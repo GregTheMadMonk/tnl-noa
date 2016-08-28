@@ -11,7 +11,7 @@
 #ifndef TimerRTH
 #define TimerRTH
 
-#include <TNL/core/mpi-supp.h>
+#include <TNL/mpi-supp.h>
 
 // TODO: remove this file
 

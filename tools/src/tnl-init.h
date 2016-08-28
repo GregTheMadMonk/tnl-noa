@@ -16,7 +16,7 @@
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/Operators/FiniteDifferences.h>
-#include <TNL/core/mfilename.h>
+#include <TNL/mfilename.h>
 #include <TNL/Functions/MeshFunction.h>
 
 using namespace TNL;
@@ -74,15 +74,13 @@ bool renderFunction( const Config::ParameterContainer& parameters )
       if( finalTime > 0.0 )
       {
          String extension = String( "." ) + getFileExtension( outputFile );
-         RemoveFileExtension( outputFile );
+         removeFileExtension( outputFile );
          outputFile += "-";
-         String aux;
-         FileNameBaseNumberEnding( outputFile.getString(),
-                                   step,
-                                   5,
-                                   extension.getString(),
-                                   aux );
-         outputFile = aux;
+         FileName outputFileName;
+         outputFileName.setFileNameBase( outputFile.getString() );
+         outputFileName.setExtension( extension.getString() );
+         outputFileName.setIndex( step );
+         outputFile = outputFileName.getFileName();
         std::cout << "+ -> Writing the function at the time " << time << " to " << outputFile << " ... " << std::endl;
       }
       else

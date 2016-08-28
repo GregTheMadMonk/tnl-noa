@@ -13,7 +13,7 @@
 
 #include <TNL/Matrices/CSR.h>
 #include <TNL/TimerRT.h>
-#include <TNL/core/mfuncs.h>
+#include <TNL/mfuncs.h>
 
 
 double tnlSpmvBenchmarkPrecision( const double& ) { return 1.0e-12; }

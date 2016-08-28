@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/core/tnlFlopsCounter.h>
+#include <TNL/Experimental/Arithmetics/FlopsCounter.h>
 
 namespace TNL {
 

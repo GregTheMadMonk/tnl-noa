@@ -11,12 +11,12 @@
 #pragma once 
 
 #include <cmath>
-#include <TNL/core/tnlConstants.h>
+#include <TNL/Constants.h>
 #include <TNL/Devices/Cuda.h>
 
 #ifdef HAVE_CUDA
 #include <cuda.h>
-#include <TNL/core/mfuncs.h>
+#include <TNL/mfuncs.h>
 #endif
 
 

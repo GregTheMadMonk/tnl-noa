@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlEllpackIndexMultimapValues.h  -  description
+                          EllpackIndexMultimapValues.h  -  description
                              -------------------
     begin                : Sep 10, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -11,21 +11,21 @@
 #pragma once
 
 #include <ostream>
-#include <TNL/core/multimaps/tnlEllpackIndexMultimap.h>
+#include <TNL/Experimental/Multimaps/EllpackIndexMultimap.h>
 
 namespace TNL {
 
 template< typename Index,
           typename Device >
-class tnlEllpackIndexMultimapValues
+class EllpackIndexMultimapValues
 {
    public:
  
       typedef Device                                     DeviceType;
       typedef Index                                      IndexType;
-      typedef tnlEllpackIndexMultimap< IndexType, DeviceType > NetworkType;
+      typedef EllpackIndexMultimap< IndexType, DeviceType > NetworkType;
  
-      tnlEllpackIndexMultimapValues();
+      EllpackIndexMultimapValues();
  
       IndexType getPortsCount() const;
  
@@ -42,7 +42,7 @@ class tnlEllpackIndexMultimapValues
  
    protected:
  
-      tnlEllpackIndexMultimapValues( IndexType* ports,
+      EllpackIndexMultimapValues( IndexType* ports,
                               const IndexType input,
                               const IndexType portsMaxCount );
  
@@ -50,14 +50,14 @@ class tnlEllpackIndexMultimapValues
  
       IndexType step, portsMaxCount;
  
-      friend tnlEllpackIndexMultimap< IndexType, DeviceType >;
+      friend EllpackIndexMultimap< IndexType, DeviceType >;
 };
 
 template< typename Index,
           typename Device >
-std::ostream& operator << ( std::ostream& str, const tnlEllpackIndexMultimapValues< Index, Device>& ports );
+std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimapValues< Index, Device>& ports );
 
 } // namespace TNL
 
-#include <TNL/core/multimaps/tnlEllpackIndexMultimapValues_impl.h>
+#include <TNL/Experimental/Multimaps/EllpackIndexMultimapValues_impl.h>
 

@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <TNL/String.h>
-#include <TNL/core/param-types.h>
+#include <TNL/param-types.h>
 
 namespace TNL {
 

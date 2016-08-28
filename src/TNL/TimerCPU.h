@@ -18,7 +18,7 @@
    #include <sys/resource.h>
 #endif
 
-#include <TNL/core/mpi-supp.h>
+#include <TNL/mpi-supp.h>
 
 namespace TNL {
 

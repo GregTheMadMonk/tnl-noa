@@ -12,7 +12,7 @@
 
 #include <TNL/tnlConfig.h>
 #include <TNL/Containers/Algorithms/cuda-prefix-sum.h>
-#include <TNL/Containers/Algorithms/tnlCublasWrapper.h>
+#include <TNL/Containers/Algorithms/CublasWrapper.h>
 
 namespace TNL {
 namespace Containers {   
@@ -418,7 +418,7 @@ typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getScalarProdu
 
    Real result( 0 );
 /*#if defined HAVE_CUBLAS && defined HAVE_CUDA
-   if( tnlCublasWrapper< typename Vector1::RealType,
+   if( CublasWraper< typename Vector1::RealType,
                          typename Vector2::RealType,
                          typename Vector1::IndexType >::dot( v1.getData(), v1.getData(), v1.getSize(), result ) )
        return result;

@@ -13,7 +13,7 @@
 
 #include <TNL/legacy/mesh/GridOld.h>
 #include <TNL/Solvers/ODE/Merson.h>
-#include <TNL/core/mfilename.h>
+#include <TNL/mfilename.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>

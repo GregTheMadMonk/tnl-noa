@@ -10,7 +10,7 @@
 
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/core/mfilename.h>
+#include <TNL/mfilename.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Images//PGMImage.h>
 #include <TNL/Images//PNGImage.h>
@@ -68,7 +68,7 @@ bool processImages( const Config::ParameterContainer& parameters )
          if( ! pgmImage.read( roi, grid, vector ) )
             return false;
          String outputFileName( fileName );
-         RemoveFileExtension( outputFileName );
+         removeFileExtension( outputFileName );
          outputFileName += ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
          vector.save( outputFileName );
@@ -94,7 +94,7 @@ bool processImages( const Config::ParameterContainer& parameters )
          if( ! pngImage.read( roi, grid, vector ) )
             return false;
          String outputFileName( fileName );
-         RemoveFileExtension( outputFileName );
+         removeFileExtension( outputFileName );
          outputFileName += ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
          vector.save( outputFileName );
@@ -120,7 +120,7 @@ bool processImages( const Config::ParameterContainer& parameters )
          if( ! jpegImage.read( roi, grid, vector ) )
             return false;
          String outputFileName( fileName );
-         RemoveFileExtension( outputFileName );
+         removeFileExtension( outputFileName );
          outputFileName += ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
          vector.save( outputFileName );
@@ -157,7 +157,7 @@ bool processTNLFiles( const Config::ParameterContainer& parameters )
       {
          Images::tnlPGMImage< int > image;
          String outputFileName( fileName );
-         RemoveFileExtension( outputFileName );
+         removeFileExtension( outputFileName );
          outputFileName += ".pgm";
 	 if ( imageFormat == "pgm" || imageFormat == "pgm-binary")
          	image.openForWrite( outputFileName, grid, true );
@@ -171,7 +171,7 @@ bool processTNLFiles( const Config::ParameterContainer& parameters )
       {
          Images::PNGImage< int > image;
          String outputFileName( fileName );
-         RemoveFileExtension( outputFileName );
+         removeFileExtension( outputFileName );
          outputFileName += ".png";
          image.openForWrite( outputFileName, grid );
          image.write( grid, vector );
@@ -181,7 +181,7 @@ bool processTNLFiles( const Config::ParameterContainer& parameters )
       {
          Images::JPEGImage< int > image;
          String outputFileName( fileName );
-         RemoveFileExtension( outputFileName );
+         removeFileExtension( outputFileName );
          outputFileName += ".jpg";
          image.openForWrite( outputFileName, grid );
          image.write( grid, vector );

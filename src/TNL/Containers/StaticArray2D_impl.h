@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/core/param-types.h>
-#include <TNL/core/mfuncs.h>
+#include <TNL/param-types.h>
+#include <TNL/mfuncs.h>
 
 namespace TNL {
 namespace Containers {   

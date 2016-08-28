@@ -1,7 +1,7 @@
 #ifndef advectionPROBLEM_IMPL_H_
 #define advectionPROBLEM_IMPL_H_
 
-#include <TNL/core/mfilename.h>
+#include <TNL/mfilename.h>
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
@@ -225,9 +225,11 @@ makeSnapshot( const RealType& time,
 {
    std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
-   String fileName;
-   FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! dofs->save( fileName ) )
+   FileName fileName;
+   fileName.setFileNameBase( "u-" );
+   fileName.setExtension( "tnl" );
+   fileName.setIndex( step );
+   if( ! dofs->save( fileName.getFileName() ) )
       return false;
    return true;
 }

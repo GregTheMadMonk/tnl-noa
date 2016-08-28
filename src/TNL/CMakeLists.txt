@@ -1,7 +1,7 @@
-ADD_SUBDIRECTORY( Arithmetics )
 ADD_SUBDIRECTORY( Config )
 ADD_SUBDIRECTORY( Containers )
 ADD_SUBDIRECTORY( Devices )
+ADD_SUBDIRECTORY( Experimental )
 ADD_SUBDIRECTORY( Functions )
 ADD_SUBDIRECTORY( Images )
 ADD_SUBDIRECTORY( Matrices )
@@ -10,7 +10,7 @@ ADD_SUBDIRECTORY( Operators )
 ADD_SUBDIRECTORY( Problems )
 ADD_SUBDIRECTORY( Solvers )
 
-ADD_SUBDIRECTORY( core )
+#ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( legacy )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
@@ -33,7 +33,14 @@ set( headers
      SystemInfo.h
      Timer.h
      TimerCPU.h
-     TimerRT.h )
+     TimerRT.h 
+
+      tnlConstants.h
+             tnlIndexedSet.h
+             mfilename.h 
+             mfuncs.h 
+             mpi-supp.h 
+             param-types.h)
 
 set( common_SOURCES 
      File.cpp
@@ -44,11 +51,15 @@ set( common_SOURCES
      SystemInfo.cpp
      Timer.cpp
      TimerCPU.cpp
-     TimerRT.cpp )
+     TimerRT.cpp
+
+${CURRENT_DIR}/mfilename.cpp 
+     ${CURRENT_DIR}/mpi-supp.cpp )
      
 set( tnl_SOURCES ${tnl_config_SOURCES}
                  ${tnl_containers_SOURCES}
                  ${tnl_devices_SOURCES}
+                 ${tnl_experimental_SOURCES}
                  ${tnl_functions_SOURCES}
                  ${tnl_images_SOURCES}
                  ${tnl_matrices_SOURCES}
@@ -64,6 +75,7 @@ set( tnl_SOURCES ${tnl_config_SOURCES}
 set( tnl_CUDA__SOURCES ${tnl_config_CUDA__SOURCES}
                        ${tnl_containers_CUDA__SOURCES}
                        ${tnl_devices_CUDA__SOURCES}
+                       ${tnl_experimental_CUDA__SOURCES}
                        ${tnl_functions_CUDA__SOURCES}
                        ${tnl_images_CUDA__SOURCES}
                        ${tnl_matrices_CUDA__SOURCES}

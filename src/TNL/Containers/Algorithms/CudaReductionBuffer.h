@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCudaReductionBuffer.h  -  description
+                          CudaReductionBuffer.h  -  description
                              -------------------
     begin                : June 17, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -17,12 +17,12 @@ namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-class tnlCudaReductionBuffer
+class CudaReductionBuffer
 {
    public:
-      inline static tnlCudaReductionBuffer& getInstance( size_t size = 0 )
+      inline static CudaReductionBuffer& getInstance( size_t size = 0 )
       {
-         static tnlCudaReductionBuffer instance( size );
+         static CudaReductionBuffer instance( size );
          return instance;
       }
 
@@ -52,21 +52,21 @@ class tnlCudaReductionBuffer
 
    private:
       // stop the compiler generating methods of copy the object
-      tnlCudaReductionBuffer( tnlCudaReductionBuffer const& copy );            // Not Implemented
-      tnlCudaReductionBuffer& operator=( tnlCudaReductionBuffer const& copy ); // Not Implemented
+      CudaReductionBuffer( CudaReductionBuffer const& copy );            // Not Implemented
+      CudaReductionBuffer& operator=( CudaReductionBuffer const& copy ); // Not Implemented
 
       // private constructor of the singleton
-      inline tnlCudaReductionBuffer( size_t size = 0 ): data( 0 ), size( 0 )
+      inline CudaReductionBuffer( size_t size = 0 ): data( 0 ), size( 0 )
       {
 #ifdef HAVE_CUDA
          if( size != 0 ) setSize( size );
-         atexit( tnlCudaReductionBuffer::free_atexit );
+         atexit( CudaReductionBuffer::free_atexit );
 #endif
       }
 
       inline static void free_atexit( void )
       {
-         tnlCudaReductionBuffer::getInstance().free();
+         CudaReductionBuffer::getInstance().free();
       }
 
    protected:

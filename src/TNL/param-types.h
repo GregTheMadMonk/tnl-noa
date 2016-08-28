@@ -10,7 +10,7 @@
 
 #pragma once 
 
-#include <TNL/core/tnlReal.h>
+#include <TNL/Experimental/Arithmetics/Real.h>
 #include <TNL/String.h>
 
 namespace TNL {

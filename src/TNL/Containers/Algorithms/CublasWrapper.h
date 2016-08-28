@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCublasWrapper.h  -  description
+                          CublasWraper.h  -  description
                              -------------------
     begin                : Apr 7, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -21,7 +21,7 @@ namespace Algorithms {
 template< typename Real1,
           typename Real2,
           typename Index >
-class tnlCublasWrapper
+class CublasWraper
 {
     public:
         static bool dot( const Real1* v1, const Real2* v2, const Index size, Real1& result)
@@ -33,7 +33,7 @@ class tnlCublasWrapper
 #if defined HAVE_CUBLAS && defined HAVE_CUDA
 
 template< typename Index >
-class tnlCublasWrapper< float, float, Index >
+class CublasWraper< float, float, Index >
 {
     public:
         static bool dot( const float* v1, const float* v2, const Index size, float& result)
@@ -48,7 +48,7 @@ class tnlCublasWrapper< float, float, Index >
 };
 
 template< typename Index >
-class tnlCublasWrapper< double, double, Index >
+class CublasWraper< double, double, Index >
 {
     public:
         static bool dot( const double* v1, const double* v2, const Index size, double& result)

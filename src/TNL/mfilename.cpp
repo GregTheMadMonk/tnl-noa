@@ -8,15 +8,53 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#include <sstream>
+#include <iomanip>
 #include <cstring>
 #include <cstdlib>
-#include <TNL/core/mfilename.h>
+#include <TNL/mfilename.h>
 #include <TNL/String.h>
-#include <TNL/core/mfuncs.h>
+#include <TNL/mfuncs.h>
 
 namespace TNL {
+   
+FileName::FileName()
+: index( 0 ), digitsCount( 5 )
+{
+}
+      
+void FileName::setFileNameBase( const String& fileNameBase )
+{
+   this->fileNameBase = fileNameBase;
+}
+      
+void FileName::setExtension( const String& extension )
+{
+   this->extension = extension;
+}
+    
+void FileName::setIndex( const int index )
+{
+   this->index = index;
+}
+    
+void FileName::setDigitsCount( const int digitsCount )
+{
+   this->digitsCount = digitsCount;
+}
 
-void FileNameBaseNumberEnding( const char* base_name,
+String FileName::getFileName()
+{
+   std::stringstream stream;
+   stream << this->fileNameBase 
+          << std::setw( this->digitsCount )
+          << std::setfill( '0' )
+          << index
+          << "." << this->extension;
+   return String( stream.str().data() );
+}
+
+/*void FileNameBaseNumberEnding( const char* base_name,
                                int number,
                                int index_size,
                                const char* ending,
@@ -35,7 +73,7 @@ void FileNameBaseNumberEnding( const char* base_name,
    file_name += zeros;
    file_name += snumber;
    file_name += ending;
-}
+}*/
 
 String getFileExtension( const String fileName )
 {
@@ -47,7 +85,7 @@ String getFileExtension( const String fileName )
    return result;
 }
 
-void RemoveFileExtension( String& fileName )
+void removeFileExtension( String& fileName )
 {
    int size = fileName. getLength();
    int i = 1;

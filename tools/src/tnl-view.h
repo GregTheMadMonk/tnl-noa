@@ -12,7 +12,7 @@
 #define TNL_VIEW_H_
 
 #include <cstdlib>
-#include <TNL/core/mfilename.h>
+#include <TNL/mfilename.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/String.h>
 #include <TNL/Containers/Vector.h>
@@ -28,7 +28,7 @@ bool getOutputFileName( const String& inputFileName,
                         String& outputFileName )
 {
    outputFileName = inputFileName;
-   RemoveFileExtension( outputFileName );
+   removeFileExtension( outputFileName );
    if( outputFormat == "gnuplot" )
    {
       outputFileName += ".gplt";

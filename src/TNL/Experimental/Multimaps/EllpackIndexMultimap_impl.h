@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlEllpackIndexMultimap_impl.h  -  description
+                          EllpackIndexMultimap_impl.h  -  description
                              -------------------
     begin                : Sep 9, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -10,24 +10,24 @@
 
 #pragma once 
 
-#include <TNL/core/multimaps/tnlEllpackIndexMultimap.h>
-#include <TNL/core/multimaps/tnlEllpackIndexMultimapValues.h>
+#include <TNL/Experimental/Multimaps/EllpackIndexMultimap.h>
+#include <TNL/Experimental/Multimaps/EllpackIndexMultimapValues.h>
 
 namespace TNL {
 
 template< typename Index,
           typename Device >
-tnlEllpackIndexMultimap< Index, Device >::
-tnlEllpackIndexMultimap()
+EllpackIndexMultimap< Index, Device >::
+EllpackIndexMultimap()
 :  keysRange( 0 ), valuesRange( 0 ), valuesMaxCount( 0 )
 {
 }
 
 template< typename Index,
           typename Device >
-String tnlEllpackIndexMultimap< Index, Device > :: getType()
+String EllpackIndexMultimap< Index, Device > :: getType()
 {
-   return String( "tnlEllpackIndexMultimap< ") +
+   return String( "EllpackIndexMultimap< ") +
           Device :: getDeviceType() +
           String( ", " ) +
           String( TNL::getType< Index >() ) +
@@ -36,7 +36,7 @@ String tnlEllpackIndexMultimap< Index, Device > :: getType()
 
 template< typename Index,
           typename Device >
-String tnlEllpackIndexMultimap< Index, Device >::getTypeVirtual() const
+String EllpackIndexMultimap< Index, Device >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -44,7 +44,7 @@ String tnlEllpackIndexMultimap< Index, Device >::getTypeVirtual() const
 template< typename Index,
           typename Device >
 void
-tnlEllpackIndexMultimap< Index, Device >::
+EllpackIndexMultimap< Index, Device >::
 setRanges( const IndexType inputs,
                const IndexType outputs )
 {
@@ -55,7 +55,7 @@ setRanges( const IndexType inputs,
 template< typename Index,
           typename Device >
 const Index
-tnlEllpackIndexMultimap< Index, Device >::
+EllpackIndexMultimap< Index, Device >::
 getKeysRange() const
 {
    return this->keysRange;
@@ -64,7 +64,7 @@ getKeysRange() const
 template< typename Index,
           typename Device >
 const Index
-tnlEllpackIndexMultimap< Index, Device >::
+EllpackIndexMultimap< Index, Device >::
 getValuesRange() const
 {
    return this->valuesRange;
@@ -73,7 +73,7 @@ getValuesRange() const
 template< typename Index,
           typename Device >
 void
-tnlEllpackIndexMultimap< Index, Device >::
+EllpackIndexMultimap< Index, Device >::
 allocate( const ValuesAllocationVectorType& portsCount )
 {
    Assert( portsCount.getSize() == this->keysRange,
@@ -89,8 +89,8 @@ allocate( const ValuesAllocationVectorType& portsCount )
 
 template< typename Index,
           typename Device >
-typename tnlEllpackIndexMultimap< Index, Device >::ValuesAccessorType
-tnlEllpackIndexMultimap< Index, Device >::
+typename EllpackIndexMultimap< Index, Device >::ValuesAccessorType
+EllpackIndexMultimap< Index, Device >::
 getValues( const IndexType& inputIndex )
 {
    return ValuesAccessorType( this->values.getData(), inputIndex, this->valuesMaxCount );
@@ -98,8 +98,8 @@ getValues( const IndexType& inputIndex )
 
 template< typename Index,
           typename Device >
-typename tnlEllpackIndexMultimap< Index, Device >::ConstValuesAccessorType
-tnlEllpackIndexMultimap< Index, Device >::
+typename EllpackIndexMultimap< Index, Device >::ConstValuesAccessorType
+EllpackIndexMultimap< Index, Device >::
 getValues( const IndexType& inputIndex ) const
 {
    return ConstPortsType( this->values.getData(), inputIndex, this->valuesMaxCount );

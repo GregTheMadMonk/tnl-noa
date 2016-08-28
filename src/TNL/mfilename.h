@@ -10,18 +10,42 @@
 
 #pragma once 
 
+#include <TNL/String.h>
+
 namespace TNL {
 
-class String;
-
-void FileNameBaseNumberEnding( const char* base_name,
+/*void FileNameBaseNumberEnding( const char* base_name,
                                int number,
                                int index_size,
                                const char* ending,
-                               String& file_name );
+                               String& file_name );*/
 
 String getFileExtension( const String fileName );
 
-void RemoveFileExtension( String& file_name );
+void removeFileExtension( String& file_name );
+
+class FileName
+{
+   public:
+      
+      FileName();
+      
+      void setFileNameBase( const String& fileNameBase );
+      
+      void setExtension( const String& extension );
+      
+      void setIndex( const int index );
+      
+      void setDigitsCount( const int digitsCount );
+      
+      String getFileName();
+      
+   protected:
+   
+      String fileNameBase, extension;
+      
+      int index, digitsCount;
+   
+};
 
 } // namespace TNL

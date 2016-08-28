@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlIndexedSet.h  -  description
+                          IndexedSet.h  -  description
                              -------------------
     begin                : Feb 15, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -14,11 +14,12 @@
 #include <stdexcept>
 
 namespace TNL {
+namespace Containers {
 
 template< typename Element,
           typename Index,
           typename Key >
-class tnlIndexedSet
+class IndexedSet
 {
    public:
 
@@ -73,8 +74,9 @@ class tnlIndexedSet
 template< typename Element,
           typename Index,
           typename Key >
-std::ostream& operator <<( std::ostream& str, tnlIndexedSet< Element, Index, Key >& set );
+std::ostream& operator <<( std::ostream& str, IndexedSet< Element, Index, Key >& set );
 
+} // namespace Containers
 } // namespace TNL
 
-#include <TNL/core/tnlIndexedSet_impl.h>
+#include <TNL/Containers/IndexedSet_impl.h>

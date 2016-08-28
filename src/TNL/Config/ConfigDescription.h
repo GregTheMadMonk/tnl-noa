@@ -12,7 +12,7 @@
 
 #include <TNL/String.h>
 #include <TNL/List.h>
-#include <TNL/core/param-types.h>
+#include <TNL/param-types.h>
 #include <TNL/Config/ConfigEntryType.h>
 #include <TNL/Config/ConfigEntry.h>
 #include <TNL/Config/ConfigEntryList.h>

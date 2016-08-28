@@ -14,7 +14,7 @@
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/SharedArray.h>
 //#include <TNL/Containers/ConstSharedArray.h>
-#include <TNL/core/tnlIndexedSet.h>
+#include <TNL/Containers/IndexedSet.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
 #include <TNL/Meshes/MeshConfigBase.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
@@ -75,8 +75,8 @@ class MeshEntityTraits
 
       typedef Containers::Array< EntityType, Devices::Host, GlobalIndexType >               StorageArrayType;
       typedef Containers::SharedArray< EntityType, Devices::Host, GlobalIndexType >         AccessArrayType;
-      typedef tnlIndexedSet< EntityType, GlobalIndexType, Key >                      UniqueContainerType;
-      typedef tnlIndexedSet< SeedType, GlobalIndexType, Key >                        SeedIndexedSetType;
+      typedef Containers::IndexedSet< EntityType, GlobalIndexType, Key >                      UniqueContainerType;
+      typedef Containers::IndexedSet< SeedType, GlobalIndexType, Key >                        SeedIndexedSetType;
       typedef Containers::Array< SeedType, Devices::Host, GlobalIndexType >                 SeedArrayType;
       typedef Containers::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType > ReferenceOrientationArrayType;
 

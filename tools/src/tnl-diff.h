@@ -13,7 +13,7 @@
 
 #include <iomanip>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/core/mfilename.h>
+#include <TNL/mfilename.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Functions/MeshFunction.h>
@@ -141,7 +141,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
       {
          String differenceFileName;
          differenceFileName = inputFiles[ i ];
-         RemoveFileExtension( differenceFileName );
+         removeFileExtension( differenceFileName );
          differenceFileName += ".diff.tnl";
          //diff.setLike( v1 );
          diff = v1;
@@ -275,7 +275,7 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
       {
          String differenceFileName;
          differenceFileName = inputFiles[ i ];
-         RemoveFileExtension( differenceFileName );
+         removeFileExtension( differenceFileName );
          differenceFileName += ".diff.tnl";
          Containers::Vector< Real, Devices::Host, Index > diff;
          diff.setLike( v1 );

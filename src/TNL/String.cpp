@@ -15,7 +15,7 @@
 #include <TNL/Assert.h>
 #include <TNL/List.h>
 #include <TNL/File.h>
-#include <TNL/core/mfuncs.h>
+#include <TNL/mfuncs.h>
 #ifdef HAVE_MPI
    #include <mpi.h>
 #endif

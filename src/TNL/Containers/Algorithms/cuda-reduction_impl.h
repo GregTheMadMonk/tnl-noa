@@ -19,9 +19,9 @@
 #include <TNL/Assert.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
 #include <TNL/Containers/ArrayOperations.h>
-#include <TNL/core/mfuncs.h>
-#include <TNL/Containers/Algorithms/tnlCudaReductionBuffer.h>
-#include <TNL/Containers/Algorithms/tnlCudaReduction.h>
+#include <TNL/mfuncs.h>
+#include <TNL/Containers/Algorithms/CudaReductionBuffer.h>
+#include <TNL/Containers/Algorithms/CudaReduction.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
 #include <TNL/TimerRT.h>
@@ -39,18 +39,18 @@ namespace Algorithms {
  */
 const int minGPUReductionDataSize = 256;//65536; //16384;//1024;//256;
 
-//static tnlCudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
+//static CudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
 
 #ifdef HAVE_CUDA
 
 template< typename Operation, int blockSize >
-__global__ void tnlCudaReductionKernel( Operation operation,
+__global__ void CudaReductionKernel( Operation operation,
                                         const typename Operation :: IndexType size,
                                         const typename Operation :: RealType* input1,
                                         const typename Operation :: RealType* input2,
                                         typename Operation :: ResultType* output )
 {
-   typedef tnlCudaReduction< Operation, blockSize > Reduction;
+   typedef CudaReduction< Operation, blockSize > Reduction;
    Reduction::reduce( operation, size, input1, input2, output );
 };
 
@@ -70,9 +70,9 @@ typename Operation::IndexType reduceOnCudaDevice( Operation& operation,
    gridSize.x = min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
  
    // create reference to the reduction buffer singleton and set default size
-   tnlCudaReductionBuffer & cudaReductionBuffer = tnlCudaReductionBuffer::getInstance( 8 * minGPUReductionDataSize );
+   CudaReductionBuffer & cudaReductionBuffer = CudaReductionBuffer::getInstance( 8 * minGPUReductionDataSize );
  
-   //tnlCudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
+   //CudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
    if( ! cudaReductionBuffer.setSize( gridSize.x * sizeof( ResultType ) ) )
       return false;
    output = cudaReductionBuffer.template getData< ResultType >();
@@ -84,39 +84,39 @@ typename Operation::IndexType reduceOnCudaDevice( Operation& operation,
    switch( blockSize.x )
    {
       case 512:
-         tnlCudaReductionKernel< Operation, 512 >
+         CudaReductionKernel< Operation, 512 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case 256:
-         tnlCudaReductionKernel< Operation, 256 >
+         CudaReductionKernel< Operation, 256 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case 128:
-         tnlCudaReductionKernel< Operation, 128 >
+         CudaReductionKernel< Operation, 128 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case  64:
-         tnlCudaReductionKernel< Operation,  64 >
+         CudaReductionKernel< Operation,  64 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case  32:
-         tnlCudaReductionKernel< Operation,  32 >
+         CudaReductionKernel< Operation,  32 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case  16:
-         tnlCudaReductionKernel< Operation,  16 >
+         CudaReductionKernel< Operation,  16 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
      case   8:
-         tnlCudaReductionKernel< Operation,   8 >
+         CudaReductionKernel< Operation,   8 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case   4:
-         tnlCudaReductionKernel< Operation,   4 >
+         CudaReductionKernel< Operation,   4 >
         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
         break;
       case   2:
-         tnlCudaReductionKernel< Operation,   2 >
+         CudaReductionKernel< Operation,   2 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case   1:

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlEllpackTest.cu  -  description
+                          EllpackTest.cu  -  description
                              -------------------
     begin                : Jan 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber

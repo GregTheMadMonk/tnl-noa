@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCudaReduction.h  -  description
+                          CudaReduction.h  -  description
                              -------------------
     begin                : Jun 17, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -17,7 +17,7 @@ namespace Algorithms {
 #ifdef HAVE_CUDA
 
 template< typename Operation, int blockSize >
-class tnlCudaReduction
+class CudaReduction
 {
    public:
 
@@ -34,7 +34,7 @@ class tnlCudaReduction
 };
  
 /*template< typename Real, typename Index, int blockSize >
-class tnlCudaReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize >
+class CudaReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize >
 {
    public:
  
@@ -57,6 +57,6 @@ class tnlCudaReduction< tnlParallelReductionScalarProduct< Real, Index >, blockS
 } // namespace TNL
 
 #ifdef HAVE_CUDA
-#include <TNL/Containers/Algorithms/tnlCudaReduction_impl.h>
+#include <TNL/Containers/Algorithms/CudaReduction_impl.h>
 #endif
 

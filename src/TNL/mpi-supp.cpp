@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/core/mpi-supp.h>
+#include <TNL/mpi-supp.h>
 
 namespace TNL {
 

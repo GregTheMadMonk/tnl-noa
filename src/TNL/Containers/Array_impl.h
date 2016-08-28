@@ -13,8 +13,8 @@
 #include <iostream>
 #include <TNL/Assert.h>
 #include <TNL/File.h>
-#include <TNL/core/mfuncs.h>
-#include <TNL/core/param-types.h>
+#include <TNL/mfuncs.h>
+#include <TNL/param-types.h>
 #include <TNL/Containers/ArrayOperations.h>
 #include <TNL/Containers/ArrayIO.h>
 #include <TNL/Containers/Array.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TNL/core/mfilename.h>
+#include <TNL/mfilename.h>
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>

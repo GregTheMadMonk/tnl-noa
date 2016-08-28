@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <TNL/core/mfilename.h>
+#include <TNL/mfilename.h>
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Matrices/MultidiagonalMatrixSetter.h>
 #include <TNL/Logger.h>
@@ -181,9 +181,11 @@ makeSnapshot( const RealType& time,
 
    this->bindDofs( meshPointer, dofs );
    //cout << "dofs = " << dofs << endl;
-   String fileName;
-   FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! this->uPointer->save( fileName ) )
+   FileName fileName;
+   fileName.setFileNameBase( "u-" );
+   fileName.setExtension( "tnl" );
+   fileName.setIndex( step );
+   if( ! this->uPointer->save( fileName.getFileName() ) )
       return false;
    return true;
 }

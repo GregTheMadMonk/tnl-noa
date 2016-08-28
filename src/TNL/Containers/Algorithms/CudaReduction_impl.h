@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCudaReduction_impl.h  -  description
+                          CudaReduction_impl.h  -  description
                              -------------------
     begin                : Jun 17, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -17,7 +17,7 @@ namespace Algorithms {
 template< typename Operation, int blockSize >
 __device__
 void
-tnlCudaReduction< Operation, blockSize >::
+CudaReduction< Operation, blockSize >::
 reduce( Operation& operation,
         const IndexType size,
         const RealType* input1,
@@ -153,7 +153,7 @@ reduce( Operation& operation,
 template< typename Real, typename Index, int blockSize >
 __device__
 void
-tnlCudaReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize >::
+CudaReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize >::
 reduce( Operation& operation,
         const IndexType size,
         const RealType* input1,

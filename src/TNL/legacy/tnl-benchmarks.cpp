@@ -11,7 +11,7 @@
 #include <TNL/TimerRT.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorCUDA.h>
-#include <TNL/core/tnl-cuda-kernels.cu.h>
+#include <TNL/tnl-cuda-kernels.cu.h>
 #include <TNL/tnl-benchmarks.h>
 
 

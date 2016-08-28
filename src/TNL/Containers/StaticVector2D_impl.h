@@ -10,7 +10,7 @@
 
 #pragma once 
 
-#include <TNL/core/mfuncs.h>
+#include <TNL/mfuncs.h>
 
 namespace TNL {
 namespace Containers {   

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlIndexedSet_impl.h  -  description
+                          IndexedSet_impl.h  -  description
                              -------------------
     begin                : Feb 15, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -11,11 +11,12 @@
 #pragma once
 
 namespace TNL {
+namespace Containers {
 
 template< typename Element,
           typename Index,
           typename Key >
-void tnlIndexedSet< Element, Index, Key >::reset()
+void IndexedSet< Element, Index, Key >::reset()
 {
    map.clear();
 }
@@ -23,7 +24,7 @@ void tnlIndexedSet< Element, Index, Key >::reset()
 template< typename Element,
           typename Index,
           typename Key >
-Index tnlIndexedSet< Element, Index, Key >::getSize() const
+Index IndexedSet< Element, Index, Key >::getSize() const
 {
    return map.size();
 }
@@ -31,7 +32,7 @@ Index tnlIndexedSet< Element, Index, Key >::getSize() const
 template< typename Element,
           typename Index,
           typename Key >
-Index tnlIndexedSet< Element, Index, Key >::insert( const Element &data )
+Index IndexedSet< Element, Index, Key >::insert( const Element &data )
 {
    STDMapIteratorType iter = map.insert( STDMapValueType( Key( data ),
                                          DataWithIndex( data, getSize() ) ) ).first;
@@ -41,7 +42,7 @@ Index tnlIndexedSet< Element, Index, Key >::insert( const Element &data )
 template< typename Element,
           typename Index,
           typename Key >
-bool tnlIndexedSet< Element, Index, Key >::find( const Element &data, Index& index ) const
+bool IndexedSet< Element, Index, Key >::find( const Element &data, Index& index ) const
 {
    STDMapIteratorType iter = map.find( Key( data ) );
    if (iter == map.end())
@@ -54,7 +55,7 @@ template< typename Element,
           typename Index,
           typename Key >
    template<typename ArrayType>
-void tnlIndexedSet< Element, Index, Key >::toArray( ArrayType& array ) const
+void IndexedSet< Element, Index, Key >::toArray( ArrayType& array ) const
 {
    Assert( array.getSize() == getSize(),
               std::cerr << "array.getSize() = " << array.getSize()
@@ -69,7 +70,7 @@ void tnlIndexedSet< Element, Index, Key >::toArray( ArrayType& array ) const
 template< typename Element,
           typename Index,
           typename Key >
-const Element& tnlIndexedSet< Element, Index, Key >::getElement( KeyType key ) const
+const Element& IndexedSet< Element, Index, Key >::getElement( KeyType key ) const
 {
    return map[ key ];
 }
@@ -77,7 +78,7 @@ const Element& tnlIndexedSet< Element, Index, Key >::getElement( KeyType key ) c
 template< typename Element,
           typename Index,
           typename Key >
-Element& tnlIndexedSet< Element, Index, Key >::getElement( KeyType key )
+Element& IndexedSet< Element, Index, Key >::getElement( KeyType key )
 {
    return map[ key ];
 }
@@ -85,7 +86,7 @@ Element& tnlIndexedSet< Element, Index, Key >::getElement( KeyType key )
 template< typename Element,
           typename Index,
           typename Key >
-void tnlIndexedSet< Element, Index, Key >::print( std::ostream& str ) const
+void IndexedSet< Element, Index, Key >::print( std::ostream& str ) const
 {
    STDMapIteratorType iter = map.begin();
    str << iter->second.data;
@@ -100,10 +101,11 @@ void tnlIndexedSet< Element, Index, Key >::print( std::ostream& str ) const
 template< typename Element,
           typename Index,
           typename Key >
-std::ostream& operator<<( std::ostream& str, tnlIndexedSet< Element, Index, Key >& set )
+std::ostream& operator<<( std::ostream& str, IndexedSet< Element, Index, Key >& set )
 {
    set.print( str );
    return str;
 }
 
+} // namespace Containers
 } // namespace TNL

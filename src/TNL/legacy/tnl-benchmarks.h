@@ -11,7 +11,7 @@
 #ifndef TNLBENCHMARKS_H_
 #define TNLBENCHMARKS_H_
 
-#include <TNL/core/mfuncs.h>
+#include <TNL/mfuncs.h>
 
 template< class T >
 bool transferBenchmark( const int size,
@@ -208,15 +208,15 @@ void reductionBenchmark( const int size,
                                         device_aux. Data() );
             break;
          default:
-            tnlCudaReductionSum( size,
+            CudaReductionSum( size,
                                  device_vector. Data(),
                                  sum,
                                  device_aux. Data() );
-            tnlCudaReductionMin( size,
+            CudaReductionMin( size,
                                  device_vector. Data(),
                                  min,
                                  device_aux. Data() );
-            tnlCudaReductionMax( size,
+            CudaReductionMax( size,
                                  device_vector. Data(),
                                  max,
                                  device_aux. Data() );

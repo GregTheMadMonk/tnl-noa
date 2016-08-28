@@ -1,7 +1,7 @@
 #ifndef HeatEquationBenchmarkPROBLEM_IMPL_H_
 #define HeatEquationBenchmarkPROBLEM_IMPL_H_
 
-#include <TNL/core/mfilename.h>
+#include <TNL/mfilename.h>
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
@@ -169,9 +169,14 @@ makeSnapshot( const RealType& time,
    this->bindDofs( meshPointer, dofsPointer );
    MeshFunctionType u;
    u.bind( meshPointer, *dofsPointer );
-   String fileName;
-   FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! u.save( fileName ) )
+   
+   FileName fileName;
+   fileName.setFileNameBase( "u-" );
+   fileName.setExtension( "tnl" );
+   fileName.setIndex( step );
+
+   //FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
+   if( ! u.save( fileName.getFileName() ) )
       return false;
    return true;
 }

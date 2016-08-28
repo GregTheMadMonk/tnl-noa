@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlEllpackIndexMultimap.h  -  description
+                          EllpackIndexMultimap.h  -  description
                              -------------------
     begin                : Sep 9, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -16,25 +16,25 @@ namespace TNL {
 
 template< typename Index = int,
           typename Device = Devices::Host >
-class tnlEllpackIndexMultimapValues;
+class EllpackIndexMultimapValues;
 
 template< typename Index = int,
           typename Device = Devices::Host >
-class tnlEllpackIndexMultimapConstValues;
+class EllpackIndexMultimapConstValues;
 
 template< typename Index = int,
           typename Device = Devices::Host >
-class tnlEllpackIndexMultimap
+class EllpackIndexMultimap
 {
    public:
  
       typedef Device                                                       DeviceType;
       typedef Index                                                        IndexType;
-      typedef tnlEllpackIndexMultimapValues< IndexType, DeviceType >       ValuesAccessorType;
-      typedef tnlEllpackIndexMultimapConstValues< IndexType, DeviceType >  ConstValuesAccessorType;
+      typedef EllpackIndexMultimapValues< IndexType, DeviceType >       ValuesAccessorType;
+      typedef EllpackIndexMultimapConstValues< IndexType, DeviceType >  ConstValuesAccessorType;
       typedef Containers::Vector< IndexType, DeviceType, IndexType >                ValuesAllocationVectorType;
  
-      tnlEllpackIndexMultimap();
+      EllpackIndexMultimap();
  
       static String getType();
 
@@ -62,5 +62,5 @@ class tnlEllpackIndexMultimap
 
 } // namespace TNL
 
-#include <TNL/core/multimaps/tnlEllpackIndexMultimap_impl.h>
+#include <TNL/Experimental/Multimaps/EllpackIndexMultimap_impl.h>
 

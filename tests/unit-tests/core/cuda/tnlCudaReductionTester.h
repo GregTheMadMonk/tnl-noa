@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCudaReductionTester.h  -  description
+                          CudaReductionTester.h  -  description
                              -------------------
     begin                : Mar 22, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -9,8 +9,8 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef tnlCudaReductionTESTER_H_
-#define tnlCudaReductionTESTER_H_
+#ifndef CudaReductionTESTER_H_
+#define CudaReductionTESTER_H_
 
 #include <TNL/tnlConfig.h>
 
@@ -25,62 +25,62 @@
 
 using namespace TNL;
 
-class tnlCudaReductionTester : public CppUnit :: TestCase
+class CudaReductionTester : public CppUnit :: TestCase
 {
    public:
-   tnlCudaReductionTester(){};
+   CudaReductionTester(){};
 
    virtual
-   ~tnlCudaReductionTester(){};
+   ~CudaReductionTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlCudaReductionTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "CudaReductionTester" );
       CppUnit :: TestResult result;
 
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< CudaReductionTester >(
                                 "shortConstantSequenceTest",
-                                &tnlCudaReductionTester :: shortConstantSequenceTest< double > )
+                                &CudaReductionTester :: shortConstantSequenceTest< double > )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< CudaReductionTester >(
                                 "longConstantSequenceTest",
-                                &tnlCudaReductionTester :: longConstantSequenceTest< double > )
+                                &CudaReductionTester :: longConstantSequenceTest< double > )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< CudaReductionTester >(
                                 "linearSequenceTest",
-                                &tnlCudaReductionTester :: linearSequenceTest< double > )
+                                &CudaReductionTester :: linearSequenceTest< double > )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< CudaReductionTester >(
                                 "shortLogicalOperationsTest",
-                                &tnlCudaReductionTester :: shortLogicalOperationsTest< int > )
+                                &CudaReductionTester :: shortLogicalOperationsTest< int > )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< CudaReductionTester >(
                                 "longLogicalOperationsTest",
-                                &tnlCudaReductionTester :: longLogicalOperationsTest< int > )
+                                &CudaReductionTester :: longLogicalOperationsTest< int > )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< CudaReductionTester >(
                                 "shortComparisonTest",
-                                &tnlCudaReductionTester :: shortComparisonTest< int > )
+                                &CudaReductionTester :: shortComparisonTest< int > )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< CudaReductionTester >(
                                 "longComparisonTest",
-                                &tnlCudaReductionTester :: longComparisonTest< int > )
+                                &CudaReductionTester :: longComparisonTest< int > )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< CudaReductionTester >(
                                 "shortScalarProductTest",
-                                &tnlCudaReductionTester :: shortScalarProductTest< double > )
+                                &CudaReductionTester :: shortScalarProductTest< double > )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< CudaReductionTester >(
                                 "longScalarProductTest",
-                                &tnlCudaReductionTester :: longScalarProductTest< double > )
+                                &CudaReductionTester :: longScalarProductTest< double > )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< CudaReductionTester >(
                                 "shortDiffTest",
-                                &tnlCudaReductionTester :: shortDiffTest< double > )
+                                &CudaReductionTester :: shortDiffTest< double > )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaReductionTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< CudaReductionTester >(
                                 "longDiffTest",
-                                &tnlCudaReductionTester :: longDiffTest< double > )
+                                &CudaReductionTester :: longDiffTest< double > )
                                );
 
       return suiteOfTests;
@@ -804,8 +804,8 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
 };
 
 #else
-class tnlCudaReductionTester
+class CudaReductionTester
 {};
 #endif /* HAVE_CPPUNIT */
 
-#endif /* tnlCudaReductionTESTER_H_ */
+#endif /* CudaReductionTESTER_H_ */

@@ -1,19 +1,13 @@
-ADD_SUBDIRECTORY( multimaps )
-
 set (headers 
              tnlConstants.h
-             tnlFlopsCounter.h
              tnlIndexedSet.h
-             tnlReal.h
              mfilename.h 
              mfuncs.h 
              mpi-supp.h 
-             param-types.h
-             tnlIndexedSet_impl.h )
+             param-types.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/core )
 set( common_SOURCES
-     ${CURRENT_DIR}/tnlFlopsCounter.cpp 
      ${CURRENT_DIR}/mfilename.cpp 
      ${CURRENT_DIR}/mpi-supp.cpp )
 
@@ -38,8 +32,8 @@ set( tnl_core_SOURCES
      PARENT_SCOPE )
     
 
-SET( libtnlcoreincludedir ${TNL_INCLUDE_DIR}/core )
-SET( libtnlcoreinclude_HEADERS ${headers} )
+#SET( libtnlcoreincludedir ${TNL_INCLUDE_DIR}/core )
+#SET( libtnlcoreinclude_HEADERS ${headers} )
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/core )
 
 

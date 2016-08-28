@@ -12,7 +12,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Images//DicomSeries.h>
-#include <TNL/core/mfilename.h>
+#include <TNL/mfilename.h>
 
 using namespace TNL;
 
@@ -68,10 +68,12 @@ bool processDicomSeries( const Config::ParameterContainer& parameters )
       for( int imageIdx = 0; imageIdx < dicomSeries.getImagesCount(); imageIdx++ )
       {
          dicomSeries.getImage( imageIdx, grid, roi, vector );
-         String fileName;
-         FileNameBaseNumberEnding( seriesName.getString(), imageIdx, 2, ".tnl", fileName );
-         std::cout << "Writing file " << fileName << " ... " << std::endl;
-         vector.save( fileName );
+         FileName fileName;
+         fileName.setFileNameBase( seriesName.getString() );
+         fileName.setExtension( "tnl" );
+         fileName.setIndex( imageIdx );
+         std::cout << "Writing file " << fileName.getFileName() << " ... " << std::endl;
+         vector.save( fileName.getFileName() );
       }
    }
 }
