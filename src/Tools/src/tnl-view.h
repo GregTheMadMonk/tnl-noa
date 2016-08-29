@@ -12,7 +12,7 @@
 #define TNL_VIEW_H_
 
 #include <cstdlib>
-#include <TNL/mfilename.h>
+#include <TNL/FileName.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/String.h>
 #include <TNL/Containers/Vector.h>

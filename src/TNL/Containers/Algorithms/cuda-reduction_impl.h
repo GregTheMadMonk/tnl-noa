@@ -19,7 +19,7 @@
 #include <TNL/Assert.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
 #include <TNL/Containers/ArrayOperations.h>
-#include <TNL/mfuncs.h>
+#include <TNL/Math.h>
 #include <TNL/Containers/Algorithms/CudaReductionBuffer.h>
 #include <TNL/Containers/Algorithms/CudaReduction.h>
 

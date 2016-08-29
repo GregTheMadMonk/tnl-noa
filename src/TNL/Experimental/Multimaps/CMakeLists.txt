@@ -1,7 +1,7 @@
-SET( headers tnlEllpackIndexMultimap.h
-             tnlEllpackIndexMultimap_impl.h
-             tnlEllpackIndexMultimapValues.h
-             tnlEllpackIndexMultimapValues_impl.h )
+SET( headers EllpackIndexMultimap.h
+             EllpackIndexMultimap_impl.h
+             EllpackIndexMultimapValues.h
+             EllpackIndexMultimapValues_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/core/multimaps )
 set( common_SOURCES

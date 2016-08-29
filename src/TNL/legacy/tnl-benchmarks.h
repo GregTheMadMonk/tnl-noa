@@ -11,7 +11,7 @@
 #ifndef TNLBENCHMARKS_H_
 #define TNLBENCHMARKS_H_
 
-#include <TNL/mfuncs.h>
+#include <TNL/Math.h>
 
 template< class T >
 bool transferBenchmark( const int size,

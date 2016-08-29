@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/Devices/Cuda.h>
-#include <TNL/mfuncs.h>
+#include <TNL/Math.h>
 #include <TNL/tnlConfig.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>

@@ -10,7 +10,7 @@
 
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/mfilename.h>
+#include <TNL/FileName.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Images//PGMImage.h>
 #include <TNL/Images//PNGImage.h>

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/param-types.h>
-#include <TNL/mfuncs.h>
+#include <TNL/Math.h>
 
 namespace TNL {
 namespace Containers {   

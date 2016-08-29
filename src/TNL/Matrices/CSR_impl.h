@@ -13,7 +13,7 @@
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/SharedVector.h>
-#include <TNL/mfuncs.h>
+#include <TNL/Math.h>
 
 #ifdef HAVE_CUSPARSE
 #include <cusparse.h>

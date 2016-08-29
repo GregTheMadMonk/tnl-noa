@@ -16,7 +16,7 @@
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/Operators/FiniteDifferences.h>
-#include <TNL/mfilename.h>
+#include <TNL/FileName.h>
 #include <TNL/Functions/MeshFunction.h>
 
 using namespace TNL;

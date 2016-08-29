@@ -12,9 +12,9 @@
 #include <iomanip>
 #include <cstring>
 #include <cstdlib>
-#include <TNL/mfilename.h>
+#include <TNL/FileName.h>
 #include <TNL/String.h>
-#include <TNL/mfuncs.h>
+#include <TNL/Math.h>
 
 namespace TNL {
    

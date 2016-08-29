@@ -17,14 +17,17 @@ SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
 
 set( headers 
      Assert.h
+     Constants.h
      Curve.h
      File.h
      File_impl.h
+     FileName.h
      Object.h
      List.h
      List_impl.h
      Logger.h
      Logger_impl.h
+     Math.h
      SharedPointer.h
      SmartPointer.h
      SmartPointersRegister.h
@@ -35,12 +38,9 @@ set( headers
      TimerCPU.h
      TimerRT.h 
 
-      tnlConstants.h
-             tnlIndexedSet.h
-             mfilename.h 
-             mfuncs.h 
-             mpi-supp.h 
-             param-types.h)
+     mpi-supp.h 
+     param-types.h
+     terminal-colors.h )
 
 set( common_SOURCES 
      File.cpp
@@ -52,8 +52,8 @@ set( common_SOURCES
      Timer.cpp
      TimerCPU.cpp
      TimerRT.cpp
+     FileName.cpp
 
-${CURRENT_DIR}/mfilename.cpp 
      ${CURRENT_DIR}/mpi-supp.cpp )
      
 set( tnl_SOURCES ${tnl_config_SOURCES}

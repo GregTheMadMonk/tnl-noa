@@ -14,7 +14,7 @@
 #include <TNL/File.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/ArrayOperations.h>
-#include <TNL/mfuncs.h>
+#include <TNL/Math.h>
 #include <TNL/param-types.h>
 
 namespace TNL {

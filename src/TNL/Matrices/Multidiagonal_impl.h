@@ -12,7 +12,7 @@
 
 #include <TNL/Matrices/Multidiagonal.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/mfuncs.h>
+#include <TNL/Math.h>
 
 namespace TNL {
 namespace Matrices {   

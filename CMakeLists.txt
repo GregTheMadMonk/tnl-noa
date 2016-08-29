@@ -321,7 +321,6 @@ LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 #Pokracujeme dalsimi podadresari
 add_subdirectory( src )
 add_subdirectory( tests )
-add_subdirectory( tools )
 add_subdirectory( examples )
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")

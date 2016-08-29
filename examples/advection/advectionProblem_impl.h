@@ -1,7 +1,7 @@
 #ifndef advectionPROBLEM_IMPL_H_
 #define advectionPROBLEM_IMPL_H_
 
-#include <TNL/mfilename.h>
+#include <TNL/FileName.h>
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>

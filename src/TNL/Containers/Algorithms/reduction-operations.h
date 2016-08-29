@@ -16,7 +16,7 @@
 
 #ifdef HAVE_CUDA
 #include <cuda.h>
-#include <TNL/mfuncs.h>
+#include <TNL/Math.h>
 #endif
 
 

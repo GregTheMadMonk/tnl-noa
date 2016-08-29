@@ -12,7 +12,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Images//DicomSeries.h>
-#include <TNL/mfilename.h>
+#include <TNL/FileName.h>
 
 using namespace TNL;
 

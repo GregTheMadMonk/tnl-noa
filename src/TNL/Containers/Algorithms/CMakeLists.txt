@@ -3,10 +3,10 @@ set( headers cuda-prefix-sum.h
              cuda-reduction.h             
              cuda-reduction_impl.h
              reduction-operations.h
-             tnlCudaReduction.h
-             tnlCudaReduction_impl.h
-             tnlCudaReductionBuffer.h
-             tnlCublasWrapper.h )
+             CudaReduction.h
+             CudaReduction_impl.h
+             CudaReductionBuffer.h
+             CublasWrapper.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/core/cuda ) 
 IF( BUILD_CUDA )

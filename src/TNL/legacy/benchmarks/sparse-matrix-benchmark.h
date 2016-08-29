@@ -21,7 +21,7 @@
 #include <TNL/Matrices/ChunkedEllpack.h>
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Matrices/MatrixReader.h>
-#include <TNL/mfuncs.h>
+#include <TNL/Math.h>
 #include "tnlSpmvBenchmark.h"
 
 #include "tnlConfig.h"
