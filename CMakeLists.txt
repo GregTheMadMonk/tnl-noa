@@ -320,6 +320,7 @@ LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
 #Pokracujeme dalsimi podadresari
 add_subdirectory( src )
+add_subdirectory( share )
 add_subdirectory( tests )
 add_subdirectory( examples )
 
