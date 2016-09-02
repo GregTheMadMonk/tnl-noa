@@ -52,12 +52,12 @@ assembly( const RealType& time,
    {
       TraverserUserData userData( time,
                                   tau,
-                                  differentialOperatorPointer,
-                                  boundaryConditionsPointer,
-                                  rightHandSidePointer,
-                                  uPointer,
-                                  matrixPointer,
-                                  bPointer );
+                                  &differentialOperatorPointer.template getData< DeviceType >(),
+                                  &boundaryConditionsPointer.template getData< DeviceType >(),
+                                  &rightHandSidePointer.template getData< DeviceType >(),
+                                  &uPointer.template getData< DeviceType >(),
+                                  &matrixPointer.template modifyData< DeviceType >(),
+                                  &bPointer.template modifyData< DeviceType >() );
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
