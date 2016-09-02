@@ -35,13 +35,15 @@ bool renderFunction( const Config::ParameterContainer& parameters )
       return false;
 
    typedef Functions::TestFunction< MeshType::meshDimensions, RealType > FunctionType;
-   FunctionType function;
+   typedef SharedPointer< FunctionType, typename MeshType::DeviceType > FunctionPointer;
+   FunctionPointer function;
    std::cout << "Setting up the function ... " << std::endl;
-   if( ! function.setup( parameters, "" ) )
+   if( ! function->setup( parameters, "" ) )
       return false;
    std::cout << "done." << std::endl;
    typedef Functions::MeshFunction< MeshType, MeshType::meshDimensions > MeshFunctionType;
-   MeshFunctionType meshFunction( meshPointer );
+   typedef SharedPointer< MeshFunctionType, typename MeshType::DeviceType > MeshFunctionPointer;
+   MeshFunctionPointer meshFunction( meshPointer );
    //if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
    //   return false;
  
@@ -87,7 +89,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
       }
       else
         std::cout << "+ -> Writing the function to " << outputFile << " ... " << std::endl;
-      if( ! meshFunction.save( outputFile) )
+      if( ! meshFunction->save( outputFile) )
          return false;
       time += tau;
       step ++;

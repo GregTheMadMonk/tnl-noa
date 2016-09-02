@@ -18,14 +18,18 @@ namespace Functions {
 
 template< typename OutMeshFunction,
           typename InFunction >
+   template< typename OutMeshFunctionPointer, typename InFunctionPointer >
 void
 MeshFunctionEvaluator< OutMeshFunction, InFunction >::
-evaluate( OutMeshFunction& meshFunction,
-          const InFunction& function,
+evaluate( OutMeshFunctionPointer& meshFunction,
+          const InFunctionPointer& function,
           const RealType& time,
           const RealType& outFunctionMultiplicator,
           const RealType& inFunctionMultiplicator )
 {
+   static_assert( std::is_same< typename std::decay< typename OutMeshFunctionPointer::ObjectType >::type, OutMeshFunction >::value, "expected a smart pointer" );
+   static_assert( std::is_same< typename std::decay< typename InFunctionPointer::ObjectType >::type, InFunction >::value, "expected a smart pointer" );
+
    switch( InFunction::getDomainType() )
    {
       case NonspaceDomain:
@@ -45,40 +49,52 @@ evaluate( OutMeshFunction& meshFunction,
 
 template< typename OutMeshFunction,
           typename InFunction >
+   template< typename OutMeshFunctionPointer, typename InFunctionPointer >
 void
 MeshFunctionEvaluator< OutMeshFunction, InFunction >::
-evaluateAllEntities( OutMeshFunction& meshFunction,
-                     const InFunction& function,
+evaluateAllEntities( OutMeshFunctionPointer& meshFunction,
+                     const InFunctionPointer& function,
                      const RealType& time,
                      const RealType& outFunctionMultiplicator,
                      const RealType& inFunctionMultiplicator )
 {
+   static_assert( std::is_same< typename std::decay< typename OutMeshFunctionPointer::ObjectType >::type, OutMeshFunction >::value, "expected a smart pointer" );
+   static_assert( std::is_same< typename std::decay< typename InFunctionPointer::ObjectType >::type, InFunction >::value, "expected a smart pointer" );
+
    return evaluateEntities( meshFunction, function, time, outFunctionMultiplicator, inFunctionMultiplicator, all );
 }
 
 template< typename OutMeshFunction,
           typename InFunction >
+   template< typename OutMeshFunctionPointer, typename InFunctionPointer >
 void
 MeshFunctionEvaluator< OutMeshFunction, InFunction >::
-evaluateInteriorEntities( OutMeshFunction& meshFunction,
-                          const InFunction& function,
+evaluateInteriorEntities( OutMeshFunctionPointer& meshFunction,
+                          const InFunctionPointer& function,
                           const RealType& time,
                           const RealType& outFunctionMultiplicator,
                           const RealType& inFunctionMultiplicator )
 {
+   static_assert( std::is_same< typename std::decay< typename OutMeshFunctionPointer::ObjectType >::type, OutMeshFunction >::value, "expected a smart pointer" );
+   static_assert( std::is_same< typename std::decay< typename InFunctionPointer::ObjectType >::type, InFunction >::value, "expected a smart pointer" );
+
    return evaluateEntities( meshFunction, function, time, outFunctionMultiplicator, inFunctionMultiplicator, interior );
 }
 
 template< typename OutMeshFunction,
           typename InFunction >
+   template< typename OutMeshFunctionPointer, typename InFunctionPointer >
 void
 MeshFunctionEvaluator< OutMeshFunction, InFunction >::
-evaluateBoundaryEntities( OutMeshFunction& meshFunction,
-                          const InFunction& function,
+evaluateBoundaryEntities( OutMeshFunctionPointer& meshFunction,
+                          const InFunctionPointer& function,
                           const RealType& time,
                           const RealType& outFunctionMultiplicator,
                           const RealType& inFunctionMultiplicator )
 {
+   static_assert( std::is_same< typename std::decay< typename OutMeshFunctionPointer::ObjectType >::type, OutMeshFunction >::value, "expected a smart pointer" );
+   static_assert( std::is_same< typename std::decay< typename InFunctionPointer::ObjectType >::type, InFunction >::value, "expected a smart pointer" );
+
    return evaluateEntities( meshFunction, function, time, outFunctionMultiplicator, inFunctionMultiplicator, boundary );
 }
 
@@ -86,121 +102,67 @@ evaluateBoundaryEntities( OutMeshFunction& meshFunction,
 
 template< typename OutMeshFunction,
           typename InFunction >
+   template< typename OutMeshFunctionPointer, typename InFunctionPointer >
 void
 MeshFunctionEvaluator< OutMeshFunction, InFunction >::
-evaluateEntities( OutMeshFunction& meshFunction,
-                  const InFunction& function,
+evaluateEntities( OutMeshFunctionPointer& meshFunction,
+                  const InFunctionPointer& function,
                   const RealType& time,
                   const RealType& outFunctionMultiplicator,
                   const RealType& inFunctionMultiplicator,
                   EntitiesType entitiesType )
 {
+   static_assert( std::is_same< typename std::decay< typename OutMeshFunctionPointer::ObjectType >::type, OutMeshFunction >::value, "expected a smart pointer" );
+   static_assert( std::is_same< typename std::decay< typename InFunctionPointer::ObjectType >::type, InFunction >::value, "expected a smart pointer" );
+
    typedef typename MeshType::template MeshEntity< OutMeshFunction::getEntitiesDimensions() > MeshEntityType;
    typedef Functions::MeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData > AssignmentEntitiesProcessor;
    typedef Functions::MeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
  
-   if( std::is_same< MeshDeviceType, Devices::Host >::value )
+   TraverserUserData userData( &function.template getData< DeviceType >(),
+                               time,
+                               &meshFunction.template modifyData< DeviceType >(),
+                               outFunctionMultiplicator,
+                               inFunctionMultiplicator );
+   Meshes::Traverser< MeshType, MeshEntityType > meshTraverser;
+   switch( entitiesType )
    {
-      TraverserUserData userData( &function, &time, &meshFunction, &outFunctionMultiplicator, &inFunctionMultiplicator );
-      Meshes::Traverser< MeshType, MeshEntityType > meshTraverser;
-      switch( entitiesType )
-      {
-         case all:
-            if( outFunctionMultiplicator )
-               meshTraverser.template processAllEntities< TraverserUserData,
-                                                          AdditionEntitiesProcessor >
-                                                        ( meshFunction.getMeshPointer(),
-                                                          userData );
-            else
-               meshTraverser.template processAllEntities< TraverserUserData,
-                                                         AssignmentEntitiesProcessor >
-                                                       ( meshFunction.getMeshPointer(),
-                                                         userData );
-            break;
-         case interior:
-            if( outFunctionMultiplicator )
-               meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                               AdditionEntitiesProcessor >
-                                                             ( meshFunction.getMeshPointer(),
-                                                               userData );
-            else
-               meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                               AssignmentEntitiesProcessor >
-                                                             ( meshFunction.getMeshPointer(),
-                                                               userData );            
-            break;
-         case boundary:
-            if( outFunctionMultiplicator )
-               meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                               AdditionEntitiesProcessor >
-                                                             ( meshFunction.getMeshPointer(),
-                                                               userData );
-            else
-               meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                               AssignmentEntitiesProcessor >
-                                                             ( meshFunction.getMeshPointer(),
-                                                               userData );
-            break;
-      }
-   }
-   if( std::is_same< MeshDeviceType, Devices::Cuda >::value )
-   {
-      OutMeshFunction* kernelMeshFunction = Devices::Cuda::passToDevice( meshFunction );
-      InFunction* kernelFunction = Devices::Cuda::passToDevice( function );
-      RealType* kernelTime = Devices::Cuda::passToDevice( time );
-      RealType* kernelOutFunctionMultiplicator = Devices::Cuda::passToDevice( outFunctionMultiplicator );
-      RealType* kernelInFunctionMultiplicator = Devices::Cuda::passToDevice( inFunctionMultiplicator );
- 
-      TraverserUserData userData( kernelFunction, kernelTime, kernelMeshFunction, kernelOutFunctionMultiplicator, kernelInFunctionMultiplicator );
-      checkCudaDevice;
-      Meshes::Traverser< MeshType, MeshEntityType > meshTraverser;
-      switch( entitiesType )
-      {
-         case all:
-            if( outFunctionMultiplicator )
-               meshTraverser.template processAllEntities< TraverserUserData,
-                                                          AdditionEntitiesProcessor >
-                                                        ( meshFunction.getMeshPointer(),
-                                                          userData );
-            else
-               meshTraverser.template processAllEntities< TraverserUserData,
-                                                         AssignmentEntitiesProcessor >
-                                                       ( meshFunction.getMeshPointer(),
-                                                         userData );
-            break;
-         case interior:
-            if( outFunctionMultiplicator )
-               meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                               AdditionEntitiesProcessor >
-                                                             ( meshFunction.getMeshPointer(),
-                                                               userData );
-            else
-               meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                               AssignmentEntitiesProcessor >
-                                                             ( meshFunction.getMeshPointer(),
-                                                               userData );            
-            break;
-         case boundary:
-            if( outFunctionMultiplicator )
-               meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                               AdditionEntitiesProcessor >
-                                                             ( meshFunction.getMeshPointer(),
-                                                               userData );
-            else
-               meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                               AssignmentEntitiesProcessor >
-                                                             ( meshFunction.getMeshPointer(),
-                                                               userData );
-            break;
-      }
-
-      checkCudaDevice;
-      Devices::Cuda::freeFromDevice( kernelMeshFunction );
-      Devices::Cuda::freeFromDevice( kernelFunction );
-      Devices::Cuda::freeFromDevice( kernelTime );
-      Devices::Cuda::freeFromDevice( kernelOutFunctionMultiplicator );
-      Devices::Cuda::freeFromDevice( kernelInFunctionMultiplicator );
-      checkCudaDevice;
+      case all:
+         if( outFunctionMultiplicator )
+            meshTraverser.template processAllEntities< TraverserUserData,
+                                                       AdditionEntitiesProcessor >
+                                                     ( meshFunction->getMeshPointer(),
+                                                       userData );
+         else
+            meshTraverser.template processAllEntities< TraverserUserData,
+                                                      AssignmentEntitiesProcessor >
+                                                    ( meshFunction->getMeshPointer(),
+                                                      userData );
+         break;
+      case interior:
+         if( outFunctionMultiplicator )
+            meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                            AdditionEntitiesProcessor >
+                                                          ( meshFunction->getMeshPointer(),
+                                                            userData );
+         else
+            meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                            AssignmentEntitiesProcessor >
+                                                          ( meshFunction->getMeshPointer(),
+                                                            userData );
+         break;
+      case boundary:
+         if( outFunctionMultiplicator )
+            meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                            AdditionEntitiesProcessor >
+                                                          ( meshFunction->getMeshPointer(),
+                                                            userData );
+         else
+            meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                            AssignmentEntitiesProcessor >
+                                                          ( meshFunction->getMeshPointer(),
+                                                            userData );
+         break;
    }
 }
 
