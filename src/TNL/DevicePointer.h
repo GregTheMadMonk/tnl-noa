@@ -210,12 +210,10 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       {
          this->counter = new int( 1 );
          this->pointer = &obj;
-#ifdef HAVE_CUDA
          this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
          if( ! this->cuda_pointer )
             return;
          Devices::Cuda::insertSmartPointer( this );
-#endif
       }
 
       // this is needed only to avoid the default compiler-generated constructor
@@ -402,9 +400,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       ~DevicePointer()
       {
          this->free();
-#ifdef HAVE_CUDA
          Devices::Cuda::removeSmartPointer( this );
-#endif
       }
 
    protected:
@@ -417,11 +413,8 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
             {
                delete this->counter;
                this->counter = nullptr;
-#ifdef HAVE_CUDA
                if( this->cuda_pointer )
-                  cudaFree( this->cuda_pointer );
-               checkCudaDevice;
-#endif
+                  Devices::Cuda::freeFromDevice( this->cuda_pointer );
             }
          }
 

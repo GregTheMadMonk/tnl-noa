@@ -310,7 +310,6 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
          {
             this->counter = new int( 1 );
             this->pointer = new Object( args... );
-#ifdef HAVE_CUDA
             this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
             if( ! this->cuda_pointer )
                return;
@@ -318,7 +317,6 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
             std::cerr << "Created shared pointer to " << demangle(typeid(ObjectType).name()) << " (cuda_pointer = " << this->cuda_pointer << ")" << std::endl;
 #endif
             Devices::Cuda::insertSmartPointer( this );
-#endif
          }
       }
 
@@ -382,12 +380,10 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
          {
             this->counter = new int( 1 );
             this->pointer = new ObjectType( args... );
-#ifdef HAVE_CUDA
             this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
             if( ! this->cuda_pointer )
                return false;
             Devices::Cuda::insertSmartPointer( this );
-#endif
             return true;
          }
          if( *this->counter == 1 )
@@ -408,13 +404,11 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
          this->pointer = new Object( args... );
          if( ! this->pointer || ! this->counter )
             return false;
-#ifdef HAVE_CUDA
          this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
          if( ! this->cuda_pointer )
             return false;
          // TODO: what if 'this' is already in the register?
          Devices::Cuda::insertSmartPointer( this );
-#endif
          return true;
       }
 
@@ -568,9 +562,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       ~SharedPointer()
       {
          this->free();
-#ifdef HAVE_CUDA
          Devices::Cuda::removeSmartPointer( this );
-#endif
       }
 
    protected:
@@ -588,11 +580,8 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
                this->counter = nullptr;
                if( this->pointer )
                   delete this->pointer;
-#ifdef HAVE_CUDA
                if( this->cuda_pointer )
-                  cudaFree( this->cuda_pointer );
-               checkCudaDevice;
-#endif
+                  Devices::Cuda::freeFromDevice( this->cuda_pointer );
 #ifdef TNL_DEBUG_SHARED_POINTERS
                std::cerr << "...deleted data." << std::endl;
 #endif

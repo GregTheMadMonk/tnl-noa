@@ -34,7 +34,8 @@ set( headers
      SystemInfo.h
      Timer.h
      TimerCPU.h
-     TimerRT.h )
+     TimerRT.h
+     UniquePointer.h )
 
 set( common_SOURCES 
      File.cpp
