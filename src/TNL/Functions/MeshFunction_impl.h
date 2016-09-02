@@ -140,9 +140,9 @@ template< typename Mesh,
           typename Real >
 void
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
-bind( MeshFunction< Mesh, MeshEntityDimensions, Real >& meshFunction )
+bind( ThisType& meshFunction )
 {
-   this->mesh = &meshFunction.getMesh();
+   this->meshPointer = meshFunction.getMeshPointer();
    this->data.bind( meshFunction.getData() );
 }
 
