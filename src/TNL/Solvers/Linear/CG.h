@@ -54,7 +54,7 @@ class CG : public Object,
 
    void setMatrix( MatrixPointer matrix );
 
-   void setPreconditioner( const PreconditionerType& preconditioner );
+   void setPreconditioner( PreconditionerPointer preconditioner );
 
    template< typename Vector,
              typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
@@ -69,7 +69,7 @@ class CG : public Object,
    Containers::Vector< RealType, DeviceType, IndexType >  r, new_r, p, Ap;
 
    MatrixPointer matrix;
-   const PreconditionerType* preconditioner;
+   PreconditionerPointer preconditioner;
 };
 
 } // namespace Linear

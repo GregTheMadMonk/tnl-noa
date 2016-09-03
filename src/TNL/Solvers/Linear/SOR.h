@@ -37,7 +37,7 @@ class SOR : public Object,
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
    typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
-
+   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
 
    SOR();
 
@@ -55,7 +55,7 @@ class SOR : public Object,
 
    void setMatrix( MatrixPointer matrix );
 
-   void setPreconditioner( const PreconditionerType& preconditioner );
+   void setPreconditioner( PreconditionerPointer preconditioner );
 
    template< typename Vector,
              typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
@@ -68,9 +68,7 @@ class SOR : public Object,
    RealType omega;
 
    MatrixPointer matrix;
-
-   const PreconditionerType* preconditioner;
-
+   PreconditionerPointer preconditioner;
 };
 
 } // namespace Linear

@@ -40,8 +40,7 @@ class TFQMR : public Object,
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
    typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
-
-   public:
+   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
 
    TFQMR();
 
@@ -55,7 +54,7 @@ class TFQMR : public Object,
 
    void setMatrix( MatrixPointer matrix );
 
-   void setPreconditioner( const Preconditioner& preconditioner );
+   void setPreconditioner( PreconditionerPointer preconditioner );
 
    template< typename VectorPointer,
              typename ResidueGetter = LinearResidueGetter< Matrix, typename VectorPointer::ObjectType >  >
@@ -72,7 +71,7 @@ class TFQMR : public Object,
    IndexType size;
 
    MatrixPointer matrix;
-   const PreconditionerType* preconditioner;
+   PreconditionerPointer preconditioner;
 };
 
 } // namespace Linear

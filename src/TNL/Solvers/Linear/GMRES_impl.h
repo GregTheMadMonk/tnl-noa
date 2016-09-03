@@ -18,8 +18,7 @@ template< typename Matrix,
            typename Preconditioner >
 GMRES< Matrix, Preconditioner > :: GMRES()
 : size( 0 ),
-  restarting( 10 ),
-  preconditioner( 0 )
+  restarting( 10 )
 {
 };
 
@@ -74,10 +73,10 @@ void GMRES< Matrix, Preconditioner > :: setMatrix( MatrixPointer matrix )
 }
 
 template< typename Matrix,
-           typename Preconditioner >
-void GMRES< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerType& preconditioner )
+          typename Preconditioner >
+void GMRES< Matrix, Preconditioner > :: setPreconditioner( PreconditionerPointer preconditioner )
 {
-   this->preconditioner = &preconditioner;
+   this->preconditioner = preconditioner;
 }
 
 template< typename Matrix,

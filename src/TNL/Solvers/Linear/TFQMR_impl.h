@@ -17,8 +17,7 @@ namespace Linear {
 template< typename Matrix,
           typename Preconditioner >
 TFQMR< Matrix, Preconditioner > :: TFQMR()
-: size( 0 ),
-  preconditioner( 0 )
+: size( 0 )
 {
 }
 
@@ -59,10 +58,10 @@ void TFQMR< Matrix, Preconditioner > :: setMatrix( MatrixPointer matrix )
 }
 
 template< typename Matrix,
-           typename Preconditioner >
-void TFQMR< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
+          typename Preconditioner >
+void TFQMR< Matrix, Preconditioner > :: setPreconditioner( PreconditionerPointer preconditioner )
 {
-   this->preconditioner = &preconditioner;
+   this->preconditioner = preconditioner;
 }
 
 template< typename Matrix,

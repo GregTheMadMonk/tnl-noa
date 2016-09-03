@@ -145,8 +145,8 @@ solve( const RealType& time,
    Assert( this->problem != 0, );
    RealType t = time;
    this->linearSystemSolver->setMatrix( this->matrix );
-   PreconditionerType preconditioner;
-   Linear::Preconditioners::SolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerType >
+   PreconditionerPointer preconditioner;
+   Linear::Preconditioners::SolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerPointer >
        ::run( *(this->linearSystemSolver), preconditioner );
 
    while( t < stopTime )
@@ -182,7 +182,7 @@ solve( const RealType& time,
         std::cout << "                                                                  Solving the linear system for time " << t + currentTau << "             \r" << std::flush;
 
       this->preconditionerUpdateTimer.start();
-      preconditioner.update( this->matrix );
+      preconditioner->update( this->matrix );
       this->preconditionerUpdateTimer.stop();
 
       this->linearSystemSolverTimer.start();

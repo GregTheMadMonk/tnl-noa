@@ -17,7 +17,6 @@ namespace Linear {
 template< typename Matrix,
           typename Preconditioner >
 CG< Matrix, Preconditioner > :: CG()
-: preconditioner( 0 )
 {
 }
 
@@ -59,9 +58,9 @@ void CG< Matrix, Preconditioner >::setMatrix( MatrixPointer matrix )
 
 template< typename Matrix,
           typename Preconditioner >
-void CG< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
+void CG< Matrix, Preconditioner > :: setPreconditioner( PreconditionerPointer preconditioner )
 {
-   this->preconditioner = &preconditioner;
+   this->preconditioner = preconditioner;
 }
 
 template< typename Matrix,

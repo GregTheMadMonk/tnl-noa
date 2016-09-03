@@ -25,7 +25,6 @@ RealType computeBICGStabNewP( Vector& p,
 template< typename Matrix,
           typename Preconditioner >
 BICGStab< Matrix, Preconditioner > :: BICGStab()
-: preconditioner( 0 )
 {
 }
 
@@ -66,10 +65,10 @@ void BICGStab< Matrix, Preconditioner >::setMatrix( MatrixPointer matrix )
 }
 
 template< typename Matrix,
-           typename Preconditioner >
-void BICGStab< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerType& preconditioner )
+          typename Preconditioner >
+void BICGStab< Matrix, Preconditioner > :: setPreconditioner( PreconditionerPointer preconditioner )
 {
-   this->preconditioner = &preconditioner;
+   this->preconditioner = preconditioner;
 }
 
 template< typename Matrix,

@@ -16,8 +16,7 @@ namespace Linear {
 
 template< typename Matrix, typename Preconditioner >
 SOR< Matrix, Preconditioner > :: SOR()
-: omega( 1.0 ),
-  preconditioner( 0 )
+: omega( 1.0 )
 {
 }
 
@@ -78,9 +77,9 @@ void SOR< Matrix, Preconditioner > :: setMatrix( MatrixPointer matrix )
 
 template< typename Matrix,
            typename Preconditioner >
-void SOR< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerType& preconditioner )
+void SOR< Matrix, Preconditioner > :: setPreconditioner( PreconditionerPointer preconditioner )
 {
-   this->preconditioner = &preconditioner;
+   this->preconditioner = preconditioner;
 }
 
 

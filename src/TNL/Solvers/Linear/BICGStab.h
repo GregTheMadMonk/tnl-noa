@@ -40,7 +40,7 @@ class BICGStab : public Object,
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
    typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
-
+   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
 
    BICGStab();
 
@@ -54,7 +54,7 @@ class BICGStab : public Object,
 
    void setMatrix( MatrixPointer matrix );
 
-   void setPreconditioner( const PreconditionerType& preconditioner );
+   void setPreconditioner( PreconditionerPointer preconditioner );
 
    template< typename Vector,
              typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
@@ -69,7 +69,7 @@ class BICGStab : public Object,
    Containers::Vector< RealType, DeviceType, IndexType >  r, r_ast, r_new, p, s, Ap, As, M_tmp;
 
    MatrixPointer matrix;
-   const PreconditionerType* preconditioner;
+   PreconditionerPointer preconditioner;
 };
 
 } // namespace Linear
