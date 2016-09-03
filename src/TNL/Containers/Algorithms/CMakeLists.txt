@@ -43,4 +43,4 @@ set( tnl_core_cuda_SOURCES
      ${CURRENT_DIR}/cuda-prefix-sum_impl.cpp     
      PARENT_SCOPE )               
         
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/core/cuda )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Containers/Algorithms )
