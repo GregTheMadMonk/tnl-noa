@@ -14,19 +14,19 @@ namespace TNL {
 namespace Solvers {
 namespace Linear {   
 
-template< typename MatrixPointer, typename VectorPointer >
+template< typename Matrix, typename Vector >
 class LinearResidueGetter
 {
    public:
 
-      typedef typename MatrixPointer::ObjectType MatrixType;
+      typedef Matrix MatrixType;
       typedef typename MatrixType::RealType RealType;
       typedef typename MatrixType::DeviceType DeviceType;
       typedef typename MatrixType::IndexType IndexType;
 
-   static RealType getResidue( const MatrixPointer& matrix,
-                               const VectorPointer& x,
-                               const VectorPointer& b,
+   static RealType getResidue( const Matrix& matrix,
+                               const Vector& x,
+                               const Vector& b,
                                RealType bNorm = 0 );
 };
 

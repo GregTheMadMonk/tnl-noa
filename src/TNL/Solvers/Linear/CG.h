@@ -12,6 +12,7 @@
 
 #include <math.h>
 #include <TNL/Object.h>
+#include <TNL/SharedPointer.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/SharedVector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
@@ -27,8 +28,8 @@ template< typename Matrix,
                                                             typename Matrix :: DeviceType,
                                                             typename Matrix :: IndexType> >
 class CG : public Object,
-                    public IterativeSolver< typename Matrix :: RealType,
-                                               typename Matrix :: IndexType >
+           public IterativeSolver< typename Matrix :: RealType,
+                                   typename Matrix :: IndexType >
 {
    public:
 
@@ -37,9 +38,8 @@ class CG : public Object,
    typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
-   typedef SharedPointer< PreconditionerType, DeviceType > PreconditionerPointer;
-   // TODO: make this const
+   typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
+   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
 
 
    CG();
@@ -50,21 +50,15 @@ class CG : public Object,
                             const String& prefix = "" );
 
    bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+               const String& prefix = "" );
 
-   void setMatrix( MatrixPointer& matrix );
+   void setMatrix( MatrixPointer matrix );
 
    void setPreconditioner( const PreconditionerType& preconditioner );
 
-#ifdef HAVE_NOT_CXX11
    template< typename Vector,
-             typename ResidueGetter >
+             typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
    bool solve( const Vector& b, Vector& x );
-#else
-   template< typename VectorPointer,
-             typename ResidueGetter = LinearResidueGetter< Matrix, VectorPointer >  >
-   bool solve( const VectorPointer& b, VectorPointer& x );
-#endif
 
    ~CG();
 

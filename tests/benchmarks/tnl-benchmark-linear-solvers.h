@@ -90,7 +90,7 @@ bool benchmarkSolver( const Config::ParameterContainer& parameters,
    solver.setSolverMonitor( monitor );
    solver.setMatrix( matrix );
    solver.setConvergenceResidue( 1.0e-6 );
-   solver.template solve< VectorPointer, Solvers::Linear::LinearResidueGetter< MatrixPointer, VectorPointer > >( b, y );
+   solver.template solve< VectorType, Solvers::Linear::LinearResidueGetter< MatrixType, VectorType > >( *b, *y );
    cout << endl;
    return true;
 }

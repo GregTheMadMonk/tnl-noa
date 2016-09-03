@@ -12,6 +12,7 @@
 
 #include <math.h>
 #include <TNL/Object.h>
+#include <TNL/SharedPointer.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/SharedVector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
@@ -28,8 +29,8 @@ template< typename Matrix,
                                                             typename Matrix :: IndexType> >
 
 class TFQMR : public Object,
-                       public IterativeSolver< typename Matrix :: RealType,
-                                                  typename Matrix :: IndexType >
+              public IterativeSolver< typename Matrix :: RealType,
+                                      typename Matrix :: IndexType >
 {
    public:
 
@@ -38,8 +39,7 @@ class TFQMR : public Object,
    typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
-   // TODO: make this: typedef SharedPointer< const MatrixType, DeviceType > ConstMatrixPointer;
+   typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
 
    public:
 
@@ -51,21 +51,15 @@ class TFQMR : public Object,
                             const String& prefix = "" );
 
    bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+               const String& prefix = "" );
 
-   void setMatrix( MatrixPointer& matrix );
+   void setMatrix( MatrixPointer matrix );
 
    void setPreconditioner( const Preconditioner& preconditioner );
 
-#ifdef HAVE_NOT_CXX11
    template< typename VectorPointer,
-             typename ResidueGetter >
+             typename ResidueGetter = LinearResidueGetter< Matrix, typename VectorPointer::ObjectType >  >
    bool solve( const VectorPointer& b, VectorPointer& x );
-#else
-   template< typename VectorPointer,
-             typename ResidueGetter = LinearResidueGetter< Matrix, VectorPointer >  >
-   bool solve( const VectorPointer& b, VectorPointer& x );
-#endif
 
    ~TFQMR();
 

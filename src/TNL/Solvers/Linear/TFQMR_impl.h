@@ -53,7 +53,7 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Matrix,
           typename Preconditioner >
-void TFQMR< Matrix, Preconditioner > :: setMatrix( MatrixPointer& matrix )
+void TFQMR< Matrix, Preconditioner > :: setMatrix( MatrixPointer matrix )
 {
    this->matrix = matrix;
 }
@@ -67,13 +67,9 @@ void TFQMR< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner&
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename VectorPointer, typename ResidueGetter >
-bool TFQMR< Matrix, Preconditioner >::solve( const VectorPointer& bPtr, VectorPointer& xPtr )
+   template< typename Vector, typename ResidueGetter >
+bool TFQMR< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 {
-   typedef typename VectorPointer::ObjectType VectorType;
-   const VectorType& b = *bPtr;
-   VectorType& x = *xPtr;
-   
    if( ! this->setSize( matrix -> getRows() ) ) return false;
 
    RealType tau, theta, eta, rho, alpha, b_norm, w_norm;

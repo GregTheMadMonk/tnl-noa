@@ -71,7 +71,7 @@ const typename SOR< Matrix, Preconditioner > :: RealType& SOR< Matrix, Precondit
 
 template< typename Matrix,
           typename Preconditioner >
-void SOR< Matrix, Preconditioner > :: setMatrix( MatrixPointer& matrix )
+void SOR< Matrix, Preconditioner > :: setMatrix( MatrixPointer matrix )
 {
    this->matrix = matrix;
 }
@@ -85,28 +85,27 @@ void SOR< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerTyp
 
 
 template< typename Matrix, typename Preconditioner >
-   template< typename VectorPointer, typename ResidueGetter >
-bool SOR< Matrix, Preconditioner > :: solve( const VectorPointer& b,
-                                                      VectorPointer& x )
+   template< typename Vector, typename ResidueGetter >
+bool SOR< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
 {
    const IndexType size = matrix -> getRows();   
 
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
 
-   RealType bNorm = b->lpNorm( ( RealType ) 2.0 );
+   RealType bNorm = b.lpNorm( ( RealType ) 2.0 );
 
    while( this->nextIteration() )
    {
       for( IndexType row = 0; row < size; row ++ )
-         matrix->performSORIteration( *b,
+         matrix->performSORIteration( b,
                                       row,
-                                      *x,
+                                      x,
                                       this->getOmega() );
-      this->setResidue( ResidueGetter::getResidue( matrix, x, b, bNorm ) );
+      this->setResidue( ResidueGetter::getResidue( *matrix, x, b, bNorm ) );
       this->refreshSolverMonitor();
    }
-   this->setResidue( ResidueGetter::getResidue( matrix, x, b, bNorm ) );
+   this->setResidue( ResidueGetter::getResidue( *matrix, x, b, bNorm ) );
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
 };

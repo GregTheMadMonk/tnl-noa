@@ -68,7 +68,7 @@ void GMRES< Matrix, Preconditioner > :: setRestarting( IndexType rest )
 
 template< typename Matrix,
           typename Preconditioner >
-void GMRES< Matrix, Preconditioner > :: setMatrix( MatrixPointer& matrix )
+void GMRES< Matrix, Preconditioner > :: setMatrix( MatrixPointer matrix )
 {
    this->matrix = matrix;
 }
@@ -82,13 +82,9 @@ void GMRES< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerT
 
 template< typename Matrix,
           typename Preconditioner >
- template< typename VectorPointer, typename ResidueGetter >
-bool GMRES< Matrix, Preconditioner >::solve( const VectorPointer& bPtr, VectorPointer& xPtr )
+   template< typename Vector, typename ResidueGetter >
+bool GMRES< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 {
-   typedef typename VectorPointer::ObjectType VectorType;
-   const VectorType& b = *bPtr;
-   VectorType& x = *xPtr;
-
    if( restarting <= 0 )
    {
       std::cerr << "I have wrong value for the restarting of the GMRES solver. It is set to " << restarting
