@@ -201,7 +201,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
    public:
 
       typedef Object ObjectType;
-      typedef Devices::Host DeviceType;
+      typedef Devices::Cuda DeviceType;
       typedef DevicePointer< Object, Devices::Cuda > ThisType;
 
       explicit  DevicePointer( ObjectType& obj )
@@ -425,9 +425,6 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       bool modified;
 
       int* counter;
-
-      template< typename Object_, typename Device_ >
-      friend class DevicePointer;
 };
 
 } // namespace TNL

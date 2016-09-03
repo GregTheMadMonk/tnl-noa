@@ -116,7 +116,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
    public:
       
       typedef Object ObjectType;
-      typedef Devices::Host DeviceType;
+      typedef Devices::Cuda DeviceType;
       typedef UniquePointer< Object, Devices::Host > ThisType;
          
       template< typename... Args >

@@ -73,8 +73,8 @@ class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
                                       std::is_same< typename std::remove_cv< Object >::type, Object_ >::value >;
 
       // friend class will be needed for templated assignment operators
-      template< typename Object_, typename Device_ >
-      friend class DevicePointer;
+      template< typename Object_, typename Device_, bool lazy_ >
+      friend class SharedPointer;
 
    public:
 
@@ -292,13 +292,13 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
                                       std::is_same< typename std::remove_cv< Object >::type, Object_ >::value >;
 
       // friend class will be needed for templated assignment operators
-      template< typename Object_, typename Device_ >
-      friend class DevicePointer;
+      template< typename Object_, typename Device_, bool lazy_ >
+      friend class SharedPointer;
 
    public:
 
       typedef Object ObjectType;
-      typedef Devices::Host DeviceType;
+      typedef Devices::Cuda DeviceType;
       typedef SharedPointer< Object, Devices::Cuda, lazy > ThisType;
 
       template< typename... Args >
