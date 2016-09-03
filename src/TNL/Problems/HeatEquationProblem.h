@@ -53,6 +53,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
       using typename BaseType::MeshDependentDataType;
+      using typename BaseType::MeshDependentDataPointer;
 
       static String getTypeStatic();
 
@@ -69,7 +70,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       bool setInitialCondition( const Config::ParameterContainer& parameters,
                                 const MeshPointer& mesh,
                                 DofVectorPointer& dofs,
-                                MeshDependentDataType& meshDependentData );
+                                MeshDependentDataPointer& meshDependentData );
 
       template< typename MatrixPointer >
       bool setupLinearSystem( const MeshPointer& meshPointer,
@@ -79,7 +80,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                          const IndexType& step,
                          const MeshPointer& meshPointer,
                          DofVectorPointer& dofs,
-                         MeshDependentDataType& meshDependentData );
+                         MeshDependentDataPointer& meshDependentData );
 
       IndexType getDofs( const MeshPointer& meshPointer ) const;
 
@@ -90,8 +91,8 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                            const RealType& tau,
                            const MeshPointer& meshPointer,
                            DofVectorPointer& _u,
-		           DofVectorPointer& _fu,
-                           MeshDependentDataType& meshDependentData );
+                           DofVectorPointer& _fu,
+                           MeshDependentDataPointer& meshDependentData );
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
@@ -100,7 +101,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                                  const DofVectorPointer& dofsPointer,
                                  MatrixPointer& matrixPointer,
                                  DofVectorPointer& rightHandSidePointer,
-                                 MeshDependentDataType& meshDependentData );
+                                 MeshDependentDataPointer& meshDependentData );
 
 
       protected:

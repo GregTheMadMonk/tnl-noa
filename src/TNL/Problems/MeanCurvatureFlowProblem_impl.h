@@ -109,7 +109,7 @@ MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOp
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
-                     MeshDependentDataType& meshDependentData )
+                     MeshDependentDataPointer& meshDependentData )
 {
    this->bindDofs( mesh, dofs );
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
@@ -159,7 +159,7 @@ makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshType& mesh,
               DofVectorType& dofs,
-              MeshDependentDataType& meshDependentData )
+              MeshDependentDataPointer& meshDependentData )
 {
   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
 
@@ -183,7 +183,7 @@ getExplicitRHS( const RealType& time,
                 const MeshType& mesh,
                 DofVectorType& inDofs,
                 DofVectorType& outDofs,
-		MeshDependentDataType& meshDependentData )
+                MeshDependentDataPointer& meshDependentData )
 {
    /****
     * If you use an explicit solver like Euler or Merson, you
@@ -237,17 +237,17 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorType& dofsU,
                       Matrix& matrix,
                       DofVectorType& b,
-                      MeshDependentDataType& meshDependentData )
+                      MeshDependentDataPointer& meshDependentData )
 {
    MeshFunctionType u( mesh, dofsU );
    LinearSystemAssembler< Mesh,
-			     MeshFunctionType,
-			     DifferentialOperator,
-			     BoundaryCondition,
-			     RightHandSide,
-			     BackwardTimeDiscretisation,
-			     MatrixType,
-			     DofVectorType > systemAssembler;
+                          MeshFunctionType,
+                          DifferentialOperator,
+                          BoundaryCondition,
+                          RightHandSide,
+                          BackwardTimeDiscretisation,
+                          MatrixType,
+                          DofVectorType > systemAssembler;
    systemAssembler.template assembly< typename Mesh::Cell >(
       time,
       tau,

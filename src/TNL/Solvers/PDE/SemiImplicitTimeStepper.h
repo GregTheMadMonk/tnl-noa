@@ -12,6 +12,8 @@
 
 #include <TNL/TimerRT.h>
 #include <TNL/Logger.h>
+#include <TNL/SharedPointer.h>
+#include <TNL/Solvers/IterativeSolverMonitor.h>
 
 namespace TNL {
 namespace Solvers {
@@ -36,6 +38,7 @@ class SemiImplicitTimeStepper
    typedef typename ProblemType::MatrixType MatrixType;
    typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
    typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+   typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
    typedef SharedPointer< PreconditionerType, DeviceType > PreconditionerPointer;
 
    SemiImplicitTimeStepper();
@@ -64,7 +67,7 @@ class SemiImplicitTimeStepper
                const RealType& stopTime,
                const MeshPointer& meshPointer,
                DofVectorPointer& dofVectorPointer,
-               MeshDependentDataType& meshDependentData );
+               MeshDependentDataPointer& meshDependentData );
  
    bool writeEpilog( Logger& logger );
 

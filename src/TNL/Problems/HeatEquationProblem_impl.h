@@ -125,7 +125,7 @@ HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperato
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshPointer& meshPointer,
                      DofVectorPointer& dofs,
-                     MeshDependentDataType& meshDependentData )
+                     MeshDependentDataPointer& meshDependentData )
 {
    this->bindDofs( meshPointer, dofs );
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
@@ -175,7 +175,7 @@ makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshPointer& meshPointer,
               DofVectorPointer& dofs,
-              MeshDependentDataType& meshDependentData )
+              MeshDependentDataPointer& meshDependentData )
 {
   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
 
@@ -199,7 +199,7 @@ getExplicitRHS( const RealType& time,
                 const MeshPointer& meshPointer,
                 DofVectorPointer& uDofs,
                 DofVectorPointer& fuDofs,
-                MeshDependentDataType& meshDependentData )
+                MeshDependentDataPointer& meshDependentData )
 {
    /****
     * If you use an explicit solver like Euler or Merson, you
@@ -252,7 +252,7 @@ assemblyLinearSystem( const RealType& time,
                       const DofVectorPointer& dofsPointer,
                       MatrixPointer& matrixPointer,
                       DofVectorPointer& bPointer,
-                      MeshDependentDataType& meshDependentData )
+                      MeshDependentDataPointer& meshDependentData )
 {
    this->bindDofs( meshPointer, dofsPointer );
    Solvers::PDE::LinearSystemAssembler< Mesh,

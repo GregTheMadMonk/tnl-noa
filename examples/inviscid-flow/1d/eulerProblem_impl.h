@@ -99,7 +99,7 @@ eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshPointer& mesh,
                      DofVectorPointer& dofs,
-                     MeshDependentDataType& meshDependentData )
+                     MeshDependentDataPointer& meshDependentData )
 {
   std::cout << std::endl << "get conditions from CML";
    typedef typename MeshType::Cell Cell;
@@ -191,7 +191,7 @@ makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshPointer& mesh,
               DofVectorPointer& dofs,
-              MeshDependentDataType& meshDependentData )
+              MeshDependentDataPointer& meshDependentData )
 {
   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
@@ -250,7 +250,7 @@ getExplicitRHS( const RealType& time,
                 const MeshPointer& mesh,
                 DofVectorPointer& _u,
                 DofVectorPointer& _fu,
-                MeshDependentDataType& meshDependentData )
+                MeshDependentDataPointer& meshDependentData )
 {
     std::cout << "explicitRHS" << std::endl;
     typedef typename MeshType::Cell Cell;
@@ -329,7 +329,7 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& _u,
                       Matrix& matrix,
                       DofVectorPointer& b,
-                      MeshDependentDataType& meshDependentData )
+                      MeshDependentDataPointer& meshDependentData )
 {
 /*   LinearSystemAssembler< Mesh,
                              MeshFunctionType,
@@ -361,7 +361,7 @@ postIterate( const RealType& time,
              const RealType& tau,
              const MeshPointer& mesh,
              DofVectorPointer& dofs,
-             MeshDependentDataType& meshDependentData )
+             MeshDependentDataPointer& meshDependentData )
 {
    //velocity
    this->velocity->setMesh( mesh );

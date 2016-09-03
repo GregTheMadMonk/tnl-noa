@@ -86,8 +86,8 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Set mesh dependent data
     */
-   this->problem->setMeshDependentData( *this->meshPointer, this->meshDependentData );
-   this->problem->bindMeshDependentData( *this->meshPointer, this->meshDependentData );
+   this->problem->setMeshDependentData( this->meshPointer, this->meshDependentData );
+   this->problem->bindMeshDependentData( this->meshPointer, this->meshDependentData );
    
    /***
     * Set-up the initial condition

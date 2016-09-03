@@ -140,7 +140,7 @@ solve( const RealType& time,
        const RealType& stopTime,
        const MeshPointer& mesh,
        DofVectorPointer& dofVector,
-       MeshDependentDataType& meshDependentData )
+       MeshDependentDataPointer& meshDependentData )
 {
    Assert( this->problem != 0, );
    RealType t = time;

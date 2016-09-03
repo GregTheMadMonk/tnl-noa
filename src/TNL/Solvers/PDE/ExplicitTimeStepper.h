@@ -15,6 +15,8 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
 #include <TNL/Logger.h>
+#include <TNL/SharedPointer.h>
+#include <TNL/Solvers/IterativeSolverMonitor.h>
 
 namespace TNL {
 namespace Solvers {
@@ -36,6 +38,7 @@ class ExplicitTimeStepper
    typedef typename ProblemType::DofVectorType DofVectorType;
    typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
    typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+   typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
 
    ExplicitTimeStepper();
 
@@ -61,7 +64,7 @@ class ExplicitTimeStepper
                const RealType& stopTime,
                const MeshPointer& mesh,
                DofVectorPointer& dofVector,
-               MeshDependentDataType& meshDependentData );
+               MeshDependentDataPointer& meshDependentData );
 
    void getExplicitRHS( const RealType& time,
                         const RealType& tau,
@@ -80,7 +83,7 @@ class ExplicitTimeStepper
 
    RealType timeStep;
 
-   MeshDependentDataType* meshDependentData;
+   MeshDependentDataPointer meshDependentData;
  
    Timer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
  

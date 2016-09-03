@@ -67,8 +67,8 @@ template< typename Mesh,
           typename Index >
 bool
 PDEProblem< Mesh, Real, Device, Index >::
-setMeshDependentData( const MeshType& mesh,
-                      MeshDependentDataType& meshDependentData )
+setMeshDependentData( const MeshPointer& mesh,
+                      MeshDependentDataPointer& meshDependentData )
 {
    /****
     * Set-up auxiliary data depending on the numerical mesh
@@ -82,8 +82,8 @@ template< typename Mesh,
           typename Index >
 void
 PDEProblem< Mesh, Real, Device, Index >::
-bindMeshDependentData( const MeshType& mesh,
-                       MeshDependentDataType& meshDependentData )
+bindMeshDependentData( const MeshPointer& mesh,
+                       MeshDependentDataPointer& meshDependentData )
 {
 }
 
@@ -97,7 +97,7 @@ preIterate( const RealType& time,
             const RealType& tau,
             const MeshPointer& meshPointer,
             DofVectorPointer& dofs,
-            MeshDependentDataType& meshDependentData )
+            MeshDependentDataPointer& meshDependentData )
 {
    return true;
 }
@@ -111,7 +111,7 @@ PDEProblem< Mesh, Real, Device, Index >::
 setExplicitBoundaryConditions( const RealType& time,
                                const MeshPointer& meshPointer,
                                DofVectorPointer& dofs,
-                               MeshDependentDataType& meshDependentData )
+                               MeshDependentDataPointer& meshDependentData )
 {
 }
 
@@ -126,7 +126,7 @@ postIterate( const RealType& time,
              const RealType& tau,
              const MeshPointer& meshPointer,
              DofVectorPointer& dofs,
-             MeshDependentDataType& meshDependentData )
+             MeshDependentDataPointer& meshDependentData )
 {
    return true;
 }
