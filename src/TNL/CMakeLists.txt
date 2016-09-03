@@ -33,8 +33,6 @@ set( headers
      String.h
      SystemInfo.h
      Timer.h
-     TimerCPU.h
-     TimerRT.h
      UniquePointer.h )
 
 set( common_SOURCES 
@@ -44,9 +42,7 @@ set( common_SOURCES
      SmartPointersRegister.cpp
      String.cpp
      SystemInfo.cpp
-     Timer.cpp
-     TimerCPU.cpp
-     TimerRT.cpp )
+     Timer.cpp )
      
 set( tnl_SOURCES ${tnl_config_SOURCES}
                  ${tnl_containers_SOURCES}

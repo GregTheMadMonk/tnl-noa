@@ -23,8 +23,7 @@ ExplicitSolver()
    stopTime( 0.0 ),
    solver_comm( MPI_COMM_WORLD ),
    verbosity( 0 ),
-   cpu_timer( &defaultCPUTimer ),
-   rt_timer( &defaultRTTimer ),
+   timer( &defaultTimer ),
    testingMode( false ),
    problem( 0 ),
    solverMonitor( 0 )
@@ -143,17 +142,9 @@ setVerbose( IndexType v )
 template< class Problem >
 void
 ExplicitSolver< Problem >::
-setTimerCPU( TimerCPU* timer )
+setTimer( Timer* timer )
 {
-   this->cpu_timer = timer;
-};
-
-template< class Problem >
-void
-ExplicitSolver< Problem >::
-setTimerRT( TimerRT* timer )
-{
-   this->rt_timer = timer;
+   this->timer = timer;
 };
 
 template< class Problem >

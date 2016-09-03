@@ -280,13 +280,13 @@ assemblyLinearSystem( const RealType& time,
    /*cout << "Matrix multiplication test ..." << std::endl;
    Vector< RealType, DeviceType, IndexType > y;
    y.setLike( u );
-   TimerRT timer;
+   Timer timer;
    timer.reset();
    timer.start();
    for( int i = 0; i < 100; i++ )
       matrix.vectorProduct( u, y );
    timer.stop();
-  std::cout << "The time is " << timer.getTime();
+  std::cout << "The time is " << timer.getRealTime();
   std::cout << "Scalar product test ..." << std::endl;
    timer.reset();
    RealType a;
@@ -294,7 +294,7 @@ assemblyLinearSystem( const RealType& time,
    for( int i = 0; i < 100; i++ )
       a = y.scalarProduct( u );
    timer.stop();
-  std::cout << "The time is " << timer.getTime();
+  std::cout << "The time is " << timer.getRealTime();
   std::cout << std::endl;
    abort();*/
 }

@@ -25,7 +25,7 @@
 #include <TNL/Matrices/SlicedEllpack.h>
 #include <TNL/Matrices/ChunkedEllpack.h>
 #include <TNL/Matrices/MatrixReader.h>
-#include <TNL/TimerRT.h>
+#include <TNL/Timer.h>
 #include "tnlCusparseCSRMatrix.h"
 
 using namespace std;
@@ -235,8 +235,8 @@ double benchmarkMatrix( const Matrix& matrix,
                         int verbose,
                         std::fstream& logFile )
 {
-   TimerRT timer;
-   timer.reset();
+   Timer timer;
+   timer.start();
    double time( 0.0 );
    int iterations( 0 );
    while( time < stopTime )
@@ -246,7 +246,7 @@ double benchmarkMatrix( const Matrix& matrix,
       if( std::is_same< typename Matrix::DeviceType, Devices::Cuda >::value )
          cudaThreadSynchronize();
 #endif
-      time = timer.getTime();
+      time = timer.getRealTime();
       iterations++;
    }
    const double gflops = computeGflops( nonzeroElements, iterations, time );
