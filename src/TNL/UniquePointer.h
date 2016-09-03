@@ -68,12 +68,18 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
          return *( this->pointer );
       }
       
+      operator bool()
+      {
+         return this->pointer;
+      }
+
       template< typename Device = Devices::Host >
       const Object& getData() const
       {
          return *( this->pointer );
       }
 
+      template< typename Device = Devices::Host >
       Object& modifyData()
       {
          return *( this->pointer );
@@ -150,6 +156,11 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          return *( this->pointer );
       }
       
+      operator bool()
+      {
+         return this->pointer;
+      }
+
       template< typename Device = Devices::Host >      
       const Object& getData() const
       {
@@ -160,10 +171,19 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
             return *( this->cuda_pointer );            
       }
 
+      template< typename Device = Devices::Host >
       Object& modifyData()
       {
-         this->modified = true;
-         return *( this->pointer );
+         static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
+         if( std::is_same< Device, Devices::Host >::value )
+         {
+            this->modified = true;
+            return *( this->pointer );
+         }
+         if( std::is_same< Device, Devices::Cuda >::value )
+         {
+            return *( this->cuda_pointer );
+         }
       }
       
       const ThisType& operator=( ThisType& ptr )
