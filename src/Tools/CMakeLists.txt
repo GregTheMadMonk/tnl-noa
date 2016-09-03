@@ -13,8 +13,7 @@ set( tnl_grid_setup_SOURCES tnl-grid-setup.cpp
                             tnl-grid-setup.h )
                             
 set( tnl_mesh_convert_SOURCES tnl-mesh-convert.cpp
-                            tnl-mesh-convert.h )
-                            
+                            tnl-mesh-convert.h )                            
                             
 set( tnl_init_SOURCES tnl-init.cpp
                       tnl-init.h )
@@ -76,9 +75,9 @@ INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-init${debugExt}
                ${PROJECT_TOOLS_PATH}/tnl-dicom-reader${debugExt}
                ${PROJECT_TOOLS_PATH}/tnl-image-converter${debugExt}
                ${PROJECT_TOOLS_PATH}/tnl-curve2gnuplot${debugExt}
-               ${PROJECT_TOOLS_PATH}/tnl-err2eoc
-               ${PROJECT_TOOLS_PATH}/tnl-time-series2png
-               ${PROJECT_TOOLS_PATH}/tnl-eoc-test-log
+               tnl-time-series2png
+               tnl-err2eoc
+               tnl-eoc-test-log
                ${PROJECT_TOOLS_PATH}/tnl-compile 
                ${PROJECT_TOOLS_PATH}/tnl-link
                ${PROJECT_TOOLS_PATH}/tnl-bindir
