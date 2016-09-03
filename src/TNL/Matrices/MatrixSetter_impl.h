@@ -23,12 +23,14 @@ template< typename Mesh,
 void
 MatrixSetter< Mesh, DifferentialOperator, BoundaryConditions, CompressedRowsLengthsVector >::
 getCompressedRowsLengths( const MeshPointer& meshPointer,
-                          DifferentialOperatorPointer& differentialOperatorPointer,
-                          BoundaryConditionsPointer& boundaryConditionsPointer,
+                          const DifferentialOperatorPointer& differentialOperatorPointer,
+                          const BoundaryConditionsPointer& boundaryConditionsPointer,
                           CompressedRowsLengthsVectorPointer& rowLengthsPointer ) const
 {
    {
-      TraversalUserData userData( differentialOperatorPointer, boundaryConditionsPointer, rowLengthsPointer );
+      TraversalUserData userData( &differentialOperatorPointer.template getData< DeviceType >(),
+                                  &boundaryConditionsPointer.template getData< DeviceType >(),
+                                  &rowLengthsPointer.template modifyData< DeviceType >() );
       Meshes::Traverser< MeshType, EntityType > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
