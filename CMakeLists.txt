@@ -251,6 +251,8 @@ if( WITH_TESTS STREQUAL "yes" )
    endif( GTEST_FOUND )
 endif( WITH_TESTS STREQUAL "yes" )
 
+find_package( PythonInterp )
+
 #if( BUILD_MPI )
 #   FIND_PATH( PETSC_INCLUDE_DIR petsc.h
 #     /usr/include/petsc
@@ -311,6 +313,10 @@ set( sourceDirectory \"${PROJECT_SOURCE_DIR}/\" )
 set( testsDirectory \"${PROJECT_TESTS_PATH}/\" )
 CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/TNL/tnlConfig.h" )
 INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.h DESTINATION include/tnl-${tnlVersion}/TNL )
+if( PYTHONINTERP_FOUND )
+    CONFIGURE_FILE( "tnlConfig.py.in" "${PROJECT_BUILD_PATH}/TNL/tnlConfig.py" )
+    INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.py DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/TNL )
+endif( PYTHONINTERP_FOUND )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )
