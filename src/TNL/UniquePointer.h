@@ -191,7 +191,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 #ifdef HAVE_CUDA
          if( this->modified )
          {
-            cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
+            cudaMemcpy( (void*) this->cuda_pointer, (void*) this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
             if( ! checkCudaDevice )
                return false;
             return true;

@@ -394,7 +394,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
             this->pointer->~ObjectType();
             new ( this->pointer ) ObjectType( args... );
 #ifdef HAVE_CUDA
-            cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
+            cudaMemcpy( (void*) this->cuda_pointer, (void*) this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
 #endif
             return true;
          }
@@ -545,7 +545,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
 #endif
             Assert( this->pointer, );
             Assert( this->cuda_pointer, );
-            cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( ObjectType ), cudaMemcpyHostToDevice );
+            cudaMemcpy( (void*) this->cuda_pointer, (void*) this->pointer, sizeof( ObjectType ), cudaMemcpyHostToDevice );
             if( ! checkCudaDevice ) {
                return false;
             }

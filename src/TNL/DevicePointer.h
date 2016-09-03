@@ -384,7 +384,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          {
             Assert( this->pointer, );
             Assert( this->cuda_pointer, );
-            cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( ObjectType ), cudaMemcpyHostToDevice );
+            cudaMemcpy( (void*) this->cuda_pointer, (void*) this->pointer, sizeof( ObjectType ), cudaMemcpyHostToDevice );
             if( ! checkCudaDevice ) {
                return false;
             }
