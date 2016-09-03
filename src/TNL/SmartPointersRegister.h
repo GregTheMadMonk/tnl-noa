@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include <vector>
-#include <list>
+#include <unordered_set>
+#include <unordered_map>
 #include <TNL/SmartPointer.h>
 #include <TNL/Assert.h>
 
@@ -27,8 +27,6 @@ class SmartPointersRegister
   
    public:
    
-      SmartPointersRegister( int devicesCount = 1 );
-      
       void insert( SmartPointer* pointer, int deviceId );
       
       void remove( SmartPointer* pointer, int deviceId );
@@ -37,10 +35,8 @@ class SmartPointersRegister
       
    protected:
       
-      typedef std::list< SmartPointer* > ListType;   
+      typedef std::unordered_set< SmartPointer* > SetType;   
       
-      std::vector< ListType > pointersOnDevices;
-      
-      int devicesCount;
+      std::unordered_map< int, SetType > pointersOnDevices;
 };
 

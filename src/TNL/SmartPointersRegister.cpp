@@ -17,34 +17,36 @@
 
 #include <iostream>
 #include <TNL/SmartPointersRegister.h>
-
-SmartPointersRegister::SmartPointersRegister( int devicesCount )
-{
-   Assert( devicesCount > 0, std::cerr << "devicesCount = " << devicesCount );
-   pointersOnDevices.resize( devicesCount );
-   this->devicesCount = devicesCount;
-}
+#include <TNL/Devices/Cuda.h>
 
 void SmartPointersRegister::insert( SmartPointer* pointer, int deviceId )
 {
-   Assert( deviceId >= 0 && deviceId < this->devicesCount,
-              std::cerr << "deviceId = " << deviceId << " devicesCount = " << this->devicesCount );
    //std::cerr << "Inserting pointer " << pointer << " to the register..." << std::endl;
-   pointersOnDevices[ deviceId ].push_back( pointer );
+   pointersOnDevices[ deviceId ].insert( pointer );
 }
 
 void SmartPointersRegister::remove( SmartPointer* pointer, int deviceId )
 {
-   Assert( deviceId >= 0 && deviceId < this->devicesCount,
-              std::cerr << "deviceId = " << deviceId << " devicesCount = " << this->devicesCount );   
-   pointersOnDevices[ deviceId ].remove( pointer );
+   try {
+      pointersOnDevices.at( deviceId ).erase( pointer );
+   }
+   catch( std::out_of_range ) {
+      std::cerr << "Given deviceId " << deviceId << " does not have any pointers yet. "
+                << "Requested to remove pointer " << pointer << ". "
+                << "This is most likely a bug in the smart pointer." << std::endl;
+      throw;
+   }
 }
-
 
 bool SmartPointersRegister::synchronizeDevice( int deviceId )
 {
-   for( ListType::iterator it = pointersOnDevices[ deviceId ].begin();
-        it != pointersOnDevices[ deviceId ].end();
-        it++ )
-      ( *it )->synchronize();            
+   try {
+      const auto & set = pointersOnDevices.at( deviceId );
+      for( auto&& it : set )
+         ( *it ).synchronize();
+      return checkCudaDevice;
+   }
+   catch( std::out_of_range ) {
+      return false;
+   }
 }

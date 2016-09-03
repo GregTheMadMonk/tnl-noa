@@ -407,7 +407,6 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
          this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
          if( ! this->cuda_pointer )
             return false;
-         // TODO: what if 'this' is already in the register?
          Devices::Cuda::insertSmartPointer( this );
          return true;
       }

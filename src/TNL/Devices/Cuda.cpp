@@ -9,6 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/CudaDeviceInfo.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/tnlConfig.h>
 #include <TNL/Config/ConfigDescription.h>
@@ -16,9 +17,9 @@
 
 namespace TNL {
 namespace Devices {
- 
-SmartPointersRegister Cuda::smartPointersRegister;   
-   
+
+SmartPointersRegister Cuda::smartPointersRegister;
+
 String Cuda::getDeviceType()
 {
    return String( "Cuda" );
@@ -30,13 +31,13 @@ int Cuda::getGPUTransferBufferSize()
 }
 
 int Cuda::getNumberOfBlocks( const int threads,
-                                const int blockSize )
+                             const int blockSize )
 {
    return roundUpDivision( threads, blockSize );
 }
 
 int Cuda::getNumberOfGrids( const int blocks,
-                               const int gridSize )
+                            const int gridSize )
 {
    return roundUpDivision( blocks, gridSize );
 }
@@ -46,17 +47,18 @@ int Cuda::getNumberOfGrids( const int blocks,
 
 }*/
 
-void Cuda::configSetup( Config::ConfigDescription& config, const String& prefix )
+void Cuda::configSetup( Config::ConfigDescription& config,
+                        const String& prefix )
 {
 #ifdef HAVE_CUDA
-   config.addEntry<  int >( prefix + "cuda-device", "Choose CUDA device to run the computation.", 0 );
+   config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device to run the computation.", 0 );
 #else
-   config.addEntry<  int >( prefix + "cuda-device", "Choose CUDA device to run the computation (not supported on this system).", 0 );
+   config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device to run the computation (not supported on this system).", 0 );
 #endif
 }
- 
+
 bool Cuda::setup( const Config::ParameterContainer& parameters,
-                      const String& prefix )
+                  const String& prefix )
 {
 #ifdef HAVE_CUDA
    int cudaDevice = parameters.getParameter< int >( "cuda-device" );
@@ -71,18 +73,19 @@ bool Cuda::setup( const Config::ParameterContainer& parameters,
 
 void Cuda::insertSmartPointer( SmartPointer* pointer )
 {
-    smartPointersRegister.insert( pointer, 0 );
+   smartPointersRegister.insert( pointer, Devices::CudaDeviceInfo::getActiveDevice() );
 }
 
 void Cuda::removeSmartPointer( SmartPointer* pointer )
 {
-    smartPointersRegister.remove( pointer, 0 );
+   smartPointersRegister.remove( pointer, Devices::CudaDeviceInfo::getActiveDevice() );
 }
-   
+
 bool Cuda::synchronizeDevice( int deviceId )
 {
-    smartPointersRegister.synchronizeDevice( deviceId );
-    return checkCudaDevice;
+   if( deviceId < 0 )
+      deviceId = Devices::CudaDeviceInfo::getActiveDevice();
+   return smartPointersRegister.synchronizeDevice( deviceId );
 }
 
 } // namespace Devices
