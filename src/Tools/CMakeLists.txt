@@ -71,7 +71,7 @@ INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-init${debugExt}
                ${PROJECT_TOOLS_PATH}/tnl-view${debugExt}
                ${PROJECT_TOOLS_PATH}/tnl-diff${debugExt}
                ${PROJECT_TOOLS_PATH}/tnl-grid-setup${debugExt}
-               ${PROJECT_TOOLS_PATH}/tnl-mesh-convert${debugExt}
+               #${PROJECT_TOOLS_PATH}/tnl-mesh-convert${debugExt}
                ${PROJECT_TOOLS_PATH}/tnl-dicom-reader${debugExt}
                ${PROJECT_TOOLS_PATH}/tnl-image-converter${debugExt}
                ${PROJECT_TOOLS_PATH}/tnl-curve2gnuplot${debugExt}

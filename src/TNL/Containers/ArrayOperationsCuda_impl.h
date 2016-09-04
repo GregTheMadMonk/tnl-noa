@@ -24,6 +24,7 @@ bool ArrayOperations< Devices::Cuda >::allocateMemory( Element*& data,
                                                     const Index size )
 {
 #ifdef HAVE_CUDA
+   checkCudaDevice;
    if( cudaMalloc( ( void** ) &data,
                    ( size_t ) size * sizeof( Element ) ) != cudaSuccess )
       data = 0;
@@ -39,6 +40,7 @@ bool ArrayOperations< Devices::Cuda >::freeMemory( Element* data )
 {
    Assert( data, );
 #ifdef HAVE_CUDA
+      checkCudaDevice;
       cudaFree( data );
       return checkCudaDevice;
 #else
