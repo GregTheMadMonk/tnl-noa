@@ -27,10 +27,15 @@ bool File :: write( const Type* buffer )
 
 template< typename Type, typename Device, typename Index >
 bool File :: read( Type* buffer,
-                      const Index& elements )
+                   const Index& _elements )
 {
-   Assert( elements >= 0,
-              std::cerr << " elements = " << elements << std::endl; );
+   Assert( _elements >= 0,
+           std::cerr << " elements = " << _elements << std::endl; );
+
+   // convert _elements from Index to size_t, which is *unsigned* type
+   // (expected by fread etc)
+   size_t elements = (size_t) _elements;
+
    if( ! elements )
       return true;
    if( ! fileOK )
@@ -44,8 +49,8 @@ bool File :: read( Type* buffer,
       return false;
    }
    this->readElements = 0;
-   const Index host_buffer_size = std::min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
-                                          elements );
+   const size_t host_buffer_size = std::min( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ),
+                                             elements );
    void* host_buffer( 0 );
    if( std::is_same< Device, Devices::Host >::value )
    {
@@ -84,7 +89,7 @@ bool File :: read( Type* buffer,
 
       while( readElements < elements )
       {
-         int transfer = :: min( ( Index ) ( elements - readElements ), host_buffer_size );
+         size_t transfer = std::min( elements - readElements, host_buffer_size );
          size_t transfered = fread( host_buffer, sizeof( Type ), transfer, file );
          if( transfered != transfer )
          {
@@ -118,11 +123,16 @@ bool File :: read( Type* buffer,
 };
 
 template< class Type, typename Device, typename Index >
-bool File ::  write( const Type* buffer,
-                        const Index elements )
+bool File :: write( const Type* buffer,
+                    const Index _elements )
 {
-   Assert( elements >= 0,
-              std::cerr << " elements = " << elements << std::endl; );
+   Assert( _elements >= 0,
+           std::cerr << " elements = " << _elements << std::endl; );
+
+   // convert _elements from Index to size_t, which is *unsigned* type
+   // (expected by fread etc)
+   size_t elements = (size_t) _elements;
+
    if( ! elements )
       return true;
    if( ! fileOK )
@@ -139,8 +149,8 @@ bool File ::  write( const Type* buffer,
    Type* buf = const_cast< Type* >( buffer );
    void* host_buffer( 0 );
    this->writtenElements = 0;
-   const long int host_buffer_size = std::min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
-                                          elements );
+   const size_t host_buffer_size = std::min( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ),
+                                             elements );
    if( std::is_same< Device, Devices::Host >::value )
    {
       if( fwrite( buf,
@@ -176,7 +186,7 @@ bool File ::  write( const Type* buffer,
 
          while( this->writtenElements < elements )
          {
-            Index transfer = min( elements - this->writtenElements, host_buffer_size );
+            size_t transfer = std::min( elements - this->writtenElements, host_buffer_size );
             cudaMemcpy( host_buffer,
                        ( void* ) & ( buffer[ this->writtenElements ] ),
                        transfer * sizeof( Type ),
