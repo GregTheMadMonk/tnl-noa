@@ -32,8 +32,8 @@ set( tnl_image_converter_SOURCES tnl-image-converter.cpp )
 ADD_EXECUTABLE(tnl-grid-setup${debugExt} ${tnl_grid_setup_SOURCES})
 target_link_libraries (tnl-grid-setup${debugExt} tnl${debugExt}-${tnlVersion} )
 
-ADD_EXECUTABLE(tnl-mesh-convert${debugExt} ${tnl_mesh_convert_SOURCES})
-target_link_libraries (tnl-mesh-convert${debugExt} tnl${debugExt}-${tnlVersion} )
+#ADD_EXECUTABLE(tnl-mesh-convert${debugExt} ${tnl_mesh_convert_SOURCES})
+#target_link_libraries (tnl-mesh-convert${debugExt} tnl${debugExt}-${tnlVersion} )
 
 ADD_EXECUTABLE(tnl-init${debugExt} ${tnl_init_SOURCES})
 target_link_libraries (tnl-init${debugExt} tnl${debugExt}-${tnlVersion} )
