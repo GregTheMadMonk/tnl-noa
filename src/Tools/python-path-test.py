@@ -1,0 +1,3 @@
+import TNL
+
+print( "OK" )
