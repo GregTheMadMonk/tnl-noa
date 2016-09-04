@@ -7,6 +7,7 @@
 __author__ = "Tomas Oberhuber"
 __date__ = "$May 6, 2015 8:40:59 PM$"
 
+import TNL
 
 def generateMakefile( problemBaseName ):
     file = open( "Makefile", "w" )
@@ -850,9 +851,19 @@ def generateRunScript( problemBaseName ):
     
 print( "TNL Quickstart -- solver generator")
 print( "----------------------------------")
-problemName = input( "Problam name:" )
-problemBaseName = input( "Problem class base name (base name acceptable in C++ code):" )
-operatorName = input( "Operator name:")
+
+definitons = {}
+
+definitions['problemName'] = input( "Problam name:" )
+definitions['problemBaseName'] = input( "Problem class base name (base name acceptable in C++ code):" )
+definitions['operatorName'] = input( "Operator name:")
+
+with open( Config.tnl_install_prefix+"/Makefile.py.in", 'r') as ftemp:
+    templateString = ftemp.read()
+with open( , 'w') as f:
+    f.write(templateString.format(**definitions ))
+
+
 generateMakefile( problemBaseName )
 generateMain( problemName, problemBaseName, operatorName )
 generateProblem( problemName, problemBaseName )
