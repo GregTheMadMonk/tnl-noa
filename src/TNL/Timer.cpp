@@ -142,7 +142,7 @@ bool Timer::writeLog( Logger& logger, int logLevel )
    logger.writeParameter< double                 >( "Real time:",  this->getRealTime(),  logLevel );
    logger.writeParameter< double                 >( "CPU time:",   this->getCPUTime(),   logLevel );
    logger.writeParameter< unsigned long long int >( "CPU Cycles:", this->getCPUCycles(), logLevel );
-
+   return true;
 }
 
 } // namespace TNL

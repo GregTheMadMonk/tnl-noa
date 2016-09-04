@@ -18,9 +18,9 @@ template< typename Problem >
 ExplicitSolver< Problem >::
 ExplicitSolver()
 :  time( 0.0 ),
+   stopTime( 0.0 ),
    tau( 0.0 ),
    maxTau( DBL_MAX ),
-   stopTime( 0.0 ),
    solver_comm( MPI_COMM_WORLD ),
    verbosity( 0 ),
    timer( &defaultTimer ),

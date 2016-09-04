@@ -210,7 +210,7 @@ __global__ void updateKernel( Real* u,
 
 template< typename Real, typename Index >
 bool writeFunction(
-   char* fileName,
+   const char* fileName,
    const Real* data,
    const Index xSize,
    const Index ySize,
@@ -232,6 +232,7 @@ bool writeFunction(
          file << i * hx - originX << " " << j * hy - originY << " " << data[ j * xSize + i ] << endl;
       file << endl;
    }
+   return true;
 }
 
 template< typename Real, typename Index >

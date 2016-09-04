@@ -435,7 +435,7 @@ bool ChunkedEllpack< Real, Device, Index >::addElementToChunkFast( const IndexTy
                                            elementPtr,
                                            chunkEnd,
                                            step );
-   IndexType col;
+   IndexType col = 0;
    while( elementPtr < chunkEnd &&
           ( col = this->columnIndexes[ elementPtr ] ) < column &&
           col != this->getPaddingIndex() )
@@ -532,7 +532,7 @@ bool ChunkedEllpack< Real, Device, Index >::addElementToChunk( const IndexType s
                                            elementPtr,
                                            chunkEnd,
                                            step );
-   IndexType col;
+   IndexType col = 0;
    while( elementPtr < chunkEnd &&
           ( col = this->columnIndexes.getElement( elementPtr ) ) < column &&
           col != this->getPaddingIndex() )
@@ -1044,7 +1044,7 @@ typename Vector::RealType ChunkedEllpack< Real, Device, Index >::chunkVectorProd
                                            elementPtr,
                                            chunkEnd,
                                            step );
-   IndexType i( 0 ), col;
+   IndexType i( 0 ), col( 0 );
    typename Vector::RealType result( 0.0 );
    while( i < chunkSize && ( col = this->columnIndexes[ elementPtr ] ) != this->getPaddingIndex() )
    {

@@ -158,7 +158,7 @@ template< typename Real,
           typename Index >
 Index Multidiagonal< Real, Device, Index > :: getNumberOfNonzeroMatrixElements() const
 {
-   IndexType nonzeroElements;
+   IndexType nonzeroElements = 0;
    for( IndexType i = 0; i < this->values.getSize(); i++ )
       if( this->values.getElement( i ) != 0 )
          nonzeroElements++;

@@ -41,7 +41,9 @@ struct ConfigEntryBase
 
    virtual bool hasEnumValues() const { return false; };
 
-   virtual void printEnumValues() const{};
+   virtual void printEnumValues() const {};
+
+   virtual ~ConfigEntryBase() {};
 };
 
 } // namespace Config

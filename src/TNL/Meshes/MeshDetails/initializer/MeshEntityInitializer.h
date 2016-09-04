@@ -74,7 +74,7 @@ class MeshEntityInitializer
 
    //using SuperentityBaseType::setNumberOfSuperentities;
 
-   static String getType() {};
+   static String getType() { return "MeshEntityInitializer"; };
 
    MeshEntityInitializer() : entity(0), entityIndex( -1 ) {}
 
@@ -111,7 +111,7 @@ class MeshEntityInitializer< MeshConfig, MeshVertexTopology >
       typedef typename MeshTraits< MeshConfig >::PointType  PointType;
       typedef MeshInitializer< MeshConfig >                 InitializerType;
 
-      static String getType() {};
+      static String getType() { return "MeshEntityInitializer"; };
  
       static void setVertexPoint( VertexType& vertex,
                                   const PointType& point,

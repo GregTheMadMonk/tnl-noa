@@ -129,7 +129,7 @@ template< typename Real,
           typename Index >
 Index Tridiagonal< Real, Device, Index > :: getNumberOfNonzeroMatrixElements() const
 {
-   IndexType nonzeroElements;
+   IndexType nonzeroElements = 0;
    for( IndexType i = 0; i < this->values.getSize(); i++ )
       if( this->values.getElement( i ) != 0 )
          nonzeroElements++;
@@ -631,13 +631,13 @@ class TridiagonalDeviceDependentCode< Devices::Host >
          if( row == 0 )
             return vector[ 0 ] * values[ 0 ] +
                    vector[ 1 ] * values[ 1 ];
-         Index i = 3 * row - 1;
+         Index i = 3 * row;
          if( row == rows - 1 )
-            return vector[ row - 1 ] * values[ i++ ] +
+            return vector[ row - 1 ] * values[ i - 1 ] +
                    vector[ row ] * values[ i ];
-         return vector[ row - 1 ] * values[ i++ ] +
-                vector[ row ] * values[ i++ ] +
-                vector[ row + 1 ] * values[ i ];
+         return vector[ row - 1 ] * values[ i - 1 ] +
+                vector[ row ] * values[ i ] +
+                vector[ row + 1 ] * values[ i + 1 ];
       }
 
       template< typename Real,

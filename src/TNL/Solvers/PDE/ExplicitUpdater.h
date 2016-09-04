@@ -27,6 +27,8 @@ class ExplicitUpdaterTraverserUserData
 {
    public:
       
+      const Real time;
+
       const DifferentialOperator* differentialOperator;
 
       const BoundaryConditions* boundaryConditions;
@@ -35,8 +37,6 @@ class ExplicitUpdaterTraverserUserData
 
       MeshFunction *u, *fu;
       
-      const Real time;
-
       ExplicitUpdaterTraverserUserData( const Real& time,
                                         const DifferentialOperator* differentialOperator,
                                         const BoundaryConditions* boundaryConditions,

@@ -34,7 +34,7 @@ class GridEntityMeasureGetter< Meshes::Grid< Dimensions, Real, Device, Index >, 
  
       template< typename EntityType >
       __cuda_callable__ inline
-      static const Real& getMeasure( const GridType& grid,
+      static const Real getMeasure( const GridType& grid,
                                      const EntityType& entity )
       {
          return 0.0;

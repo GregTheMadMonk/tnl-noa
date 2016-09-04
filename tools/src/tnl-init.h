@@ -198,6 +198,7 @@ bool resolveRealType( const Config::ParameterContainer& parameters )
       return resolveDerivatives< MeshType, double >( parameters );
    if( realType == "long-double" )
       return resolveDerivatives< MeshType, long double >( parameters );
+   return false;
 }
 
 
@@ -226,6 +227,8 @@ bool resolveIndexType( const List< String >& parsedMeshType,
 
    if( parsedMeshType[ 4 ] == "long int" )
       return resolveMesh< Dimensions, RealType, long int >( parsedMeshType, parameters );
+
+   return false;
 }
 
 template< int Dimensions >
@@ -241,6 +244,8 @@ bool resolveRealType( const List< String >& parsedMeshType,
 
    if( parsedMeshType[ 2 ] == "long-double" )
       return resolveIndexType< Dimensions, long double >( parsedMeshType, parameters );
+
+   return false;
 }
 
 bool resolveMeshType( const List< String >& parsedMeshType,
@@ -259,5 +264,6 @@ bool resolveMeshType( const List< String >& parsedMeshType,
    if( dimensions == 3 )
       return resolveRealType< 3 >( parsedMeshType, parameters );
 
+   return false;
 }
 #endif /* TNL_INIT_H_ */

@@ -128,6 +128,7 @@ bool processImages( const Config::ParameterContainer& parameters )
          continue;
       }
    }
+   return true;
 }
 
 bool processTNLFiles( const Config::ParameterContainer& parameters )
@@ -189,6 +190,7 @@ bool processTNLFiles( const Config::ParameterContainer& parameters )
       }
 
    }
+   return true;
 }
 
 int main( int argc, char* argv[] )
