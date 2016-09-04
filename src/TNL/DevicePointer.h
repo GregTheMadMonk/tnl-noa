@@ -210,8 +210,8 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       typedef DevicePointer< Object, Devices::Cuda > ThisType;
 
       explicit  DevicePointer( ObjectType& obj )
-      : counter( 0 ), cuda_pointer( 0 ),
-        pointer( 0 ), modified( false )
+      : pointer( 0 ), cuda_pointer( 0 ),
+        counter( 0 ), modified( false )
       {
          this->counter = new int( 1 );
          this->pointer = &obj;
@@ -252,8 +252,8 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       {
          pointer.pointer = nullptr;
          pointer.cuda_pointer = nullptr;
-         pointer.modified = false;
          pointer.counter = nullptr;
+         pointer.modified = false;
       }
 
       // conditional constructor for non-const -> const data
@@ -267,8 +267,8 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       {
          pointer.pointer = nullptr;
          pointer.cuda_pointer = nullptr;
-         pointer.modified = false;
          pointer.counter = nullptr;
+         pointer.modified = false;
       }
 
       const Object* operator->() const
@@ -335,8 +335,8 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->free();
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
-         this->modified = ptr.modified;
          this->counter = ptr.counter;
+         this->modified = ptr.modified;
          *( this->counter ) += 1;
          return *this;
       }
@@ -349,8 +349,8 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->free();
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
-         this->modified = ptr.modified;
          this->counter = ptr.counter;
+         this->modified = ptr.modified;
          *( this->counter ) += 1;
          return *this;
       }
@@ -361,12 +361,12 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->free();
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
-         this->modified = ptr.modified;
          this->counter = ptr.counter;
+         this->modified = ptr.modified;
          ptr.pointer = nullptr;
          ptr.cuda_pointer = nullptr;
-         ptr.modified = false;
          ptr.counter = nullptr;
+         ptr.modified = false;
          return *this;
       }
 
@@ -378,12 +378,12 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->free();
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
-         this->modified = ptr.modified;
          this->counter = ptr.counter;
+         this->modified = ptr.modified;
          ptr.pointer = nullptr;
          ptr.cuda_pointer = nullptr;
-         ptr.modified = false;
          ptr.counter = nullptr;
+         ptr.modified = false;
          return *this;
       }
 
@@ -432,9 +432,9 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 
       Object *pointer, *cuda_pointer;
 
-      bool modified;
-
       int* counter;
+
+      bool modified;
 };
 
 } // namespace TNL
