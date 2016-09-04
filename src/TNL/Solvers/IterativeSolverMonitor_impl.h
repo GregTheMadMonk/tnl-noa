@@ -90,7 +90,7 @@ void IterativeSolverMonitor< Real, Index > :: refresh( bool force )
       }
 
       if( this->stage.length() && free > 5 ) {
-         if( this->stage.length() <= free - 2 ) {
+         if( (int) this->stage.length() <= free - 2 ) {
             std::cout << "  " << this->stage;
             free -= ( 2 + this->stage.length() );
          }
