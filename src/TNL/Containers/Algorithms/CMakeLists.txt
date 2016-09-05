@@ -8,7 +8,7 @@ set( headers cuda-prefix-sum.h
              CudaReductionBuffer.h
              CublasWrapper.h )
 
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/core/cuda ) 
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Containers/Algorithms ) 
 IF( BUILD_CUDA )
    set( tnl_core_cuda_CUDA__SOURCES
         ${common_SOURCES}
@@ -43,4 +43,4 @@ set( tnl_core_cuda_SOURCES
      ${CURRENT_DIR}/cuda-prefix-sum_impl.cpp     
      PARENT_SCOPE )               
         
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/core/cuda )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Containers/Algorithms )
