@@ -21,6 +21,8 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/SmartPointer.h>
 
+#include <cstring>
+
 
 //#define TNL_DEBUG_SHARED_POINTERS
 
@@ -309,7 +311,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       template< typename... Args >
       explicit  SharedPointer( Args... args )
       : pointer( 0 ), cuda_pointer( 0 ),
-        counter( 0 ), modified( false )
+        counter( 0 ), last_sync_state( 0 )
       {
          if( ! lazy )
          {
@@ -318,6 +320,8 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
             this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
             if( ! this->cuda_pointer )
                return;
+            this->last_sync_state = ::operator new( sizeof( Object ) );
+            this->set_last_sync_state();
 #ifdef TNL_DEBUG_SHARED_POINTERS
             std::cerr << "Created shared pointer to " << demangle(typeid(ObjectType).name()) << " (cuda_pointer = " << this->cuda_pointer << ")" << std::endl;
 #endif
@@ -330,7 +334,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       : pointer( pointer.pointer ),
         cuda_pointer( pointer.cuda_pointer ),
         counter( pointer.counter ),
-        modified( pointer.modified )
+        last_sync_state( pointer.last_sync_state )
       {
          *counter += 1;
       }
@@ -342,7 +346,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       : pointer( pointer.pointer ),
         cuda_pointer( pointer.cuda_pointer ),
         counter( pointer.counter ),
-        modified( pointer.modified )
+        last_sync_state( pointer.last_sync_state )
       {
          *counter += 1;
       }
@@ -352,12 +356,12 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       : pointer( pointer.pointer ),
         cuda_pointer( pointer.cuda_pointer ),
         counter( pointer.counter ),
-        modified( pointer.modified )
+        last_sync_state( pointer.last_sync_state )
       {
          pointer.pointer = nullptr;
          pointer.cuda_pointer = nullptr;
          pointer.counter = nullptr;
-         pointer.modified = false;
+         pointer.last_sync_state = nullptr;
       }
 
       // conditional constructor for non-const -> const data
@@ -367,12 +371,12 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       : pointer( pointer.pointer ),
         cuda_pointer( pointer.cuda_pointer ),
         counter( pointer.counter ),
-        modified( pointer.modified )
+        last_sync_state( pointer.last_sync_state )
       {
          pointer.pointer = nullptr;
          pointer.cuda_pointer = nullptr;
          pointer.counter = nullptr;
-         pointer.modified = false;
+         pointer.last_sync_state = nullptr;
       }
 
       template< typename... Args >
@@ -388,6 +392,8 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
             this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
             if( ! this->cuda_pointer )
                return false;
+            this->last_sync_state = ::operator new( sizeof( Object ) );
+            this->set_last_sync_state();
             Devices::Cuda::insertSmartPointer( this );
             return true;
          }
@@ -401,10 +407,13 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
 #ifdef HAVE_CUDA
             cudaMemcpy( (void*) this->cuda_pointer, (void*) this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
 #endif
+            this->set_last_sync_state();
             return true;
          }
 
-         this->modified = false;
+         // free will just decrement the counter
+         this->free();
+
          this->counter= new int( 1 );
          this->pointer = new Object( args... );
          if( ! this->pointer || ! this->counter )
@@ -412,6 +421,8 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
          this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
          if( ! this->cuda_pointer )
             return false;
+         this->last_sync_state = ::operator new( sizeof( Object ) );
+         this->set_last_sync_state();
          Devices::Cuda::insertSmartPointer( this );
          return true;
       }
@@ -423,7 +434,6 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
 
       Object* operator->()
       {
-         this->modified = true;
          return this->pointer;
       }
 
@@ -434,7 +444,6 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
 
       Object& operator *()
       {
-         this->modified = true;
          return *( this->pointer );
       }
 
@@ -465,7 +474,6 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
          Assert( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
          {
-            this->modified = true;
             return *( this->pointer );
          }
          if( std::is_same< Device, Devices::Cuda >::value )
@@ -481,7 +489,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
          this->counter = ptr.counter;
-         this->modified = ptr.modified;
+         this->last_sync_state = ptr.last_sync_state;
          *( this->counter ) += 1;
 #ifdef TNL_DEBUG_SHARED_POINTERS
          std::cerr << "Copy-assigned shared pointer: counter = " << *(this->counter) << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
@@ -498,7 +506,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
          this->counter = ptr.counter;
-         this->modified = ptr.modified;
+         this->last_sync_state = ptr.last_sync_state;
          *( this->counter ) += 1;
 #ifdef TNL_DEBUG_SHARED_POINTERS
          std::cerr << "Copy-assigned shared pointer: counter = " << *(this->counter) << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
@@ -513,11 +521,11 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
          this->counter = ptr.counter;
-         this->modified = ptr.modified;
+         this->last_sync_state = ptr.last_sync_state;
          ptr.pointer = nullptr;
          ptr.cuda_pointer = nullptr;
          ptr.counter = nullptr;
-         ptr.modified = false;
+         ptr.last_sync_state = nullptr;
 #ifdef TNL_DEBUG_SHARED_POINTERS
          std::cerr << "Move-assigned shared pointer: counter = " << *(this->counter) << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
 #endif
@@ -533,11 +541,11 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
          this->counter = ptr.counter;
-         this->modified = ptr.modified;
+         this->last_sync_state = ptr.last_sync_state;
          ptr.pointer = nullptr;
          ptr.cuda_pointer = nullptr;
          ptr.counter = nullptr;
-         ptr.modified = false;
+         ptr.last_sync_state = nullptr;
 #ifdef TNL_DEBUG_SHARED_POINTERS
          std::cerr << "Move-assigned shared pointer: counter = " << *(this->counter) << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
 #endif
@@ -547,7 +555,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       bool synchronize()
       {
 #ifdef HAVE_CUDA
-         if( this->modified )
+         if( this->modified() )
          {
 #ifdef TNL_DEBUG_SHARED_POINTERS
             std::cerr << "Synchronizing shared pointer: counter = " << *(this->counter) << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
@@ -559,7 +567,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
             if( ! checkCudaDevice ) {
                return false;
             }
-            this->modified = false;
+            this->set_last_sync_state();
             return true;
          }
          return true;
@@ -576,6 +584,16 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
 
    protected:
 
+      void set_last_sync_state()
+      {
+         std::memcpy( (void*) this->last_sync_state, (void*) this->pointer, sizeof( ObjectType ) );
+      }
+
+      bool modified()
+      {
+         return std::memcmp( (void*) this->last_sync_state, (void*) this->pointer, sizeof( ObjectType ) ) != 0;
+      }
+
       void free()
       {
          if( this->counter )
@@ -591,19 +609,20 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
                   delete this->pointer;
                if( this->cuda_pointer )
                   Devices::Cuda::freeFromDevice( this->cuda_pointer );
+               if( this->last_sync_state )
+                  ::operator delete( this->last_sync_state );
 #ifdef TNL_DEBUG_SHARED_POINTERS
                std::cerr << "...deleted data." << std::endl;
 #endif
             }
          }
-
       }
 
       Object *pointer, *cuda_pointer;
 
       int* counter;
 
-      bool modified;
+      void* last_sync_state;
 };
 
 } // namespace TNL

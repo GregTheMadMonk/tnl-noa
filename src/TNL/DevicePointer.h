@@ -21,6 +21,8 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/SmartPointer.h>
 
+#include <cstring>
+
 
 namespace TNL {
 
@@ -211,13 +213,15 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 
       explicit  DevicePointer( ObjectType& obj )
       : pointer( 0 ), cuda_pointer( 0 ),
-        counter( 0 ), modified( false )
+        counter( 0 ), last_sync_state( 0 )
       {
          this->counter = new int( 1 );
          this->pointer = &obj;
          this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
          if( ! this->cuda_pointer )
             return;
+         this->last_sync_state = ::operator new( sizeof( Object ) );
+         this->set_last_sync_state();
          Devices::Cuda::insertSmartPointer( this );
       }
 
@@ -226,7 +230,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       : pointer( pointer.pointer ),
         cuda_pointer( pointer.cuda_pointer ),
         counter( pointer.counter ),
-        modified( pointer.modified )
+        last_sync_state( pointer.last_sync_state )
       {
          *counter += 1;
       }
@@ -238,7 +242,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       : pointer( pointer.pointer ),
         cuda_pointer( pointer.cuda_pointer ),
         counter( pointer.counter ),
-        modified( pointer.modified )
+        last_sync_state( pointer.last_sync_state )
       {
          *counter += 1;
       }
@@ -248,12 +252,12 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       : pointer( pointer.pointer ),
         cuda_pointer( pointer.cuda_pointer ),
         counter( pointer.counter ),
-        modified( pointer.modified )
+        last_sync_state( pointer.last_sync_state )
       {
          pointer.pointer = nullptr;
          pointer.cuda_pointer = nullptr;
          pointer.counter = nullptr;
-         pointer.modified = false;
+         pointer.last_sync_state = nullptr;
       }
 
       // conditional constructor for non-const -> const data
@@ -263,12 +267,12 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       : pointer( pointer.pointer ),
         cuda_pointer( pointer.cuda_pointer ),
         counter( pointer.counter ),
-        modified( pointer.modified )
+        last_sync_state( pointer.last_sync_state )
       {
          pointer.pointer = nullptr;
          pointer.cuda_pointer = nullptr;
          pointer.counter = nullptr;
-         pointer.modified = false;
+         pointer.last_sync_state = nullptr;
       }
 
       const Object* operator->() const
@@ -278,7 +282,6 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 
       Object* operator->()
       {
-         this->modified = true;
          return this->pointer;
       }
 
@@ -289,7 +292,6 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 
       Object& operator *()
       {
-         this->modified = true;
          return *( this->pointer );
       }
 
@@ -320,7 +322,6 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          Assert( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
          {
-            this->modified = true;
             return *( this->pointer );
          }
          if( std::is_same< Device, Devices::Cuda >::value )
@@ -336,7 +337,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
          this->counter = ptr.counter;
-         this->modified = ptr.modified;
+         this->last_sync_state = ptr.last_sync_state;
          *( this->counter ) += 1;
          return *this;
       }
@@ -350,7 +351,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
          this->counter = ptr.counter;
-         this->modified = ptr.modified;
+         this->last_sync_state = ptr.last_sync_state;
          *( this->counter ) += 1;
          return *this;
       }
@@ -362,11 +363,11 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
          this->counter = ptr.counter;
-         this->modified = ptr.modified;
+         this->last_sync_state = ptr.last_sync_state;
          ptr.pointer = nullptr;
          ptr.cuda_pointer = nullptr;
          ptr.counter = nullptr;
-         ptr.modified = false;
+         ptr.last_sync_state = nullptr;
          return *this;
       }
 
@@ -379,18 +380,18 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
          this->counter = ptr.counter;
-         this->modified = ptr.modified;
+         this->last_sync_state = ptr.last_sync_state;
          ptr.pointer = nullptr;
          ptr.cuda_pointer = nullptr;
          ptr.counter = nullptr;
-         ptr.modified = false;
+         ptr.last_sync_state = nullptr;
          return *this;
       }
 
       bool synchronize()
       {
 #ifdef HAVE_CUDA
-         if( this->modified )
+         if( this->modified() )
          {
             Assert( this->pointer, );
             Assert( this->cuda_pointer, );
@@ -398,7 +399,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
             if( ! checkCudaDevice ) {
                return false;
             }
-            this->modified = false;
+            this->set_last_sync_state();
             return true;
          }
          return true;
@@ -415,6 +416,16 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 
    protected:
 
+      void set_last_sync_state()
+      {
+         std::memcpy( (void*) this->last_sync_state, (void*) this->pointer, sizeof( ObjectType ) );
+      }
+
+      bool modified()
+      {
+         return std::memcmp( (void*) this->last_sync_state, (void*) this->pointer, sizeof( ObjectType ) ) != 0;
+      }
+
       void free()
       {
          if( this->counter )
@@ -425,16 +436,17 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
                this->counter = nullptr;
                if( this->cuda_pointer )
                   Devices::Cuda::freeFromDevice( this->cuda_pointer );
+               if( this->last_sync_state )
+                  ::operator delete( this->last_sync_state );
             }
          }
-
       }
 
       Object *pointer, *cuda_pointer;
 
       int* counter;
 
-      bool modified;
+      void* last_sync_state;
 };
 
 } // namespace TNL

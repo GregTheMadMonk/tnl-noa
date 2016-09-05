@@ -21,6 +21,9 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/SmartPointer.h>
 
+#include <cstring>
+
+
 namespace TNL { 
 
 template< typename Object, typename Device = typename Object::DeviceType >
@@ -37,11 +40,6 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
       typedef Devices::Host DeviceType;
       typedef UniquePointer< Object, Devices::Host > ThisType;
          
-      UniquePointer()
-      {
-         this->pointer = new Object();
-      }
-      
       template< typename... Args >
       UniquePointer( const Args... args )
       {
@@ -123,14 +121,17 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       
       typedef Object ObjectType;
       typedef Devices::Cuda DeviceType;
-      typedef UniquePointer< Object, Devices::Host > ThisType;
+      typedef UniquePointer< Object, Devices::Cuda > ThisType;
          
       template< typename... Args >
       UniquePointer( const Args... args )
-      : modified( false )
+      : pointer( 0 ), cuda_pointer( 0 ),
+        last_sync_state( 0 )
       {
          this->pointer = new Object( args... );
          this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
+         this->last_sync_state = ::operator new( sizeof( Object ) );
+         this->set_last_sync_state();
          Devices::Cuda::insertSmartPointer( this );
       }
       
@@ -141,7 +142,6 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       
       Object* operator->()
       {
-         this->modified = true;
          return this->pointer;
       }
       
@@ -152,7 +152,6 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       
       Object& operator *()
       {
-         this->modified = true;
          return *( this->pointer );
       }
       
@@ -177,7 +176,6 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
          if( std::is_same< Device, Devices::Host >::value )
          {
-            this->modified = true;
             return *( this->pointer );
          }
          if( std::is_same< Device, Devices::Cuda >::value )
@@ -194,10 +192,10 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
             Devices::Cuda::freeFromDevice( this->cuda_pointer );
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
-         this->modified = ptr.modified;
+         this->last_sync_state = ptr.last_sync_state;
          ptr.pointer = nullptr;
          ptr.cuda_pointer = nullptr;
-         ptr.modified = false;
+         ptr.last_sync_state = nullptr;
          return *this;
       }
       
@@ -209,11 +207,12 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       bool synchronize()
       {
 #ifdef HAVE_CUDA
-         if( this->modified )
+         if( this->modified() )
          {
             cudaMemcpy( (void*) this->cuda_pointer, (void*) this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
             if( ! checkCudaDevice )
                return false;
+            this->set_last_sync_state();
             return true;
          }
          return true;
@@ -228,14 +227,26 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
             delete this->pointer;
          if( this->cuda_pointer )
             Devices::Cuda::freeFromDevice( this->cuda_pointer );
+         if( this->last_sync_state )
+            ::operator delete( this->last_sync_state );
          Devices::Cuda::removeSmartPointer( this );
       }
       
    protected:
+
+      void set_last_sync_state()
+      {
+         std::memcpy( (void*) this->last_sync_state, (void*) this->pointer, sizeof( ObjectType ) );
+      }
+
+      bool modified()
+      {
+         return std::memcmp( (void*) this->last_sync_state, (void*) this->pointer, sizeof( ObjectType ) ) != 0;
+      }
       
       Object *pointer, *cuda_pointer;
       
-      bool modified;      
+      void* last_sync_state;
 };
 
 } // namespace TNL
