@@ -119,11 +119,12 @@ evaluateEntities( OutMeshFunctionPointer& meshFunction,
    typedef Functions::MeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData > AssignmentEntitiesProcessor;
    typedef Functions::MeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
  
-   TraverserUserData userData( &function.template getData< DeviceType >(),
-                               time,
-                               &meshFunction.template modifyData< DeviceType >(),
-                               outFunctionMultiplicator,
-                               inFunctionMultiplicator );
+   SharedPointer< TraverserUserData, DeviceType >
+      userData( &function.template getData< DeviceType >(),
+                time,
+                &meshFunction.template modifyData< DeviceType >(),
+                outFunctionMultiplicator,
+                inFunctionMultiplicator );
    Meshes::Traverser< MeshType, MeshEntityType > meshTraverser;
    switch( entitiesType )
    {

@@ -50,14 +50,15 @@ assembly( const RealType& time,
    Assert( maxRowLength > 0, );
 
    {
-      TraverserUserData userData( time,
-                                  tau,
-                                  &differentialOperatorPointer.template getData< DeviceType >(),
-                                  &boundaryConditionsPointer.template getData< DeviceType >(),
-                                  &rightHandSidePointer.template getData< DeviceType >(),
-                                  &uPointer.template getData< DeviceType >(),
-                                  &matrixPointer.template modifyData< DeviceType >(),
-                                  &bPointer.template modifyData< DeviceType >() );
+      SharedPointer< TraverserUserData, DeviceType >
+         userData( time,
+                   tau,
+                   &differentialOperatorPointer.template getData< DeviceType >(),
+                   &boundaryConditionsPointer.template getData< DeviceType >(),
+                   &rightHandSidePointer.template getData< DeviceType >(),
+                   &uPointer.template getData< DeviceType >(),
+                   &matrixPointer.template modifyData< DeviceType >(),
+                   &bPointer.template modifyData< DeviceType >() );
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >

@@ -44,12 +44,13 @@ update( const RealType& time,
                                            typename MeshFunction::IndexType > >::value != true,
       "Error: I am getting tnlVector instead of MeshFunction or similar object. You might forget to bind DofVector into MeshFunction in you method getExplicitRHS."  );
    {
-      TraverserUserData userData( time,
-                                  &differentialOperatorPointer.template getData< DeviceType >(),
-                                  &boundaryConditionsPointer.template getData< DeviceType >(),
-                                  &rightHandSidePointer.template getData< DeviceType >(),
-                                  &uPointer.template modifyData< DeviceType >(),
-                                  &fuPointer.template modifyData< DeviceType >() );
+      SharedPointer< TraverserUserData, DeviceType >
+         userData( time,
+                   &differentialOperatorPointer.template getData< DeviceType >(),
+                   &boundaryConditionsPointer.template getData< DeviceType >(),
+                   &rightHandSidePointer.template getData< DeviceType >(),
+                   &uPointer.template modifyData< DeviceType >(),
+                   &fuPointer.template modifyData< DeviceType >() );
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >

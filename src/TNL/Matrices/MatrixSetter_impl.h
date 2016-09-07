@@ -28,9 +28,10 @@ getCompressedRowsLengths( const MeshPointer& meshPointer,
                           CompressedRowsLengthsVectorPointer& rowLengthsPointer ) const
 {
    {
-      TraversalUserData userData( &differentialOperatorPointer.template getData< DeviceType >(),
-                                  &boundaryConditionsPointer.template getData< DeviceType >(),
-                                  &rowLengthsPointer.template modifyData< DeviceType >() );
+      SharedPointer< TraversalUserData, DeviceType >
+         userData( &differentialOperatorPointer.template getData< DeviceType >(),
+                   &boundaryConditionsPointer.template getData< DeviceType >(),
+                   &rowLengthsPointer.template modifyData< DeviceType >() );
       Meshes::Traverser< MeshType, EntityType > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
