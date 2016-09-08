@@ -26,7 +26,7 @@ do
     case $option in
         --prefix=*                       ) PREFIX="${option#*=}" ;;
         --build=*                        ) BUILD="${option#*=}" ;;
-        --with-clang=                    ) WITH_CLANG="${option#*=}" ;;
+        --with-clang=*                   ) WITH_CLANG="${option#*=}" ;;
         --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
         --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
         --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;

@@ -73,7 +73,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
       String outputFile = parameters.getParameter< String >( "output-file" );
       if( finalTime > 0.0 )
       {
-         String extension = String( "." ) + getFileExtension( outputFile );
+         String extension = getFileExtension( outputFile );
          removeFileExtension( outputFile );
          outputFile += "-";
          FileName outputFileName;

@@ -254,7 +254,8 @@ processEntities(
    }
    else
    {
-//#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )
+      //TODO: This does not work with gcc-5.4 and older
+/*#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )
       for( entity.getCoordinates().y() = begin.y();
            entity.getCoordinates().y() <= end.y();
            entity.getCoordinates().y() ++ )
@@ -264,7 +265,16 @@ processEntities(
          {
             entity.refresh();
             EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-         }
+         }*/
+#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )
+      for( IndexType y = begin.y(); y <= end.y(); y ++ )
+         for( IndexType x = begin.x(); x<= end.x(); x ++ )
+         {
+            entity.getCoordinates().x() = x;
+            entity.getCoordinates().y() = y;
+            entity.refresh();
+            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+         }      
    }
 }
 
@@ -390,8 +400,8 @@ void
 GridTraverser< Meshes::Grid< 3, Real, Devices::Host, Index > >::
 processEntities(
    const GridPointer& gridPointer,
-   const CoordinatesType& begin,
-   const CoordinatesType& end,
+   const CoordinatesType begin,
+   const CoordinatesType end,
    const CoordinatesType& entityOrientation,
    const CoordinatesType& entityBasis,
    UserData& userData )
@@ -450,6 +460,8 @@ processEntities(
    }
    else
    {
+      // TODO: this does not work with gcc-5.4 and older
+/*#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )      
       for( entity.getCoordinates().z() = begin.z();
            entity.getCoordinates().z() <= end.z();
            entity.getCoordinates().z() ++ )
@@ -462,7 +474,19 @@ processEntities(
             {
                entity.refresh();
                EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-            }
+            }*/
+#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )
+      for( IndexType z = begin.y(); z <= end.y(); z ++ )
+         for( IndexType y = begin.y(); y <= end.y(); y ++ )
+            for( IndexType x = begin.x(); x<= end.x(); x ++ )
+            {
+               entity.getCoordinates().x() = x;
+               entity.getCoordinates().y() = y;
+               entity.getCoordinates().z() = z;
+               entity.refresh();
+               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+         }      
+      
    }
 }
 

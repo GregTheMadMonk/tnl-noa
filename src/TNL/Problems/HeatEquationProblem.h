@@ -90,7 +90,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                            const RealType& tau,
                            const MeshPointer& meshPointer,
                            DofVectorPointer& _u,
-		           DofVectorPointer& _fu,
+		                     DofVectorPointer& _fu,
                            MeshDependentDataType& meshDependentData );
 
       template< typename MatrixPointer >

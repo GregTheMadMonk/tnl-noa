@@ -142,6 +142,16 @@ writeProlog( Logger& logger,
    logger.writeParameter< String >( "Real type:", "real-type", parameters, 0 );
    logger.writeParameter< String >( "Index type:", "index-type", parameters, 0 );
    logger.writeParameter< String >( "Device:", "device", parameters, 0 );
+   if( parameters.getParameter< String >( "device" ) == "host" )
+   {
+      if( Devices::Host::isOMPEnabled() )
+      {
+         logger.writeParameter< String >( "OMP enabled:", "yes", 1 );
+         logger.writeParameter< int >( "OMP threads:", Devices::Host::getMaxThreadsCount(), 1 );
+      }
+      else
+         logger.writeParameter< String >( "OMP enabled:", "no", 1 );
+   }
    logger.writeSeparator();
    logger.writeSystemInformation( parameters );
    logger.writeSeparator();

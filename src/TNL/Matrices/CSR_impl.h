@@ -441,7 +441,7 @@ template< typename Real,
           typename Index >
    template< typename InVector, typename OutVector >
 void CSR< Real, Device, Index >::vectorProduct( const InVector& inVector,
-                                                         OutVector& outVector ) const
+                                                OutVector& outVector ) const
 {
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
@@ -452,8 +452,8 @@ template< typename Real,
    template< typename Real2,
              typename Index2 >
 void CSR< Real, Device, Index >::addMatrix( const CSR< Real2, Device, Index2 >& matrix,
-                                                                          const RealType& matrixMultiplicator,
-                                                                          const RealType& thisMatrixMultiplicator )
+                                            const RealType& matrixMultiplicator,
+                                            const RealType& thisMatrixMultiplicator )
 {
    Assert( false, std::cerr << "TODO: implement" );
    // TODO: implement
@@ -476,9 +476,9 @@ template< typename Real,
           typename Index >
    template< typename Vector >
 bool CSR< Real, Device, Index >::performSORIteration( const Vector& b,
-                                                               const IndexType row,
-                                                               Vector& x,
-                                                               const RealType& omega ) const
+                                                      const IndexType row,
+                                                      Vector& x,
+                                                      const RealType& omega ) const
 {
    Assert( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row

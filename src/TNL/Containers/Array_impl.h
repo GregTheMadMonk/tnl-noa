@@ -557,8 +557,8 @@ boundLoad( File& file )
    {
       if( this->getSize() != _size )
       {
-         std::cerr << "Error: The current array size is not zero and it is different from the size of" << std::endl
-                   << "the array being loaded. This is not possible. Call method reset() before." << std::endl;
+         std::cerr << "Error: The current array size is not zero ( " << this->getSize() << ") and it is different from the size of" << std::endl
+                   << "the array being loaded (" << _size << "). This is not possible. Call method reset() before." << std::endl;
          return false;
       }
    }

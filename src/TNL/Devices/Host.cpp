@@ -18,7 +18,6 @@
 namespace TNL {
 namespace Devices {   
 
-
 bool Host::ompEnabled( true );
 int Host::maxThreadsCount( -1 );
 
