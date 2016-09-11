@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/mfuncs.h>
+#include <TNL/Math.h>
 #include "SemiImplicitTimeStepper.h"
 
 namespace TNL {

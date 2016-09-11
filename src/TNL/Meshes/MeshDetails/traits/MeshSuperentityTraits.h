@@ -17,7 +17,7 @@
 #include <TNL/Meshes/MeshConfigBase.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
-#include <TNL/core/multimaps/tnlEllpackIndexMultimap.h>
+#include <TNL/Experimental/Multimaps/EllpackIndexMultimap.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSuperentityAccessor.h>
 
 namespace TNL {
@@ -47,7 +47,7 @@ class MeshSuperentityTraits
     */
    typedef Containers::Array< GlobalIndexType, Devices::Host, LocalIndexType >             StorageArrayType;
  
-   typedef tnlEllpackIndexMultimap< GlobalIndexType, Devices::Host >                        StorageNetworkType;
+   typedef EllpackIndexMultimap< GlobalIndexType, Devices::Host >                        StorageNetworkType;
    typedef MeshSuperentityAccessor< typename StorageNetworkType::ValuesAccessorType > SuperentityAccessorType;
  
    /****

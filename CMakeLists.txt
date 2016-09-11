@@ -27,16 +27,16 @@ include( UseCodeCoverage )
 # Settings for debug/release version
 #
 if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Debug/src )
-    set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Debug/tests )
-    set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Debug/tools )
+    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Debug/src/TNL )
+    set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Debug/src/Tests )
+    set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( debugExt -dbg )
 else()
-    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
-    set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Release/tests )
-    set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Release/tools )
+    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src/TNL )
+    set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Release/src/Tests )
+    set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Release/bin )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
 endif()
@@ -84,7 +84,7 @@ if( WITH_CUDA STREQUAL "yes" )
                 # Select GPU architecture
                 #
                 set( CUDA_ARCH_EXECUTABLE ${EXECUTABLE_OUTPUT_PATH}/tnl-cuda-arch)
-                set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/tools/src/tnl-cuda-arch.cu)
+                set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/src/Tools/tnl-cuda-arch.cu)
                 message( "Compiling tnl-cuda-arch ..." )
                 file( MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
                 execute_process( COMMAND nvcc ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
@@ -175,6 +175,7 @@ if( OPENMP_FOUND )
    message( "Compiler supports OpenMP." )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp" )
 endif()
+#set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp=libgomp" )
 
 ####
 # Check for MPI
@@ -251,6 +252,8 @@ if( WITH_TESTS STREQUAL "yes" )
    endif( GTEST_FOUND )
 endif( WITH_TESTS STREQUAL "yes" )
 
+find_package( PythonInterp 3 )
+
 #if( BUILD_MPI )
 #   FIND_PATH( PETSC_INCLUDE_DIR petsc.h
 #     /usr/include/petsc
@@ -311,6 +314,11 @@ set( sourceDirectory \"${PROJECT_SOURCE_DIR}/\" )
 set( testsDirectory \"${PROJECT_TESTS_PATH}/\" )
 CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/TNL/tnlConfig.h" )
 INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.h DESTINATION include/tnl-${tnlVersion}/TNL )
+if( PYTHONINTERP_FOUND )
+    CONFIGURE_FILE( "Config.py.in" "${PROJECT_BUILD_PATH}/TNL/Config.py" )
+    INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/Config.py DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/TNL )
+    CONFIGURE_FILE( "python-version.in" "${PROJECT_TOOLS_PATH}/../python-version" )
+endif( PYTHONINTERP_FOUND )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )
@@ -320,8 +328,8 @@ LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
 #Pokracujeme dalsimi podadresari
 add_subdirectory( src )
+add_subdirectory( share )
 add_subdirectory( tests )
-add_subdirectory( tools )
 add_subdirectory( examples )
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")

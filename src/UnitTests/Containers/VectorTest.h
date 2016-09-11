@@ -12,7 +12,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/File.h>
-#include <TNL/core/mfuncs.h>
+#include <TNL/Math.h>
 
 using namespace TNL;
 

@@ -64,7 +64,9 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       bool writeEpilog( Logger& logger );
 
 
-      bool setup( const Config::ParameterContainer& parameters );
+      bool setup( const MeshPointer& meshPointer,
+                  const Config::ParameterContainer& parameters,
+                  const String& prefix );
 
       bool setInitialCondition( const Config::ParameterContainer& parameters,
                                 const MeshPointer& mesh,
@@ -90,7 +92,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                            const RealType& tau,
                            const MeshPointer& meshPointer,
                            DofVectorPointer& _u,
-		           DofVectorPointer& _fu,
+		                     DofVectorPointer& _fu,
                            MeshDependentDataType& meshDependentData );
 
       template< typename MatrixPointer >

@@ -60,6 +60,16 @@ then
     cd ..
 fi
 
+
+PREFIX=${HOME}/local
+for option in "$@"
+do
+    case $option in
+        --prefix=*                     ) PREFIX="${option#*=}" ;;
+    esac
+done
+
+
 TNL_TEST=`which tnl-bindir`
 
 if test x${TNL_TEST} = x;
@@ -72,14 +82,6 @@ then
     echo "Add the following to your .bashrc file:"
     echo ""
     
-    PREFIX=${HOME}/local
-    for option in "$@"
-    do
-        case $option in
-            --prefix=*                     ) PREFIX="${option#*=}" ;;
-        esac
-    done
-
     echo "if test x\${PATH} = x;"
     echo "then"
     echo "   PATH=${PREFIX}/bin"
@@ -94,6 +96,36 @@ then
     echo "fi"
     echo "export PATH"
     echo "export LD_LIBRARY_PATH"
+fi
+
+if test ${BUILD_RELEASE} = "yes";
+then
+    BUILD_PREFIX="Release"
+fi
+if test ${BUILD_DEBUG} = "yes";
+then
+    BUILD_PREFIX="Debug"
+fi
+
+
+
+if test x`python src/Tools/python-path-test.py 2> /dev/null` != xOK;
+then
+    source ${BUILD_PREFIX}/python-version    
+    echo ""
+    echo "WARNING !!!"
+    echo ""
+    echo "Your system does not see TNL Python modules which were installed right now."
+    echo "You need to add it to your system variables PATH and LD_LIBRARY_PATH."
+    echo "Add the following to your .bashrc file:"
+    echo ""
+    echo "if test x\${PYTHONPATH} = x;"
+    echo "then"
+    echo "   PYTHONPATH=${PREFIX}/lib/python${PYTHON_VERSION}"
+    echo "else"
+    echo "   PYTHONPATH=\${PYTHONPATH}:${PREFIX}/lib/python${PYTHON_VERSION}"
+    echo "fi" 
+    echo "export PYTHONPATH" 
 fi
 
 exit 0

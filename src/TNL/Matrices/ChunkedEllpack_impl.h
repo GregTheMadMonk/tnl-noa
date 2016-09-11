@@ -12,7 +12,7 @@
 
 #include <TNL/Matrices/ChunkedEllpack.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/core/mfuncs.h>
+#include <TNL/Math.h>
 
 #ifdef HAVE_CUDA
 #include <cuda.h>

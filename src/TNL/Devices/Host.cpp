@@ -18,7 +18,6 @@
 namespace TNL {
 namespace Devices {   
 
-
 bool Host::ompEnabled( true );
 int Host::maxThreadsCount( -1 );
 
@@ -87,8 +86,11 @@ void Host::configSetup( Config::ConfigDescription& config, const String& prefix 
 bool Host::setup( const Config::ParameterContainer& parameters,
                   const String& prefix )
 {
-   ompEnabled = parameters.getParameter< bool >( prefix + "omp-enabled" );
-   maxThreadsCount = parameters.getParameter< int >( prefix + "omp-max-threads" );
+   if( parameters.getParameter< bool >( prefix + "omp-enabled" ) )
+      enableOMP();
+   else
+      disableOMP();
+   setMaxThreadsCount( parameters.getParameter< int >( prefix + "omp-max-threads" ) );
    return true;
 }
 

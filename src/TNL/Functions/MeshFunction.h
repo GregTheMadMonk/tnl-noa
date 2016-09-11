@@ -62,7 +62,8 @@ class MeshFunction :
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" );
 
-      bool setup( const Config::ParameterContainer& parameters,
+      bool setup( const MeshPointer& meshPointer,
+                  const Config::ParameterContainer& parameters,
                   const String& prefix = "" );
  
       void bind( ThisType& meshFunction );

@@ -26,6 +26,7 @@ class Logger
 
    void writeSeparator();
 
+   // TODO: move this to Devices::Host
    bool writeSystemInformation( const Config::ParameterContainer& parameters );
  
 

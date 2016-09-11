@@ -12,7 +12,7 @@
 #define TNLDISTRIBUTEDGRID_H_
 
 #include <TNL/Object.h>
-#include <TNL/core/tnlCommunicator.h>
+#include <TNL/tnlCommunicator.h>
 
 template< int Dimensions,
           typename GridType,

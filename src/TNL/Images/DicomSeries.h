@@ -17,7 +17,7 @@
 #include <TNL/Containers/Array.h>
 #include <TNL/List.h>
 #include <TNL/String.h>
-#include <TNL/core/param-types.h>
+#include <TNL/param-types.h>
 #include <TNL/Images//Image.h>
 #include <TNL/Images//DicomHeader.h>
 #include <TNL/Images//RegionOfInterest.h>

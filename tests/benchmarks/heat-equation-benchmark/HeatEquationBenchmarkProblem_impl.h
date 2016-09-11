@@ -1,7 +1,7 @@
 #ifndef HeatEquationBenchmarkPROBLEM_IMPL_H_
 #define HeatEquationBenchmarkPROBLEM_IMPL_H_
 
-#include <TNL/core/mfilename.h>
+#include <TNL/FileName.h>
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
@@ -63,9 +63,11 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const Config::ParameterContainer& parameters )
+setup( const MeshPointer& meshPointer,
+       const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( parameters, "boundary-conditions-" ) ||
+   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
       return false;
    this->cudaKernelType = parameters.getParameter< String >( "cuda-kernel-type" );
@@ -169,9 +171,14 @@ makeSnapshot( const RealType& time,
    this->bindDofs( meshPointer, dofsPointer );
    MeshFunctionType u;
    u.bind( meshPointer, *dofsPointer );
-   String fileName;
-   FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! u.save( fileName ) )
+   
+   FileName fileName;
+   fileName.setFileNameBase( "u-" );
+   fileName.setExtension( "tnl" );
+   fileName.setIndex( step );
+
+   //FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
+   if( ! u.save( fileName.getFileName() ) )
       return false;
    return true;
 }

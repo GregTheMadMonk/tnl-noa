@@ -12,7 +12,7 @@
 
 #include <TNL/Matrices/SlicedEllpack.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/core/mfuncs.h>
+#include <TNL/Math.h>
 
 namespace TNL {
 namespace Matrices {   
