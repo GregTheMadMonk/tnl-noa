@@ -122,13 +122,15 @@ template< typename Mesh,
           typename Real >
 bool
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
-setup( const Config::ParameterContainer& parameters,
+setup( const MeshPointer& meshPointer,
+       const Config::ParameterContainer& parameters,
        const String& prefix )
 {
+   this->setMesh( meshPointer );
    if( parameters.checkParameter( prefix + "file" ) )
    {
       String fileName = parameters.getParameter< String >( prefix + "file" );
-      if( ! this->data.load( fileName ) )
+      if( ! this->load( fileName ) )
          return false;
    }
    return true;
@@ -416,9 +418,10 @@ load( File& file )
       return false;
    if( ! this->data.load( file ) )
       return false;
-   if( this->data.getSize() != this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimensions > >() )
+   const IndexType meshSize = this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimensions > >();
+   if( this->data.getSize() != meshSize )
    {      
-      std::cerr << "Size of the data loaded to the mesh function does not fit with the mesh size." << std::endl;
+      std::cerr << "Size of the data loaded to the mesh function (" << this->data.getSize() << ") does not fit with the mesh size (" << meshSize << ")." << std::endl;
       return false;
    }
    return true;

@@ -56,10 +56,12 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const Config::ParameterContainer& parameters )
+setup( const MeshPointer& meshPointer,
+       const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
-   if( ! this->boundaryConditionsPointer->setup( parameters, "boundary-conditions-" ) ||
-       ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
+   if( ! this->boundaryConditionsPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
+       ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
    return true;
 }

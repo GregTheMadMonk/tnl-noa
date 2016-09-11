@@ -13,6 +13,7 @@
 #include <TNL/Operators/Operator.h>
 #include <TNL/Functions/Analytic/Constant.h>
 #include <TNL/Functions/FunctionAdapter.h>
+#include <TNL/Functions/MeshFunction.h>
 
 namespace TNL {
 namespace Operators {
@@ -24,11 +25,11 @@ template< typename Mesh,
           typename Index = typename Mesh::IndexType >
 class DirichletBoundaryConditions
 : public Operator< Mesh,
-                      Functions::MeshBoundaryDomain,
-                      MeshEntitiesDimensions,
-                      MeshEntitiesDimensions,
-                      Real,
-                      Index >
+                   Functions::MeshBoundaryDomain,
+                   MeshEntitiesDimensions,
+                   MeshEntitiesDimensions,
+                   Real,
+                   Index >
 {
    public:
 
@@ -37,7 +38,8 @@ class DirichletBoundaryConditions
       typedef Real RealType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef Index IndexType;
-
+      
+      typedef SharedPointer< Mesh > MeshPointer;
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::VertexType VertexType;
 
@@ -49,10 +51,11 @@ class DirichletBoundaryConditions
          Function::configSetup( config, prefix );
       }
  
-      bool setup( const Config::ParameterContainer& parameters,
+      bool setup( const MeshPointer& meshPointer,
+                  const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         return this->function.setup( parameters, prefix );
+         return Functions::FunctionAdapter< MeshType, FunctionType >::template setup< MeshPointer >( this->function, meshPointer, parameters, prefix );
       }
 
       void setFunction( const Function& function )
@@ -115,6 +118,7 @@ class DirichletBoundaryConditions
  
    //static_assert( Device::DeviceType == Function::Device::DeviceType );
 };
+
 
 template< typename Mesh,
           typename Function >

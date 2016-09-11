@@ -34,18 +34,35 @@ class NeumannBoundaryConditionsBase
    public:
       
       typedef Function FunctionType;
-
-      static void configSetup( Config::ConfigDescription& config,
-                               const String& prefix = "" );
-
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" );
-
-      void setFunction( const FunctionType& function );
       
-      FunctionType& getFunction();
+      static void configSetup( const Config::ConfigDescription& config,
+                               const String& prefix = "" )
+      {
+         Function::configSetup( config, prefix );
+      }
+      
+      template< typename MeshPointer >
+      bool setup( const MeshPointer& meshPointer, 
+                  const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
+      {
+         return Functions::FunctionAdapter< typename MeshPointer::ObjectType, FunctionType >::setup( this->function, meshPointer, parameters, prefix );
+      }
 
-      const FunctionType& getFunction() const;
+      void setFunction( const FunctionType& function )
+      {
+         this->function = function;
+      }
+      
+      FunctionType& getFunction()
+      {
+         return this->function;
+      }
+
+      const FunctionType& getFunction() const
+      {
+         return this->function;
+      };
 
    protected:
 

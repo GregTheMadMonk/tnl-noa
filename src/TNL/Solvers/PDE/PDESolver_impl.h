@@ -69,6 +69,16 @@ setup( const Config::ParameterContainer& parameters,
   std::cout << " [ OK ] " << std::endl;
 
    /****
+    * Setup the problem
+    */
+  
+   if( ! problem->setup( this->meshPointer, parameters, prefix ) )
+   {
+      std::cerr << "The problem initiation failed!" << std::endl;
+      return false;
+   }
+
+   /****
     * Set DOFs (degrees of freedom)
     */
    Assert( problem->getDofs( this->meshPointer ) != 0, );

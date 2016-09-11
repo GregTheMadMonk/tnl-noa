@@ -39,9 +39,11 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 HeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator  >::
-setup( const Config::ParameterContainer& parameters )
+setup( const MeshPointer& meshPointer,
+       const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( parameters ) ||
+   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix ) ||
        ! this->rightHandSidePointer->setup( parameters ) )
       return false;
    return true;

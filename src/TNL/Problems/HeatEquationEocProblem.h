@@ -30,10 +30,16 @@ template< typename Mesh,
 class HeatEquationEocProblem : public HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
 {
    public:
+      
+      typedef HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator > BaseType;
+      
+      using typename BaseType::MeshPointer;
 
       static String getTypeStatic();
 
-      bool setup( const Config::ParameterContainer& parameters );
+      bool setup( const MeshPointer& meshPointer,
+                  const Config::ParameterContainer& parameters,
+                  const String& prefix );
 };
 
 } // namespace Problems

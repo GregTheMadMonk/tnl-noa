@@ -63,9 +63,11 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const Config::ParameterContainer& parameters )
+setup( const MeshPointer& meshPointer,
+       const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( parameters, "boundary-conditions-" ) ||
+   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
       return false;
    this->cudaKernelType = parameters.getParameter< String >( "cuda-kernel-type" );
