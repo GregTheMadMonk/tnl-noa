@@ -70,6 +70,8 @@ class Merson : public ExplicitSolver< Problem >
     * This controls the accuracy of the solver
     */
    RealType adaptivity;
+   
+   Containers::Vector< RealType, DeviceType, IndexType > openMPErrorEstimateBuffer;
 };
 
 } // namespace ODE
