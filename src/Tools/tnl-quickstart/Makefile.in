@@ -26,16 +26,16 @@ endif
 all: $(TARGET)
 
 clean:
-\t rm -f *.o
-\n
+	rm -f *.o
+
 dist: $(DIST)
-\t tar zcvf $(TARGET).tgz $(DIST)
+	tar zcvf $(TARGET).tgz $(DIST)
 
 $(TARGET): $(OBJECTS)
-\t$(CXX) -o $@ $< $(LDFLAGS)
+	$(CXX) -o $@ $< $(LDFLAGS)
 
 %.o: %.cpp
-\t $(CXX) $(CPPFLAGS) $(CXX_FLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CXX_FLAGS) -c -o $@ $<
 
 %.o: %.cu
-\t $(CXX) $(CPPFLAGS) $(CXX_FLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(CXX_FLAGS) -c -o $@ $<

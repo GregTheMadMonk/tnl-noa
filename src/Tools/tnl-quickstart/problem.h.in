@@ -12,7 +12,7 @@ class {problemBaseName}Problem:
                          typename DifferentialOperator::RealType,
                          typename Mesh::DeviceType,
                          typename DifferentialOperator::IndexType >
-{
+{{
    public:
 
       typedef typename DifferentialOperator::RealType RealType;
@@ -75,6 +75,6 @@ class {problemBaseName}Problem:
       DifferentialOperator differentialOperator;
       BoundaryCondition boundaryCondition;
       RightHandSide rightHandSide;
-};
+}};
 
 #include "{problemBaseName}Problem_impl.h"

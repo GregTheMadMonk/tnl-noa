@@ -1,0 +1,44 @@
+#pragma once
+
+#include <TNL/Solvers/BuildConfigTags.h>
+
+class {problemBaseName}BuildConfigTag{{}};
+
+/****
+ * Turn off support for float and long double.
+ */
+template<> struct tnlConfigTagReal< {problemBaseName}BuildConfigTag, float > {{ enum {{ enabled = false }}; }};
+template<> struct tnlConfigTagReal< {problemBaseName}BuildConfigTag, long double > {{ enum {{ enabled = false }}; }};
+
+/****
+ * Turn off support for short int and long int indexing.
+ */
+template<> struct tnlConfigTagIndex< {problemBaseName}BuildConfigTag, short int >{{ enum {{ enabled = false }}; }};
+template<> struct tnlConfigTagIndex< {problemBaseName}BuildConfigTag, long int >{{ enum {{ enabled = false }}; }};
+    
+/****
+ * With how many dimensions may have the problem to be solved...
+ */    
+template< int Dimensions > struct tnlConfigTagDimensions< {problemName}BuildConfigTag, Dimensions >{{ enum {{ enabled = ( Dimensions == 1 ) }}; }};
+
+/****
+ * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
+ */
+template< int Dimensions, typename Real, typename Device, typename Index >
+   struct tnlConfigTagMesh< {problemBaseName}BuildConfigTag, tnlGrid< Dimensions, Real, Device, Index > >
+      {{ enum {{ enabled = tnlConfigTagDimensions< {problemBaseName}BuildConfigTag, Dimensions >::enabled  &&
+                         tnlConfigTagReal< {problemBaseName}BuildConfigTag, Real >::enabled &&
+                         tnlConfigTagDevice< {problemBaseName}BuildConfigTag, Device >::enabled &&
+                         tnlConfigTagIndex< {problemBaseName}BuildConfigTag, Index >::enabled }}; }};
+
+/****
+ * Please, chose your preferred time discretization  here.
+ */
+template<> struct tnlConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, tnlExplicitTimeDiscretisationTag >{{ enum {{ enabled = true }}; }};
+template<> struct tnlConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, tnlSemiImplicitTimeDiscretisationTag >{{ enum {{ enabled = true }}; }};
+template<> struct tnlConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, tnlImplicitTimeDiscretisationTag >{{ enum {{ enabled = false }}; }};
+
+/****
+ * Only the Runge-Kutta-Merson solver is enabled by default.
+ */
+template<> struct tnlConfigTagExplicitSolver< {problemBaseName}BuildConfigTag, tnlExplicitEulerSolverTag >{{ enum {{ enabled = false }}; }};

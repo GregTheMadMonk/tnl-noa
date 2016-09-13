@@ -1,1 +1,2 @@
-tnl_install_prefix = ${CMAKE_INSTALL_PREFIX}
+tnl_install_prefix = "@CMAKE_INSTALL_PREFIX@"
+tnl_version = "@tnlVersion@"

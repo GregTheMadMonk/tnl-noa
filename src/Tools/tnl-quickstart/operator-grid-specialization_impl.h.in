@@ -1,0 +1,94 @@
+/****
+ * {meshDimensions}D problem
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+tnlString
+{operatorName}< tnlGrid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
+getType()
+{{
+   return TNL::String( "{operatorName}< " ) +
+          MeshType::getType() + ", " +
+          ::getType< Real >() + ", " +
+          ::getType< Index >() + " >";
+}}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >    
+template< typename MeshFunction, typename MeshEntity >
+__cuda_callable__
+Real
+{operatorName}< tnlGrid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
+operator()( const MeshFunction& u,
+            const MeshEntity& entity,
+            const Real& time ) const
+{{
+   /****
+    * Implement your explicit form of the differential operator here.
+    * The following example is the Laplace operator approximated 
+    * by the Finite difference method.
+    */  
+   static_assert( MeshEntity::entityDimensions == {meshDimensions}, "Wrong mesh entity dimensions." ); \n' )
+   static_assert( MeshFunction::getEntitiesDimensions() == {meshDimensions}, "Wrong preimage function" ); \n' )
+   const typename MeshEntity::template NeighbourEntities< {meshDimensions} >& neighbourEntities = entity.getNeighbourEntities(); 
+
+{explicitScheme}
+}}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >        
+template< typename MeshEntity >
+__cuda_callable__
+Index
+{operatorName}< tnlGrid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
+getLinearSystemRowLength( const MeshType& mesh,
+                          const IndexType& index,
+                          const MeshEntity& entity ) const
+{{
+   /****
+    * Return a number of non-zero elements in a line (associated with given grid element) of
+    * the linear system.
+    * The following example is the Laplace operator approximated 
+    * by the Finite difference method.
+    */
+
+   return 2*Dimensions + 1;
+}}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   template< typename MeshEntity, typename Vector, typename MatrixRow >       
+__cuda_callable__        
+void
+{operatorName}< tnlGrid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
+updateLinearSystem( const RealType& time,
+                    const RealType& tau,
+                    const MeshType& mesh,
+                    const IndexType& index,
+                    const MeshEntity& entity,
+                    const MeshFunctionType& u,
+                    Vector& b,
+                    MatrixRow& matrixRow ) const
+{{
+   /****
+    * Setup the non-zero elements of the linear system here.
+    * The following example is the Laplace operator approximated 
+    * by the Finite difference method.
+    */    
+
+   const typename MeshEntity::template NeighbourEntities< " + dimensions + " >& neighbourEntities = entity.getNeighbourEntities(); 
+
+{semiimplicitScheme}
+}}
