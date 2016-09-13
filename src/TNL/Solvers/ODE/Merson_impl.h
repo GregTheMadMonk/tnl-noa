@@ -14,6 +14,8 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ParameterContainer.h>
 
+#include "Merson.h"
+
 namespace TNL {
 namespace Solvers {
 namespace ODE {   
@@ -85,6 +87,10 @@ template< typename Problem >
 Merson< Problem > :: Merson()
 : adaptivity( 0.00001 )
 {
+   if( std::is_same< DeviceType, Devices::Host >::value )
+   {
+      this->openMPErrorEstimateBuffer.setSize( std::max( 1, Devices::Host::getMaxThreadsCount() ) );
+   }
 };
 
 template< typename Problem >
@@ -378,16 +384,23 @@ typename Problem :: RealType Merson< Problem > :: computeError( const RealType t
    RealType eps( 0.0 ), maxEps( 0.0 );
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
-      // TODO: implement OpenMP support
-      for( IndexType i = 0; i < size; i ++  )
+      this->openMPErrorEstimateBuffer.setValue( 0.0 );
+#pragma omp parallel if( Devices::Host::isOMPEnabled() )
       {
-         RealType err = ( RealType ) ( tau / 3.0 *
-                              abs( 0.2 * _k1[ i ] +
-                                  -0.9 * _k3[ i ] +
-                                   0.8 * _k4[ i ] +
-                                  -0.1 * _k5[ i ] ) );
-         eps = max( eps, err );
+         RealType localEps( 0.0 );
+#pragma omp for
+         for( IndexType i = 0; i < size; i ++  )
+         {
+            RealType err = ( RealType ) ( tau / 3.0 *
+                                 abs( 0.2 * _k1[ i ] +
+                                     -0.9 * _k3[ i ] +
+                                      0.8 * _k4[ i ] +
+                                     -0.1 * _k5[ i ] ) );
+            localEps = max( localEps, err );
+         }
+         this->openMPErrorEstimateBuffer[ Devices::Host::getThreadIdx() ] = localEps;
       }
+      eps = this->openMPErrorEstimateBuffer.max();
    }
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
