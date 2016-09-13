@@ -27,19 +27,18 @@ void
 GridTraverser< Meshes::Grid< 1, Real, Devices::Host, Index > >::
 processEntities(
    const GridPointer& gridPointer,
-   const CoordinatesType& begin,
-   const CoordinatesType& end,
+   const CoordinatesType begin,
+   const CoordinatesType end,
    const CoordinatesType& entityOrientation,
    const CoordinatesType& entityBasis,
    UserData& userData )
-{
-
-   
-   GridEntity entity( *gridPointer );
-   entity.setOrientation( entityOrientation );
-   entity.setBasis( entityBasis );
+{   
    if( processOnlyBoundaryEntities )
    {
+      GridEntity entity( *gridPointer );
+      entity.setOrientation( entityOrientation );
+      entity.setBasis( entityBasis );
+
       entity.getCoordinates() = begin;
       entity.refresh();
       EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
@@ -49,13 +48,28 @@ processEntities(
    }
    else
    {
-      for( entity.getCoordinates().x() = begin.x();
+      //TODO: This does not work with gcc-5.4 and older, should work at gcc 6.x
+      /*for( entity.getCoordinates().x() = begin.x();
            entity.getCoordinates().x() <= end.x();
            entity.getCoordinates().x() ++ )
       {
          entity.refresh();
          EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+      }*/ 
+#pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
+      {
+         GridEntity entity( *gridPointer );
+         entity.setOrientation( entityOrientation );
+         entity.setBasis( entityBasis );
+#pragma omp for 
+         for( IndexType x = begin.x(); x<= end.x(); x ++ )
+         {
+            entity.getCoordinates().x() = x;
+            entity.refresh();
+            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+         }      
       }
+      
    }
 }
 
@@ -221,12 +235,12 @@ processEntities(
    const CoordinatesType& entityBasis,
    UserData& userData )
 {
-   GridEntity entity( *gridPointer );
-   entity.setOrientation( entityOrientation );
-   entity.setBasis( entityBasis );
-
    if( processOnlyBoundaryEntities )
    {
+      GridEntity entity( *gridPointer );
+      entity.setOrientation( entityOrientation );
+      entity.setBasis( entityBasis );
+      
       if( YOrthogonalBoundary )
          for( entity.getCoordinates().x() = begin.x();
               entity.getCoordinates().x() <= end.x();
@@ -254,7 +268,7 @@ processEntities(
    }
    else
    {
-      //TODO: This does not work with gcc-5.4 and older
+      //TODO: This does not work with gcc-5.4 and older, should work at gcc 6.x
 /*#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )
       for( entity.getCoordinates().y() = begin.y();
            entity.getCoordinates().y() <= end.y();
@@ -266,15 +280,21 @@ processEntities(
             entity.refresh();
             EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
          }*/
-#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )
-      for( IndexType y = begin.y(); y <= end.y(); y ++ )
-         for( IndexType x = begin.x(); x<= end.x(); x ++ )
-         {
-            entity.getCoordinates().x() = x;
-            entity.getCoordinates().y() = y;
-            entity.refresh();
-            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-         }      
+#pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
+      {
+         GridEntity entity( *gridPointer );
+         entity.setOrientation( entityOrientation );
+         entity.setBasis( entityBasis );
+#pragma omp for 
+         for( IndexType y = begin.y(); y <= end.y(); y ++ )
+            for( IndexType x = begin.x(); x<= end.x(); x ++ )
+            {
+               entity.getCoordinates().x() = x;
+               entity.getCoordinates().y() = y;
+               entity.refresh();
+               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+            }      
+      }
    }
 }
 
@@ -406,12 +426,12 @@ processEntities(
    const CoordinatesType& entityBasis,
    UserData& userData )
 {
-   GridEntity entity( *gridPointer );
-   entity.setOrientation( entityOrientation );
-   entity.setBasis( entityBasis );
-
    if( processOnlyBoundaryEntities )
    {
+      GridEntity entity( *gridPointer );
+      entity.setOrientation( entityOrientation );
+      entity.setBasis( entityBasis );
+      
       if( ZOrthogonalBoundary )
          for( entity.getCoordinates().y() = begin.y();
               entity.getCoordinates().y() <= end.y();
@@ -460,7 +480,7 @@ processEntities(
    }
    else
    {
-      // TODO: this does not work with gcc-5.4 and older
+      // TODO: this does not work with gcc-5.4 and older, should work at gcc 6.x
 /*#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )      
       for( entity.getCoordinates().z() = begin.z();
            entity.getCoordinates().z() <= end.z();
@@ -475,18 +495,23 @@ processEntities(
                entity.refresh();
                EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
             }*/
-#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )
-      for( IndexType z = begin.y(); z <= end.y(); z ++ )
-         for( IndexType y = begin.y(); y <= end.y(); y ++ )
-            for( IndexType x = begin.x(); x<= end.x(); x ++ )
-            {
-               entity.getCoordinates().x() = x;
-               entity.getCoordinates().y() = y;
-               entity.getCoordinates().z() = z;
-               entity.refresh();
-               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-         }      
-      
+#pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
+      {
+         GridEntity entity( *gridPointer );
+         entity.setOrientation( entityOrientation );
+         entity.setBasis( entityBasis );         
+#pragma omp for
+         for( IndexType z = begin.y(); z <= end.y(); z ++ )
+            for( IndexType y = begin.y(); y <= end.y(); y ++ )
+               for( IndexType x = begin.x(); x<= end.x(); x ++ )
+               {
+                  entity.getCoordinates().x() = x;
+                  entity.getCoordinates().y() = y;
+                  entity.getCoordinates().z() = z;
+                  entity.refresh();
+                  EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+            }
+      }      
    }
 }
 

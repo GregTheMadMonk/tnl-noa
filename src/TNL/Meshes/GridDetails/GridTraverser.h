@@ -46,8 +46,8 @@ class GridTraverser< Meshes::Grid< 1, Real, Devices::Host, Index > >
       static void
       processEntities(
          const GridPointer& gridPointer,
-         const CoordinatesType& begin,
-         const CoordinatesType& end,
+         const CoordinatesType begin,
+         const CoordinatesType end,
          const CoordinatesType& entityOrientation,
          const CoordinatesType& entityBasis,
          UserData& userData );
