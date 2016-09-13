@@ -109,7 +109,7 @@ fi
 
 
 PYTHON_TEST="`python src/Tools/python-path-test.py 2> /dev/null`"
-echo "xxxxx ${PYTHON_TEST} xxxxx\n"
+#echo "xxxxx ${PYTHON_TEST} xxxxx\n"
 if test PYTHON_TEST != "xOK";
 then
     source ${BUILD_PREFIX}/python-version    

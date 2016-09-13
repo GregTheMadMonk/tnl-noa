@@ -203,9 +203,9 @@ class GridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, Dimensions, C
  
       __cuda_callable__ inline
       GridEntity( const GridType& grid,
-                     const CoordinatesType& coordinates,
-                     const EntityOrientationType& orientation = EntityOrientationType( 0 ),
-                     const EntityBasisType& basis = EntityBasisType( 1 ) );
+                  const CoordinatesType& coordinates,
+                  const EntityOrientationType& orientation = EntityOrientationType( 0 ),
+                  const EntityBasisType& basis = EntityBasisType( 1 ) );
  
       __cuda_callable__ inline
       const CoordinatesType& getCoordinates() const;
