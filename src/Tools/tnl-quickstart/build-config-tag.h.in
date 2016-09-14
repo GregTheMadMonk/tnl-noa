@@ -25,7 +25,7 @@ template<> struct ConfigTagIndex< {problemBaseName}BuildConfigTag, long int >{{ 
 template< int Dimensions > struct ConfigTagDimensions< {problemBaseName}BuildConfigTag, Dimensions >{{ enum {{ enabled = ( Dimensions == 1 ) }}; }};
 
 /****
- * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
+ * Use of Meshes::Grid is enabled for allowed dimensions and Real, Device and Index types.
  */
 template< int Dimensions, typename Real, typename Device, typename Index >
    struct ConfigTagMesh< {problemBaseName}BuildConfigTag, Meshes::Grid< Dimensions, Real, Device, Index > >
