@@ -132,11 +132,11 @@ class tnlUserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
           */
          const String& timeDiscretisation = parameters. getParameter< String>( "time-discretisation" );
          if( timeDiscretisation == "explicit" )
-            return SolverStarterTimeDiscretisationSetter< Problem, tnlExplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
+            return SolverStarterTimeDiscretisationSetter< Problem, ExplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
          if( timeDiscretisation == "semi-implicit" )
-            return SolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
+            return SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
          if( timeDiscretisation == "implicit" )
-            return SolverStarterTimeDiscretisationSetter< Problem, tnlImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
+            return SolverStarterTimeDiscretisationSetter< Problem, ImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
          std::cerr << "Uknown time discretisation: " << timeDiscretisation << "." << std::endl;
          return false;
       }
@@ -162,7 +162,7 @@ class SolverStarterTimeDiscretisationSetter< Problem, TimeDiscretisation, Config
 
 template< typename Problem,
           typename ConfigTag >
-class SolverStarterTimeDiscretisationSetter< Problem, tnlExplicitTimeDiscretisationTag, ConfigTag, true >
+class SolverStarterTimeDiscretisationSetter< Problem, ExplicitTimeDiscretisationTag, ConfigTag, true >
 {
    public:
       static bool run( Problem& problem,
@@ -176,16 +176,16 @@ class SolverStarterTimeDiscretisationSetter< Problem, tnlExplicitTimeDiscretisat
             return false;
          }
          if( discreteSolver == "euler" )
-            return SolverStarterExplicitSolverSetter< Problem, tnlExplicitEulerSolverTag, ConfigTag >::run( problem, parameters );
+            return SolverStarterExplicitSolverSetter< Problem, ExplicitEulerSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "merson" )
-            return SolverStarterExplicitSolverSetter< Problem, tnlExplicitMersonSolverTag, ConfigTag >::run( problem, parameters );
+            return SolverStarterExplicitSolverSetter< Problem, ExplicitMersonSolverTag, ConfigTag >::run( problem, parameters );
          return false;
       }
 };
 
 template< typename Problem,
           typename ConfigTag >
-class SolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDiscretisationTag, ConfigTag, true >
+class SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisationTag, ConfigTag, true >
 {
    public:
       static bool run( Problem& problem,
@@ -216,18 +216,18 @@ class SolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDiscret
 #endif
 
          if( discreteSolver == "sor" )
-            return SolverStarterPreconditionerSetter< Problem, tnlSemiImplicitSORSolverTag, ConfigTag >::run( problem, parameters );
+            return SolverStarterPreconditionerSetter< Problem, SemiImplicitSORSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "cg" )
-            return SolverStarterPreconditionerSetter< Problem, tnlSemiImplicitCGSolverTag, ConfigTag >::run( problem, parameters );
+            return SolverStarterPreconditionerSetter< Problem, SemiImplicitCGSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "bicgstab" )
-            return SolverStarterPreconditionerSetter< Problem, tnlSemiImplicitBICGStabSolverTag, ConfigTag >::run( problem, parameters );
+            return SolverStarterPreconditionerSetter< Problem, SemiImplicitBICGStabSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "gmres" )
-            return SolverStarterPreconditionerSetter< Problem, tnlSemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
+            return SolverStarterPreconditionerSetter< Problem, SemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "tfqmr" )
-            return SolverStarterPreconditionerSetter< Problem, tnlSemiImplicitTFQMRSolverTag, ConfigTag >::run( problem, parameters );
+            return SolverStarterPreconditionerSetter< Problem, SemiImplicitTFQMRSolverTag, ConfigTag >::run( problem, parameters );
 #ifdef HAVE_UMFPACK
          if( discreteSolver == "umfpack" )
-            return SolverStarterPreconditionerSetter< Problem, tnlSemiImplicitUmfpackSolverTag, ConfigTag >::run( problem, parameters );
+            return SolverStarterPreconditionerSetter< Problem, SemiImplicitUmfpackSolverTag, ConfigTag >::run( problem, parameters );
 #endif
          return false;
       }
@@ -235,7 +235,7 @@ class SolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDiscret
 
 template< typename Problem,
           typename ConfigTag >
-class SolverStarterTimeDiscretisationSetter< Problem, tnlImplicitTimeDiscretisationTag, ConfigTag, true >
+class SolverStarterTimeDiscretisationSetter< Problem, ImplicitTimeDiscretisationTag, ConfigTag, true >
 {
    public:
       static bool run( Problem& problem,

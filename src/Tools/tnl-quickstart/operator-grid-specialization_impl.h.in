@@ -6,14 +6,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
-{operatorName}< tnlGrid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
+TNL::String
+{operatorName}< TNL::Meshes::Grid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {{
    return TNL::String( "{operatorName}< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+          TNL::getType< Real >() + ", " +
+          TNL::getType< Index >() + " >";
 }}
 
 template< typename MeshReal,
@@ -24,7 +24,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-{operatorName}< tnlGrid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
+{operatorName}< TNL::Meshes::Grid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -34,8 +34,8 @@ operator()( const MeshFunction& u,
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */  
-   static_assert( MeshEntity::entityDimensions == {meshDimensions}, "Wrong mesh entity dimensions." ); \n' )
-   static_assert( MeshFunction::getEntitiesDimensions() == {meshDimensions}, "Wrong preimage function" ); \n' )
+   static_assert( MeshEntity::entityDimensions == {meshDimensions}, "Wrong mesh entity dimensions." );
+   static_assert( MeshFunction::getEntitiesDimensions() == {meshDimensions}, "Wrong preimage function" );
    const typename MeshEntity::template NeighbourEntities< {meshDimensions} >& neighbourEntities = entity.getNeighbourEntities(); 
 
 {explicitScheme}
@@ -49,7 +49,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-{operatorName}< tnlGrid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
+{operatorName}< TNL::Meshes::Grid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -72,7 +72,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >       
 __cuda_callable__        
 void
-{operatorName}< tnlGrid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
+{operatorName}< TNL::Meshes::Grid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,

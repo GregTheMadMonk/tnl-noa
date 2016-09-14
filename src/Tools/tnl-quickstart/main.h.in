@@ -59,8 +59,8 @@ class {problemBaseName}Setter
       static bool run( const Config::ParameterContainer & parameters )
       {{
           enum {{ Dimensions = MeshType::getMeshDimensions() }};
-          typedef " + operatorName + "< MeshType, Real, Index > ApproximateOperator;
-          typedef " + problemBaseName + "Rhs< MeshType, Real > RightHandSide;    
+          typedef {operatorName}< MeshType, Real, Index > ApproximateOperator;
+          typedef {problemBaseName}Rhs< MeshType, Real > RightHandSide;    
           typedef Containers::StaticVector < MeshType::getMeshDimensions(), Real > Vertex;
 
          /****
@@ -93,7 +93,7 @@ class {problemBaseName}Setter
              return solverStarter.template run< Problem >( parameters );
           }}
           typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
-          typedef " + problemBaseName + "Problem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+          typedef {problemBaseName}Problem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
           SolverStarter solverStarter;
           return solverStarter.template run< Problem >( parameters );
       }}

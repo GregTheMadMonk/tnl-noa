@@ -4,41 +4,47 @@
 
 class {problemBaseName}BuildConfigTag{{}};
 
+
+namespace TNL {{
+namespace Solvers {{
 /****
  * Turn off support for float and long double.
  */
-template<> struct tnlConfigTagReal< {problemBaseName}BuildConfigTag, float > {{ enum {{ enabled = false }}; }};
-template<> struct tnlConfigTagReal< {problemBaseName}BuildConfigTag, long double > {{ enum {{ enabled = false }}; }};
+template<> struct ConfigTagReal< {problemBaseName}BuildConfigTag, float > {{ enum {{ enabled = false }}; }};
+template<> struct ConfigTagReal< {problemBaseName}BuildConfigTag, long double > {{ enum {{ enabled = false }}; }};
 
 /****
  * Turn off support for short int and long int indexing.
  */
-template<> struct tnlConfigTagIndex< {problemBaseName}BuildConfigTag, short int >{{ enum {{ enabled = false }}; }};
-template<> struct tnlConfigTagIndex< {problemBaseName}BuildConfigTag, long int >{{ enum {{ enabled = false }}; }};
+template<> struct ConfigTagIndex< {problemBaseName}BuildConfigTag, short int >{{ enum {{ enabled = false }}; }};
+template<> struct ConfigTagIndex< {problemBaseName}BuildConfigTag, long int >{{ enum {{ enabled = false }}; }};
     
 /****
  * With how many dimensions may have the problem to be solved...
  */    
-template< int Dimensions > struct tnlConfigTagDimensions< {problemName}BuildConfigTag, Dimensions >{{ enum {{ enabled = ( Dimensions == 1 ) }}; }};
+template< int Dimensions > struct ConfigTagDimensions< {problemBaseName}BuildConfigTag, Dimensions >{{ enum {{ enabled = ( Dimensions == 1 ) }}; }};
 
 /****
  * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
  */
 template< int Dimensions, typename Real, typename Device, typename Index >
-   struct tnlConfigTagMesh< {problemBaseName}BuildConfigTag, tnlGrid< Dimensions, Real, Device, Index > >
-      {{ enum {{ enabled = tnlConfigTagDimensions< {problemBaseName}BuildConfigTag, Dimensions >::enabled  &&
-                         tnlConfigTagReal< {problemBaseName}BuildConfigTag, Real >::enabled &&
-                         tnlConfigTagDevice< {problemBaseName}BuildConfigTag, Device >::enabled &&
-                         tnlConfigTagIndex< {problemBaseName}BuildConfigTag, Index >::enabled }}; }};
+   struct ConfigTagMesh< {problemBaseName}BuildConfigTag, Meshes::Grid< Dimensions, Real, Device, Index > >
+      {{ enum {{ enabled = ConfigTagDimensions< {problemBaseName}BuildConfigTag, Dimensions >::enabled  &&
+                         ConfigTagReal< {problemBaseName}BuildConfigTag, Real >::enabled &&
+                         ConfigTagDevice< {problemBaseName}BuildConfigTag, Device >::enabled &&
+                         ConfigTagIndex< {problemBaseName}BuildConfigTag, Index >::enabled }}; }};
 
 /****
  * Please, chose your preferred time discretization  here.
  */
-template<> struct tnlConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, tnlExplicitTimeDiscretisationTag >{{ enum {{ enabled = true }}; }};
-template<> struct tnlConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, tnlSemiImplicitTimeDiscretisationTag >{{ enum {{ enabled = true }}; }};
-template<> struct tnlConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, tnlImplicitTimeDiscretisationTag >{{ enum {{ enabled = false }}; }};
+template<> struct ConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, tnlExplicitTimeDiscretisationTag >{{ enum {{ enabled = true }}; }};
+template<> struct ConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, tnlSemiImplicitTimeDiscretisationTag >{{ enum {{ enabled = true }}; }};
+template<> struct ConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, tnlImplicitTimeDiscretisationTag >{{ enum {{ enabled = false }}; }};
 
 /****
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
-template<> struct tnlConfigTagExplicitSolver< {problemBaseName}BuildConfigTag, tnlExplicitEulerSolverTag >{{ enum {{ enabled = false }}; }};
+template<> struct ConfigTagExplicitSolver< {problemBaseName}BuildConfigTag, tnlExplicitEulerSolverTag >{{ enum {{ enabled = false }}; }};
+
+}} // namespace Solvers
+}} // namespace TNL

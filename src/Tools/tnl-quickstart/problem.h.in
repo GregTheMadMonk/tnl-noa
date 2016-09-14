@@ -8,7 +8,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 class {problemBaseName}Problem:
-   public tnlPDEProblem< Mesh,
+   public TNL::Problems::PDEProblem< Mesh,
                          typename DifferentialOperator::RealType,
                          typename Mesh::DeviceType,
                          typename DifferentialOperator::IndexType >

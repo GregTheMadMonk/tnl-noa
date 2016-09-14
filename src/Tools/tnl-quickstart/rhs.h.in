@@ -4,15 +4,15 @@
 
 template< typename Mesh, typename Real >
 class {problemBaseName}Rhs
-  : public tnlDomain< Mesh::meshDimensions, MeshDomain >
+  : public TNL::Functions::Domain< Mesh::meshDimensions, TNL::Functions::MeshDomain >
 {{
    public:
 
       typedef Mesh MeshType;
       typedef Real RealType;
 
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" )
+      bool setup( const TNL::Config::ParameterContainer& parameters,
+                  const TNL::String& prefix = "" )
       {{
          return true;
       }}

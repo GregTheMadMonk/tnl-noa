@@ -4,28 +4,29 @@
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-String
+TNL::String
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {{
-   return String( "{problemBaseName}Problem< " ) + Mesh :: getTypeStatic() + " >";
+   return TNL::String( "{problemBaseName}Problem< " ) + Mesh :: getTypeStatic() + " >";
 }}
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-String 
+TNL::String 
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {{    
-   return String( "{problemName}" );
+   return TNL::String( "{problemName}" );
 }}
 
 template< typename Mesh,
@@ -48,7 +49,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::        
-setup( const tnlParameterContainer& parameters )
+setup( const TNL::Config::ParameterContainer& parameters )
 {{
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
@@ -88,16 +89,16 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::            
-setInitialCondition( const tnlParameterContainer& parameters,    
+setInitialCondition( const TNL::Config::ParameterContainer& parameters,    
                      const MeshType& mesh,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
 {{
-   const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
+   const TNL::String& initialConditionFile = parameters.getParameter< TNL::String >( "initial-condition" );
    TNL::Functions::MeshFunction< Mesh > u( mesh, dofs );
    if( ! u.boundLoad( initialConditionFile ) )
    {{
-      cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
+      std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
    }}
    return true; 
@@ -141,9 +142,9 @@ makeSnapshot( const RealType& time,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData )
 {{
-   cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
+   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
-   FileName fileName;
+   TNL::FileName fileName;
    fileName.setFileNameBase( "u-" );
    fileName.setExtension( "tnl" );
    fileName.setIndex( step );
@@ -185,7 +186,7 @@ getExplicitRHS( const RealType& time,
                                                            this->rightHandSide,
                                                            u,
                                                            fu );
-   tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
+   TNL::Solvers::PDE::BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
    boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
       this->boundaryCondition, 
       time + tau,
@@ -212,7 +213,7 @@ assemblyLinearSystem( const RealType& time,
                              DifferentialOperator,
                              BoundaryCondition,
                              RightHandSide,
-                             tnlBackwardTimeDiscretisation,
+                             TNL::Solvers::PDE::BackwardTimeDiscretisation,
                              Matrix,
                              DofVectorType > systemAssembler;
 
