@@ -49,7 +49,9 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::        
-setup( const TNL::Config::ParameterContainer& parameters )
+setup( const MeshPointer& meshPointer,
+       const TNL::Config::ParameterContainer& parameters,
+       const TNL::String& prefix )
 {{
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
@@ -63,7 +65,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 typename {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
     {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::            
-getDofs( const MeshType& mesh ) const
+getDofs( const MeshPointer& mesh ) const
 {{
    /****
     * Return number of  DOFs (degrees of freedom) i.e. number
@@ -78,8 +80,8 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::            
-bindDofs( const MeshType& mesh,
-          DofVectorType& dofVector )    
+bindDofs( const MeshPointer& mesh,
+          DofVectorPointer& dofVector )    
 {{
 }}
 
@@ -90,7 +92,7 @@ template< typename Mesh,
 bool
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::            
 setInitialCondition( const TNL::Config::ParameterContainer& parameters,    
-                     const MeshType& mesh,
+                     const MeshPointer& mesh,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
 {{
@@ -111,7 +113,7 @@ template< typename Mesh,
    template< typename Matrix >
 bool
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::                
-setupLinearSystem( const MeshType& mesh,
+setupLinearSystem( const MeshPointer& mesh,
                    Matrix& matrix )
 {{
    const IndexType dofs = this->getDofs( mesh );
@@ -138,7 +140,7 @@ bool
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::                    
 makeSnapshot( const RealType& time,
               const IndexType& step,
-              const MeshType& mesh,
+              const MeshPointer& mesh,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData )
 {{
@@ -161,7 +163,7 @@ void
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::                    
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
-                const MeshType& mesh,
+                const MeshPointer& mesh,
                 DofVectorType& _u,
                 DofVectorType& _fu,
                 MeshDependentDataType& meshDependentData )
@@ -202,7 +204,7 @@ void
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::                
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const MeshType& mesh,
+                      const MeshPointer& mesh,
                       DofVectorType& _u,
                       Matrix& matrix,
                       DofVectorType& b,

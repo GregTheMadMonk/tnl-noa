@@ -22,8 +22,11 @@ class {problemBaseName}Problem:
       typedef TNL::Problems::PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
 
       using typename BaseType::MeshType;
+      using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
+      using typename BaseType::DofVectorPointer;
       using typename BaseType::MeshDependentDataType;
+
 
       static TNL::String getTypeStatic();
 
@@ -32,31 +35,34 @@ class {problemBaseName}Problem:
       void writeProlog( TNL::Logger& logger,
                         const TNL::Config::ParameterContainer& parameters ) const;
 
-      bool setup( const TNL::Config::ParameterContainer& parameters );
+      bool setup( const MeshPointer& meshPointer,
+                  const TNL::Config::ParameterContainer& parameters,
+                  const TNL::String& prefix );
+
 
       bool setInitialCondition( const TNL::Config::ParameterContainer& parameters,
-                                const MeshType& mesh,
+                                const MeshPointer& mesh,
                                 DofVectorType& dofs,
                                 MeshDependentDataType& meshDependentData );
 
       template< typename Matrix >
-      bool setupLinearSystem( const MeshType& mesh,
+      bool setupLinearSystem( const MeshPointer& mesh,
                               Matrix& matrix );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
-                         const MeshType& mesh,
+                         const MeshPointer& mesh,
                          DofVectorType& dofs,
                          MeshDependentDataType& meshDependentData );
 
-      IndexType getDofs( const MeshType& mesh ) const;
+      IndexType getDofs( const MeshPointer& mesh ) const;
 
-      void bindDofs( const MeshType& mesh,
-                     DofVectorType& dofs );
+      void bindDofs( const MeshPointer& mesh,
+                     DofVectorPointer& dofs );
 
       void getExplicitRHS( const RealType& time,
                            const RealType& tau,
-                           const MeshType& mesh,
+                           const MeshPointer& mesh,
                            DofVectorType& _u,
                            DofVectorType& _fu,
                            MeshDependentDataType& meshDependentData );
@@ -64,7 +70,7 @@ class {problemBaseName}Problem:
       template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
-                                 const MeshType& mesh,
+                                 const MeshPointer& mesh,
                                  DofVectorType& dofs,
                                  Matrix& matrix,
                                  DofVectorType& rightHandSide,

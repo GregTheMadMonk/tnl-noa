@@ -30,7 +30,7 @@ class {problemBaseName}Config
       static void configSetup( Config::ConfigDescription& config )
       {{
          config.addDelimiter( "{problemName} settings:" );
-         config.addEntry< tnlString >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
+         config.addEntry< String >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
             config.addEntryEnum< String >( "dirichlet" );
             config.addEntryEnum< String >( "neumann" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
@@ -71,7 +71,7 @@ class {problemBaseName}Setter
           String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )
           {{
-             typedef Functions::Constant< Dimensions, Real > ConstantFunction;
+             typedef Functions::Analytic::Constant< Dimensions, Real > ConstantFunction;
              if( boundaryConditionsType == "dirichlet" )
              {{
                 typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;

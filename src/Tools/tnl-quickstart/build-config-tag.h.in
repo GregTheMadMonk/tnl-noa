@@ -37,14 +37,14 @@ template< int Dimensions, typename Real, typename Device, typename Index >
 /****
  * Please, chose your preferred time discretization  here.
  */
-template<> struct ConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, tnlExplicitTimeDiscretisationTag >{{ enum {{ enabled = true }}; }};
-template<> struct ConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, tnlSemiImplicitTimeDiscretisationTag >{{ enum {{ enabled = true }}; }};
-template<> struct ConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, tnlImplicitTimeDiscretisationTag >{{ enum {{ enabled = false }}; }};
+template<> struct ConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, ExplicitTimeDiscretisationTag >{{ enum {{ enabled = true }}; }};
+template<> struct ConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, SemiImplicitTimeDiscretisationTag >{{ enum {{ enabled = true }}; }};
+template<> struct ConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, ImplicitTimeDiscretisationTag >{{ enum {{ enabled = false }}; }};
 
 /****
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
-template<> struct ConfigTagExplicitSolver< {problemBaseName}BuildConfigTag, tnlExplicitEulerSolverTag >{{ enum {{ enabled = false }}; }};
+template<> struct ConfigTagExplicitSolver< {problemBaseName}BuildConfigTag, ExplicitEulerSolverTag >{{ enum {{ enabled = false }}; }};
 
 }} // namespace Solvers
 }} // namespace TNL
