@@ -22,20 +22,22 @@ template< typename MeshFunction,
    template< typename EntityType >
 void
 BoundaryConditionsSetter< MeshFunction, BoundaryConditions >::
-apply( const BoundaryConditions& boundaryConditions,
+apply( const BoundaryConditionsPointer& boundaryConditions,
        const RealType& time,
-       MeshFunction& u )
+       MeshFunctionPointer& u )
 {
-   if( std::is_same< DeviceType, Devices::Host >::value )
+   //if( std::is_same< DeviceType, Devices::Host >::value )
    {
-      TraverserUserData userData( time, boundaryConditions, u );
+      TraverserUserData userData( time,
+                                  boundaryConditions.template getData< DeviceType >(),
+                                  u.template modifyData< DeviceType >() );
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
-                                                    ( u.getMeshPointer(),
+                                                    ( u->getMeshPointer(),
                                                       userData );
    }
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
+   /*if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
       RealType* kernelTime = Devices::Cuda::passToDevice( time );
       BoundaryConditions* kernelBoundaryConditions = Devices::Cuda::passToDevice( boundaryConditions );
@@ -51,7 +53,7 @@ apply( const BoundaryConditions& boundaryConditions,
       Devices::Cuda::freeFromDevice( kernelBoundaryConditions );
       Devices::Cuda::freeFromDevice( kernelU );
       checkCudaDevice;
-   }
+   }*/
 }
 
 } // namespace PDE

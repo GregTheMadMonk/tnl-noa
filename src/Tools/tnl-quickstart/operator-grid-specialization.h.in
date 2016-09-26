@@ -30,14 +30,14 @@ class {operatorName}< TNL::Meshes::Grid< {meshDimensions}, MeshReal, Device, Mes
 
       template< typename MeshEntity, typename Vector, typename MatrixRow >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const MeshEntity& entity,
-                               const MeshFunctionType& u,
-                               Vector& b,
-                               MatrixRow& matrixRow ) const;
+      void setMatrixElements( const RealType& time,
+                              const RealType& tau,
+                              const MeshType& mesh,
+                              const IndexType& index,
+                              const MeshEntity& entity,
+                              const MeshFunctionType& u,
+                              Vector& b,
+                              MatrixRow& matrixRow ) const;
 }};
     
 

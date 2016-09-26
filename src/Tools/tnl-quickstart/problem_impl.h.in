@@ -53,8 +53,8 @@ setup( const MeshPointer& meshPointer,
        const TNL::Config::ParameterContainer& parameters,
        const TNL::String& prefix )
 {{
-   if( ! this->boundaryCondition.setup( meshPointer, parameters, "boundary-conditions-" ) ||
-       ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
+   if( ! this->boundaryCondition->setup( meshPointer, parameters, "boundary-conditions-" ) ||
+       ! this->rightHandSide->setup( parameters, "right-hand-side-" ) )
       return false;
    return true;
 }}
@@ -179,8 +179,8 @@ getExplicitRHS( const RealType& time,
 
    this->bindDofs( mesh, _u );
    TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   MeshFunctionType u( mesh, _u ); 
-   MeshFunctionType fu( mesh, _fu ); 
+   TNL::SharedPointer< MeshFunctionType > u( mesh, _u ); 
+   TNL::SharedPointer< MeshFunctionType > fu( mesh, _fu ); 
    explicitUpdater.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            this->differentialOperator,
@@ -219,7 +219,7 @@ assemblyLinearSystem( const RealType& time,
                              typename MatrixPointer::ObjectType,
                              DofVectorType > systemAssembler;
 
-   TNL::Functions::MeshFunction< Mesh > u( mesh, _u );
+   TNL::SharedPointer< TNL::Functions::MeshFunction< Mesh > > u( mesh, _u );
    systemAssembler.template assembly< typename Mesh::Cell >( time,
                                                              tau,
                                                              mesh,

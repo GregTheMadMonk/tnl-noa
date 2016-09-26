@@ -73,14 +73,14 @@ template< typename MeshReal,
 __cuda_callable__        
 void
 {operatorName}< TNL::Meshes::Grid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
-updateLinearSystem( const RealType& time,
-                    const RealType& tau,
-                    const MeshType& mesh,
-                    const IndexType& index,
-                    const MeshEntity& entity,
-                    const MeshFunctionType& u,
-                    Vector& b,
-                    MatrixRow& matrixRow ) const
+setMatrixElements( const RealType& time,
+                   const RealType& tau,
+                   const MeshType& mesh,
+                   const IndexType& index,
+                   const MeshEntity& entity,
+                   const MeshFunctionType& u,
+                   Vector& b,
+                   MatrixRow& matrixRow ) const
 {{
    /****
     * Setup the non-zero elements of the linear system here.

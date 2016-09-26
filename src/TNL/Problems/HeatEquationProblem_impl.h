@@ -227,11 +227,11 @@ getExplicitRHS( const RealType& time,
       this->rightHandSidePointer,
       this->uPointer,
       fuPointer );
-   /*BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
+   Solvers::PDE::BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
-      this->boundaryCondition,
+      this->boundaryConditionPointer,
       time + tau,
-      this->u );*/
+      this->uPointer );
    
    //fu.write( "fu.txt", "gnuplot" );
    //this->u.write( "u.txt", "gnuplot");
