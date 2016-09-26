@@ -28,16 +28,18 @@ class {operatorName}< TNL::Meshes::Grid< {meshDimensions}, MeshReal, Device, Mes
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
 
-      template< typename MeshEntity, typename Vector, typename MatrixRow >
+
+      template< typename PreimageFunction,
+                typename MeshEntity,
+                typename Matrix,
+                typename Vector >
       __cuda_callable__
-      void setMatrixElements( const RealType& time,
-                              const RealType& tau,
-                              const MeshType& mesh,
-                              const IndexType& index,
-                              const MeshEntity& entity,
-                              const MeshFunctionType& u,
-                              Vector& b,
-                              MatrixRow& matrixRow ) const;
+      inline void setMatrixElements( const PreimageFunction& u,
+                                     const MeshEntity& entity,
+                                     const RealType& time,
+                                     const RealType& tau,
+                                     Matrix& matrix,
+                                     Vector& b ) const;
 }};
     
 

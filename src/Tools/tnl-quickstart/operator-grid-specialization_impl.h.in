@@ -69,26 +69,31 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename MeshEntity, typename Vector, typename MatrixRow >       
-__cuda_callable__        
+   template< typename PreimageFunction,
+             typename MeshEntity,
+             typename Matrix,
+             typename Vector >
+__cuda_callable__
+inline
 void
 {operatorName}< TNL::Meshes::Grid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
-setMatrixElements( const RealType& time,
-                   const RealType& tau,
-                   const MeshType& mesh,
-                   const IndexType& index,
+setMatrixElements( const PreimageFunction& u,
                    const MeshEntity& entity,
-                   const MeshFunctionType& u,
-                   Vector& b,
-                   MatrixRow& matrixRow ) const
+                   const RealType& time,
+                   const RealType& tau,
+                   Matrix& matrix,
+                   Vector& b ) const
 {{
+   static_assert( MeshEntity::entityDimensions == {meshDimensions}, "Wrong mesh entity dimensions." );
+   static_assert( PreimageFunction::getEntitiesDimensions() == {meshDimensions}, "Wrong preimage function" );
+
    /****
     * Setup the non-zero elements of the linear system here.
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */    
-
-   const typename MeshEntity::template NeighbourEntities< " + dimensions + " >& neighbourEntities = entity.getNeighbourEntities(); 
-
+   const typename MeshEntity::template NeighbourEntities< {meshDimensions} >& neighbourEntities = entity.getNeighbourEntities();
+   const IndexType& index = entity.getIndex();
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
 {semiimplicitScheme}
 }}
