@@ -20,6 +20,9 @@ class {problemBaseName}Problem:
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef TNL::Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef TNL::Problems::PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef TNL::SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
+      typedef TNL::SharedPointer< BoundaryCondition > BoundaryConditionPointer;
+      typedef TNL::SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
@@ -42,17 +45,17 @@ class {problemBaseName}Problem:
 
       bool setInitialCondition( const TNL::Config::ParameterContainer& parameters,
                                 const MeshPointer& mesh,
-                                DofVectorType& dofs,
+                                DofVectorPointer& dofs,
                                 MeshDependentDataType& meshDependentData );
 
-      template< typename Matrix >
+      template< typename MatrixPointer >
       bool setupLinearSystem( const MeshPointer& mesh,
-                              Matrix& matrix );
+                              MatrixPointer& matrixPointer );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
                          const MeshPointer& mesh,
-                         DofVectorType& dofs,
+                         DofVectorPointer& dofs,
                          MeshDependentDataType& meshDependentData );
 
       IndexType getDofs( const MeshPointer& mesh ) const;
@@ -63,24 +66,24 @@ class {problemBaseName}Problem:
       void getExplicitRHS( const RealType& time,
                            const RealType& tau,
                            const MeshPointer& mesh,
-                           DofVectorType& _u,
-                           DofVectorType& _fu,
+                           DofVectorPointer& _u,
+                           DofVectorPointer& _fu,
                            MeshDependentDataType& meshDependentData );
 
-      template< typename Matrix >
+      template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
                                  const MeshPointer& mesh,
-                                 DofVectorType& dofs,
-                                 Matrix& matrix,
-                                 DofVectorType& rightHandSide,
+                                 DofVectorPointer& dofs,
+                                 MatrixPointer& matrixPointer,
+                                 DofVectorPointer& rightHandSide,
                                  MeshDependentDataType& meshDependentData );
 
    protected:
     
-      DifferentialOperator differentialOperator;
-      BoundaryCondition boundaryCondition;
-      RightHandSide rightHandSide;
+      DifferentialOperatorPointer differentialOperator;
+      BoundaryConditionPointer boundaryCondition;
+      RightHandSidePointer rightHandSide;
 }};
 
 #include "{problemBaseName}Problem_impl.h"
