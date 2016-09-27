@@ -215,14 +215,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       : pointer( 0 ), cuda_pointer( 0 ),
         counter( 0 ), last_sync_state( 0 )
       {
-         this->counter = new int( 1 );
-         this->pointer = &obj;
-         this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
-         if( ! this->cuda_pointer )
-            return;
-         this->last_sync_state = ::operator new( sizeof( Object ) );
-         this->set_last_sync_state();
-         Devices::Cuda::insertSmartPointer( this );
+         this->allocate( obj );
       }
 
       // this is needed only to avoid the default compiler-generated constructor
@@ -415,6 +408,21 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       }
 
    protected:
+
+      bool allocate( ObjectType& obj )
+      {
+         this->counter = new int( 1 );
+         if( ! this->counter )
+            return false;
+         this->pointer = &obj;
+         this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
+         if( ! this->cuda_pointer )
+            return false;
+         this->last_sync_state = ::operator new( sizeof( Object ) );
+         this->set_last_sync_state();
+         Devices::Cuda::insertSmartPointer( this );
+         return true;
+      }
 
       void set_last_sync_state()
       {

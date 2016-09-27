@@ -128,11 +128,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       : pointer( 0 ), cuda_pointer( 0 ),
         last_sync_state( 0 )
       {
-         this->pointer = new Object( args... );
-         this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
-         this->last_sync_state = ::operator new( sizeof( Object ) );
-         this->set_last_sync_state();
-         Devices::Cuda::insertSmartPointer( this );
+         this->allocate( args... );
       }
       
       const Object* operator->() const
@@ -186,10 +182,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       
       const ThisType& operator=( ThisType& ptr )
       {
-         if( this->pointer )
-            delete this->pointer;
-         if( this->cuda_pointer )
-            Devices::Cuda::freeFromDevice( this->cuda_pointer );
+         this->free();
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
          this->last_sync_state = ptr.last_sync_state;
@@ -223,16 +216,26 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
             
       ~UniquePointer()
       {
-         if( this->pointer )
-            delete this->pointer;
-         if( this->cuda_pointer )
-            Devices::Cuda::freeFromDevice( this->cuda_pointer );
-         if( this->last_sync_state )
-            ::operator delete( this->last_sync_state );
+         this->free();
          Devices::Cuda::removeSmartPointer( this );
       }
       
    protected:
+
+      template< typename... Args >
+      bool allocate( Args... args )
+      {
+         this->pointer = new Object( args... );
+         if( ! this->pointer )
+            return false;
+         this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
+         if( ! this->cuda_pointer )
+            return false;
+         this->last_sync_state = ::operator new( sizeof( Object ) );
+         this->set_last_sync_state();
+         Devices::Cuda::insertSmartPointer( this );
+         return true;
+      }
 
       void set_last_sync_state()
       {
@@ -242,6 +245,16 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       bool modified()
       {
          return std::memcmp( (void*) this->last_sync_state, (void*) this->pointer, sizeof( ObjectType ) ) != 0;
+      }
+
+      void free()
+      {
+         if( this->pointer )
+            delete this->pointer;
+         if( this->cuda_pointer )
+            Devices::Cuda::freeFromDevice( this->cuda_pointer );
+         if( this->last_sync_state )
+            ::operator delete( this->last_sync_state );
       }
       
       Object *pointer, *cuda_pointer;
