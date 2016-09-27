@@ -431,6 +431,8 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 
       bool modified()
       {
+         if( ! this->pointer || ! this->last_sync_state )
+            return false;
          return std::memcmp( (void*) this->last_sync_state, (void*) this->pointer, sizeof( ObjectType ) ) != 0;
       }
 

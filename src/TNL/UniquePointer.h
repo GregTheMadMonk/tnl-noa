@@ -246,6 +246,8 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       bool modified()
       {
+         if( ! this->pointer )
+            return false;
          return std::memcmp( (void*) (this->pointer + 1), (void*) this->pointer, sizeof( ObjectType ) ) != 0;
       }
 
