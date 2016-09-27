@@ -125,8 +125,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          
       template< typename... Args >
       UniquePointer( const Args... args )
-      : pointer( 0 ), cuda_pointer( 0 ),
-        last_sync_state( 0 )
+      : pointer( 0 ), cuda_pointer( 0 )
       {
          this->allocate( args... );
       }
@@ -185,10 +184,8 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          this->free();
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
-         this->last_sync_state = ptr.last_sync_state;
          ptr.pointer = nullptr;
          ptr.cuda_pointer = nullptr;
-         ptr.last_sync_state = nullptr;
          return *this;
       }
       
@@ -225,13 +222,18 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       template< typename... Args >
       bool allocate( Args... args )
       {
-         this->pointer = new Object( args... );
+         // Allocate space for two objects: the first one is the "real" object,
+         // the second is a "mirror" used to set last-sync state.
+         this->pointer = (Object*) ::operator new( 2 * sizeof( Object ) );
          if( ! this->pointer )
             return false;
+         // construct the object
+         new( (void*) this->pointer ) Object( args... );
+         // pass to device
          this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
          if( ! this->cuda_pointer )
             return false;
-         this->last_sync_state = ::operator new( sizeof( Object ) );
+         // set last-sync state
          this->set_last_sync_state();
          Devices::Cuda::insertSmartPointer( this );
          return true;
@@ -239,27 +241,26 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       void set_last_sync_state()
       {
-         std::memcpy( (void*) this->last_sync_state, (void*) this->pointer, sizeof( ObjectType ) );
+         std::memcpy( (void*) (this->pointer + 1), (void*) this->pointer, sizeof( ObjectType ) );
       }
 
       bool modified()
       {
-         return std::memcmp( (void*) this->last_sync_state, (void*) this->pointer, sizeof( ObjectType ) ) != 0;
+         return std::memcmp( (void*) (this->pointer + 1), (void*) this->pointer, sizeof( ObjectType ) ) != 0;
       }
 
       void free()
       {
-         if( this->pointer )
-            delete this->pointer;
+         if( this->pointer ) {
+            // call destructor on the "real" object, but not on the "mirror"
+            ( (Object*)this->pointer )->~Object();
+            ::operator delete( (void*) this->pointer );
+         }
          if( this->cuda_pointer )
             Devices::Cuda::freeFromDevice( this->cuda_pointer );
-         if( this->last_sync_state )
-            ::operator delete( this->last_sync_state );
       }
       
       Object *pointer, *cuda_pointer;
-      
-      void* last_sync_state;
 };
 
 } // namespace TNL
