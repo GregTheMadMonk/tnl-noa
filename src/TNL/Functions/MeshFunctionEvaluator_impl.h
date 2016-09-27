@@ -122,7 +122,7 @@ evaluateEntities( OutMeshFunctionPointer& meshFunction,
    SharedPointer< TraverserUserData, DeviceType >
       userData( &function.template getData< DeviceType >(),
                 time,
-                &meshFunction.template modifyData< DeviceType >(),
+                &meshFunction.template getData< DeviceType >(),
                 outFunctionMultiplicator,
                 inFunctionMultiplicator );
    Meshes::Traverser< MeshType, MeshEntityType > meshTraverser;

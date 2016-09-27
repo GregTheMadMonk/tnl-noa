@@ -57,8 +57,8 @@ assembly( const RealType& time,
                    &boundaryConditionsPointer.template getData< DeviceType >(),
                    &rightHandSidePointer.template getData< DeviceType >(),
                    &uPointer.template getData< DeviceType >(),
-                   &matrixPointer.template modifyData< DeviceType >(),
-                   &bPointer.template modifyData< DeviceType >() );
+                   &matrixPointer.template getData< DeviceType >(),
+                   &bPointer.template getData< DeviceType >() );
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
