@@ -16,6 +16,7 @@ class EulerPressureGetter
    public:
       
       typedef Mesh MeshType;
+      typedef typename MeshType::DeviceType DeviceType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
