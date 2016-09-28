@@ -49,8 +49,8 @@ update( const RealType& time,
                    &differentialOperatorPointer.template getData< DeviceType >(),
                    &boundaryConditionsPointer.template getData< DeviceType >(),
                    &rightHandSidePointer.template getData< DeviceType >(),
-                   &uPointer.template getData< DeviceType >(),
-                   &fuPointer.template getData< DeviceType >() );
+                   &uPointer.template modifyData< DeviceType >(),
+                   &fuPointer.template modifyData< DeviceType >() );
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >

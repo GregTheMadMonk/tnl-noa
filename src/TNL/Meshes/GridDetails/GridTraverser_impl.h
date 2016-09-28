@@ -173,7 +173,7 @@ processEntities(
       GridBoundaryTraverser1D< Real, Index, GridEntity, UserData, EntitiesProcessor >
             <<< cudaBlocks, cudaBlockSize >>>
             ( &gridPointer.template getData< Devices::Cuda >(),
-              &userDataPointer.template getData< Devices::Cuda >(),
+              &userDataPointer.template modifyData< Devices::Cuda >(),
               &kernelData.template getData< Devices::Cuda >() );
    }
    else
@@ -187,7 +187,7 @@ processEntities(
          GridTraverser1D< Real, Index, GridEntity, UserData, EntitiesProcessor >
             <<< cudaBlocks, cudaBlockSize >>>
             ( &gridPointer.template getData< Devices::Cuda >(),
-              &userDataPointer.template getData< Devices::Cuda >(),
+              &userDataPointer.template modifyData< Devices::Cuda >(),
               &kernelData.template getData< Devices::Cuda >(),
               gridXIdx );
    }
@@ -343,7 +343,7 @@ processEntities(
          GridTraverser2D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities >
             <<< cudaBlocks, cudaBlockSize >>>
             ( &gridPointer.template getData< Devices::Cuda >(),
-              &userDataPointer.template getData< Devices::Cuda >(),
+              &userDataPointer.template modifyData< Devices::Cuda >(),
               &kernelData.template getData< Devices::Cuda >(),
               gridXIdx,
               gridYIdx );
@@ -530,7 +530,7 @@ processEntities(
             GridTraverser3D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities >
                <<< cudaBlocks, cudaBlockSize >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
-                 &userDataPointer.template getData< Devices::Cuda >(),
+                 &userDataPointer.template modifyData< Devices::Cuda >(),
                  &kernelData.template getData< Devices::Cuda >(),
                  gridXIdx,
                  gridYIdx,

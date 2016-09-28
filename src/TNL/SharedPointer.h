@@ -199,7 +199,7 @@ class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
 
       template< typename Device = Devices::Host >
       __cuda_callable__
-      Object& getData()
+      Object& modifyData()
       {
          return *( this->pointer );
       }
@@ -430,7 +430,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
 
       template< typename Device = Devices::Host >
       __cuda_callable__
-      Object& getData()
+      Object& modifyData()
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
          Assert( this->pointer, );
