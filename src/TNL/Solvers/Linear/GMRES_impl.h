@@ -67,14 +67,14 @@ void GMRES< Matrix, Preconditioner > :: setRestarting( IndexType rest )
 
 template< typename Matrix,
           typename Preconditioner >
-void GMRES< Matrix, Preconditioner > :: setMatrix( MatrixPointer matrix )
+void GMRES< Matrix, Preconditioner > :: setMatrix( const MatrixPointer& matrix )
 {
    this->matrix = matrix;
 }
 
 template< typename Matrix,
           typename Preconditioner >
-void GMRES< Matrix, Preconditioner > :: setPreconditioner( PreconditionerPointer preconditioner )
+void GMRES< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerPointer& preconditioner )
 {
    this->preconditioner = preconditioner;
 }

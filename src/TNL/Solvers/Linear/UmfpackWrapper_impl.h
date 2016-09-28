@@ -34,14 +34,14 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Preconditioner >
 void UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
-setMatrix( MatrixPointer matrix )
+setMatrix( const MatrixPointer& matrix )
 {
     this -> matrix = matrix;
 }
 
 template< typename Preconditioner >
 void UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
-setPreconditioner( PreconditionerPointer preconditioner )
+setPreconditioner( const PreconditionerPointer& preconditioner )
 {
     this -> preconditioner = preconditioner;
 }

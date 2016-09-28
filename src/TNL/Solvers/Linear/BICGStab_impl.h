@@ -59,14 +59,14 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Matrix,
           typename Preconditioner >
-void BICGStab< Matrix, Preconditioner >::setMatrix( MatrixPointer matrix )
+void BICGStab< Matrix, Preconditioner >::setMatrix( const MatrixPointer& matrix )
 {
    this->matrix = matrix;
 }
 
 template< typename Matrix,
           typename Preconditioner >
-void BICGStab< Matrix, Preconditioner > :: setPreconditioner( PreconditionerPointer preconditioner )
+void BICGStab< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerPointer& preconditioner )
 {
    this->preconditioner = preconditioner;
 }

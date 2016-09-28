@@ -70,14 +70,14 @@ const typename SOR< Matrix, Preconditioner > :: RealType& SOR< Matrix, Precondit
 
 template< typename Matrix,
           typename Preconditioner >
-void SOR< Matrix, Preconditioner > :: setMatrix( MatrixPointer matrix )
+void SOR< Matrix, Preconditioner > :: setMatrix( const MatrixPointer& matrix )
 {
    this->matrix = matrix;
 }
 
 template< typename Matrix,
            typename Preconditioner >
-void SOR< Matrix, Preconditioner > :: setPreconditioner( PreconditionerPointer preconditioner )
+void SOR< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerPointer& preconditioner )
 {
    this->preconditioner = preconditioner;
 }

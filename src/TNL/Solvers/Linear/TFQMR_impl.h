@@ -52,14 +52,14 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Matrix,
           typename Preconditioner >
-void TFQMR< Matrix, Preconditioner > :: setMatrix( MatrixPointer matrix )
+void TFQMR< Matrix, Preconditioner > :: setMatrix( const MatrixPointer& matrix )
 {
    this->matrix = matrix;
 }
 
 template< typename Matrix,
           typename Preconditioner >
-void TFQMR< Matrix, Preconditioner > :: setPreconditioner( PreconditionerPointer preconditioner )
+void TFQMR< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerPointer& preconditioner )
 {
    this->preconditioner = preconditioner;
 }

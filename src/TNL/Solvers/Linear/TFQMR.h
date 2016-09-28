@@ -52,9 +52,9 @@ class TFQMR : public Object,
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
 
-   void setMatrix( MatrixPointer matrix );
+   void setMatrix( const MatrixPointer& matrix );
 
-   void setPreconditioner( PreconditionerPointer preconditioner );
+   void setPreconditioner( const PreconditionerPointer& preconditioner );
 
    template< typename VectorPointer,
              typename ResidueGetter = LinearResidueGetter< Matrix, typename VectorPointer::ObjectType >  >
