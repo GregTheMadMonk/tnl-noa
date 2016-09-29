@@ -124,43 +124,46 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       typedef UniquePointer< Object, Devices::Cuda > ThisType;
          
       template< typename... Args >
-      UniquePointer( const Args... args )
-      : pointer( 0 ), cuda_pointer( 0 )
+      explicit  UniquePointer( const Args... args )
+      : pd( nullptr ),
+        cuda_pointer( nullptr )
       {
          this->allocate( args... );
       }
       
       const Object* operator->() const
       {
-         return this->pointer;
+         return &this->pd->data;
       }
       
       Object* operator->()
       {
-         return this->pointer;
+         return &this->pd->data;
       }
       
       const Object& operator *() const
       {
-         return *( this->pointer );
+         return this->pd->data;
       }
       
       Object& operator *()
       {
-         return *( this->pointer );
+         return this->pd->data;
       }
       
       operator bool()
       {
-         return this->pointer;
+         return this->pd;
       }
 
       template< typename Device = Devices::Host >      
       const Object& getData() const
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
+         Assert( this->pd, );
+         Assert( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
-            return *( this->pointer );
+            return this->pd->data;
          if( std::is_same< Device, Devices::Cuda >::value )
             return *( this->cuda_pointer );            
       }
@@ -169,22 +172,20 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       Object& modifyData()
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
+         Assert( this->pd, );
+         Assert( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
-         {
-            return *( this->pointer );
-         }
+            return this->pd->data;
          if( std::is_same< Device, Devices::Cuda >::value )
-         {
             return *( this->cuda_pointer );
-         }
       }
       
       const ThisType& operator=( ThisType& ptr )
       {
          this->free();
-         this->pointer = ptr.pointer;
+         this->pd = ptr.pd;
          this->cuda_pointer = ptr.cuda_pointer;
-         ptr.pointer = nullptr;
+         ptr.pd = nullptr;
          ptr.cuda_pointer = nullptr;
          return *this;
       }
@@ -196,10 +197,12 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       
       bool synchronize()
       {
+         if( ! this->pd )
+            return true;
 #ifdef HAVE_CUDA
          if( this->modified() )
          {
-            cudaMemcpy( (void*) this->cuda_pointer, (void*) this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
+            cudaMemcpy( (void*) this->cuda_pointer, (void*) &this->pd->data, sizeof( Object ), cudaMemcpyHostToDevice );
             if( ! checkCudaDevice )
                return false;
             this->set_last_sync_state();
@@ -219,18 +222,25 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       
    protected:
 
+      struct PointerData
+      {
+         Object data;
+         char data_image[ sizeof(Object) ];
+
+         template< typename... Args >
+         explicit PointerData( Args... args )
+         : data( args... )
+         {}
+      };
+
       template< typename... Args >
       bool allocate( Args... args )
       {
-         // Allocate space for two objects: the first one is the "real" object,
-         // the second is a "mirror" used to set last-sync state.
-         this->pointer = (Object*) ::operator new( 2 * sizeof( Object ) );
-         if( ! this->pointer )
+         this->pd = new PointerData( args... );
+         if( ! this->pd )
             return false;
-         // construct the object
-         new( (void*) this->pointer ) Object( args... );
          // pass to device
-         this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
+         this->cuda_pointer = Devices::Cuda::passToDevice( this->pd->data );
          if( ! this->cuda_pointer )
             return false;
          // set last-sync state
@@ -241,28 +251,29 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       void set_last_sync_state()
       {
-         std::memcpy( (void*) (this->pointer + 1), (void*) this->pointer, sizeof( ObjectType ) );
+         Assert( this->pd, );
+         std::memcpy( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( ObjectType ) );
       }
 
       bool modified()
       {
-         if( ! this->pointer )
-            return false;
-         return std::memcmp( (void*) (this->pointer + 1), (void*) this->pointer, sizeof( ObjectType ) ) != 0;
+         Assert( this->pd, );
+         return std::memcmp( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( ObjectType ) ) != 0;
       }
 
       void free()
       {
-         if( this->pointer ) {
-            // call destructor on the "real" object, but not on the "mirror"
-            ( (Object*)this->pointer )->~Object();
-            ::operator delete( (void*) this->pointer );
-         }
+         if( this->pd )
+            delete this->pd;
          if( this->cuda_pointer )
             Devices::Cuda::freeFromDevice( this->cuda_pointer );
       }
       
-      Object *pointer, *cuda_pointer;
+      PointerData* pd;
+
+      // cuda_pointer can't be part of PointerData structure, since we would be
+      // unable to dereference this-pd on the device
+      Object* cuda_pointer;
 };
 
 } // namespace TNL
