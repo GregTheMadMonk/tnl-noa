@@ -11,11 +11,10 @@
 #pragma once
 
 #include <iomanip>
-#include <TNL/TimerCPU.h>
-#include <TNL/TimerRT.h>
+#include <TNL/Timer.h>
 #include <TNL/Experimental/Arithmetics/FlopsCounter.h>
 #include <TNL/Object.h>
-#include <TNL/Solvers/ODE/ODESolverMonitor.h>
+#include <TNL/Solvers/IterativeSolverMonitor.h>
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
@@ -36,7 +35,8 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
    typedef typename Problem :: RealType RealType;
    typedef typename Problem :: DeviceType DeviceType;
    typedef typename Problem :: IndexType IndexType;
-   typedef SharedPointer< DofVectorType, DeviceType >  DofVectorPointer;
+   typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+   typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
 
    ExplicitSolver();
 
@@ -68,17 +68,15 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
  
    void setVerbose( IndexType v );
 
-   void setTimerCPU( TimerCPU* timer );
+   void setTimer( Timer* timer );
 
-   void setTimerRT( TimerRT* timer );
-   
    virtual bool solve( DofVectorPointer& u ) = 0;
 
    void setTestingMode( bool testingMode );
 
    void setRefreshRate( const IndexType& refreshRate );
 
-   void setSolverMonitor( ODESolverMonitor< RealType, IndexType >& solverMonitor );
+   void setSolverMonitor( SolverMonitorType& solverMonitor );
 
    void refreshSolverMonitor();
 
@@ -105,15 +103,13 @@ protected:
 
    IndexType verbosity;
 
-   TimerCPU* cpu_timer;
+   Timer* timer;
  
-   TimerRT* rt_timer;
-
    bool testingMode;
 
    Problem* problem;
 
-   ODESolverMonitor< RealType, IndexType >* solverMonitor;
+   SolverMonitorType* solverMonitor;
 
    /****
     * Auxiliary array for the computation of the solver residue on CUDA device.

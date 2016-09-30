@@ -51,9 +51,9 @@ class ConfigDescription
                   const EntryType& defaultValue )
    {
       currentEntry = new ConfigEntry< EntryType >( name,
-                                                      description,
-                                                      false,
-                                                      defaultValue );
+                                                   description,
+                                                   false,
+                                                   defaultValue );
       entries. Append( currentEntry );
    }
 

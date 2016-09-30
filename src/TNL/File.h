@@ -34,7 +34,7 @@ enum tnlIOMode { tnlUndefinedMode = 0,
  * http://wiki.accelereyes.com/wiki/index.php/GPU_Memory_Transfer
  * Similar constant is defined in tnlLonegVectorCUDA
  */
-const int tnlFileGPUvsCPUTransferBufferSize = 5 * 2<<20;
+const size_t tnlFileGPUvsCPUTransferBufferSize = 5 * 2<<20;
 
 /*
  * This file is aimed mainly for the binary data. It supports transparent compression.
@@ -49,9 +49,9 @@ class File
 
    String fileName;
 
-   long int writtenElements;
+   size_t writtenElements;
 
-   long int readElements;
+   size_t readElements;
 
    public:
 

@@ -340,6 +340,7 @@ bool setTupleType( const MeshPointer& meshPointer,
             return setIndexType< MeshPointer, Containers::StaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
+   return false;
 }
 
 template< typename MeshPointer >

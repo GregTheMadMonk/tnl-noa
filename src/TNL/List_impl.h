@@ -246,12 +246,14 @@ void List< T >::DeepEraseAll()
 {
    iterator = first;
    DataElement< T >* tmp_it;
+   int i( 0 );
    while( iterator )
    {
       tmp_it = iterator;
       iterator = iterator -> Next();
       delete tmp_it -> Data();
       delete tmp_it;
+      i++;
    }
    first = last = 0;
    size = 0;

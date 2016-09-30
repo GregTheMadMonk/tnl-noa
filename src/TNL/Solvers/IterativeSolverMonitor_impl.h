@@ -11,18 +11,47 @@
 #pragma once
 
 #include <iomanip>
+#include <limits>
+
+#ifdef HAVE_SYS_IOCTL_H
+#include <sys/ioctl.h>
+#include <unistd.h>
+#endif
 
 namespace TNL {
 namespace Solvers {   
 
 template< typename Real, typename Index>
 IterativeSolverMonitor< Real, Index > :: IterativeSolverMonitor()
-: iterations( 0 ),
+: SolverMonitor(),
+  time( 0.0 ),
+  timeStep( 0.0 ),
+  stage( "" ),
+  iterations( 0 ),
   residue( 0 ),
-  refreshing( 0 ),
-  refreshRate( 1 ),
   verbose( 1 )
 {
+}
+
+template< typename Real, typename Index>
+void IterativeSolverMonitor< Real, Index > :: setTime( const RealType& time )
+{
+   this->time = time;
+}
+
+template< typename Real, typename Index>
+void IterativeSolverMonitor< Real, Index > :: setTimeStep( const RealType& timeStep )
+{
+   this->timeStep = timeStep;
+}
+
+template< typename Real, typename Index>
+void IterativeSolverMonitor< Real, Index > :: setStage( const std::string& stage )
+{
+   this->stage = stage;
+   // reset numerical items displayed after stage
+   this->iterations = 0;
+   this->residue = 0.0;
 }
 
 template< typename Real, typename Index>
@@ -32,21 +61,9 @@ void IterativeSolverMonitor< Real, Index > :: setIterations( const Index& iterat
 }
 
 template< typename Real, typename Index>
-const Index& IterativeSolverMonitor< Real, Index > :: getIterations() const
-{
-   return this->iterations;
-}
-
-template< typename Real, typename Index>
 void IterativeSolverMonitor< Real, Index > :: setResidue( const Real& residue )
 {
    this->residue = residue;
-}
-
-template< typename Real, typename Index>
-const Real& IterativeSolverMonitor< Real, Index > :: getResidue() const
-{
-   return this->residue;
 }
 
 template< typename Real, typename Index>
@@ -56,42 +73,59 @@ void IterativeSolverMonitor< Real, Index > :: setVerbose( const Index& verbose )
 }
 
 template< typename Real, typename Index>
-void IterativeSolverMonitor< Real, Index > :: setRefreshRate( const Index& refreshRate )
-{
-   this->refreshRate = refreshRate;
-}
-
-template< typename Real, typename Index>
 void IterativeSolverMonitor< Real, Index > :: refresh( bool force )
 {
-   if( this->verbose > 0 && ( force || this->getIterations() % this->refreshRate == 0 ) )
+//   if( this->verbose > 0 && ( force || this->getIterations() % this->refreshRate == 0 ) )
+   if( this->verbose > 0 && force )
    {
-     std::cout << " ITER:" << std::setw( 8 ) << this->getIterations()
-           << " RES:" << std::setprecision( 5 ) << std::setw( 12 ) << this->getResidue()
-           << " CPU: " << std::setw( 8 ) << this->getCPUTime()
-           << " ELA: " << std::setw( 8 ) << this->getRealTime()
-           << "   \r" << std::flush;
+      const int line_width = this->getLineWidth();
+      int free = line_width ? line_width : std::numeric_limits<int>::max();
+
+      std::cout << " ELA:" << std::setw( 8 ) << this->getElapsedTime()
+                << " T:"   << std::setw( 8 ) << this->time;
+      free -= 24;
+      if( this->timeStep > 0 ) {
+         std::cout << " TAU:" << std::setw( 5 ) << this->timeStep;
+         free -= 10;
+      }
+
+      if( this->stage.length() && free > 5 ) {
+         if( (int) this->stage.length() <= free - 2 ) {
+            std::cout << "  " << this->stage;
+            free -= ( 2 + this->stage.length() );
+         }
+         else {
+            std::cout << "  " << this->stage.substr( 0, free - 5 ) << "...";
+            free = 0;
+         }
+      }
+
+      if( this->iterations > 0 && free >= 14 ) {
+         std::cout << " ITER:" << std::setw( 8 ) << this->iterations;
+         free -= 14;
+      }
+      if( this->residue && free >= 17 ) {
+         std::cout << " RES:" << std::setprecision( 5 ) << std::setw( 12 ) << this->residue;
+         free -= 17;
+      }
+
+      // fill the rest of the line with spaces to clear previous content
+      while( line_width && free-- > 0 )
+         std::cout << " ";
+      std::cout << "\r" << std::flush;
    }
-   this->refreshing ++;
 }
 
 template< typename Real, typename Index>
-void IterativeSolverMonitor< Real, Index > :: resetTimers()
+int IterativeSolverMonitor< Real, Index > :: getLineWidth()
 {
-   cpuTimer.reset();
-   rtTimer.reset();
-}
-
-template< typename Real, typename Index>
-double IterativeSolverMonitor< Real, Index > :: getCPUTime()
-{
-   return cpuTimer.getTime();
-}
-
-template< typename Real, typename Index>
-double IterativeSolverMonitor< Real, Index > :: getRealTime()
-{
-   return rtTimer.getTime();
+#ifdef HAVE_SYS_IOCTL_H
+   struct winsize w;
+   ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+   return w.ws_col;
+#else
+   return 0;
+#endif
 }
 
 } // namespace Solvers

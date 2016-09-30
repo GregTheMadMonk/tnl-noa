@@ -105,7 +105,7 @@ class MeshBuilder
          for( GlobalIndexType i = 0; i < this->points.getSize(); i++ )
             if (! this->pointsSet[ i ] )
                return false;
-            return true;
+         return true;
       }
 
       PointArrayType points;

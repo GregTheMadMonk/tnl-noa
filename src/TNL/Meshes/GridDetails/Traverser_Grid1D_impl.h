@@ -27,7 +27,7 @@ template< typename Real,
 void
 Traverser< Meshes::Grid< 1, Real, Device, Index >, GridEntity, 1 >::
 processBoundaryEntities( const GridPointer& gridPointer,
-                         UserData& userData ) const
+                         SharedPointer< UserData, DeviceType >& userDataPointer ) const
 {
    /****
     * Boundary cells
@@ -40,7 +40,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
       gridPointer->getDimensions() - CoordinatesType( 1 ),
       CoordinatesType(),
       CoordinatesType(),
-      userData );
+      userDataPointer );
 }
 
 template< typename Real,
@@ -52,7 +52,7 @@ template< typename Real,
 void
 Traverser< Meshes::Grid< 1, Real, Device, Index >, GridEntity, 1 >::
 processInteriorEntities( const GridPointer& gridPointer,
-                         UserData& userData ) const
+                         SharedPointer< UserData, DeviceType >& userDataPointer ) const
 {
    /****
     * Interior cells
@@ -65,7 +65,7 @@ processInteriorEntities( const GridPointer& gridPointer,
       gridPointer->getDimensions() - CoordinatesType( 2 ),
       CoordinatesType(),
       CoordinatesType(),
-      userData );
+      userDataPointer );
 }
 
 template< typename Real,
@@ -78,7 +78,7 @@ void
 Traverser< Meshes::Grid< 1, Real, Device, Index >, GridEntity, 1 >::
 processAllEntities(
    const GridPointer& gridPointer,
-   UserData& userData ) const
+   SharedPointer< UserData, DeviceType >& userDataPointer ) const
 {
    /****
     * All cells
@@ -91,7 +91,7 @@ processAllEntities(
       gridPointer->getDimensions() - CoordinatesType( 1 ),
       CoordinatesType(),
       CoordinatesType(),
-      userData );
+      userDataPointer );
 }
 
 /****
@@ -106,7 +106,7 @@ template< typename Real,
 void
 Traverser< Meshes::Grid< 1, Real, Device, Index >, GridEntity, 0 >::
 processBoundaryEntities( const GridPointer& gridPointer,
-                         UserData& userData ) const
+                         SharedPointer< UserData, DeviceType >& userDataPointer ) const
 {
    /****
     * Boundary vertices
@@ -119,7 +119,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
       gridPointer->getDimensions(),
       CoordinatesType(),
       CoordinatesType(),
-      userData );
+      userDataPointer );
 }
 
 template< typename Real,
@@ -131,7 +131,7 @@ template< typename Real,
 void
 Traverser< Meshes::Grid< 1, Real, Device, Index >, GridEntity, 0 >::
 processInteriorEntities( const GridPointer& gridPointer,
-                         UserData& userData ) const
+                         SharedPointer< UserData, DeviceType >& userDataPointer ) const
 {
    /****
     * Interior vertices
@@ -144,7 +144,7 @@ processInteriorEntities( const GridPointer& gridPointer,
       gridPointer->getDimensions() - CoordinatesType( 1 ),
       CoordinatesType(),
       CoordinatesType(),
-      userData );
+      userDataPointer );
 }
 
 template< typename Real,
@@ -157,7 +157,7 @@ void
 Traverser< Meshes::Grid< 1, Real, Device, Index >, GridEntity, 0 >::
 processAllEntities(
    const GridPointer& gridPointer,
-   UserData& userData ) const
+   SharedPointer< UserData, DeviceType >& userDataPointer ) const
 {
    /****
     * All vertices
@@ -170,7 +170,7 @@ processAllEntities(
       gridPointer->getDimensions(),
       CoordinatesType(),
       CoordinatesType(),
-      userData );
+      userDataPointer );
 }
 
 } // namespace Meshes

@@ -44,6 +44,7 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
+      using typename BaseType::MeshDependentDataPointer;
 
       static String getTypeStatic();
 
@@ -57,7 +58,7 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
       bool setInitialCondition( const Config::ParameterContainer& parameters,
                                 const MeshType& mesh,
                                 DofVectorType& dofs,
-                                MeshDependentDataType& meshDependentData );
+                                MeshDependentDataPointer& meshDependentData );
 
       template< typename Matrix >
       bool setupLinearSystem( const MeshType& mesh,
@@ -67,7 +68,7 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
                          const IndexType& step,
                          const MeshType& mesh,
                          DofVectorType& dofs,
-                         MeshDependentDataType& meshDependentData );
+                         MeshDependentDataPointer& meshDependentData );
 
       IndexType getDofs( const MeshType& mesh ) const;
 
@@ -79,7 +80,7 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
                            const MeshType& mesh,
                            DofVectorType& _u,
                            DofVectorType& _fu,
-			   MeshDependentDataType& meshDependentData );
+                           MeshDependentDataPointer& meshDependentData );
 
       template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,
@@ -88,7 +89,7 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
                                  DofVectorType& dofs,
                                  Matrix& matrix,
                                  DofVectorType& rightHandSide,
-                                 MeshDependentDataType& meshDependentData );
+                                 MeshDependentDataPointer& meshDependentData );
 
 
       protected:

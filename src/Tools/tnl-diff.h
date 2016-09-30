@@ -300,6 +300,7 @@ bool computeDifference( const MeshPointer& meshPointer, const String& objectType
    if( objectType == "Containers::Vector" ||
        objectType == "tnlVector" || objectType == "tnlSharedVector" )   // TODO: remove deprecated type name
       return computeDifferenceOfVectors< MeshPointer, Element, Real, Index >( meshPointer, parameters );
+   return false;
 }
 
 
@@ -379,6 +380,7 @@ bool setTupleType( const MeshPointer& meshPointer,
             return setIndexType< MeshPointer, Containers::StaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
+   return false;
 }
 
 template< typename MeshPointer >
@@ -444,21 +446,22 @@ bool processFiles( const Config::ParameterContainer& parameters )
       }
 
    String objectType;
-   if( ! getObjectType( inputFiles[ 0 ], objectType ) )
+   if( ! getObjectType( inputFiles[ 0 ], objectType ) ) {
        std::cerr << "unknown object ... SKIPPING!" << std::endl;
-   else
-   {
-      if( verbose )
-        std::cout << objectType << " detected ... ";
-
-      List< String > parsedObjectType;
-      if( ! parseObjectType( objectType, parsedObjectType ) )
-      {
-         std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
-         return false;
-      }
-      setElementType< MeshPointer >( meshPointer, inputFiles[ 0 ], parsedObjectType, parameters );
+       return false;
    }
+
+   if( verbose )
+     std::cout << objectType << " detected ... ";
+
+   List< String > parsedObjectType;
+   if( ! parseObjectType( objectType, parsedObjectType ) )
+   {
+      std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
+      return false;
+   }
+   setElementType< MeshPointer >( meshPointer, inputFiles[ 0 ], parsedObjectType, parameters );
+   return true;
 }
 
 #endif /* TNL_DIFF_H_ */

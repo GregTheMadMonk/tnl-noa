@@ -265,7 +265,7 @@ writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid )
                  PNG_FILTER_TYPE_DEFAULT );
    png_init_io( this->png_ptr, this->file );
    png_write_info( png_ptr, info_ptr );
- 
+   return true;
 #else
    std::cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << std::endl;
    return false;

@@ -18,13 +18,12 @@ template< typename Problem >
 ExplicitSolver< Problem >::
 ExplicitSolver()
 :  time( 0.0 ),
+   stopTime( 0.0 ),
    tau( 0.0 ),
    maxTau( DBL_MAX ),
-   stopTime( 0.0 ),
    solver_comm( MPI_COMM_WORLD ),
    verbosity( 0 ),
-   cpu_timer( &defaultCPUTimer ),
-   rt_timer( &defaultRTTimer ),
+   timer( &defaultTimer ),
    testingMode( false ),
    problem( 0 ),
    solverMonitor( 0 )
@@ -46,6 +45,7 @@ ExplicitSolver< Problem >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
+   this->setVerbose( parameters.getParameter< bool >( "verbose" ) );
    return IterativeSolver< typename Problem::RealType, typename Problem::IndexType >::setup( parameters, prefix );
 }
 
@@ -142,23 +142,15 @@ setVerbose( IndexType v )
 template< class Problem >
 void
 ExplicitSolver< Problem >::
-setTimerCPU( TimerCPU* timer )
+setTimer( Timer* timer )
 {
-   this->cpu_timer = timer;
+   this->timer = timer;
 };
 
 template< class Problem >
 void
 ExplicitSolver< Problem >::
-setTimerRT( TimerRT* timer )
-{
-   this->rt_timer = timer;
-};
-
-template< class Problem >
-void
-ExplicitSolver< Problem >::
-setSolverMonitor( ODESolverMonitor< RealType, IndexType >& solverMonitor )
+setSolverMonitor( SolverMonitorType& solverMonitor )
 {
    this->solverMonitor = &solverMonitor;
 }

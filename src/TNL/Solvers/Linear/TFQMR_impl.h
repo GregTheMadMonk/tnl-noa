@@ -17,8 +17,7 @@ namespace Linear {
 template< typename Matrix,
           typename Preconditioner >
 TFQMR< Matrix, Preconditioner > :: TFQMR()
-: size( 0 ),
-  preconditioner( 0 )
+: size( 0 )
 {
 }
 
@@ -53,27 +52,23 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Matrix,
           typename Preconditioner >
-void TFQMR< Matrix, Preconditioner > :: setMatrix( MatrixPointer& matrix )
+void TFQMR< Matrix, Preconditioner > :: setMatrix( const MatrixPointer& matrix )
 {
    this->matrix = matrix;
 }
 
 template< typename Matrix,
-           typename Preconditioner >
-void TFQMR< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
+          typename Preconditioner >
+void TFQMR< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerPointer& preconditioner )
 {
-   this->preconditioner = &preconditioner;
+   this->preconditioner = preconditioner;
 }
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename VectorPointer, typename ResidueGetter >
-bool TFQMR< Matrix, Preconditioner >::solve( const VectorPointer& bPtr, VectorPointer& xPtr )
+   template< typename Vector, typename ResidueGetter >
+bool TFQMR< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 {
-   typedef typename VectorPointer::ObjectType VectorType;
-   const VectorType& b = *bPtr;
-   VectorType& x = *xPtr;
-   
    if( ! this->setSize( matrix -> getRows() ) ) return false;
 
    RealType tau, theta, eta, rho, alpha, b_norm, w_norm;

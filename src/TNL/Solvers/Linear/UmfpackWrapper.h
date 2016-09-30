@@ -33,13 +33,13 @@ struct is_csr_matrix< CSR< Real, Device, Index > >
 
 template< typename Matrix,
           typename Preconditioner = Dummy< typename Matrix :: RealType,
-                                                            typename Matrix :: DeviceType,
-                                                            typename Matrix :: IndexType> >
+                                           typename Matrix :: DeviceType,
+                                           typename Matrix :: IndexType> >
 class UmfpackWrapper
     : public Object,
       // just to ensure the same interface as other linear solvers
       public IterativeSolver< typename Matrix::RealType,
-                                 typename Matrix::IndexType >
+                              typename Matrix::IndexType >
 {
 public:
     typedef typename Matrix :: RealType RealType;
@@ -47,6 +47,8 @@ public:
     typedef typename Matrix :: DeviceType DeviceType;
     typedef Matrix MatrixType;
     typedef Preconditioner PreconditionerType;
+    typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
+    typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
 
     UmfpackWrapper()
     {
@@ -62,27 +64,26 @@ public:
 
     static void configSetup( Config::ConfigDescription& config,
                              const String& prefix = "" )
-    {};
+    {}
 
     bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" )
+                const String& prefix = "" )
     {
         return false;
-    };
+    }
 
-    void setMatrix( const MatrixType& matrix )
-    {};
+    void setMatrix( const MatrixPointer& matrix )
+    {}
 
-    void setPreconditioner( const Preconditioner& preconditioner )
-    {};
+    void setPreconditioner( const PreconditionerPointer& preconditioner )
+    {}
 
     template< typename Vector,
               typename ResidueGetter = LinearResidueGetter< MatrixType, Vector > >
     bool solve( const Vector& b, Vector& x )
     {
         return false;
-    };
-
+    }
 };
 
 
@@ -98,6 +99,8 @@ public:
     typedef Devices::Host DeviceType;
     typedef CSR< double, Devices::Host, int > MatrixType;
     typedef Preconditioner PreconditionerType;
+    typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
+    typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
 
     UmfpackWrapper();
 
@@ -109,18 +112,18 @@ public:
     bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
 
-    void setMatrix( const MatrixType& matrix );
+    void setMatrix( const MatrixPointer& matrix );
 
-    void setPreconditioner( const Preconditioner& preconditioner );
+    void setPreconditioner( const PreconditionerPointer& preconditioner );
 
     template< typename Vector,
               typename ResidueGetter = LinearResidueGetter< MatrixType, Vector > >
     bool solve( const Vector& b, Vector& x );
 
 protected:
-   const MatrixType* matrix;
+   MatrixPointer matrix;
 
-   const PreconditionerType* preconditioner;
+   PreconditionerPointer preconditioner;
 };
 
 } // namespace Linear

@@ -51,6 +51,7 @@ bool convertMesh( const Config::ParameterContainer& parameters )
          std::cerr << "I am not able to write the mesh into the file " << outputFileName << "." << std::endl;
          return false;
       }
+      return true;
    }
    if( outputFileExt == "vtk" )
    {
@@ -61,6 +62,7 @@ bool convertMesh( const Config::ParameterContainer& parameters )
       }
       return true;
    }
+   return false;
 }
 
 bool readNetgenMesh( const Config::ParameterContainer& parameters )
@@ -114,6 +116,7 @@ bool convertMesh( const Config::ParameterContainer& parameters )
    const String fileExt = getFileExtension( inputFileName );
    if( fileExt == "ng" )
       return readNetgenMesh( parameters );
+   return false;
 }
 
 

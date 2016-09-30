@@ -60,8 +60,6 @@ update( const MatrixPointer& matrix )
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      //Matrix* kernelMatrix = tnlCuda::passToDevice( matrix );
-
       const Index& size = diagonal.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
@@ -72,10 +70,7 @@ update( const MatrixPointer& matrix )
             &matrix.template getData< Devices::Cuda >(),
             diagonal.getData(),
             size );
-
       checkCudaDevice;
-      //tnlCuda::freeFromDevice( kernelMatrix );
-      //checkCudaDevice;
 #endif
    }
 }

@@ -35,13 +35,15 @@ bool renderFunction( const Config::ParameterContainer& parameters )
       return false;
 
    typedef Functions::TestFunction< MeshType::meshDimensions, RealType > FunctionType;
-   FunctionType function;
+   typedef SharedPointer< FunctionType, typename MeshType::DeviceType > FunctionPointer;
+   FunctionPointer function;
    std::cout << "Setting up the function ... " << std::endl;
-   if( ! function.setup( parameters, "" ) )
+   if( ! function->setup( parameters, "" ) )
       return false;
    std::cout << "done." << std::endl;
    typedef Functions::MeshFunction< MeshType, MeshType::meshDimensions > MeshFunctionType;
-   MeshFunctionType meshFunction( meshPointer );
+   typedef SharedPointer< MeshFunctionType, typename MeshType::DeviceType > MeshFunctionPointer;
+   MeshFunctionPointer meshFunction( meshPointer );
    //if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
    //   return false;
  
@@ -85,7 +87,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
       }
       else
         std::cout << "+ -> Writing the function to " << outputFile << " ... " << std::endl;
-      if( ! meshFunction.save( outputFile) )
+      if( ! meshFunction->save( outputFile) )
          return false;
       time += tau;
       step ++;
@@ -194,6 +196,7 @@ bool resolveRealType( const Config::ParameterContainer& parameters )
       return resolveDerivatives< MeshType, double >( parameters );
    if( realType == "long-double" )
       return resolveDerivatives< MeshType, long double >( parameters );
+   return false;
 }
 
 
@@ -222,6 +225,8 @@ bool resolveIndexType( const List< String >& parsedMeshType,
 
    if( parsedMeshType[ 4 ] == "long int" )
       return resolveMesh< Dimensions, RealType, long int >( parsedMeshType, parameters );
+
+   return false;
 }
 
 template< int Dimensions >
@@ -237,6 +242,8 @@ bool resolveRealType( const List< String >& parsedMeshType,
 
    if( parsedMeshType[ 2 ] == "long-double" )
       return resolveIndexType< Dimensions, long double >( parsedMeshType, parameters );
+
+   return false;
 }
 
 bool resolveMeshType( const List< String >& parsedMeshType,
@@ -255,5 +262,6 @@ bool resolveMeshType( const List< String >& parsedMeshType,
    if( dimensions == 3 )
       return resolveRealType< 3 >( parsedMeshType, parameters );
 
+   return false;
 }
 #endif /* TNL_INIT_H_ */

@@ -35,7 +35,7 @@ class MeshEntityReferenceOrientation
          }
       }
  
-      static String getType(){};
+      static String getType(){ return "MeshEntityReferenceOrientation"; };
 
       EntityOrientation createOrientation( const SeedType& seed ) const
       {

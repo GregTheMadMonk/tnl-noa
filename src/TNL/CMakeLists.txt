@@ -19,6 +19,7 @@ set( headers
      Assert.h
      Constants.h
      Curve.h
+     DevicePointer.h
      File.h
      File_impl.h
      FileName.h
@@ -35,26 +36,17 @@ set( headers
      String.h
      SystemInfo.h
      Timer.h
-     TimerCPU.h
-     TimerRT.h 
-
-     mpi-supp.h 
-     param-types.h
-     terminal-colors.h )
+     UniquePointer.h )
 
 set( common_SOURCES 
      File.cpp
+     FileName.cpp
      Object.cpp
      Logger.cpp
      SmartPointersRegister.cpp
      String.cpp
      SystemInfo.cpp
-     Timer.cpp
-     TimerCPU.cpp
-     TimerRT.cpp
-     FileName.cpp
-
-     ${CURRENT_DIR}/mpi-supp.cpp )
+     Timer.cpp )
      
 set( tnl_SOURCES ${tnl_config_SOURCES}
                  ${tnl_containers_SOURCES}

@@ -3,6 +3,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 
@@ -18,7 +19,8 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelGetter< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class EulerVelGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >
+    : public TNL::Functions::Domain< 1, TNL::Functions::MeshDomain >
 {
    public:
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
@@ -72,7 +74,8 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelGetter< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+class EulerVelGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >
+    : public TNL::Functions::Domain< 2, TNL::Functions::MeshDomain >
 {
    public:
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
@@ -126,7 +129,8 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelGetter< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+class EulerVelGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >
+    : public TNL::Functions::Domain< 3, TNL::Functions::MeshDomain >
 {
    public:
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;

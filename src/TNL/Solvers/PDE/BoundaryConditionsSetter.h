@@ -14,6 +14,7 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Functions/FunctionAdapter.h>
 #include <TNL/SharedPointer.h>
+#include <TNL/Meshes/Traverser.h>
 
 namespace TNL {
 namespace Solvers {
@@ -63,7 +64,19 @@ class BoundaryConditionsSetter
       template< typename EntityType = typename MeshType::Cell >
       static void apply( const BoundaryConditionsPointer& boundaryConditions,
                          const RealType& time,
-                         MeshFunctionPointer& u );
+                         MeshFunctionPointer& u )
+      {
+         SharedPointer< TraverserUserData, DeviceType >
+            userData( time,
+                      boundaryConditions.template getData< DeviceType >(),
+                      u.template modifyData< DeviceType >() );
+         Meshes::Traverser< MeshType, EntityType > meshTraverser;
+         meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                         TraverserBoundaryEntitiesProcessor >
+                                                       ( u->getMeshPointer(),
+                                                         userData );
+      }
+
  
       class TraverserBoundaryEntitiesProcessor
       {
@@ -87,7 +100,5 @@ class BoundaryConditionsSetter
 } // namespace PDE
 } // namespace Solvers
 } // namespace TNL
-
-#include <TNL/Solvers/PDE/BoundaryConditionsSetter_impl.h>
 
 

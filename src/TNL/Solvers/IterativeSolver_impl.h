@@ -37,6 +37,7 @@ void IterativeSolver< Real, Index> :: configSetup( Config::ConfigDescription& co
    config.addEntry< int >   ( prefix + "min-iterations", "Minimal number of iterations the solver must perform.", 0 );
    config.addEntry< double >( prefix + "convergence-residue", "Convergence occurs when the residue drops bellow this limit.", 1.0e-6 );
    config.addEntry< double >( prefix + "divergence-residue", "Divergence occurs when the residue exceeds given limit.", DBL_MAX );
+   // TODO: setting refresh rate should be done in SolverStarter::setup (it's not a parameter of the IterativeSolver)
    config.addEntry< int >   ( prefix + "refresh-rate", "Number of iterations between solver monitor refreshes.", 1 );
 }
 
@@ -48,6 +49,7 @@ bool IterativeSolver< Real, Index> :: setup( const Config::ParameterContainer& p
    this->setMinIterations( parameters.getParameter< int >( "min-iterations" ) );
    this->setConvergenceResidue( parameters.getParameter< double >( "convergence-residue" ) );
    this->setDivergenceResidue( parameters.getParameter< double >( "divergence-residue" ) );
+   // TODO: setting refresh rate should be done in SolverStarter::setup (it's not a parameter of the IterativeSolver)
    this->setRefreshRate( parameters.getParameter< int >( "refresh-rate" ) );
    return true;
 }
@@ -94,15 +96,7 @@ bool IterativeSolver< Real, Index> :: nextIteration()
 template< typename Real, typename Index >
 bool IterativeSolver< Real, Index> :: checkNextIteration()
 {
-   // TODO: fix
-   //Assert( solverMonitor, );
-   if( this->solverMonitor )
-   {
-      solverMonitor->setIterations( this->currentIteration );
-      solverMonitor->setResidue( this->getResidue() );
-      if( this->currentIteration % this->refreshRate == 0 )
-         solverMonitor->refresh();
-   }
+   this->refreshSolverMonitor();
 
    if( std::isnan( this->getResidue() ) ||
        this->getIterations() > this->getMaxIterations()  ||
@@ -186,6 +180,7 @@ const Real& IterativeSolver< Real, Index> :: getResidue() const
    return this->currentResidue;
 }
 
+// TODO: setting refresh rate should be done in SolverStarter::setup (it's not a parameter of the IterativeSolver)
 template< typename Real, typename Index >
 void IterativeSolver< Real, Index> :: setRefreshRate( const Index& refreshRate )
 {
@@ -206,7 +201,7 @@ void IterativeSolver< Real, Index> :: refreshSolverMonitor( bool force )
       this->solverMonitor -> setIterations( this->getIterations() );
       this->solverMonitor -> setResidue( this->getResidue() );
       this->solverMonitor -> setRefreshRate( this-> refreshRate );
-      this->solverMonitor -> refresh( force );
+//      this->solverMonitor -> refresh( force );
    }
 }
 

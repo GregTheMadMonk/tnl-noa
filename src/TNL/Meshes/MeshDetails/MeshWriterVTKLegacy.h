@@ -72,8 +72,7 @@ class MeshWriterVTKLegacy
       outputFile << std::setprecision( 6 );
       outputFile << std::fixed;
 
-      if( ! writeMesh( outputFile, mesh, verbose ) )
-         return false;
+      return writeMesh( outputFile, mesh, verbose );
    }
 
    template< typename MeshType >

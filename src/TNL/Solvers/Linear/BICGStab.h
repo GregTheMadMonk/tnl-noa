@@ -12,6 +12,7 @@
 
 #include <math.h>
 #include <TNL/Object.h>
+#include <TNL/SharedPointer.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/SharedVector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
@@ -28,8 +29,8 @@ template< typename Matrix,
                                                             typename Matrix :: IndexType> >
 
 class BICGStab : public Object,
-                          public IterativeSolver< typename Matrix :: RealType,
-                                                     typename Matrix :: IndexType >
+                 public IterativeSolver< typename Matrix :: RealType,
+                                         typename Matrix :: IndexType >
 {
    public:
 
@@ -38,11 +39,8 @@ class BICGStab : public Object,
    typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
-   // TODO: make this 'typedef SharedPointer< const MatrixType, DeviceType > ConstMatrixPointer;'
-
-
-   public:
+   typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
+   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
 
    BICGStab();
 
@@ -52,21 +50,15 @@ class BICGStab : public Object,
                             const String& prefix = "" );
 
    bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+               const String& prefix = "" );
 
-   void setMatrix( MatrixPointer& matrix );
+   void setMatrix( const MatrixPointer& matrix );
 
-   void setPreconditioner( const PreconditionerType& preconditioner );
+   void setPreconditioner( const PreconditionerPointer& preconditioner );
 
-#ifdef HAVE_NOT_CXX11
-   template< typename VectorPointer,
-             typename ResidueGetter  >
-   bool solve( const VectorPointer& b, VectorPointer& x );
-#else
-   template< typename VectorPointer,
-             typename ResidueGetter = LinearResidueGetter< MatrixPointer, VectorPointer >  >
-   bool solve( const VectorPointer& b, VectorPointer& x );
-#endif
+   template< typename Vector,
+             typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
+   bool solve( const Vector& b, Vector& x );
 
    ~BICGStab();
 
@@ -77,7 +69,7 @@ class BICGStab : public Object,
    Containers::Vector< RealType, DeviceType, IndexType >  r, r_ast, r_new, p, s, Ap, As, M_tmp;
 
    MatrixPointer matrix;
-   const PreconditionerType* preconditioner;
+   PreconditionerPointer preconditioner;
 };
 
 } // namespace Linear

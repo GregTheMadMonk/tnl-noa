@@ -173,11 +173,13 @@ benchmarkSpmvSynthetic( Benchmark & benchmark,
                         const int & size,
                         const int & elementsPerRow )
 {
+    bool result = true;
     // TODO: benchmark all formats from tnl-benchmark-spmv (different parameters of the base formats)
-    benchmarkSpMV< Real, Matrices::CSR >( benchmark, loops, size, elementsPerRow );
-    benchmarkSpMV< Real, Matrices::Ellpack >( benchmark, loops, size, elementsPerRow );
-    benchmarkSpMV< Real, SlicedEllpack >( benchmark, loops, size, elementsPerRow );
-    benchmarkSpMV< Real, Matrices::ChunkedEllpack >( benchmark, loops, size, elementsPerRow );
+    result |= benchmarkSpMV< Real, Matrices::CSR >( benchmark, loops, size, elementsPerRow );
+    result |= benchmarkSpMV< Real, Matrices::Ellpack >( benchmark, loops, size, elementsPerRow );
+    result |= benchmarkSpMV< Real, SlicedEllpack >( benchmark, loops, size, elementsPerRow );
+    result |= benchmarkSpMV< Real, Matrices::ChunkedEllpack >( benchmark, loops, size, elementsPerRow );
+    return result;
 }
 
 } // namespace benchmarks

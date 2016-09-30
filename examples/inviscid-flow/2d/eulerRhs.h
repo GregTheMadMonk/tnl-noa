@@ -27,7 +27,7 @@ template< typename Mesh, typename Real >class eulerRhs
          typedef typename MeshEntity::MeshType::VertexType VertexType;
          VertexType v = entity.getCenter();
          return 0.0;
-      };
+      }
 };
 
 } //namespace TNL

@@ -24,7 +24,7 @@
 #include <TNL/Containers/Algorithms/CudaReduction.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
-#include <TNL/TimerRT.h>
+#include <TNL/Timer.h>
 #endif
 
 namespace TNL {
@@ -163,7 +163,7 @@ bool reductionOnCudaDevice( Operation& operation,
    }
 
    #ifdef CUDA_REDUCTION_PROFILING
-      TimerRT timer;
+      Timer timer;
       timer.reset();
       timer.start();
    #endif
@@ -179,7 +179,7 @@ bool reductionOnCudaDevice( Operation& operation,
                                                deviceAux1 );
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
-     std::cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getTime() << " sec. " << std::endl;
+      std::cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << std::endl;
       timer.reset();
       timer.start();
    #endif
@@ -193,7 +193,7 @@ bool reductionOnCudaDevice( Operation& operation,
  
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
-     std::cout << "   Transferring data to CPU took " << timer.getTime() << " sec. " << std::endl;
+      std::cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << std::endl;
    #endif
 
    #ifdef CUDA_REDUCTION_PROFILING
@@ -211,7 +211,7 @@ bool reductionOnCudaDevice( Operation& operation,
  
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
-     std::cout << "   Reduction of small data set on CPU took " << timer.getTime() << " sec. " << std::endl;
+      std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
    #endif
  
    return checkCudaDevice;
