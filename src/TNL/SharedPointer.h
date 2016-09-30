@@ -387,6 +387,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
 
       Object* operator->()
       {
+         this->pd->maybe_modified = true;
          return &this->pd->data;
       }
 
@@ -397,6 +398,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
 
       Object& operator *()
       {
+         this->pd->maybe_modified = true;
          return this->pd->data;
       }
 
@@ -426,7 +428,10 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
          Assert( this->pd, );
          Assert( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
+         {
+            this->pd->maybe_modified = true;
             return this->pd->data;
+         }
          if( std::is_same< Device, Devices::Cuda >::value )
             return *( this->cuda_pointer );
       }
@@ -527,11 +532,13 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
          Object data;
          char data_image[ sizeof(Object) ];
          int counter;
+         bool maybe_modified;
 
          template< typename... Args >
          explicit PointerData( Args... args )
          : data( args... ),
-           counter( 1 )
+           counter( 1 ),
+           maybe_modified( false )
          {}
       };
 
@@ -558,11 +565,15 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       {
          Assert( this->pd, );
          std::memcpy( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( Object ) );
+         this->pd->maybe_modified = false;
       }
 
       bool modified()
       {
          Assert( this->pd, );
+         // optimization: skip bitwise comparison if we're sure that the data is the same
+         if( ! this->pd->maybe_modified )
+            return false;
          return std::memcmp( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( Object ) ) != 0;
       }
 

@@ -138,6 +138,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       
       Object* operator->()
       {
+         this->pd->maybe_modified = true;
          return &this->pd->data;
       }
       
@@ -148,6 +149,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       
       Object& operator *()
       {
+         this->pd->maybe_modified = true;
          return this->pd->data;
       }
       
@@ -175,7 +177,10 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          Assert( this->pd, );
          Assert( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
+         {
+            this->pd->maybe_modified = true;
             return this->pd->data;
+         }
          if( std::is_same< Device, Devices::Cuda >::value )
             return *( this->cuda_pointer );
       }
@@ -226,10 +231,12 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       {
          Object data;
          char data_image[ sizeof(Object) ];
+         bool maybe_modified;
 
          template< typename... Args >
          explicit PointerData( Args... args )
-         : data( args... )
+         : data( args... ),
+           maybe_modified( false )
          {}
       };
 
@@ -253,11 +260,15 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       {
          Assert( this->pd, );
          std::memcpy( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( ObjectType ) );
+         this->pd->maybe_modified = false;
       }
 
       bool modified()
       {
          Assert( this->pd, );
+         // optimization: skip bitwise comparison if we're sure that the data is the same
+         if( ! this->pd->maybe_modified )
+            return false;
          return std::memcmp( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( ObjectType ) ) != 0;
       }
 
