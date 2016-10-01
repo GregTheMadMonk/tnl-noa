@@ -43,7 +43,8 @@ struct ConfigEntryBase
 
    virtual void printEnumValues() const {};
 
-   virtual ~ConfigEntryBase() {};
+   // TODO: Fix this -- uncommenting leads to SIGSEGV (for example in tnl-init)
+   //virtual ~ConfigEntryBase() {};
 };
 
 } // namespace Config

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TNL/core/mfilename.h>
+#include <TNL/FileName.h>
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
@@ -59,10 +59,12 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const Config::ParameterContainer& parameters )
+setup( const MeshPointer& meshPointer,
+       const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( parameters, "boundary-conditions-" ) ||
-       ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
+   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
+       ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
    return true;
 }
@@ -196,30 +198,32 @@ makeSnapshot( const RealType& time,
 {
   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
-   String fileName;
-   FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
-   if( ! this->rho.save( fileName ) )
+   FileName fileName;
+   fileName.setExtension( "tnl" );
+   fileName.setIndex( step );
+   fileName.setFileNameBase( "rho-" );
+   if( ! this->rho.save( fileName.getFileName() ) )
       return false;
-   FileNameBaseNumberEnding( "rhoVelX-", step, 5, ".tnl", fileName );
-   if( ! this->rhoVelX.save( fileName ) )
+   fileName.setFileNameBase( "rhoVelX-" );
+   if( ! this->rhoVelX.save( fileName.getFileName() ) )
       return false;
-   FileNameBaseNumberEnding( "rhoVelY-", step, 5, ".tnl", fileName );
-   if( ! this->rhoVelY.save( fileName ) )
+   fileName.setFileNameBase( "rhoVelY-" );
+   if( ! this->rhoVelY.save( fileName.getFileName() ) )
       return false;
-   FileNameBaseNumberEnding( "energy-", step, 5, ".tnl", fileName );
-   if( ! this->energy.save( fileName ) )
+   fileName.setFileNameBase( "energy-" );
+   if( ! this->energy.save( fileName.getFileName() ) )
       return false;
-   FileNameBaseNumberEnding( "velocityX-", step, 5, ".tnl", fileName );
-   if( ! this->velocityX.save( fileName ) )
+   fileName.setFileNameBase( "velocityX-" );
+   if( ! this->velocityX.save( fileName.getFileName() ) )
       return false;
-   FileNameBaseNumberEnding( "velocityY-", step, 5, ".tnl", fileName );
-   if( ! this->velocityY.save( fileName ) )
+   fileName.setFileNameBase( "velocityY-" );
+   if( ! this->velocityY.save( fileName.getFileName() ) )
       return false;
-   FileNameBaseNumberEnding( "velocity-", step, 5, ".tnl", fileName );
-   if( ! this->velocity.save( fileName ) )
+   fileName.setFileNameBase( "velocity-" );
+   if( ! this->velocity.save( fileName.getFileName() ) )
       return false;
-   FileNameBaseNumberEnding( "pressure-", step, 5, ".tnl", fileName );
-   if( ! this->pressure.save( fileName ) )
+   fileName.setFileNameBase( "pressue-" );
+   if( ! this->pressure.save( fileName.getFileName() ) )
       return false;
 
    return true;

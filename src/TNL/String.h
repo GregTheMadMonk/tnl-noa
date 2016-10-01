@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <sstream>
-#include <TNL/core/mpi-supp.h>
+#include <TNL/mpi-supp.h>
 
 
 namespace TNL {

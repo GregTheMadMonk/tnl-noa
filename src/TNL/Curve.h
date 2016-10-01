@@ -15,9 +15,9 @@
 #include <cstring>
 #include <TNL/List.h>
 #include <TNL/Object.h>
-#include <TNL/core/mfuncs.h>
+#include <TNL/Math.h>
 #include <TNL/Containers/StaticVector.h>
-#include <TNL/core/param-types.h>
+#include <TNL/param-types.h>
 
 namespace TNL {
 

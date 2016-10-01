@@ -32,6 +32,15 @@ class FunctionAdapter
       typedef typename MeshType::IndexType     IndexType;
       //typedef typename FunctionType::VertexType VertexType;
  
+      template< typename MeshPointer >
+      static bool setup( FunctionType& function,
+                         const MeshPointer& meshPointer,
+                         const Config::ParameterContainer& parameters,
+                         const String& prefix = "" )
+      {
+         return function.setup( meshPointer, parameters, prefix );
+      }
+      
       template< typename EntityType >
       __cuda_callable__ inline
       static RealType getValue( const FunctionType& function,
@@ -57,6 +66,16 @@ class FunctionAdapter< Mesh, Function, SpaceDomain >
       typedef typename FunctionType::RealType  RealType;
       typedef typename MeshType::IndexType     IndexType;
       typedef typename FunctionType::VertexType VertexType;
+      
+      template< typename MeshPointer >
+      static bool setup( FunctionType& function,
+                         const MeshPointer& meshPointer,
+                         const Config::ParameterContainer& parameters,
+                         const String& prefix = "" )
+      {
+         return function.setup( parameters, prefix );
+      }
+      
  
       template< typename EntityType >
       __cuda_callable__ inline
@@ -84,7 +103,16 @@ class FunctionAdapter< Mesh, Function, NonspaceDomain >
       typedef typename FunctionType::RealType  RealType;
       typedef typename MeshType::IndexType     IndexType;
       typedef typename FunctionType::VertexType VertexType;
- 
+      
+      template< typename MeshPointer >
+      static bool setup( FunctionType& function,
+                         const MeshPointer& meshPointer,
+                         const Config::ParameterContainer& parameters,
+                         const String& prefix = "" )
+      {
+         return function.setup( parameters, prefix );
+      }
+      
       template< typename EntityType >
       __cuda_callable__ inline
       static RealType getValue( const FunctionType& function,

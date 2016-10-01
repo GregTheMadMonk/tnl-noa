@@ -25,6 +25,8 @@ struct ConfigDelimiter : public ConfigEntryBase
    String getEntryType() const { return ""; };
 
    String getUIEntryType() const { return ""; };
+   
+   //~ConfigDelimiter(){};
 };
 
 } //namespace Config

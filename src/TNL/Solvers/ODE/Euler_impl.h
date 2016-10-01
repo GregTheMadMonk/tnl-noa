@@ -176,9 +176,9 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
 
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
-//#ifdef HAVE_OPENMP
-//#pragma omp parallel for reduction(+:localResidue) firstprivate( _u, _k1, tau ) if( Devices::Host::isOMPEnabled() )
-//#endif
+#ifdef HAVE_OPENMP
+#pragma omp parallel for reduction(+:localResidue) firstprivate( _u, _k1, tau ) if( Devices::Host::isOMPEnabled() )
+#endif
       for( IndexType i = 0; i < size; i ++ )
       {
          const RealType add = tau * _k1[ i ];
@@ -209,6 +209,7 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
                                                                       this->cudaBlockResidue.getData() );
          localResidue += this->cudaBlockResidue.sum();
          cudaThreadSynchronize();
+         checkCudaDevice;
       }
 #endif
    }

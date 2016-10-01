@@ -23,7 +23,7 @@ ConfigDescription :: ConfigDescription()
 
 ConfigDescription :: ~ConfigDescription()
 {
-   entries. DeepEraseAll();
+   entries.DeepEraseAll();
 }
 
 void ConfigDescription::printUsage( const char* program_name ) const

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlEllpackIndexMultimapTest.cpp  -  description
+                          EllpackIndexMultimapTest.cpp  -  description
                              -------------------
     begin                : Sep 10, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -12,15 +12,15 @@
 #include <TNL/Devices/Host.h>
 #include <cstdlib>
 
-#include <TNL/core/multimaps/tnlEllpackIndexMultimap.h>
+#include <TNL/Experimental/Multimaps/EllpackIndexMultimap.h>
 #include "tnlIndexMultimapTester.h"
 #include "../../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< tnlEllpackIndexMultimap< int, Devices::Host > > >() ||
-       ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< tnlEllpackIndexMultimap< long int, Devices::Host > > >()
+   if( ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< EllpackIndexMultimap< int, Devices::Host > > >() ||
+       ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< EllpackIndexMultimap< long int, Devices::Host > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

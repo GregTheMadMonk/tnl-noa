@@ -12,7 +12,7 @@
 
 #include <iomanip>
 #include <TNL/Timer.h>
-#include <TNL/core/tnlFlopsCounter.h>
+#include <TNL/Experimental/Arithmetics/FlopsCounter.h>
 #include <TNL/Object.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 #include <TNL/Solvers/IterativeSolver.h>

@@ -18,7 +18,6 @@
 namespace TNL {
 namespace Devices {   
 
-
 bool Host::ompEnabled( true );
 int Host::maxThreadsCount( -1 );
 
@@ -75,11 +74,11 @@ int Host::getThreadIdx()
 void Host::configSetup( Config::ConfigDescription& config, const String& prefix )
 {
 #ifdef HAVE_OPENMP
-   config.addEntry< bool >( prefix + "omp-enabled", "Enable support of OpenMP.", true );
-   config.addEntry<  int >( prefix + "omp-max-threads", "Set maximum number of OpenMP threads.", omp_get_max_threads() );
+   config.addEntry< bool >( prefix + "openmp-enabled", "Enable support of OpenMP.", true );
+   config.addEntry<  int >( prefix + "openmp-max-threads", "Set maximum number of OpenMP threads.", omp_get_max_threads() );
 #else
-   config.addEntry< bool >( prefix + "omp-enabled", "Enable support of OpenMP (not supported on this system).", false );
-   config.addEntry<  int >( prefix + "omp-max-threads", "Set maximum number of OpenMP threads (not supported on this system).", 0 );
+   config.addEntry< bool >( prefix + "openmp-enabled", "Enable support of OpenMP (not supported on this system).", false );
+   config.addEntry<  int >( prefix + "openmp-max-threads", "Set maximum number of OpenMP threads (not supported on this system).", 0 );
 #endif
  
 }
@@ -87,8 +86,11 @@ void Host::configSetup( Config::ConfigDescription& config, const String& prefix 
 bool Host::setup( const Config::ParameterContainer& parameters,
                   const String& prefix )
 {
-   ompEnabled = parameters.getParameter< bool >( prefix + "omp-enabled" );
-   maxThreadsCount = parameters.getParameter< int >( prefix + "omp-max-threads" );
+   if( parameters.getParameter< bool >( prefix + "openmp-enabled" ) )
+      enableOMP();
+   else
+      disableOMP();
+   setMaxThreadsCount( parameters.getParameter< int >( prefix + "openmp-max-threads" ) );
    return true;
 }
 

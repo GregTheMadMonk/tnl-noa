@@ -23,8 +23,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <TNL/String.h>
-#include <TNL/core/mfilename.h>
-#include <TNL/core/mfuncs.h>
+#include <TNL/FileName.h>
+#include <TNL/Math.h>
 #include <TNL/Containers/SharedVector.h>
 #include <TNL/Solvers/ODE/Merson.h>
 

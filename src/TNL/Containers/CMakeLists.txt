@@ -7,6 +7,8 @@ set( headers Array.h
              ArrayOperationsHost_impl.h
              ArrayOperationsCuda_impl.h
              DynamicTypeTag.h
+             IndexedSet.h
+             IndexedSet_impl.h
              MultiArray.h
              MultiArray1D_impl.h
              MultiArray2D_impl.h

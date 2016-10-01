@@ -9,6 +9,7 @@
 
 namespace TNL {
 
+// TODO: Move this to Devices::Host
 struct tnlCacheSizes {
    int L1instruction = 0;
    int L1data = 0;

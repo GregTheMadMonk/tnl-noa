@@ -12,8 +12,8 @@
 
 #include <TNL/List.h>
 #include <TNL/Config/ConfigDescription.h>
-#include <TNL/core/mpi-supp.h>
-#include <TNL/core/param-types.h>
+#include <TNL/mpi-supp.h>
+#include <TNL/param-types.h>
 
 namespace TNL {
 namespace Config {   

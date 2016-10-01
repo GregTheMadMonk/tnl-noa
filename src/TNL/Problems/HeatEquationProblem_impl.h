@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <TNL/core/mfilename.h>
+#include <TNL/FileName.h>
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Matrices/MultidiagonalMatrixSetter.h>
 #include <TNL/Logger.h>
@@ -81,9 +81,11 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const Config::ParameterContainer& parameters )
+setup( const MeshPointer& meshPointer,
+       const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( parameters, "boundary-conditions-" ) ||
+   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
       return false;
    return true;
@@ -181,9 +183,11 @@ makeSnapshot( const RealType& time,
 
    this->bindDofs( meshPointer, dofs );
    //cout << "dofs = " << dofs << endl;
-   String fileName;
-   FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! this->uPointer->save( fileName ) )
+   FileName fileName;
+   fileName.setFileNameBase( "u-" );
+   fileName.setExtension( "tnl" );
+   fileName.setIndex( step );
+   if( ! this->uPointer->save( fileName.getFileName() ) )
       return false;
    return true;
 }
@@ -223,11 +227,11 @@ getExplicitRHS( const RealType& time,
       this->rightHandSidePointer,
       this->uPointer,
       fuPointer );
-   /*BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
+   Solvers::PDE::BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
-      this->boundaryCondition,
+      this->boundaryConditionPointer,
       time + tau,
-      this->u );*/
+      this->uPointer );
    
    //fu.write( "fu.txt", "gnuplot" );
    //this->u.write( "u.txt", "gnuplot");

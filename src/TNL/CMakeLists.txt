@@ -1,7 +1,7 @@
-ADD_SUBDIRECTORY( Arithmetics )
 ADD_SUBDIRECTORY( Config )
 ADD_SUBDIRECTORY( Containers )
 ADD_SUBDIRECTORY( Devices )
+ADD_SUBDIRECTORY( Experimental )
 ADD_SUBDIRECTORY( Functions )
 ADD_SUBDIRECTORY( Images )
 ADD_SUBDIRECTORY( Matrices )
@@ -10,22 +10,25 @@ ADD_SUBDIRECTORY( Operators )
 ADD_SUBDIRECTORY( Problems )
 ADD_SUBDIRECTORY( Solvers )
 
-ADD_SUBDIRECTORY( core )
+#ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( legacy )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
 
 set( headers 
      Assert.h
+     Constants.h
      Curve.h
      DevicePointer.h
      File.h
      File_impl.h
+     FileName.h
      Object.h
      List.h
      List_impl.h
      Logger.h
      Logger_impl.h
+     Math.h
      SharedPointer.h
      SmartPointer.h
      SmartPointersRegister.h
@@ -37,6 +40,7 @@ set( headers
 
 set( common_SOURCES 
      File.cpp
+     FileName.cpp
      Object.cpp
      Logger.cpp
      SmartPointersRegister.cpp
@@ -47,6 +51,7 @@ set( common_SOURCES
 set( tnl_SOURCES ${tnl_config_SOURCES}
                  ${tnl_containers_SOURCES}
                  ${tnl_devices_SOURCES}
+                 ${tnl_experimental_SOURCES}
                  ${tnl_functions_SOURCES}
                  ${tnl_images_SOURCES}
                  ${tnl_matrices_SOURCES}
@@ -62,6 +67,7 @@ set( tnl_SOURCES ${tnl_config_SOURCES}
 set( tnl_CUDA__SOURCES ${tnl_config_CUDA__SOURCES}
                        ${tnl_containers_CUDA__SOURCES}
                        ${tnl_devices_CUDA__SOURCES}
+                       ${tnl_experimental_CUDA__SOURCES}
                        ${tnl_functions_CUDA__SOURCES}
                        ${tnl_images_CUDA__SOURCES}
                        ${tnl_matrices_CUDA__SOURCES}

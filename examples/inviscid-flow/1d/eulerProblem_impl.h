@@ -1,7 +1,7 @@
 #ifndef eulerPROBLEM_IMPL_H_
 #define eulerPROBLEM_IMPL_H_
 
-#include <TNL/core/mfilename.h>
+#include <TNL/FileName.h>
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
@@ -56,10 +56,12 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const Config::ParameterContainer& parameters )
+setup( const MeshPointer& meshPointer,
+       const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
-   if( ! this->boundaryConditionsPointer->setup( parameters, "boundary-conditions-" ) ||
-       ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
+   if( ! this->boundaryConditionsPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
+       ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
    return true;
 }
@@ -195,7 +197,6 @@ makeSnapshot( const RealType& time,
 {
   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
-   String fileName;
    typedef typename MeshType::Cell Cell;
    int count = mesh->template getEntitiesCount< Cell >();
    std::ofstream vysledek;
@@ -227,14 +228,18 @@ makeSnapshot( const RealType& time,
    vysledek.close();
 */   getchar();
 
-   FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
-   if( ! uRho->save( fileName ) )
+   FileName fileName;
+   fileName.setExtension( "tnl" );
+   fileName.setIndex( step );
+   fileName.setFileNameBase( "rho-" );
+   
+   if( ! uRho->save( fileName.getFileName() ) )
       return false;
-   FileNameBaseNumberEnding( "rhoVel-", step, 5, ".tnl", fileName );
-   if( ! uRhoVelocity->save( fileName ) )
+   fileName.setFileNameBase( "rhoVel-" );
+   if( ! uRhoVelocity->save( fileName.getFileName() ) )
       return false;
-   FileNameBaseNumberEnding( "energy-", step, 5, ".tnl", fileName );
-   if( ! uEnergy->save( fileName ) )
+   fileName.setFileNameBase( "energy-" );
+   if( ! uEnergy->save( fileName.getFileName() ) )
       return false;
    return true;
 }

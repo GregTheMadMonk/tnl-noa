@@ -1,7 +1,8 @@
 #!/bin/bash
 
 TARGET=TNL
-PREFIX=${HOME}/local
+PREFIX=${HOME}/.local
+WITH_CLANG="no"
 WITH_CUDA="yes"
 WITH_TESTS="yes"
 
@@ -25,6 +26,7 @@ do
     case $option in
         --prefix=*                       ) PREFIX="${option#*=}" ;;
         --build=*                        ) BUILD="${option#*=}" ;;
+        --with-clang=*                   ) WITH_CLANG="${option#*=}" ;;
         --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
         --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
         --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;
@@ -72,6 +74,13 @@ then
     echo "   --help                                Write this help."
     exit 1
 fi
+
+if test ${WITH_CLANG} = "yes";
+then
+   export CXX=clang++
+   export CC=clang
+fi
+
 
 echo "Configuring ${BUILD} $TARGET ..."
 
