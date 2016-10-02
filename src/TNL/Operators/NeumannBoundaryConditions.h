@@ -220,7 +220,8 @@ class NeumannBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
             return u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - entity.getMesh().getSpaceSteps().y() *
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
-         if( entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 )
+         // The following line is commented to avoid compiler warning
+         //if( entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 )
          {
             return u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] + entity.getMesh().getSpaceSteps().y() *
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
@@ -348,7 +349,8 @@ class NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
             return u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] - entity.getMesh().getSpaceSteps().z() *
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
-         if( entity.getCoordinates().z() == entity.getMesh().getDimensions().z() - 1 )
+         // The following line is commented to avoid compiler warning
+         //if( entity.getCoordinates().z() == entity.getMesh().getDimensions().z() - 1 )
          {
             return u[ neighbourEntities.template getEntityIndex< 0, 0, -1 >() ] + entity.getMesh().getSpaceSteps().z() *
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
@@ -437,7 +439,5 @@ std::ostream& operator << ( std::ostream& str, const NeumannBoundaryConditions< 
 
 } // namespace Operators
 } // namespace TNL
-
-#include <TNL/Operators/NeumannBoundaryConditions_impl.h>
 
 

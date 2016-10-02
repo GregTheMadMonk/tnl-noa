@@ -13,7 +13,6 @@ SET( headers DirichletBoundaryConditions.h
              FunctionInverseOperator.h
              IdentityOperator.h
              NeumannBoundaryConditions.h
-             NeumannBoundaryConditions_impl.h
              OperatorComposition.h
              Operator.h )
              
