@@ -85,9 +85,16 @@ setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, "boundary-conditions-" ) ||
-       ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
+   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, "boundary-conditions-" ) )
+   {
+      std::cerr << "I was not able to initialize the boundary conditions." << std::endl;
       return false;
+   }
+   if( ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
+   {
+      std::cerr << "I was not able to initialize the right-hand side function." << std::endl;
+      return false;
+   }
    return true;
 }
 

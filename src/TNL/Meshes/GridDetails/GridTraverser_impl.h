@@ -121,12 +121,12 @@ GridTraverser1D(
    typename GridType::CoordinatesType coordinates;
  
    coordinates.x() = kernelData->begin.x() + ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
- 
-   GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
-   
-   entity.refresh();
    if( coordinates.x() <= kernelData->end.x() )
+   {   
+      GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
+      entity.refresh();
       EntitiesProcessor::processEntity( entity.getMesh(), *userData, entity );
+   }
 }
 
 template< typename Real,
@@ -148,6 +148,7 @@ GridBoundaryTraverser1D(
    if( threadIdx.x == 0 )
    {
       coordinates.x() = kernelData->begin.x();
+      printf( "thread %d coord %d \n", threadIdx.x, coordinates.x() );
       GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
       entity.refresh();
       EntitiesProcessor::processEntity( entity.getMesh(), *userData, entity );
@@ -155,6 +156,7 @@ GridBoundaryTraverser1D(
    if( threadIdx.x == 1 )
    {
       coordinates.x() = kernelData->end.x();
+      printf( "thread %d coord %d \n", threadIdx.x, coordinates.x() );
       GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
       entity.refresh();
       EntitiesProcessor::processEntity( entity.getMesh(), *userData, entity );
@@ -325,11 +327,12 @@ GridTraverser2D(
    coordinates.x() = kernelData->begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    coordinates.y() = kernelData->begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
    
-   GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
+   
 
-   if( entity.getCoordinates().x() <= kernelData->end.x() &&
-       entity.getCoordinates().y() <= kernelData->end.y() )
+   if( coordinates.x() <= kernelData->end.x() &&
+       coordinates.y() <= kernelData->end.y() )
    {
+      GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
       entity.refresh();
       if( ! processOnlyBoundaryEntities || entity.isBoundaryEntity() )
       {
@@ -526,12 +529,13 @@ GridTraverser3D(
    coordinates.y() = kernelData->begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
    coordinates.z() = kernelData->begin.z() + ( gridZIdx * Devices::Cuda::getMaxGridSize() + blockIdx.z ) * blockDim.z + threadIdx.z;
  
-   GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
+   
 
-   if( entity.getCoordinates().x() <= kernelData->end.x() &&
-       entity.getCoordinates().y() <= kernelData->end.y() &&
-       entity.getCoordinates().z() <= kernelData->end.z() )
+   if( coordinates.x() <= kernelData->end.x() &&
+       coordinates.y() <= kernelData->end.y() &&
+       coordinates.z() <= kernelData->end.z() )
    {
+      GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
       entity.refresh();
       if( ! processOnlyBoundaryEntities || entity.isBoundaryEntity() )
       {

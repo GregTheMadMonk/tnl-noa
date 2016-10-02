@@ -134,6 +134,11 @@ setup( const MeshPointer& meshPointer,
       if( ! this->load( fileName ) )
          return false;
    }
+   else
+   {
+      std::cerr << "Missing parameter " << prefix << "file." << std::endl;
+      return false;
+   }
    return true;
 }
 
