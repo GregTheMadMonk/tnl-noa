@@ -24,7 +24,7 @@ namespace TNL {
 namespace Images {   
 
 template< typename Index = int >
-class PNGImage : public tnlImage< Index >
+class PNGImage : public Image< Index >
 {
    public:
  

@@ -26,7 +26,7 @@ template< typename Index >
 bool
 RegionOfInterest< Index >::
 setup( const Config::ParameterContainer& parameters,
-       const tnlImage< Index >* image )
+       const Image< Index >* image )
 {
    const int roiTop    = parameters.getParameter< int >( "roi-top" );
    const int roiBottom = parameters.getParameter< int >( "roi-bottom" );
@@ -97,7 +97,7 @@ setup( const Config::ParameterContainer& parameters,
 template< typename Index >
 bool
 RegionOfInterest< Index >::
-check( const tnlImage< Index >* image ) const
+check( const Image< Index >* image ) const
 {
    if( top >= image->getHeight() ||
        bottom >= image->getHeight() ||

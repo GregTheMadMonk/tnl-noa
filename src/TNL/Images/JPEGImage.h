@@ -32,7 +32,7 @@ namespace TNL {
 namespace Images {   
 
 template< typename Index = int >
-class JPEGImage : public tnlImage< Index >
+class JPEGImage : public Image< Index >
 {
    public:
  

@@ -148,7 +148,6 @@ GridBoundaryTraverser1D(
    if( threadIdx.x == 0 )
    {
       coordinates.x() = kernelData->begin.x();
-      printf( "thread %d coord %d \n", threadIdx.x, coordinates.x() );
       GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
       entity.refresh();
       EntitiesProcessor::processEntity( entity.getMesh(), *userData, entity );
@@ -156,7 +155,6 @@ GridBoundaryTraverser1D(
    if( threadIdx.x == 1 )
    {
       coordinates.x() = kernelData->end.x();
-      printf( "thread %d coord %d \n", threadIdx.x, coordinates.x() );
       GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
       entity.refresh();
       EntitiesProcessor::processEntity( entity.getMesh(), *userData, entity );

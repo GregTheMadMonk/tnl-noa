@@ -57,9 +57,11 @@ struct ImagesInfo
  * DICOM serie (searches the directory of the file). Call isDicomSeriesLoaded()
  * function to check if the load was successful.
  */
-class DicomSeries : public tnlImage< int >
+class DicomSeries : public Image< int >
 {
    public:
+      
+      typedef int IndexType;
  
       inline DicomSeries( const String& filePath );
  

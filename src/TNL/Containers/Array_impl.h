@@ -325,7 +325,7 @@ getElement( const Index& i ) const
               std::cerr << "Wrong index for getElement method in Array "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
-   return ArrayOperations< Device > :: getMemoryElement( & ( this->data[ i ] ) );
+   return ArrayOperations< Device >::getMemoryElement( & ( this->data[ i ] ) );
 };
 
 template< typename Element,

@@ -100,11 +100,13 @@ void IterativeSolverMonitor< Real, Index > :: refresh( bool force )
          }
       }
 
-      if( this->iterations > 0 && free >= 14 ) {
+      if( this->iterations > 0 && 
+      if( free >= 14 ) {
          std::cout << " ITER:" << std::setw( 8 ) << this->iterations;
          free -= 14;
       }
-      if( this->residue && free >= 17 ) {
+      if( this->residue && 
+      if( free >= 17 ) {
          std::cout << " RES:" << std::setprecision( 5 ) << std::setw( 12 ) << this->residue;
          free -= 17;
       }

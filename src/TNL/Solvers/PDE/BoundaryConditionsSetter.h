@@ -27,7 +27,7 @@ class BoundaryConditionsSetterTraverserUserData
 {
    public:
 
-      const Real *time;
+      const Real time;
 
       const BoundaryConditions* boundaryConditions;
 
@@ -35,11 +35,11 @@ class BoundaryConditionsSetterTraverserUserData
 
       BoundaryConditionsSetterTraverserUserData(
          const Real& time,
-         const BoundaryConditions& boundaryConditions,
-         DofVector& u )
-      : time( &time ),
-        boundaryConditions( &boundaryConditions ),
-        u( &u )
+         const BoundaryConditions* boundaryConditions,
+         DofVector* u )
+      : time( time ),
+        boundaryConditions( boundaryConditions ),
+        u( u )
       {};
 };
 
@@ -68,8 +68,8 @@ class BoundaryConditionsSetter
       {
          SharedPointer< TraverserUserData, DeviceType >
             userData( time,
-                      boundaryConditions.template getData< DeviceType >(),
-                      u.template modifyData< DeviceType >() );
+                      &boundaryConditions.template getData< DeviceType >(),
+                      &u.template modifyData< DeviceType >() );
          Meshes::Traverser< MeshType, EntityType > meshTraverser;
          meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                          TraverserBoundaryEntitiesProcessor >
@@ -91,7 +91,7 @@ class BoundaryConditionsSetter
                ( *userData.u )( entity ) = userData.boundaryConditions->operator()
                ( *userData.u,
                  entity,
-                 *userData.time );
+                 userData.time );
             }
 
       };

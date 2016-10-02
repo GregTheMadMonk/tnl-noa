@@ -239,7 +239,7 @@ inline bool DicomSeries::loadImage( const String& filePath, int number)
     {
         this->height = dicomImage->getHeight();
     }
-    else if(dicomImage->getHeight() != this->height)
+    else if( ( IndexType ) dicomImage->getHeight() != this->height)
     {
         std::cerr << filePath <<" image has bad height value\n";
     }
@@ -248,7 +248,7 @@ inline bool DicomSeries::loadImage( const String& filePath, int number)
     {
         this->width = dicomImage->getWidth ();
     }
-    else if(dicomImage->getWidth() != this->width)
+    else if( ( IndexType ) dicomImage->getWidth() != this->width)
     {
         std::cerr << filePath <<" image has bad width value\n";
     }
@@ -257,7 +257,7 @@ inline bool DicomSeries::loadImage( const String& filePath, int number)
     {
         imagesInfo.bps = dicomImage->getDepth ();
     }
-    else if( dicomImage->getDepth() != imagesInfo.bps )
+    else if( ( IndexType ) dicomImage->getDepth() != imagesInfo.bps )
     {
         std::cerr << filePath <<" image has bad bps value\n";
     }
@@ -287,7 +287,7 @@ inline bool DicomSeries::loadImage( const String& filePath, int number)
     }
     else
     {//check image size for compatibility
-        if( imagesInfo.frameSize != size )
+        if( ( unsigned long ) imagesInfo.frameSize != size )
         {
             std::cerr << filePath << " image has bad frame size value\n";
             return false;

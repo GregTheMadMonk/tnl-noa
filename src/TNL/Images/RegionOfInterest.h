@@ -25,9 +25,9 @@ class RegionOfInterest
       RegionOfInterest();
  
       bool setup( const Config::ParameterContainer& parameters,
-                  const tnlImage< Index >* image );
+                  const Image< Index >* image );
  
-      bool check( const tnlImage< Index >* image ) const;
+      bool check( const Image< Index >* image ) const;
  
       Index getTop() const;
  
