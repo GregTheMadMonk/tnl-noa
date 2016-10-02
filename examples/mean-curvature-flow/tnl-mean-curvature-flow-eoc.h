@@ -36,7 +36,7 @@
 #include <TNL/Operators/geometric/ExactGradientNorm.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
-typedef tnlFastBuildConfig BuildConfig;
+typedef FastBuildConfig BuildConfig;
 
 template< typename ConfigTag >
 class meanCurvatureFlowEocConfig

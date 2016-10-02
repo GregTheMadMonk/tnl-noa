@@ -254,13 +254,12 @@ boundaryConditionsTemplatedCompact( const GridType* grid,
    typename GridType::CoordinatesType coordinates;
 
    coordinates.x() = begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
-   
-   GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
+   coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;        
 
-   if( entity.getCoordinates().x() < end.x() &&
-       entity.getCoordinates().y() < end.y() )
+   if( coordinates.x() < end.x() &&
+       coordinates.y() < end.y() )
    {
+      GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
       entity.refresh();
       if( entity.isBoundaryEntity() )
       {
@@ -364,17 +363,16 @@ heatEquationTemplatedCompact( const GridType* grid,
    coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
    
    //TestEntity< GridType > entity( *grid, coordinates, entityOrientation, entityBasis );
-   GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
-   //const GridType* g = grid;
-   
+      
    MeshFunction& u = *_u;
    MeshFunction& fu = *_fu;
 
    //if( threadIdx.x == 0 )
    //   printf( "entity size = %d \n", sizeof( GridEntity ) );
-   //if( entity.getCoordinates().x() < end.x() &&
-   //    entity.getCoordinates().y() < end.y() )
+   if( coordinates.x() < end.x() &&
+       coordinates.y() < end.y() )
    {
+      GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
       
       entity.refresh();
       if( ! entity.isBoundaryEntity() )
@@ -386,6 +384,7 @@ heatEquationTemplatedCompact( const GridType* grid,
          fu( entity ) +=  FunctionAdapter::getValue( *rightHandSide, entity, time );
       }
    }
+   return;
       
    //GridEntity entity( grid, coordinates, entityOrientation, entityBasis );
    //printf( "size = %d ", sizeof( GridEntity ) );
@@ -431,7 +430,6 @@ getExplicitRHS( const RealType& time,
     *
     * You may use supporting mesh dependent data if you need.
     */
-
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
       const IndexType gridXSize = mesh->getDimensions().x();
@@ -536,6 +534,7 @@ getExplicitRHS( const RealType& time,
                     gridXIdx,
                     gridYIdx );
          cudaThreadSynchronize();
+         checkCudaDevice;
          
          //std::cerr << "Computing the heat equation ..." << std::endl;
          for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
@@ -554,8 +553,8 @@ getExplicitRHS( const RealType& time,
                     cell.getBasis(),
                     gridXIdx,
                     gridYIdx );
-         checkCudaDevice;
          cudaThreadSynchronize();         
+         checkCudaDevice;
       }
       #endif
       if( this->cudaKernelType == "templated" )

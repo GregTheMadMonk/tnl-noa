@@ -240,14 +240,9 @@ getExplicitRHS( const RealType& time,
       time + tau,
       this->uPointer );
    
-   //fu.write( "fu.txt", "gnuplot" );
-   //this->u.write( "u.txt", "gnuplot");
+   //uPointer->write( "u.txt", "gnuplot" );
+   //fuPointer->write( "fu.txt", "gnuplot" );
    //getchar();
-   /*cout << "u = " << u << std::endl;
-  std::cout << "fu = " << fu << std::endl;
-   u.save( "u.tnl" );
-   fu.save( "fu.tnl" );
-   getchar();*/
 }
 
 template< typename Mesh,

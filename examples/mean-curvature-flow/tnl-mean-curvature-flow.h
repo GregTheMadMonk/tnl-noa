@@ -32,7 +32,7 @@
 #include <TNL/Functions/MeshFunction.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
-typedef tnlFastBuildConfig BuildConfig;
+typedef FastBuildConfig BuildConfig;
 
 template< typename ConfigTag >
 class meanCurvatureFlowConfig
