@@ -81,12 +81,14 @@ void IterativeSolverMonitor< Real, Index > :: refresh( bool force )
       const int line_width = this->getLineWidth();
       int free = line_width ? line_width : std::numeric_limits<int>::max();
 
+      // FIXME: std::setw sets only minimum width, so free should be adjusted dynamically if more chars are actually written
+      std::cout << std::setprecision( 5 );
       std::cout << " ELA:" << std::setw( 8 ) << this->getElapsedTime()
                 << " T:"   << std::setw( 8 ) << this->time;
       free -= 24;
       if( this->timeStep > 0 ) {
-         std::cout << " TAU:" << std::setw( 5 ) << this->timeStep;
-         free -= 10;
+         std::cout << " TAU:" << std::setw( 8 ) << this->timeStep;
+         free -= 13;
       }
 
       if( this->stage.length() && free > 5 ) {
