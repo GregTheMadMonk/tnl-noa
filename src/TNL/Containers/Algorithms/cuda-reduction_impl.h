@@ -39,8 +39,6 @@ namespace Algorithms {
  */
 const int minGPUReductionDataSize = 256;//65536; //16384;//1024;//256;
 
-//static CudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
-
 #ifdef HAVE_CUDA
 
 template< typename Operation, int blockSize >
@@ -72,7 +70,6 @@ typename Operation::IndexType reduceOnCudaDevice( Operation& operation,
    // create reference to the reduction buffer singleton and set default size
    CudaReductionBuffer & cudaReductionBuffer = CudaReductionBuffer::getInstance( 8 * minGPUReductionDataSize );
  
-   //CudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
    if( ! cudaReductionBuffer.setSize( gridSize.x * sizeof( ResultType ) ) )
       return false;
    output = cudaReductionBuffer.template getData< ResultType >();
