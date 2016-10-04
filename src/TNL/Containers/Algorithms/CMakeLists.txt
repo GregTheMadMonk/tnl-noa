@@ -6,7 +6,11 @@ set( headers cuda-prefix-sum.h
              CudaReduction.h
              CudaReduction_impl.h
              CudaReductionBuffer.h
-             CublasWrapper.h )
+             CublasWrapper.h
+             CudaMultireductionKernel.h
+             Multireduction.h
+             Multireduction_impl.h
+   )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Containers/Algorithms ) 
 IF( BUILD_CUDA )
