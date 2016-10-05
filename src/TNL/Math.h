@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mfuncs.h  -  description
+                          Math.h  -  description
                              -------------------
     begin                : 2005/07/05
     copyright            : (C) 2005 by Tomas Oberhuber

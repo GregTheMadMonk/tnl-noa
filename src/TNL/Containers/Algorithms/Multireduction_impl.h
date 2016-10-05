@@ -83,7 +83,7 @@ multireduceOnCudaDevice( Operation& operation,
    gridSize.x = min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSizeX );
    gridSize.y = Devices::Cuda::getNumberOfBlocks( n, blockSize.y );
 
-   if( gridSize.y > Devices::Cuda::getMaxGridSize() ) {
+   if( gridSize.y > (unsigned) Devices::Cuda::getMaxGridSize() ) {
       std::cerr << "Maximum gridSize.y limit exceeded (limit is 65535, attempted " << gridSize.y << ")." << std::endl;
       throw 1;
    }
