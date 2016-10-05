@@ -15,7 +15,6 @@
 #ifdef HAVE_CUDA
 #include <cuda.h>
 #endif
-#include <iostream>
 #include <TNL/Assert.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
 #include <TNL/Containers/ArrayOperations.h>
@@ -24,6 +23,7 @@
 #include <TNL/Containers/Algorithms/CudaReduction.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
+#include <iostream>
 #include <TNL/Timer.h>
 #endif
 
@@ -42,22 +42,24 @@ const int minGPUReductionDataSize = 256;//65536; //16384;//1024;//256;
 #ifdef HAVE_CUDA
 
 template< typename Operation, int blockSize >
-__global__ void CudaReductionKernel( Operation operation,
-                                        const typename Operation :: IndexType size,
-                                        const typename Operation :: RealType* input1,
-                                        const typename Operation :: RealType* input2,
-                                        typename Operation :: ResultType* output )
+__global__ void
+CudaReductionKernel( Operation operation,
+                     const typename Operation::IndexType size,
+                     const typename Operation::RealType* input1,
+                     const typename Operation::RealType* input2,
+                     typename Operation::ResultType* output )
 {
    typedef CudaReduction< Operation, blockSize > Reduction;
    Reduction::reduce( operation, size, input1, input2, output );
 };
 
 template< typename Operation >
-typename Operation::IndexType reduceOnCudaDevice( Operation& operation,
-                                                  const typename Operation::IndexType size,
-                                                  const typename Operation::RealType* input1,
-                                                  const typename Operation::RealType* input2,
-                                                  typename Operation::ResultType*& output)
+typename Operation::IndexType
+reduceOnCudaDevice( Operation& operation,
+                    const typename Operation::IndexType size,
+                    const typename Operation::RealType* input1,
+                    const typename Operation::RealType* input2,
+                    typename Operation::ResultType*& output)
 {
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::RealType RealType;
@@ -127,11 +129,12 @@ typename Operation::IndexType reduceOnCudaDevice( Operation& operation,
 #endif
 
 template< typename Operation >
-bool reductionOnCudaDevice( Operation& operation,
-                            const typename Operation :: IndexType size,
-                            const typename Operation :: RealType* deviceInput1,
-                            const typename Operation :: RealType* deviceInput2,
-                            typename Operation :: ResultType& result )
+bool
+reductionOnCudaDevice( Operation& operation,
+                       const typename Operation::IndexType size,
+                       const typename Operation::RealType* deviceInput1,
+                       const typename Operation::RealType* deviceInput2,
+                       typename Operation::ResultType& result )
 {
 #ifdef HAVE_CUDA
 
@@ -144,10 +147,10 @@ bool reductionOnCudaDevice( Operation& operation,
     * First check if the input array(s) is/are large enough for the reduction on GPU.
     * Otherwise copy it/them to host and reduce on CPU.
     */
-   RealType hostArray1[ minGPUReductionDataSize ];
-   RealType hostArray2[ minGPUReductionDataSize ];
    if( size <= minGPUReductionDataSize )
    {
+      RealType hostArray1[ minGPUReductionDataSize ];
+      RealType hostArray2[ minGPUReductionDataSize ];
       if( ! Containers::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray1, deviceInput1, size ) )
          return false;
       if( deviceInput2 && !
