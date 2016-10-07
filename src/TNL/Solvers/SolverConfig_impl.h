@@ -107,6 +107,8 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
          config.addEntryEnum( "cg" );
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitBICGStabSolverTag >::enabled )
          config.addEntryEnum( "bicgstab" );
+      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitCWYGMRESSolverTag >::enabled )
+         config.addEntryEnum( "cwygmres" );
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitGMRESSolverTag >::enabled )
          config.addEntryEnum( "gmres" );
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitTFQMRSolverTag >::enabled )
@@ -145,6 +147,8 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
          Linear::CG< MatrixType >::configSetup( config );
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitBICGStabSolverTag >::enabled )
          Linear::BICGStab< MatrixType >::configSetup( config );
+      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitCWYGMRESSolverTag >::enabled )
+         Linear::CWYGMRES< MatrixType >::configSetup( config );
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitGMRESSolverTag >::enabled )
          Linear::GMRES< MatrixType >::configSetup( config );
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitTFQMRSolverTag >::enabled )

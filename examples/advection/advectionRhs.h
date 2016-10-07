@@ -6,7 +6,7 @@ namespace TNL {
 
 template< typename Mesh, typename Real >class advectionRhs
   : public Functions::Domain< Mesh::meshDimensions, Functions::MeshDomain > 
- {
+{
    public:
 
       typedef Mesh MeshType;
@@ -26,7 +26,7 @@ template< typename Mesh, typename Real >class advectionRhs
          typedef typename MeshEntity::MeshType::VertexType VertexType;
          VertexType v = entity.getCenter();
          return 0.0;
-      };
+      }
 };
 
 } // namespace TNL

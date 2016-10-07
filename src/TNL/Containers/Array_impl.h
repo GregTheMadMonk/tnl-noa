@@ -83,12 +83,11 @@ Array( Array< Element, Device, Index >& array,
       if( array.referenceCounter )
       {
          this->referenceCounter = array.referenceCounter;
-         *this->referenceCounter++;
+         *this->referenceCounter += 1;
       }
       else
       {
-         this->referenceCounter = array.referenceCounter = new int;
-         *this->referenceCounter = 2;
+         this->referenceCounter = array.referenceCounter = new int( 2 );
       }
    }
 }

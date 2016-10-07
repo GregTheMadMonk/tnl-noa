@@ -16,6 +16,7 @@ SET( headers Matrix.h
              ChunkedEllpack_impl.h
              CSR.h
              CSR_impl.h 
+             MatrixOperations.h
              MatrixReader.h
              MatrixReader_impl.h
              MatrixWriter.h

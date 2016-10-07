@@ -16,11 +16,19 @@ namespace Linear {
 
 template< typename Matrix,
            typename Preconditioner >
-GMRES< Matrix, Preconditioner > :: GMRES()
+GMRES< Matrix, Preconditioner >::
+GMRES()
 : size( 0 ),
   restarting( 10 )
 {
-};
+}
+
+template< typename Matrix,
+          typename Preconditioner >
+GMRES< Matrix, Preconditioner >::
+~GMRES()
+{
+}
 
 template< typename Matrix,
           typename Preconditioner >
@@ -57,24 +65,30 @@ setup( const Config::ParameterContainer& parameters,
 }
 
 template< typename Matrix,
-           typename Preconditioner >
-void GMRES< Matrix, Preconditioner > :: setRestarting( IndexType rest )
+          typename Preconditioner >
+void
+GMRES< Matrix, Preconditioner >::
+setRestarting( IndexType rest )
 {
    if( size != 0 )
       setSize( size, rest );
    restarting = rest;
-};
+}
 
 template< typename Matrix,
           typename Preconditioner >
-void GMRES< Matrix, Preconditioner > :: setMatrix( const MatrixPointer& matrix )
+void
+GMRES< Matrix, Preconditioner >::
+setMatrix( const MatrixPointer& matrix )
 {
    this->matrix = matrix;
 }
 
 template< typename Matrix,
           typename Preconditioner >
-void GMRES< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerPointer& preconditioner )
+void
+GMRES< Matrix, Preconditioner >::
+setPreconditioner( const PreconditionerPointer& preconditioner )
 {
    this->preconditioner = preconditioner;
 }
@@ -82,8 +96,11 @@ void GMRES< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerP
 template< typename Matrix,
           typename Preconditioner >
    template< typename Vector, typename ResidueGetter >
-bool GMRES< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
+bool
+GMRES< Matrix, Preconditioner >::
+solve( const Vector& b, Vector& x )
 {
+   Assert( matrix, std::cerr << "No matrix was set in GMRES. Call setMatrix() before solve()." << std::endl );
    if( restarting <= 0 )
    {
       std::cerr << "I have wrong value for the restarting of the GMRES solver. It is set to " << restarting
@@ -98,43 +115,38 @@ bool GMRES< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 
    IndexType _size = size;
  
-   //RealType *w = _w. getData();
-   RealType *s = _s. getData();
-   RealType *cs = _cs. getData();
-   RealType *sn = _sn. getData();
-   RealType *v = _v. getData();
-   RealType *H = _H. getData();
-   RealType *M_tmp = _M_tmp. getData();
+   //RealType *w = _w.getData();
+   RealType *s = _s.getData();
+   RealType *cs = _cs.getData();
+   RealType *sn = _sn.getData();
+   RealType *v = _v.getData();
+   RealType *H = _H.getData();
+   RealType *M_tmp = _M_tmp.getData();
 
    RealType normb( 0.0 ), beta( 0.0 );
-   //T normb( 0.0 ), beta( 0.0 ); does not work with openmp yet
    /****
     * 1. Solve r from M r = b - A x_0
     */
    if( preconditioner )
    {
       this->preconditioner->solve( b, _M_tmp );
-      normb = _M_tmp. lpNorm( ( RealType ) 2.0 );
+      normb = _M_tmp.lpNorm( ( RealType ) 2.0 );
 
       matrix -> vectorProduct( x, _M_tmp );
       _M_tmp.addVector( b, ( RealType ) 1.0, -1.0 );
-      /*for( i = 0; i < size; i ++ )
-         M_tmp[ i ] = b[ i ] - M_tmp[ i ];*/
 
       this->preconditioner->solve( _M_tmp, _r );
-      beta = _r. lpNorm( ( RealType ) 2.0 );
    }
    else
    {
       matrix -> vectorProduct( x, _r );
-      normb = b. lpNorm( ( RealType ) 2.0 );
-      _r. addVector( b, ( RealType ) 1.0, -1.0 );
-      beta = _r. lpNorm( ( RealType ) 2.0 );
-      //cout << "x = " << x << std::endl;
+      normb = b.lpNorm( ( RealType ) 2.0 );
+      _r.addVector( b, ( RealType ) 1.0, -1.0 );
    }
+   beta = _r.lpNorm( ( RealType ) 2.0 );
  
-    //cout << "norm b = " << normb << std::endl;
-    //cout << " beta = " << beta << std::endl;
+   //cout << "norm b = " << normb << std::endl;
+   //cout << " beta = " << beta << std::endl;
 
 
    if( normb == 0.0 ) normb = 1.0;
@@ -142,7 +154,7 @@ bool GMRES< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
    this->resetIterations();
    this->setResidue( beta / normb );
 
-   Containers::SharedVector< RealType, DeviceType, IndexType > vi, vk;
+   Containers::Vector< RealType, DeviceType, IndexType > vi, vk;
    while( this->checkNextIteration() )
    {
       const IndexType m = restarting;
@@ -152,15 +164,15 @@ bool GMRES< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
       /****
        * v = 0
        */
-      _v. setValue( ( RealType ) 0.0 );
+      _v.setValue( ( RealType ) 0.0 );
 
       /***
        * v_0 = r / | r | =  1.0 / beta * r
        */
-      vi. bind( _v. getData(), size );
-      vi. addVector( _r, ( RealType ) 1.0 / beta );
+      vi.bind( _v.getData(), size );
+      vi.addVector( _r, ( RealType ) 1.0 / beta );
 
-      _s. setValue( ( RealType ) 0.0 );
+      _s.setValue( ( RealType ) 0.0 );
       _s[ 0 ] = beta;
 
 
@@ -170,7 +182,7 @@ bool GMRES< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
        */
       for( IndexType i = 0; i < m && this->nextIteration(); i++ )
       {
-         vi. bind( &( _v. getData()[ i * size ] ), size );
+         vi.bind( &( _v.getData()[ i * size ] ), size );
          /****
           * Solve w from M w = A v_i
           */
@@ -189,17 +201,17 @@ bool GMRES< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
          for( IndexType l = 0; l < 2; l++ )
             for( IndexType k = 0; k <= i; k++ )
             {
-               vk. bind( &( _v. getData()[ k * _size ] ), _size );
+               vk.bind( &( _v.getData()[ k * _size ] ), _size );
                /***
                 * H_{k,i} = ( w, v_k )
                 */
-               RealType H_k_i = w. scalarProduct( vk );
+               RealType H_k_i = w.scalarProduct( vk );
                H[ k + i * ( m + 1 ) ] += H_k_i;
 
                /****
                 * w = w - H_{k,i} v_k
                 */
-               w. addVector( vk, -H_k_i );
+               w.addVector( vk, -H_k_i );
 
                //cout << "H_ki = " << H_k_i << std::endl;
                //cout << "w = " << w << std::endl;
@@ -207,7 +219,7 @@ bool GMRES< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
          /***
           * H_{i+1,i} = |w|
           */
-         RealType normw = w. lpNorm( ( RealType ) 2.0 );
+         RealType normw = w.lpNorm( ( RealType ) 2.0 );
          H[ i + 1 + i * ( m + 1 ) ] = normw;
 
          //cout << "normw = " << normw << std::endl;
@@ -215,8 +227,8 @@ bool GMRES< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
          /***
           * v_{i+1} = w / |w|
           */
-         vi. bind( &( _v. getData()[ ( i + 1 ) * size ] ), size );
-         vi. addVector( w, ( RealType ) 1.0 / normw );
+         vi.bind( &( _v.getData()[ ( i + 1 ) * size ] ), size );
+         vi.addVector( w, ( RealType ) 1.0 / normw );
  
          //cout << "vi = " << vi << std::endl;
  
@@ -266,13 +278,13 @@ bool GMRES< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
          matrix -> vectorProduct( x, _M_tmp );
          _M_tmp.addVector( b, ( RealType ) 1.0, -1.0 );
          preconditioner -> solve( _M_tmp, _r );
-         beta = _r. lpNorm( ( RealType ) 2.0 );
+         beta = _r.lpNorm( ( RealType ) 2.0 );
       }
       else
       {
          matrix -> vectorProduct( x, _r );
          _r.addVector( b, ( RealType ) 1.0, -1.0 );
-         beta = _r. lpNorm( ( RealType ) 2.0 );
+         beta = _r.lpNorm( ( RealType ) 2.0 );
       }
       this->setResidue( beta / normb );
 
@@ -283,26 +295,22 @@ bool GMRES< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
    }
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
-};
-
-template< typename Matrix,
-          typename Preconditioner >
-GMRES< Matrix, Preconditioner > :: ~GMRES()
-{
-};
+}
 
 template< typename Matrix,
           typename Preconditioner >
    template< typename VectorT >
-void GMRES< Matrix, Preconditioner > :: update( IndexType k,
-                                                         IndexType m,
-                                                         const Containers::Vector< RealType, Devices::Host, IndexType >& H,
-                                                         const Containers::Vector< RealType, Devices::Host, IndexType >& s,
-                                                         Containers::Vector< RealType, DeviceType, IndexType >& v,
-                                                         VectorT& x )
+void
+GMRES< Matrix, Preconditioner >::
+update( IndexType k,
+        IndexType m,
+        const Containers::Vector< RealType, Devices::Host, IndexType >& H,
+        const Containers::Vector< RealType, Devices::Host, IndexType >& s,
+        Containers::Vector< RealType, DeviceType, IndexType >& v,
+        VectorT& x )
 {
    Containers::Vector< RealType, Devices::Host, IndexType > y;
-   y. setSize( m + 1 );
+   y.setSize( m + 1 );
 
    IndexType i, j;
    for( i = 0; i <= m ; i ++ )
@@ -317,20 +325,22 @@ void GMRES< Matrix, Preconditioner > :: update( IndexType k,
          y[ j ] -= H[ j + i * ( m + 1 ) ] * y[ i ];
    }
 
-   Containers::SharedVector< RealType, DeviceType, IndexType > vi;
+   Containers::Vector< RealType, DeviceType, IndexType > vi;
    for( i = 0; i <= k; i++)
    {
-      vi. bind( &( v. getData()[ i * this->size ] ), x. getSize() );
-      x. addVector( vi, y[ i ] );
+      vi.bind( &( v.getData()[ i * this->size ] ), x.getSize() );
+      x.addVector( vi, y[ i ] );
    }
-};
+}
 
 template< typename Matrix,
           typename Preconditioner >
-void GMRES< Matrix, Preconditioner > :: generatePlaneRotation( RealType &dx,
-                                                                        RealType &dy,
-                                                                        RealType &cs,
-                                                                        RealType &sn )
+void
+GMRES< Matrix, Preconditioner >::
+generatePlaneRotation( RealType& dx,
+                       RealType& dy,
+                       RealType& cs,
+                       RealType& sn )
 {
    if( dy == 0.0 )
    {
@@ -350,41 +360,45 @@ void GMRES< Matrix, Preconditioner > :: generatePlaneRotation( RealType &dx,
          cs = 1.0 / std::sqrt( 1.0 + temp * temp );
          sn = temp * cs;
       }
-};
+}
 
 template< typename Matrix,
           typename Preconditioner >
-void GMRES< Matrix, Preconditioner > :: applyPlaneRotation( RealType &dx,
-                                                                     RealType &dy,
-                                                                     RealType &cs,
-                                                                     RealType &sn )
+void
+GMRES< Matrix, Preconditioner >::
+applyPlaneRotation( RealType& dx,
+                    RealType& dy,
+                    RealType& cs,
+                    RealType& sn )
 {
    RealType temp  =  cs * dx + sn * dy;
    dy =  cs * dy - sn * dx;
    dx = temp;
-};
+}
 
 template< typename Matrix,
           typename Preconditioner >
-bool GMRES< Matrix, Preconditioner > :: setSize( IndexType _size, IndexType m )
+bool
+GMRES< Matrix, Preconditioner >::
+setSize( IndexType _size, IndexType m )
 {
    if( size == _size && restarting == m ) return true;
    size = _size;
    restarting = m;
-   if( ! _r. setSize( size ) ||
-       ! w. setSize( size ) ||
-       ! _s. setSize( restarting + 1 ) ||
-       ! _cs. setSize( restarting + 1 ) ||
-       ! _sn. setSize( restarting + 1 ) ||
-       ! _v. setSize( size * ( restarting + 1 ) ) ||
-       ! _H. setSize( ( restarting + 1 ) * restarting ) ||
-       ! _M_tmp. setSize( size ) )
+   if( ! _r.setSize( size ) ||
+       ! w.setSize( size ) ||
+       ! _s.setSize( restarting + 1 ) ||
+       ! _cs.setSize( restarting + 1 ) ||
+       ! _sn.setSize( restarting + 1 ) ||
+       ! _v.setSize( size * ( restarting + 1 ) ) ||
+       ! _H.setSize( ( restarting + 1 ) * restarting ) ||
+       ! _M_tmp.setSize( size ) )
    {
       std::cerr << "I could not allocate all supporting arrays for the GMRES solver." << std::endl;
       return false;
    }
    return true;
-};
+}
 
 } // namespace Linear
 } // namespace Solvers

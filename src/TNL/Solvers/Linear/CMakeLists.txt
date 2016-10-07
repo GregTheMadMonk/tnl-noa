@@ -4,6 +4,8 @@ SET( headers BICGStab.h
              BICGStab_impl.h
              CG.h
              CG_impl.h
+             CWYGMRES.h
+             CWYGMRES_impl.h
              GMRES.h
              GMRES_impl.h
              LinearResidueGetter.h
@@ -14,7 +16,6 @@ SET( headers BICGStab.h
              TFQMR_impl.h
              UmfpackWrapper.h
              UmfpackWrapper_impl.h
-
    )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Solvers/Linear )

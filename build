@@ -13,6 +13,7 @@ INSTANTIATE_INT="yes"
 INSTANTIATE_LONG_DOUBLE="no"
 INSTANTIATE_DOUBLE="yes"
 INSTANTIATE_FLOAT="no"
+OPTIMIZED_VECTOR_HOST_OPERATIONS="no"
 CMAKE="cmake"
 CMAKE_ONLY="no"
 HELP="no"
@@ -42,6 +43,7 @@ do
                                            INSTANTIATE_DOUBLE="yes"
                                            INSTANTIATE_FLOAT="no"
                                            WITH_CUDA_ARCH="auto" ;;
+        --optimize-vector-host-operations=* ) OPTIMIZED_VECTOR_HOST_OPERATIONS="yes" ;;
         --with-cmake=*                   ) CMAKE="${option#*=}" ;;
         --build-jobs=*                   ) BUILD_JOBS="${option#*=}" ;;
         --cmake-only=*                   ) CMAKE_ONLY="${option#*=}" ;;
@@ -97,7 +99,8 @@ ${CMAKE} ${ROOT_DIR} \
          -DINSTANTIATE_DOUBLE=${INSTANTIATE_DOUBLE} \
          -DINSTANTIATE_LONG_DOUBLE=${INSTANTIATE_LONG_DOUBLE} \
          -DINSTANTIATE_INT=${INSTANTIATE_INT} \
-         -DINSTANTIATE_LONG_INT=${INSTANTIATE_LONG_INT}
+         -DINSTANTIATE_LONG_INT=${INSTANTIATE_LONG_INT} \
+         -DOPTIMIZED_VECTOR_HOST_OPERATIONS=${OPTIMIZED_VECTOR_HOST_OPERATIONS}
 
 if test $? != 0; then
     echo "Error: cmake exited with error code."

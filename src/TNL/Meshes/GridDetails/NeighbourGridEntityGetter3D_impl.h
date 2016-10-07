@@ -308,7 +308,7 @@ class NeighbourGridEntityGetter<
                                         stepY + ( stepY < 0 ),
                                         stepZ + ( stepZ < 0 ) )
                        < entity.getMesh().getDimensions() +
-                        CoordinatesType( sign( stepX ), sign( stepY ), sign(  stepZ ) ),
+                        CoordinatesType( ( stepX > 0 ), ( stepY > 0 ), ( stepZ > 0 ) ),
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) ) = "
                    << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -397,7 +397,7 @@ class NeighbourGridEntityGetter<
                                         stepY + ( stepY < 0 ),
                                         stepZ + ( stepZ < 0 ) )
                        < entity.getMesh().getDimensions() +
-                        CoordinatesType( sign( stepX ), sign( stepY ), sign(  stepZ ) ),
+                        CoordinatesType( ( stepX > 0 ), ( stepY > 0 ), ( stepZ > 0 ) ),
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) ) = "
                    << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -487,7 +487,7 @@ class NeighbourGridEntityGetter<
                                         stepY + ( stepY < 0 ),
                                         stepZ + ( stepZ < 0 ) )
                        < entity.getMesh().getDimensions() +
-                        CoordinatesType( sign( stepX ), sign( stepY ), sign(  stepZ ) ),
+                        CoordinatesType( ( stepX > 0 ), ( stepY > 0 ), ( stepZ > 0 ) ),
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) ) = "
                    << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -572,7 +572,7 @@ class NeighbourGridEntityGetter<
                                         stepY + ( stepY < 0 ),
                                         stepZ + ( stepZ < 0 ) )
                        < entity.getMesh().getDimensions() +
-                            CoordinatesType( sign( stepX ), sign( stepY ), sign( stepZ ) ),
+                            CoordinatesType( ( stepX > 0 ), ( stepY > 0 ), ( stepZ > 0 ) ),
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 )  ) = "
                    << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) )
                    << " entity.getMesh().getDimensions() + CoordinatesType( sign( stepX ), sign( stepY ), sign( stepZ ) ) = "

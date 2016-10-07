@@ -322,6 +322,10 @@ find_package( PythonInterp 3 )
 #   endif()
 #endif()
 
+if( OPTIMIZED_VECTOR_HOST_OPERATIONS STREQUAL "yes" )
+   AddCompilerFlag( "-DOPTIMIZED_VECTOR_HOST_OPERATIONS " )
+endif()
+
 set( CXX_TEST_FLAGS "-fprofile-arcs -ftest-coverage" )
 set( LD_TEST_FLAGS "-lgcov -coverage" )
 
