@@ -76,14 +76,6 @@ class ExplicitUpdater
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       typedef SharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
       
-      ExplicitUpdater()
-      : gpuTransferTimer( 0 ){}
- 
-      void setGPUTransferTimer( Timer& timer )
-      {
-         this->gpuTransferTimer = &timer;
-      }
-
       template< typename EntityType >
       void update( const RealType& time,
                    const MeshPointer& meshPointer,
@@ -128,11 +120,7 @@ class ExplicitUpdater
                (  *userData.fu )( entity ) += 
                   FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
             }
-      };
- 
-   protected:
- 
-      Timer* gpuTransferTimer;
+      }; 
 };
 
 } // namespace PDE

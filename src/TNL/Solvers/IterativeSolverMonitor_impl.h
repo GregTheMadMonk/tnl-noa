@@ -76,7 +76,7 @@ template< typename Real, typename Index>
 void IterativeSolverMonitor< Real, Index > :: refresh( bool force )
 {
 //   if( this->verbose > 0 && ( force || this->getIterations() % this->refreshRate == 0 ) )
-   if( this->verbose > 0 && force )
+   if( this->verbose > 0 || force )
    {
       const int line_width = this->getLineWidth();
       int free = line_width ? line_width : std::numeric_limits<int>::max();

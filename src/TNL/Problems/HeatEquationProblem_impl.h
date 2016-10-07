@@ -222,10 +222,12 @@ getExplicitRHS( const RealType& time,
     */
    
    //cout << "u = " << u << endl;
+   std::cerr << "==========================================================================================" << std::endl;
+   std::cerr << "==========================================================================================" << std::endl;
+   std::cerr << "==========================================================================================" << std::endl;
    this->bindDofs( meshPointer, uDofs );
    MeshFunctionPointer fuPointer( meshPointer, fuDofs );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer );
    explicitUpdater.template update< typename Mesh::Cell >(
       time,
       meshPointer,
@@ -234,11 +236,14 @@ getExplicitRHS( const RealType& time,
       this->rightHandSidePointer,
       this->uPointer,
       fuPointer );
-   Solvers::PDE::BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
+   std::cerr << "******************************************************************************************" << std::endl;
+   std::cerr << "******************************************************************************************" << std::endl;
+   std::cerr << "******************************************************************************************" << std::endl;
+   /*Solvers::PDE::BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
       this->boundaryConditionPointer,
       time + tau,
-      this->uPointer );
+      this->uPointer );*/
    
    //uPointer->write( "u.txt", "gnuplot" );
    //fuPointer->write( "fu.txt", "gnuplot" );

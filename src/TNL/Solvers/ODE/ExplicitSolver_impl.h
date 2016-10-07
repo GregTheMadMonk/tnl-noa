@@ -25,8 +25,8 @@ ExplicitSolver()
    verbosity( 0 ),
    timer( &defaultTimer ),
    testingMode( false ),
-   problem( 0 ),
-   solverMonitor( 0 )
+   problem( 0 )//,
+   //solverMonitor( 0 )
 {
 };
 
@@ -146,14 +146,6 @@ setTimer( Timer* timer )
 {
    this->timer = timer;
 };
-
-template< class Problem >
-void
-ExplicitSolver< Problem >::
-setSolverMonitor( SolverMonitorType& solverMonitor )
-{
-   this->solverMonitor = &solverMonitor;
-}
 
 template< class Problem >
 void

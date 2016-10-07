@@ -266,19 +266,9 @@ boundaryConditionsTemplatedCompact( const GridType* grid,
          ( *u )( entity ) = ( *boundaryConditions )( *u, entity, time );
       }
    }
-   
-   /*typedef typename GridEntity::IndexType IndexType;
-   typedef typename GridEntity::RealType RealType;
-   RealType* _u = &( *u )[ 0 ];
-   const IndexType tidX = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   const IndexType tidY = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
-   if( tidX == 0 || tidX == end.x() - 1 || tidY == 0 || tidY == end.y() - 1 )      
-   {
-      _u[ tidY * grid->getDimensions().x() + tidX ] = 0.0;
-   }*/
 }
 
-template< typename EntityType, int Dimensions >
+/*template< typename EntityType, int Dimensions >
 struct EntityPointer : public EntityPointer< EntityType, Dimensions - 1 >
 {
    __device__ EntityPointer( const EntityType* ptr )
@@ -299,9 +289,9 @@ struct EntityPointer< EntityType, 0 >
 
    
    const EntityType* pointer;
-};
+};*/
 
-template< typename GridType >
+/*template< typename GridType >
 struct TestEntity
 {
    typedef typename GridType::Cell::CoordinatesType CoordinatesType;
@@ -328,9 +318,8 @@ struct TestEntity
    
    const typename GridType::Cell::CoordinatesType coordinates;
    const typename GridType::Cell::EntityOrientationType orientation;
-   const typename GridType::Cell::EntityBasisType basis;
-   
-};
+   const typename GridType::Cell::EntityBasisType basis;   
+};*/
 
 template< typename GridType,
           typename GridEntity,
@@ -355,20 +344,12 @@ heatEquationTemplatedCompact( const GridType* grid,
    typedef typename GridType::IndexType IndexType;
    typedef typename GridType::RealType RealType;
 
-   //TestEntity< GridType > *entities = getSharedMemory< TestEntity< GridType > >();
-   //TestEntity< GridType >& entity = entities[ threadIdx.y * 16 + threadIdx.x ];
-   //new ( &entity ) TestEntity< GridType >( *grid, coordinates, entityOrientation, entityBasis );
-   
    coordinates.x() = begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
-   
-   //TestEntity< GridType > entity( *grid, coordinates, entityOrientation, entityBasis );
+   coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;     
       
    MeshFunction& u = *_u;
    MeshFunction& fu = *_fu;
 
-   //if( threadIdx.x == 0 )
-   //   printf( "entity size = %d \n", sizeof( GridEntity ) );
    if( coordinates.x() < end.x() &&
        coordinates.y() < end.y() )
    {
@@ -384,26 +365,6 @@ heatEquationTemplatedCompact( const GridType* grid,
          fu( entity ) +=  FunctionAdapter::getValue( *rightHandSide, entity, time );
       }
    }
-   return;
-      
-   //GridEntity entity( grid, coordinates, entityOrientation, entityBasis );
-   //printf( "size = %d ", sizeof( GridEntity ) );
-   //entity.refresh();
-   //typename GridType::TestCell entity( grid, coordinates, entityOrientation, entityBasis );
-   
-   /*const IndexType tidX = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   const IndexType tidY = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
-   MeshFunction& u = *_u;
-   MeshFunction& fu = *_fu;
-   if( tidX > 0 && tidX < end.x() - 1 && tidY > 0 && tidY < end.y() - 1 )      
-   {
-      const IndexType& xSize = grid->getDimensions().x();
-      const IndexType& c = tidY * xSize + tidX;
-      const RealType& hxSquareInverse = grid->template getSpaceStepsProducts< -2, 0 >(); 
-      const RealType& hySquareInverse = grid->template getSpaceStepsProducts< 0, -2 >(); 
-      fu[ c ] = ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ]  ) * hxSquareInverse +
-                ( u[ c - xSize ] - 2.0 * u[ c ] + u[ c + xSize ] ) * hySquareInverse;      
-   }*/
 }
 #endif
 
@@ -557,7 +518,7 @@ getExplicitRHS( const RealType& time,
          checkCudaDevice;
       }
       #endif
-      if( this->cudaKernelType == "templated" )
+      if( this->cudaKernelType == "templated-compact" )
       {
          //if( !this->cudaMesh )
          //   this->cudaMesh = tnlCuda::passToDevice( &mesh );
