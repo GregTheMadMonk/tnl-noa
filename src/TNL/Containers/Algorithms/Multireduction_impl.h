@@ -62,14 +62,17 @@ bool multireductionOnCudaDevice( Operation& operation,
     */
    if( n * ldInput1 < Multireduction_minGpuDataSize ) {
       RealType hostArray1[ Multireduction_minGpuDataSize ];
-      // FIXME: hostArray2 is left undefined if deviceInput2 is nullptr
-      RealType hostArray2[ Multireduction_minGpuDataSize ];
       if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray1, deviceInput1, n * ldInput1 ) )
          return false;
-      if( deviceInput2 &&
-          ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, n * size ) )
-         return false;
-      return multireductionOnHostDevice( operation, n, size, hostArray1, ldInput1, hostArray2, hostResult );
+      if( deviceInput2 ) {
+         RealType hostArray2[ Multireduction_minGpuDataSize ];
+         if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, n * size ) )
+            return false;
+         return multireductionOnHostDevice( operation, n, size, hostArray1, ldInput1, hostArray2, hostResult );
+      }
+      else {
+         return multireductionOnHostDevice( operation, n, size, hostArray1, ldInput1, nullptr, hostResult );
+      }
    }
 
    #ifdef CUDA_REDUCTION_PROFILING
