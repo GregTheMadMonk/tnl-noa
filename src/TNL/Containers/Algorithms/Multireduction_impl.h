@@ -2,16 +2,10 @@
 
 //#define CUDA_REDUCTION_PROFILING
 
-#ifdef HAVE_CUDA
-#include <cuda.h>
-#endif
 #include <TNL/Assert.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
 #include <TNL/Containers/ArrayOperations.h>
-#include <TNL/Math.h>
-#include <TNL/Containers/Algorithms/CudaReductionBuffer.h>
 #include <TNL/Containers/Algorithms/CudaMultireductionKernel.h>
-#include <TNL/Devices/CudaDeviceInfo.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
 #include <TNL/Timer.h>

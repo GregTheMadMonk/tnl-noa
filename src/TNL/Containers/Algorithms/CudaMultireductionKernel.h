@@ -1,5 +1,14 @@
 #pragma once
 
+#ifdef HAVE_CUDA
+#include <cuda.h>
+#endif
+
+#include <TNL/Assert.h>
+#include <TNL/Math.h>
+#include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Containers/Algorithms/CudaReductionBuffer.h>
+
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
