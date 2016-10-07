@@ -29,148 +29,6 @@ namespace Algorithms {
 // TODO: benchmarks with different values
 static constexpr int Multireduction_minGpuDataSize = 256;//65536; //16384;//1024;//256;
 
-#ifdef HAVE_CUDA
-template< typename Operation >
-typename Operation::IndexType
-multireduceOnCudaDevice( Operation& operation,
-                         int n,
-                         const typename Operation::IndexType size,
-                         const typename Operation::RealType* input1,
-                         const typename Operation::IndexType ldInput1,
-                         const typename Operation::RealType* input2,
-                         typename Operation::ResultType*& output )
-{
-   typedef typename Operation::IndexType IndexType;
-   typedef typename Operation::RealType RealType;
-   typedef typename Operation::ResultType ResultType;
-
-   // The number of blocks should be a multiple of the number of multiprocessors
-   // to ensure optimum balancing of the load. This is very important, because
-   // we run the kernel with a fixed number of blocks, so the amount of work per
-   // block increases with enlarging the problem, so even small imbalance can
-   // cost us dearly.
-   // On Tesla K40c, desGridSizeX = 4 * 6 * 15 = 360.
-//   const IndexType desGridSizeX = 4 * Multireduction_minBlocksPerMultiprocessor
-//                                    * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-   // On Tesla K40c, desGridSizeX = 6 * 15 = 90.
-   const IndexType desGridSizeX = Multireduction_minBlocksPerMultiprocessor
-                                * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-   dim3 blockSize, gridSize;
-   
-   // version A: max 16 rows of threads
-   blockSize.y = min( n, 16 );
-
-   // version B: up to 16 rows of threads, then "minimize" number of inactive rows
-//   if( n <= 16 )
-//      blockSize.y = n;
-//   else {
-//      int r = (n - 1) % 16 + 1;
-//      if( r > 12 )
-//         blockSize.y = 16;
-//      else if( r > 8 )
-//         blockSize.y = 4;
-//      else if( r > 4 )
-//         blockSize.y = 8;
-//      else
-//         blockSize.y = 4;
-//   }
-
-   // blockSize.x has to be a power of 2
-   blockSize.x = Multireduction_maxThreadsPerBlock;
-   while( blockSize.x * blockSize.y > Multireduction_maxThreadsPerBlock )
-      blockSize.x /= 2;
-
-   gridSize.x = min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSizeX );
-   gridSize.y = Devices::Cuda::getNumberOfBlocks( n, blockSize.y );
-
-   if( gridSize.y > (unsigned) Devices::Cuda::getMaxGridSize() ) {
-      std::cerr << "Maximum gridSize.y limit exceeded (limit is 65535, attempted " << gridSize.y << ")." << std::endl;
-      throw 1;
-   }
-
-   // create reference to the reduction buffer singleton and set default size
-   // (make an overestimate to avoid reallocation on every call if n is increased by 1 each time)
-   const size_t buf_size = 8 * ( n / 8 + 1 ) * desGridSizeX * sizeof( ResultType );
-   CudaReductionBuffer & cudaReductionBuffer = CudaReductionBuffer::getInstance();
-   if( ! cudaReductionBuffer.setSize( buf_size ) )
-     throw 1;
-   output = cudaReductionBuffer.template getData< ResultType >();
-
-   // when there is only one warp per blockSize.x, we need to allocate two warps
-   // worth of shared memory so that we don't index shared memory out of bounds
-   const IndexType shmem = (blockSize.x <= 32)
-            ? 2 * blockSize.x * blockSize.y * sizeof( ResultType )
-            : blockSize.x * blockSize.y * sizeof( ResultType );
-
-   //cout << "Multireduction of " << n << " datasets, block size (" << blockSize.x << "," << blockSize.y << "), grid size (" << gridSize.x << "," << gridSize.y << "), shmem " << shmem << endl;
-
-   /***
-    * Depending on the blockSize we generate appropriate template instance.
-    */
-   switch( blockSize.x )
-   {
-      case 512:
-         CudaMultireductionKernel< Operation, 512 >
-         <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
-         break;
-      case 256:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation, 256 >, cudaFuncCachePreferShared);
-
-         CudaMultireductionKernel< Operation, 256 >
-         <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
-         break;
-      case 128:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation, 128 >, cudaFuncCachePreferShared);
-
-         CudaMultireductionKernel< Operation, 128 >
-         <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
-         break;
-      case  64:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation,  64 >, cudaFuncCachePreferShared);
-
-         CudaMultireductionKernel< Operation,  64 >
-         <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
-         break;
-      case  32:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation,  32 >, cudaFuncCachePreferShared);
-
-         CudaMultireductionKernel< Operation,  32 >
-         <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
-         break;
-      case  16:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation,  16 >, cudaFuncCachePreferShared);
-
-         CudaMultireductionKernel< Operation,  16 >
-         <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
-         break;
-     case   8:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation,   8 >, cudaFuncCachePreferShared);
-
-         CudaMultireductionKernel< Operation,   8 >
-         <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
-         break;
-      case   4:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation,   4 >, cudaFuncCachePreferShared);
-
-         CudaMultireductionKernel< Operation,   4 >
-        <<< gridSize, blockSize, shmem >>>( operation,  n,size, input1, ldInput1, input2, output);
-        break;
-      case   2:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation,   2 >, cudaFuncCachePreferShared);
-
-         CudaMultireductionKernel< Operation,   2 >
-         <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
-         break;
-      case   1:
-         Assert( false, std::cerr << "blockSize should not be 1." << std::endl );
-      default:
-         Assert( false, std::cerr << "Block size is " << blockSize.x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." << std::endl );
-   }
-   checkCudaDevice;
-   return gridSize.x;
-}
-#endif
-
 /*
  * Parameters:
  *    operation: the operation used for reduction
@@ -224,13 +82,13 @@ bool multireductionOnCudaDevice( Operation& operation,
     * Reduce the data on the CUDA device.
     */
    ResultType* deviceAux1 = nullptr;
-   const IndexType reducedSize = multireduceOnCudaDevice( operation,
-                                                          n,
-                                                          size,
-                                                          deviceInput1,
-                                                          ldInput1,
-                                                          deviceInput2,
-                                                          deviceAux1 );
+   const IndexType reducedSize = CudaMultireductionKernelLauncher( operation,
+                                                                   n,
+                                                                   size,
+                                                                   deviceInput1,
+                                                                   ldInput1,
+                                                                   deviceInput2,
+                                                                   deviceAux1 );
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
       cout << "   Multireduction of " << n << " datasets on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << endl;
