@@ -10,185 +10,15 @@
 
 #pragma once 
 
-#include <cmath>
 #include <TNL/Constants.h>
+#include <TNL/Math.h>
 #include <TNL/Devices/Cuda.h>
 
-#ifdef HAVE_CUDA
-#include <cuda.h>
-#include <TNL/Math.h>
-#endif
 
 
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
-
-#ifdef HAVE_CUDA
-/***
- * This function returns minimum of two numbers stored on the device.
- * TODO: Make it tnlMin, tnlMax etc.
- */
-template< class T > __device__ T tnlCudaMin( const T& a,
-                                             const T& b )
-{
-   return a < b ? a : b;
-}
-
-__device__ inline int tnlCudaMin( const int& a,
-                                  const int& b )
-{
-   return min( a, b );
-}
-
-__device__ inline  float tnlCudaMin( const float& a,
-                                     const float& b )
-{
-   return fminf( a, b );
-}
-
-__device__ inline  double tnlCudaMin( const double& a,
-                                      const double& b )
-{
-   return fmin( a, b );
-}
-
-template< class T > __device__ T tnlCudaMin( volatile const T& a,
-                                             volatile const T& b )
-{
-   return a < b ? a : b;
-}
-
-__device__ inline int tnlCudaMin( volatile const int& a,
-                                  volatile const int& b )
-{
-   return min( a, b );
-}
-
-__device__ inline  float tnlCudaMin( volatile const float& a,
-                                     volatile const float& b )
-{
-   return fminf( a, b );
-}
-
-__device__ inline  double tnlCudaMin( volatile const double& a,
-                                      volatile const double& b )
-{
-   return fmin( a, b );
-}
-
-
-/***
- * This function returns maximum of two numbers stored on the device.
- */
-template< class T > __device__ T tnlCudaMax( const T& a,
-                                             const T& b )
-{
-   return a > b ? a : b;
-}
-
-__device__  inline int tnlCudaMax( const int& a,
-                                   const int& b )
-{
-   return max( a, b );
-}
-
-__device__  inline float tnlCudaMax( const float& a,
-                                     const float& b )
-{
-   return fmaxf( a, b );
-}
-
-__device__  inline double tnlCudaMax( const double& a,
-                                      const double& b )
-{
-   return fmax( a, b );
-}
-
-template< class T > __device__ T tnlCudaMax( volatile const T& a,
-                                             volatile const T& b )
-{
-   return a > b ? a : b;
-}
-
-__device__  inline int tnlCudaMax( volatile const int& a,
-                                   volatile const int& b )
-{
-   return max( a, b );
-}
-
-__device__  inline float tnlCudaMax( volatile const float& a,
-                                     volatile const float& b )
-{
-   return fmaxf( a, b );
-}
-
-__device__  inline double tnlCudaMax( volatile const double& a,
-                                      volatile const double& b )
-{
-   return fmax( a, b );
-}
-
-/***
- * This function returns absolute value of given number on the device.
- */
-__device__  inline int tnlCudaAbs( const int& a )
-{
-   return ::abs( a );
-}
-
-__device__  inline long int tnlCudaAbs( const long int& a )
-{
-   return ::abs( a );
-}
-
-__device__  inline float tnlCudaAbs( const float& a )
-{
-   return ::abs( a );
-}
-
-__device__  inline double tnlCudaAbs( const double& a )
-{
-   return ::abs( a );
-}
-
-__device__  inline long double tnlCudaAbs( const long double& a )
-{
-   return ::abs( ( double ) a );
-}
-
-__device__  inline int tnlCudaAbs( volatile const int& a )
-{
-   return ::abs( a );
-}
-
-__device__  inline long int tnlCudaAbs( volatile const long int& a )
-{
-   return ::abs( a );
-}
-
-__device__  inline float tnlCudaAbs( volatile const float& a )
-{
-   return ::abs( a );
-}
-
-__device__  inline double tnlCudaAbs( volatile const double& a )
-{
-   return ::abs( a );
-}
-
-__device__  inline long double tnlCudaAbs( volatile const long double& a )
-{
-   return ::abs( ( double ) a );
-}
-
-
-template< typename Type1, typename Type2 >
-__device__ Type1 tnlCudaPow( const Type1& x, const Type2& power )
-{
-   return ( Type1 ) ::pow( ( double ) x, ( double ) power );
-}
-#endif
 
 template< typename Real, typename Index >
 class tnlParallelReductionSum
@@ -256,19 +86,19 @@ class tnlParallelReductionMin
                                               const RealType* data1,
                                               const RealType* data2 )
    {
-      result = tnlCudaMin( result, data1[ index ] );
+      result = TNL::min( result, data1[ index ] );
    }
  
    __cuda_callable__ void commonReductionOnDevice( ResultType& result,
                                                    const ResultType& data )
    {
-      result = tnlCudaMin( result, data );
+      result = TNL::min( result, data );
    };
  
    __cuda_callable__ void commonReductionOnDevice( volatile ResultType& result,
                                                    volatile const ResultType& data )
    {
-      result = tnlCudaMin( result, data );
+      result = TNL::min( result, data );
    };
 };
 
@@ -297,19 +127,19 @@ class tnlParallelReductionMax
                                               const RealType* data1,
                                               const RealType* data2 )
    {
-      result = tnlCudaMax( result, data1[ index ] );
+      result = TNL::max( result, data1[ index ] );
    }
  
    __cuda_callable__ void commonReductionOnDevice( ResultType& result,
                                                    const ResultType& data )
    {
-      result = tnlCudaMax( result, data );
+      result = TNL::max( result, data );
    };
 
    __cuda_callable__ void commonReductionOnDevice( volatile ResultType& result,
                                                    volatile const ResultType& data )
    {
-      result = tnlCudaMax( result, data );
+      result = TNL::max( result, data );
    };
 };
 
@@ -421,7 +251,7 @@ class tnlParallelReductionAbsSum : public tnlParallelReductionSum< Real, Index >
                                               const RealType* data1,
                                               const RealType* data2 )
    {
-      result += tnlCudaAbs( data1[ index ] );
+      result += TNL::abs( data1[ index ] );
    }
 };
 
@@ -450,7 +280,7 @@ class tnlParallelReductionAbsMin : public tnlParallelReductionMin< Real, Index >
                                               const RealType* data1,
                                               const RealType* data2 )
    {
-      result = tnlCudaMin( result, tnlCudaAbs( data1[ index ] ) );
+      result = TNL::min( result, TNL::abs( data1[ index ] ) );
    }
 };
 
@@ -479,7 +309,7 @@ class tnlParallelReductionAbsMax : public tnlParallelReductionMax< Real, Index >
                                               const RealType* data1,
                                               const RealType* data2 )
    {
-      result = tnlCudaMax( result, tnlCudaAbs( data1[ index ] ) );
+      result = TNL::max( result, TNL::abs( data1[ index ] ) );
    }
 };
 
@@ -545,7 +375,7 @@ class tnlParallelReductionLpNorm : public tnlParallelReductionSum< Real, Index >
                                               const RealType* data1,
                                               const RealType* data2 )
    {
-      result += tnlCudaPow( tnlCudaAbs( data1[ index ] ), p );
+      result += TNL::pow( TNL::abs( data1[ index ] ), p );
    }
  
    protected:
@@ -694,7 +524,7 @@ class tnlParallelReductionDiffMin : public tnlParallelReductionMin< Real, Index 
                                               const RealType* data1,
                                               const RealType* data2 )
    {
-      result = tnlCudaMin( result, data1[ index ] - data2[ index ] );
+      result = TNL::min( result, data1[ index ] - data2[ index ] );
    }
 };
 
@@ -723,7 +553,7 @@ class tnlParallelReductionDiffMax : public tnlParallelReductionMax< Real, Index 
                                               const RealType* data1,
                                               const RealType* data2 )
    {
-      result = tnlCudaMax( result, data1[ index ] - data2[ index ] );
+      result = TNL::max( result, data1[ index ] - data2[ index ] );
    }
 };
 
@@ -752,7 +582,7 @@ class tnlParallelReductionDiffAbsSum : public tnlParallelReductionMax< Real, Ind
                                               const RealType* data1,
                                               const RealType* data2 )
    {
-      result += tnlCudaAbs( data1[ index ] - data2[ index ] );
+      result += TNL::abs( data1[ index ] - data2[ index ] );
    }
 };
 
@@ -781,7 +611,7 @@ class tnlParallelReductionDiffAbsMin : public tnlParallelReductionMin< Real, Ind
                                               const RealType* data1,
                                               const RealType* data2 )
    {
-      result = tnlCudaMin( result, tnlCudaAbs( data1[ index ] - data2[ index ] ) );
+      result = TNL::min( result, TNL::abs( data1[ index ] - data2[ index ] ) );
    }
 };
 
@@ -810,7 +640,7 @@ class tnlParallelReductionDiffAbsMax : public tnlParallelReductionMax< Real, Ind
                                               const RealType* data1,
                                               const RealType* data2 )
    {
-      result = tnlCudaMax( result, tnlCudaAbs( data1[ index ] - data2[ index ] ) );
+      result = TNL::max( result, TNL::abs( data1[ index ] - data2[ index ] ) );
    }
 };
 
@@ -879,7 +709,7 @@ class tnlParallelReductionDiffLpNorm : public tnlParallelReductionSum< Real, Ind
                                               const RealType* data1,
                                               const RealType* data2 )
    {
-      result += tnlCudaPow( tnlCudaAbs( data1[ index ] - data2[ index ] ), p );
+      result += TNL::pow( TNL::abs( data1[ index ] - data2[ index ] ), p );
    }
  
    protected:

@@ -11,24 +11,163 @@
 #pragma once 
 
 #include <cmath>
-#include <stdlib.h>
+#include <type_traits>
+
 #include <TNL/Devices/Cuda.h>
+
+#ifdef HAVE_CUDA
+#include <cuda.h>
+#endif
 
 namespace TNL {
 
+template< typename T1, typename T2 >
+using enable_if_same_base = std::enable_if< std::is_same< typename std::decay< T1 >::type, T2 >::value, T2 >;
+
+/***
+ * This function returns minimum of two numbers.
+ * Specializations use the functions defined in the CUDA's math_functions.h
+ * in CUDA device code and STL functions otherwise.
+ */
 template< typename Type1, typename Type2 >
-__cuda_callable__
+__cuda_callable__ inline
 Type1 min( const Type1& a, const Type2& b )
 {
    return a < b ? a : b;
 };
 
+// specialization for int
+template< class T >
+__cuda_callable__ inline
+typename enable_if_same_base< T, int >::type
+min( const T& a, const T& b )
+{
+#ifdef __CUDA_ARCH__
+   return ::min( a, b );
+#else
+   return std::min( a, b );
+#endif
+}
+
+// specialization for float
+template< class T >
+__cuda_callable__ inline
+typename enable_if_same_base< T, float >::type
+min( const T& a, const T& b )
+{
+#ifdef __CUDA_ARCH__
+   return ::fminf( a, b );
+#else
+   return std::fmin( a, b );
+#endif
+}
+
+// specialization for double
+template< class T >
+__cuda_callable__ inline
+typename enable_if_same_base< T, double >::type
+min( const T& a, const T& b )
+{
+#ifdef __CUDA_ARCH__
+   return ::fmin( a, b );
+#else
+   return std::fmin( a, b );
+#endif
+}
+
+
+/***
+ * This function returns maximum of two numbers.
+ * Specializations use the functions defined in the CUDA's math_functions.h
+ * in CUDA device code and STL functions otherwise.
+ */
 template< typename Type1, typename Type2 >
 __cuda_callable__
 Type1 max( const Type1& a, const Type2& b )
 {
    return a > b ? a : b;
 };
+
+// specialization for int
+template< class T >
+__cuda_callable__ inline
+typename enable_if_same_base< T, int >::type
+max( const T& a, const T& b )
+{
+#ifdef __CUDA_ARCH__
+   return ::max( a, b );
+#else
+   return std::max( a, b );
+#endif
+}
+
+// specialization for float
+template< class T >
+__cuda_callable__ inline
+typename enable_if_same_base< T, float >::type
+max( const T& a, const T& b )
+{
+#ifdef __CUDA_ARCH__
+   return ::fmaxf( a, b );
+#else
+   return std::fmax( a, b );
+#endif
+}
+
+// specialization for double
+template< class T >
+__cuda_callable__ inline
+typename enable_if_same_base< T, double >::type
+max( const T& a, const T& b )
+{
+#ifdef __CUDA_ARCH__
+   return ::fmax( a, b );
+#else
+   return std::fmax( a, b );
+#endif
+}
+
+
+/***
+ * This function returns absolute value of given number.
+ * Specializations use the functions defined in the CUDA's math_functions.h
+ * in CUDA device code and STL functions otherwise.
+ */
+template< class T >
+__cuda_callable__ inline
+typename std::enable_if< ! std::is_arithmetic< T >::value, T >::type
+abs( const T& n )
+{
+   if( n < ( T ) 0 )
+      return -n;
+   return n;
+}
+
+// specialization for any arithmetic type (e.g. int, float, double)
+template< class T >
+__cuda_callable__ inline
+typename std::enable_if< std::is_arithmetic< T >::value, T >::type
+abs( const T& n )
+{
+#ifdef __CUDA_ARCH__
+   return ::abs( n );
+#else
+   return std::abs( n );
+#endif
+}
+
+
+template< class T >
+__cuda_callable__ inline
+T pow( const T& base, const T& exp )
+{
+#ifdef __CUDA_ARCH__
+   return ::pow( base, exp );
+#else
+   return std::pow( base, exp );
+#endif
+}
+
 
 template< typename Type >
 __cuda_callable__
@@ -46,33 +185,6 @@ T sign( const T& a )
    if( a < ( T ) 0 ) return -1;
    if( a == ( T ) 0 ) return 0;
    return 1;
-};
-
-template< class T >
-__cuda_callable__
-T abs( const T& n )
-{
-   if( n < ( T ) 0 )
-      return -n;
-   return n;
-};
-
-__cuda_callable__
-inline int abs( const int& n )
-{
-   return ::abs( n );
-};
-
-__cuda_callable__
-inline float abs( const float& f )
-{
-   return ::fabs( f );
-};
-
-__cuda_callable__
-inline double abs( const double& d )
-{
-   return ::fabs( d );
 };
 
 template< typename Real >
