@@ -12,37 +12,36 @@
 
 #include <limits.h>
 #include <float.h>
-#include <cstdio>
 #include <TNL/Assert.h>
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 
-template< typename T > __cuda_callable__ T tnlMinValue(){ Assert( false,)};
-template<> inline __cuda_callable__ char               tnlMinValue< char >() { return CHAR_MIN; }
-template<> inline __cuda_callable__ unsigned char      tnlMinValue< unsigned char >() { return 0; }
-template<> inline __cuda_callable__ short int          tnlMinValue< short int >() { return SHRT_MIN; }
-template<> inline __cuda_callable__ unsigned short int tnlMinValue< unsigned short int >() { return 0; }
-template<> inline __cuda_callable__ int                tnlMinValue< int >() { return INT_MIN; }
-template<> inline __cuda_callable__ unsigned int       tnlMinValue< unsigned int >() { return 0; }
-template<> inline __cuda_callable__ long int           tnlMinValue< long int >() { return LONG_MIN; }
-template<> inline __cuda_callable__ unsigned long int  tnlMinValue< unsigned long int >() { return 0; }
-template<> inline __cuda_callable__ float              tnlMinValue< float >() { return -FLT_MAX; }
-template<> inline __cuda_callable__ double             tnlMinValue< double >() { return -DBL_MAX; }
-template<> inline __cuda_callable__ long double        tnlMinValue< long double >() { return -LDBL_MAX; }
+template< typename T > T tnlMinValue() { Assert( false, ); };
+template<> constexpr char               tnlMinValue< char >() { return CHAR_MIN; }
+template<> constexpr unsigned char      tnlMinValue< unsigned char >() { return 0; }
+template<> constexpr short int          tnlMinValue< short int >() { return SHRT_MIN; }
+template<> constexpr unsigned short int tnlMinValue< unsigned short int >() { return 0; }
+template<> constexpr int                tnlMinValue< int >() { return INT_MIN; }
+template<> constexpr unsigned int       tnlMinValue< unsigned int >() { return 0; }
+template<> constexpr long int           tnlMinValue< long int >() { return LONG_MIN; }
+template<> constexpr unsigned long int  tnlMinValue< unsigned long int >() { return 0; }
+template<> constexpr float              tnlMinValue< float >() { return -FLT_MAX; }
+template<> constexpr double             tnlMinValue< double >() { return -DBL_MAX; }
+template<> constexpr long double        tnlMinValue< long double >() { return -LDBL_MAX; }
 
-template< typename T > __cuda_callable__ T tnlMaxValue(){ Assert( false,)};
-template<> inline __cuda_callable__ char               tnlMaxValue< char >() { return CHAR_MAX; }
-template<> inline __cuda_callable__ unsigned char      tnlMaxValue< unsigned char >() { return UCHAR_MAX; }
-template<> inline __cuda_callable__ short int          tnlMaxValue< short int >() { return SHRT_MAX; }
-template<> inline __cuda_callable__ unsigned short int tnlMaxValue< unsigned short int >() { return USHRT_MAX; }
-template<> inline __cuda_callable__ int                tnlMaxValue< int >() { return INT_MAX; }
-template<> inline __cuda_callable__ unsigned int       tnlMaxValue< unsigned int >() { return UINT_MAX; }
-template<> inline __cuda_callable__ long int           tnlMaxValue< long int >() { return LONG_MAX; }
-template<> inline __cuda_callable__ unsigned long int  tnlMaxValue< unsigned long int >() { return ULONG_MAX; }
-template<> inline __cuda_callable__ float              tnlMaxValue< float >() { return FLT_MAX; }
-template<> inline __cuda_callable__ double             tnlMaxValue< double >() { return DBL_MAX; }
-template<> inline __cuda_callable__ long double        tnlMaxValue< long double >() { return LDBL_MAX; }
+template< typename T > T tnlMaxValue() { Assert( false, ); };
+template<> constexpr char               tnlMaxValue< char >() { return CHAR_MAX; }
+template<> constexpr unsigned char      tnlMaxValue< unsigned char >() { return UCHAR_MAX; }
+template<> constexpr short int          tnlMaxValue< short int >() { return SHRT_MAX; }
+template<> constexpr unsigned short int tnlMaxValue< unsigned short int >() { return USHRT_MAX; }
+template<> constexpr int                tnlMaxValue< int >() { return INT_MAX; }
+template<> constexpr unsigned int       tnlMaxValue< unsigned int >() { return UINT_MAX; }
+template<> constexpr long int           tnlMaxValue< long int >() { return LONG_MAX; }
+template<> constexpr unsigned long int  tnlMaxValue< unsigned long int >() { return ULONG_MAX; }
+template<> constexpr float              tnlMaxValue< float >() { return FLT_MAX; }
+template<> constexpr double             tnlMaxValue< double >() { return DBL_MAX; }
+template<> constexpr long double        tnlMaxValue< long double >() { return LDBL_MAX; }
 
 } // namespace TNL
 
