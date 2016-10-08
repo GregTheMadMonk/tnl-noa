@@ -388,27 +388,18 @@ hauseholder_generate( DeviceVector& Y,
    if( i > 0 ) {
       // aux = Y_{i-1}^T * y_i
       RealType aux[ i ];
-      if( std::is_same< DeviceType, Devices::Host >::value ) {
-         // this is optimized better than multireductionOnHostDevice
-         DeviceVector y_k;
-         for( int k = 0; k < i; k++ ) {
-            y_k.bind( &Y.getData()[ k * ldSize ], size );
-            aux[ k ] = y_k.scalarProduct( y_i );
-         }
-      }
-      if( std::is_same< DeviceType, Devices::Cuda >::value ) {
-         Containers::Algorithms::tnlParallelReductionScalarProduct< RealType, IndexType > scalarProduct;
-         if( ! multireductionOnCudaDevice( scalarProduct,
-                                           i,
-                                           size,
-                                           Y.getData(),
-                                           ldSize,
-                                           y_i.getData(),
-                                           aux ) )
-         {
-            std::cerr << "multireductionOnCudaDevice failed" << std::endl;
-            throw 1;
-         }
+      Containers::Algorithms::tnlParallelReductionScalarProduct< RealType, IndexType > scalarProduct;
+      if( ! Containers::Algorithms::Multireduction< DeviceType >::reduce
+               ( scalarProduct,
+                 i,
+                 size,
+                 Y.getData(),
+                 ldSize,
+                 y_i.getData(),
+                 aux ) )
+      {
+         std::cerr << "multireduction failed" << std::endl;
+         throw 1;
       }
 
       // [T_i]_{0..i-1} = - T_{i-1} * t_i * aux
@@ -503,27 +494,18 @@ hauseholder_cwy_transposed( DeviceVector& z,
 {
    // aux = Y_i^T * w
    RealType aux[ i + 1 ];
-   if( std::is_same< DeviceType, Devices::Host >::value ) {
-      // this is optimized better than multireductionOnHostDevice
-      DeviceVector y_k;
-      for( int k = 0; k <= i; k++ ) {
-         y_k.bind( &Y.getData()[ k * ldSize ], size );
-         aux[ k ] = y_k.scalarProduct( w );
-      }
-   }
-   if( std::is_same< DeviceType, Devices::Cuda >::value ) {
-      Containers::Algorithms::tnlParallelReductionScalarProduct< RealType, IndexType > scalarProduct;
-      if( ! multireductionOnCudaDevice( scalarProduct,
-                                        i + 1,
-                                        size,
-                                        Y.getData(),
-                                        ldSize,
-                                        w.getData(),
-                                        aux ) )
-      {
-         std::cerr << "multireductionOnCudaDevice failed" << std::endl;
-         throw 1;
-      }
+   Containers::Algorithms::tnlParallelReductionScalarProduct< RealType, IndexType > scalarProduct;
+   if( ! Containers::Algorithms::Multireduction< DeviceType >::reduce
+            ( scalarProduct,
+              i + 1,
+              size,
+              Y.getData(),
+              ldSize,
+              w.getData(),
+              aux ) )
+   {
+      std::cerr << "multireduction failed" << std::endl;
+      throw 1;
    }
 
    // aux = T_i^T * aux

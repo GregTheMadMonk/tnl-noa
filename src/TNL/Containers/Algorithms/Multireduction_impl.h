@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Multireduction.h"
+
 //#define CUDA_REDUCTION_PROFILING
 
 #include <TNL/Assert.h>
@@ -34,16 +36,19 @@ static constexpr int Multireduction_minGpuDataSize = 256;//65536; //16384;//1024
  *    hostResult: output array of size = n
  */
 template< typename Operation >
-bool multireductionOnCudaDevice( Operation& operation,
-                                 int n,
-                                 const typename Operation::IndexType size,
-                                 const typename Operation::RealType* deviceInput1,
-                                 const typename Operation::IndexType ldInput1,
-                                 const typename Operation::RealType* deviceInput2,
-                                 typename Operation::ResultType* hostResult )
+bool
+Multireduction< Devices::Cuda >::
+reduce( Operation& operation,
+        int n,
+        const typename Operation::IndexType size,
+        const typename Operation::RealType* deviceInput1,
+        const typename Operation::IndexType ldInput1,
+        const typename Operation::RealType* deviceInput2,
+        typename Operation::ResultType* hostResult )
 {
 #ifdef HAVE_CUDA
    Assert( n > 0, );
+   Assert( size <= ldInput1, );
 
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::RealType RealType;
@@ -62,10 +67,10 @@ bool multireductionOnCudaDevice( Operation& operation,
          RealType hostArray2[ Multireduction_minGpuDataSize ];
          if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, n * size ) )
             return false;
-         return multireductionOnHostDevice( operation, n, size, hostArray1, ldInput1, hostArray2, hostResult );
+         return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, hostArray2, hostResult );
       }
       else {
-         return multireductionOnHostDevice( operation, n, size, hostArray1, ldInput1, nullptr, hostResult );
+         return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, nullptr, hostResult );
       }
    }
 
@@ -119,7 +124,7 @@ bool multireductionOnCudaDevice( Operation& operation,
     * Reduce the data on the host system.
     */
    LaterReductionOperation laterReductionOperation;
-   multireductionOnHostDevice( laterReductionOperation, n, reducedSize, resultArray, reducedSize, (RealType*) nullptr, hostResult );
+   Multireduction< Devices::Host >::reduce( laterReductionOperation, n, reducedSize, resultArray, reducedSize, (RealType*) nullptr, hostResult );
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
@@ -144,23 +149,91 @@ bool multireductionOnCudaDevice( Operation& operation,
  *    hostResult: output array of size = n
  */
 template< typename Operation >
-bool multireductionOnHostDevice( Operation& operation,
-                                 int n,
-                                 const typename Operation::IndexType size,
-                                 const typename Operation::RealType* input1,
-                                 const typename Operation::IndexType ldInput1,
-                                 const typename Operation::RealType* input2,
-                                 typename Operation::ResultType* result )
+bool
+Multireduction< Devices::Host >::
+reduce( Operation& operation,
+        int n,
+        const typename Operation::IndexType size,
+        const typename Operation::RealType* input1,
+        const typename Operation::IndexType ldInput1,
+        const typename Operation::RealType* input2,
+        typename Operation::ResultType* result )
 {
+   Assert( n > 0, );
+   Assert( size <= ldInput1, );
+
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::RealType RealType;
+   typedef typename Operation::ResultType ResultType;
 
-   for( int k = 0; k < n; k++ ) {
-      result[ k ] = operation.initialValue();
-      const RealType* _input1 = input1 + k * ldInput1;
-      for( IndexType i = 0; i < size; i++ )
-         result[ k ] = operation.reduceOnHost( i, result[ k ], _input1, input2 );
+   const int block_size = 128;
+   const int blocks = size / block_size;
+
+#ifdef HAVE_OPENMP
+   if( TNL::Devices::Host::isOMPEnabled() && blocks >= 2 )
+#pragma omp parallel
+   {
+      // first thread initializes the result array
+      #pragma omp single nowait
+      {
+         for( int k = 0; k < n; k++ )
+            result[ k ] = operation.initialValue();
+      }
+
+      // initialize array for thread-local results
+      ResultType r[ n ];
+      for( int k = 0; k < n; k++ )
+         r[ k ] = operation.initialValue();
+
+      #pragma omp for nowait
+      for( int b = 0; b < blocks; b++ ) {
+         const int offset = b * block_size;
+         for( int k = 0; k < n; k++ ) {
+            const RealType* _input1 = input1 + k * ldInput1;
+            for( IndexType i = 0; i < block_size; i++ )
+               r[ k ] = operation.reduceOnHost( offset + i, r[ k ], _input1, input2 );
+         }
+      }
+
+      // the first thread that reaches here processes the last, incomplete block
+      #pragma omp single nowait
+      {
+         for( int k = 0; k < n; k++ ) {
+            const RealType* _input1 = input1 + k * ldInput1;
+            for( IndexType i = blocks * block_size; i < size; i++ )
+               r[ k ] = operation.reduceOnHost( i, r[ k ], _input1, input2 );
+         }
+      }
+
+      // inter-thread reduction of local results
+      for( int k = 0; k < n; k++ )
+         #pragma omp critical
+         {
+            operation.commonReductionOnDevice( result[ k ], r[ k ] );
+         }
    }
+   else {
+#endif
+      for( int k = 0; k < n; k++ )
+         result[ k ] = operation.initialValue();
+
+      for( int b = 0; b < blocks; b++ ) {
+         const int offset = b * block_size;
+         for( int k = 0; k < n; k++ ) {
+            const RealType* _input1 = input1 + k * ldInput1;
+            for( IndexType i = 0; i < block_size; i++ )
+               result[ k ] = operation.reduceOnHost( offset + i, result[ k ], _input1, input2 );
+         }
+      }
+
+      for( int k = 0; k < n; k++ ) {
+         const RealType* _input1 = input1 + k * ldInput1;
+         for( IndexType i = blocks * block_size; i < size; i++ )
+            result[ k ] = operation.reduceOnHost( i, result[ k ], _input1, input2 );
+      }
+#ifdef HAVE_OPENMP
+   }
+#endif
 
    return true;
 }

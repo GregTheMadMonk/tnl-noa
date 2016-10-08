@@ -40,6 +40,9 @@ public:
       Assert( m <= lda, );
 
       if( beta != 0.0 ) {
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )
+#endif
          for( IndexType j = 0; j < m; j++ ) {
             RealType tmp = 0.0;
             for( int k = 0; k < n; k++ )
@@ -49,6 +52,9 @@ public:
       }
       else {
          // the vector y might be uninitialized, and 0.0 * NaN = NaN
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )
+#endif
          for( IndexType j = 0; j < m; j++ ) {
             RealType tmp = 0.0;
             for( int k = 0; k < n; k++ )
