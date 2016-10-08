@@ -75,19 +75,24 @@ processEntities(
    else
    {
       //TODO: This does not work with gcc-5.4 and older, should work at gcc 6.x
-      /*for( entity.getCoordinates().x() = begin.x();
+/*#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )
+      for( entity.getCoordinates().x() = begin.x();
            entity.getCoordinates().x() <= end.x();
            entity.getCoordinates().x() ++ )
       {
          entity.refresh();
          EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
       }*/ 
+#ifdef HAVE_OPENMP
 #pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
+#endif
       {
          GridEntity entity( *gridPointer );
          entity.setOrientation( entityOrientation );
          entity.setBasis( entityBasis );
+#ifdef HAVE_OPENMP
 #pragma omp for 
+#endif
          for( IndexType x = begin.x(); x<= end.x(); x ++ )
          {
             entity.getCoordinates().x() = x;
@@ -283,12 +288,16 @@ processEntities(
             entity.refresh();
             EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
          }*/
+#ifdef HAVE_OPENMP
 #pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
+#endif
       {
          GridEntity entity( *gridPointer );
          entity.setOrientation( entityOrientation );
          entity.setBasis( entityBasis );
+#ifdef HAVE_OPENMP
 #pragma omp for 
+#endif
          for( IndexType y = begin.y(); y <= end.y(); y ++ )
             for( IndexType x = begin.x(); x<= end.x(); x ++ )
             {
@@ -481,12 +490,16 @@ processEntities(
                entity.refresh();
                EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
             }*/
+#ifdef HAVE_OPENMP
 #pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
+#endif
       {
          GridEntity entity( *gridPointer );
          entity.setOrientation( entityOrientation );
          entity.setBasis( entityBasis );         
+#ifdef HAVE_OPENMP
 #pragma omp for
+#endif
          for( IndexType z = begin.y(); z <= end.y(); z ++ )
             for( IndexType y = begin.y(); y <= end.y(); y ++ )
                for( IndexType x = begin.x(); x<= end.x(); x ++ )
