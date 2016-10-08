@@ -17,7 +17,7 @@
 
 namespace TNL {
 
-template< typename T > T tnlMinValue() { Assert( false, ); };
+template< typename T > constexpr T tnlMinValue() { Assert( false, ); return T(); };
 template<> constexpr char               tnlMinValue< char >() { return CHAR_MIN; }
 template<> constexpr unsigned char      tnlMinValue< unsigned char >() { return 0; }
 template<> constexpr short int          tnlMinValue< short int >() { return SHRT_MIN; }
@@ -30,7 +30,7 @@ template<> constexpr float              tnlMinValue< float >() { return -FLT_MAX
 template<> constexpr double             tnlMinValue< double >() { return -DBL_MAX; }
 template<> constexpr long double        tnlMinValue< long double >() { return -LDBL_MAX; }
 
-template< typename T > T tnlMaxValue() { Assert( false, ); };
+template< typename T > constexpr T tnlMaxValue() { Assert( false, ); return T(); };
 template<> constexpr char               tnlMaxValue< char >() { return CHAR_MAX; }
 template<> constexpr unsigned char      tnlMaxValue< unsigned char >() { return UCHAR_MAX; }
 template<> constexpr short int          tnlMaxValue< short int >() { return SHRT_MAX; }
