@@ -93,7 +93,7 @@ processEntities(
 #ifdef HAVE_OPENMP
 #pragma omp for 
 #endif
-         for( IndexType x = begin.x(); x<= end.x(); x ++ )
+         for( IndexType x = begin.x(); x <= end.x(); x ++ )
          {
             entity.getCoordinates().x() = x;
             entity.refresh();
@@ -299,7 +299,7 @@ processEntities(
 #pragma omp for 
 #endif
          for( IndexType y = begin.y(); y <= end.y(); y ++ )
-            for( IndexType x = begin.x(); x<= end.x(); x ++ )
+            for( IndexType x = begin.x(); x <= end.x(); x ++ )
             {
                entity.getCoordinates().x() = x;
                entity.getCoordinates().y() = y;
@@ -500,9 +500,9 @@ processEntities(
 #ifdef HAVE_OPENMP
 #pragma omp for
 #endif
-         for( IndexType z = begin.y(); z <= end.y(); z ++ )
+         for( IndexType z = begin.z(); z <= end.z(); z ++ )
             for( IndexType y = begin.y(); y <= end.y(); y ++ )
-               for( IndexType x = begin.x(); x<= end.x(); x ++ )
+               for( IndexType x = begin.x(); x <= end.x(); x ++ )
                {
                   entity.getCoordinates().x() = x;
                   entity.getCoordinates().y() = y;
