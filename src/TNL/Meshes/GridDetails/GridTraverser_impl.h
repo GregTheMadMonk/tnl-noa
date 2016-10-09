@@ -324,22 +324,28 @@ __global__ void
 GridTraverser2D(
    const Meshes::Grid< 2, Real, Devices::Cuda, Index >* grid,
    UserData* userData,
-   const TraverserKernelData< typename GridEntity::CoordinatesType >* kernelData,
+   //const TraverserKernelData< typename GridEntity::CoordinatesType >* kernelData,
+   const typename GridEntity::CoordinatesType begin,
+   const typename GridEntity::CoordinatesType end,
+   const typename GridEntity::CoordinatesType entityOrientation,
+   const typename GridEntity::CoordinatesType entityBasis,
    const Index gridXIdx,
    const Index gridYIdx )
 {
    typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
 
-   coordinates.x() = kernelData->begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = kernelData->begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
+   //coordinates.x() = kernelData->begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   //coordinates.y() = kernelData->begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
    
+   coordinates.x() = begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
    
 
-   if( coordinates.x() <= kernelData->end.x() &&
-       coordinates.y() <= kernelData->end.y() )
+   if( coordinates.x() <= end.x() &&
+       coordinates.y() <= end.y() )
    {
-      GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
+      GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
       entity.refresh();
       if( ! processOnlyBoundaryEntities || entity.isBoundaryEntity() )
       {
@@ -372,8 +378,8 @@ processEntities(
    SharedPointer< UserData, DeviceType >& userDataPointer )
 {
 #ifdef HAVE_CUDA   
-   UniquePointer< TraverserKernelData< CoordinatesType >, Devices::Cuda >
-      kernelData( begin, end, entityOrientation, entityBasis );
+   //UniquePointer< TraverserKernelData< CoordinatesType >, Devices::Cuda >
+   //   kernelData( begin, end, entityOrientation, entityBasis );
 
    dim3 cudaBlockSize( 16, 16 );
    dim3 cudaBlocks;
@@ -389,7 +395,8 @@ processEntities(
             <<< cudaBlocks, cudaBlockSize >>>
             ( &gridPointer.template getData< Devices::Cuda >(),
               &userDataPointer.template modifyData< Devices::Cuda >(),
-              &kernelData.template getData< Devices::Cuda >(),
+              //&kernelData.template getData< Devices::Cuda >(),
+              begin, end, entityOrientation, entityBasis,
               gridXIdx,
               gridYIdx );
  

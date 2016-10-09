@@ -3,7 +3,6 @@
 
 #include <TNL/FileName.h>
 #include <TNL/Matrices/MatrixSetter.h>
-#include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 #include "TestGridEntity.h"
@@ -355,15 +354,15 @@ heatEquationTemplatedCompact( const GridType* grid,
    {
       GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
       
-      entity.refresh();
-      if( ! entity.isBoundaryEntity() )
+      //entity.refresh();
+      /*if( ! entity.isBoundaryEntity() )
       {
          fu( entity ) = 
             ( *differentialOperator )( u, entity, time );
 
          typedef Functions::FunctionAdapter< GridType, RightHandSide > FunctionAdapter;
          fu( entity ) +=  FunctionAdapter::getValue( *rightHandSide, entity, time );
-      }
+      }*/
    }
 }
 #endif
@@ -518,22 +517,21 @@ getExplicitRHS( const RealType& time,
          checkCudaDevice;
       }
       #endif
-      if( this->cudaKernelType == "templated-compact" )
+      if( this->cudaKernelType == "templated" )
       {
          //if( !this->cudaMesh )
          //   this->cudaMesh = tnlCuda::passToDevice( &mesh );
-         MeshFunctionPointer uPointer( mesh, uDofs );
-         MeshFunctionPointer fuPointer( mesh, fuDofs );
-         Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+         this->u->bind( mesh, uDofs );
+         this->fu->bind( mesh, fuDofs );         
          //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
-         explicitUpdater.template update< typename Mesh::Cell >( 
+         this->explicitUpdater.template update< typename Mesh::Cell >( 
             time,
             mesh,
             this->differentialOperatorPointer,
             this->boundaryConditionPointer,
             this->rightHandSidePointer,
-            uPointer,
-            fuPointer );
+            this->u,
+            this->fu );
             }
    }
 }

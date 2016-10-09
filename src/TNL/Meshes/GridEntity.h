@@ -268,10 +268,6 @@ class GridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, Dimensions, C
  
       CoordinatesType coordinates;
  
-      EntityOrientationType orientation;
- 
-      EntityBasisType basis;
- 
       NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
  
       //__cuda_callable__ inline

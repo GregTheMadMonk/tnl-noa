@@ -130,11 +130,11 @@ solve( const RealType& time,
    this->odeSolver->setStopTime( stopTime );
    if( this->odeSolver->getMinIterations() )
       this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< Problem >::RealType ) this->odeSolver->getMinIterations() );
-   this->mesh = mesh;
-   this->meshDependentData = meshDependentData;
+   this->mesh = &mesh;
+   this->meshDependentData = &meshDependentData;
    if( ! this->odeSolver->solve( dofVector ) )
       return false;
-   this->problem->setExplicitBoundaryConditions( stopTime, this->mesh, dofVector, this->meshDependentData );
+   this->problem->setExplicitBoundaryConditions( stopTime, *this->mesh, dofVector, *this->meshDependentData );
    mainTimer.stop();
    this->allIterations += this->odeSolver->getIterations();
    return true;
@@ -157,9 +157,9 @@ getExplicitRHS( const RealType& time,
    this->preIterateTimer.start();
    if( ! this->problem->preIterate( time,
                                     tau,
-                                    this->mesh,
+                                    *this->mesh,
                                     u,
-                                    this->meshDependentData ) )
+                                    *this->meshDependentData ) )
    {
       std::cerr << std::endl << "Preiteration failed." << std::endl;
       return;
@@ -171,8 +171,8 @@ getExplicitRHS( const RealType& time,
       this->solverMonitor->setStage( "Explicit update" );
 
    this->explicitUpdaterTimer.start();
-   this->problem->setExplicitBoundaryConditions( time, this->mesh, u, this->meshDependentData );
-   this->problem->getExplicitRHS( time, tau, this->mesh, u, fu, this->meshDependentData );
+   this->problem->setExplicitBoundaryConditions( time, *this->mesh, u, *this->meshDependentData );
+   this->problem->getExplicitRHS( time, tau, *this->mesh, u, fu, *this->meshDependentData );
    this->explicitUpdaterTimer.stop();
 
    if( this->solverMonitor )
@@ -181,9 +181,9 @@ getExplicitRHS( const RealType& time,
    this->postIterateTimer.start();
    if( ! this->problem->postIterate( time,
                                      tau,
-                                     this->mesh,
+                                     *this->mesh,
                                      u,
-                                     this->meshDependentData ) )
+                                     *this->meshDependentData ) )
    {
       std::cerr << std::endl << "Postiteration failed." << std::endl;
       return;
