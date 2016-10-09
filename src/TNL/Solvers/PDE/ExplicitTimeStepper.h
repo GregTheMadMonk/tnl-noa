@@ -83,11 +83,16 @@ class ExplicitTimeStepper
 
    Problem* problem;
 
-   MeshPointer mesh;
 
    RealType timeStep;
 
-   MeshDependentDataPointer meshDependentData;
+   /****
+    * The pointers on the shared pointer is important here to avoid 
+    * memory deallocation in the assignment operator in SharedPointer.
+    */
+   MeshDependentDataPointer* meshDependentData;
+   
+   const MeshPointer* mesh;
  
    Timer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
  

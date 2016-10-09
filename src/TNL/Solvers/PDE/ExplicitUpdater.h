@@ -27,7 +27,7 @@ class ExplicitUpdaterTraverserUserData
 {
    public:
       
-      const Real time;
+      Real time;
 
       const DifferentialOperator* differentialOperator;
 
@@ -37,19 +37,30 @@ class ExplicitUpdaterTraverserUserData
 
       MeshFunction *u, *fu;
       
-      ExplicitUpdaterTraverserUserData( const Real& time,
-                                        const DifferentialOperator* differentialOperator,
-                                        const BoundaryConditions* boundaryConditions,
-                                        const RightHandSide* rightHandSide,
-                                        MeshFunction* u,
-                                        MeshFunction* fu )
-      : time( time ),
-        differentialOperator( differentialOperator ),
-        boundaryConditions( boundaryConditions ),
-        rightHandSide( rightHandSide ),
-        u( u ),
-        fu( fu )
+      ExplicitUpdaterTraverserUserData()
+      : time( 0.0 ),
+        differentialOperator( NULL ),
+        boundaryConditions( NULL ),
+        rightHandSide( NULL ),
+        u( NULL ),
+        fu( NULL )
       {}
+      
+      
+      void setUserData( const Real& time,
+                        const DifferentialOperator* differentialOperator,
+                        const BoundaryConditions* boundaryConditions,
+                        const RightHandSide* rightHandSide,
+                        MeshFunction* u,
+                        MeshFunction* fu )
+      {
+         this->time = time;
+         this->differentialOperator = differentialOperator;
+         this->boundaryConditions = boundaryConditions;
+         this->rightHandSide = rightHandSide;
+         this->u = u;
+         this->fu = fu;
+      }
 };
 
 
@@ -75,6 +86,7 @@ class ExplicitUpdater
       typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       typedef SharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
+      typedef SharedPointer< TraverserUserData, DeviceType > TraverserUserDataPointer;
       
       template< typename EntityType >
       void update( const RealType& time,
@@ -83,12 +95,13 @@ class ExplicitUpdater
                    const BoundaryConditionsPointer& boundaryConditionsPointer,
                    const RightHandSidePointer& rightHandSidePointer,
                    MeshFunctionPointer& uPointer,
-                   MeshFunctionPointer& fuPointer ) const;      
+                   MeshFunctionPointer& fuPointer );
       
+         
       class TraverserBoundaryEntitiesProcessor
       {
          public:
- 
+
             template< typename GridEntity >
             __cuda_callable__
             static inline void processEntity( const MeshType& mesh,
@@ -106,7 +119,7 @@ class ExplicitUpdater
          public:
 
             typedef typename MeshType::VertexType VertexType;
- 
+
             template< typename EntityType >
             __cuda_callable__
             static inline void processEntity( const MeshType& mesh,
@@ -121,6 +134,11 @@ class ExplicitUpdater
                   FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
             }
       }; 
+
+   protected:
+
+      TraverserUserDataPointer userDataPointer;
+
 };
 
 } // namespace PDE
