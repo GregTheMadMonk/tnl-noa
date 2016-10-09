@@ -206,11 +206,11 @@ reduce( Operation& operation,
       }
 
       // inter-thread reduction of local results
-      for( int k = 0; k < n; k++ )
-         #pragma omp critical
-         {
+      #pragma omp critical
+      {
+         for( int k = 0; k < n; k++ )
             operation.commonReductionOnDevice( result[ k ], r[ k ] );
-         }
+      }
    }
    else {
 #endif
