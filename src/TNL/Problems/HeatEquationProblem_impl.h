@@ -21,7 +21,6 @@
 #include <TNL/Matrices/MultidiagonalMatrixSetter.h>
 #include <TNL/Logger.h>
 #include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
-#include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
@@ -226,8 +225,7 @@ getExplicitRHS( const RealType& time,
    //std::cerr << "==========================================================================================" << std::endl;
    //std::cerr << "==========================================================================================" << std::endl;
    this->bindDofs( meshPointer, uDofs );
-   MeshFunctionPointer fuPointer( meshPointer, fuDofs );
-   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+   MeshFunctionPointer fuPointer( meshPointer, fuDofs );   
    explicitUpdater.template update< typename Mesh::Cell >(
       time,
       meshPointer,

@@ -72,9 +72,7 @@ __global__ void heatEquationKernel( const Real* u,
                                     const Real hx_inv,
                                     const Real hy_inv,
                                     const Index gridXSize,
-                                    const Index gridYSize,
-                                    Data d1,
-                                    Data d2 )
+                                    const Index gridYSize )
 {
    const Index i = blockIdx.x * blockDim.x + threadIdx.x;
    const Index j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -98,20 +96,6 @@ bool pureCRhsCuda( dim3 cudaGridSize,
                    int gridXSize,
                    int gridYSize )
 {
-   /*Real* kernelTime = tnlCuda::passToDevice( time );
-   Real* kernelTau = tnlCuda::passToDevice( tau );
-   typedef tnlStaticVector< 2, Real > Coordinates;
-   Coordinates c;
-   Coordinates* kernelC1 = tnlCuda::passToDevice( c );
-   Coordinates* kernelC2 = tnlCuda::passToDevice( c );
-   Coordinates* kernelC3 = tnlCuda::passToDevice( c );
-   Coordinates* kernelC4 = tnlCuda::passToDevice( c );
-   typedef Meshes::Grid< 2, Real, tnlCuda, int > Grid;
-   Grid g;
-   Grid* kernelGrid = tnlCuda::passToDevice( g );*/
-   Data d, d2;
-   //Data* kernelD = tnlCuda::passToDevice( d );
-
    int cudaErr;
    /****
     * Neumann boundary conditions
@@ -129,21 +113,12 @@ bool pureCRhsCuda( dim3 cudaGridSize,
     */
    //cout << "Laplace operator ... " << endl;
    heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
-      ( cuda_u, cuda_aux, tau, hx_inv, hy_inv, gridXSize, gridYSize, d, d2 );
+      ( cuda_u, cuda_aux, tau, hx_inv, hy_inv, gridXSize, gridYSize );
    if( cudaGetLastError() != cudaSuccess )
    {
       std::cerr << "Laplace operator failed." << std::endl;
       return false;
    }
-
-   //tnlCuda::freeFromDevice( kernelD );
-   /*tnlCuda::freeFromDevice( kernelTau );
-   tnlCuda::freeFromDevice( kernelC1 );
-   tnlCuda::freeFromDevice( kernelC2 );
-   tnlCuda::freeFromDevice( kernelC3 );
-   tnlCuda::freeFromDevice( kernelC4 );
-   tnlCuda::freeFromDevice( kernelGrid );*/
-
    return true;
 }
 

@@ -70,7 +70,7 @@ reduce( Operation& operation,
          return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, hostArray2, hostResult );
       }
       else {
-         return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, nullptr, hostResult );
+         return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, ( RealType* ) nullptr, hostResult );
       }
    }
 
