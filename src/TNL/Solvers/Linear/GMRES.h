@@ -12,12 +12,12 @@
 
 #include <math.h>
 #include <TNL/Object.h>
+#include <TNL/SharedPointer.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/SharedVector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
-#include <TNL/SharedPointer.h>
 
 namespace TNL {
 namespace Solvers {
@@ -38,8 +38,8 @@ class GMRES : public Object,
    typedef typename Matrix :: DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
-   // TODO: make this: typedef SharedPointer< const MatrixType, DeviceType > ConstMatrixPointer;
+   typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
+   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
 
    GMRES();
 
@@ -49,23 +49,17 @@ class GMRES : public Object,
                             const String& prefix = "" );
 
    bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+               const String& prefix = "" );
 
    void setRestarting( IndexType rest );
 
-   void setMatrix( MatrixPointer& matrix );
+   void setMatrix( const MatrixPointer& matrix );
 
-   void setPreconditioner( const PreconditionerType& preconditioner );
+   void setPreconditioner( const PreconditionerPointer& preconditioner );
 
-#ifdef HAVE_NOT_CXX11
-   template< typename VectorPointer,
-             typename ResidueGetter >
+   template< typename Vector,
+             typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
    bool solve( const Vector& b, Vector& x );
-#else
-   template< typename VectorPointer,
-             typename ResidueGetter = LinearResidueGetter< Matrix, VectorPointer >  >
-   bool solve( const VectorPointer& b, VectorPointer& x );
-#endif
 
    ~GMRES();
 
@@ -98,7 +92,7 @@ class GMRES : public Object,
    IndexType size, restarting;
 
    MatrixPointer matrix;
-   const PreconditionerType* preconditioner;
+   PreconditionerPointer preconditioner;
 };
 
 } // namespace Linear

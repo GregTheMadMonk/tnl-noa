@@ -33,7 +33,8 @@ class eulerProblem:
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
-      using typename BaseType::MeshDependentDataType;       
+      using typename BaseType::MeshDependentDataType;
+      using typename BaseType::MeshDependentDataPointer;
 
       typedef typename DifferentialOperator::Continuity Continuity;
       typedef typename DifferentialOperator::MomentumX MomentumX;
@@ -58,7 +59,7 @@ class eulerProblem:
       bool setInitialCondition( const Config::ParameterContainer& parameters,
                                 const MeshPointer& mesh,
                                 DofVectorPointer& dofs,
-                                MeshDependentDataType& meshDependentData );
+                                MeshDependentDataPointer& meshDependentData );
 
       template< typename Matrix >
       bool setupLinearSystem( const MeshPointer& mesh,
@@ -68,7 +69,7 @@ class eulerProblem:
                          const IndexType& step,
                          const MeshPointer& mesh,
                          DofVectorPointer& dofs,
-                         MeshDependentDataType& meshDependentData );
+                         MeshDependentDataPointer& meshDependentData );
 
       IndexType getDofs( const MeshPointer& mesh ) const;
 
@@ -80,7 +81,7 @@ class eulerProblem:
                            const MeshPointer& mesh,
                            DofVectorPointer& _u,
                            DofVectorPointer& _fu,
-                           MeshDependentDataType& meshDependentData );
+                           MeshDependentDataPointer& meshDependentData );
 
       template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,
@@ -89,13 +90,13 @@ class eulerProblem:
                                  DofVectorPointer& dofs,
                                  Matrix& matrix,
                                  DofVectorPointer& rightHandSide,
-                                 MeshDependentDataType& meshDependentData );
+                                 MeshDependentDataPointer& meshDependentData );
 
       bool postIterate( const RealType& time,
                         const RealType& tau,
                         const MeshPointer& mesh,
                         DofVectorPointer& dofs,
-                        MeshDependentDataType& meshDependentData );
+                        MeshDependentDataPointer& meshDependentData );
 
    protected:
 

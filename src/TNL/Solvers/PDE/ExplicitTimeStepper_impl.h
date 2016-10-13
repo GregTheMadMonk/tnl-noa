@@ -79,6 +79,17 @@ setProblem( ProblemType& problem )
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
+void
+ExplicitTimeStepper< Problem, OdeSolver >::
+setSolverMonitor( SolverMonitorType& solverMonitor )
+{
+   this->solverMonitor = &solverMonitor;
+   if( this->odeSolver )
+      this->odeSolver->setSolverMonitor( solverMonitor );
+}
+
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
 Problem*
 ExplicitTimeStepper< Problem, OdeSolver >::
 getProblem() const
@@ -109,7 +120,7 @@ solve( const RealType& time,
        const RealType& stopTime,
        const MeshPointer& mesh,
        DofVectorPointer& dofVector,
-       MeshDependentDataType& meshDependentData )
+       MeshDependentDataPointer& meshDependentData )
 {
    Assert( this->odeSolver, );
    mainTimer.start();
@@ -120,10 +131,10 @@ solve( const RealType& time,
    if( this->odeSolver->getMinIterations() )
       this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< Problem >::RealType ) this->odeSolver->getMinIterations() );
    this->mesh = mesh;
-   this->meshDependentData = &meshDependentData;
+   this->meshDependentData = meshDependentData;
    if( ! this->odeSolver->solve( dofVector ) )
       return false;
-   this->problem->setExplicitBoundaryConditions( stopTime, this->mesh, dofVector, *( this->meshDependentData ) );
+   this->problem->setExplicitBoundaryConditions( stopTime, this->mesh, dofVector, this->meshDependentData );
    mainTimer.stop();
    this->allIterations += this->odeSolver->getIterations();
    return true;
@@ -138,28 +149,41 @@ getExplicitRHS( const RealType& time,
                 DofVectorPointer& u,
                 DofVectorPointer& fu )
 {
+   if( this->solverMonitor ) {
+      this->solverMonitor->setTime( time );
+      this->solverMonitor->setStage( "Preiteration" );
+   }
+
    this->preIterateTimer.start();
    if( ! this->problem->preIterate( time,
                                     tau,
                                     this->mesh,
                                     u,
-                                    *( this->meshDependentData ) ) )
+                                    this->meshDependentData ) )
    {
       std::cerr << std::endl << "Preiteration failed." << std::endl;
       return;
       //return false; // TODO: throw exception
    }
    this->preIterateTimer.stop();
+
+   if( this->solverMonitor )
+      this->solverMonitor->setStage( "Explicit update" );
+
    this->explicitUpdaterTimer.start();
-   this->problem->setExplicitBoundaryConditions( time, this->mesh, u, *( this->meshDependentData ) );
-   this->problem->getExplicitRHS( time, tau, this->mesh, u, fu, *( this->meshDependentData ) );
+   this->problem->setExplicitBoundaryConditions( time, this->mesh, u, this->meshDependentData );
+   this->problem->getExplicitRHS( time, tau, this->mesh, u, fu, this->meshDependentData );
    this->explicitUpdaterTimer.stop();
+
+   if( this->solverMonitor )
+      this->solverMonitor->setStage( "Postiteration" );
+
    this->postIterateTimer.start();
    if( ! this->problem->postIterate( time,
                                      tau,
                                      this->mesh,
                                      u,
-                                     *( this->meshDependentData ) ) )
+                                     this->meshDependentData ) )
    {
       std::cerr << std::endl << "Postiteration failed." << std::endl;
       return;

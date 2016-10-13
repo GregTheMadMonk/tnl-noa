@@ -108,6 +108,18 @@ setSolver( LinearSystemSolver& linearSystemSolver )
 {
    this->linearSystemSolver = &linearSystemSolver;
 }
+
+template< typename Problem,
+          typename LinearSystemSolver >
+void
+SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+setSolverMonitor( SolverMonitorType& solverMonitor )
+{
+   this->solverMonitor = &solverMonitor;
+   if( this->linearSystemSolver )
+      this->linearSystemSolver->setSolverMonitor( solverMonitor );
+}
+
 template< typename Problem,
           typename LinearSystemSolver >
 LinearSystemSolver*
@@ -140,18 +152,23 @@ solve( const RealType& time,
        const RealType& stopTime,
        const MeshPointer& mesh,
        DofVectorPointer& dofVector,
-       MeshDependentDataType& meshDependentData )
+       MeshDependentDataPointer& meshDependentData )
 {
    Assert( this->problem != 0, );
    RealType t = time;
    this->linearSystemSolver->setMatrix( this->matrix );
-   PreconditionerType preconditioner;
-   Linear::Preconditioners::SolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerType >
+   PreconditionerPointer preconditioner;
+   Linear::Preconditioners::SolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerPointer >
        ::run( *(this->linearSystemSolver), preconditioner );
 
    while( t < stopTime )
    {
       RealType currentTau = min( this->timeStep, stopTime - t );
+
+      if( this->solverMonitor ) {
+         this->solverMonitor->setTime( t );
+         this->solverMonitor->setStage( "Preiteration" );
+      }
 
       this->preIterateTimer.start();
       if( ! this->problem->preIterate( t,
@@ -165,8 +182,10 @@ solve( const RealType& time,
       }
       this->preIterateTimer.stop();
 
-      if( verbose )
-        std::cout << "                                                                  Assembling the linear system ... \r" << std::flush;
+//      if( verbose )
+//        std::cout << "                                                                  Assembling the linear system ... \r" << std::flush;
+      if( this->solverMonitor )
+         this->solverMonitor->setStage( "Assembling the linear system" );
 
       this->linearSystemAssemblerTimer.start();
       this->problem->assemblyLinearSystem( t,
@@ -178,15 +197,17 @@ solve( const RealType& time,
                                            meshDependentData );
       this->linearSystemAssemblerTimer.stop();
 
-      if( verbose )
-        std::cout << "                                                                  Solving the linear system for time " << t + currentTau << "             \r" << std::flush;
+//      if( verbose )
+//        std::cout << "                                                                  Solving the linear system for time " << t + currentTau << "             \r" << std::flush;
+      if( this->solverMonitor )
+         this->solverMonitor->setStage( "Solving the linear system" );
 
       this->preconditionerUpdateTimer.start();
-      preconditioner.update( this->matrix );
+      preconditioner->update( this->matrix );
       this->preconditionerUpdateTimer.stop();
 
       this->linearSystemSolverTimer.start();
-      if( ! this->linearSystemSolver->template solve< DofVectorPointer, Linear::LinearResidueGetter< MatrixPointer, DofVectorPointer > >( this->rightHandSidePointer, dofVector ) )
+      if( ! this->linearSystemSolver->template solve< DofVectorType, Linear::LinearResidueGetter< MatrixType, DofVectorType > >( *this->rightHandSidePointer, *dofVector ) )
       {
          std::cerr << std::endl << "The linear system solver did not converge." << std::endl;
          return false;
@@ -196,6 +217,9 @@ solve( const RealType& time,
 
       //if( verbose )
       //  std::cout << std::endl;
+
+      if( this->solverMonitor )
+         this->solverMonitor->setStage( "Postiteration" );
 
       this->postIterateTimer.start();
       if( ! this->problem->postIterate( t,

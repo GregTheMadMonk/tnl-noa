@@ -9,6 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/Assert.h>
+#include <TNL/DevicePointer.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Functions/MeshFunctionEvaluator.h>
 #include <TNL/Functions/MeshFunctionNormGetter.h>
@@ -141,9 +142,9 @@ template< typename Mesh,
           typename Real >
 void
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
-bind( MeshFunction< Mesh, MeshEntityDimensions, Real >& meshFunction )
+bind( ThisType& meshFunction )
 {
-   this->mesh = &meshFunction.getMesh();
+   this->meshPointer = meshFunction.getMeshPointer();
    this->data.bind( meshFunction.getData() );
 }
 
@@ -344,7 +345,9 @@ MeshFunction< Mesh, MeshEntityDimensions, Real >&
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator = ( const Function& f )
 {
-   MeshFunctionEvaluator< ThisType, Function >::evaluate( *this, f );
+   DevicePointer< ThisType > thisDevicePtr( *this );
+   DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
+   MeshFunctionEvaluator< ThisType, Function >::evaluate( thisDevicePtr, fDevicePtr );
    return *this;
 }
 
@@ -356,7 +359,9 @@ MeshFunction< Mesh, MeshEntityDimensions, Real >&
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator += ( const Function& f )
 {
-   MeshFunctionEvaluator< ThisType, Function >::evaluate( *this, f, 1.0, 1.0 );
+   DevicePointer< ThisType > thisDevicePtr( *this );
+   DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
+   MeshFunctionEvaluator< ThisType, Function >::evaluate( thisDevicePtr, fDevicePtr, 1.0, 1.0 );
    return *this;
 }
 
@@ -368,7 +373,9 @@ MeshFunction< Mesh, MeshEntityDimensions, Real >&
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator -= ( const Function& f )
 {
-   MeshFunctionEvaluator< ThisType, Function >::evaluate( *this, f, 1.0, -1.0 );
+   DevicePointer< ThisType > thisDevicePtr( *this );
+   DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
+   MeshFunctionEvaluator< ThisType, Function >::evaluate( thisDevicePtr, fDevicePtr, 1.0, -1.0 );
    return *this;
 }
 

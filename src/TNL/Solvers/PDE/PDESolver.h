@@ -14,6 +14,8 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Logger.h>
+#include <TNL/Timer.h>
+#include <TNL/SharedPointer.h>
 
 namespace TNL {
 namespace Solvers {
@@ -30,10 +32,11 @@ class PDESolver : public Object
       typedef typename TimeStepper::IndexType IndexType;
       typedef Problem ProblemType;
       typedef typename ProblemType::MeshType MeshType;
-      typedef SharedPointer< MeshType, DeviceType > MeshPointer;
       typedef typename ProblemType::DofVectorType DofVectorType;
       typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
+      typedef SharedPointer< MeshType, DeviceType > MeshPointer;
       typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+      typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
 
       PDESolver();
 
@@ -84,7 +87,7 @@ class PDESolver : public Object
 
       DofVectorPointer dofsPointer;
 
-      MeshDependentDataType meshDependentData;
+      MeshDependentDataPointer meshDependentData;
 
       TimeStepper* timeStepper;
 

@@ -25,7 +25,6 @@ RealType computeBICGStabNewP( Vector& p,
 template< typename Matrix,
           typename Preconditioner >
 BICGStab< Matrix, Preconditioner > :: BICGStab()
-: preconditioner( 0 )
 {
 }
 
@@ -60,22 +59,22 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Matrix,
           typename Preconditioner >
-void BICGStab< Matrix, Preconditioner >::setMatrix( MatrixPointer& matrix )
+void BICGStab< Matrix, Preconditioner >::setMatrix( const MatrixPointer& matrix )
 {
    this->matrix = matrix;
 }
 
 template< typename Matrix,
-           typename Preconditioner >
-void BICGStab< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerType& preconditioner )
+          typename Preconditioner >
+void BICGStab< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerPointer& preconditioner )
 {
-   this->preconditioner = &preconditioner;
+   this->preconditioner = preconditioner;
 }
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename VectorPointer, typename ResidueGetter >
-bool BICGStab< Matrix, Preconditioner >::solve( const VectorPointer& b, VectorPointer& x )
+   template< typename Vector, typename ResidueGetter >
+bool BICGStab< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 {
    if( ! this->setSize( matrix->getRows() ) ) return false;
 
@@ -86,7 +85,7 @@ bool BICGStab< Matrix, Preconditioner >::solve( const VectorPointer& b, VectorPo
    // r_0 = b - A x_0, p_0 = r_0
    // r^ast_0 = r_0
 
-   this->matrix -> vectorProduct( *x, r );
+   this->matrix -> vectorProduct( x, r );
 
    //if( bNorm == 0.0 ) bNorm = 1.0;
 
@@ -107,10 +106,10 @@ bool BICGStab< Matrix, Preconditioner >::solve( const VectorPointer& b, VectorPo
    }
    else*/
    {
-      r.addVector( *b, 1.0, -1.0 );
+      r.addVector( b, 1.0, -1.0 );
       p = r_ast = r;
       rho = r.scalarProduct( r_ast );
-      bNorm = b->lpNorm( 2.0 );
+      bNorm = b.lpNorm( 2.0 );
    }
 
    while( this->nextIteration() )
@@ -156,7 +155,7 @@ bool BICGStab< Matrix, Preconditioner >::solve( const VectorPointer& b, VectorPo
       /****
        * x_{j+1} = x_j + alpha_j * p_j + omega_j * s_j
        */
-      x->addVectors( p, alpha, s, omega );
+      x.addVectors( p, alpha, s, omega );
       
       /****
        * r_{j+1} = s_j - omega_j * A * s_j
@@ -182,18 +181,18 @@ bool BICGStab< Matrix, Preconditioner >::solve( const VectorPointer& b, VectorPo
       residue /= bNorm;
       this->setResidue( residue );
       if( this->getIterations() % 10 == 0 )
-         this->setResidue( ResidueGetter::getResidue( matrix, b, x, bNorm ) );
+         this->setResidue( ResidueGetter::getResidue( *matrix, b, x, bNorm ) );
    }
    //this->setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
-};
+}
 
 template< typename Matrix,
           typename Preconditioner >
 BICGStab< Matrix, Preconditioner > :: ~BICGStab()
 {
-};
+}
 
 template< typename Matrix,
           typename Preconditioner >
@@ -212,7 +211,7 @@ bool BICGStab< Matrix, Preconditioner > :: setSize( IndexType size )
    }
    return true;
 
-};
+}
 
 } // namespace Linear
 } // namespace Solvers

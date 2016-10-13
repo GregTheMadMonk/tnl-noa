@@ -337,6 +337,7 @@ class MeshInitializerLayer< MeshConfig,
       using BaseType::findEntitySeedIndex;
       GlobalIndexType findEntitySeedIndex( const SeedType& seed ) const
       {
+         // FIXME: index may be uninitialized (when seedsIndexedSet.find returns false)
          GlobalIndexType index;
          this->seedsIndexedSet.find( seed, index );
          return index;

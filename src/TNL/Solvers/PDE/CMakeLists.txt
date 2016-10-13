@@ -1,6 +1,5 @@
 SET( headers BackwardTimeDiscretisation.h
              BoundaryConditionsSetter.h
-             BoundaryConditionsSetter_impl.h
              ExplicitTimeStepper.h
              ExplicitTimeStepper_impl.h
              ExplicitUpdater.h

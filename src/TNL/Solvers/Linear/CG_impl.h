@@ -17,7 +17,6 @@ namespace Linear {
 template< typename Matrix,
           typename Preconditioner >
 CG< Matrix, Preconditioner > :: CG()
-: preconditioner( 0 )
 {
 }
 
@@ -52,24 +51,24 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Matrix,
           typename Preconditioner >
-void CG< Matrix, Preconditioner >::setMatrix( MatrixPointer& matrix )
+void CG< Matrix, Preconditioner >::setMatrix( const MatrixPointer& matrix )
 {
    this->matrix = matrix;
 }
 
 template< typename Matrix,
           typename Preconditioner >
-void CG< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
+void CG< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerPointer& preconditioner )
 {
-   this->preconditioner = &preconditioner;
+   this->preconditioner = preconditioner;
 }
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename VectorPointer, typename ResidueGetter >
+   template< typename Vector, typename ResidueGetter >
 bool
 CG< Matrix, Preconditioner >::
-solve( const VectorPointer& b, VectorPointer& x )
+solve( const Vector& b, Vector& x )
 {
    if( ! this->setSize( matrix->getRows() ) ) return false;
 
@@ -77,13 +76,13 @@ solve( const VectorPointer& b, VectorPointer& x )
    this->setResidue( this->getConvergenceResidue() + 1.0 );
 
    RealType alpha, beta, s1, s2;
-   RealType bNorm = b->lpNorm( ( RealType ) 2.0 );
+   RealType bNorm = b.lpNorm( ( RealType ) 2.0 );
 
    /****
     * r_0 = b - A x_0, p_0 = r_0
     */
-   this->matrix->vectorProduct( *x, r );
-   r. addVector( *b, 1.0, -1.0 );
+   this->matrix->vectorProduct( x, r );
+   r. addVector( b, 1.0, -1.0 );
    p = r;
 
    while( this->nextIteration() )
@@ -105,7 +104,7 @@ solve( const VectorPointer& b, VectorPointer& x )
       /****
        * 2. x_{j+1} = x_j + \alpha_j p_j
        */
-      x->addVector( p, alpha );
+      x.addVector( p, alpha );
       
       /****
        * 3. r_{j+1} = r_j - \alpha_j A * p_j
@@ -136,9 +135,9 @@ solve( const VectorPointer& b, VectorPointer& x )
       new_r.swap( r );
  
       if( this->getIterations() % 10 == 0 )
-         this->setResidue( ResidueGetter::getResidue( matrix, b, x, bNorm ) );
+         this->setResidue( ResidueGetter::getResidue( *matrix, b, x, bNorm ) );
    }
-   this->setResidue( ResidueGetter::getResidue( matrix, b, x, bNorm ) );
+   this->setResidue( ResidueGetter::getResidue( *matrix, b, x, bNorm ) );
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
 };

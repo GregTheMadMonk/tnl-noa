@@ -34,6 +34,7 @@ class HeatEquationBenchmarkProblem:
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorPointer;
       using typename BaseType::MeshDependentDataType;
+      using typename BaseType::MeshDependentDataPointer;
 
       HeatEquationBenchmarkProblem();
       
@@ -51,7 +52,7 @@ class HeatEquationBenchmarkProblem:
       bool setInitialCondition( const Config::ParameterContainer& parameters,
                                 const MeshPointer& meshPointer,
                                 DofVectorPointer& dofsPointer,
-                                MeshDependentDataType& meshDependentData );
+                                MeshDependentDataPointer& meshDependentData );
 
       template< typename Matrix >
       bool setupLinearSystem( const MeshType& mesh,
@@ -61,7 +62,7 @@ class HeatEquationBenchmarkProblem:
                          const IndexType& step,
                          const MeshPointer& meshPointer,
                          DofVectorPointer& dofsPointer,
-                         MeshDependentDataType& meshDependentData );
+                         MeshDependentDataPointer& meshDependentData );
 
       IndexType getDofs( const MeshPointer& meshPointer ) const;
 
@@ -73,7 +74,7 @@ class HeatEquationBenchmarkProblem:
                            const MeshPointer& meshPointer,
                            DofVectorPointer& _uPointer,
                            DofVectorPointer& _fuPointer,
-                           MeshDependentDataType& meshDependentData );
+                           MeshDependentDataPointer& meshDependentData );
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
@@ -82,7 +83,7 @@ class HeatEquationBenchmarkProblem:
                                  DofVectorPointer& dofs,
                                  MatrixPointer& matrix,
                                  DofVectorPointer& rightHandSide,
-                                 MeshDependentDataType& meshDependentData );
+                                 MeshDependentDataPointer& meshDependentData );
       
       ~HeatEquationBenchmarkProblem();
 

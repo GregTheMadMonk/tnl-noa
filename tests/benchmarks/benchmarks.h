@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-#include <TNL/TimerRT.h>
+#include <TNL/Timer.h>
 #include <TNL/String.h>
 
 namespace TNL
@@ -23,7 +23,7 @@ timeFunction( ComputeFunction compute,
               const int & loops )
 {
     // the timer is constructed zero-initialized and stopped
-    TimerRT timer;
+    Timer timer;
 
     reset();
     for(int i = 0; i < loops; ++i) {
@@ -42,7 +42,7 @@ timeFunction( ComputeFunction compute,
         reset();
     }
 
-    return timer.getTime();
+    return timer.getRealTime();
 }
 
 

@@ -74,23 +74,23 @@ template< typename ConfigTag, int Dimensions, typename Real, typename Device, ty
  * All time discretisations (explicit, semi-impicit and implicit ) are
  * enabled by default.
  */
-class tnlExplicitTimeDiscretisationTag{};
-class tnlSemiImplicitTimeDiscretisationTag{};
-class tnlImplicitTimeDiscretisationTag{};
+class ExplicitTimeDiscretisationTag{};
+class SemiImplicitTimeDiscretisationTag{};
+class ImplicitTimeDiscretisationTag{};
 
 template< typename ConfigTag, typename TimeDiscretisation > struct ConfigTagTimeDiscretisation{ enum { enabled = true }; };
 
 /****
  * All explicit solvers are enabled by default
  */
-class tnlExplicitEulerSolverTag
+class ExplicitEulerSolverTag
 {
 public:
     template< typename Problem >
     using Template = ODE::Euler< Problem >;
 };
 
-class tnlExplicitMersonSolverTag
+class ExplicitMersonSolverTag
 {
 public:
     template< typename Problem >
@@ -102,7 +102,7 @@ template< typename ConfigTag, typename ExplicitSolver > struct ConfigTagExplicit
 /****
  * All semi-implicit solvers are enabled by default
  */
-class  tnlSemiImplicitSORSolverTag
+class  SemiImplicitSORSolverTag
 {
 public:
     template< typename Matrix, typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
@@ -111,7 +111,7 @@ public:
     using Template = Linear::SOR< Matrix, Preconditioner >;
 };
 
-class  tnlSemiImplicitCGSolverTag
+class  SemiImplicitCGSolverTag
 {
 public:
     template< typename Matrix, typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
@@ -120,7 +120,7 @@ public:
     using Template = Linear::CG< Matrix, Preconditioner >;
 };
 
-class  tnlSemiImplicitBICGStabSolverTag
+class  SemiImplicitBICGStabSolverTag
 {
 public:
     template< typename Matrix, typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
@@ -129,7 +129,7 @@ public:
     using Template = Linear::BICGStab< Matrix, Preconditioner >;
 };
 
-class  tnlSemiImplicitGMRESSolverTag
+class  SemiImplicitGMRESSolverTag
 {
 public:
     template< typename Matrix, typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
@@ -138,7 +138,7 @@ public:
     using Template = Linear::GMRES< Matrix, Preconditioner >;
 };
 
-class  tnlSemiImplicitTFQMRSolverTag
+class  SemiImplicitTFQMRSolverTag
 {
 public:
     template< typename Matrix, typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
@@ -148,7 +148,7 @@ public:
 };
 
 #ifdef HAVE_UMFPACK
-class  tnlSemiImplicitUmfpackSolverTag
+class  SemiImplicitUmfpackSolverTag
 {
 public:
     template< typename Matrix, typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,

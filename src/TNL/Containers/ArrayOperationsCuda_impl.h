@@ -232,7 +232,10 @@ bool ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( DestinationEle
          }
          Index j( 0 );
          while( j < Devices::Cuda::getGPUTransferBufferSize() && i + j < size )
-            destination[ i + j ] = buffer[ j++ ];
+         {
+            destination[ i + j ] = buffer[ j ];
+            j++;
+         }
          i += j;
       }
       delete[] buffer;
@@ -334,7 +337,10 @@ bool ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( DestinationEle
       {
          Index j( 0 );
          while( j < Devices::Cuda::getGPUTransferBufferSize() && i + j < size )
-            buffer[ j ] = source[ i + j++ ];
+         {
+            buffer[ j ] = source[ i + j ];
+            j++;
+         }
          if( cudaMemcpy( &destination[ i ],
                          buffer,
                          j * sizeof( DestinationElement ),

@@ -11,14 +11,12 @@
 #pragma once
 
 #include <TNL/Solvers/SolverMonitor.h>
-#include <TNL/TimerCPU.h>
-#include <TNL/TimerRT.h>
 
 namespace TNL {
 namespace Solvers {   
 
 template< typename Real, typename Index>
-class IterativeSolverMonitor : public SolverMonitor< Real, Index >
+class IterativeSolverMonitor : public SolverMonitor
 {
    public:
 
@@ -27,41 +25,35 @@ class IterativeSolverMonitor : public SolverMonitor< Real, Index >
 
    IterativeSolverMonitor();
 
-   void setIterations( const IndexType& iterations );
+   void setTime( const RealType& time );
 
-   const IndexType& getIterations() const;
+   void setTimeStep( const RealType& timeStep );
+
+   void setStage( const std::string& stage );
+
+   void setIterations( const IndexType& iterations );
 
    void setResidue( const RealType& residue );
 
-   const RealType& getResidue() const;
-
    void setVerbose( const Index& verbose );
  
-   void setRefreshRate( const IndexType& refreshRate );
-
    virtual void refresh( bool force = false );
 
-   void resetTimers();
-
-   double getCPUTime();
-
-   double getRealTime();
-
    protected:
+
+   int getLineWidth();
+
+   RealType time;
+
+   RealType timeStep;
+
+   std::string stage;
 
    IndexType iterations;
 
    RealType residue;
 
-   IndexType refreshing;
-
-   IndexType refreshRate;
-
    IndexType verbose;
-
-   TimerCPU cpuTimer;
-
-   TimerRT rtTimer;
 };
 
 } // namespace Solvers

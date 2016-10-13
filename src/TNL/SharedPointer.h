@@ -17,10 +17,11 @@
 
 #pragma once
 
-#include <utility>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/SmartPointer.h>
+
+#include <cstring>
 
 
 //#define TNL_DEBUG_SHARED_POINTERS
@@ -33,6 +34,7 @@
    #include <memory>
    #include <cstdlib>
 
+   inline
    std::string demangle(const char* mangled)
    {
       int status;
@@ -51,346 +53,302 @@ namespace TNL {
  */
 template< typename Object,
           typename Device = typename Object::DeviceType,
-          bool lazy = false,
-          bool isConst = std::is_const< Object >::value >
+          bool lazy = false >
 class SharedPointer
 {
    static_assert( ! std::is_same< Device, void >::value, "The device cannot be void. You need to specify the device explicitly in your code." );
 };
 
 /****
- * Non-const specialization
+ * Specialization for Devices::Host
  */
 template< typename Object, bool lazy >
-class SharedPointer< Object, Devices::Host, lazy, false > : public SmartPointer
-{   
+class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
+{
+   private:
+      // Convenient template alias for controlling the selection of copy- and
+      // move-constructors and assignment operators using SFINAE.
+      // The type Object_ is "enabled" iff Object_ and Object are not the same,
+      // but after removing const and volatile qualifiers they are the same.
+      template< typename Object_ >
+      using Enabler = std::enable_if< ! std::is_same< Object_, Object >::value &&
+                                      std::is_same< typename std::remove_cv< Object >::type, Object_ >::value >;
+
+      // friend class will be needed for templated assignment operators
+      template< typename Object_, typename Device_, bool lazy_ >
+      friend class SharedPointer;
+
    public:
-      
+
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
-      typedef SharedPointer< Object, Devices::Host, lazy, false > ThisType;
-      typedef SharedPointer< const Object, Devices::Host, lazy, true > ConstThisType;
-         
+      typedef SharedPointer< Object, Devices::Host, lazy > ThisType;
+
       template< typename... Args >
       explicit  SharedPointer( Args... args )
-      : pointer( 0 ), counter( 0 )
+      : pd( nullptr )
       {
 #ifdef TNL_DEBUG_SHARED_POINTERS
          std::cerr << "Creating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
 #endif
          if( ! lazy )
-         {
-            this->counter = new int( 1 );
-            this->pointer = new Object( args... );
-         }
+            this->allocate( args... );
       }
-      
+
+      // this is needed only to avoid the default compiler-generated constructor
       SharedPointer( const ThisType& pointer )
-      : pointer( pointer.pointer ),
-        counter( pointer.counter )
+      : pd( (PointerData*) pointer.pd )
       {
-         *counter += 1;
+         this->pd->counter += 1;
       }
-      
+
+      // conditional constructor for non-const -> const data
+      template< typename Object_, bool lazy_,
+                typename = typename Enabler< Object_ >::type >
+      SharedPointer( const SharedPointer< Object_, DeviceType, lazy_ >& pointer )
+      : pd( (PointerData*) pointer.pd )
+      {
+         this->pd->counter += 1;
+      }
+
+      // this is needed only to avoid the default compiler-generated constructor
+      SharedPointer( ThisType&& pointer )
+      : pd( (PointerData*) pointer.pd )
+      {
+         pointer.pd = nullptr;
+      }
+
+      // conditional constructor for non-const -> const data
+      template< typename Object_, bool lazy_,
+                typename = typename Enabler< Object_ >::type >
+      SharedPointer( SharedPointer< Object_, DeviceType, lazy_ >&& pointer )
+      : pd( (PointerData*) pointer.pd )
+      {
+         pointer.pd = nullptr;
+      }
+
       template< typename... Args >
       bool recreate( Args... args )
-      {         
+      {
 #ifdef TNL_DEBUG_SHARED_POINTERS
          std::cerr << "Recreating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
 #endif
          if( ! this->counter )
-         {
-            this->counter = new int( 1 );
-            this->pointer = new ObjectType( args... );
-            return true;
-         }
-         if( *this->counter == 1 )
+            return this->allocate( args... );
+
+         if( *this->pd->counter == 1 )
          {
             /****
-             * The object is not shared
+             * The object is not shared -> recreate it in-place, without reallocation
              */
-            this->pointer->~ObjectType();
-            new ( this->pointer ) ObjectType( args... );
+            this->pd->data.~ObjectType();
+            new ( this->pd->data ) ObjectType( args... );
             return true;
          }
-         ( *this->counter )--;
-         this->pointer = new Object( args... );
-         this->counter = new int( 1 );
-         if( ! this->pointer || ! this->counter )
-            return false;
-         return true;         
-      }      
-      
+
+         // free will just decrement the counter
+         this->free();
+
+         return this->allocate( args... );
+      }
+
       const Object* operator->() const
       {
-         return this->pointer;
+         return &this->pd->data;
       }
-      
+
       Object* operator->()
       {
-         return this->pointer;
+         return &this->pd->data;
       }
-      
+
       const Object& operator *() const
       {
-         return *( this->pointer );
+         return this->pd->data;
       }
-      
+
       Object& operator *()
       {
-         return *( this->pointer );
+         return this->pd->data;
       }
-      
+
+      operator bool()
+      {
+         return this->pd;
+      }
+
       template< typename Device = Devices::Host >
       __cuda_callable__
       const Object& getData() const
       {
-         return *( this->pointer );
+         return this->pd->data;
       }
 
       template< typename Device = Devices::Host >
       __cuda_callable__
       Object& modifyData()
       {
-         return *( this->pointer );
+         return this->pd->data;
       }
-      
+
+      // this is needed only to avoid the default compiler-generated operator
       const ThisType& operator=( const ThisType& ptr )
       {
          this->free();
-         this->pointer = ptr.pointer;
-         this->counter = ptr.counter;
-         *( this->counter ) += 1;
-         return *this;
-      }      
-      
-      const ThisType& operator=( const ThisType&& ptr )
-      {
-         this->free();
-         this->pointer = ptr.pointer;
-         ptr.pointer= NULL;
-         this->counter = ptr.counter;
-         ptr.counter = NULL;
+         this->pd = (PointerData*) ptr.pd;
+         this->pd->counter += 1;
          return *this;
       }
-            
+
+      // conditional operator for non-const -> const data
+      template< typename Object_, bool lazy_,
+                typename = typename Enabler< Object_ >::type >
+      const ThisType& operator=( const SharedPointer< Object_, DeviceType, lazy_ >& ptr )
+      {
+         this->free();
+         this->pd = (PointerData*) ptr.pd;
+         this->pd->counter += 1;
+         return *this;
+      }
+
+      // this is needed only to avoid the default compiler-generated operator
+      const ThisType& operator=( ThisType&& ptr )
+      {
+         this->free();
+         this->pd = (PointerData*) ptr.pd;
+         ptr.pd = nullptr;
+         return *this;
+      }
+
+      // conditional operator for non-const -> const data
+      template< typename Object_, bool lazy_,
+                typename = typename Enabler< Object_ >::type >
+      const ThisType& operator=( SharedPointer< Object_, DeviceType, lazy_ >&& ptr )
+      {
+         this->free();
+         this->pd = (PointerData*) ptr.pd;
+         ptr.pd = nullptr;
+         return *this;
+      }
+
       bool synchronize()
       {
          return true;
       }
-      
+
       ~SharedPointer()
       {
          this->free();
       }
 
-      
+
    protected:
-      
+
+      struct PointerData
+      {
+         Object data;
+         int counter;
+
+         template< typename... Args >
+         explicit PointerData( Args... args )
+         : data( args... ),
+           counter( 1 )
+         {}
+      };
+
+      template< typename... Args >
+      bool allocate( Args... args )
+      {
+         this->pd = new PointerData( args... );
+         return this->pd;
+      }
+
       void free()
       {
-         if( this->counter )
+         if( this->pd )
          {
-            if( ! --*( this->counter ) )
+            if( ! --this->pd->counter )
             {
-               delete this->counter;
-               this->counter = nullptr;
-               if( this->pointer )
-                  delete this->pointer;
+               delete this->pd;
+               this->pd = nullptr;
             }
          }
 
       }
-      
-      Object* pointer;
-      
-      int* counter;
+
+      PointerData* pd;
 };
 
 /****
- * Const specialization
+ * Specialization for CUDA
  */
 template< typename Object, bool lazy >
-class SharedPointer< Object, Devices::Host, lazy, true > : public SmartPointer
-{   
-   public:
-      
-      typedef Object ObjectType;
-      typedef Devices::Host DeviceType;
-      typedef SharedPointer< Object, Devices::Host, lazy, true > ThisType;
-      typedef typename std::remove_const< Object >::type NonConstObjectType;
-         
-      template< typename... Args >
-      explicit  SharedPointer( Args... args )
-      : counter( 0 ), pointer( 0 )
-      {
-         if( ! lazy )
-         {
-            this->counter = new int( 1 );
-            this->pointer = new Object( args... );
-         }
-      }
-      
-      SharedPointer( const ThisType& pointer )
-      : pointer( pointer.pointer ),
-        counter( pointer.counter )
-      {
-         *counter += 1;
-      }
-      
-      SharedPointer( const SharedPointer< NonConstObjectType, Devices::Host, lazy >& pointer )
-      : pointer( pointer.pointer ),
-        counter( pointer.counter )
-      {
-         *counter += 1;
-      }
-
-      
-      template< typename... Args >
-      bool recreate( Args... args )
-      {         
-         if( ! this->counter )
-         {
-            this->counter = new int( 1 );
-            this->pointer = new ObjectType( args... );
-            return true;
-         }
-         if( *this->counter == 1 )
-         {
-            /****
-             * The object is not shared
-             */
-            this->pointer->~ObjectType();
-            new ( this->pointer ) ObjectType( args... );
-            return true;
-         }
-         ( *this->counter )--;
-         this->pointer = new Object( args... );
-         this->counter = new int( 1 );
-         if( ! this->pointer || ! this->counter )
-            return false;
-         return true;         
-      }      
-      
-      const Object* operator->() const
-      {
-         return this->pointer;
-      }
-            
-      const Object& operator *() const
-      {
-         return *( this->pointer );
-      }
-      
-      template< typename Device = Devices::Host >
-      __cuda_callable__
-      const Object& getData() const
-      {
-         return *( this->pointer );
-      }
-      
-      const ThisType& operator=( const SharedPointer< NonConstObjectType, Devices::Host >& ptr )
-      {
-         this->free();
-         this->pointer = ptr.pointer;
-         this->counter = ptr.counter;
-         *( this->counter ) += 1;
-         return *this;
-      }      
-
-      
-      const ThisType& operator=( const ThisType& ptr )
-      {
-         this->free();
-         this->pointer = ptr.pointer;
-         this->counter = ptr.counter;
-         *( this->counter ) += 1;
-         return *this;
-      }      
-      
-      const ThisType& operator=( const ThisType&& ptr )
-      {
-         this->free();
-         this->pointer = ptr.pointer;
-         ptr.pointer= NULL;
-         this->counter = ptr.counter;
-         ptr.counter = NULL;
-         return *this;
-      }
-            
-      bool synchronize()
-      {
-         return true;
-      }
-      
-      ~SharedPointer()
-      {
-         this->free();
-      }
-
-      
-   protected:
-      
-      void free()
-      {
-         if( this->counter )
-         {
-            if( ! --*( this->counter ) )
-            {
-               delete this->counter;
-               this->counter = nullptr;
-               if( this->pointer )
-                  delete this->pointer;
-            }
-         }
-
-      }
-      
-      const Object* pointer;
-      
-      int* counter;
-};
-
-/****
- * Non-const specialization for CUDA
- */
-template< typename Object, bool lazy >
-class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
+class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
 {
+   private:
+      // Convenient template alias for controlling the selection of copy- and
+      // move-constructors and assignment operators using SFINAE.
+      // The type Object_ is "enabled" iff Object_ and Object are not the same,
+      // but after removing const and volatile qualifiers they are the same.
+      template< typename Object_ >
+      using Enabler = std::enable_if< ! std::is_same< Object_, Object >::value &&
+                                      std::is_same< typename std::remove_cv< Object >::type, Object_ >::value >;
+
+      // friend class will be needed for templated assignment operators
+      template< typename Object_, typename Device_, bool lazy_ >
+      friend class SharedPointer;
+
    public:
-      
+
       typedef Object ObjectType;
-      typedef Devices::Host DeviceType;
+      typedef Devices::Cuda DeviceType;
       typedef SharedPointer< Object, Devices::Cuda, lazy > ThisType;
 
       template< typename... Args >
       explicit  SharedPointer( Args... args )
-      : counter( 0 ), cuda_pointer( 0 ), 
-        pointer( 0 ), modified( false )
+      : pd( nullptr ),
+        cuda_pointer( nullptr )
       {
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Creating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
          if( ! lazy )
-         {
-            this->counter = new int( 1 );
-            this->pointer = new Object( args... );
-#ifdef HAVE_CUDA         
-            this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
-            if( ! this->cuda_pointer )
-               return;
-            Devices::Cuda::insertSmartPointer( this );
-#endif            
-         }
+            this->allocate( args... );
       }
-                  
+
+      // this is needed only to avoid the default compiler-generated constructor
       SharedPointer( const ThisType& pointer )
-      : pointer( pointer.pointer ),
-        cuda_pointer( pointer.cuda_pointer ),
-        counter( pointer.counter ),
-        modified( pointer.modified )
+      : pd( (PointerData*) pointer.pd ),
+        cuda_pointer( pointer.cuda_pointer )
       {
-         *counter += 1;
+         this->pd->counter += 1;
+      }
+
+      // conditional constructor for non-const -> const data
+      template< typename Object_, bool lazy_,
+                typename = typename Enabler< Object_ >::type >
+      SharedPointer( const SharedPointer< Object_, DeviceType, lazy_ >& pointer )
+      : pd( (PointerData*) pointer.pd ),
+        cuda_pointer( pointer.cuda_pointer )
+      {
+         this->pd->counter += 1;
+      }
+
+      // this is needed only to avoid the default compiler-generated constructor
+      SharedPointer( ThisType&& pointer )
+      : pd( (PointerData*) pointer.pd ),
+        cuda_pointer( pointer.cuda_pointer )
+      {
+         pointer.pd = nullptr;
+         pointer.cuda_pointer = nullptr;
+      }
+
+      // conditional constructor for non-const -> const data
+      template< typename Object_, bool lazy_,
+                typename = typename Enabler< Object_ >::type >
+      SharedPointer( SharedPointer< Object_, DeviceType, lazy_ >&& pointer )
+      : pd( (PointerData*) pointer.pd ),
+        cuda_pointer( pointer.cuda_pointer )
+      {
+         pointer.pd = nullptr;
+         pointer.cuda_pointer = nullptr;
       }
 
       template< typename... Args >
@@ -399,79 +357,67 @@ class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
 #ifdef TNL_DEBUG_SHARED_POINTERS
          std::cerr << "Recreating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
 #endif
-         if( ! this->counter )
-         {
-            this->counter = new int( 1 );
-            this->pointer = new ObjectType( args... );
-#ifdef HAVE_CUDA         
-            this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
-            if( ! this->cuda_pointer )
-               return false;
-            Devices::Cuda::insertSmartPointer( this );
-#endif                 
-            return true;
-         }
-         if( *this->counter == 1 )
+         if( ! this->pd )
+            return this->allocate( args... );
+
+         if( this->pd->counter == 1 )
          {
             /****
-             * The object is not shared
+             * The object is not shared -> recreate it in-place, without reallocation
              */
-            this->pointer->~ObjectType();
-            new ( this->pointer ) ObjectType( args... );
-#ifdef HAVE_CUDA                     
-            cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
-#endif            
+            this->pd->data.~Object();
+            new ( &this->pd->data ) Object( args... );
+#ifdef HAVE_CUDA
+            cudaMemcpy( (void*) this->cuda_pointer, (void*) &this->pd->data, sizeof( Object ), cudaMemcpyHostToDevice );
+#endif
+            this->set_last_sync_state();
             return true;
          }
 
-         this->modified = false;
-         this->counter= new int( 1 );
-         this->pointer = new Object( args... );
-         if( ! this->pointer || ! this->counter )
-            return false;
-#ifdef HAVE_CUDA         
-         this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
-         if( ! this->cuda_pointer )
-            return false;
-         // TODO: what if 'this' is already in the register?
-         Devices::Cuda::insertSmartPointer( this );
-#endif
-         return true;
+         // free will just decrement the counter
+         this->free();
+
+         return this->allocate( args... );
       }
-      
+
       const Object* operator->() const
       {
-         return this->pointer;
+         return &this->pd->data;
       }
-      
+
       Object* operator->()
       {
-         this->modified = true;
-         return this->pointer;
+         this->pd->maybe_modified = true;
+         return &this->pd->data;
       }
-      
+
       const Object& operator *() const
       {
-         return *( this->pointer );
+         return this->pd->data;
       }
-      
+
       Object& operator *()
       {
-         this->modified = true;
-         return *( this->pointer );
-      }     
-      
-      template< typename Device = Devices::Host >   
+         this->pd->maybe_modified = true;
+         return this->pd->data;
+      }
+
+      operator bool()
+      {
+         return this->pd;
+      }
+
+      template< typename Device = Devices::Host >
       __cuda_callable__
       const Object& getData() const
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
-         Assert( this->pointer, );
+         Assert( this->pd, );
          Assert( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
-            return *( this->pointer );
+            return this->pd->data;
          if( std::is_same< Device, Devices::Cuda >::value )
-            return *( this->cuda_pointer );            
+            return *( this->cuda_pointer );
       }
 
       template< typename Device = Devices::Host >
@@ -479,312 +425,183 @@ class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
       Object& modifyData()
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
-         Assert( this->pointer, );
+         Assert( this->pd, );
          Assert( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
          {
-            this->modified = true;
-            return *( this->pointer );
+            this->pd->maybe_modified = true;
+            return this->pd->data;
          }
          if( std::is_same< Device, Devices::Cuda >::value )
-         {
-            return *( this->cuda_pointer );            
-         }
+            return *( this->cuda_pointer );
       }
-      
-      /*const ThisType& operator=( ThisType&& ptr )
-      {
-         this->free();
-#ifdef HAVE_CUDA
-         if( this->cuda_pointer )
-            cudaFree( this->cuda_pointer );
-#endif                  
-         this->pointer = ptr.pointer;
-         this->cuda_pointer = ptr.cuda_pointer;
-         this->modified = ptr.modified;
-         this->counter = ptr.counter;
-         ptr.pointer= NULL;
-         ptr.cuda_pointer = NULL;
-         ptr.modified = false;
-         ptr.counter = NULL;
-         return *this;
-      }*/
-      
+
+      // this is needed only to avoid the default compiler-generated operator
       const ThisType& operator=( const ThisType& ptr )
       {
          this->free();
-         this->pointer = ptr.pointer;
+         this->pd = (PointerData*) ptr.pd;
          this->cuda_pointer = ptr.cuda_pointer;
-         this->modified = ptr.modified;
-         this->counter = ptr.counter;
-         *( this->counter ) += 1;
+         this->pd->counter += 1;
 #ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Assigned shared pointer: counter = " << *(this->counter) << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
+         std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
 #endif
          return *this;
       }
-      
+
+      // conditional operator for non-const -> const data
+      template< typename Object_, bool lazy_,
+                typename = typename Enabler< Object_ >::type >
+      const ThisType& operator=( const SharedPointer< Object_, DeviceType, lazy_ >& ptr )
+      {
+         this->free();
+         this->pd = (PointerData*) ptr.pd;
+         this->cuda_pointer = ptr.cuda_pointer;
+         this->pd->counter += 1;
+#ifdef TNL_DEBUG_SHARED_POINTERS
+         std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
+#endif
+         return *this;
+      }
+
+      // this is needed only to avoid the default compiler-generated operator
+      const ThisType& operator=( ThisType&& ptr )
+      {
+         this->free();
+         this->pd = (PointerData*) ptr.pd;
+         this->cuda_pointer = ptr.cuda_pointer;
+         ptr.pd = nullptr;
+         ptr.cuda_pointer = nullptr;
+#ifdef TNL_DEBUG_SHARED_POINTERS
+         std::cerr << "Move-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
+#endif
+         return *this;
+      }
+
+      // conditional operator for non-const -> const data
+      template< typename Object_, bool lazy_,
+                typename = typename Enabler< Object_ >::type >
+      const ThisType& operator=( SharedPointer< Object_, DeviceType, lazy_ >&& ptr )
+      {
+         this->free();
+         this->pd = (PointerData*) ptr.pd;
+         this->cuda_pointer = ptr.cuda_pointer;
+         ptr.pd = nullptr;
+         ptr.cuda_pointer = nullptr;
+#ifdef TNL_DEBUG_SHARED_POINTERS
+         std::cerr << "Move-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
+#endif
+         return *this;
+      }
+
       bool synchronize()
       {
+         if( ! this->pd )
+            return true;
 #ifdef HAVE_CUDA
-         if( this->modified )
+         if( this->modified() )
          {
 #ifdef TNL_DEBUG_SHARED_POINTERS
-            std::cerr << "Synchronizing shared pointer: counter = " << *(this->counter) << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
-            std::cerr << "   ( " << sizeof( ObjectType ) << " bytes, CUDA adress " << this->cuda_pointer << " )" << std::endl;
+            std::cerr << "Synchronizing shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(Object).name()) << std::endl;
+            std::cerr << "   ( " << sizeof( Object ) << " bytes, CUDA adress " << this->cuda_pointer << " )" << std::endl;
 #endif
-            Assert( this->pointer, );
             Assert( this->cuda_pointer, );
-            cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( ObjectType ), cudaMemcpyHostToDevice );            
+            cudaMemcpy( (void*) this->cuda_pointer, (void*) &this->pd->data, sizeof( Object ), cudaMemcpyHostToDevice );
             if( ! checkCudaDevice ) {
                return false;
             }
-            this->modified = false;
+            this->set_last_sync_state();
             return true;
          }
-#else         
+         return true;
+#else
          return false;
-#endif         
+#endif
       }
-            
+
       ~SharedPointer()
       {
          this->free();
-#ifdef HAVE_CUDA         
          Devices::Cuda::removeSmartPointer( this );
-#endif         
       }
-      
+
    protected:
-      
+
+      struct PointerData
+      {
+         Object data;
+         char data_image[ sizeof(Object) ];
+         int counter;
+         bool maybe_modified;
+
+         template< typename... Args >
+         explicit PointerData( Args... args )
+         : data( args... ),
+           counter( 1 ),
+           maybe_modified( false )
+         {}
+      };
+
+      template< typename... Args >
+      bool allocate( Args... args )
+      {
+         this->pd = new PointerData( args... );
+         if( ! this->pd )
+            return false;
+         // pass to device
+         this->cuda_pointer = Devices::Cuda::passToDevice( this->pd->data );
+         if( ! this->cuda_pointer )
+            return false;
+         // set last-sync state
+         this->set_last_sync_state();
+#ifdef TNL_DEBUG_SHARED_POINTERS
+         std::cerr << "Created shared pointer to " << demangle(typeid(ObjectType).name()) << " (cuda_pointer = " << this->cuda_pointer << ")" << std::endl;
+#endif
+         Devices::Cuda::insertSmartPointer( this );
+         return true;
+      }
+
+      void set_last_sync_state()
+      {
+         Assert( this->pd, );
+         std::memcpy( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( Object ) );
+         this->pd->maybe_modified = false;
+      }
+
+      bool modified()
+      {
+         Assert( this->pd, );
+         // optimization: skip bitwise comparison if we're sure that the data is the same
+         if( ! this->pd->maybe_modified )
+            return false;
+         return std::memcmp( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( Object ) ) != 0;
+      }
+
       void free()
       {
-         if( this->counter )
+         if( this->pd )
          {
 #ifdef TNL_DEBUG_SHARED_POINTERS
-            std::cerr << "Freeing shared pointer: counter = " << *(this->counter) << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
+            std::cerr << "Freeing shared pointer: counter = " << this->pd->counter << ", cuda_pointer = " << this->cuda_pointer << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
 #endif
-            if( ! --*( this->counter ) )
+            if( ! --this->pd->counter )
             {
-               delete this->counter;
-               this->counter = nullptr;
-               if( this->pointer )
-                  delete this->pointer;
-#ifdef HAVE_CUDA
+               delete this->pd;
+               this->pd = nullptr;
                if( this->cuda_pointer )
-                  cudaFree( this->cuda_pointer );
-               checkCudaDevice;
-#endif         
+                  Devices::Cuda::freeFromDevice( this->cuda_pointer );
 #ifdef TNL_DEBUG_SHARED_POINTERS
                std::cerr << "...deleted data." << std::endl;
 #endif
             }
          }
-         
-      }
-      
-      Object *pointer, *cuda_pointer;
-      
-      bool modified;
-      
-      int* counter;
-};
-
-
-/****
- * Const specialization for CUDA
- */
-template< typename Object, bool lazy >
-class SharedPointer< Object, Devices::Cuda, lazy, true > : public SmartPointer
-{
-   public:
-      
-      typedef Object ObjectType;
-      typedef Devices::Host DeviceType;
-      typedef SharedPointer< Object, Devices::Cuda, lazy > ThisType;
-      typedef typename std::remove_const< Object >::type NonConstObjectType;      
-
-      template< typename... Args >
-      explicit  SharedPointer( Args... args )
-      : counter( 0 ), cuda_pointer( 0 ), 
-        pointer( 0 ), modified( false )
-      {
-         if( ! lazy )
-         {
-            this->counter = new int( 1 );
-            this->pointer = new Object( args... );
-#ifdef HAVE_CUDA         
-            this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
-            if( ! this->cuda_pointer )
-               return;
-            Devices::Cuda::insertSmartPointer( this );
-#endif            
-         }
-      }
-                  
-      SharedPointer( const ThisType& pointer )
-      : pointer( pointer.pointer ),
-        cuda_pointer( pointer.cuda_pointer ),
-        counter( pointer.counter ),
-        modified( pointer.modified )
-      {
-         *counter += 1;
-      }
-      
-      SharedPointer( const SharedPointer< NonConstObjectType, Devices::Cuda, lazy >& pointer )
-      : pointer( pointer.pointer ),
-        cuda_pointer( pointer.cuda_pointer ),
-        counter( pointer.counter )
-      {
-         *counter += 1;
-      }      
-
-      template< typename... Args >
-      bool recreate( Args... args )
-      {
-         if( ! this->counter )
-         {
-            this->counter = new int( 1 );
-            this->pointer = new ObjectType( args... );
-#ifdef HAVE_CUDA         
-            this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
-            if( ! this->cuda_pointer )
-               return false;
-            Devices::Cuda::insertSmartPointer( this );
-#endif                 
-            return true;
-         }
-         if( *this->counter == 1 )
-         {
-            /****
-             * The object is not shared
-             */
-            this->pointer->~ObjectType();
-            new ( this->pointer ) ObjectType( args... );
-#ifdef HAVE_CUDA                     
-            cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
-#endif            
-            return true;
-         }
-
-         this->modified = false;
-         this->counter= new int( 1 );
-         this->pointer = new Object( args... );
-         if( ! this->pointer || ! this->counter )
-            return false;
-#ifdef HAVE_CUDA         
-         this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
-         if( ! this->cuda_pointer )
-            return false;
-         Devices::Cuda::insertSmartPointer( this );
-#endif
-         return true;
-      }
-      
-      const Object* operator->() const
-      {
-         return this->pointer;
-      }
-      
-      const Object& operator *() const
-      {
-         return *( this->pointer );
-      }
-      
-      template< typename Device = Devices::Host >   
-      __cuda_callable__
-      const Object& getData() const
-      {
-         static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
-         Assert( this->pointer, );
-         Assert( this->cuda_pointer, );
-         if( std::is_same< Device, Devices::Host >::value )
-            return *( this->pointer );
-         if( std::is_same< Device, Devices::Cuda >::value )
-            return *( this->cuda_pointer );            
       }
 
-      
-      /*const ThisType& operator=( ThisType&& ptr )
-      {
-         this->free();
-#ifdef HAVE_CUDA
-         if( this->cuda_pointer )
-            cudaFree( this->cuda_pointer );
-#endif                  
-         this->pointer = ptr.pointer;
-         this->cuda_pointer = ptr.cuda_pointer;
-         this->modified = ptr.modified;
-         this->counter = ptr.counter;
-         ptr.pointer= NULL;
-         ptr.cuda_pointer = NULL;
-         ptr.modified = false;
-         ptr.counter = NULL;
-         return *this;
-      }*/
+      PointerData* pd;
 
-      const ThisType& operator=( const SharedPointer< NonConstObjectType, Devices::Cuda >& ptr )
-      {
-         this->free();
-         this->pointer = ptr.pointer;
-         this->counter = ptr.counter;
-         this->cuda_pointer = ptr.cuda_pointer;
-         this->modified = ptr.modified;
-         *( this->counter ) += 1;
-         return *this;
-      }      
-      
-      const ThisType& operator=( const ThisType& ptr )
-      {
-         this->free();
-         this->pointer = ptr.pointer;
-         this->cuda_pointer = ptr.cuda_pointer;
-         this->modified = ptr.modified;
-         this->counter = ptr.counter;
-         *( this->counter ) += 1;
-         return *this;
-      }      
-      
-      bool synchronize()
-      {
-         return true;
-      }
-            
-      ~SharedPointer()
-      {
-         this->free();
-#ifdef HAVE_CUDA         
-         Devices::Cuda::removeSmartPointer( this );
-#endif         
-      }
-      
-   protected:
-      
-      void free()
-      {
-         if( this->counter )
-         {
-            if( ! --*( this->counter ) )
-            {
-               delete this->counter;
-               this->counter = nullptr;
-               if( this->pointer )
-                  delete this->pointer;
-#ifdef HAVE_CUDA
-               if( this->cuda_pointer )
-                  cudaFree( this->cuda_pointer );
-               checkCudaDevice;
-#endif         
-            }
-         }
-         
-      }
-      
-      Object *pointer, *cuda_pointer;
-      
-      bool modified;
-      
-      int* counter;
+      // cuda_pointer can't be part of PointerData structure, since we would be
+      // unable to dereference this-pd on the device
+      Object* cuda_pointer;
 };
 
 } // namespace TNL

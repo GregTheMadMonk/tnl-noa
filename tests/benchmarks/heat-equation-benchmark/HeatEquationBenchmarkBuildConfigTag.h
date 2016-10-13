@@ -33,15 +33,15 @@ template< int Dimensions, typename Real, typename Device, typename Index >
 /****
  * Please, chose your preferred time discretisation  here.
  */
-template<> struct ConfigTagTimeDiscretisation< HeatEquationBenchmarkBuildConfigTag, tnlExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
-template<> struct ConfigTagTimeDiscretisation< HeatEquationBenchmarkBuildConfigTag, tnlSemiImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
-template<> struct ConfigTagTimeDiscretisation< HeatEquationBenchmarkBuildConfigTag, tnlImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
+template<> struct ConfigTagTimeDiscretisation< HeatEquationBenchmarkBuildConfigTag, ExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
+template<> struct ConfigTagTimeDiscretisation< HeatEquationBenchmarkBuildConfigTag, SemiImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
+template<> struct ConfigTagTimeDiscretisation< HeatEquationBenchmarkBuildConfigTag, ImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
 
 /****
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
-template<> struct ConfigTagExplicitSolver< HeatEquationBenchmarkBuildConfigTag, tnlExplicitEulerSolverTag >{ enum { enabled = true }; };
-template<> struct ConfigTagExplicitSolver< HeatEquationBenchmarkBuildConfigTag, tnlExplicitMersonSolverTag >{ enum { enabled = false }; };
+template<> struct ConfigTagExplicitSolver< HeatEquationBenchmarkBuildConfigTag, ExplicitEulerSolverTag >{ enum { enabled = true }; };
+template<> struct ConfigTagExplicitSolver< HeatEquationBenchmarkBuildConfigTag, ExplicitMersonSolverTag >{ enum { enabled = false }; };
 
 } // namespace Solvers
 } // namespace TNL

@@ -27,11 +27,7 @@ class ExplicitUpdaterTraverserUserData
 {
    public:
       
-      /*typedef typename DifferentialOperator::DeviceType DeviceType;
-      /*typedef DifferentialOperator DifferentialOperator;
-      typedef BoundaryConditions BoundaryConditions;
-      typedef RightHandSide RightHandSide;
-      typedef MeshFunction MeshFunction;*/
+      const Real time;
 
       const DifferentialOperator* differentialOperator;
 
@@ -41,29 +37,19 @@ class ExplicitUpdaterTraverserUserData
 
       MeshFunction *u, *fu;
       
-      Real* _fu;
-      
-      public:
-
-         const Real time;         
-
-
       ExplicitUpdaterTraverserUserData( const Real& time,
-                                           const DifferentialOperator& differentialOperator,
-                                           const BoundaryConditions& boundaryConditions,
-                                           const RightHandSide& rightHandSide,
-                                           MeshFunction& u,
-                                           MeshFunction& fu,
-                                           MeshFunction& __fu )
+                                        const DifferentialOperator* differentialOperator,
+                                        const BoundaryConditions* boundaryConditions,
+                                        const RightHandSide* rightHandSide,
+                                        MeshFunction* u,
+                                        MeshFunction* fu )
       : time( time ),
-        differentialOperator( &differentialOperator ),
-        boundaryConditions( &boundaryConditions ),
-        rightHandSide( &rightHandSide ),
-        u( &u ),
-        fu( &fu ),
-        _fu( &__fu[ 0 ] )
-      {
-      };
+        differentialOperator( differentialOperator ),
+        boundaryConditions( boundaryConditions ),
+        rightHandSide( rightHandSide ),
+        u( u ),
+        fu( fu )
+      {}
 };
 
 

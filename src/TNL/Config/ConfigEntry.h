@@ -104,6 +104,8 @@ struct ConfigEntry : public ConfigEntryBase
       }
       return true;
    };
+   
+   //~ConfigEntry(){};
 };
 
 } // namespace Config

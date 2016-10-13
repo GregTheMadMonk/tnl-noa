@@ -69,7 +69,7 @@ ObjectType* Cuda::passToDevice( const ObjectType& object )
                    cudaMemcpyHostToDevice ) != cudaSuccess )
    {
       checkCudaDevice;
-      cudaFree( deviceObject );
+      cudaFree( ( void* ) deviceObject );
       return 0;
    }
    return deviceObject;
@@ -126,7 +126,7 @@ template< typename ObjectType >
 void Cuda::freeFromDevice( ObjectType* deviceObject )
 {
 #ifdef HAVE_CUDA
-   cudaFree( deviceObject );
+   cudaFree( ( void* ) deviceObject );
    checkCudaDevice;
 #else
    Assert( false, std::cerr << "CUDA support is missing." );

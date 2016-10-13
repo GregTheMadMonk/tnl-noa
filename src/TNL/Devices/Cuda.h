@@ -104,12 +104,13 @@ class Cuda
    
    static void removeSmartPointer( SmartPointer* pointer );
    
-   static bool synchronizeDevice( int deviceId = 0  );
+   // Negative deviceId means that CudaDeviceInfo::getActiveDevice will be
+   // called to get the device ID.
+   static bool synchronizeDevice( int deviceId = -1 );
    
    protected:
    
-      static SmartPointersRegister smartPointersRegister;
-
+   static SmartPointersRegister smartPointersRegister;
 
 };
 

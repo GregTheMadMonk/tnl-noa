@@ -36,6 +36,7 @@ class PDEProblem : public Problem< Real, Device, Index >
       typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
       typedef Matrices::CSR< RealType, DeviceType, IndexType > MatrixType;
       typedef Containers::Vector< RealType, DeviceType, IndexType > MeshDependentDataType;
+      typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
 
       /****
        * This means that the time stepper will be set from the command line arguments.
@@ -52,32 +53,30 @@ class PDEProblem : public Problem< Real, Device, Index >
       bool writeEpilog( Logger& logger ) const;
 
 
-      bool setMeshDependentData( const MeshType& mesh,
-                                 MeshDependentDataType& meshDependentData );
+      bool setMeshDependentData( const MeshPointer& mesh,
+                                 MeshDependentDataPointer& meshDependentData );
 
-      void bindMeshDependentData( const MeshType& mesh,
-                                  MeshDependentDataType& meshDependentData );
+      void bindMeshDependentData( const MeshPointer& mesh,
+                                  MeshDependentDataPointer& meshDependentData );
 
       bool preIterate( const RealType& time,
                        const RealType& tau,
                        const MeshPointer& meshPointer,
                        DofVectorPointer& dofs,
-                       MeshDependentDataType& meshDependentData );
+                       MeshDependentDataPointer& meshDependentData );
  
       void setExplicitBoundaryConditions( const RealType& time,
                                           const MeshPointer& meshPointer,
                                           DofVectorPointer& dofs,
-                                          MeshDependentDataType& meshDependentData );
+                                          MeshDependentDataPointer& meshDependentData );
 
       bool postIterate( const RealType& time,
                         const RealType& tau,
                         const MeshPointer& meshPointer,
                         DofVectorPointer& dofs,
-                        MeshDependentDataType& meshDependentData );
+                        MeshDependentDataPointer& meshDependentData );
 
-      Solvers::SolverMonitor< RealType, IndexType >* getSolverMonitor();
-
-
+      Solvers::SolverMonitor* getSolverMonitor();
 };
 
 } // namespace Problems

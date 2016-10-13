@@ -69,6 +69,7 @@ readHeader()
    this->components = this->decinfo.num_components;
    //this->color_space = this->cinfo.jpeg_color_space;
    //cout << this->height << " x " << this->width << " : " << this->components << " " << this->color_space << std::endl;
+   return true;
 #else
    std::cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << std::endl;
    return false;
@@ -192,6 +193,7 @@ writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid )
    this->cinfo.in_color_space = JCS_GRAYSCALE;
    jpeg_set_defaults( &this->cinfo );
    jpeg_start_compress( &this->cinfo, true );
+   return true;
 #else
    //cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << std::endl;
    return false;

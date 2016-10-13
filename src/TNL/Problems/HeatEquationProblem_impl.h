@@ -127,7 +127,7 @@ HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperato
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshPointer& meshPointer,
                      DofVectorPointer& dofs,
-                     MeshDependentDataType& meshDependentData )
+                     MeshDependentDataPointer& meshDependentData )
 {
    this->bindDofs( meshPointer, dofs );
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
@@ -177,7 +177,7 @@ makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshPointer& meshPointer,
               DofVectorPointer& dofs,
-              MeshDependentDataType& meshDependentData )
+              MeshDependentDataPointer& meshDependentData )
 {
   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
 
@@ -203,7 +203,7 @@ getExplicitRHS( const RealType& time,
                 const MeshPointer& meshPointer,
                 DofVectorPointer& uDofs,
                 DofVectorPointer& fuDofs,
-                MeshDependentDataType& meshDependentData )
+                MeshDependentDataPointer& meshDependentData )
 {
    /****
     * If you use an explicit solver like Euler or Merson, you
@@ -227,11 +227,11 @@ getExplicitRHS( const RealType& time,
       this->rightHandSidePointer,
       this->uPointer,
       fuPointer );
-   /*BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
+   Solvers::PDE::BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
-      this->boundaryCondition,
+      this->boundaryConditionPointer,
       time + tau,
-      this->u );*/
+      this->uPointer );
    
    //fu.write( "fu.txt", "gnuplot" );
    //this->u.write( "u.txt", "gnuplot");
@@ -256,7 +256,7 @@ assemblyLinearSystem( const RealType& time,
                       const DofVectorPointer& dofsPointer,
                       MatrixPointer& matrixPointer,
                       DofVectorPointer& bPointer,
-                      MeshDependentDataType& meshDependentData )
+                      MeshDependentDataPointer& meshDependentData )
 {
    this->bindDofs( meshPointer, dofsPointer );
    Solvers::PDE::LinearSystemAssembler< Mesh,
@@ -284,13 +284,13 @@ assemblyLinearSystem( const RealType& time,
    /*cout << "Matrix multiplication test ..." << std::endl;
    Vector< RealType, DeviceType, IndexType > y;
    y.setLike( u );
-   TimerRT timer;
+   Timer timer;
    timer.reset();
    timer.start();
    for( int i = 0; i < 100; i++ )
       matrix.vectorProduct( u, y );
    timer.stop();
-  std::cout << "The time is " << timer.getTime();
+  std::cout << "The time is " << timer.getRealTime();
   std::cout << "Scalar product test ..." << std::endl;
    timer.reset();
    RealType a;
@@ -298,7 +298,7 @@ assemblyLinearSystem( const RealType& time,
    for( int i = 0; i < 100; i++ )
       a = y.scalarProduct( u );
    timer.stop();
-  std::cout << "The time is " << timer.getTime();
+  std::cout << "The time is " << timer.getRealTime();
   std::cout << std::endl;
    abort();*/
 }

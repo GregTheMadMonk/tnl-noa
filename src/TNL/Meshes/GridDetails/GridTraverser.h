@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/SharedPointer.h>
+
 
 namespace TNL {
 namespace Meshes {
@@ -50,7 +52,7 @@ class GridTraverser< Meshes::Grid< 1, Real, Devices::Host, Index > >
          const CoordinatesType end,
          const CoordinatesType& entityOrientation,
          const CoordinatesType& entityBasis,
-         UserData& userData );
+         SharedPointer< UserData, DeviceType >& userData );
 };
 
 /****
@@ -65,7 +67,7 @@ class GridTraverser< Meshes::Grid< 1, Real, Devices::Cuda, Index > >
       typedef Meshes::Grid< 1, Real, Devices::Cuda, Index > GridType;
       typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
-      typedef Devices::Host DeviceType;
+      typedef Devices::Cuda DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
  
@@ -81,7 +83,7 @@ class GridTraverser< Meshes::Grid< 1, Real, Devices::Cuda, Index > >
          const CoordinatesType& end,
          const CoordinatesType& entityOrientation,
          const CoordinatesType& entityBasis,
-         UserData& userData );
+         SharedPointer< UserData, DeviceType >& userData );
 };
 
 /****
@@ -114,7 +116,7 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Host, Index > >
          const CoordinatesType end,
          const CoordinatesType& entityOrientation,
          const CoordinatesType& entityBasis,
-         UserData& userData );
+         SharedPointer< UserData, DeviceType >& userData );
 };
 
 /****
@@ -129,7 +131,7 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Cuda, Index > >
       typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
       typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
-      typedef Devices::Host DeviceType;
+      typedef Devices::Cuda DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
  
@@ -147,7 +149,7 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Cuda, Index > >
          const CoordinatesType& end,
          const CoordinatesType& entityOrientation,
          const CoordinatesType& entityBasis,
-         UserData& userData );
+         SharedPointer< UserData, DeviceType >& userData );
 };
 
 /****
@@ -181,7 +183,7 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::Host, Index > >
          const CoordinatesType end,
          const CoordinatesType& entityOrientation,
          const CoordinatesType& entityBasis,
-         UserData& userData );
+         SharedPointer< UserData, DeviceType >& userData );
 };
 
 /****
@@ -196,7 +198,7 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::Cuda, Index > >
       typedef Meshes::Grid< 3, Real, Devices::Cuda, Index > GridType;
       typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
-      typedef Devices::Host DeviceType;
+      typedef Devices::Cuda DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
  
@@ -215,7 +217,7 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::Cuda, Index > >
          const CoordinatesType& end,
          const CoordinatesType& entityOrientation,
          const CoordinatesType& entityBasis,
-         UserData& userData );
+         SharedPointer< UserData, DeviceType >& userData );
 };
 
 } // namespace Meshes

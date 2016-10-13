@@ -61,7 +61,7 @@ then
 fi
 
 
-PREFIX=${HOME}/local
+PREFIX=${HOME}/.local
 for option in "$@"
 do
     case $option in

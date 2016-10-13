@@ -193,7 +193,7 @@ bool SlicedEllpack< Real, Device, Index, SliceSize >::addElementFast( const Inde
    Index elementPtr, rowEnd, step;
    DeviceDependentCode::initRowTraverseFast( *this, row, elementPtr, rowEnd, step );
 
-   IndexType col;
+   IndexType col = 0;
    while( elementPtr < rowEnd &&
           ( col = this->columnIndexes[ elementPtr ] ) < column &&
           col != this->getPaddingIndex() ) elementPtr += step;
@@ -241,7 +241,7 @@ bool SlicedEllpack< Real, Device, Index, SliceSize >::addElement( const IndexTyp
    Index elementPtr, rowEnd, step;
    DeviceDependentCode::initRowTraverse( *this, row, elementPtr, rowEnd, step );
 
-   IndexType col;
+   IndexType col = 0;
    while( elementPtr < rowEnd &&
           ( col = this->columnIndexes.getElement( elementPtr ) ) < column &&
           col != this->getPaddingIndex() ) elementPtr += step;
@@ -379,7 +379,7 @@ Real SlicedEllpack< Real, Device, Index, SliceSize >::getElementFast( const Inde
    Index elementPtr, rowEnd, step;
    DeviceDependentCode::initRowTraverseFast( *this, row, elementPtr, rowEnd, step );
 
-   IndexType col;
+   IndexType col = 0;
    while( elementPtr < rowEnd &&
           ( col = this->columnIndexes[ elementPtr ] ) < column &&
           col != this->getPaddingIndex() )
@@ -400,7 +400,7 @@ Real SlicedEllpack< Real, Device, Index, SliceSize >::getElement( const IndexTyp
    Index elementPtr, rowEnd, step;
    DeviceDependentCode::initRowTraverse( *this, row, elementPtr, rowEnd, step );
 
-   IndexType col;
+   IndexType col = 0;
    while( elementPtr < rowEnd &&
           ( col = this->columnIndexes.getElement( elementPtr ) ) < column &&
           col != this->getPaddingIndex() )

@@ -21,24 +21,20 @@ class MatrixSetterTraversalUserData
    public:
       
       typedef typename CompressedRowsLengthsVector::DeviceType DeviceType;
-      typedef SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-      typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-      typedef SharedPointer< CompressedRowsLengthsVector, DeviceType > CompressedRowsLengthsVectorPointer;
 
+      const DifferentialOperator* differentialOperator;
 
-      const DifferentialOperatorPointer differentialOperatorPointer;
+      const BoundaryConditions* boundaryConditions;
 
-      const BoundaryConditionsPointer boundaryConditionsPointer;
+      CompressedRowsLengthsVector* rowLengths;
 
-      CompressedRowsLengthsVectorPointer rowLengthsPointer;
-
-      MatrixSetterTraversalUserData( const DifferentialOperatorPointer& differentialOperatorPointer,
-                                        const BoundaryConditionsPointer& boundaryConditionsPointer,
-                                        CompressedRowsLengthsVectorPointer& rowLengthsPointer )
-      : differentialOperatorPointer( differentialOperatorPointer ),
-        boundaryConditionsPointer( boundaryConditionsPointer ),
-        rowLengthsPointer( rowLengthsPointer )
-      {};
+      MatrixSetterTraversalUserData( const DifferentialOperator* differentialOperator,
+                                     const BoundaryConditions* boundaryConditions,
+                                     CompressedRowsLengthsVector* rowLengths )
+      : differentialOperator( differentialOperator ),
+        boundaryConditions( boundaryConditions ),
+        rowLengths( rowLengths )
+      {}
 
 };
 
@@ -54,17 +50,17 @@ class MatrixSetter
    typedef typename MeshType::DeviceType DeviceType;
    typedef typename CompressedRowsLengthsVector::RealType IndexType;
    typedef MatrixSetterTraversalUserData< DifferentialOperator,
-                                             BoundaryConditions,
-                                             CompressedRowsLengthsVector > TraversalUserData;
+                                          BoundaryConditions,
+                                          CompressedRowsLengthsVector > TraversalUserData;
    typedef SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
    typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
    typedef SharedPointer< CompressedRowsLengthsVector, DeviceType > CompressedRowsLengthsVectorPointer;
 
    template< typename EntityType >
    void getCompressedRowsLengths( const MeshPointer& meshPointer,
-                       DifferentialOperatorPointer& differentialOperatorPointer,
-                       BoundaryConditionsPointer& boundaryConditionsPointer,
-                       CompressedRowsLengthsVectorPointer& rowLengthsPointer ) const;
+                                  const DifferentialOperatorPointer& differentialOperatorPointer,
+                                  const BoundaryConditionsPointer& boundaryConditionsPointer,
+                                  CompressedRowsLengthsVectorPointer& rowLengthsPointer ) const;
 
    class TraversalBoundaryEntitiesProcessor
    {
@@ -76,8 +72,8 @@ class MatrixSetter
                                     TraversalUserData& userData,                                    
                                     const EntityType& entity )
          {
-            userData.rowLengthsPointer.template modifyData< DeviceType >()[ entity.getIndex() ] =
-                     userData.boundaryConditionsPointer.template getData< DeviceType >().getLinearSystemRowLength( mesh, entity.getIndex(), entity );
+            ( *userData.rowLengths )[ entity.getIndex() ] =
+               userData.boundaryConditions->getLinearSystemRowLength( mesh, entity.getIndex(), entity );
          }
 
    };
@@ -92,8 +88,8 @@ class MatrixSetter
                                     TraversalUserData& userData,
                                     const EntityType& entity )
          {
-            userData.rowLengthsPointer.template modifyData< DeviceType >()[ entity.getIndex() ] =
-               userData.differentialOperatorPointer.template getData< DeviceType >().getLinearSystemRowLength( mesh, entity.getIndex(), entity );
+            ( *userData.rowLengths )[ entity.getIndex() ] =
+               userData.differentialOperator->getLinearSystemRowLength( mesh, entity.getIndex(), entity );
          }
    };
 
