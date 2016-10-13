@@ -220,10 +220,6 @@ getExplicitRHS( const RealType& time,
     * You may use supporting vectors again if you need.
     */
    
-   //cout << "u = " << u << endl;
-   //std::cerr << "==========================================================================================" << std::endl;
-   //std::cerr << "==========================================================================================" << std::endl;
-   //std::cerr << "==========================================================================================" << std::endl;
    this->bindDofs( meshPointer, uDofs );
    MeshFunctionPointer fuPointer( meshPointer, fuDofs );   
    explicitUpdater.template update< typename Mesh::Cell >(

@@ -83,7 +83,7 @@ void IterativeSolverMonitor< Real, Index > :: refresh( bool force )
 
       // FIXME: std::setw sets only minimum width, so free should be adjusted dynamically if more chars are actually written
       std::cout << std::setprecision( 5 );
-      std::cout << " ELA:" << std::setw( 8 ) << this->getElapsedTime()
+      std::cout << "\33[2K\r ELA:" << std::setw( 8 ) << this->getElapsedTime()
                 << " T:"   << std::setw( 8 ) << this->time;
       free -= 24;
       if( this->timeStep > 0 ) {
@@ -112,8 +112,8 @@ void IterativeSolverMonitor< Real, Index > :: refresh( bool force )
       }
 
       // fill the rest of the line with spaces to clear previous content
-      while( line_width && free-- > 0 )
-         std::cout << " ";
+      //while( line_width && free-- > 8 )
+      //   std::cout << " ";
       std::cout << "\r" << std::flush;
    }
 }
