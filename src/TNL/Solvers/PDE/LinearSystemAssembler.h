@@ -27,45 +27,40 @@ template< typename Real,
 class LinearSystemAssemblerTraverserUserData
 {
    public:
-      typedef Matrix MatrixType;
-      typedef typename Matrix::DeviceType DeviceType;
+      Real time = 0.0;
 
-      const Real time;
+      Real tau = 0.0;
 
-      const Real tau;
+      const DifferentialOperator* differentialOperator = NULL;
 
-      const DifferentialOperator* differentialOperator;
+      const BoundaryConditions* boundaryConditions = NULL;
 
-      const BoundaryConditions* boundaryConditions;
-
-      const RightHandSide* rightHandSide;
+      const RightHandSide* rightHandSide = NULL;
       
-      const MeshFunction* u;
+      const MeshFunction* u = NULL;
       
-      DofVector* b;
+      DofVector* b = NULL;
 
-      Matrix* matrix;
+      Matrix* matrix = NULL;
 
-      LinearSystemAssemblerTraverserUserData( const Real& time,
-                                              const Real& tau,
-                                              const DifferentialOperator* differentialOperator,
-                                              const BoundaryConditions* boundaryConditions,
-                                              const RightHandSide* rightHandSide,
-                                              const MeshFunction* u,
-                                              Matrix* matrix,
-                                              DofVector* b )
-      : time( time ),
-        tau( tau ),
-        differentialOperator( differentialOperator ),
-        boundaryConditions( boundaryConditions ),
-        rightHandSide( rightHandSide ),
-        u( u ),
-        b( b ),
-        matrix( matrix )
-      {}
-
-   protected:
-
+      void setUserData( const Real& time,
+                        const Real& tau,
+                        const DifferentialOperator* differentialOperator,
+                        const BoundaryConditions* boundaryConditions,
+                        const RightHandSide* rightHandSide,
+                        const MeshFunction* u,
+                        Matrix* matrix,
+                        DofVector* b )
+      {
+         this->time = time;
+         this->tau = tau;
+         this->differentialOperator = differentialOperator;
+         this->boundaryConditions = boundaryConditions;
+         this->rightHandSide = rightHandSide;
+         this->u = u;
+         this->b = b;
+         this->matrix = matrix;
+      }
 };
 
 
@@ -111,7 +106,7 @@ class LinearSystemAssembler
                   const RightHandSidePointer& rightHandSidePointer,
                   const MeshFunctionPointer& uPointer,
                   MatrixPointer& matrixPointer,
-                  DofVectorPointer& bPointer ) const;
+                  DofVectorPointer& bPointer );
 
  
       class TraverserBoundaryEntitiesProcessor
@@ -168,6 +163,9 @@ class LinearSystemAssembler
                                                          rhs );
          }
    };
+
+protected:
+   SharedPointer< TraverserUserData, DeviceType > userDataPointer;
 };
 
 } // namespace PDE

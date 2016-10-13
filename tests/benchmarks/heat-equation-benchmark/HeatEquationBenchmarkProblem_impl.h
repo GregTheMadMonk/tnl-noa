@@ -551,6 +551,7 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& b,
                       MeshDependentDataPointer& meshDependentData )
 {
+   // TODO: the instance should be "cached" like this->explicitUpdater, but there is a problem with MatrixPointer
    Solvers::PDE::LinearSystemAssembler< Mesh,
                              MeshFunctionType,
                              DifferentialOperator,
