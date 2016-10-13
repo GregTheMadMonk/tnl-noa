@@ -34,7 +34,17 @@ class Host
  
       static void enableOMP();
  
-      static inline bool isOMPEnabled() { return ompEnabled; };
+      static inline bool isOMPEnabled()
+      {
+         // This MUST stay in the header since we are interested in whether the
+         // client was compiled with OpenMP support, not the libtnl.so file.
+         // Also, keeping it in the header makes it inline-able.
+#ifdef HAVE_OPENMP
+         return ompEnabled;
+#else
+         return false;
+#endif
+      }
  
       static void setMaxThreadsCount( int maxThreadsCount );
  

@@ -33,7 +33,7 @@ void setupConfig( Config::ConfigDescription& config )
 #ifdef HAVE_DCMTK_H
 bool processDicomFiles( const Config::ParameterContainer& parameters )
 {
- 
+   return true;
 }
 
 bool processDicomSeries( const Config::ParameterContainer& parameters )
@@ -76,6 +76,7 @@ bool processDicomSeries( const Config::ParameterContainer& parameters )
          vector.save( fileName.getFileName() );
       }
    }
+   return true;
 }
 #endif
 

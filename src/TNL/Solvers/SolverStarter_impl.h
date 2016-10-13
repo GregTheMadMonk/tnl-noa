@@ -20,6 +20,7 @@
 #include <TNL/Solvers/Linear/CG.h>
 #include <TNL/Solvers/Linear/BICGStab.h>
 #include <TNL/Solvers/Linear/GMRES.h>
+#include <TNL/Solvers/Linear/CWYGMRES.h>
 #include <TNL/Solvers/Linear/TFQMR.h>
 #include <TNL/Solvers/Linear/UmfpackWrapper.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
@@ -185,9 +186,10 @@ class SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisa
              discreteSolver != "cg" &&
              discreteSolver != "bicgstab" &&
              discreteSolver != "gmres" &&
+             discreteSolver != "cwygmres" &&
              discreteSolver != "tfqmr" )
          {
-            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres or tfqmr." << std::endl;
+            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres, cwygmres or tfqmr." << std::endl;
             return false;
          }
 #else
@@ -195,10 +197,11 @@ class SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisa
              discreteSolver != "cg" &&
              discreteSolver != "bicgstab" &&
              discreteSolver != "gmres" &&
+             discreteSolver != "cwygmres" &&
              discreteSolver != "tfqmr" &&
              discreteSolver != "umfpack" )
          {
-            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres, tfqmr or umfpack." << std::endl;
+            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres, cwygmres, tfqmr or umfpack." << std::endl;
             return false;
          }
 #endif
@@ -211,6 +214,8 @@ class SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisa
             return SolverStarterPreconditionerSetter< Problem, SemiImplicitBICGStabSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "gmres" )
             return SolverStarterPreconditionerSetter< Problem, SemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
+         if( discreteSolver == "cwygmres" )
+            return SolverStarterPreconditionerSetter< Problem, SemiImplicitCWYGMRESSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "tfqmr" )
             return SolverStarterPreconditionerSetter< Problem, SemiImplicitTFQMRSolverTag, ConfigTag >::run( problem, parameters );
 #ifdef HAVE_UMFPACK
@@ -330,72 +335,6 @@ class SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Pre
       }
 };
 
-
-
-
-
-
-
-#ifdef UNDEF
-template< typename ConfigTag >
-   template< typename Problem >
-bool SolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
-                                                         const Config::ParameterContainer& parameters )
-{
-   if( ( discreteSolver == "sor" ||
-         discreteSolver == "cg" ||
-         discreteSolver == "bicg-stab" ||
-         discreteSolver == "gmres" ) &&
-         timeDiscretisation != "semi-implicit" )
-   {
-      std::cerr << "The '" << discreteSolver << "' solver can be used only with the semi-implicit time discretisation but not with the "
-           <<  timeDiscretisation << " one." << std::endl;
-      return false;
-   }
-
-   if( discreteSolver == "sor" )
-   {
-      typedef SOR< typename Problem :: DiscreteSolverMatrixType,
-                            typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
-      DiscreteSolver solver;
-      double omega = parameters. getParameter< double >( "sor-omega" );
-      solver. setOmega( omega );
-      //solver. setVerbose( this->verbose );
-      return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
-   }
-
-   if( discreteSolver == "cg" )
-   {
-      typedef CG< typename Problem :: DiscreteSolverMatrixType,
-                           typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
-      DiscreteSolver solver;
-      //solver. setVerbose( this->verbose );
-      return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
-   }
-
-   if( discreteSolver == "bicg-stab" )
-   {
-      typedef BICGStab< typename Problem :: DiscreteSolverMatrixType,
-                                 typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
-      DiscreteSolver solver;
-      //solver. setVerbose( this->verbose );
-      return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
-   }
-
-   if( discreteSolver == "gmres" )
-   {
-      typedef GMRES< typename Problem :: DiscreteSolverMatrixType,
-                              typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
-      DiscreteSolver solver;
-      int restarting = parameters. getParameter< int >( "gmres-restarting" );
-      solver. setRestarting( restarting );
-      //solver. setVerbose( this->verbose );
-      return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
-   }
-   std::cerr << "Unknown discrete solver " << discreteSolver << "." << std::endl;
-   return false;
-}
-#endif
 
 template< typename ConfigTag >
    template< typename Problem,

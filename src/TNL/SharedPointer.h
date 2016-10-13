@@ -182,8 +182,8 @@ class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
       const Object& getData() const
       {
          return this->pd->data;
-      }
-
+      }      
+      
       template< typename Device = Devices::Host >
       __cuda_callable__
       Object& modifyData()

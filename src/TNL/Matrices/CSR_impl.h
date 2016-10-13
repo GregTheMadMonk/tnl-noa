@@ -172,7 +172,7 @@ bool CSR< Real, Device, Index >::addElementFast( const IndexType row,
 
    IndexType elementPtr = this->rowPointers[ row ];
    const IndexType rowEnd = this->rowPointers[ row + 1 ];
-   IndexType col;
+   IndexType col = 0;
    while( elementPtr < rowEnd &&
           ( col = this->columnIndexes[ elementPtr ] ) < column &&
           col != this->getPaddingIndex() ) elementPtr++;
@@ -340,7 +340,7 @@ Real CSR< Real, Device, Index >::getElementFast( const IndexType row,
 {
    IndexType elementPtr = this->rowPointers[ row ];
    const IndexType rowEnd = this->rowPointers[ row + 1 ];
-   IndexType col;
+   IndexType col = 0;
    while( elementPtr < rowEnd &&
           ( col = this->columnIndexes[ elementPtr ] ) < column &&
           col != this->getPaddingIndex() )
@@ -358,7 +358,7 @@ Real CSR< Real, Device, Index >::getElement( const IndexType row,
 {
    IndexType elementPtr = this->rowPointers.getElement( row );
    const IndexType rowEnd = this->rowPointers.getElement( row + 1 );
-   IndexType col;
+   IndexType col = 0;
    while( elementPtr < rowEnd &&
           ( col = this->columnIndexes.getElement( elementPtr ) ) < column &&
           col != this->getPaddingIndex() )

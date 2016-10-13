@@ -13,6 +13,8 @@
 #include <cmath>
 #include <float.h>
 
+#include "IterativeSolver.h"
+
 namespace TNL {
 namespace Solvers {   
 
@@ -82,6 +84,9 @@ template< typename Real, typename Index >
 void IterativeSolver< Real, Index> :: resetIterations()
 {
    this->currentIteration = 0;
+   if( this->solverMonitor )
+      this->solverMonitor->setIterations( 0 );
+   
 }
 
 template< typename Real, typename Index >
@@ -90,6 +95,10 @@ bool IterativeSolver< Real, Index> :: nextIteration()
    // this->checkNextIteration() must be called before the iteration counter is incremented
    bool result = this->checkNextIteration();
    this->currentIteration++;
+   if( this->solverMonitor )
+   {
+      this->solverMonitor->setIterations( this->getIterations() );
+   }
    return result;
 }
 
@@ -172,6 +181,8 @@ template< typename Real, typename Index >
 void IterativeSolver< Real, Index> :: setResidue( const Real& residue )
 {
    this->currentResidue = residue;
+   if( this->solverMonitor )
+      this->solverMonitor->setResidue( this->getResidue() );
 }
 
 template< typename Real, typename Index >
@@ -198,9 +209,9 @@ void IterativeSolver< Real, Index> :: refreshSolverMonitor( bool force )
 {
    if( this->solverMonitor )
    {
-      this->solverMonitor -> setIterations( this->getIterations() );
-      this->solverMonitor -> setResidue( this->getResidue() );
-      this->solverMonitor -> setRefreshRate( this-> refreshRate );
+      this->solverMonitor->setIterations( this->getIterations() );
+      this->solverMonitor->setResidue( this->getResidue() );
+      this->solverMonitor->setRefreshRate( this-> refreshRate );
 //      this->solverMonitor -> refresh( force );
    }
 }

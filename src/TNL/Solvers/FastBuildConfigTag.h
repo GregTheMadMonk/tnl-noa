@@ -15,46 +15,46 @@
 namespace TNL {
 namespace Solvers {   
 
-class tnlFastBuildConfig
+class FastBuildConfig
 {
    public:
 
-      static void print() { std::cerr << "tnlFastBuildConfig" << std::endl; }
+      static void print() { std::cerr << "FastBuildConfig" << std::endl; }
 };
 
 /****
  * Turn off support for float and long double.
  */
-template<> struct ConfigTagReal< tnlFastBuildConfig, float > { enum { enabled = false }; };
-template<> struct ConfigTagReal< tnlFastBuildConfig, long double > { enum { enabled = false }; };
+template<> struct ConfigTagReal< FastBuildConfig, float > { enum { enabled = false }; };
+template<> struct ConfigTagReal< FastBuildConfig, long double > { enum { enabled = false }; };
 
 /****
  * Turn off support for short int and long int indexing.
  */
-template<> struct ConfigTagIndex< tnlFastBuildConfig, short int >{ enum { enabled = false }; };
-template<> struct ConfigTagIndex< tnlFastBuildConfig, long int >{ enum { enabled = false }; };
+template<> struct ConfigTagIndex< FastBuildConfig, short int >{ enum { enabled = false }; };
+template<> struct ConfigTagIndex< FastBuildConfig, long int >{ enum { enabled = false }; };
 
 /****
  * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
  */
 template< int Dimensions, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< tnlFastBuildConfig, Meshes::Grid< Dimensions, Real, Device, Index > >
-      { enum { enabled = ConfigTagDimensions< tnlFastBuildConfig, Dimensions >::enabled  &&
-                         ConfigTagReal< tnlFastBuildConfig, Real >::enabled &&
-                         ConfigTagDevice< tnlFastBuildConfig, Device >::enabled &&
-                         ConfigTagIndex< tnlFastBuildConfig, Index >::enabled }; };
+   struct ConfigTagMesh< FastBuildConfig, Meshes::Grid< Dimensions, Real, Device, Index > >
+      { enum { enabled = ConfigTagDimensions< FastBuildConfig, Dimensions >::enabled  &&
+                         ConfigTagReal< FastBuildConfig, Real >::enabled &&
+                         ConfigTagDevice< FastBuildConfig, Device >::enabled &&
+                         ConfigTagIndex< FastBuildConfig, Index >::enabled }; };
 
 /****
  * Please, chose your preferred time discretisation  here.
  */
-template<> struct ConfigTagTimeDiscretisation< tnlFastBuildConfig, ExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
-template<> struct ConfigTagTimeDiscretisation< tnlFastBuildConfig, SemiImplicitTimeDiscretisationTag >{ enum { enabled = true }; };
-template<> struct ConfigTagTimeDiscretisation< tnlFastBuildConfig, ImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
+template<> struct ConfigTagTimeDiscretisation< FastBuildConfig, ExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
+template<> struct ConfigTagTimeDiscretisation< FastBuildConfig, SemiImplicitTimeDiscretisationTag >{ enum { enabled = true }; };
+template<> struct ConfigTagTimeDiscretisation< FastBuildConfig, ImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
 
 /****
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
-template<> struct ConfigTagExplicitSolver< tnlFastBuildConfig, ExplicitEulerSolverTag >{ enum { enabled = false }; };
+//template<> struct ConfigTagExplicitSolver< FastBuildConfig, ExplicitEulerSolverTag >{ enum { enabled = false }; };
 
 } // namespace Solvers
 } // namespace TNL

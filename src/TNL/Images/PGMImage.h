@@ -19,7 +19,7 @@ namespace TNL {
 namespace Images {   
 
 template< typename Index = int >
-class tnlPGMImage : public tnlImage< Index >
+class tnlPGMImage : public Image< Index >
 {
    public:
  

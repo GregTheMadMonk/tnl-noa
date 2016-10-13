@@ -31,9 +31,9 @@ class MeshFunction :
    public:
       
       typedef Mesh MeshType;
-      typedef SharedPointer< MeshType > MeshPointer;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
+      typedef SharedPointer< MeshType > MeshPointer;      
       typedef Real RealType;
       typedef Containers::Vector< RealType, DeviceType, IndexType > VectorType;
       typedef Functions::MeshFunction< Mesh, MeshEntityDimensions, Real > ThisType;
@@ -48,8 +48,14 @@ class MeshFunction :
       
       template< typename Vector >
       MeshFunction( const MeshPointer& meshPointer,
-                       Vector& data,
-                       const IndexType& offset = 0 );
+                    Vector& data,
+                    const IndexType& offset = 0 );      
+      
+      
+      template< typename Vector >
+      MeshFunction( const MeshPointer& meshPointer,
+                    SharedPointer< Vector >& data,
+                    const IndexType& offset = 0 );      
  
       static String getType();
  

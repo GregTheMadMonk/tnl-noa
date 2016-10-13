@@ -132,7 +132,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 1, 0 ),
-      CoordinatesType( 0, 1, 0 ),
+      CoordinatesType( 0, 0, 1 ),
       CoordinatesType( 1, 1, 0 ),
       userDataPointer );
 }

@@ -75,20 +75,25 @@ processEntities(
    else
    {
       //TODO: This does not work with gcc-5.4 and older, should work at gcc 6.x
-      /*for( entity.getCoordinates().x() = begin.x();
+/*#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )
+      for( entity.getCoordinates().x() = begin.x();
            entity.getCoordinates().x() <= end.x();
            entity.getCoordinates().x() ++ )
       {
          entity.refresh();
          EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
       }*/ 
+#ifdef HAVE_OPENMP
 #pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
+#endif
       {
          GridEntity entity( *gridPointer );
          entity.setOrientation( entityOrientation );
          entity.setBasis( entityBasis );
+#ifdef HAVE_OPENMP
 #pragma omp for 
-         for( IndexType x = begin.x(); x<= end.x(); x ++ )
+#endif
+         for( IndexType x = begin.x(); x <= end.x(); x ++ )
          {
             entity.getCoordinates().x() = x;
             entity.refresh();
@@ -121,12 +126,12 @@ GridTraverser1D(
    typename GridType::CoordinatesType coordinates;
  
    coordinates.x() = kernelData->begin.x() + ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
- 
-   GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
-   
-   entity.refresh();
    if( coordinates.x() <= kernelData->end.x() )
+   {   
+      GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
+      entity.refresh();
       EntitiesProcessor::processEntity( entity.getMesh(), *userData, entity );
+   }
 }
 
 template< typename Real,
@@ -283,14 +288,18 @@ processEntities(
             entity.refresh();
             EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
          }*/
+#ifdef HAVE_OPENMP
 #pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
+#endif
       {
          GridEntity entity( *gridPointer );
          entity.setOrientation( entityOrientation );
          entity.setBasis( entityBasis );
+#ifdef HAVE_OPENMP
 #pragma omp for 
+#endif
          for( IndexType y = begin.y(); y <= end.y(); y ++ )
-            for( IndexType x = begin.x(); x<= end.x(); x ++ )
+            for( IndexType x = begin.x(); x <= end.x(); x ++ )
             {
                entity.getCoordinates().x() = x;
                entity.getCoordinates().y() = y;
@@ -315,21 +324,28 @@ __global__ void
 GridTraverser2D(
    const Meshes::Grid< 2, Real, Devices::Cuda, Index >* grid,
    UserData* userData,
-   const TraverserKernelData< typename GridEntity::CoordinatesType >* kernelData,
+   //const TraverserKernelData< typename GridEntity::CoordinatesType >* kernelData,
+   const typename GridEntity::CoordinatesType begin,
+   const typename GridEntity::CoordinatesType end,
+   const typename GridEntity::CoordinatesType entityOrientation,
+   const typename GridEntity::CoordinatesType entityBasis,
    const Index gridXIdx,
    const Index gridYIdx )
 {
    typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
 
-   coordinates.x() = kernelData->begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = kernelData->begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
+   //coordinates.x() = kernelData->begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   //coordinates.y() = kernelData->begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
    
-   GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
+   coordinates.x() = begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
+   
 
-   if( entity.getCoordinates().x() <= kernelData->end.x() &&
-       entity.getCoordinates().y() <= kernelData->end.y() )
+   if( coordinates.x() <= end.x() &&
+       coordinates.y() <= end.y() )
    {
+      GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
       entity.refresh();
       if( ! processOnlyBoundaryEntities || entity.isBoundaryEntity() )
       {
@@ -362,8 +378,8 @@ processEntities(
    SharedPointer< UserData, DeviceType >& userDataPointer )
 {
 #ifdef HAVE_CUDA   
-   UniquePointer< TraverserKernelData< CoordinatesType >, Devices::Cuda >
-      kernelData( begin, end, entityOrientation, entityBasis );
+   //UniquePointer< TraverserKernelData< CoordinatesType >, Devices::Cuda >
+   //   kernelData( begin, end, entityOrientation, entityBasis );
 
    dim3 cudaBlockSize( 16, 16 );
    dim3 cudaBlocks;
@@ -379,7 +395,8 @@ processEntities(
             <<< cudaBlocks, cudaBlockSize >>>
             ( &gridPointer.template getData< Devices::Cuda >(),
               &userDataPointer.template modifyData< Devices::Cuda >(),
-              &kernelData.template getData< Devices::Cuda >(),
+              //&kernelData.template getData< Devices::Cuda >(),
+              begin, end, entityOrientation, entityBasis,
               gridXIdx,
               gridYIdx );
  
@@ -480,15 +497,19 @@ processEntities(
                entity.refresh();
                EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
             }*/
+#ifdef HAVE_OPENMP
 #pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
+#endif
       {
          GridEntity entity( *gridPointer );
          entity.setOrientation( entityOrientation );
          entity.setBasis( entityBasis );         
+#ifdef HAVE_OPENMP
 #pragma omp for
-         for( IndexType z = begin.y(); z <= end.y(); z ++ )
+#endif
+         for( IndexType z = begin.z(); z <= end.z(); z ++ )
             for( IndexType y = begin.y(); y <= end.y(); y ++ )
-               for( IndexType x = begin.x(); x<= end.x(); x ++ )
+               for( IndexType x = begin.x(); x <= end.x(); x ++ )
                {
                   entity.getCoordinates().x() = x;
                   entity.getCoordinates().y() = y;
@@ -526,12 +547,13 @@ GridTraverser3D(
    coordinates.y() = kernelData->begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
    coordinates.z() = kernelData->begin.z() + ( gridZIdx * Devices::Cuda::getMaxGridSize() + blockIdx.z ) * blockDim.z + threadIdx.z;
  
-   GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
+   
 
-   if( entity.getCoordinates().x() <= kernelData->end.x() &&
-       entity.getCoordinates().y() <= kernelData->end.y() &&
-       entity.getCoordinates().z() <= kernelData->end.z() )
+   if( coordinates.x() <= kernelData->end.x() &&
+       coordinates.y() <= kernelData->end.y() &&
+       coordinates.z() <= kernelData->end.z() )
    {
+      GridEntity entity( *grid, coordinates, kernelData->entityOrientation, kernelData->entityBasis );
       entity.refresh();
       if( ! processOnlyBoundaryEntities || entity.isBoundaryEntity() )
       {

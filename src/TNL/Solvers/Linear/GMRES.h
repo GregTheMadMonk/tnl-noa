@@ -14,7 +14,6 @@
 #include <TNL/Object.h>
 #include <TNL/SharedPointer.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/SharedVector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
@@ -27,15 +26,15 @@ template< typename Matrix,
           typename Preconditioner = Preconditioners::Dummy< typename Matrix :: RealType,
                                                             typename Matrix :: DeviceType,
                                                             typename Matrix :: IndexType> >
-class GMRES : public Object,
-                       public IterativeSolver< typename Matrix :: RealType,
-                                                  typename Matrix :: IndexType >
+class GMRES
+: public Object,
+  public IterativeSolver< typename Matrix :: RealType,
+                          typename Matrix :: IndexType >
 {
-   public:
-
-   typedef typename Matrix :: RealType RealType;
-   typedef typename Matrix :: IndexType IndexType;
-   typedef typename Matrix :: DeviceType DeviceType;
+public:
+   typedef typename Matrix::RealType RealType;
+   typedef typename Matrix::IndexType IndexType;
+   typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
    typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
@@ -58,13 +57,12 @@ class GMRES : public Object,
    void setPreconditioner( const PreconditionerPointer& preconditioner );
 
    template< typename Vector,
-             typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
+             typename ResidueGetter = LinearResidueGetter< Matrix, Vector > >
    bool solve( const Vector& b, Vector& x );
 
    ~GMRES();
 
-   protected:
-
+protected:
    template< typename VectorT >
    void update( IndexType k,
                 IndexType m,
@@ -73,15 +71,15 @@ class GMRES : public Object,
                 Containers::Vector< RealType, DeviceType, IndexType >& v,
                 VectorT& x );
 
-   void generatePlaneRotation( RealType &dx,
-                               RealType &dy,
-                               RealType &cs,
-                               RealType &sn );
+   void generatePlaneRotation( RealType& dx,
+                               RealType& dy,
+                               RealType& cs,
+                               RealType& sn );
 
-   void applyPlaneRotation( RealType &dx,
-                            RealType &dy,
-                            RealType &cs,
-                            RealType &sn );
+   void applyPlaneRotation( RealType& dx,
+                            RealType& dy,
+                            RealType& cs,
+                            RealType& sn );
 
 
    bool setSize( IndexType _size, IndexType m );
@@ -109,10 +107,10 @@ namespace TNL {
 namespace Solvers {
 namespace Linear {
    
-extern template class GMRES< Matrices::CSR< float,  Devices::Host, int > >;
+/*extern template class GMRES< Matrices::CSR< float,  Devices::Host, int > >;
 extern template class GMRES< Matrices::CSR< double, Devices::Host, int > >;
 extern template class GMRES< Matrices::CSR< float,  Devices::Host, long int > >;
-extern template class GMRES< Matrices::CSR< double, Devices::Host, long int > >;
+extern template class GMRES< Matrices::CSR< double, Devices::Host, long int > >;*/
 
 /*extern template class GMRES< Ellpack< float,  Devices::Host, int > >;
 extern template class GMRES< Ellpack< double, Devices::Host, int > >;

@@ -83,12 +83,11 @@ Array( Array< Element, Device, Index >& array,
       if( array.referenceCounter )
       {
          this->referenceCounter = array.referenceCounter;
-         *this->referenceCounter++;
+         *this->referenceCounter += 1;
       }
       else
       {
-         this->referenceCounter = array.referenceCounter = new int;
-         *this->referenceCounter = 2;
+         this->referenceCounter = array.referenceCounter = new int( 2 );
       }
    }
 }
@@ -325,7 +324,7 @@ getElement( const Index& i ) const
               std::cerr << "Wrong index for getElement method in Array "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
-   return ArrayOperations< Device > :: getMemoryElement( & ( this->data[ i ] ) );
+   return ArrayOperations< Device >::getMemoryElement( & ( this->data[ i ] ) );
 };
 
 template< typename Element,

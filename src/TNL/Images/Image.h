@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlImage.h  -  description
+                          Image.h  -  description
                              -------------------
     begin                : Jul 20, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -14,13 +14,13 @@ namespace TNL {
 namespace Images {   
 
 template< typename Index = int >
-class tnlImage
+class Image
 {
    public:
  
       typedef Index IndexType;
  
-      tnlImage() : width( 0 ), height( 0 ) {};
+      Image() : width( 0 ), height( 0 ) {};
  
       IndexType getWidth() const
       {

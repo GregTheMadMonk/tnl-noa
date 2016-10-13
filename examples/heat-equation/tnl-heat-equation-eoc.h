@@ -25,7 +25,7 @@ using namespace TNL;
 using namespace TNL::Problems;
 
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
-typedef Solvers::tnlFastBuildConfig BuildConfig;
+typedef Solvers::FastBuildConfig BuildConfig;
 
 template< typename MeshConfig >
 class heatEquationEocConfig

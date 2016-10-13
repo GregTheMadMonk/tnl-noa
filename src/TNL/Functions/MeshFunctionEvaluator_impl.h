@@ -118,7 +118,9 @@ evaluateEntities( OutMeshFunctionPointer& meshFunction,
    typedef typename MeshType::template MeshEntity< OutMeshFunction::getEntitiesDimensions() > MeshEntityType;
    typedef Functions::MeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData > AssignmentEntitiesProcessor;
    typedef Functions::MeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
- 
+   //typedef typename OutMeshFunction::MeshPointer OutMeshPointer;
+   typedef SharedPointer< TraverserUserData, DeviceType > TraverserUserDataPointer;
+   
    SharedPointer< TraverserUserData, DeviceType >
       userData( &function.template getData< DeviceType >(),
                 time,
@@ -136,7 +138,7 @@ evaluateEntities( OutMeshFunctionPointer& meshFunction,
                                                        userData );
          else
             meshTraverser.template processAllEntities< TraverserUserData,
-                                                      AssignmentEntitiesProcessor >
+                                                       AssignmentEntitiesProcessor >
                                                     ( meshFunction->getMeshPointer(),
                                                       userData );
          break;

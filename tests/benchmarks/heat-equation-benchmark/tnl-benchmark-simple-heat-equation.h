@@ -286,9 +286,8 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
       {
          const Real x = i * hx - domainXSize / 2.0;
          const Real y = j * hy - domainYSize / 2.0;
-         u[ j * gridXSize + i ] = exp( - sigma * ( x * x + y * y ) );
+         u[ j * gridXSize + i ] = exp( - ( x * x + y * y ) / ( sigma * sigma ) );
       }
-   
    
    /****
     * Allocate data on the CUDA device
@@ -304,11 +303,23 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
       std::cerr << "Allocation failed. " << cudaErr << std::endl;
       return false;
    }
+   
+   typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
+   typedef typename GridType::VertexType VertexType;
+   typedef SharedPointer< GridType > GridPointer;
+   GridPointer gridPointer;
+   gridPointer->setDimensions( gridXSize, gridYSize );
+   gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   Containers::Vector< Real, Devices::Cuda, Index > vecU;
+   vecU.bind( cuda_u, gridXSize * gridYSize );
+   Functions::MeshFunction< GridType > meshFunction;
+   meshFunction.bind( gridPointer, vecU );
+   meshFunction.save( "simple-heat-equation-initial.tnl" );
+   
    Containers::Vector< Real, Devices::Cuda, Index > vecAux;
    vecAux.bind( cuda_aux, gridXSize * gridYSize );
    vecAux.setValue( 0.0 );   
-   cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
-   writeFunction( "initial", aux, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
+
    
    /****
     * Explicit Euler solver
@@ -380,22 +391,12 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
          cout << "Iteration: " << iteration << "\t Time:" << time << "    \r" << flush;                 
    }
    timer.stop();
-   cudaMemcpy( u, cuda_u, dofsCount * sizeof( Real ), cudaMemcpyDeviceToHost );
-   writeFunction( "final", u, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
+   //cudaMemcpy( u, cuda_u, dofsCount * sizeof( Real ), cudaMemcpyDeviceToHost );
+   //writeFunction( "final", u, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
 
    /****
     * Saving the result
     */
-   typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
-   typedef typename GridType::VertexType VertexType;
-   typedef SharedPointer< GridType > GridPointer;
-   GridPointer gridPointer;
-   gridPointer->setDimensions( gridXSize, gridYSize );
-   gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
-   Containers::Vector< Real, Devices::Cuda, Index > vecU;
-   vecU.bind( cuda_u, gridXSize * gridYSize );
-   Functions::MeshFunction< GridType > meshFunction;
-   meshFunction.bind( gridPointer, vecU );
    meshFunction.save( "simple-heat-equation-result.tnl" );
    
    /***

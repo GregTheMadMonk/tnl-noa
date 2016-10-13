@@ -23,7 +23,7 @@ class SolverMonitor
    public:
 
    SolverMonitor()
-      : timeout_milliseconds(1),
+      : timeout_milliseconds(500),
         stopped(true)
    {};
 

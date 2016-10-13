@@ -76,8 +76,6 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
 
    void setRefreshRate( const IndexType& refreshRate );
 
-   void setSolverMonitor( SolverMonitorType& solverMonitor );
-
    void refreshSolverMonitor();
 
 protected:
@@ -108,8 +106,6 @@ protected:
    bool testingMode;
 
    Problem* problem;
-
-   SolverMonitorType* solverMonitor;
 
    /****
     * Auxiliary array for the computation of the solver residue on CUDA device.

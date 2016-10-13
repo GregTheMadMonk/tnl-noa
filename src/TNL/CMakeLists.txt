@@ -29,6 +29,8 @@ set( headers
      Logger.h
      Logger_impl.h
      Math.h
+     mpi-supp.h
+     param-types.h
      SharedPointer.h
      SmartPointer.h
      SmartPointersRegister.h

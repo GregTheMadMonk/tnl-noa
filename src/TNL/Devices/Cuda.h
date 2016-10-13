@@ -115,9 +115,9 @@ class Cuda
 };
 
 #ifdef HAVE_CUDA
-#define checkCudaDevice TNL::Devices::Cuda::checkDevice( __FILE__, __LINE__, cudaGetLastError() )
+#define checkCudaDevice ::TNL::Devices::Cuda::checkDevice( __FILE__, __LINE__, cudaGetLastError() )
 #else
-#define checkCudaDevice TNL::Devices::Cuda::checkDevice()
+#define checkCudaDevice ::TNL::Devices::Cuda::checkDevice()
 #endif
 
 #define CudaSupportMissingMessage \

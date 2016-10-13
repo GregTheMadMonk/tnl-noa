@@ -122,7 +122,7 @@ public:
                 horizontalGroups.pop_back();
                 header_indent.pop_back();
             }
-        for( int i = 0; i < horizontalGroups.size(); i++ ) {
+        for( size_t i = 0; i < horizontalGroups.size(); i++ ) {
             if( horizontalGroups[ i ].second > 0 ) {
                 log << header_indent << " " << horizontalGroups[ i ].first << std::endl;
                 header_indent += "!";
@@ -194,7 +194,7 @@ public:
             horizontalGroups.pop_back();
             header_indent.pop_back();
         }
-        for( int i = 0; i < horizontalGroups.size(); i++ ) {
+        for( size_t i = 0; i < horizontalGroups.size(); i++ ) {
             if( horizontalGroups[ i ].second > 0 ) {
                 log << header_indent << " " << horizontalGroups[ i ].first << std::endl;
                 header_indent += "!";

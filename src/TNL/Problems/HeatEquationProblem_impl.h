@@ -21,7 +21,6 @@
 #include <TNL/Matrices/MultidiagonalMatrixSetter.h>
 #include <TNL/Logger.h>
 #include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
-#include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
@@ -85,9 +84,16 @@ setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, "boundary-conditions-" ) ||
-       ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
+   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, "boundary-conditions-" ) )
+   {
+      std::cerr << "I was not able to initialize the boundary conditions." << std::endl;
       return false;
+   }
+   if( ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
+   {
+      std::cerr << "I was not able to initialize the right-hand side function." << std::endl;
+      return false;
+   }
    return true;
 }
 
@@ -214,11 +220,8 @@ getExplicitRHS( const RealType& time,
     * You may use supporting vectors again if you need.
     */
    
-   //cout << "u = " << u << endl;
    this->bindDofs( meshPointer, uDofs );
-   MeshFunctionPointer fuPointer( meshPointer, fuDofs );
-   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer );
+   MeshFunctionPointer fuPointer( meshPointer, fuDofs );   
    explicitUpdater.template update< typename Mesh::Cell >(
       time,
       meshPointer,
@@ -227,20 +230,18 @@ getExplicitRHS( const RealType& time,
       this->rightHandSidePointer,
       this->uPointer,
       fuPointer );
-   Solvers::PDE::BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
+   //std::cerr << "******************************************************************************************" << std::endl;
+   //std::cerr << "******************************************************************************************" << std::endl;
+   //std::cerr << "******************************************************************************************" << std::endl;
+   /*Solvers::PDE::BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
       this->boundaryConditionPointer,
       time + tau,
-      this->uPointer );
+      this->uPointer );*/
    
-   //fu.write( "fu.txt", "gnuplot" );
-   //this->u.write( "u.txt", "gnuplot");
+   //uPointer->write( "u.txt", "gnuplot" );
+   //fuPointer->write( "fu.txt", "gnuplot" );
    //getchar();
-   /*cout << "u = " << u << std::endl;
-  std::cout << "fu = " << fu << std::endl;
-   u.save( "u.tnl" );
-   fu.save( "fu.tnl" );
-   getchar();*/
 }
 
 template< typename Mesh,
