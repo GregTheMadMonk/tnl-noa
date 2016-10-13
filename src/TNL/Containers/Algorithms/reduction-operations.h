@@ -79,7 +79,7 @@ class tnlParallelReductionMin
       return min( current, data1[ idx ] );
    };
 
-   __cuda_callable__ ResultType initialValue() { return tnlMaxValue< ResultType>(); };
+   __cuda_callable__ ResultType initialValue() { return MaxValue< ResultType>(); };
  
    __cuda_callable__ void cudaFirstReduction( ResultType& result,
                                               const IndexType& index,
@@ -120,7 +120,7 @@ class tnlParallelReductionMax
       return max( current, data1[ idx ] );
    };
 
-   __cuda_callable__ ResultType initialValue() { return tnlMinValue< ResultType>(); };
+   __cuda_callable__ ResultType initialValue() { return MinValue< ResultType>(); };
  
    __cuda_callable__ void cudaFirstReduction( ResultType& result,
                                               const IndexType& index,
@@ -273,7 +273,7 @@ class tnlParallelReductionAbsMin : public tnlParallelReductionMin< Real, Index >
       return min( current, abs( data1[ idx ] ) );
    };
 
-   __cuda_callable__ ResultType initialValue() { return tnlMaxValue< ResultType>(); };
+   __cuda_callable__ ResultType initialValue() { return MaxValue< ResultType>(); };
  
    __cuda_callable__ void cudaFirstReduction( ResultType& result,
                                               const IndexType& index,
@@ -517,7 +517,7 @@ class tnlParallelReductionDiffMin : public tnlParallelReductionMin< Real, Index 
       return min( current, data1[ idx ] - data2[ idx ] );
    };
 
-   __cuda_callable__ ResultType initialValue() { return tnlMaxValue< ResultType>(); };
+   __cuda_callable__ ResultType initialValue() { return MaxValue< ResultType>(); };
  
    __cuda_callable__ void cudaFirstReduction( ResultType& result,
                                               const IndexType& index,
@@ -604,7 +604,7 @@ class tnlParallelReductionDiffAbsMin : public tnlParallelReductionMin< Real, Ind
       return min( current, abs( data1[ idx ] - data2[ idx ] ) );
    };
 
-   __cuda_callable__ ResultType initialValue() { return tnlMaxValue< ResultType>(); };
+   __cuda_callable__ ResultType initialValue() { return MaxValue< ResultType>(); };
  
    __cuda_callable__ void cudaFirstReduction( ResultType& result,
                                               const IndexType& index,

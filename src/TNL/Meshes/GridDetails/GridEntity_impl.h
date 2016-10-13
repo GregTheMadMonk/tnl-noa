@@ -304,8 +304,6 @@ GridEntity( const GridType& grid )
   neighbourEntitiesStorage( *this )
 {
    this->coordinates = CoordinatesType( ( Index ) 0 );
-   this->orientation = EntityOrientationType( ( Index ) 0 );
-   this->basis = EntityBasisType( ( Index ) 1 );
 }
 
 template< int Dimensions,
@@ -324,8 +322,6 @@ GridEntity( const GridType& grid,
   coordinates( coordinates ),
   neighbourEntitiesStorage( *this )
 {
-   this->orientation = EntityOrientationType( ( Index ) 0 );
-   this->basis = EntityBasisType( ( Index ) 1 );
 }
 
 template< int Dimensions,

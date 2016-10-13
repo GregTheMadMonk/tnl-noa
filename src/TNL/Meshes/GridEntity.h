@@ -57,14 +57,14 @@ class GridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, EntityDimensi
  
       constexpr static int getDimensions() { return EntityDimensions; };
  
-      constexpr static int getMeshDimensions() { return meshDimensions; };
+      constexpr static int getMeshDimensions() { return meshDimensions; };            
  
       typedef Containers::StaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef Containers::StaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef GridEntity< GridType, entityDimensions, Config > ThisType;
       typedef typename GridType::VertexType VertexType;
  
-      typedef NeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
+      typedef NeighbourGridEntitiesStorage< ThisType, Config > NeighbourGridEntitiesStorageType;
  
       template< int NeighbourEntityDimensions = entityDimensions >
       using NeighbourEntities =
@@ -187,7 +187,7 @@ class GridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, Dimensions, C
       typedef Containers::StaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef Containers::StaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef GridEntity< GridType, entityDimensions, Config > ThisType;
-      typedef NeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
+      typedef NeighbourGridEntitiesStorage< ThisType, Config > NeighbourGridEntitiesStorageType;
  
       template< int NeighbourEntityDimensions = entityDimensions >
       using NeighbourEntities =
@@ -268,10 +268,6 @@ class GridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, Dimensions, C
  
       CoordinatesType coordinates;
  
-      EntityOrientationType orientation;
- 
-      EntityBasisType basis;
- 
       NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
  
       //__cuda_callable__ inline
@@ -313,7 +309,7 @@ class GridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, 0, Config >
       typedef Containers::StaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef Containers::StaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef GridEntity< GridType, entityDimensions, Config > ThisType;
-      typedef NeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
+      typedef NeighbourGridEntitiesStorage< ThisType, Config > NeighbourGridEntitiesStorageType;
  
       template< int NeighbourEntityDimensions = entityDimensions >
       using NeighbourEntities =

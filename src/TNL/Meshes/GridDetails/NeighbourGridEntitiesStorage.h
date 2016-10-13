@@ -12,18 +12,26 @@
 
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/GridEntityConfig.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename GridEntity,
-          int NeighbourEntityDimensions >
-class NeighbourGridEntityLayer
-: public NeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions - 1 >
+          int NeighbourEntityDimensions,
+          typename GridEntityConfig,
+          bool storage = GridEntityConfig::template neighbourEntityStorage< GridEntity >( NeighbourEntityDimensions ) >
+class NeighbourGridEntityLayer{};   
+   
+template< typename GridEntity,
+          int NeighbourEntityDimensions,
+          typename GridEntityConfig >
+class NeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions, GridEntityConfig, true >
+: public NeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions - 1, GridEntityConfig >
 {
    public:
  
-      typedef NeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions - 1 > BaseType;
+      typedef NeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions - 1, GridEntityConfig > BaseType;
       typedef NeighbourGridEntityGetter< GridEntity, NeighbourEntityDimensions > NeighbourEntityGetterType;
  
       using BaseType::getNeighbourEntities;
@@ -53,8 +61,9 @@ class NeighbourGridEntityLayer
       NeighbourEntityGetterType neighbourEntities;
 };
 
-template< typename GridEntity >
-class NeighbourGridEntityLayer< GridEntity, 0 >
+template< typename GridEntity,
+          typename GridEntityConfig >
+class NeighbourGridEntityLayer< GridEntity, 0, GridEntityConfig, true >
 {
    public:
  
@@ -84,11 +93,58 @@ class NeighbourGridEntityLayer< GridEntity, 0 >
  
 };
 
-template< typename GridEntity >
-class NeighbourGridEntitiesStorage
-: public NeighbourGridEntityLayer< GridEntity, GridEntity::meshDimensions >
+template< typename GridEntity,
+          int NeighbourEntityDimensions,
+          typename GridEntityConfig >
+class NeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions, GridEntityConfig, false >
+: public NeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions - 1, GridEntityConfig >
 {
-   typedef NeighbourGridEntityLayer< GridEntity, GridEntity::meshDimensions > BaseType;
+   public:
+      
+      typedef NeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions - 1, GridEntityConfig > BaseType;      
+      typedef NeighbourGridEntityGetter< GridEntity, NeighbourEntityDimensions > NeighbourEntityGetterType;
+
+      using BaseType::getNeighbourEntities;      
+         
+      __cuda_callable__
+      NeighbourGridEntityLayer( const GridEntity& entity )
+      : BaseType( entity )
+      {};
+
+      __cuda_callable__
+      const NeighbourEntityGetterType& getNeighbourEntities( const MeshDimensionsTag< NeighbourEntityDimensions >& tag ) const {};
+ 
+      __cuda_callable__
+      void refresh( const typename GridEntity::GridType& grid,
+                    const typename GridEntity::GridType::IndexType& entityIndex ) {};
+};
+
+template< typename GridEntity,
+          typename GridEntityConfig >
+class NeighbourGridEntityLayer< GridEntity, 0, GridEntityConfig, false >
+{
+   public:
+      
+      typedef NeighbourGridEntityGetter< GridEntity, 0 > NeighbourEntityGetterType;
+         
+      __cuda_callable__
+      NeighbourGridEntityLayer( const GridEntity& entity ){}
+
+      __cuda_callable__
+      const NeighbourEntityGetterType& getNeighbourEntities( const MeshDimensionsTag< 0 >& tag ) const {};
+ 
+      __cuda_callable__
+      void refresh( const typename GridEntity::GridType& grid,
+                    const typename GridEntity::GridType::IndexType& entityIndex ) {};
+
+};
+
+template< typename GridEntity,
+          typename GridEntityConfig >
+class NeighbourGridEntitiesStorage
+: public NeighbourGridEntityLayer< GridEntity, GridEntity::meshDimensions, GridEntityConfig >
+{
+   typedef NeighbourGridEntityLayer< GridEntity, GridEntity::meshDimensions, GridEntityConfig > BaseType;
  
    public:
  
@@ -115,6 +171,7 @@ class NeighbourGridEntitiesStorage
          BaseType::refresh( grid, entityIndex );
       };      
 };
+
 
 } // namespace Meshes
 } // namespace TNL

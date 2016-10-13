@@ -21,7 +21,6 @@
 #include <TNL/Matrices/MultidiagonalMatrixSetter.h>
 #include <TNL/Logger.h>
 #include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
-#include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
@@ -221,13 +220,8 @@ getExplicitRHS( const RealType& time,
     * You may use supporting vectors again if you need.
     */
    
-   //cout << "u = " << u << endl;
-   std::cerr << "==========================================================================================" << std::endl;
-   std::cerr << "==========================================================================================" << std::endl;
-   std::cerr << "==========================================================================================" << std::endl;
    this->bindDofs( meshPointer, uDofs );
-   MeshFunctionPointer fuPointer( meshPointer, fuDofs );
-   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+   MeshFunctionPointer fuPointer( meshPointer, fuDofs );   
    explicitUpdater.template update< typename Mesh::Cell >(
       time,
       meshPointer,
@@ -236,9 +230,9 @@ getExplicitRHS( const RealType& time,
       this->rightHandSidePointer,
       this->uPointer,
       fuPointer );
-   std::cerr << "******************************************************************************************" << std::endl;
-   std::cerr << "******************************************************************************************" << std::endl;
-   std::cerr << "******************************************************************************************" << std::endl;
+   //std::cerr << "******************************************************************************************" << std::endl;
+   //std::cerr << "******************************************************************************************" << std::endl;
+   //std::cerr << "******************************************************************************************" << std::endl;
    /*Solvers::PDE::BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
       this->boundaryConditionPointer,

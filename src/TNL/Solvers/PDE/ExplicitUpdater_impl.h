@@ -15,7 +15,7 @@
 #include <TNL/Meshes/GridDetails/Traverser_Grid2D.h>
 #include <TNL/Meshes/GridDetails/Traverser_Grid3D.h>
 
-#include "ExplicitUpdater.h"
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
 
 
 namespace TNL {
@@ -36,7 +36,7 @@ update( const RealType& time,
         const BoundaryConditionsPointer& boundaryConditionsPointer,
         const RightHandSidePointer& rightHandSidePointer,
         MeshFunctionPointer& uPointer,
-        MeshFunctionPointer& fuPointer ) const
+        MeshFunctionPointer& fuPointer )
 {
    static_assert( std::is_same< MeshFunction,
                                 Containers::Vector< typename MeshFunction::RealType,
@@ -44,22 +44,22 @@ update( const RealType& time,
                                            typename MeshFunction::IndexType > >::value != true,
       "Error: I am getting Vector instead of MeshFunction or similar object. You might forget to bind DofVector into MeshFunction in you method getExplicitRHS."  );
    {
-      SharedPointer< TraverserUserData, DeviceType >
-         userData( time,
-                   &differentialOperatorPointer.template getData< DeviceType >(),
-                   &boundaryConditionsPointer.template getData< DeviceType >(),
-                   &rightHandSidePointer.template getData< DeviceType >(),
-                   &uPointer.template modifyData< DeviceType >(),
-                   &fuPointer.template modifyData< DeviceType >() );
+      //SharedPointer< TraverserUserData, DeviceType >
+      this->userDataPointer->setUserData( time,
+                                          &differentialOperatorPointer.template getData< DeviceType >(),
+                                          &boundaryConditionsPointer.template getData< DeviceType >(),
+                                          &rightHandSidePointer.template getData< DeviceType >(),
+                                          &uPointer.template modifyData< DeviceType >(),
+                                          &fuPointer.template modifyData< DeviceType >() );
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( meshPointer,
-                                                      userData );
+                                                      userDataPointer );
       meshTraverser.template processInteriorEntities< TraverserUserData,
                                                       TraverserInteriorEntitiesProcessor >
                                                     ( meshPointer,
-                                                      userData );
+                                                      userDataPointer );
    }
 }
 

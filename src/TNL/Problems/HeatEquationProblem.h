@@ -21,6 +21,7 @@
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Timer.h>
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
 
 namespace TNL {
 namespace Problems {
@@ -117,6 +118,8 @@ class HeatEquationProblem : public PDEProblem< Mesh,
          RightHandSidePointer rightHandSidePointer;
          
          Timer gpuTransferTimer;
+         
+         Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
 };
 
 } // namespace Problems
