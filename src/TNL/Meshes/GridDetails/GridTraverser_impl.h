@@ -29,7 +29,8 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType begin,
    const CoordinatesType end,
-   SharedPointer< UserData, DeviceType >& userDataPointer )
+   SharedPointer< UserData, DeviceType >& userDataPointer,
+   const int& stream )
 {
    GridEntity entity( *gridPointer );
    if( processOnlyBoundaryEntities )
@@ -152,16 +153,20 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType& begin,
    const CoordinatesType& end,
-   SharedPointer< UserData, DeviceType >& userDataPointer )
+   SharedPointer< UserData, DeviceType >& userDataPointer,
+   const int& stream )
 {
 #ifdef HAVE_CUDA
+   auto& pool = CudaStreamPool::getInstance();
+   const cudaStream_t& s = pool.getStream( stream );
+
    Devices::Cuda::synchronizeDevice();
    if( processOnlyBoundaryEntities )
    {
       dim3 cudaBlockSize( 2 );
       dim3 cudaBlocks( 1 );
       GridBoundaryTraverser1D< Real, Index, GridEntity, UserData, EntitiesProcessor >
-            <<< cudaBlocks, cudaBlockSize >>>
+            <<< cudaBlocks, cudaBlockSize, 0, s >>>
             ( &gridPointer.template getData< Devices::Cuda >(),
               &userDataPointer.template modifyData< Devices::Cuda >(),
               begin,
@@ -176,15 +181,20 @@ processEntities(
 
       for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
          GridTraverser1D< Real, Index, GridEntity, UserData, EntitiesProcessor >
-            <<< cudaBlocks, cudaBlockSize >>>
+            <<< cudaBlocks, cudaBlockSize, 0, s >>>
             ( &gridPointer.template getData< Devices::Cuda >(),
               &userDataPointer.template modifyData< Devices::Cuda >(),
               begin,
               end,
               gridXIdx );
    }
-   cudaThreadSynchronize();
-   checkCudaDevice;
+
+   // only launches into the stream 0 are synchronized
+   if( stream == 0 )
+   {
+      cudaStreamSynchronize( s );
+      checkCudaDevice;
+   }
 #endif
 }
 
@@ -209,6 +219,7 @@ processEntities(
    const CoordinatesType begin,
    const CoordinatesType end,
    SharedPointer< UserData, DeviceType >& userDataPointer,
+   const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
    if( processOnlyBoundaryEntities )
@@ -333,6 +344,7 @@ processEntities(
    const CoordinatesType& begin,
    const CoordinatesType& end,
    SharedPointer< UserData, DeviceType >& userDataPointer,
+   const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
 #ifdef HAVE_CUDA   
@@ -343,11 +355,14 @@ processEntities(
    const IndexType cudaXGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.x );
    const IndexType cudaYGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.y );
 
+   auto& pool = CudaStreamPool::getInstance();
+   const cudaStream_t& s = pool.getStream( stream );
+
    Devices::Cuda::synchronizeDevice();
    for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
       for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
          GridTraverser2D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
-            <<< cudaBlocks, cudaBlockSize >>>
+            <<< cudaBlocks, cudaBlockSize, 0, s >>>
             ( &gridPointer.template getData< Devices::Cuda >(),
               &userDataPointer.template modifyData< Devices::Cuda >(),
               begin,
@@ -356,8 +371,12 @@ processEntities(
               gridYIdx,
               gridEntityParameters... );
  
-   cudaThreadSynchronize();
-   checkCudaDevice;
+   // only launches into the stream 0 are synchronized
+   if( stream == 0 )
+   {
+      cudaStreamSynchronize( s );
+      checkCudaDevice;
+   }
 #endif
 }
 
@@ -382,6 +401,7 @@ processEntities(
    const CoordinatesType begin,
    const CoordinatesType end,
    SharedPointer< UserData, DeviceType >& userDataPointer,
+   const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
    if( processOnlyBoundaryEntities )
@@ -535,6 +555,7 @@ processEntities(
    const CoordinatesType& begin,
    const CoordinatesType& end,
    SharedPointer< UserData, DeviceType >& userDataPointer,
+   const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
 #ifdef HAVE_CUDA   
@@ -547,12 +568,15 @@ processEntities(
    const IndexType cudaYGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.y );
    const IndexType cudaZGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.z );
 
+   auto& pool = CudaStreamPool::getInstance();
+   const cudaStream_t& s = pool.getStream( stream );
+
    Devices::Cuda::synchronizeDevice();
    for( IndexType gridZIdx = 0; gridZIdx < cudaZGrids; gridZIdx ++ )
       for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
          for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
             GridTraverser3D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
-               <<< cudaBlocks, cudaBlockSize >>>
+               <<< cudaBlocks, cudaBlockSize, 0, s >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
                  &userDataPointer.template modifyData< Devices::Cuda >(),
                  begin,
@@ -562,8 +586,12 @@ processEntities(
                  gridZIdx,
                  gridEntityParameters... );
 
-   cudaThreadSynchronize();
-   checkCudaDevice;
+   // only launches into the stream 0 are synchronized
+   if( stream == 0 )
+   {
+      cudaStreamSynchronize( s );
+      checkCudaDevice;
+   }
 #endif
 }
 

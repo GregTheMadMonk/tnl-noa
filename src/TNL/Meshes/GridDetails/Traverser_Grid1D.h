@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/Traverser.h>
+#include <TNL/SharedPointer.h>
 
 namespace TNL {
 namespace Meshes {

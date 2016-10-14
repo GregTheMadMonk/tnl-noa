@@ -10,8 +10,9 @@
 
 #pragma once
 
+#include <TNL/Meshes/Grid.h>
 #include <TNL/SharedPointer.h>
-
+#include <TNL/CudaStreamPool.h>
 
 namespace TNL {
 namespace Meshes {
@@ -50,7 +51,8 @@ class GridTraverser< Meshes::Grid< 1, Real, Devices::Host, Index > >
          const GridPointer& gridPointer,
          const CoordinatesType begin,
          const CoordinatesType end,
-         SharedPointer< UserData, DeviceType >& userData );
+         SharedPointer< UserData, DeviceType >& userData,
+         const int& stream = 0 );
 };
 
 /****
@@ -79,7 +81,8 @@ class GridTraverser< Meshes::Grid< 1, Real, Devices::Cuda, Index > >
          const GridPointer& gridPointer,
          const CoordinatesType& begin,
          const CoordinatesType& end,
-         SharedPointer< UserData, DeviceType >& userData );
+         SharedPointer< UserData, DeviceType >& userData,
+         const int& stream = 0 );
 };
 
 /****
@@ -112,6 +115,7 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Host, Index > >
          const CoordinatesType begin,
          const CoordinatesType end,
          SharedPointer< UserData, DeviceType >& userData,
+         const int& stream = 0,
          // gridEntityParameters are passed to GridEntity's constructor
          // (i.e. orientation and basis for faces)
          const GridEntityParameters&... gridEntityParameters );
@@ -147,6 +151,7 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Cuda, Index > >
          const CoordinatesType& begin,
          const CoordinatesType& end,
          SharedPointer< UserData, DeviceType >& userData,
+         const int& stream = 0,
          // gridEntityParameters are passed to GridEntity's constructor
          // (i.e. orientation and basis for faces)
          const GridEntityParameters&... gridEntityParameters );
@@ -183,6 +188,7 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::Host, Index > >
          const CoordinatesType begin,
          const CoordinatesType end,
          SharedPointer< UserData, DeviceType >& userData,
+         const int& stream = 0,
          // gridEntityParameters are passed to GridEntity's constructor
          // (i.e. orientation and basis for faces and edges)
          const GridEntityParameters&... gridEntityParameters );
@@ -219,6 +225,7 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::Cuda, Index > >
          const CoordinatesType& begin,
          const CoordinatesType& end,
          SharedPointer< UserData, DeviceType >& userData,
+         const int& stream = 0,
          // gridEntityParameters are passed to GridEntity's constructor
          // (i.e. orientation and basis for faces and edges)
          const GridEntityParameters&... gridEntityParameters );
