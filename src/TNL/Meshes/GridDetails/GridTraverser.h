@@ -115,7 +115,9 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Host, Index > >
          const CoordinatesType begin,
          const CoordinatesType end,
          SharedPointer< UserData, DeviceType >& userData,
-         const int& stream = 0,
+         // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
+//         const int& stream = 0,
+         const int& stream,
          // gridEntityParameters are passed to GridEntity's constructor
          // (i.e. orientation and basis for faces)
          const GridEntityParameters&... gridEntityParameters );
@@ -151,7 +153,9 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Cuda, Index > >
          const CoordinatesType& begin,
          const CoordinatesType& end,
          SharedPointer< UserData, DeviceType >& userData,
-         const int& stream = 0,
+         // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
+//         const int& stream = 0,
+         const int& stream,
          // gridEntityParameters are passed to GridEntity's constructor
          // (i.e. orientation and basis for faces)
          const GridEntityParameters&... gridEntityParameters );
@@ -188,7 +192,9 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::Host, Index > >
          const CoordinatesType begin,
          const CoordinatesType end,
          SharedPointer< UserData, DeviceType >& userData,
-         const int& stream = 0,
+         // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
+//         const int& stream = 0,
+         const int& stream,
          // gridEntityParameters are passed to GridEntity's constructor
          // (i.e. orientation and basis for faces and edges)
          const GridEntityParameters&... gridEntityParameters );
@@ -225,7 +231,9 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::Cuda, Index > >
          const CoordinatesType& begin,
          const CoordinatesType& end,
          SharedPointer< UserData, DeviceType >& userData,
-         const int& stream = 0,
+         // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
+//         const int& stream = 0,
+         const int& stream,
          // gridEntityParameters are passed to GridEntity's constructor
          // (i.e. orientation and basis for faces and edges)
          const GridEntityParameters&... gridEntityParameters );

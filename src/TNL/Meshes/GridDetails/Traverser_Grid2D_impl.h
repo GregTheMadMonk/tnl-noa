@@ -38,7 +38,8 @@ processBoundaryEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 1 ),
-      userDataPointer );
+      userDataPointer,
+      0 );
 }
 
 template< typename Real,
@@ -61,7 +62,8 @@ processInteriorEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 1, 1 ),
       gridPointer->getDimensions() - CoordinatesType( 2, 2 ),
-      userDataPointer );
+      userDataPointer,
+      0 );
 }
 
 template< typename Real,
@@ -84,7 +86,8 @@ processAllEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 1 ),
-      userDataPointer );
+      userDataPointer,
+      0 );
 }
 
 /****
@@ -215,7 +218,8 @@ processBoundaryEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions(),
-      userDataPointer );
+      userDataPointer,
+      0 );
 }
 
 template< typename Real,
@@ -238,7 +242,8 @@ processInteriorEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 1, 1 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 1 ),
-      userDataPointer );
+      userDataPointer,
+      0 );
 }
  
 template< typename Real,
@@ -261,7 +266,8 @@ processAllEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions(),
-      userDataPointer );
+      userDataPointer,
+      0 );
 }
 
 } // namespace Meshes
