@@ -38,8 +38,6 @@ processBoundaryEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 0 ),
       gridPointer->getDimensions() - CoordinatesType( 1 ),
-      CoordinatesType(),
-      CoordinatesType(),
       userDataPointer );
 }
 
@@ -63,8 +61,6 @@ processInteriorEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 1 ),
       gridPointer->getDimensions() - CoordinatesType( 2 ),
-      CoordinatesType(),
-      CoordinatesType(),
       userDataPointer );
 }
 
@@ -89,8 +85,6 @@ processAllEntities(
       gridPointer,
       CoordinatesType( 0 ),
       gridPointer->getDimensions() - CoordinatesType( 1 ),
-      CoordinatesType(),
-      CoordinatesType(),
       userDataPointer );
 }
 
@@ -117,8 +111,6 @@ processBoundaryEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 0 ),
       gridPointer->getDimensions(),
-      CoordinatesType(),
-      CoordinatesType(),
       userDataPointer );
 }
 
@@ -142,8 +134,6 @@ processInteriorEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 1 ),
       gridPointer->getDimensions() - CoordinatesType( 1 ),
-      CoordinatesType(),
-      CoordinatesType(),
       userDataPointer );
 }
 
@@ -168,8 +158,6 @@ processAllEntities(
       gridPointer,
       CoordinatesType( 0 ),
       gridPointer->getDimensions(),
-      CoordinatesType(),
-      CoordinatesType(),
       userDataPointer );
 }
 
