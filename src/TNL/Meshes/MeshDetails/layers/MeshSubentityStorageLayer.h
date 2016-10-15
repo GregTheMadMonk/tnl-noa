@@ -28,9 +28,9 @@ template< typename MeshConfig,
           typename EntityTopology,
           typename DimensionTag,
           bool SubentityStorage =
-            MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionTag::value >::storageEnabled,
+               MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionsTag::value >::storageEnabled,
           bool SubentityOrientationStorage =
-            MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionTag::value >::orientationEnabled >
+               MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionsTag::value >::orientationEnabled >
 class MeshSubentityStorageLayer;
 
 
@@ -38,8 +38,8 @@ template< typename MeshConfig,
           typename EntityTopology >
 class MeshSubentityStorageLayers
    : public MeshSubentityStorageLayer< MeshConfig,
-                                          EntityTopology,
-                                          MeshDimensionTag< EntityTopology::dimensions - 1 > >
+                                       EntityTopology,
+                                       MeshDimensionsTag< EntityTopology::dimensions - 1 > >
 {
 };
 
@@ -48,23 +48,22 @@ template< typename MeshConfig,
           typename EntityTopology,
           typename DimensionTag >
 class MeshSubentityStorageLayer< MeshConfig,
-                                    EntityTopology,
-                                    DimensionTag,
-                                    true,
-                                    true >
+                                 EntityTopology,
+                                 DimensionsTag,
+                                 true,
+                                 true >
    : public MeshSubentityStorageLayer< MeshConfig,
-                                          EntityTopology,
-                                          typename DimensionTag::Decrement >
+                                       EntityTopology,
+                                       typename DimensionsTag::Decrement >
 {
    typedef MeshSubentityStorageLayer< MeshConfig,
-                                         EntityTopology,
-                                         typename DimensionTag::Decrement > BaseType;
+                                      EntityTopology,
+                                      typename DimensionsTag::Decrement > BaseType;
 
-   protected:
-
-   static const int Dimension = DimensionTag::value;
-   typedef MeshTraits< MeshConfig >                                                      MeshTraitsType;
-   typedef typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimension >   SubentityTraitsType;
+protected:
+   static const int Dimensions = DimensionsTag::value;
+   typedef MeshTraits< MeshConfig >                                                          MeshTraitsType;
+   typedef typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimensions >   SubentityTraitsType;
    typedef typename MeshTraitsType::GlobalIndexType                                          GlobalIndexType;
    typedef typename MeshTraitsType::LocalIndexType                                           LocalIndexType;
    typedef typename SubentityTraitsType::IdArrayType                                         IdArrayType;
@@ -159,10 +158,10 @@ class MeshSubentityStorageLayer< MeshConfig,
    using BaseType::subentityOrientationsArray;
 	OrientationArrayType& subentityOrientationsArray( DimensionTag ) { return this->subentityOrientations; }
  
-   private:
-      IdArrayType subentitiesIndices;
+private:
+   IdArrayType subentitiesIndices;
 
-      OrientationArrayType subentityOrientations;
+   OrientationArrayType subentityOrientations;
 };
 
 
@@ -170,23 +169,22 @@ template< typename MeshConfig,
           typename EntityTopology,
           typename DimensionTag >
 class MeshSubentityStorageLayer< MeshConfig,
-                                    EntityTopology,
-                                    DimensionTag,
-                                    true,
-                                    false >
+                                 EntityTopology,
+                                 DimensionsTag,
+                                 true,
+                                 false >
    : public MeshSubentityStorageLayer< MeshConfig,
-                                          EntityTopology,
-                                          typename DimensionTag::Decrement >
+                                       EntityTopology,
+                                       typename DimensionsTag::Decrement >
 {
    typedef MeshSubentityStorageLayer< MeshConfig,
-                                         EntityTopology,
-                                         typename DimensionTag::Decrement > BaseType;
+                                      EntityTopology,
+                                      typename DimensionsTag::Decrement > BaseType;
 
-   protected:
- 
-   static const int Dimension = DimensionTag::value;
-   typedef MeshTraits< MeshConfig >                                                      MeshTraitsType;
-   typedef typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimension >   SubentityTraitsType;
+protected:
+   static const int Dimensions = DimensionsTag::value;
+   typedef MeshTraits< MeshConfig >                                                          MeshTraitsType;
+   typedef typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimensions >   SubentityTraitsType;
    typedef typename MeshTraitsType::GlobalIndexType                                          GlobalIndexType;
    typedef typename MeshTraitsType::LocalIndexType                                           LocalIndexType;
    typedef typename SubentityTraitsType::IdArrayType                                         IdArrayType;
@@ -273,21 +271,21 @@ class MeshSubentityStorageLayer< MeshConfig,
    using BaseType::subentityOrientationsArray;
    void subentityOrientationsArray() {}
  
-   private:
-      IdArrayType subentitiesIndices;
+private:
+   IdArrayType subentitiesIndices;
 };
 
 template< typename MeshConfig,
           typename EntityTopology,
           typename DimensionTag >
 class MeshSubentityStorageLayer< MeshConfig,
-                                    EntityTopology,
-                                    DimensionTag,
-                                    false,
-                                    false >
+                                 EntityTopology,
+                                 DimensionsTag,
+                                 false,
+                                 false >
    : public MeshSubentityStorageLayer< MeshConfig,
-                                          EntityTopology,
-                                          typename DimensionTag::Decrement >
+                                       EntityTopology,
+                                       typename DimensionsTag::Decrement >
 {
 };
 
@@ -295,15 +293,15 @@ class MeshSubentityStorageLayer< MeshConfig,
 template< typename MeshConfig,
           typename EntityTopology >
 class MeshSubentityStorageLayer< MeshConfig,
-                                    EntityTopology,
-                                    MeshDimensionTag< 0 >,
-                                    true,
-                                    false >
+                                 EntityTopology,
+                                 MeshDimensionsTag< 0 >,
+                                 true,
+                                 false >
 {
    typedef MeshDimensionTag< 0 >                           DimensionTag;
 
-   protected:
-   static const int Dimension = 0;
+protected:
+   static const int Dimensions = 0;
    typedef MeshTraits< MeshConfig >                                                          MeshTraitsType;
    typedef typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimension >   SubentityTraitsType;
    typedef typename MeshTraitsType::GlobalIndexType                                          GlobalIndexType;
@@ -371,27 +369,25 @@ class MeshSubentityStorageLayer< MeshConfig,
 
    IdArrayType& subentityIdsArray( DimensionTag ) { return this->verticesIndices; }
  
-   protected:
- 
-      /***
-       *  Necessary because of 'using TBase::...;' in the derived classes
-       */
-	   void subentityOrientation()       {}
-	   void subentityOrientationsArray() {}
+protected:
+   /***
+    *  Necessary because of 'using TBase::...;' in the derived classes
+    */
+   void subentityOrientation()       {}
+   void subentityOrientationsArray() {}
 
-      IdArrayType verticesIndices;
+   IdArrayType verticesIndices;
 };
 
 template< typename MeshConfig,
           typename EntityTopology >
 class MeshSubentityStorageLayer< MeshConfig,
-                                    EntityTopology,
-                                    MeshDimensionTag< 0 >,
-                                    false,
-                                    false >
+                                 EntityTopology,
+                                 MeshDimensionsTag< 0 >,
+                                 false,
+                                 false >
 {
-   public:
-
+public:
    bool save( File& file ) const
    {
       return true;
@@ -401,7 +397,6 @@ class MeshSubentityStorageLayer< MeshConfig,
    {
       return true;
    }
-
 };
 
 } // namespace Meshes

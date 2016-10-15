@@ -16,6 +16,10 @@
 
 #pragma once
 
+#include <map>
+
+#include <TNL/Meshes/MeshDetails/MeshEntityOrientation.h>
+
 namespace TNL {
 namespace Meshes {
 
@@ -26,8 +30,8 @@ class MeshEntityReferenceOrientation
 	typedef typename MeshTraits< MeshConfig >::GlobalIndexType GlobalIndexType;
 
    public:
-      typedef MeshEntitySeed< MeshConfig, EntityTopology >         SeedType;
-      typedef MeshEntityOrientation< MeshConfig, EntityTopology >         EntityOrientation;
+      typedef MeshEntitySeed< MeshConfig, EntityTopology >        SeedType;
+      typedef MeshEntityOrientation< MeshConfig, EntityTopology > EntityOrientation;
 
       MeshEntityReferenceOrientation() = default;
 

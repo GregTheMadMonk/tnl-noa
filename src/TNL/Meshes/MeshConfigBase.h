@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <TNL/String.h>
+
 namespace TNL {
 namespace Meshes {
 
@@ -39,8 +41,10 @@ struct MeshConfigBase
    typedef LocalIndex  LocalIndexType;
    typedef Id          IdType;
 
-   static const int worldDimension = WorldDimension;
-   static const int meshDimension = Cell::dimensions;
+   static const int worldDimensions = WorldDimensions;
+   static const int meshDimensions = Cell::dimensions;
+ 
+   static_assert( worldDimensions >= meshDimensions, "The cell dimension cannot be larger than the world dimension." );
 
    static String getType()
    {
@@ -91,8 +95,6 @@ struct MeshConfigBase
       return true;
 		//return false;
 	}
- 
-   static_assert( WorldDimension >= Cell::dimensions, "The number of the cell dimensions cannot be larger than the world dimension." );
 };
 
 } // namespace Meshes

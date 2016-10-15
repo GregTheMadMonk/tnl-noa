@@ -39,7 +39,7 @@ class MeshEntity
    : public MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >,
      public MeshSuperentityAccess< MeshConfig, EntityTopology_ >,
      public MeshEntityId< typename MeshConfig::IdType,
-                             typename MeshConfig::GlobalIndexType >
+                          typename MeshConfig::GlobalIndexType >
 {
    public:
 
@@ -48,13 +48,13 @@ class MeshEntity
       typedef typename MeshTraitsType::GlobalIndexType                GlobalIndexType;
       typedef typename MeshTraitsType::LocalIndexType                 LocalIndexType;
       typedef typename MeshTraitsType::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
-      typedef MeshEntitySeed< MeshConfig, EntityTopology >     SeedType;
+      typedef MeshEntitySeed< MeshConfig, EntityTopology >            SeedType;
 
-      template< int Subdimensions > using SubentityTraits =
-      typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimensions >;
+      template< int Subdimensions >
+      using SubentityTraits = typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimensions >;
  
-      template< int SuperDimension > using SuperentityTraits =
-      typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimension >;
+      template< int SuperDimensions >
+      using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimensions >;
  
       MeshEntity( const SeedType& entitySeed );
 
@@ -103,11 +103,11 @@ class MeshEntity
       template< int SuperDimension >
       GlobalIndexType getSuperentityIndex( const LocalIndexType localIndex ) const;
 
-      template< int SuperDimension >
-         typename SuperentityTraits< SuperDimension >::AccessArrayType& getSuperentitiesIndices();
+      template< int SuperDimensions >
+      typename SuperentityTraits< SuperDimensions >::AccessArrayType& getSuperentitiesIndices();
 
-      template< int SuperDimension >
-         const typename SuperentityTraits< SuperDimension >::AccessArrayType& getSuperentitiesIndices() const;
+      template< int SuperDimensions >
+      const typename SuperentityTraits< SuperDimensions >::AccessArrayType& getSuperentitiesIndices() const;
 
       /****
        * Vertices
@@ -146,7 +146,6 @@ class MeshEntity
       typename SubentityTraits< Subdimensions >::OrientationArrayType& subentityOrientationsArray();
  
    friend MeshInitializer< MeshConfig >;
- 
 };
 
 /****
@@ -156,7 +155,7 @@ template< typename MeshConfig >
 class MeshEntity< MeshConfig, MeshVertexTopology >
    : public MeshSuperentityAccess< MeshConfig, MeshVertexTopology >,
      public MeshEntityId< typename MeshConfig::IdType,
-                             typename MeshConfig::GlobalIndexType >
+                          typename MeshConfig::GlobalIndexType >
 {
    public:
 
@@ -168,8 +167,8 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       typedef typename MeshTraitsType::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
       typedef MeshEntitySeed< MeshConfig, EntityTopology >     SeedType;
  
-      template< int SuperDimension > using SuperentityTraits =
-      typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimension >;
+      template< int SuperDimensions >
+      using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimensions >;
 
       static String getType();
 
@@ -190,10 +189,10 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       template< int Superdimensions > LocalIndexType getNumberOfSuperentities() const;
 
       template< int Superdimensions >
-         typename SuperentityTraits< Superdimensions >::AccessArrayType& getSuperentitiesIndices();
+      typename SuperentityTraits< Superdimensions >::AccessArrayType& getSuperentitiesIndices();
 
       template< int Superdimensions >
-         const typename SuperentityTraits< Superdimensions >::AccessArrayType& getSuperentitiesIndeces() const;
+      const typename SuperentityTraits< Superdimensions >::AccessArrayType& getSuperentitiesIndeces() const;
 
       template< int Dimension >
       GlobalIndexType getSuperentityIndex( const LocalIndexType localIndex ) const;
@@ -207,7 +206,7 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
 
    protected:
  
-      typedef typename MeshTraitsType::IdArrayAccessorType                          IdArrayAccessorType;
+      typedef typename MeshTraitsType::IdArrayAccessorType                IdArrayAccessorType;
       typedef MeshSuperentityAccess< MeshConfig, MeshVertexTopology >     SuperentityAccessBase;
  
       template< int Superdimensions >

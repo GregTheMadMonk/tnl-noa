@@ -65,8 +65,8 @@ class Mesh : public Object/*,
 
       const CellType& getCell( const GlobalIndexType entityIndex ) const;
 
-      template< int Dimension >
-       EntityType< Dimension >& getEntity( const GlobalIndexType entityIndex );
+      template< int Dimensions >
+      EntityType< Dimensions >& getEntity( const GlobalIndexType entityIndex );
  
       template< int Dimension >
       const EntityType< Dimension >& getEntity( const GlobalIndexType entityIndex ) const;
@@ -83,12 +83,12 @@ class Mesh : public Object/*,
       bool operator==( const Mesh& mesh ) const;
 
       // TODO: this is only for mesh intializer - remove it if possible
-      template< typename DimensionTag >
-           typename EntityTraits< DimensionTag::value >::StorageArrayType& entitiesArray();
+      template< typename DimensionsTag >
+      typename EntityTraits< DimensionsTag::value >::StorageArrayType& entitiesArray();
 
  
-      template< typename DimensionTag, typename SuperDimensionTag >
-           typename MeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray();
+      template< typename DimensionsTag, typename SuperDimensionsTag >
+      typename MeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray();
  
       template< typename EntityTopology, typename SuperdimensionsTag >
       typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&

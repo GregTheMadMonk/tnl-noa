@@ -10,6 +10,9 @@
 
 #pragma once
 
+#include <TNL/String.h>
+#include <TNL/Devices/Host.h>
+
 namespace TNL {
 namespace Meshes {
 
@@ -18,8 +21,7 @@ template< typename Real = double,
           typename Index = int >
 class DummyMesh
 {
-   public:
-
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;

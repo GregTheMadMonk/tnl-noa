@@ -109,7 +109,7 @@ operator==( const MeshEntity& entity ) const
    return ( MeshSubentityStorageLayers< MeshConfig, EntityTopology >::operator==( entity ) &&
             MeshSuperentityAccess< MeshConfig, EntityTopology >::operator==( entity ) &&
             MeshEntityId< typename MeshConfig::IdType,
-                             typename MeshConfig::GlobalIndexType >::operator==( entity ) );
+                          typename MeshConfig::GlobalIndexType >::operator==( entity ) );
 }
 
 template< typename MeshConfig,
@@ -152,11 +152,10 @@ MeshEntity< MeshConfig, EntityTopology >::
 getSubentityIndex( const LocalIndexType localIndex) const
 {
    static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to get subentity which is not configured for storage." );
-   TNL_ASSERT( 0 <= localIndex &&
-              localIndex < SubentityTraits< Subdimensions >::count,
+   Assert( 0 <= localIndex && localIndex < SubentityTraits< Subdimensions >::count,
               std::cerr << "localIndex = " << localIndex
-                   << " subentitiesCount = "
-                   << SubentityTraits< Subdimensions >::count );
+                        << " subentitiesCount = "
+                        << SubentityTraits< Subdimensions >::count );
    typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >  SubentityBaseType;
    return SubentityBaseType::getSubentityIndex( MeshDimensionTag< Subdimensions >(),
                                                 localIndex );
@@ -208,7 +207,7 @@ getSuperentityIndex( const LocalIndexType localIndex ) const
    static_assert( SuperentityTraits< SuperDimension >::storageEnabled, "You try to get superentity which is not configured for storage." );
    TNL_ASSERT( localIndex < this->getNumberOfSuperentities< SuperDimension >(),
               std::cerr << " localIndex = " << localIndex
-                   << " this->getNumberOfSuperentities< Dimension >() = " << this->getNumberOfSuperentities< SuperDimension >() << std::endl; );
+                        << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< SuperDimensions >() << std::endl; );
    typedef MeshSuperentityAccess< MeshConfig, EntityTopology >  SuperentityBaseType;
    return SuperentityBaseType::getSuperentityIndex( MeshDimensionTag< SuperDimension >(),
                                                     localIndex );
@@ -300,11 +299,10 @@ setSubentityIndex( const LocalIndexType localIndex,
                    const GlobalIndexType globalIndex )
 {
    static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to set subentity which is not configured for storage." );
-   TNL_ASSERT( 0 <= localIndex &&
-              localIndex < SubentityTraits< Subdimensions >::count,
+   Assert( 0 <= localIndex && localIndex < SubentityTraits< Subdimensions >::count,
               std::cerr << "localIndex = " << localIndex
-                   << " subentitiesCount = "
-                   << SubentityTraits< Subdimensions >::count );
+                        << " subentitiesCount = "
+                        << SubentityTraits< Subdimensions >::count );
    typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >  SubentityBaseType;
    SubentityBaseType::setSubentityIndex( MeshDimensionTag< Subdimensions >(),
                                          localIndex,
@@ -406,7 +404,7 @@ operator==( const MeshEntity& entity ) const
 {
    return ( //MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::operator==( entity ) &&
             MeshEntityId< typename MeshConfig::IdType,
-                             typename MeshConfig::GlobalIndexType >::operator==( entity ) &&
+                          typename MeshConfig::GlobalIndexType >::operator==( entity ) &&
             point == entity.point );
 }
 
@@ -456,7 +454,7 @@ getSuperentityIndex( const LocalIndexType localIndex ) const
 {
    TNL_ASSERT( localIndex < this->getNumberOfSuperentities< Dimension >(),
               std::cerr << " localIndex = " << localIndex
-                   << " this->getNumberOfSuperentities< Dimension >() = " << this->getNumberOfSuperentities< Dimension >() << std::endl; );
+                        << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << std::endl; );
    typedef MeshSuperentityAccess< MeshConfig, MeshVertexTopology >  SuperentityBaseType;
    return SuperentityBaseType::getSuperentityIndex( MeshDimensionTag< Dimension >(),
                                                     localIndex );

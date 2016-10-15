@@ -31,15 +31,15 @@ class MeshSuperentityAccessLayer;
 
 template< typename MeshConfig,
           typename MeshEntity >
-class MeshSuperentityAccess :
-   public MeshSuperentityAccessLayer< MeshConfig,
-                                         MeshEntity,
-                                         MeshDimensionTag< MeshTraits< MeshConfig >::meshDimension > >
+class MeshSuperentityAccess
+   : public MeshSuperentityAccessLayer< MeshConfig,
+                                        MeshEntity,
+                                        MeshDimensionsTag< MeshTraits< MeshConfig >::meshDimensions > >
 {
    public:
       typedef MeshSuperentityAccessLayer< MeshConfig,
-                                             MeshEntity,
-                                             MeshDimensionTag< MeshTraits< MeshConfig >::meshDimension > > BaseType;
+                                          MeshEntity,
+                                          MeshDimensionsTag< MeshTraits< MeshConfig >::meshDimensions > > BaseType;
  
       bool operator == ( const MeshSuperentityAccess< MeshConfig, MeshEntity>& a ) const { return true; } // TODO: fix
  
@@ -47,22 +47,20 @@ class MeshSuperentityAccess :
       {
          BaseType::print( str );
       };
-
 };
 
 template< typename MeshConfig,
           typename MeshEntity,
           typename Dimension >
 class MeshSuperentityAccessLayer< MeshConfig,
-                                     MeshEntity,
-                                     Dimension,
-                                     true > :
-   public MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimension::Decrement >
+                                  MeshEntity,
+                                  Dimensions,
+                                  true >
+   : public MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimensions::Decrement >
 {
 	typedef MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimension::Decrement > BaseType;
 
    public:
- 
       typedef MeshTraits< MeshConfig >                                                             MeshTraitsType;
       typedef typename MeshTraitsType::template SuperentityTraits< MeshEntity, Dimension::value > SuperentityTraitsType;
       typedef typename MeshTraitsType::IdArrayAccessorType                                         IdArrayAccessorType;
@@ -102,30 +100,29 @@ class MeshSuperentityAccessLayer< MeshConfig,
 	   IdArrayAccessorType m_superentityIndices;
  
       SuperentityAccessorType superentityIndices;
- 
 };
 
 template< typename MeshConfig,
           typename MeshEntity,
           typename Dimension >
 class MeshSuperentityAccessLayer< MeshConfig,
-                                     MeshEntity,
-                                     Dimension,
-                                     false > :
-   public MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimension::Decrement >
+                                  MeshEntity,
+                                  Dimensions,
+                                  false >
+   : public MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimensions::Decrement >
 {
 };
 
 template< typename MeshConfig,
           typename MeshEntity >
 class MeshSuperentityAccessLayer< MeshConfig,
-                                     MeshEntity,
-                                     MeshDimensionTag< MeshEntity::dimensions >,
-                                     false >
+                                  MeshEntity,
+                                  MeshDimensionsTag< MeshEntity::dimensions >,
+                                  false >
 {
    protected:
 	   /***
-       * Necessary because of 'using TBase::...;' in the derived classes
+       * Necessary because of 'using BaseType::...;' in the derived classes
        */
 	   void superentityIds()      {}
 	   void superentityIdsArray() {}
@@ -138,13 +135,13 @@ class MeshSuperentityAccessLayer< MeshConfig,
 template< typename MeshConfig,
           typename MeshEntity >
 class MeshSuperentityAccessLayer< MeshConfig,
-                                     MeshEntity,
-                                     MeshDimensionTag< MeshEntity::dimensions >,
-                                     true >
+                                  MeshEntity,
+                                  MeshDimensionsTag< MeshEntity::dimensions >,
+                                  true >
 {
    protected:
 	   /***
-       * Necessary because of 'using TBase::...;' in the derived classes
+       * Necessary because of 'using BaseType::...;' in the derived classes
        */
 	   void superentityIds()      {}
 	   void superentityIdsArray() {}

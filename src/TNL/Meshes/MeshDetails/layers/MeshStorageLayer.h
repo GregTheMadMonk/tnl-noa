@@ -20,6 +20,8 @@
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <TNL/Meshes/MeshDetails/layers/MeshSubentityStorageLayer.h>
+#include <TNL/Meshes/MeshDetails/layers/MeshSuperentityStorageLayer.h>
 
 namespace TNL {
 namespace Meshes {
@@ -40,27 +42,26 @@ class MeshStorageLayers
 template< typename MeshConfig,
           typename DimensionTag >
 class MeshStorageLayer< MeshConfig,
-                           DimensionTag,
-                           true >
-   : public MeshStorageLayer< MeshConfig, typename DimensionTag::Decrement >,
+                        DimensionsTag,
+                        true >
+   : public MeshStorageLayer< MeshConfig, typename DimensionsTag::Decrement >,
      public MeshSuperentityStorageLayers< MeshConfig,
-                                             typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::EntityTopology >
+                                          typename MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::EntityTopology >
 {
    public:
 
-      static const int Dimension = DimensionTag::value;
-      typedef MeshStorageLayer< MeshConfig, typename DimensionTag::Decrement >   BaseType;
+      static const int Dimensions = DimensionsTag::value;
+      typedef MeshStorageLayer< MeshConfig, typename DimensionsTag::Decrement >  BaseType;
       typedef MeshSuperentityStorageLayers< MeshConfig,
-                                               typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::EntityTopology > SuperentityStorageBaseType;
-      typedef MeshTraits< MeshConfig >                                             MeshTraitsType;
-      typedef typename MeshTraitsType::template EntityTraits< Dimension >         EntityTraitsType;
+                                            typename MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::EntityTopology > SuperentityStorageBaseType;
+      typedef MeshTraits< MeshConfig >                                           MeshTraitsType;
+      typedef typename MeshTraitsType::template EntityTraits< Dimensions >       EntityTraitsType;
 
-      typedef typename EntityTraitsType::StorageArrayType                          StorageArrayType;
-      typedef typename EntityTraitsType::AccessArrayType                           AccessArrayType;
-      typedef typename EntityTraitsType::GlobalIndexType                           GlobalIndexType;
-      typedef typename EntityTraitsType::EntityType                                EntityType;
-      typedef typename EntityTraitsType::EntityTopology                            EntityTopology;
-
+      typedef typename EntityTraitsType::StorageArrayType                        StorageArrayType;
+      typedef typename EntityTraitsType::AccessArrayType                         AccessArrayType;
+      typedef typename EntityTraitsType::GlobalIndexType                         GlobalIndexType;
+      typedef typename EntityTraitsType::EntityType                              EntityType;
+      typedef typename EntityTraitsType::EntityTopology                          EntityTopology;
 
       using BaseType::getNumberOfEntities;
       using BaseType::getEntity;
@@ -139,7 +140,6 @@ class MeshStorageLayer< MeshConfig,
          return ( BaseType::operator==( meshLayer ) && entities == meshLayer.entities );
       }
 
-
    protected:
       StorageArrayType entities;
 
@@ -147,7 +147,6 @@ class MeshStorageLayer< MeshConfig,
  
    // TODO: this is only for the mesh initializer - fix it
    public:
-
       using BaseType::entitiesArray;
  
       typename EntityTraitsType::StorageArrayType& entitiesArray( DimensionTag )
@@ -180,27 +179,26 @@ class MeshStorageLayer< MeshConfig, DimensionTag, false >
 };
 
 template< typename MeshConfig >
-class MeshStorageLayer< MeshConfig, MeshDimensionTag< 0 >, true > :
-   public MeshSuperentityStorageLayers< MeshConfig,
-                                           MeshVertexTopology >
+class MeshStorageLayer< MeshConfig, MeshDimensionsTag< 0 >, true >
+   : public MeshSuperentityStorageLayers< MeshConfig,
+                                          MeshVertexTopology >
 
 {
-   public:
-
-   typedef MeshDimensionTag< 0 >                        DimensionTag;
+public:
+   typedef MeshDimensionsTag< 0 >                                 DimensionsTag;
  
    typedef MeshSuperentityStorageLayers< MeshConfig,
-                                            MeshVertexTopology >     SuperentityStorageBaseType;
+                                         MeshVertexTopology >     SuperentityStorageBaseType;
 
-   typedef MeshTraits< MeshConfig >                                   MeshTraitsType;
-   typedef typename MeshTraitsType::template EntityTraits< 0 >        EntityTraitsType;
+   typedef MeshTraits< MeshConfig >                               MeshTraitsType;
+   typedef typename MeshTraitsType::template EntityTraits< 0 >    EntityTraitsType;
  
-   typedef typename EntityTraitsType::StorageArrayType                StorageArrayType;
-   typedef typename EntityTraitsType::AccessArrayType                 AccessArrayType;
-   typedef typename EntityTraitsType::GlobalIndexType                 GlobalIndexType;
-   typedef typename EntityTraitsType::EntityType                      VertexType;
-   typedef typename VertexType::PointType                             PointType;
-   typedef MeshVertexTopology                                         EntityTopology;
+   typedef typename EntityTraitsType::StorageArrayType            StorageArrayType;
+   typedef typename EntityTraitsType::AccessArrayType             AccessArrayType;
+   typedef typename EntityTraitsType::GlobalIndexType             GlobalIndexType;
+   typedef typename EntityTraitsType::EntityType                  VertexType;
+   typedef typename VertexType::PointType                         PointType;
+   typedef MeshVertexTopology                                     EntityTopology;
  
    MeshStorageLayer()
    {
@@ -226,7 +224,6 @@ class MeshStorageLayer< MeshConfig, MeshDimensionTag< 0 >, true > :
    {
       return this->vertices[ vertexIndex ];
    }
-
 
    void setVertex( const GlobalIndexType vertexIndex,
                    const PointType& point )
@@ -302,7 +299,7 @@ class MeshStorageLayer< MeshConfig, MeshDimensionTag< 0 >, true > :
       return ( vertices == meshLayer.vertices );
    }
 
-   private:
+private:
 
    StorageArrayType vertices;
 
@@ -310,8 +307,7 @@ class MeshStorageLayer< MeshConfig, MeshDimensionTag< 0 >, true > :
  
    // TODO: this is only for the mesh initializer - fix it
    public:
- 
-      typename EntityTraitsType::StorageArrayType& entitiesArray( DimensionTag )
+      typename EntityTraitsType::StorageArrayType& entitiesArray( DimensionsTag )
       {
          return vertices;
       }
@@ -328,7 +324,6 @@ class MeshStorageLayer< MeshConfig, MeshDimensionTag< 0 >, true > :
       {
          return SuperentityStorageBaseType::getStorageNetwork( SuperdimensionsTag() );
       }
-
 };
 
 /****

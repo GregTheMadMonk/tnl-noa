@@ -28,15 +28,15 @@ template< typename MeshConfig,
           typename EntityTopology,
           typename DimensionTag,
           bool SuperentityStorage =
-             MeshSuperentityTraits< MeshConfig, EntityTopology, DimensionTag::value >::storageEnabled >
+               MeshSuperentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >::storageEnabled >
 class MeshSuperentityStorageLayer;
 
 template< typename MeshConfig,
           typename EntityTopology >
 class MeshSuperentityStorageLayers
    : public MeshSuperentityStorageLayer< MeshConfig,
-                                            EntityTopology,
-                                            MeshDimensionTag< MeshTraits< MeshConfig >::meshDimension > >
+                                         EntityTopology,
+                                         MeshDimensionsTag< MeshTraits< MeshConfig >::meshDimensions > >
 {
 };
 
@@ -46,127 +46,124 @@ template< typename MeshConfig,
 class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionTag, true >
    : public MeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename DimensionTag::Decrement >
 {
-   typedef
-      MeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename DimensionTag::Decrement >  BaseType;
+   typedef MeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename DimensionsTag::Decrement >  BaseType;
 
    static const int Dimension = DimensionTag::value;
    typedef MeshTraits< MeshConfig >                                                          MeshTraitsType;
    typedef typename MeshTraitsType::template SuperentityTraits< EntityTopology, Dimension > SuperentityTraitsType;
 
-   protected:
-
+protected:
    typedef typename SuperentityTraitsType::StorageArrayType       StorageArrayType;
    typedef typename SuperentityTraitsType::AccessArrayType        AccessArrayType;
    typedef typename SuperentityTraitsType::GlobalIndexType        GlobalIndexType;
    typedef typename SuperentityTraitsType::LocalIndexType         LocalIndexType;
 
-   typedef typename SuperentityTraitsType::StorageNetworkType   StorageNetworkType;
+   typedef typename SuperentityTraitsType::StorageNetworkType     StorageNetworkType;
  
    /****
      * Make visible setters and getters of the lower superentities
      */
-    using BaseType::setNumberOfSuperentities;
-    using BaseType::getNumberOfSuperentities;
-    using BaseType::getSuperentityIndex;
-    using BaseType::setSuperentityIndex;
-    using BaseType::getSuperentitiesIndices;
+   using BaseType::setNumberOfSuperentities;
+   using BaseType::getNumberOfSuperentities;
+   using BaseType::getSuperentityIndex;
+   using BaseType::setSuperentityIndex;
+   using BaseType::getSuperentitiesIndices;
 
-    MeshSuperentityStorageLayer()
-    {
-    }
+   MeshSuperentityStorageLayer()
+   {
+   }
 
-    /*~MeshSuperentityStorageLayer()
-    {
-       std::cerr << "      Destroying " << this->superentitiesIndices.getSize() << " superentities with "<< DimensionTag::value << " dimensions." << std::endl;
-       std::cerr << "         this->superentitiesIndices.getName() = " << this->superentitiesIndices.getName() << std::endl;
-       std::cerr << "         this->sharedSuperentitiesIndices.getName() = " << this->sharedSuperentitiesIndices.getName() << std::endl;
-    }*/
+   /*~MeshSuperentityStorageLayer()
+   {
+      std::cerr << "      Destroying " << this->superentitiesIndices.getSize() << " superentities with "<< DimensionsTag::value << " dimensions." << std::endl;
+      std::cerr << "         this->superentitiesIndices.getName() = " << this->superentitiesIndices.getName() << std::endl;
+      std::cerr << "         this->sharedSuperentitiesIndices.getName() = " << this->sharedSuperentitiesIndices.getName() << std::endl;
+   }*/
 
-    MeshSuperentityStorageLayer& operator = ( const MeshSuperentityStorageLayer& layer )
-    {
-       this->superentitiesIndices.setSize( layer.superentitiesIndices.getSize() );
-       this->superentitiesIndices = layer.superentitiesIndices;
-       this->sharedSuperentitiesIndices.bind( this->superentitiesIndices );
-       return *this;
-    }
+   MeshSuperentityStorageLayer& operator = ( const MeshSuperentityStorageLayer& layer )
+   {
+      this->superentitiesIndices.setSize( layer.superentitiesIndices.getSize() );
+      this->superentitiesIndices = layer.superentitiesIndices;
+      this->sharedSuperentitiesIndices.bind( this->superentitiesIndices );
+      return *this;
+   }
 
-    /****
-     * Define setter/getter for the current level of the superentities
-     */
-    bool setNumberOfSuperentities( DimensionTag,
-                                   const LocalIndexType size )
-    {
-       if( ! this->superentitiesIndices.setSize( size ) )
-          return false;
-       this->superentitiesIndices.setValue( -1 );
-       this->sharedSuperentitiesIndices.bind( this->superentitiesIndices );
-       return true;
-    }
+   /****
+    * Define setter/getter for the current level of the superentities
+    */
+   bool setNumberOfSuperentities( DimensionsTag,
+                                  const LocalIndexType size )
+   {
+      if( ! this->superentitiesIndices.setSize( size ) )
+         return false;
+      this->superentitiesIndices.setValue( -1 );
+      this->sharedSuperentitiesIndices.bind( this->superentitiesIndices );
+      return true;
+   }
 
-    LocalIndexType getNumberOfSuperentities( DimensionTag ) const
-    {
-       return this->superentitiesIndices.getSize();
-    }
+   LocalIndexType getNumberOfSuperentities( DimensionsTag ) const
+   {
+      return this->superentitiesIndices.getSize();
+   }
 
-    void setSuperentityIndex( DimensionTag,
-                              const LocalIndexType localIndex,
-                              const GlobalIndexType globalIndex )
-    {
-       this->superentitiesIndices[ localIndex ] = globalIndex;
-    }
+   void setSuperentityIndex( DimensionsTag,
+                             const LocalIndexType localIndex,
+                             const GlobalIndexType globalIndex )
+   {
+      this->superentitiesIndices[ localIndex ] = globalIndex;
+   }
 
-    GlobalIndexType getSuperentityIndex( DimensionTag,
-                                         const LocalIndexType localIndex ) const
-    {
-       return this->superentitiesIndices[ localIndex ];
-    }
+   GlobalIndexType getSuperentityIndex( DimensionsTag,
+                                        const LocalIndexType localIndex ) const
+   {
+      return this->superentitiesIndices[ localIndex ];
+   }
 
-    AccessArrayType& getSuperentitiesIndices( DimensionTag )
-    {
-       return this->sharedSuperentitiesIndices;
-    }
+   AccessArrayType& getSuperentitiesIndices( DimensionsTag )
+   {
+      return this->sharedSuperentitiesIndices;
+   }
 
-    const AccessArrayType& getSuperentitiesIndices( DimensionTag ) const
-    {
-       return this->sharedSuperentitiesIndices;
-    }
+   const AccessArrayType& getSuperentitiesIndices( DimensionsTag ) const
+   {
+      return this->sharedSuperentitiesIndices;
+   }
 
-    bool save( File& file ) const
-    {
-       if( ! BaseType::save( file ) ||
-           ! this->superentitiesIndices.save( file ) )
-       {
-          //cerr << "Saving of the entity superentities layer with " << DimensionTag::value << " failed." << std::endl;
-          return false;
-       }
-       return true;
-    }
+   bool save( File& file ) const
+   {
+      if( ! BaseType::save( file ) ||
+          ! this->superentitiesIndices.save( file ) )
+      {
+         //cerr << "Saving of the entity superentities layer with " << DimensionsTag::value << " failed." << std::endl;
+         return false;
+      }
+      return true;
+   }
 
-    bool load( File& file )
-    {
-       if( ! BaseType::load( file ) ||
-           ! this->superentitiesIndices.load( file ) )
-       {
-          //cerr << "Loading of the entity superentities layer with " << DimensionTag::value << " failed." << std::endl;
-          return false;
-       }
-       return true;
-    }
+   bool load( File& file )
+   {
+      if( ! BaseType::load( file ) ||
+          ! this->superentitiesIndices.load( file ) )
+      {
+         //cerr << "Loading of the entity superentities layer with " << DimensionsTag::value << " failed." << std::endl;
+         return false;
+      }
+      return true;
+   }
 
-    void print( std::ostream& str ) const
-    {
-       BaseType::print( str );
-       str << std::endl << "\t Superentities with " << DimensionTag::value << " dimensions are: " << this->superentitiesIndices << ".";
-    }
+   void print( std::ostream& str ) const
+   {
+      BaseType::print( str );
+      str << std::endl << "\t Superentities with " << DimensionsTag::value << " dimensions are: " << this->superentitiesIndices << ".";
+   }
 
-    bool operator==( const MeshSuperentityStorageLayer& layer  ) const
-    {
-       return ( BaseType::operator==( layer ) &&
-                superentitiesIndices == layer.superentitiesIndices );
-    }
+   bool operator==( const MeshSuperentityStorageLayer& layer  ) const
+   {
+      return ( BaseType::operator==( layer ) &&
+               superentitiesIndices == layer.superentitiesIndices );
+   }
 
-    private:
-
+private:
     StorageArrayType superentitiesIndices;
 
     AccessArrayType sharedSuperentitiesIndices;
@@ -175,7 +172,6 @@ class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionTag, tru
  
    // TODO: this is only for the mesh initializer - fix it
    public:
- 
       using BaseType::superentityIdsArray;
       typename MeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray( DimensionTag )
       {
@@ -195,39 +191,37 @@ template< typename MeshConfig,
 class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionTag, false >
    : public MeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename DimensionTag::Decrement >
 {
-   public:
-
 };
 
 template< typename MeshConfig,
           typename EntityTopology >
 class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, MeshDimensionTag< EntityTopology::dimensions >, false >
 {
-   static const int Dimension = EntityTopology::dimensions;
-   typedef MeshDimensionTag< EntityTopology::dimensions >        DimensionTag;
+   static const int Dimensions = EntityTopology::dimensions;
+   typedef MeshDimensionsTag< EntityTopology::dimensions >     DimensionsTag;
 
    typedef MeshSuperentityTraits< MeshConfig, EntityTopology, Dimension >      SuperentityTraits;
 
    typedef MeshSuperentityStorageLayer< MeshConfig,
-                                           EntityTopology,
-                                           DimensionTag,
-                                           false > ThisType;
+                                        EntityTopology,
+                                        DimensionsTag,
+                                        false > ThisType;
 
-   protected:
-
-   typedef typename SuperentityTraits::ContainerType              ContainerType;
+protected:
+   typedef typename SuperentityTraits::ContainerType           ContainerType;
    typedef typename ContainerType::ElementType                 GlobalIndexType;
+   // FIXME: take it from MeshConfig or something
    typedef int                                                 LocalIndexType;
 
-   typedef typename SuperentityTraits::StorageNetworkType   StorageNetworkType;
+   typedef typename SuperentityTraits::StorageNetworkType      StorageNetworkType;
  
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */
-   bool setNumberOfSuperentities( DimensionTag,
-                                   const LocalIndexType size );
-   LocalIndexType getNumberOfSuperentities( DimensionTag ) const;
-   GlobalIndexType getSuperentityIndex( DimensionTag,
+   bool setNumberOfSuperentities( DimensionsTag,
+                                  const LocalIndexType size );
+   LocalIndexType getNumberOfSuperentities( DimensionsTag ) const;
+   GlobalIndexType getSuperentityIndex( DimensionsTag,
                                         const LocalIndexType localIndex ){}
    void setSuperentityIndex( DimensionTag,
                              const LocalIndexType localIndex,
@@ -235,14 +229,14 @@ class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, MeshDimensionTag<
 
    void print( std::ostream& str ) const{}
 
-   bool operator==( const ThisType& layer  ) const
+   bool operator==( const ThisType& layer ) const
    {
       return true;
    }
 
-   ContainerType& getSuperentitiesIndices(){}
+   ContainerType& getSuperentitiesIndices() {}
 
-   const ContainerType& getSuperentitiesIndices() const{}
+   const ContainerType& getSuperentitiesIndices() const {}
 
    bool save( File& file ) const
    {
@@ -265,48 +259,46 @@ class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, MeshDimensionTag<
       TNL_ASSERT( false, );
      //return this->storageNetwork;
    }
-
 };
 
 template< typename MeshConfig,
           typename EntityTopology >
 class MeshSuperentityStorageLayer< MeshConfig,
-                                      EntityTopology,
-                                      MeshDimensionTag< EntityTopology::dimensions >,
-                                      true >
+                                   EntityTopology,
+                                   MeshDimensionsTag< EntityTopology::dimensions >,
+                                   true >
 {
-   static const int Dimension = EntityTopology::dimensions;
-   typedef MeshDimensionTag< Dimension >                          DimensionTag;
+   static const int Dimensions = EntityTopology::dimensions;
+   typedef MeshDimensionsTag< Dimensions >                     DimensionsTag;
 
    typedef MeshSuperentityTraits< MeshConfig,
-                                     EntityTopology,
-                                     Dimension >               SuperentityTraits;
+                                  EntityTopology,
+                                  Dimensions >                 SuperentityTraits;
    typedef MeshSuperentityStorageLayer< MeshConfig,
-                                           EntityTopology,
-                                           DimensionTag,
-                                           true > ThisType;
+                                        EntityTopology,
+                                        DimensionsTag,
+                                        true > ThisType;
 
-   protected:
+protected:
+   typedef typename SuperentityTraits::StorageArrayType        StorageArrayType;
+   typedef typename SuperentityTraits::GlobalIndexType         GlobalIndexType;
+   typedef typename SuperentityTraits::LocalIndexType          LocalIndexType;
 
-   typedef typename SuperentityTraits::StorageArrayType              StorageArrayType;
-   typedef typename SuperentityTraits::GlobalIndexType               GlobalIndexType;
-   typedef typename SuperentityTraits::LocalIndexType                LocalIndexType;
-
-   typedef typename SuperentityTraits::StorageNetworkType   StorageNetworkType;
+   typedef typename SuperentityTraits::StorageNetworkType      StorageNetworkType;
  
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */
-   bool setNumberOfSuperentities( DimensionTag,
-                                   const LocalIndexType size );
-   LocalIndexType getNumberOfSuperentities( DimensionTag ) const;
-   GlobalIndexType getSuperentityIndex( DimensionTag,
-                                        const LocalIndexType localIndex ){}
-   void setSuperentityIndex( DimensionTag,
+   bool setNumberOfSuperentities( DimensionsTag,
+                                  const LocalIndexType size );
+   LocalIndexType getNumberOfSuperentities( DimensionsTag ) const;
+   GlobalIndexType getSuperentityIndex( DimensionsTag,
+                                        const LocalIndexType localIndex ) {}
+   void setSuperentityIndex( DimensionsTag,
                              const LocalIndexType localIndex,
                              const GlobalIndexType globalIndex ) {}
 
-   void print( std::ostream& str ) const{}
+   void print( std::ostream& str ) const {}
 
    bool operator==( const ThisType& layer  ) const
    {
@@ -315,7 +307,7 @@ class MeshSuperentityStorageLayer< MeshConfig,
 
    StorageArrayType& getSuperentitiesIndices(){}
 
-   const StorageArrayType& getSuperentitiesIndices() const{}
+   const StorageArrayType& getSuperentitiesIndices() const {}
 
    bool save( File& file ) const
    {
@@ -338,8 +330,6 @@ class MeshSuperentityStorageLayer< MeshConfig,
       TNL_ASSERT( false, );
       //return this->storageNetwork;
    }
-
- 
 };
 
 } // namespace Meshes

@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <fstream>
+
 namespace TNL {
 namespace Meshes {
 
@@ -23,7 +25,6 @@ template< typename IndexMultimapValues >
 class MeshSuperentityAccessor
 {
    public:
- 
       typedef typename IndexMultimapValues::IndexType   GlobalIndexType;
       typedef typename IndexMultimapValues::IndexType   LocalIndexType;
  
@@ -32,7 +33,7 @@ class MeshSuperentityAccessor
       LocalIndexType getSupernetitiesCount() const
       {
          return this->indexes.getPortsCount();
-      };
+      }
  
       void setSuperentityIndex( const LocalIndexType localIndex,
                                 const GlobalIndexType globalIndex )
@@ -61,9 +62,7 @@ class MeshSuperentityAccessor
       }
  
    protected:
- 
       IndexMultimapValues indexes;
- 
 };
 
 template< typename IndexMultimapValues >
