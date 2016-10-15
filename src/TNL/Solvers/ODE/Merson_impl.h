@@ -385,10 +385,14 @@ typename Problem :: RealType Merson< Problem > :: computeError( const RealType t
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
       this->openMPErrorEstimateBuffer.setValue( 0.0 );
+#ifdef HAVE_OPENMP
 #pragma omp parallel if( Devices::Host::isOMPEnabled() )
+#endif
       {
          RealType localEps( 0.0 );
+#ifdef HAVE_OPENMP
 #pragma omp for
+#endif
          for( IndexType i = 0; i < size; i ++  )
          {
             RealType err = ( RealType ) ( tau / 3.0 *
