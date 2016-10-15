@@ -11,24 +11,10 @@
 #pragma once
 
 #include <TNL/Assert.h>
+#include <TNL/Meshes/GridEntityConfig.h>
 
 namespace TNL {
 namespace Meshes {
-
-/*enum GridEntityStencilStorage
-{ 
-   GridEntityNoStencil = 0,
-   GridEntityCrossStencil,
-   GridEntityFullStencil
-};*/
-
-template< int storage >
-class GridEntityStencilStorageTag
-{
-   public:
- 
-      static const int stencilStorage = storage;
-};
 
 template< typename GridEntity,
           int NeighbourEntityDimensions,
@@ -44,14 +30,14 @@ class NeighbourGridEntityGetter
       NeighbourGridEntityGetter( const GridEntity& entity )
       {
          //Assert( false, );
-      };
+      }
  
       __cuda_callable__
       void refresh( const typename GridEntity::GridType& grid,
                     const typename GridEntity::IndexType& entityIndex )
       {
          //Assert( false, );
-      };
+      }
 
 };
 

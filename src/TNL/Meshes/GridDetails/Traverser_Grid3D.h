@@ -10,10 +10,11 @@
 
 #pragma once
 
+#include <TNL/Meshes/Traverser.h>
+#include <TNL/SharedPointer.h>
+
 namespace TNL {
 namespace Meshes {
-
-#include <TNL/SharedPointer.h>
 
 template< typename Real,
           typename Device,

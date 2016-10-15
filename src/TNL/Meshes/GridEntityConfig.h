@@ -20,6 +20,14 @@ enum GridEntityStencilStorage
    GridEntityFullStencil
 };
 
+template< int storage >
+class GridEntityStencilStorageTag
+{
+   public:
+ 
+      static const int stencilStorage = storage;
+};
+
 /****
  * This class says what neighbour grid entity indexes shall be pre-computed and stored in the
  * grid entity structure. If neighbourEntityStorage() returns false, nothing is stored.
@@ -47,7 +55,7 @@ class GridEntityNoStencilStorage
       template< typename GridEntity >
       constexpr static bool neighbourEntityStorage( int neighbourEntityStorage )
       {
-         return GridEntityNoStencil;
+         return false;
       }
  
       constexpr static int getStencilSize()
@@ -64,9 +72,9 @@ class GridEntityCrossStencilStorage
       template< typename GridEntity >
       constexpr static bool neighbourEntityStorage( const int neighbourEntityDimensions )
       {
-         //return GridEntityNoStencil;
          return ( GridEntity::entityDimensions == GridEntity::GridType::meshDimensions &&
                   neighbourEntityDimensions == GridEntity::GridType::meshDimensions )
+               // FIXME: how is GridEntityCrossStencil cast to int?
                 * GridEntityCrossStencil;
       }
  

@@ -8,7 +8,6 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-
 #pragma once
 
 #include <TNL/Meshes/GridDetails/GridTraverser.h>
@@ -39,9 +38,8 @@ processBoundaryEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 1 ),
-      CoordinatesType(),
-      CoordinatesType(),
-      userDataPointer );
+      userDataPointer,
+      0 );
 }
 
 template< typename Real,
@@ -59,14 +57,13 @@ processInteriorEntities( const GridPointer& gridPointer,
     * Interior cells
     */
    static_assert( GridEntity::entityDimensions == 2, "The entity has wrong dimensions." );
- 
+
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
       gridPointer,
       CoordinatesType( 1, 1 ),
       gridPointer->getDimensions() - CoordinatesType( 2, 2 ),
-      CoordinatesType(),
-      CoordinatesType(),
-      userDataPointer );
+      userDataPointer,
+      0 );
 }
 
 template< typename Real,
@@ -89,9 +86,8 @@ processAllEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 1 ),
-      CoordinatesType(),
-      CoordinatesType(),
-      userDataPointer );
+      userDataPointer,
+      0 );
 }
 
 /****
@@ -113,21 +109,23 @@ processBoundaryEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
  
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 1, 0 >(
+   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 1, 0, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 0, 1 ),
+      userDataPointer,
+      1,
       CoordinatesType( 1, 0 ),
-      CoordinatesType( 0, 1 ),
-      userDataPointer );
+      CoordinatesType( 0, 1 ) );
 
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 0, 1 >(
+   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 0, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 0 ),
+      userDataPointer,
+      0,
       CoordinatesType( 0, 1 ),
-      CoordinatesType( 1, 0 ),
-      userDataPointer );
+      CoordinatesType( 1, 0 ) );
 }
 
 template< typename Real,
@@ -146,21 +144,23 @@ processInteriorEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
  
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 1, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 1 ),
+      userDataPointer,
+      1,
       CoordinatesType( 1, 0 ),
-      CoordinatesType( 0, 1 ),
-      userDataPointer );
+      CoordinatesType( 0, 1 ) );
 
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 1 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 1 ),
+      userDataPointer,
+      0,
       CoordinatesType( 0, 1 ),
-      CoordinatesType( 1, 0 ),
-      userDataPointer );
+      CoordinatesType( 1, 0 ) );
 }
 
 template< typename Real,
@@ -179,21 +179,23 @@ processAllEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
  
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 0, 1 ),
+      userDataPointer,
+      1,
       CoordinatesType( 1, 0 ),
-      CoordinatesType( 0, 1 ),
-      userDataPointer );
+      CoordinatesType( 0, 1 ) );
 
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 0 ),
+      userDataPointer,
+      0,
       CoordinatesType( 0, 1 ),
-      CoordinatesType( 1, 0 ),
-      userDataPointer );
+      CoordinatesType( 1, 0 ) );
 }
 
 template< typename Real,
@@ -216,9 +218,8 @@ processBoundaryEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions(),
-      CoordinatesType(),
-      CoordinatesType(),
-      userDataPointer );
+      userDataPointer,
+      0 );
 }
 
 template< typename Real,
@@ -241,9 +242,8 @@ processInteriorEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 1, 1 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 1 ),
-      CoordinatesType(),
-      CoordinatesType(),
-      userDataPointer );
+      userDataPointer,
+      0 );
 }
  
 template< typename Real,
@@ -266,9 +266,8 @@ processAllEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions(),
-      CoordinatesType(),
-      CoordinatesType(),
-      userDataPointer );
+      userDataPointer,
+      0 );
 }
 
 } // namespace Meshes

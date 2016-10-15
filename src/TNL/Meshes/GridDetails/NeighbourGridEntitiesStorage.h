@@ -13,6 +13,7 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Meshes/MeshDimensionsTag.h>
 #include <TNL/Meshes/GridEntityConfig.h>
+#include <TNL/Meshes/GridDetails/NeighbourGridEntityGetter.h>
 
 namespace TNL {
 namespace Meshes {
@@ -33,7 +34,7 @@ class NeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions, GridEntit
  
       typedef NeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions - 1, GridEntityConfig > BaseType;
       typedef NeighbourGridEntityGetter< GridEntity, NeighbourEntityDimensions > NeighbourEntityGetterType;
- 
+
       using BaseType::getNeighbourEntities;
  
       __cuda_callable__
@@ -54,7 +55,7 @@ class NeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions, GridEntit
       {
          BaseType::refresh( grid, entityIndex );
          neighbourEntities.refresh( grid, entityIndex );
-      };
+      }
  
    protected:
  
@@ -85,12 +86,11 @@ class NeighbourGridEntityLayer< GridEntity, 0, GridEntityConfig, true >
                     const typename GridEntity::GridType::IndexType& entityIndex )
       {
          neighbourEntities.refresh( grid, entityIndex );
-      };
+      }
  
    protected:
  
       NeighbourEntityGetterType neighbourEntities;
- 
 };
 
 template< typename GridEntity,
@@ -104,19 +104,19 @@ class NeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions, GridEntit
       typedef NeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions - 1, GridEntityConfig > BaseType;      
       typedef NeighbourGridEntityGetter< GridEntity, NeighbourEntityDimensions > NeighbourEntityGetterType;
 
-      using BaseType::getNeighbourEntities;      
-         
+      using BaseType::getNeighbourEntities;
+ 
       __cuda_callable__
       NeighbourGridEntityLayer( const GridEntity& entity )
       : BaseType( entity )
-      {};
+      {}
 
       __cuda_callable__
-      const NeighbourEntityGetterType& getNeighbourEntities( const MeshDimensionsTag< NeighbourEntityDimensions >& tag ) const {};
+      const NeighbourEntityGetterType& getNeighbourEntities( const MeshDimensionsTag< NeighbourEntityDimensions >& tag ) const {}
  
       __cuda_callable__
       void refresh( const typename GridEntity::GridType& grid,
-                    const typename GridEntity::GridType::IndexType& entityIndex ) {};
+                    const typename GridEntity::GridType::IndexType& entityIndex ) {}
 };
 
 template< typename GridEntity,
@@ -131,13 +131,15 @@ class NeighbourGridEntityLayer< GridEntity, 0, GridEntityConfig, false >
       NeighbourGridEntityLayer( const GridEntity& entity ){}
 
       __cuda_callable__
-      const NeighbourEntityGetterType& getNeighbourEntities( const MeshDimensionsTag< 0 >& tag ) const {};
+      const NeighbourEntityGetterType& getNeighbourEntities( const MeshDimensionsTag< 0 >& tag ) const {}
  
       __cuda_callable__
       void refresh( const typename GridEntity::GridType& grid,
-                    const typename GridEntity::GridType::IndexType& entityIndex ) {};
-
+                    const typename GridEntity::GridType::IndexType& entityIndex ) {}
 };
+
+
+
 
 template< typename GridEntity,
           typename GridEntityConfig >
@@ -149,12 +151,12 @@ class NeighbourGridEntitiesStorage
    public:
  
       using BaseType::getNeighbourEntities;
+      using BaseType::refresh;
  
       __cuda_callable__
       NeighbourGridEntitiesStorage( const GridEntity& entity )
       : BaseType( entity )
       {}
-
  
       template< int EntityDimensions >
       __cuda_callable__
@@ -163,13 +165,6 @@ class NeighbourGridEntitiesStorage
       {
          return BaseType::getNeighbourEntities( MeshDimensionsTag< EntityDimensions >() );
       }
-
-      __cuda_callable__
-      void refresh( const typename GridEntity::GridType& grid,
-                    const typename GridEntity::GridType::IndexType& entityIndex )
-      {
-         BaseType::refresh( grid, entityIndex );
-      };      
 };
 
 

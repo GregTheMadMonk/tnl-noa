@@ -518,8 +518,6 @@ GridEntity( const GridType& grid )
  : grid( grid ),
    entityIndex( -1 ),
    coordinates( 0 ),
-   orientation( 1 ),
-   basis( 0 ),
    neighbourEntitiesStorage( *this )
 {
 }
@@ -538,8 +536,6 @@ GridEntity( const GridType& grid,
 : grid( grid ),
   entityIndex( -1 ),
   coordinates( coordinates ),
-  orientation( orientation ),
-  basis( basis ),
   neighbourEntitiesStorage( *this )
 {
 }

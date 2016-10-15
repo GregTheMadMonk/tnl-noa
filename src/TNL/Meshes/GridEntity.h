@@ -204,8 +204,8 @@ class GridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, Dimensions, C
       __cuda_callable__ inline
       GridEntity( const GridType& grid,
                   const CoordinatesType& coordinates,
-                  const EntityOrientationType& orientation = EntityOrientationType( 0 ),
-                  const EntityBasisType& basis = EntityBasisType( 1 ) );
+                  const EntityOrientationType& orientation = EntityOrientationType( ( Index ) 0 ),
+                  const EntityBasisType& basis = EntityBasisType( ( Index ) 1 ) );
  
       __cuda_callable__ inline
       const CoordinatesType& getCoordinates() const;
@@ -326,8 +326,8 @@ class GridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, 0, Config >
       __cuda_callable__ inline
       GridEntity( const GridType& grid,
                      const CoordinatesType& coordinates,
-                     const EntityOrientationType& orientation,
-                     const EntityBasisType& basis );
+                     const EntityOrientationType& orientation = EntityOrientationType( ( Index ) 0 ),
+                     const EntityBasisType& basis = EntityOrientationType( ( Index ) 0 ) );
  
       __cuda_callable__ inline
       const CoordinatesType& getCoordinates() const;
@@ -390,10 +390,6 @@ class GridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, 0, Config >
       IndexType entityIndex;
  
       CoordinatesType coordinates;
- 
-      EntityOrientationType orientation;
- 
-      EntityBasisType basis;
  
       NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
  

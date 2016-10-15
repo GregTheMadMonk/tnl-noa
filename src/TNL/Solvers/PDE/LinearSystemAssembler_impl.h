@@ -38,7 +38,7 @@ assembly( const RealType& time,
           const RightHandSidePointer& rightHandSidePointer,
           const MeshFunctionPointer& uPointer,
           MatrixPointer& matrixPointer,
-          DofVectorPointer& bPointer ) const
+          DofVectorPointer& bPointer )
 {
       static_assert( std::is_same< MeshFunction,
                                 Containers::Vector< typename MeshFunction::RealType,
@@ -50,24 +50,24 @@ assembly( const RealType& time,
    Assert( maxRowLength > 0, );
 
    {
-      SharedPointer< TraverserUserData, DeviceType >
-         userData( time,
-                   tau,
-                   &differentialOperatorPointer.template getData< DeviceType >(),
-                   &boundaryConditionsPointer.template getData< DeviceType >(),
-                   &rightHandSidePointer.template getData< DeviceType >(),
-                   &uPointer.template getData< DeviceType >(),
-                   &matrixPointer.template modifyData< DeviceType >(),
-                   &bPointer.template modifyData< DeviceType >() );
+      this->userDataPointer->setUserData(
+            time,
+            tau,
+            &differentialOperatorPointer.template getData< DeviceType >(),
+            &boundaryConditionsPointer.template getData< DeviceType >(),
+            &rightHandSidePointer.template getData< DeviceType >(),
+            &uPointer.template getData< DeviceType >(),
+            &matrixPointer.template modifyData< DeviceType >(),
+            &bPointer.template modifyData< DeviceType >() );
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( meshPointer,
-                                                      userData );
+                                                      userDataPointer );
       meshTraverser.template processInteriorEntities< TraverserUserData,
                                                       TraverserInteriorEntitiesProcessor >
                                                     ( meshPointer,
-                                                      userData );
+                                                      userDataPointer );
    }
 }
 
