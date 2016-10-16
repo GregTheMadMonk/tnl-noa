@@ -226,7 +226,7 @@ std::ostream& operator <<( std::ostream& str, const MeshEntity< MeshConfig, Enti
  * This tells the compiler that theMeshEntity is a type with a dynamic memory allocation.
  * It is necessary for the loading and the saving of the mesh entities arrays.
  */
-namespace Containers{
+namespace Containers {
 template< typename MeshConfig,
           typename EntityTopology >
 struct DynamicTypeTag< Meshes::MeshEntity< MeshConfig, EntityTopology > >
