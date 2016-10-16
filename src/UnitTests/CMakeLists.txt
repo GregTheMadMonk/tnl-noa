@@ -37,3 +37,4 @@ ADD_TEST( FileTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/FileTest${mpiEx
 ADD_TEST( StringTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/StringTest${mpiExt}${debugExt} )
 ADD_TEST( ListTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/ListTest${mpiExt}${debugExt} )
 ADD_TEST( ObjectTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/ObjectTest${mpiExt}${debugExt} )
+ADD_TEST( UniquePointerTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/UniquePointerTest${mpiExt}${debugExt} )
