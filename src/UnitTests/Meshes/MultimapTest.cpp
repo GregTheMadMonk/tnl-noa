@@ -1,0 +1,76 @@
+#include <TNL/Experimental/Multimaps/EllpackIndexMultimap.h>
+
+using namespace TNL;
+
+using IndexType = int;
+using Device = Devices::Host;
+using LocalIndexType = short;
+
+#ifdef HAVE_GTEST 
+#include "gtest/gtest.h"
+
+TEST( MultimapTest, TestTypedefs )
+{
+   using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
+   const bool same_index = std::is_same< typename MultimapType::IndexType, IndexType >::value;
+   ASSERT_TRUE( same_index );
+   const bool same_device = std::is_same< typename MultimapType::DeviceType, Device >::value;
+   ASSERT_TRUE( same_device );
+   const bool same_localindex = std::is_same< typename MultimapType::LocalIndexType, LocalIndexType >::value;
+   ASSERT_TRUE( same_localindex );
+}
+
+TEST( MultimapTest, TestSettingValues )
+{
+   using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
+
+   IndexType inputs = 10;
+   LocalIndexType values = 4;
+   LocalIndexType allocatedValues = 2;
+
+   MultimapType map;
+   map.setRanges( inputs, values );
+   ASSERT_EQ( map.getKeysRange(), inputs );
+   ASSERT_EQ( map.getValuesRange(), values );
+
+   typename MultimapType::ValuesAllocationVectorType allocationRanges;
+   ASSERT_TRUE( allocationRanges.setSize( inputs ) );
+   allocationRanges.setValue( allocatedValues );
+   ASSERT_TRUE( map.allocate( allocationRanges ) );
+
+   for( IndexType i = 0; i < inputs; i++ ) {
+      auto values = map.getValues( i );
+      const auto constValues = ( (const MultimapType) map ).getValues( i );
+
+      for( LocalIndexType o = 0; o < allocatedValues; o++ )
+         values.setOutput( o, i + o );
+
+      for( LocalIndexType o = 0; o < allocatedValues; o++ ) {
+         ASSERT_EQ( values.getOutput( o ), i + o );
+         ASSERT_EQ( values[ o ], i + o );
+         ASSERT_EQ( constValues.getOutput( o ), i + o );
+         ASSERT_EQ( constValues[ o ], i + o );
+      }
+
+      for( LocalIndexType o = 0; o < allocatedValues; o++ )
+         values[ o ] = i * o;
+
+      for( LocalIndexType o = 0; o < allocatedValues; o++ ) {
+         ASSERT_EQ( values.getOutput( o ), i * o );
+         ASSERT_EQ( values[ o ], i * o );
+         ASSERT_EQ( constValues.getOutput( o ), i * o );
+         ASSERT_EQ( constValues[ o ], i * o );
+      }
+   }
+}
+#endif
+
+int main( int argc, char* argv[] )
+{
+#ifdef HAVE_GTEST
+   ::testing::InitGoogleTest( &argc, argv );
+   return RUN_ALL_TESTS();
+#else
+   return EXIT_FAILURE;
+#endif
+}
