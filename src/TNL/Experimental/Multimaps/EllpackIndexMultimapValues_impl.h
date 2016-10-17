@@ -12,76 +12,90 @@
 
 #include "EllpackIndexMultimapValues.h"
 
+#include <TNL/Assert.h>
+
 namespace TNL {
  
 template< typename Index,
-          typename Device >
-EllpackIndexMultimapValues< Index, Device >::
+          typename Device,
+          typename LocalIndex >
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 EllpackIndexMultimapValues()
 {
 }
 
 template< typename Index,
-          typename Device >
-EllpackIndexMultimapValues< Index, Device >::
+          typename Device,
+          typename LocalIndex >
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 EllpackIndexMultimapValues( IndexType* networkPorts,
-                        const IndexType input,
-                        const IndexType portsMaxCount )
+                            const IndexType& input,
+                            const LocalIndexType& portsMaxCount )
 {
    this->ports = &networkPorts[ input * portsMaxCount ];
    this->portsMaxCount = portsMaxCount;
 }
 
 template< typename Index,
-          typename Device >
-Index
-EllpackIndexMultimapValues< Index, Device >::
+          typename Device,
+          typename LocalIndex >
+LocalIndex
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 getPortsCount() const
 {
    return this->portsMaxCount;
 }
 
 template< typename Index,
-          typename Device >
+          typename Device,
+          typename LocalIndex >
 void
-EllpackIndexMultimapValues< Index, Device >::
-setOutput( const IndexType portIndex,
-           const IndexType output )
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
+setOutput( const LocalIndexType& portIndex,
+           const IndexType& output )
 {
+   Assert( portIndex < this->portsMaxCount, );
    this->ports[ portIndex ] = output;
 }
 
 template< typename Index,
-          typename Device >
+          typename Device,
+          typename LocalIndex >
 Index
-EllpackIndexMultimapValues< Index, Device >::
-getOutput( const IndexType portIndex ) const
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
+getOutput( const LocalIndexType& portIndex ) const
 {
+   Assert( portIndex < this->portsMaxCount, );
    return this->ports[ portIndex ];
 }
 
 template< typename Index,
-          typename Device >
+          typename Device,
+          typename LocalIndex >
 Index&
-EllpackIndexMultimapValues< Index, Device >::
-operator[]( const IndexType portIndex )
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
+operator[]( const LocalIndexType& portIndex )
 {
+   Assert( portIndex < this->portsMaxCount, );
    return this->ports[ portIndex ];
 }
 
 template< typename Index,
-          typename Device >
+          typename Device,
+          typename LocalIndex >
 const Index&
-EllpackIndexMultimapValues< Index, Device >::
-operator[]( const IndexType portIndex ) const
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
+operator[]( const LocalIndexType& portIndex ) const
 {
+   Assert( portIndex < this->portsMaxCount, );
    return this->ports[ portIndex ];
 }
 
 template< typename Index,
-          typename Device >
+          typename Device,
+          typename LocalIndex >
 void
-EllpackIndexMultimapValues< Index, Device >::
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 print( std::ostream& str ) const
 {
    if( this->getPortsCount() == 0 )
@@ -96,8 +110,9 @@ print( std::ostream& str ) const
 }
 
 template< typename Index,
-          typename Device >
-std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimapValues< Index, Device>& ports )
+          typename Device,
+          typename LocalIndex >
+std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimapValues< Index, Device, LocalIndex >& ports )
 {
    ports.print( str );
    return str;

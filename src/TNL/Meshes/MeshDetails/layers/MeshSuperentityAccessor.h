@@ -25,10 +25,8 @@ template< typename IndexMultimapValues >
 class MeshSuperentityAccessor
 {
    public:
-      typedef typename IndexMultimapValues::IndexType   GlobalIndexType;
-      typedef typename IndexMultimapValues::IndexType   LocalIndexType;
- 
-      // TODO: Add LocalIndexType to EllpackIndexMultimap
+      typedef typename IndexMultimapValues::IndexType       GlobalIndexType;
+      typedef typename IndexMultimapValues::LocalIndexType  LocalIndexType;
  
       LocalIndexType getSupernetitiesCount() const
       {

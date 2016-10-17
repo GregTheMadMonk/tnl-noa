@@ -8,56 +8,50 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
 #include <TNL/Containers/Vector.h>
+#include <TNL/Experimental/Multimaps/EllpackIndexMultimapValues.h>
 
 namespace TNL {
 
 template< typename Index = int,
-          typename Device = Devices::Host >
-class EllpackIndexMultimapValues;
-
-template< typename Index = int,
-          typename Device = Devices::Host >
-class EllpackIndexMultimapConstValues;
-
-template< typename Index = int,
-          typename Device = Devices::Host >
+          typename Device = Devices::Host,
+          typename LocalIndex = Index >
 class EllpackIndexMultimap
 {
    public:
- 
-      typedef Device                                                       DeviceType;
-      typedef Index                                                        IndexType;
-      typedef EllpackIndexMultimapValues< IndexType, DeviceType >       ValuesAccessorType;
-      typedef EllpackIndexMultimapConstValues< IndexType, DeviceType >  ConstValuesAccessorType;
-      typedef Containers::Vector< IndexType, DeviceType, IndexType >                ValuesAllocationVectorType;
- 
+      using DeviceType                 = Device;
+      using IndexType                  = Index;
+      using LocalIndexType             = LocalIndex;
+      using ValuesAccessorType         = EllpackIndexMultimapValues< IndexType, DeviceType, LocalIndexType >;
+      using ConstValuesAccessorType    = EllpackIndexMultimapValues< const IndexType, DeviceType, LocalIndexType >;
+      using ValuesAllocationVectorType = Containers::Vector< LocalIndexType, DeviceType, IndexType >;
+
       EllpackIndexMultimap();
- 
+
       static String getType();
 
       String getTypeVirtual() const;
- 
+
       void setRanges( const IndexType keysRange,
-                      const IndexType valuesRange );
- 
+                      const LocalIndexType valuesRange );
+
       const IndexType getKeysRange() const;
- 
-      const IndexType getValuesRange() const;
- 
-      void allocate( const ValuesAllocationVectorType& portsCount );
- 
+
+      const LocalIndexType getValuesRange() const;
+
+      bool allocate( const ValuesAllocationVectorType& portsCount );
+
       ValuesAccessorType getValues( const IndexType& inputIndex );
- 
+
       ConstValuesAccessorType getValues( const IndexType& inputIndex ) const;
- 
+
    protected:
- 
       Containers::Vector< IndexType, DeviceType, IndexType > values;
- 
-      IndexType keysRange, valuesRange, valuesMaxCount;
+
+      IndexType keysRange;
+      LocalIndexType valuesRange, valuesMaxCount;
 };
 
 } // namespace TNL

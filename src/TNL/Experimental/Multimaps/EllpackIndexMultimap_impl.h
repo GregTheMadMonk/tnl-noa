@@ -11,98 +11,114 @@
 #pragma once 
 
 #include <TNL/Experimental/Multimaps/EllpackIndexMultimap.h>
-#include <TNL/Experimental/Multimaps/EllpackIndexMultimapValues.h>
 
 namespace TNL {
 
 template< typename Index,
-          typename Device >
-EllpackIndexMultimap< Index, Device >::
+          typename Device,
+          typename LocalIndex >
+EllpackIndexMultimap< Index, Device, LocalIndex >::
 EllpackIndexMultimap()
 :  keysRange( 0 ), valuesRange( 0 ), valuesMaxCount( 0 )
 {
 }
 
 template< typename Index,
-          typename Device >
-String EllpackIndexMultimap< Index, Device > :: getType()
+          typename Device,
+          typename LocalIndex >
+String
+EllpackIndexMultimap< Index, Device, LocalIndex >::
+getType()
 {
    return String( "EllpackIndexMultimap< ") +
+          String( TNL::getType< Index >() ) +
+          String( ", " ) +
           Device :: getDeviceType() +
           String( ", " ) +
-          String( TNL::getType< Index >() ) +
+          String( TNL::getType< LocalIndexType >() ) +
           String( " >" );
 }
 
 template< typename Index,
-          typename Device >
-String EllpackIndexMultimap< Index, Device >::getTypeVirtual() const
+          typename Device,
+          typename LocalIndex >
+String
+EllpackIndexMultimap< Index, Device, LocalIndex >::
+getTypeVirtual() const
 {
    return this->getType();
 }
 
 template< typename Index,
-          typename Device >
+          typename Device,
+          typename LocalIndex >
 void
-EllpackIndexMultimap< Index, Device >::
+EllpackIndexMultimap< Index, Device, LocalIndex >::
 setRanges( const IndexType inputs,
-               const IndexType outputs )
+           const LocalIndexType outputs )
 {
+   Assert( inputs >= 0, );
+   Assert( outputs >= 0, );
    this->keysRange = inputs;
    this->valuesRange = outputs;
 }
 
 template< typename Index,
-          typename Device >
+          typename Device,
+          typename LocalIndex >
 const Index
-EllpackIndexMultimap< Index, Device >::
+EllpackIndexMultimap< Index, Device, LocalIndex >::
 getKeysRange() const
 {
    return this->keysRange;
 }
 
 template< typename Index,
-          typename Device >
-const Index
-EllpackIndexMultimap< Index, Device >::
+          typename Device,
+          typename LocalIndex >
+const LocalIndex
+EllpackIndexMultimap< Index, Device, LocalIndex >::
 getValuesRange() const
 {
    return this->valuesRange;
 }
 
 template< typename Index,
-          typename Device >
-void
-EllpackIndexMultimap< Index, Device >::
+          typename Device,
+          typename LocalIndex >
+bool
+EllpackIndexMultimap< Index, Device, LocalIndex >::
 allocate( const ValuesAllocationVectorType& portsCount )
 {
    TNL_ASSERT( portsCount.getSize() == this->keysRange,
               std::cerr << "portsCount.getSize() =  " << portsCount.getSize()
-                   << "this->inputs = " << this->keysRange );
+                        << "this->inputs = " << this->keysRange );
    this->valuesMaxCount = portsCount.max();
  
    TNL_ASSERT( this->valuesMaxCount >= 0 && this->valuesMaxCount <= this->valuesRange,
               std::cerr << "this->portsMaxCount = " << this->valuesMaxCount
-                   << " this->outputs = " << this->valuesRange );
-   this->values.setSize( this->keysRange * this->valuesMaxCount );
+                        << " this->outputs = " << this->valuesRange );
+   return this->values.setSize( this->keysRange * this->valuesMaxCount );
 }
 
 template< typename Index,
-          typename Device >
-typename EllpackIndexMultimap< Index, Device >::ValuesAccessorType
-EllpackIndexMultimap< Index, Device >::
+          typename Device,
+          typename LocalIndex >
+typename EllpackIndexMultimap< Index, Device, LocalIndex >::ValuesAccessorType
+EllpackIndexMultimap< Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex )
 {
    return ValuesAccessorType( this->values.getData(), inputIndex, this->valuesMaxCount );
 }
 
 template< typename Index,
-          typename Device >
-typename EllpackIndexMultimap< Index, Device >::ConstValuesAccessorType
-EllpackIndexMultimap< Index, Device >::
+          typename Device,
+          typename LocalIndex >
+typename EllpackIndexMultimap< Index, Device, LocalIndex >::ConstValuesAccessorType
+EllpackIndexMultimap< Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex ) const
 {
-   return ConstPortsType( this->values.getData(), inputIndex, this->valuesMaxCount );
+   return ConstValuesAccessorType( this->values.getData(), inputIndex, this->valuesMaxCount );
 }
 
 } // namespace TNL

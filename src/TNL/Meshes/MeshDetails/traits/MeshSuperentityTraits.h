@@ -51,9 +51,9 @@ class MeshSuperentityTraits
    /****
     * Type of container for storing of the superentities indecis.
     */
-   typedef Containers::Array< GlobalIndexType, Devices::Host, LocalIndexType >             StorageArrayType;
+   typedef Containers::Array< GlobalIndexType, Devices::Host, LocalIndexType >        StorageArrayType;
  
-   typedef EllpackIndexMultimap< GlobalIndexType, Devices::Host >                        StorageNetworkType;
+   typedef EllpackIndexMultimap< GlobalIndexType, Devices::Host, LocalIndexType >     StorageNetworkType;
    typedef MeshSuperentityAccessor< typename StorageNetworkType::ValuesAccessorType > SuperentityAccessorType;
  
    /****
