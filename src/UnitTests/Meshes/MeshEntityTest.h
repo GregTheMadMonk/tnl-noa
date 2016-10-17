@@ -428,18 +428,18 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 1 ) == 3 );
    ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 2 ) == 4 );
 
-   /*vertexEntities[ 0 ].template setNumberOfSuperentities< 1 >( 2 );
-   vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 0, 2 );
-   vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 1, 1 );
+//   vertexEntities[ 0 ].template setNumberOfSuperentities< 1 >( 2 );
+//   vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 0, 2 );
+//   vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 1, 1 );
 
-   vertexEntities[ 1 ].template setNumberOfSuperentities< 1 >( 3 );
-   vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 0, 0 );
-   vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 1, 2 );
-   vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 2, 4 );
+//   vertexEntities[ 1 ].template setNumberOfSuperentities< 1 >( 3 );
+//   vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 0, 0 );
+//   vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 1, 2 );
+//   vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 2, 4 );
 
-   vertexEntities[ 1 ].template setNumberOfSuperentities< 2 >( 2 );
-   vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 0, 0 );
-   vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 1, 1 );*/
+//   vertexEntities[ 1 ].template setNumberOfSuperentities< 2 >( 2 );
+//   vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 0, 0 );
+//   vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 1, 1 );
 
 //   ASSERT_TRUE( vertexEntities[ 0 ].template getNumberOfSuperentities< 1 >() == 2 );
 //   ASSERT_TRUE( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 0 ) == 2 );
@@ -454,12 +454,12 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
 //   ASSERT_TRUE( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 0 ) == 0 );
 //   ASSERT_TRUE( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 1 ) == 1 );
 
-   /*edgeEntities[ 0 ].template setNumberOfSuperentities< 2 >( 2 );
-   edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 0, 0 );
-   edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 1, 1 );*/
+//   edgeEntities[ 0 ].template setNumberOfSuperentities< 2 >( 2 );
+//   edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 0, 0 );
+//   edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 1, 1 );
 
-   /*ASSERT_TRUE( edgeEntities[ 0 ].template getNumberOfSuperentities< 2 >() == 2  );
-   ASSERT_TRUE( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 0 ) == 0 );*/
+//   ASSERT_TRUE( edgeEntities[ 0 ].template getNumberOfSuperentities< 2 >() == 2  );
+//   ASSERT_TRUE( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 0 ) == 0 );
 }
 
 #endif

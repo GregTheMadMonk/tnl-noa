@@ -67,7 +67,7 @@ protected:
    using BaseType::getNumberOfSuperentities;
    using BaseType::getSuperentityIndex;
    using BaseType::setSuperentityIndex;
-   using BaseType::getSuperentitiesIndices;
+   using BaseType::getSuperentityIndices;
 
    MeshSuperentityStorageLayer()
    {
@@ -119,12 +119,12 @@ protected:
       return this->superentitiesIndices[ localIndex ];
    }
 
-   AccessArrayType& getSuperentitiesIndices( DimensionsTag )
+   AccessArrayType& getSuperentityIndices( DimensionsTag )
    {
       return this->sharedSuperentitiesIndices;
    }
 
-   const AccessArrayType& getSuperentitiesIndices( DimensionsTag ) const
+   const AccessArrayType& getSuperentityIndices( DimensionsTag ) const
    {
       return this->sharedSuperentitiesIndices;
    }
@@ -234,9 +234,9 @@ protected:
       return true;
    }
 
-   ContainerType& getSuperentitiesIndices() {}
+   ContainerType& getSuperentityIndices() {}
 
-   const ContainerType& getSuperentitiesIndices() const {}
+   const ContainerType& getSuperentityIndices() const {}
 
    bool save( File& file ) const
    {
@@ -305,9 +305,9 @@ protected:
       return true;
    }
 
-   StorageArrayType& getSuperentitiesIndices(){}
+   StorageArrayType& getSuperentityIndices(){}
 
-   const StorageArrayType& getSuperentitiesIndices() const {}
+   const StorageArrayType& getSuperentityIndices() const {}
 
    bool save( File& file ) const
    {

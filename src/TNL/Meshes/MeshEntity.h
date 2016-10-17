@@ -89,10 +89,10 @@ class MeshEntity
       GlobalIndexType getSubentityIndex( const LocalIndexType localIndex) const;
 
       template< int Subdimensions >
-      typename SubentityTraits< Subdimensions >::AccessArrayType& getSubentitiesIndices();
+      typename SubentityTraits< Subdimensions >::AccessArrayType& getSubentityIndices();
 
       template< int Subdimensions >
-      const typename SubentityTraits< Subdimensions >::AccessArrayType& getSubentitiesIndices() const;
+      const typename SubentityTraits< Subdimensions >::AccessArrayType& getSubentityIndices() const;
 
       /****
        * Superentities
@@ -104,10 +104,10 @@ class MeshEntity
       GlobalIndexType getSuperentityIndex( const LocalIndexType localIndex ) const;
 
       template< int SuperDimensions >
-      typename SuperentityTraits< SuperDimensions >::AccessArrayType& getSuperentitiesIndices();
+      typename SuperentityTraits< SuperDimensions >::AccessArrayType& getSuperentityIndices();
 
       template< int SuperDimensions >
-      const typename SuperentityTraits< SuperDimensions >::AccessArrayType& getSuperentitiesIndices() const;
+      const typename SuperentityTraits< SuperDimensions >::AccessArrayType& getSuperentityIndices() const;
 
       /****
        * Vertices
@@ -189,10 +189,10 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       template< int Superdimensions > LocalIndexType getNumberOfSuperentities() const;
 
       template< int Superdimensions >
-      typename SuperentityTraits< Superdimensions >::AccessArrayType& getSuperentitiesIndices();
+      typename SuperentityTraits< Superdimensions >::AccessArrayType& getSuperentityIndices();
 
       template< int Superdimensions >
-      const typename SuperentityTraits< Superdimensions >::AccessArrayType& getSuperentitiesIndeces() const;
+      const typename SuperentityTraits< Superdimensions >::AccessArrayType& getSuperentityIndices() const;
 
       template< int Dimension >
       GlobalIndexType getSuperentityIndex( const LocalIndexType localIndex ) const;

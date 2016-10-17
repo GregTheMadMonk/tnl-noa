@@ -57,7 +57,7 @@ class MeshSuperentityTraits
    typedef MeshSuperentityAccessor< typename StorageNetworkType::ValuesAccessorType > SuperentityAccessorType;
  
    /****
-    * Type for passing the superentities indecis by the getSuperentitiesIndices()
+    * Type for passing the superentities indecis by the getSuperentityIndices()
     * method. We introduce it because of the compatibility with the subentities
     * which are usually stored in static array.
     */

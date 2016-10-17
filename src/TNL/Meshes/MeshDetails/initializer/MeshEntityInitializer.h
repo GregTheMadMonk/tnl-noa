@@ -93,7 +93,7 @@ class MeshEntityInitializer
    template< typename SuperentityDimensionTag >
    typename MeshSuperentityTraits< MeshConfig, EntityTopology, SuperentityDimensionTag::value >::SharedContainerType& getSuperentityContainer( SuperentityDimensionTag )
    {
-      return this->entity->template getSuperentitiesIndices< SuperentityDimensionTag::value >();
+      return this->entity->template getSuperentityIndices< SuperentityDimensionTag::value >();
    }
 
    static void setEntityVertex( EntityType& entity,
