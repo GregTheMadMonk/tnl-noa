@@ -54,7 +54,10 @@ EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 setOutput( const LocalIndexType& portIndex,
            const IndexType& output )
 {
-   Assert( portIndex < this->portsMaxCount, );
+   Assert( portIndex < this->portsMaxCount,
+              std::cerr << " portIndex = " << portIndex
+                        << " portsMaxCount = " << this->portsMaxCount
+                        << std::endl );
    this->ports[ portIndex ] = output;
 }
 
@@ -65,7 +68,10 @@ Index
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 getOutput( const LocalIndexType& portIndex ) const
 {
-   Assert( portIndex < this->portsMaxCount, );
+   Assert( portIndex < this->portsMaxCount,
+              std::cerr << " portIndex = " << portIndex
+                        << " portsMaxCount = " << this->portsMaxCount
+                        << std::endl );
    return this->ports[ portIndex ];
 }
 
@@ -76,7 +82,10 @@ Index&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator[]( const LocalIndexType& portIndex )
 {
-   Assert( portIndex < this->portsMaxCount, );
+   Assert( portIndex < this->portsMaxCount,
+              std::cerr << " portIndex = " << portIndex
+                        << " portsMaxCount = " << this->portsMaxCount
+                        << std::endl );
    return this->ports[ portIndex ];
 }
 
@@ -87,7 +96,10 @@ const Index&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator[]( const LocalIndexType& portIndex ) const
 {
-   Assert( portIndex < this->portsMaxCount, );
+   Assert( portIndex < this->portsMaxCount,
+              std::cerr << " portIndex = " << portIndex
+                        << " portsMaxCount = " << this->portsMaxCount
+                        << std::endl );
    return this->ports[ portIndex ];
 }
 
