@@ -51,37 +51,37 @@ class MeshSuperentityAccess
 
 template< typename MeshConfig,
           typename MeshEntity,
-          typename Dimension >
+          typename DimensionsTag >
 class MeshSuperentityAccessLayer< MeshConfig,
                                   MeshEntity,
-                                  Dimensions,
+                                  DimensionsTag,
                                   true >
-   : public MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimensions::Decrement >
+   : public MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename DimensionsTag::Decrement >
 {
-	typedef MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimension::Decrement > BaseType;
+	typedef MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename DimensionsTag::Decrement > BaseType;
 
    public:
       typedef MeshTraits< MeshConfig >                                                             MeshTraitsType;
-      typedef typename MeshTraitsType::template SuperentityTraits< MeshEntity, Dimension::value > SuperentityTraitsType;
+      typedef typename MeshTraitsType::template SuperentityTraits< MeshEntity, DimensionsTag::value > SuperentityTraitsType;
       typedef typename MeshTraitsType::IdArrayAccessorType                                         IdArrayAccessorType;
       typedef typename SuperentityTraitsType::StorageNetworkType                                   StorageNetworkType;
       typedef typename SuperentityTraitsType::SuperentityAccessorType                              SuperentityAccessorType;
       //typedef typename StorageNetworkType::PortsType                            SuperentityAccessorType;
 
 	   using BaseType::superentityIds;
-	   IdArrayAccessorType superentityIds( Dimension ) const { return m_superentityIndices; }
+	   IdArrayAccessorType superentityIds( DimensionsTag ) const { return m_superentityIndices; }
 
 	   using BaseType::superentityIdsArray;
-	   IdArrayAccessorType &superentityIdsArray( Dimension ) { return m_superentityIndices; }
+	   IdArrayAccessorType &superentityIdsArray( DimensionsTag ) { return m_superentityIndices; }
  
       using BaseType::getSuperentityIndices;
-      const SuperentityAccessorType& getSuperentityIndices( Dimension ) const
+      const SuperentityAccessorType& getSuperentityIndices( DimensionsTag ) const
       {
          std::cerr << "###" << std::endl;
          return this->superentityIndices;
       }
  
-      SuperentityAccessorType& getSuperentityIndices( Dimension )
+      SuperentityAccessorType& getSuperentityIndices( DimensionsTag )
       {
          std::cerr << "######" << std::endl;
          return this->superentityIndices;
@@ -89,7 +89,7 @@ class MeshSuperentityAccessLayer< MeshConfig,
  
       void print( std::ostream& str ) const
       {
-         str << "Superentities with " << Dimension::value << " dimensions are: " <<
+         str << "Superentities with " << DimensionsTag::value << " dimensions are: " <<
             this->superentityIndices << std::endl;
          BaseType::print( str );
       }
@@ -104,12 +104,12 @@ class MeshSuperentityAccessLayer< MeshConfig,
 
 template< typename MeshConfig,
           typename MeshEntity,
-          typename Dimension >
+          typename DimensionsTag >
 class MeshSuperentityAccessLayer< MeshConfig,
                                   MeshEntity,
-                                  Dimensions,
+                                  DimensionsTag,
                                   false >
-   : public MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimensions::Decrement >
+   : public MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename DimensionsTag::Decrement >
 {
 };
 

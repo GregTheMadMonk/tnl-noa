@@ -166,8 +166,10 @@ protected:
 private:
     StorageArrayType superentitiesIndices;
 
+    // TODO: removed even from MeshSubentityStorageLayer
     AccessArrayType sharedSuperentitiesIndices;
  
+    // TODO: unused???
     StorageNetworkType storageNetwork;
  
    // TODO: this is only for the mesh initializer - fix it
@@ -200,7 +202,7 @@ class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, MeshDimensionTag<
    static const int Dimensions = EntityTopology::dimensions;
    typedef MeshDimensionsTag< EntityTopology::dimensions >     DimensionsTag;
 
-   typedef MeshSuperentityTraits< MeshConfig, EntityTopology, Dimension >      SuperentityTraits;
+   typedef MeshSuperentityTraits< MeshConfig, EntityTopology, Dimensions >      SuperentityTraitsType;
 
    typedef MeshSuperentityStorageLayer< MeshConfig,
                                         EntityTopology,
@@ -208,12 +210,12 @@ class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, MeshDimensionTag<
                                         false > ThisType;
 
 protected:
-   typedef typename SuperentityTraits::ContainerType           ContainerType;
-   typedef typename ContainerType::ElementType                 GlobalIndexType;
-   // FIXME: take it from MeshConfig or something
-   typedef int                                                 LocalIndexType;
+   typedef typename SuperentityTraitsType::StorageArrayType       StorageArrayType;
+   typedef typename SuperentityTraitsType::AccessArrayType        AccessArrayType;
+   typedef typename SuperentityTraitsType::GlobalIndexType        GlobalIndexType;
+   typedef typename SuperentityTraitsType::LocalIndexType         LocalIndexType;
 
-   typedef typename SuperentityTraits::StorageNetworkType      StorageNetworkType;
+   typedef typename SuperentityTraitsType::StorageNetworkType     StorageNetworkType;
  
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
@@ -234,9 +236,9 @@ protected:
       return true;
    }
 
-   ContainerType& getSuperentityIndices() {}
+   AccessArrayType& getSuperentityIndices() {}
 
-   const ContainerType& getSuperentityIndices() const {}
+   const AccessArrayType& getSuperentityIndices() const {}
 
    bool save( File& file ) const
    {
