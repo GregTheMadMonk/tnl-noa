@@ -20,6 +20,49 @@ TEST( MultimapTest, TestTypedefs )
    ASSERT_TRUE( same_localindex );
 }
 
+TEST( MultimapTest, TestSettingSizes )
+{
+   using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
+
+   IndexType inputs = 10;
+   LocalIndexType valuesRange = 4;
+   LocalIndexType valuesGlobalMax = 3;
+   LocalIndexType valuesLocalMax = 2;
+
+   MultimapType map;
+   map.setRanges( inputs, valuesRange );
+   ASSERT_EQ( map.getKeysRange(), inputs );
+   ASSERT_EQ( map.getValuesRange(), valuesRange );
+
+   typename MultimapType::ValuesAllocationVectorType allocationRanges;
+   ASSERT_TRUE( allocationRanges.setSize( inputs ) );
+   allocationRanges.setValue( valuesGlobalMax );
+   ASSERT_TRUE( map.allocate( allocationRanges ) );
+
+   for( IndexType i = 0; i < inputs; i++ ) {
+      auto values = map.getValues( i );
+      const auto constValues = ( (const MultimapType) map ).getValues( i );
+
+      ASSERT_TRUE( values.setSize( valuesLocalMax ) );
+      ASSERT_EQ( values.getSize(), valuesLocalMax );
+      ASSERT_EQ( constValues.getSize(), valuesLocalMax );
+
+      // setting wrong local sizes should not be allowed
+      ASSERT_FALSE( values.setSize( valuesGlobalMax + 1 ) );
+      ASSERT_EQ( values.getSize(), valuesLocalMax );
+      ASSERT_EQ( constValues.getSize(), valuesLocalMax );
+   }
+
+   for( IndexType i = 0; i < inputs; i++ ) {
+      auto values = map.getValues( i );
+      const auto constValues = ( (const MultimapType) map ).getValues( i );
+
+      ASSERT_TRUE( values.setSize( valuesGlobalMax ) );
+      ASSERT_EQ( values.getSize(), valuesGlobalMax );
+      ASSERT_EQ( constValues.getSize(), valuesGlobalMax );
+   }
+}
+
 TEST( MultimapTest, TestSettingValues )
 {
    using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
@@ -42,13 +85,15 @@ TEST( MultimapTest, TestSettingValues )
       auto values = map.getValues( i );
       const auto constValues = ( (const MultimapType) map ).getValues( i );
 
+      ASSERT_TRUE( values.setSize( allocatedValues ) );
+
       for( LocalIndexType o = 0; o < allocatedValues; o++ )
-         values.setOutput( o, i + o );
+         values.setValue( o, i + o );
 
       for( LocalIndexType o = 0; o < allocatedValues; o++ ) {
-         ASSERT_EQ( values.getOutput( o ), i + o );
+         ASSERT_EQ( values.getValue( o ), i + o );
          ASSERT_EQ( values[ o ], i + o );
-         ASSERT_EQ( constValues.getOutput( o ), i + o );
+         ASSERT_EQ( constValues.getValue( o ), i + o );
          ASSERT_EQ( constValues[ o ], i + o );
       }
 
@@ -56,9 +101,9 @@ TEST( MultimapTest, TestSettingValues )
          values[ o ] = i * o;
 
       for( LocalIndexType o = 0; o < allocatedValues; o++ ) {
-         ASSERT_EQ( values.getOutput( o ), i * o );
+         ASSERT_EQ( values.getValue( o ), i * o );
          ASSERT_EQ( values[ o ], i * o );
-         ASSERT_EQ( constValues.getOutput( o ), i * o );
+         ASSERT_EQ( constValues.getValue( o ), i * o );
          ASSERT_EQ( constValues[ o ], i * o );
       }
    }

@@ -49,6 +49,9 @@ class TestTetrahedronMeshConfig : public MeshConfigBase< MeshTetrahedronTopology
       }
 };
 
+template< typename MeshConfig, typename EntityTopology, int Dimensions >
+using StorageNetwork = typename MeshSuperentityTraits< MeshConfig, EntityTopology, Dimensions >::StorageNetworkType;
+
 // stupid wrapper around MeshEntity to expose protected members needed for tests
 template< typename MeshConfig, typename EntityTopology >
 class TestMeshEntity
@@ -58,10 +61,17 @@ class TestMeshEntity
 
 public:
    template< int Subdimensions >
-   void setSubentityIndex( const typename BaseType::LocalIndexType localIndex,
-                           const typename BaseType::GlobalIndexType globalIndex )
+   void setSubentityIndex( const typename BaseType::LocalIndexType& localIndex,
+                           const typename BaseType::GlobalIndexType& globalIndex )
    {
       BaseType::template setSubentityIndex< Subdimensions >( localIndex, globalIndex );
+   }
+
+   template< int Superdimensions >
+   void setSuperentityIndex( const typename BaseType::LocalIndexType& localIndex,
+                             const typename BaseType::GlobalIndexType& globalIndex )
+   {
+      BaseType::template setSuperentityIndex< Superdimensions >( localIndex, globalIndex );
    }
 };
  
@@ -428,38 +438,60 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 1 ) == 3 );
    ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 2 ) == 4 );
 
-//   vertexEntities[ 0 ].template setNumberOfSuperentities< 1 >( 2 );
-//   vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 0, 2 );
-//   vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 1, 1 );
 
-//   vertexEntities[ 1 ].template setNumberOfSuperentities< 1 >( 3 );
-//   vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 0, 0 );
-//   vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 1, 2 );
-//   vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 2, 4 );
+   /*
+    * Tests for the superentities layer.
+    */
+   StorageNetwork< TestTriangleMeshConfig, MeshVertexTopology, 1 > vertexEdgeSuperentities;
+   vertexEdgeSuperentities.setRanges( 4, 3 );
+   vertexEdgeSuperentities.allocate( 3 );
 
-//   vertexEntities[ 1 ].template setNumberOfSuperentities< 2 >( 2 );
-//   vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 0, 0 );
-//   vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 1, 1 );
+   vertexEntities[ 0 ].template bindSuperentitiesStorageNetwork< 1 >( vertexEdgeSuperentities.getValues( 0 ) );
+   vertexEntities[ 0 ].template setNumberOfSuperentities< 1 >( 2 );
+   vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 0, 2 );
+   vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 1, 1 );
 
-//   ASSERT_TRUE( vertexEntities[ 0 ].template getNumberOfSuperentities< 1 >() == 2 );
-//   ASSERT_TRUE( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 0 ) == 2 );
-//   ASSERT_TRUE( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 1 ) == 1 );
+   ASSERT_EQ( vertexEntities[ 0 ].template getNumberOfSuperentities< 1 >(),  2 );
+   ASSERT_EQ( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 0 ),    2 );
+   ASSERT_EQ( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 1 ),    1 );
 
-//   ASSERT_TRUE( vertexEntities[ 1 ].template getNumberOfSuperentities< 1 >() == 3 );
-//   ASSERT_TRUE( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 0 ) == 0 );
-//   ASSERT_TRUE( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 1 ) == 2 );
-//   ASSERT_TRUE( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 2 ) == 4 );
+   vertexEntities[ 1 ].template bindSuperentitiesStorageNetwork< 1 >( vertexEdgeSuperentities.getValues( 1 ) );
+   vertexEntities[ 1 ].template setNumberOfSuperentities< 1 >( 3 );
+   vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 0, 0 );
+   vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 1, 2 );
+   vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 2, 4 );
 
-//   ASSERT_TRUE( vertexEntities[ 1 ].template getNumberOfSuperentities< 2 >() == 2 );
-//   ASSERT_TRUE( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 0 ) == 0 );
-//   ASSERT_TRUE( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 1 ) == 1 );
+   ASSERT_EQ( vertexEntities[ 1 ].template getNumberOfSuperentities< 1 >(),  3 );
+   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 0 ),    0 );
+   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 1 ),    2 );
+   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 2 ),    4 );
 
-//   edgeEntities[ 0 ].template setNumberOfSuperentities< 2 >( 2 );
-//   edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 0, 0 );
-//   edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 1, 1 );
 
-//   ASSERT_TRUE( edgeEntities[ 0 ].template getNumberOfSuperentities< 2 >() == 2  );
-//   ASSERT_TRUE( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 0 ) == 0 );
+   StorageNetwork< TestTriangleMeshConfig, MeshVertexTopology, 2 > vertexCellSuperentities;
+   vertexCellSuperentities.setRanges( 4, 2 );
+   vertexCellSuperentities.allocate( 2 );
+
+   vertexEntities[ 1 ].template bindSuperentitiesStorageNetwork< 2 >( vertexCellSuperentities.getValues( 1 ) );
+   vertexEntities[ 1 ].template setNumberOfSuperentities< 2 >( 2 );
+   vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 0, 0 );
+   vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 1, 1 );
+
+   ASSERT_EQ( vertexEntities[ 1 ].template getNumberOfSuperentities< 2 >(),  2 );
+   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 0 ),    0 );
+   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 1 ),    1 );
+
+
+   StorageNetwork< TestTriangleMeshConfig, MeshEdgeTopology, 2 > edgeCellSuperentities;
+   edgeCellSuperentities.setRanges( 5, 2 );
+   edgeCellSuperentities.allocate( 2 );
+
+   edgeEntities[ 0 ].template bindSuperentitiesStorageNetwork< 2 >( edgeCellSuperentities.getValues( 0 ) );
+   edgeEntities[ 0 ].template setNumberOfSuperentities< 2 >( 2 );
+   edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 0, 0 );
+   edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 1, 1 );
+
+   ASSERT_EQ( edgeEntities[ 0 ].template getNumberOfSuperentities< 2 >(),  2 );
+   ASSERT_EQ( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 0 ),    0 );
 }
 
 #endif
