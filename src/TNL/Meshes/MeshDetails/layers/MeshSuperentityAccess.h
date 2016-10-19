@@ -54,7 +54,6 @@ public:
       BaseType::print( str );
    }
 
-   // TODO: probably should be moved to MeshEntity itself - or the related methods could be moved here
    template< int SuperDimensions >
    void bindSuperentitiesStorageNetwork( const typename SuperentityTraits< SuperDimensions >::SuperentityAccessorType& storage )
    {
@@ -66,9 +65,37 @@ public:
    template< int SuperDimensions >
    bool setNumberOfSuperentities( const typename SuperentityTraits< SuperDimensions >::LocalIndexType size )
    {
-      static_assert( SuperentityTraits< SuperDimensions >::storageEnabled, "You try to get number of superentities which are not configured for storage." );
+      static_assert( SuperentityTraits< SuperDimensions >::storageEnabled, "You try to set number of superentities which are not configured for storage." );
       return BaseType::setNumberOfSuperentities( MeshDimensionsTag< SuperDimensions >(),
                                                  size );
+   }
+
+   template< int SuperDimensions >
+   typename SuperentityTraits< SuperDimensions >::LocalIndexType
+   getNumberOfSuperentities() const
+   {
+      static_assert( SuperentityTraits< SuperDimensions >::storageEnabled, "You try to get number of superentities which are not configured for storage." );
+      return BaseType::getNumberOfSuperentities( MeshDimensionsTag< SuperDimensions >() );
+   }
+
+   template< int SuperDimensions >
+   void
+   setSuperentityIndex( const typename SuperentityTraits< SuperDimensions >::LocalIndexType& localIndex,
+                        const typename SuperentityTraits< SuperDimensions >::GlobalIndexType& globalIndex )
+   {
+      static_assert( SuperentityTraits< SuperDimensions >::storageEnabled, "You try to set superentities which are not configured for storage." );
+      BaseType::setSuperentityIndex( MeshDimensionsTag< SuperDimensions >(),
+                                     localIndex,
+                                     globalIndex );
+   }
+
+   template< int SuperDimensions >
+   typename SuperentityTraits< SuperDimensions >::GlobalIndexType
+   getSuperentityIndex( const typename SuperentityTraits< SuperDimensions >::LocalIndexType localIndex ) const
+   {
+      static_assert( SuperentityTraits< SuperDimensions >::storageEnabled, "You try to get superentities which are not configured for storage." );
+      return BaseType::getSuperentityIndex( MeshDimensionsTag< SuperDimensions >(),
+                                            localIndex );
    }
 };
 

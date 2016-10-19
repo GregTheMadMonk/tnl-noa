@@ -37,7 +37,7 @@ template< typename MeshConfig,
           typename EntityTopology_ >
 class MeshEntity
    : public MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >,
-     public MeshSuperentityAccess< MeshConfig, EntityTopology_ >,
+     protected MeshSuperentityAccess< MeshConfig, EntityTopology_ >,
      public MeshEntityId< typename MeshConfig::IdType,
                           typename MeshConfig::GlobalIndexType >
 {
@@ -97,12 +97,10 @@ class MeshEntity
       /****
        * Superentities
        */
-      template< int SuperDimension >
-      LocalIndexType getNumberOfSuperentities() const;
+      using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::getNumberOfSuperentities;
+      using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::getSuperentityIndex;
 
-      template< int SuperDimension >
-      GlobalIndexType getSuperentityIndex( const LocalIndexType localIndex ) const;
-
+      // TODO: used only in MeshInitializer, should be removed
       template< int SuperDimensions >
       typename SuperentityTraits< SuperDimensions >::AccessArrayType& getSuperentityIndices();
 
@@ -124,21 +122,18 @@ class MeshEntity
       IdPermutationArrayAccessorType subentityOrientation( LocalIndexType index ) const;
  
    protected:
-
       /****
        * Methods for the mesh initialization
        */
-      typedef MeshSuperentityAccess< MeshConfig, EntityTopology >            SuperentityAccessBase;
       typedef typename MeshTraitsType::IdArrayAccessorType                   IdArrayAccessorType;
-      typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >       SubentityStorageLayers;
+
+      using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::bindSuperentitiesStorageNetwork;
+      using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::setNumberOfSuperentities;
+      using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::setSuperentityIndex;
 
       template< int Subdimensions >
       void setSubentityIndex( const LocalIndexType& localIndex,
                               const GlobalIndexType& globalIndex );
- 
-      template< int Superdimensions >
-      void setSuperentityIndex( const LocalIndexType& localIndex,
-                                const GlobalIndexType& globalIndex );
  
       template< int Subdimensions >
       typename SubentityTraits< Subdimensions >::IdArrayType& subentityIdsArray();
@@ -157,7 +152,7 @@ class MeshEntity
  */
 template< typename MeshConfig >
 class MeshEntity< MeshConfig, MeshVertexTopology >
-   : public MeshSuperentityAccess< MeshConfig, MeshVertexTopology >,
+   : protected MeshSuperentityAccess< MeshConfig, MeshVertexTopology >,
      public MeshEntityId< typename MeshConfig::IdType,
                           typename MeshConfig::GlobalIndexType >
 {
@@ -190,16 +185,18 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
  
       constexpr int getEntityDimension() const;
 
-      template< int Superdimensions > LocalIndexType getNumberOfSuperentities() const;
+      /****
+       * Superentities
+       */
+      using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::getNumberOfSuperentities;
+      using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::getSuperentityIndex;
 
+      // TODO: used only in MeshInitializer, should be removed
       template< int Superdimensions >
       typename SuperentityTraits< Superdimensions >::AccessArrayType& getSuperentityIndices();
 
       template< int Superdimensions >
       const typename SuperentityTraits< Superdimensions >::AccessArrayType& getSuperentityIndices() const;
-
-      template< int Dimension >
-      GlobalIndexType getSuperentityIndex( const LocalIndexType localIndex ) const;
 
       /****
        * Points
@@ -209,14 +206,13 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       void setPoint( const PointType& point );
 
    protected:
+      using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::bindSuperentitiesStorageNetwork;
+      using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::setNumberOfSuperentities;
+      using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::setSuperentityIndex;
  
       typedef typename MeshTraitsType::IdArrayAccessorType                IdArrayAccessorType;
       typedef MeshSuperentityAccess< MeshConfig, MeshVertexTopology >     SuperentityAccessBase;
 
-      template< int Superdimensions >
-      void setSuperentityIndex( const LocalIndexType& localIndex,
-                                const GlobalIndexType& globalIndex );
- 
       template< int Superdimensions >
       IdArrayAccessorType& superentityIdsArray();
 

@@ -67,12 +67,9 @@ public:
       BaseType::template setSubentityIndex< Subdimensions >( localIndex, globalIndex );
    }
 
-   template< int Superdimensions >
-   void setSuperentityIndex( const typename BaseType::LocalIndexType& localIndex,
-                             const typename BaseType::GlobalIndexType& globalIndex )
-   {
-      BaseType::template setSuperentityIndex< Superdimensions >( localIndex, globalIndex );
-   }
+   using BaseType::bindSuperentitiesStorageNetwork;
+   using BaseType::setNumberOfSuperentities;
+   using BaseType::setSuperentityIndex;
 };
  
 using RealType = double;
