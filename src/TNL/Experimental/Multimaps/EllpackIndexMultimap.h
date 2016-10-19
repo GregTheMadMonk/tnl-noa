@@ -41,7 +41,9 @@ class EllpackIndexMultimap
 
       const LocalIndexType getValuesRange() const;
 
-      bool allocate( const ValuesAllocationVectorType& portsCount );
+      bool allocate( const LocalIndexType& maxValuesCount );
+
+      bool allocate( const ValuesAllocationVectorType& valuesCounts );
 
       ValuesAccessorType getValues( const IndexType& inputIndex );
 
@@ -51,7 +53,7 @@ class EllpackIndexMultimap
       Containers::Vector< IndexType, DeviceType, IndexType > values;
 
       IndexType keysRange;
-      LocalIndexType valuesRange, valuesMaxCount;
+      LocalIndexType valuesRange, maxValuesCount;
 };
 
 } // namespace TNL

@@ -21,6 +21,7 @@ template< typename Index,
           typename LocalIndex >
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 EllpackIndexMultimapValues()
+: values( nullptr ), allocatedSize( 0 )
 {
 }
 
@@ -28,22 +29,40 @@ template< typename Index,
           typename Device,
           typename LocalIndex >
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
-EllpackIndexMultimapValues( IndexType* networkPorts,
-                            const IndexType& input,
-                            const LocalIndexType& portsMaxCount )
+EllpackIndexMultimapValues( ThisType&& other )
+: values( other.values ), allocatedSize( other.allocatedSize )
 {
-   this->ports = &networkPorts[ input * portsMaxCount ];
-   this->portsMaxCount = portsMaxCount;
+   other.values = nullptr;
+   other.allocatedSize = 0;
 }
 
 template< typename Index,
           typename Device,
           typename LocalIndex >
-LocalIndex
+EllpackIndexMultimapValues< Index, Device, LocalIndex >&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
-getPortsCount() const
+operator=( const ThisType& other )
 {
-   return this->portsMaxCount;
+   Assert( this->getSize() == other.getSize(), );
+   if( this->values != other.values ) {
+      for( LocalIndexType i = 0; i < this->getSize(); i++ )
+         this->setValue( i, other[ i ] );
+   }
+   return *this;
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+EllpackIndexMultimapValues< Index, Device, LocalIndex >&
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
+operator=( ThisType&& other )
+{
+   this->values = other.values;
+   this->allocatedSize = other.allocatedSize;
+   other.values = nullptr;
+   other.allocatedSize = 0;
+   return *this;
 }
 
 template< typename Index,
@@ -51,14 +70,72 @@ template< typename Index,
           typename LocalIndex >
 void
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
-setOutput( const LocalIndexType& portIndex,
-           const IndexType& output )
+bind( const ThisType& other )
 {
-   Assert( portIndex < this->portsMaxCount,
+   this->values = other.values;
+   this->allocatedSize = other.allocatedSize;
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
+EllpackIndexMultimapValues( IndexType* values,
+                            const IndexType& input,
+                            const LocalIndexType& allocatedSize )
+{
+   this->values = &values[ input * ( allocatedSize + 1 ) ];
+   this->allocatedSize = allocatedSize;
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+bool
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
+setSize( const LocalIndexType& size )
+{
+   if( ! this->values || size > this->allocatedSize )
+      return false;
+   this->values[ this->allocatedSize ] = size;
+   return true;
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+LocalIndex
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
+getSize() const
+{
+   if( ! this->values )
+      return 0;
+   return this->values[ this->allocatedSize ];
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+LocalIndex
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
+getAllocatedSize() const
+{
+   return this->allocatedSize;
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+void
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
+setValue( const LocalIndexType& portIndex,
+          const IndexType& value )
+{
+   Assert( portIndex < this->getSize(),
               std::cerr << " portIndex = " << portIndex
-                        << " portsMaxCount = " << this->portsMaxCount
+                        << " getSize() = " << this->getSize()
                         << std::endl );
-   this->ports[ portIndex ] = output;
+   this->values[ portIndex ] = value;
 }
 
 template< typename Index,
@@ -66,13 +143,13 @@ template< typename Index,
           typename LocalIndex >
 Index
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
-getOutput( const LocalIndexType& portIndex ) const
+getValue( const LocalIndexType& portIndex ) const
 {
-   Assert( portIndex < this->portsMaxCount,
+   Assert( portIndex < this->getSize(),
               std::cerr << " portIndex = " << portIndex
-                        << " portsMaxCount = " << this->portsMaxCount
+                        << " getSize() = " << this->getSize()
                         << std::endl );
-   return this->ports[ portIndex ];
+   return this->values[ portIndex ];
 }
 
 template< typename Index,
@@ -82,11 +159,11 @@ Index&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator[]( const LocalIndexType& portIndex )
 {
-   Assert( portIndex < this->portsMaxCount,
+   Assert( portIndex < this->getSize(),
               std::cerr << " portIndex = " << portIndex
-                        << " portsMaxCount = " << this->portsMaxCount
+                        << " getSize() = " << this->getSize()
                         << std::endl );
-   return this->ports[ portIndex ];
+   return this->values[ portIndex ];
 }
 
 template< typename Index,
@@ -96,11 +173,11 @@ const Index&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator[]( const LocalIndexType& portIndex ) const
 {
-   Assert( portIndex < this->portsMaxCount,
+   Assert( portIndex < this->getSize(),
               std::cerr << " portIndex = " << portIndex
-                        << " portsMaxCount = " << this->portsMaxCount
+                        << " getSize() = " << this->getSize()
                         << std::endl );
-   return this->ports[ portIndex ];
+   return this->values[ portIndex ];
 }
 
 template< typename Index,
@@ -110,14 +187,14 @@ void
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 print( std::ostream& str ) const
 {
-   if( this->getPortsCount() == 0 )
+   if( this->getSize() == 0 )
    {
       str << "[]";
       return;
    }
-   str << "[ " << this->getOutput( 0 );
-   for( Index i = 1; i < this->getPortsCount(); i++ )
-      str << ", " << this->getOutput( i );
+   str << "[ " << this->getValue( 0 );
+   for( Index i = 1; i < this->getSize(); i++ )
+      str << ", " << this->getValue( i );
    str << " ]";
 }
 

@@ -19,7 +19,7 @@ template< typename Index,
           typename LocalIndex >
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 EllpackIndexMultimap()
-:  keysRange( 0 ), valuesRange( 0 ), valuesMaxCount( 0 )
+: keysRange( 0 ), valuesRange( 0 ), maxValuesCount( 0 )
 {
 }
 
@@ -88,17 +88,39 @@ template< typename Index,
           typename LocalIndex >
 bool
 EllpackIndexMultimap< Index, Device, LocalIndex >::
-allocate( const ValuesAllocationVectorType& portsCount )
+allocate( const LocalIndexType& maxValuesCount )
 {
-   TNL_ASSERT( portsCount.getSize() == this->keysRange,
-              std::cerr << "portsCount.getSize() =  " << portsCount.getSize()
-                        << "this->inputs = " << this->keysRange );
-   this->valuesMaxCount = portsCount.max();
+   Assert( maxValuesCount >= 0 && maxValuesCount <= this->valuesRange,
+              std::cerr << "maxValuesCount = " << maxValuesCount
+                        << " this->valuesRange = " << this->valuesRange );
+   this->maxValuesCount = maxValuesCount;
+   if( ! this->values.setSize( this->keysRange * ( this->maxValuesCount + 1 ) ) )
+      return false;
+   // TODO: it's necessary to reset just the local row sizes - maybe they should be stored differently?
+   this->values.setValue( 0 );
+   return true;
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+bool
+EllpackIndexMultimap< Index, Device, LocalIndex >::
+allocate( const ValuesAllocationVectorType& valuesCounts )
+{
+   Assert( valuesCounts.getSize() == this->keysRange,
+              std::cerr << "valuesCounts.getSize() =  " << valuesCounts.getSize()
+                        << "this->keysRange = " << this->keysRange );
+   this->maxValuesCount = valuesCounts.max();
  
-   TNL_ASSERT( this->valuesMaxCount >= 0 && this->valuesMaxCount <= this->valuesRange,
-              std::cerr << "this->portsMaxCount = " << this->valuesMaxCount
-                        << " this->outputs = " << this->valuesRange );
-   return this->values.setSize( this->keysRange * this->valuesMaxCount );
+   Assert( this->maxValuesCount >= 0 && this->maxValuesCount <= this->valuesRange,
+              std::cerr << "this->maxValuesCount = " << this->maxValuesCount
+                        << " this->valuesRange = " << this->valuesRange );
+   if( ! this->values.setSize( this->keysRange * ( this->maxValuesCount + 1 ) ) )
+      return false;
+   // TODO: it's necessary to reset just the local row sizes - maybe they should be stored differently?
+   this->values.setValue( 0 );
+   return true;
 }
 
 template< typename Index,
@@ -108,7 +130,7 @@ typename EllpackIndexMultimap< Index, Device, LocalIndex >::ValuesAccessorType
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex )
 {
-   return ValuesAccessorType( this->values.getData(), inputIndex, this->valuesMaxCount );
+   return ValuesAccessorType( this->values.getData(), inputIndex, this->maxValuesCount );
 }
 
 template< typename Index,
@@ -118,7 +140,7 @@ typename EllpackIndexMultimap< Index, Device, LocalIndex >::ConstValuesAccessorT
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex ) const
 {
-   return ConstValuesAccessorType( this->values.getData(), inputIndex, this->valuesMaxCount );
+   return ConstValuesAccessorType( this->values.getData(), inputIndex, this->maxValuesCount );
 }
 
 } // namespace TNL

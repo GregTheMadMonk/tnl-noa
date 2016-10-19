@@ -24,6 +24,8 @@ template< typename Index,
           typename LocalIndex >
 class EllpackIndexMultimapValues
 {
+      using ThisType       = EllpackIndexMultimapValues< Index, Device, LocalIndex >;
+
    public:
       using DeviceType     = Device;
       using IndexType      = Index;
@@ -32,12 +34,24 @@ class EllpackIndexMultimapValues
 
       EllpackIndexMultimapValues();
 
-      LocalIndexType getPortsCount() const;
+      EllpackIndexMultimapValues( ThisType&& other );
 
-      void setOutput( const LocalIndexType& portIndex,
-                      const IndexType& output );
+      ThisType& operator=( const ThisType& );
 
-      IndexType getOutput( const LocalIndexType& portIndex ) const;
+      ThisType& operator=( ThisType&& other );
+
+      void bind( const ThisType& other );
+
+      bool setSize( const LocalIndexType& portsCount );
+
+      LocalIndexType getSize() const;
+
+      LocalIndexType getAllocatedSize() const;
+
+      void setValue( const LocalIndexType& portIndex,
+                     const IndexType& value );
+
+      IndexType getValue( const LocalIndexType& portIndex ) const;
 
       IndexType& operator[]( const LocalIndexType& portIndex );
 
@@ -46,15 +60,16 @@ class EllpackIndexMultimapValues
       void print( std::ostream& str ) const;
 
    protected:
-      EllpackIndexMultimapValues( IndexType* ports,
+      EllpackIndexMultimapValues( IndexType* values,
                                   const IndexType& input,
-                                  const LocalIndexType& portsMaxCount );
+                                  const LocalIndexType& allocatedSize );
 
-      IndexType* ports;
+      IndexType* values;
 
       // TODO: step is unused
 //      LocalIndexType step;
-      LocalIndexType portsMaxCount;
+
+      LocalIndexType allocatedSize;
 
       friend EllpackIndexMultimap< IndexType, DeviceType, LocalIndexType >;
       friend EllpackIndexMultimap< typename std::remove_const< IndexType >::type, DeviceType, LocalIndexType >;
