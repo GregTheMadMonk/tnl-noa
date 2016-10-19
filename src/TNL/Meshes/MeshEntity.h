@@ -133,8 +133,12 @@ class MeshEntity
       typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >       SubentityStorageLayers;
 
       template< int Subdimensions >
-      void setSubentityIndex( const LocalIndexType localIndex,
-                              const GlobalIndexType globalIndex );
+      void setSubentityIndex( const LocalIndexType& localIndex,
+                              const GlobalIndexType& globalIndex );
+ 
+      template< int Superdimensions >
+      void setSuperentityIndex( const LocalIndexType& localIndex,
+                                const GlobalIndexType& globalIndex );
  
       template< int Subdimensions >
       typename SubentityTraits< Subdimensions >::IdArrayType& subentityIdsArray();
@@ -208,6 +212,10 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
  
       typedef typename MeshTraitsType::IdArrayAccessorType                IdArrayAccessorType;
       typedef MeshSuperentityAccess< MeshConfig, MeshVertexTopology >     SuperentityAccessBase;
+
+      template< int Superdimensions >
+      void setSuperentityIndex( const LocalIndexType& localIndex,
+                                const GlobalIndexType& globalIndex );
  
       template< int Superdimensions >
       IdArrayAccessorType& superentityIdsArray();

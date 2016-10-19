@@ -54,7 +54,7 @@ class MeshSuperentityTraits
    typedef Containers::Array< GlobalIndexType, Devices::Host, LocalIndexType >        StorageArrayType;
  
    typedef EllpackIndexMultimap< GlobalIndexType, Devices::Host, LocalIndexType >     StorageNetworkType;
-   typedef MeshSuperentityAccessor< typename StorageNetworkType::ValuesAccessorType > SuperentityAccessorType;
+   typedef typename StorageNetworkType::ValuesAccessorType                            SuperentityAccessorType;
  
    /****
     * Type for passing the superentities indices by the getSuperentityIndices()

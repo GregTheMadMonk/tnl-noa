@@ -65,8 +65,8 @@ protected:
      */
    using BaseType::setNumberOfSuperentities;
    using BaseType::getNumberOfSuperentities;
-   using BaseType::getSuperentityIndex;
    using BaseType::setSuperentityIndex;
+   using BaseType::getSuperentityIndex;
    using BaseType::getSuperentityIndices;
 
    MeshSuperentityStorageLayer()
