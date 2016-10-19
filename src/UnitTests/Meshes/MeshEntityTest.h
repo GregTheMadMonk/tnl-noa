@@ -11,9 +11,12 @@
 using namespace TNL;
 using namespace TNL::Meshes;
 
-//typedef MeshConfigBase< MeshTriangleTopology, 2, double, int, int, void > TestTriangleEntityTopology;
-typedef MeshConfigBase< MeshEdgeTopology, 2, double, int, int, void > TestEdgeEntityTopology;
-typedef MeshConfigBase< MeshVertexTopology, 2, double, int, int, void > TestVertexEntityTopology;
+using RealType = double;
+using Device = Devices::Host;
+using IndexType = int;
+
+using TestVertexMeshConfig = MeshConfigBase< MeshVertexTopology, 2, RealType, IndexType, IndexType, void >;
+using TestEdgeMeshConfig   = MeshConfigBase< MeshEdgeTopology,   2, RealType, IndexType, IndexType, void >;
 
 class TestTriangleMeshConfig : public MeshConfigBase< MeshTriangleTopology >
 {
@@ -72,14 +75,9 @@ public:
    using BaseType::setSuperentityIndex;
 };
  
-using RealType = double;
-using Device = Devices::Host;
-using IndexType = int;
-
 TEST( MeshEntityTest, VertexMeshEntityTest )
 {
-   typedef MeshConfigBase< MeshEdgeTopology, 2, RealType, IndexType, IndexType, void > TestEntityTopology;
-   typedef TestMeshEntity< TestEntityTopology, MeshVertexTopology > VertexMeshEntityType;
+   typedef TestMeshEntity< TestVertexMeshConfig, MeshVertexTopology > VertexMeshEntityType;
    typedef typename VertexMeshEntityType::PointType PointType;
 
    ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
@@ -94,11 +92,13 @@ TEST( MeshEntityTest, VertexMeshEntityTest )
 
 TEST( MeshEntityTest, EdgeMeshEntityTest )
 {
-   typedef TestMeshEntity< TestEdgeEntityTopology, MeshEdgeTopology > EdgeMeshEntityType;
-   typedef TestMeshEntity< TestEdgeEntityTopology, MeshVertexTopology > VertexMeshEntityType;
+   typedef TestMeshEntity< TestVertexMeshConfig, MeshVertexTopology > VertexMeshEntityType;
+   typedef TestMeshEntity< TestEdgeMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
 
    typedef typename VertexMeshEntityType::PointType PointType;
    ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
+
+   ASSERT_TRUE( EdgeMeshEntityType().template subentitiesAvailable< 0 >() );
 
    /****
     *
@@ -157,12 +157,12 @@ TEST( MeshEntityTest, EdgeMeshEntityTest )
 
 TEST( MeshEntityTest, TriangleMeshEntityTest )
 {
+   typedef TestMeshEntity< TestVertexMeshConfig, MeshVertexTopology > VertexMeshEntityType;
+   typedef TestMeshEntity< TestEdgeMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
    typedef TestMeshEntity< TestTriangleMeshConfig, MeshTriangleTopology > TriangleMeshEntityType;
 
    static_assert( TriangleMeshEntityType::SubentityTraits< 1 >::storageEnabled, "Testing triangular mesh does not store edges as required." );
    static_assert( TriangleMeshEntityType::SubentityTraits< 0 >::storageEnabled, "" );
-   typedef TestMeshEntity< TestEdgeEntityTopology, MeshEdgeTopology > EdgeMeshEntityType;
-   typedef TestMeshEntity< TestVertexEntityTopology, MeshVertexTopology > VertexMeshEntityType;
    typedef typename VertexMeshEntityType::PointType PointType;
    ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
 
