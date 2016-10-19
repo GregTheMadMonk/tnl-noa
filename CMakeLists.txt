@@ -21,7 +21,6 @@ set( tnlVersion "0.1" )
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 include( OptimizeForArchitecture )
-include( UseCodeCoverage )
 
 ####
 # Settings for debug/release version
@@ -268,6 +267,10 @@ if( WITH_TESTS STREQUAL "yes" )
    if( GTEST_FOUND )
       set( CXX_TESTS_FLAGS "-DHAVE_GTEST" )
    endif( GTEST_FOUND )
+
+   # enable code coverage reports
+   set( ENABLE_CODECOVERAGE ON )
+   include( UseCodeCoverage )
 endif( WITH_TESTS STREQUAL "yes" )
 
 find_package( PythonInterp 3 )
@@ -327,9 +330,6 @@ find_package( PythonInterp 3 )
 if( OPTIMIZED_VECTOR_HOST_OPERATIONS STREQUAL "yes" )
    AddCompilerFlag( "-DOPTIMIZED_VECTOR_HOST_OPERATIONS " )
 endif()
-
-set( CXX_TEST_FLAGS "-fprofile-arcs -ftest-coverage" )
-set( LD_TEST_FLAGS "-lgcov -coverage" )
 
 set( configDirectory \"${CMAKE_INSTALL_PREFIX}/share/tnl-${tnlVersion}/\")
 set( sourceDirectory \"${PROJECT_SOURCE_DIR}/\" )
