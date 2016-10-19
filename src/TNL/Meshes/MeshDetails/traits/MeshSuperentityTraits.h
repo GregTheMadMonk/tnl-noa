@@ -24,7 +24,6 @@
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 #include <TNL/Experimental/Multimaps/EllpackIndexMultimap.h>
-#include <TNL/Meshes/MeshDetails/layers/MeshSuperentityAccessor.h>
 
 namespace TNL {
 namespace Meshes {
