@@ -43,11 +43,11 @@ class MeshEntityOrientationNeeded
 
 	typedef typename MeshTraits< MeshConfig >::template EntityTraits< SuperDimensionTag::value >::EntityTopology SuperentityTopology;
 
-	static const bool previousSuperDimensionValue = MeshEntityOrientationNeeded< MeshConfig, DimensionTag, typename SuperDimensionTag::Decrement >::value;
-	static const bool thisSuperDimensionValue = MeshTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, DimensionTag::value >::orientationEnabled;
+	static constexpr bool previousSuperDimensionsValue = MeshEntityOrientationNeeded< MeshConfig, DimensionsTag, typename SuperDimensionsTag::Decrement >::value;
+	static constexpr bool thisSuperDimensionsValue = MeshTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, DimensionsTag::value >::orientationEnabled;
 
-   public:
-      static const bool value = ( previousSuperDimensionValue || thisSuperDimensionValue );
+public:
+   static constexpr bool value = ( previousSuperDimensionsValue || thisSuperDimensionsValue );
 };
 
 template< typename MeshConfig, typename DimensionTag >
@@ -55,8 +55,8 @@ class MeshEntityOrientationNeeded< MeshConfig, DimensionTag, DimensionTag >
 {
 	static_assert( 0 <= DimensionTag::value && DimensionTag::value <= MeshConfig::CellTopology::dimensions, "invalid dimensions" );
 
-   public:
-      static const bool value = false;
+public:
+   static constexpr bool value = false;
 };
 
 
@@ -64,29 +64,27 @@ template< typename MeshConfig,
           int Dimension >
 class MeshEntityTraits
 {
-   public:
+public:
+   static constexpr bool storageEnabled = MeshConfig::entityStorage( Dimensions );
+   static constexpr bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, MeshDimensionsTag< Dimensions > >::value;
 
-      static const bool storageEnabled = MeshConfig::entityStorage( Dimension );
-      static const bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, MeshDimensionTag< Dimension > >::value;
+   using GlobalIndexType               = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType                = typename MeshConfig::LocalIndexType;
+   using EntityTopology                = typename MeshEntityTopology< MeshConfig, Dimensions >::Topology;
 
-      typedef typename MeshConfig::GlobalIndexType                                 GlobalIndexType;
-      typedef typename MeshConfig::LocalIndexType                                  LocalIndexType;
-      typedef typename MeshEntityTopology< MeshConfig, Dimension >::Topology   EntityTopology;
- 
-      typedef MeshEntity< MeshConfig, EntityTopology >                          EntityType;
-      typedef MeshEntitySeed< MeshConfig, EntityTopology >                      SeedType;
-      typedef MeshEntityReferenceOrientation< MeshConfig, EntityTopology >      ReferenceOrientationType;
-      typedef MeshEntitySeedKey< MeshConfig, EntityTopology >                   Key;
+   using EntityType                    = MeshEntity< MeshConfig, EntityTopology >;
+   using SeedType                      = MeshEntitySeed< MeshConfig, EntityTopology >;
+   using ReferenceOrientationType      = MeshEntityReferenceOrientation< MeshConfig, EntityTopology >;
+   using Key                           = MeshEntitySeedKey< MeshConfig, EntityTopology >;
 
+   using StorageArrayType              = Containers::Array< EntityType, Devices::Host, GlobalIndexType >;
+   using AccessArrayType               = Containers::SharedArray< EntityType, Devices::Host, GlobalIndexType >;
+   using UniqueContainerType           = Containers::IndexedSet< EntityType, GlobalIndexType, Key >;
+   using SeedIndexedSetType            = Containers::IndexedSet< SeedType, GlobalIndexType, Key >;
+   using SeedArrayType                 = Containers::Array< SeedType, Devices::Host, GlobalIndexType >;
+   using ReferenceOrientationArrayType = Containers::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType >;
 
-      typedef Containers::Array< EntityType, Devices::Host, GlobalIndexType >               StorageArrayType;
-      typedef Containers::SharedArray< EntityType, Devices::Host, GlobalIndexType >         AccessArrayType;
-      typedef Containers::IndexedSet< EntityType, GlobalIndexType, Key >                      UniqueContainerType;
-      typedef Containers::IndexedSet< SeedType, GlobalIndexType, Key >                        SeedIndexedSetType;
-      typedef Containers::Array< SeedType, Devices::Host, GlobalIndexType >                 SeedArrayType;
-      typedef Containers::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType > ReferenceOrientationArrayType;
-
-      typedef Containers::tnlConstSharedArray< EntityType, Devices::Host, GlobalIndexType >    SharedArrayType;
+   using SharedArrayType               = Containers::tnlConstSharedArray< EntityType, Devices::Host, GlobalIndexType >;
 };
 
 } // namespace Meshes

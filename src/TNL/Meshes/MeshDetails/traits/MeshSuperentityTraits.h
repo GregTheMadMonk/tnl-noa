@@ -33,40 +33,36 @@ template< typename MeshConfig,
           int Dimension >
 class MeshSuperentityTraits
 {
-   public:
- 
-   typedef typename MeshConfig::GlobalIndexType                              GlobalIndexType;
-   typedef typename MeshConfig::LocalIndexType                               LocalIndexType;
+public:
+   static constexpr bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimensions );
 
-
-   static const bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimension );
-   //typedef tnlStorageTraits< storageEnabled >                               SuperentityStorageTag;
-   typedef MeshEntity< MeshConfig, EntityTopology >                            EntityType;
-   typedef MeshEntityTraits< MeshConfig, Dimension >                     EntityTraits;
-   typedef typename EntityTraits::EntityTopology                             SuperentityTopology;
-   typedef typename EntityTraits::EntityType                                 SuperentityType;
+   using GlobalIndexType     = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType      = typename MeshConfig::LocalIndexType;
+   using EntityType          = MeshEntity< MeshConfig, EntityTopology >;
+   using EntityTraits        = MeshEntityTraits< MeshConfig, Dimensions >;
+   using SuperentityTopology = typename EntityTraits::EntityTopology;
+   using SuperentityType     = typename EntityTraits::EntityType;
 
 
    /****
-    * Type of container for storing of the superentities indecis.
+    * Type of container for storing of the superentities indices.
     */
-   typedef Containers::Array< GlobalIndexType, Devices::Host, LocalIndexType >        StorageArrayType;
- 
-   typedef EllpackIndexMultimap< GlobalIndexType, Devices::Host, LocalIndexType >     StorageNetworkType;
-   typedef typename StorageNetworkType::ValuesAccessorType                            SuperentityAccessorType;
- 
+   using StorageArrayType        = Containers::Array< GlobalIndexType, Devices::Host, LocalIndexType >;
+
+   using StorageNetworkType      = EllpackIndexMultimap< GlobalIndexType, Devices::Host, LocalIndexType >;
+   using SuperentityAccessorType = typename StorageNetworkType::ValuesAccessorType;
+
    /****
     * Type for passing the superentities indices by the getSuperentityIndices()
     * method. We introduce it because of the compatibility with the subentities
     * which are usually stored in static array.
     */
-   typedef Containers::SharedArray< GlobalIndexType, Devices::Host, LocalIndexType >       AccessArrayType;
+   using AccessArrayType = Containers::SharedArray< GlobalIndexType, Devices::Host, LocalIndexType >;
 
    /****
     * This is used by the mesh initializer.
     */
-   typedef Containers::List< GlobalIndexType >                                       GrowableContainerType;
-
+   using GrowableContainerType = List< GlobalIndexType >;
 };
 
 } // namespace Meshes

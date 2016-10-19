@@ -32,42 +32,40 @@ template< typename MeshConfig,
           int Dimension >
 class MeshSubentityTraits
 {
-   public:
-      static const bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimension );
-      static const bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimension );
+public:
+   static constexpr bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimensions );
+   static constexpr bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimensions );
 
-      typedef typename MeshConfig::GlobalIndexType                                GlobalIndexType;
-      typedef typename MeshConfig::LocalIndexType                                 LocalIndexType;
-      typedef MeshSubtopology< EntityTopology, Dimension >                    Subtopology;
-      typedef typename Subtopology::Topology                                      SubentityTopology;
-      typedef MeshEntity< MeshConfig, SubentityTopology >                      SubentityType;
-      typedef MeshEntitySeed< MeshConfig, SubentityTopology >                  Seed;
-      typedef MeshEntityOrientation< MeshConfig, SubentityTopology >           Orientation;
+   using GlobalIndexType        = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType         = typename MeshConfig::LocalIndexType;
+   using Subtopology            = MeshSubtopology< EntityTopology, Dimensions >;
+   using SubentityTopology      = typename Subtopology::Topology;
+   using SubentityType          = MeshEntity< MeshConfig, SubentityTopology >;
+   using Seed                   = MeshEntitySeed< MeshConfig, SubentityTopology >;
+   using Orientation            = MeshEntityOrientation< MeshConfig, SubentityTopology >;
 
 
-      static const int count = Subtopology::count;
+   static constexpr int count = Subtopology::count;
 
-      typedef Containers::StaticArray< count, GlobalIndexType >              StorageArrayType;
-      typedef Containers::SharedArray< GlobalIndexType,
-                                      Devices::Host,
-                                      LocalIndexType >                      AccessArrayType;
-      typedef Containers::StaticArray< count, GlobalIndexType >              IdArrayType;
-      typedef Containers::StaticArray< count, SubentityType >                SubentityContainerType;
-      typedef Containers::StaticArray< count, Seed >                         SeedArrayType;
-      typedef Containers::StaticArray< count, Orientation >                  OrientationArrayType;
-      typedef Containers::StaticArray< count, LocalIndexType >               IdPermutationArrayType;
+   using StorageArrayType       = Containers::StaticArray< count, GlobalIndexType >;
+   using AccessArrayType        = Containers::SharedArray< GlobalIndexType, Devices::Host, LocalIndexType >;
+   using IdArrayType            = Containers::StaticArray< count, GlobalIndexType >;
+   using SubentityContainerType = Containers::StaticArray< count, SubentityType >;
+   using SeedArrayType          = Containers::StaticArray< count, Seed >;
+   using OrientationArrayType   = Containers::StaticArray< count, Orientation >;
+   using IdPermutationArrayType = Containers::StaticArray< count, LocalIndexType >;
 
-      template< LocalIndexType subentityIndex,
-                LocalIndexType subentityPointIndex >
-      struct Point
-      {
-         enum { index = tnlSubentityPoint< EntityTopology,
-                                            SubentityTopology,
-                                            subentityIndex,
-                                            subentityPointIndex>::index };
-      };
+   template< LocalIndexType subentityIndex,
+             LocalIndexType subentityVertexIndex >
+   struct Vertex
+   {
+      enum { index = tnlSubentityVertex< EntityTopology,
+                                         SubentityTopology,
+                                         subentityIndex,
+                                         subentityVertexIndex>::index };
+   };
 
-      static_assert( EntityTopology::dimensions > Dimension, "You try to create subentities traits where subentity dimension are not smaller than the entity dimension." );
+   static_assert( EntityTopology::dimensions > Dimensions, "You try to create subentities traits where subentity dimensions are not smaller than the entity dimensions." );
 };
 
 } // namespace Meshes
