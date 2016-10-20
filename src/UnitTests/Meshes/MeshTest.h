@@ -16,49 +16,45 @@
 using namespace TNL;
 using namespace TNL::Meshes;
 
+using RealType = double;
+using Device = Devices::Host;
+using IndexType = int;
+
 class TestTriangleMeshConfig : public MeshConfigBase< MeshTriangleTopology >
 {
-   public:
-
-      static constexpr bool entityStorage( int dimensions ) { return true; };
-      template< typename MeshEntity > static constexpr bool subentityStorage( MeshEntity, int SubentityDimensions ) { return true; };
-      //template< typename MeshEntity > static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions ) { return true; };
-      template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
+public:
+   static constexpr bool entityStorage( int dimensions ) { return true; };
+   template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; };
+   //template< typename EntityTopology > static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimensions ) { return true; };
+   template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; };
 };
 
 class TestQuadrilateralMeshConfig : public MeshConfigBase< MeshQuadrilateralTopology >
 {
-   public:
- 
-      static constexpr bool entityStorage( int dimensions ) { return true; };
-      template< typename MeshEntity > static constexpr bool subentityStorage( MeshEntity, int SubentityDimensions ) { return true; };
-      template< typename MeshEntity > static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions ) { return ( SubentityDimensions % 2 != 0 ); };
-      template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
+public:
+   static constexpr bool entityStorage( int dimensions ) { return true; };
+   template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; };
+   template< typename EntityTopology > static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimensions ) { return ( SubentityDimensions % 2 != 0 ); };
+   template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; };
 };
 
 class TestTetrahedronMeshConfig : public MeshConfigBase< MeshTetrahedronTopology >
 {
-   public:
-
-      static constexpr bool entityStorage( int dimensions ) { return true; };
-      template< typename MeshEntity > static constexpr bool subentityStorage( MeshEntity, int SubentityDimensions ) { return true; };
-      template< typename MeshEntity > static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions ) {  return ( SubentityDimensions % 2 != 0 ); };
-      template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
+public:
+   static constexpr bool entityStorage( int dimensions ) { return true; };
+   template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; };
+   template< typename EntityTopology > static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimensions ) {  return ( SubentityDimensions % 2 != 0 ); };
+   template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; };
 };
 
 class TestHexahedronMeshConfig : public MeshConfigBase< MeshHexahedronTopology >
 {
-   public:
-
-      static constexpr bool entityStorage( int dimensions ) { return true; };
-      template< typename MeshEntity > static constexpr bool subentityStorage( MeshEntity, int SubentityDimensions ) { return true; };
-      template< typename MeshEntity > static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions ) {  return ( SubentityDimensions % 2 != 0 ); };
-      template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
+public:
+   static constexpr bool entityStorage( int dimensions ) { return true; };
+   template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; };
+   template< typename EntityTopology > static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimensions ) {  return ( SubentityDimensions % 2 != 0 ); };
+   template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; };
 };
-
-using RealType = double;
-using Device = Devices::Host;
-using IndexType = int;
 
 TEST( MeshTest, TwoTrianglesTest )
 {

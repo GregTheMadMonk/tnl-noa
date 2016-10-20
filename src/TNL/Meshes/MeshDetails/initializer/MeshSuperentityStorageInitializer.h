@@ -16,9 +16,11 @@
 
 #pragma once
 
-#include <TNL/Meshes/MeshDimensionTag.h>
 #include <algorithm>
 #include <vector>
+
+#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/MeshDetails/traits/MeshSuperentityTraits.h>
 
 namespace TNL {
 namespace Meshes {
@@ -34,8 +36,8 @@ class MeshSuperentityStorageInitializerLayer;
 
 template< typename MeshConfig,
           typename EntityTopology >
-class MeshSuperentityStorageInitializer :
-   public MeshSuperentityStorageInitializerLayer< MeshConfig, EntityTopology, MeshDimensionTag< MeshTraits< MeshConfig >::meshDimension > >
+class MeshSuperentityStorageInitializer
+   : public MeshSuperentityStorageInitializerLayer< MeshConfig, EntityTopology, MeshDimensionsTag< MeshTraits< MeshConfig >::meshDimensions > >
 {};
 
 template< typename MeshConfig,

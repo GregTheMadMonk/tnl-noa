@@ -320,7 +320,8 @@ private:
       }
 
       template< typename SuperdimensionsTag >
-      typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType& getSuperentityStorageNetwork( MeshDimensionTag< EntityTopology::dimensions > )
+      typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
+      getSuperentityStorageNetwork( MeshDimensionsTag< EntityTopology::dimensions > )
       {
          return SuperentityStorageBaseType::getStorageNetwork( SuperdimensionsTag() );
       }

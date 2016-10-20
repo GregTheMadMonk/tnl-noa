@@ -19,36 +19,34 @@ using TestEdgeMeshConfig = MeshConfigBase< MeshEdgeTopology,   2, RealType, Inde
 
 class TestTriangleMeshConfig : public MeshConfigBase< MeshTriangleTopology >
 {
-   public:
- 
-      template< typename EntityTopology >
-      static constexpr bool subentityStorage( EntityTopology entity, int subentityDimensions )
-      {
-         return true;
-      }
- 
-      template< typename EntityTopology >
-      static constexpr bool superentityStorage( EntityTopology entity, int superentityDimensions )
-      {
-         return true;
-      }
+public:
+   template< typename EntityTopology >
+   static constexpr bool subentityStorage( EntityTopology entity, int subentityDimensions )
+   {
+      return true;
+   }
+
+   template< typename EntityTopology >
+   static constexpr bool superentityStorage( EntityTopology entity, int superentityDimensions )
+   {
+      return true;
+   }
 };
 
 class TestTetrahedronMeshConfig : public MeshConfigBase< MeshTetrahedronTopology >
 {
-   public:
- 
-      template< typename EntityTopology >
-      static constexpr bool subentityStorage( EntityTopology entity, int subentityDimensions )
-      {
-         return true;
-      }
- 
-      template< typename EntityTopology >
-      static constexpr bool superentityStorage( EntityTopology entity, int superentityDimensions )
-      {
-         return true;
-      }
+public:
+   template< typename EntityTopology >
+   static constexpr bool subentityStorage( EntityTopology entity, int subentityDimensions )
+   {
+      return true;
+   }
+
+   template< typename EntityTopology >
+   static constexpr bool superentityStorage( EntityTopology entity, int superentityDimensions )
+   {
+      return true;
+   }
 };
 
 template< typename MeshConfig, typename EntityTopology, int Dimensions >
