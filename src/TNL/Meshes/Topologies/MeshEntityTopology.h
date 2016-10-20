@@ -33,22 +33,17 @@ struct tnlSubentityVertex;
 
 
 template< typename MeshConfig,
-          int Dimension >
-class MeshEntityTopology
+          int Dimensions >
+struct MeshEntityTopology
 {
-   public:
-
-   typedef typename MeshSubtopology< typename MeshConfig::CellTopology,
-                                        Dimension >::Topology Topology;
+   static_assert( Dimensions <= MeshConfig::meshDimensions, "There are no entities with dimension higher than the mesh dimension." );
+   using Topology = typename MeshSubtopology< typename MeshConfig::CellTopology, Dimensions >::Topology;
 };
 
 template< typename MeshConfig >
-class MeshEntityTopology< MeshConfig,
-                             MeshConfig::CellTopology::dimensions >
+struct MeshEntityTopology< MeshConfig, MeshConfig::CellTopology::dimensions >
 {
-   public:
-
-   typedef typename MeshConfig::CellTopology Topology;
+   using Topology = typename MeshConfig::CellTopology;
 };
 
 } // namespace Meshes

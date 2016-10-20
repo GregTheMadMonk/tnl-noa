@@ -15,8 +15,7 @@ using RealType = double;
 using Device = Devices::Host;
 using IndexType = int;
 
-using TestVertexMeshConfig = MeshConfigBase< MeshVertexTopology, 2, RealType, IndexType, IndexType, void >;
-using TestEdgeMeshConfig   = MeshConfigBase< MeshEdgeTopology,   2, RealType, IndexType, IndexType, void >;
+using TestEdgeMeshConfig = MeshConfigBase< MeshEdgeTopology,   2, RealType, IndexType, IndexType, void >;
 
 class TestTriangleMeshConfig : public MeshConfigBase< MeshTriangleTopology >
 {
@@ -77,13 +76,14 @@ public:
  
 TEST( MeshEntityTest, VertexMeshEntityTest )
 {
-   typedef TestMeshEntity< TestVertexMeshConfig, MeshVertexTopology > VertexMeshEntityType;
-   typedef typename VertexMeshEntityType::PointType PointType;
+   using EdgeMeshEntityType = TestMeshEntity< TestEdgeMeshConfig, MeshEdgeTopology >;
+   using VertexMeshEntityType = TestMeshEntity< TestEdgeMeshConfig, typename EdgeMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
 
+   using PointType = typename VertexMeshEntityType::PointType;
    ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
+
    VertexMeshEntityType vertexEntity;
    PointType point;
-
    point.x() = 1.0;
    point.y() = 2.0;
    vertexEntity.setPoint( point );
@@ -92,13 +92,12 @@ TEST( MeshEntityTest, VertexMeshEntityTest )
 
 TEST( MeshEntityTest, EdgeMeshEntityTest )
 {
-   typedef TestMeshEntity< TestVertexMeshConfig, MeshVertexTopology > VertexMeshEntityType;
-   typedef TestMeshEntity< TestEdgeMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
+   using EdgeMeshEntityType = TestMeshEntity< TestEdgeMeshConfig, MeshEdgeTopology >;
+   using VertexMeshEntityType = TestMeshEntity< TestEdgeMeshConfig, typename EdgeMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
+   static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
 
-   typedef typename VertexMeshEntityType::PointType PointType;
+   using PointType = typename VertexMeshEntityType::PointType;
    ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
-
-   ASSERT_TRUE( EdgeMeshEntityType().template subentitiesAvailable< 0 >() );
 
    /****
     *
@@ -157,13 +156,15 @@ TEST( MeshEntityTest, EdgeMeshEntityTest )
 
 TEST( MeshEntityTest, TriangleMeshEntityTest )
 {
-   typedef TestMeshEntity< TestVertexMeshConfig, MeshVertexTopology > VertexMeshEntityType;
-   typedef TestMeshEntity< TestEdgeMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
-   typedef TestMeshEntity< TestTriangleMeshConfig, MeshTriangleTopology > TriangleMeshEntityType;
+   using TriangleMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, MeshTriangleTopology >;
+   using EdgeMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, typename TriangleMeshEntityType::SubentityTraits< 1 >::SubentityTopology >;
+   using VertexMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, typename TriangleMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
 
-   static_assert( TriangleMeshEntityType::SubentityTraits< 1 >::storageEnabled, "Testing triangular mesh does not store edges as required." );
-   static_assert( TriangleMeshEntityType::SubentityTraits< 0 >::storageEnabled, "" );
-   typedef typename VertexMeshEntityType::PointType PointType;
+   static_assert( TriangleMeshEntityType::SubentityTraits< 1 >::storageEnabled, "Testing triangle entity does not store edges as required." );
+   static_assert( TriangleMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing triangle entity does not store vertices as required." );
+   static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
+
+   using PointType = typename VertexMeshEntityType::PointType;
    ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
 
    /****
@@ -218,16 +219,19 @@ TEST( MeshEntityTest, TriangleMeshEntityTest )
 
 TEST( MeshEntityTest, TetragedronMeshEntityTest )
 {
-   //typedef MeshConfigBase< MeshTetrahedronTopology, 3, RealType, IndexType, IndexType, void > TestTetrahedronEntityTopology;
-   typedef MeshConfigBase< MeshTriangleTopology, 3, RealType, IndexType, IndexType, void > TestTriangleEntityTopology;
-   typedef MeshConfigBase< MeshEdgeTopology, 3, RealType, IndexType, IndexType, void > TestEdgeEntityTopology;
-   typedef MeshConfigBase< MeshVertexTopology, 3, RealType, IndexType, IndexType, void > TestVertexEntityTopology;
+   using TetrahedronMeshEntityType = TestMeshEntity< TestTetrahedronMeshConfig, MeshTetrahedronTopology >;
+   using TriangleMeshEntityType = TestMeshEntity< TestTetrahedronMeshConfig, typename TetrahedronMeshEntityType::SubentityTraits< 2 >::SubentityTopology >;
+   using EdgeMeshEntityType = TestMeshEntity< TestTetrahedronMeshConfig, typename TetrahedronMeshEntityType::SubentityTraits< 1 >::SubentityTopology >;
+   using VertexMeshEntityType = TestMeshEntity< TestTetrahedronMeshConfig, typename TetrahedronMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
 
-   typedef TestMeshEntity< TestTetrahedronMeshConfig, MeshTetrahedronTopology > TetrahedronMeshEntityType;
-   typedef TestMeshEntity< TestTriangleMeshConfig, MeshTriangleTopology > TriangleMeshEntityType;
-   typedef TestMeshEntity< TestEdgeEntityTopology, MeshEdgeTopology > EdgeMeshEntityType;
-   typedef TestMeshEntity< TestVertexEntityTopology, MeshVertexTopology > VertexMeshEntityType;
-   typedef typename VertexMeshEntityType::PointType PointType;
+   static_assert( TetrahedronMeshEntityType::SubentityTraits< 2 >::storageEnabled, "Testing tetrahedron entity does not store triangles as required." );
+   static_assert( TetrahedronMeshEntityType::SubentityTraits< 1 >::storageEnabled, "Testing tetrahedron entity does not store edges as required." );
+   static_assert( TetrahedronMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing tetrahedron entity does not store vertices as required." );
+   static_assert( TriangleMeshEntityType::SubentityTraits< 1 >::storageEnabled, "Testing triangle entity does not store edges as required." );
+   static_assert( TriangleMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing triangle entity does not store vertices as required." );
+   static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
+
+   using PointType = typename VertexMeshEntityType::PointType;
    ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 3, RealType >::getType() ) );
 
    /****
@@ -343,10 +347,18 @@ TEST( MeshEntityTest, TetragedronMeshEntityTest )
 
 TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
 {
-   typedef TestMeshEntity< TestTriangleMeshConfig, MeshTriangleTopology > TriangleMeshEntityType;
-   typedef TestMeshEntity< TestTriangleMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
-   typedef TestMeshEntity< TestTriangleMeshConfig, MeshVertexTopology > VertexMeshEntityType;
-   typedef typename VertexMeshEntityType::PointType PointType;
+   using TriangleMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, MeshTriangleTopology >;
+   using EdgeMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, typename TriangleMeshEntityType::SubentityTraits< 1 >::SubentityTopology >;
+   using VertexMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, typename TriangleMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
+
+   static_assert( TriangleMeshEntityType::SubentityTraits< 1 >::storageEnabled, "Testing triangle entity does not store edges as required." );
+   static_assert( TriangleMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing triangle entity does not store vertices as required." );
+   static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
+   static_assert( EdgeMeshEntityType::SuperentityTraits< 2 >::storageEnabled, "Testing edge entity does not store triangles as required." );
+   static_assert( VertexMeshEntityType::SuperentityTraits< 2 >::storageEnabled, "Testing vertex entity does not store triangles as required." );
+   static_assert( VertexMeshEntityType::SuperentityTraits< 1 >::storageEnabled, "Testing vertex entity does not store edges as required." );
+
+   using PointType = typename VertexMeshEntityType::PointType;
    ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
 
    /****

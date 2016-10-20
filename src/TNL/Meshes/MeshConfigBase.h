@@ -45,6 +45,7 @@ struct MeshConfigBase
    static const int meshDimensions = Cell::dimensions;
  
    static_assert( worldDimensions >= meshDimensions, "The cell dimension cannot be larger than the world dimension." );
+   static_assert( meshDimensions > 0, "The cell dimension must be at least 1." );
 
    static String getType()
    {
@@ -54,47 +55,50 @@ struct MeshConfigBase
    /****
     * Storage of mesh entities.
     */
-	static constexpr bool entityStorage( int dimensions )
-	{
+   static constexpr bool entityStorage( int dimensions )
+   {
       /****
        *  Vertices and cells must always be stored
        */
       return true;
-		//return ( dimensions == 0 || dimensions == cellDimension );
-	}
+      //return ( dimensions == 0 || dimensions == cellDimensions );
+   }
  
    /****
     *  Storage of subentities of mesh entities
     */
-	template< typename MeshEntity >
-	static constexpr bool subentityStorage( MeshEntity, int SubentityDimension )
-	{
+   // TODO: MeshEntity -> EntityTopology
+   template< typename MeshEntity >
+   static constexpr bool subentityStorage( MeshEntity, int SubentityDimensions )
+   {
       /****
        *  Vertices must always be stored
        */
       return true;
-		//return ( SubentityDimension == 0 );
-	}
+      //return ( SubentityDimensions == 0 );
+   }
 
-	/****
+   /****
     * Storage of subentity orientations of mesh entities.
     * It must be false for vertices and cells.
     */
-	template< typename MeshEntity >
-	static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimension )
-	{
-		return ( SubentityDimension > 0 );
-	}
+   // TODO: MeshEntity -> EntityTopology
+   template< typename MeshEntity >
+   static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions )
+   {
+      return ( SubentityDimensions > 0 );
+   }
 
-	/****
+   /****
     *  Storage of superentities of mesh entities
     */
-	template< typename MeshEntity >
-	static constexpr bool superentityStorage( MeshEntity, int SuperentityDimension )
-	{
+   // TODO: MeshEntity -> EntityTopology
+   template< typename MeshEntity >
+   static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions )
+   {
       return true;
-		//return false;
-	}
+      //return false;
+   }
 };
 
 } // namespace Meshes
