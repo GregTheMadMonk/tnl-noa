@@ -24,60 +24,69 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
-          typename MeshEntity,
+          typename EntityTopology,
           typename dimensions >
-class MeshConfigValidatorSubtopologyLayer :
-public MeshConfigValidatorSubtopologyLayer< MeshConfig, MeshEntity, typename dimensions::Decrement >
+class MeshConfigValidatorSubtopologyLayer
+   : public MeshConfigValidatorSubtopologyLayer< MeshConfig, EntityTopology, typename dimensions::Decrement >
 {
-   static_assert( ! MeshConfig::subentityStorage( MeshEntity(), dimensions::value ) ||
-                    MeshConfig::entityStorage( MeshEntity::dimensions ), "entities of which subentities are stored must be stored" );
-   static_assert( ! MeshConfig::subentityStorage( MeshEntity(), dimensions::value ) ||
-                    MeshConfig::entityStorage( dimensions::value ), "entities that are stored as subentities must be stored");
-   static_assert( ! MeshConfig::subentityOrientationStorage( MeshEntity(), dimensions::value ) ||
-                    MeshConfig::subentityStorage( MeshEntity(), dimensions::value ), "orientation can be stored only for subentities that are stored");
+   static_assert( ! MeshConfig::subentityStorage( EntityTopology(), dimensions::value ) ||
+                    MeshConfig::entityStorage( EntityTopology::dimensions ),
+                  "entities of which subentities are stored must be stored" );
+   static_assert( ! MeshConfig::subentityStorage( EntityTopology(), dimensions::value ) ||
+                    MeshConfig::entityStorage( dimensions::value ),
+                  "entities that are stored as subentities must be stored");
+   static_assert( ! MeshConfig::subentityOrientationStorage( EntityTopology(), dimensions::value ) ||
+                    MeshConfig::subentityStorage( EntityTopology(), dimensions::value ),
+                  "orientation can be stored only for subentities that are stored");
 };
 
 template< typename MeshConfig,
-          typename MeshEntity >
-class MeshConfigValidatorSubtopologyLayer< MeshConfig, MeshEntity, MeshDimensionTag< 0 > >
+          typename EntityTopology >
+class MeshConfigValidatorSubtopologyLayer< MeshConfig, EntityTopology, MeshDimensionsTag< 0 > >
 {
-   static_assert( ! MeshConfig::subentityStorage( MeshEntity(), 0 ) ||
-                    MeshConfig::entityStorage( 0 ), "entities that are stored as subentities must be stored" );
-   static_assert( ! MeshConfig::subentityOrientationStorage( MeshEntity(), 0 ), "storage of vertex orientation does not make sense" );
+   static_assert( ! MeshConfig::subentityStorage( EntityTopology(), 0 ) ||
+                    MeshConfig::entityStorage( 0 ),
+                  "entities that are stored as subentities must be stored" );
+   static_assert( ! MeshConfig::subentityOrientationStorage( EntityTopology(), 0 ),
+                  "storage of vertex orientation does not make sense" );
 };
 
 
 template< typename MeshConfig,
-          typename MeshEntity,
+          typename EntityTopology,
           typename dimensions >
-class MeshConfigValidatorSupertopologyLayer :
-public MeshConfigValidatorSupertopologyLayer< MeshConfig, MeshEntity, typename dimensions::Decrement >
+class MeshConfigValidatorSupertopologyLayer
+   : public MeshConfigValidatorSupertopologyLayer< MeshConfig, EntityTopology, typename dimensions::Decrement >
 {
-   static_assert( ! MeshConfig::superentityStorage( MeshEntity(), 0 ) ||
-                  MeshConfig::entityStorage( MeshEntity::dimensions ), "entities of which superentities are stored must be stored");
-   static_assert( ! MeshConfig::superentityStorage( MeshEntity(), 0 ) ||
-                  MeshConfig::entityStorage( dimensions::value ), "entities that are stored as superentities must be stored");
+   static_assert( ! MeshConfig::superentityStorage( EntityTopology(), 0 ) ||
+                    MeshConfig::entityStorage( EntityTopology::dimensions ),
+                  "entities of which superentities are stored must be stored");
+   static_assert( ! MeshConfig::superentityStorage( EntityTopology(), 0 ) ||
+                    MeshConfig::entityStorage( dimensions::value ),
+                  "entities that are stored as superentities must be stored");
 };
 
 template< typename MeshConfig,
-          typename MeshEntity >
-class MeshConfigValidatorSupertopologyLayer< MeshConfig, MeshEntity, MeshDimensionTag< MeshEntity::dimensions > >
+          typename EntityTopology >
+class MeshConfigValidatorSupertopologyLayer< MeshConfig, EntityTopology, MeshDimensionsTag< EntityTopology::dimensions > >
 {};
 
 
 template< typename MeshConfig, int dimensions >
-class MeshConfigValidatorLayer :
- public MeshConfigValidatorLayer< MeshConfig, dimensions - 1 >,
- public MeshConfigValidatorSubtopologyLayer< MeshConfig,
-                                                typename MeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology,
-                                                MeshDimensionTag< dimensions - 1 > >,
- public MeshConfigValidatorSupertopologyLayer< MeshConfig,
-                                                  typename MeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology,
-                                                  MeshDimensionTag< MeshConfig::CellTopology::dimensions > >
+class MeshConfigValidatorLayer
+   : public MeshConfigValidatorLayer< MeshConfig, dimensions - 1 >,
+     public MeshConfigValidatorSubtopologyLayer< MeshConfig,
+                                                 typename MeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology,
+                                                 MeshDimensionsTag< dimensions - 1 > >,
+     public MeshConfigValidatorSupertopologyLayer< MeshConfig,
+                                                   typename MeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology,
+                                                   MeshDimensionsTag< MeshConfig::CellTopology::dimensions > >
 {
-	typedef typename MeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology Topology;
+   using Topology = typename MeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology;
 
-	static_assert( ! MeshConfig::entityStorage( dimensions ) || MeshConfig::subentityStorage( Topology(), 0 ), "subvertices of all stored entities must be stored");
+   static_assert( ! MeshConfig::entityStorage( dimensions ) ||
+                    MeshConfig::subentityStorage( Topology(), 0 ),
+                  "subvertices of all stored entities must be stored");
 };
 
 template< typename MeshConfig >
@@ -86,28 +95,31 @@ class MeshConfigValidatorLayer< MeshConfig, 0 >
 };
 
 template< typename MeshConfig >
-class MeshConfigValidatorLayerCell :
-   public MeshConfigValidatorLayer< MeshConfig, MeshConfig::CellTopology::dimensions - 1 >,
-   public MeshConfigValidatorSubtopologyLayer< MeshConfig,
-                                                  typename MeshConfig::CellTopology,
-                                                  MeshDimensionTag< MeshConfig::CellTopology::dimensions - 1 > >
+class MeshConfigValidatorLayerCell
+   : public MeshConfigValidatorLayer< MeshConfig, MeshConfig::CellTopology::dimensions - 1 >,
+     public MeshConfigValidatorSubtopologyLayer< MeshConfig,
+                                                 typename MeshConfig::CellTopology,
+                                                 MeshDimensionsTag< MeshConfig::CellTopology::dimensions - 1 > >
 {
-	typedef typename MeshConfig::CellTopology    CellTopology;
- 	static const int dimensions =  CellTopology::dimensions;
+   using CellTopology = typename MeshConfig::CellTopology;
+   static constexpr int dimensions = CellTopology::dimensions;
 
-	static_assert( !MeshConfig::entityStorage( dimensions ) || MeshConfig::subentityStorage( CellTopology(), 0 ), "subvertices of all stored entities must be stored");
+   static_assert( ! MeshConfig::entityStorage( dimensions ) ||
+                    MeshConfig::subentityStorage( CellTopology(), 0 ),
+                  "subvertices of all stored entities must be stored" );
 };
 
-template<typename MeshConfig >
-class MeshConfigValidator : public MeshConfigValidatorLayerCell< MeshConfig >
+template< typename MeshConfig >
+class MeshConfigValidator
+   : public MeshConfigValidatorLayerCell< MeshConfig >
 {
-	static const int meshDimension = MeshConfig::CellTopology::dimensions;
+   static constexpr int meshDimensions = MeshConfig::CellTopology::dimensions;
 
-	static_assert(1 <= meshDimension, "zero dimensional meshes are not supported");
-	static_assert( meshDimension <= MeshConfig::worldDimension, "world dimension must not be less than mesh dimension");
+   static_assert( 1 <= meshDimensions, "zero dimensional meshes are not supported" );
+   static_assert( meshDimensions <= MeshConfig::worldDimensions, "world dimension must not be less than mesh dimension" );
 
-	static_assert( MeshConfig::entityStorage( 0 ), "mesh vertices must be stored");
-	static_assert( MeshConfig::entityStorage( meshDimension ), "mesh cells must be stored");
+   static_assert( MeshConfig::entityStorage( 0 ), "mesh vertices must be stored" );
+   static_assert( MeshConfig::entityStorage( meshDimensions ), "mesh cells must be stored" );
 };
 
 } // namespace Meshes

@@ -67,9 +67,8 @@ struct MeshConfigBase
    /****
     *  Storage of subentities of mesh entities
     */
-   // TODO: MeshEntity -> EntityTopology
-   template< typename MeshEntity >
-   static constexpr bool subentityStorage( MeshEntity, int SubentityDimensions )
+   template< typename EntityTopology >
+   static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions )
    {
       /****
        *  Vertices must always be stored
@@ -82,9 +81,8 @@ struct MeshConfigBase
     * Storage of subentity orientations of mesh entities.
     * It must be false for vertices and cells.
     */
-   // TODO: MeshEntity -> EntityTopology
-   template< typename MeshEntity >
-   static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions )
+   template< typename EntityTopology >
+   static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimensions )
    {
       return ( SubentityDimensions > 0 );
    }
@@ -92,9 +90,8 @@ struct MeshConfigBase
    /****
     *  Storage of superentities of mesh entities
     */
-   // TODO: MeshEntity -> EntityTopology
-   template< typename MeshEntity >
-   static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions )
+   template< typename EntityTopology >
+   static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions )
    {
       return true;
       //return false;

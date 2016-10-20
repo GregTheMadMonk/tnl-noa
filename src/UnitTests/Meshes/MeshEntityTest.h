@@ -21,14 +21,14 @@ class TestTriangleMeshConfig : public MeshConfigBase< MeshTriangleTopology >
 {
    public:
  
-      template< typename MeshEntity >
-      static constexpr bool subentityStorage( MeshEntity entity, int subentityDimensions )
+      template< typename EntityTopology >
+      static constexpr bool subentityStorage( EntityTopology entity, int subentityDimensions )
       {
          return true;
       }
  
-      template< typename MeshEntity >
-      static constexpr bool superentityStorage( MeshEntity entity, int superentityDimensions )
+      template< typename EntityTopology >
+      static constexpr bool superentityStorage( EntityTopology entity, int superentityDimensions )
       {
          return true;
       }
@@ -38,14 +38,14 @@ class TestTetrahedronMeshConfig : public MeshConfigBase< MeshTetrahedronTopology
 {
    public:
  
-      template< typename MeshEntity >
-      static constexpr bool subentityStorage( MeshEntity entity, int subentityDimensions )
+      template< typename EntityTopology >
+      static constexpr bool subentityStorage( EntityTopology entity, int subentityDimensions )
       {
          return true;
       }
  
-      template< typename MeshEntity >
-      static constexpr bool superentityStorage( MeshEntity entity, int superentityDimensions )
+      template< typename EntityTopology >
+      static constexpr bool superentityStorage( EntityTopology entity, int superentityDimensions )
       {
          return true;
       }
