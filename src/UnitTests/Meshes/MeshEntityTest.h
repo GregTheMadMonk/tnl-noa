@@ -425,12 +425,12 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    triangleEntities[ 0 ].template setSubentityIndex< 1 >( 0 , 0 );
    triangleEntities[ 0 ].template setSubentityIndex< 1 >( 1 , 1 );
    triangleEntities[ 0 ].template setSubentityIndex< 1 >( 2 , 2 );
-   triangleEntities[ 1 ].template setSubentityIndex< 0 >( 0 , 0 );
+   triangleEntities[ 1 ].template setSubentityIndex< 0 >( 0 , 1 );
    triangleEntities[ 1 ].template setSubentityIndex< 0 >( 1 , 2 );
    triangleEntities[ 1 ].template setSubentityIndex< 0 >( 2 , 3 );
-   triangleEntities[ 1 ].template setSubentityIndex< 1 >( 0 , 0 );
-   triangleEntities[ 1 ].template setSubentityIndex< 1 >( 1 , 3 );
-   triangleEntities[ 1 ].template setSubentityIndex< 1 >( 2 , 4 );
+   triangleEntities[ 1 ].template setSubentityIndex< 1 >( 0 , 3 );
+   triangleEntities[ 1 ].template setSubentityIndex< 1 >( 1 , 4 );
+   triangleEntities[ 1 ].template setSubentityIndex< 1 >( 2 , 0 );
 
    ASSERT_TRUE( triangleEntities[ 0 ].template getSubentityIndex< 0 >( 0 ) == 0 );
    ASSERT_TRUE( triangleEntities[ 0 ].template getSubentityIndex< 0 >( 1 ) == 1 );
@@ -438,12 +438,12 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    ASSERT_TRUE( triangleEntities[ 0 ].template getSubentityIndex< 1 >( 0 ) == 0 );
    ASSERT_TRUE( triangleEntities[ 0 ].template getSubentityIndex< 1 >( 1 ) == 1 );
    ASSERT_TRUE( triangleEntities[ 0 ].template getSubentityIndex< 1 >( 2 ) == 2 );
-   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 0 >( 0 ) == 0 );
+   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 0 >( 0 ) == 1 );
    ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 0 >( 1 ) == 2 );
    ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 0 >( 2 ) == 3 );
-   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 0 ) == 0 );
-   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 1 ) == 3 );
-   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 2 ) == 4 );
+   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 0 ) == 3 );
+   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 1 ) == 4 );
+   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 2 ) == 0 );
 
 
    /*
