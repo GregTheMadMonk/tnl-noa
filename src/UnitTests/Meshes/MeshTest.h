@@ -112,7 +112,7 @@ TEST( MeshTest, TwoTrianglesTest )
    meshBuilder.getCellSeed( 1 ).setCornerId( 0, 1 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 1, 2 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 2, 3 );
-   meshBuilder.build( mesh );
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
 
    EXPECT_EQ( mesh.getNumberOfEntities< 2 >(),  2 );
    EXPECT_EQ( mesh.getNumberOfEntities< 1 >(),  5 );
@@ -333,7 +333,7 @@ TEST( MeshTest, TetrahedronsTest )
    meshBuilder.getCellSeed( 17 ).setCornerId( 2, 6 );
    meshBuilder.getCellSeed( 17 ).setCornerId( 3, 10 );
 
-   meshBuilder.build( mesh );
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
 
    /*ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
    ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
@@ -364,16 +364,16 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
    /****
     * Setup vertices
     */
-   for( IndexType i = 0; i <= xSize; i++ )
-      for( IndexType j = 0; j <= ySize; j++ )
-         meshBuilder.setPoint(  j*xSize + i, PointType( i * hx, j * hy ) );
+   for( IndexType j = 0; j <= ySize; j++ )
+      for( IndexType i = 0; i <= xSize; i++ )
+         meshBuilder.setPoint(  j * ( xSize + 1 ) + i, PointType( i * hx, j * hy ) );
 
    /****
     * Setup cells
     */
    IndexType cellIdx( 0 );
-   for( IndexType i = 0; i < xSize; i++ )
-      for( IndexType j = 0; j < ySize; j++ )
+   for( IndexType j = 0; j < ySize; j++ )
+      for( IndexType i = 0; i < xSize; i++ )
       {
          IndexType vertex0 = j * xSize + i;
          IndexType vertex1 = j * xSize + i + 1;
@@ -387,7 +387,7 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
          meshBuilder.getCellSeed( cellIdx++ ).setCornerId( 2, vertex3 );
       }
 
-   meshBuilder.build( mesh );
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
    //ASSERT_TRUE( mesh.save( "mesh-test.tnl" ) );
    //ASSERT_TRUE( mesh2.load( "mesh-test.tnl" ) );
    //ASSERT_TRUE( mesh == mesh2 );

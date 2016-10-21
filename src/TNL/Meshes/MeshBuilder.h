@@ -58,10 +58,10 @@ class MeshBuilder
    void setPoint( GlobalIndexType index,
                  const PointType& point )
    {
-	TNL_ASSERT( 0 <= index && index < getPointsCount(), std::cerr << "Index = " << index );
+	   Assert( 0 <= index && index < getPointsCount(), std::cerr << "Index = " << index );
 
-        this->points[ index ] = point;
-        this->pointsSet[ index ] = true;
+      this->points[ index ] = point;
+      this->pointsSet[ index ] = true;
    }
 
    CellSeedType& getCellSeed( GlobalIndexType index )
