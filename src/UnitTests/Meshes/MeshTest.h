@@ -395,6 +395,53 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
       }
 
    ASSERT_TRUE( meshBuilder.build( mesh ) );
+
+   // Test cells -> vertices subentities
+   cellIdx = 0;
+   for( IndexType j = 0; j < ySize; j++ )
+      for( IndexType i = 0; i < xSize; i++ )
+      {
+         const IndexType vertex0 = j * ( xSize + 1 ) + i;
+         const IndexType vertex1 = j * ( xSize + 1 ) + i + 1;
+         const IndexType vertex2 = ( j + 1 ) * ( xSize + 1 ) + i;
+         const IndexType vertex3 = ( j + 1 ) * ( xSize + 1 ) + i + 1;
+
+         const TriangleMeshEntityType& leftCell = mesh.getCell( cellIdx++ );
+         EXPECT_EQ( leftCell.template getSubentityIndex< 0 >( 0 ), vertex0 );
+         EXPECT_EQ( leftCell.template getSubentityIndex< 0 >( 1 ), vertex1 );
+         EXPECT_EQ( leftCell.template getSubentityIndex< 0 >( 2 ), vertex2 );
+
+         const TriangleMeshEntityType& rightCell = mesh.getCell( cellIdx++ );
+         EXPECT_EQ( rightCell.template getSubentityIndex< 0 >( 0 ), vertex1 );
+         EXPECT_EQ( rightCell.template getSubentityIndex< 0 >( 1 ), vertex2 );
+         EXPECT_EQ( rightCell.template getSubentityIndex< 0 >( 2 ), vertex3 );
+      }
+
+   // Test vertices -> cells superentities
+   for( IndexType j = 0; j <= ySize; j++ )
+      for( IndexType i = 0; i <= xSize; i++ )
+      {
+         const IndexType vertexIndex = j * ( xSize + 1 ) + i;
+         const VertexMeshEntityType& vertex = mesh.template getEntity< 0 >( vertexIndex );
+
+         if( ( i == 0 && j == 0 ) || ( i == xSize && j == ySize ) ) {
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 2 );
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 1 );
+         }
+         else if( ( i == 0 && j == ySize ) || ( i == xSize && j == 0 ) ) {
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 3 );
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 2 );
+         }
+         else if( i == 0 || i == xSize || j == 0 || j == ySize ) {
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 4 );
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 3 );
+         }
+         else {
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 6 );
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 6 );
+         }
+      }
+
    //ASSERT_TRUE( mesh.save( "mesh-test.tnl" ) );
    //ASSERT_TRUE( mesh2.load( "mesh-test.tnl" ) );
    //ASSERT_TRUE( mesh == mesh2 );
@@ -410,7 +457,7 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    using PointType = typename VertexMeshEntityType::PointType;
    ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
 
-   const IndexType xSize( 5 ), ySize( 5 );
+   const IndexType xSize( 3 ), ySize( 4 );
    const RealType width( 1.0 ), height( 1.0 );
    const RealType hx( width / ( RealType ) xSize ),
                   hy( height / ( RealType ) ySize );
@@ -450,6 +497,51 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
 
    ASSERT_TRUE( meshBuilder.build( mesh ) );
 
+   // Test cells -> vertices subentities
+   cellIdx = 0;
+   for( IndexType j = 0; j < ySize; j++ )
+      for( IndexType i = 0; i < xSize; i++ )
+      {
+         const IndexType vertex0 = j * ( xSize + 1 ) + i;
+         const IndexType vertex1 = j * ( xSize + 1 ) + i + 1;
+         const IndexType vertex2 = ( j + 1 ) * ( xSize + 1 ) + i + 1;
+         const IndexType vertex3 = ( j + 1 ) * ( xSize + 1 ) + i;
+
+         const QuadrilateralMeshEntityType& cell = mesh.getCell( cellIdx++ );
+         EXPECT_EQ( cell.template getSubentityIndex< 0 >( 0 ), vertex0 );
+         EXPECT_EQ( cell.template getSubentityIndex< 0 >( 1 ), vertex1 );
+         EXPECT_EQ( cell.template getSubentityIndex< 0 >( 2 ), vertex2 );
+         EXPECT_EQ( cell.template getSubentityIndex< 0 >( 3 ), vertex3 );
+      }
+
+   // Test vertices -> cells superentities
+   for( IndexType j = 0; j <= ySize; j++ )
+      for( IndexType i = 0; i <= xSize; i++ )
+      {
+         const IndexType vertexIndex = j * ( xSize + 1 ) + i;
+         const VertexMeshEntityType& vertex = mesh.template getEntity< 0 >( vertexIndex );
+
+         if( ( i == 0 || i == xSize ) && ( j == 0 || j == ySize ) ) {
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 2 );
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 1 );
+            EXPECT_EQ( vertex.template getSuperentityIndex< 2 >( 0 ),   ( j - ( j == ySize ) ) * xSize + i - ( i == xSize ) );
+         }
+         else if( i == 0 || i == xSize || j == 0 || j == ySize ) {
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 3 );
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 2 );
+            EXPECT_EQ( vertex.template getSuperentityIndex< 2 >( 0 ),   ( j - ( j == ySize || i == 0 || i == xSize ) ) * xSize + i - ( i == xSize ) - ( j == 0 || j == ySize ) );
+            EXPECT_EQ( vertex.template getSuperentityIndex< 2 >( 1 ),   ( j - ( j == ySize ) ) * xSize + i - ( i == xSize ) );
+         }
+         else {
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 4 );
+            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 4 );
+            EXPECT_EQ( vertex.template getSuperentityIndex< 2 >( 0 ),   ( j - 1 ) * xSize + i - 1 );
+            EXPECT_EQ( vertex.template getSuperentityIndex< 2 >( 1 ),   ( j - 1 ) * xSize + i     );
+            EXPECT_EQ( vertex.template getSuperentityIndex< 2 >( 2 ),   ( j     ) * xSize + i - 1 );
+            EXPECT_EQ( vertex.template getSuperentityIndex< 2 >( 3 ),   ( j     ) * xSize + i     );
+         }
+      }
+
    //ASSERT_TRUE( mesh.save( "mesh-test.tnl" ) );
    //ASSERT_TRUE( mesh2.load( "mesh-test.tnl" ) );
    //ASSERT_TRUE( mesh == mesh2 );
@@ -466,7 +558,7 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
    using PointType = typename VertexMeshEntityType::PointType;
    ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 3, RealType >::getType() ) );
 
-   const IndexType xSize( 5 ), ySize( 5 ), zSize( 5 );
+   const IndexType xSize( 3 ), ySize( 4 ), zSize( 5 );
    const RealType width( 1.0 ), height( 1.0 ), depth( 1.0 );
    const RealType hx( width / ( RealType ) xSize ),
                   hy( height / ( RealType ) ySize ),
@@ -498,12 +590,12 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
          {
             const IndexType vertex0 = k * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i;
             const IndexType vertex1 = k * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i + 1;
-            const IndexType vertex2 = k * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i;
-            const IndexType vertex3 = k * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i + 1;
+            const IndexType vertex2 = k * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i + 1;
+            const IndexType vertex3 = k * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i;
             const IndexType vertex4 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i;
             const IndexType vertex5 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i + 1;
-            const IndexType vertex6 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i;
-            const IndexType vertex7 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i + 1;
+            const IndexType vertex6 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i + 1;
+            const IndexType vertex7 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i;
 
             meshBuilder.getCellSeed( cellIdx   ).setCornerId( 0, vertex0 );
             meshBuilder.getCellSeed( cellIdx   ).setCornerId( 1, vertex1 );
@@ -516,6 +608,106 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
          }
 
    ASSERT_TRUE( meshBuilder.build( mesh ) );
+
+   // Test cells -> vertices subentities
+   cellIdx = 0;
+   for( IndexType k = 0; k < zSize; k++ )
+      for( IndexType j = 0; j < ySize; j++ )
+         for( IndexType i = 0; i < xSize; i++ )
+         {
+            const IndexType vertex0 = k * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i;
+            const IndexType vertex1 = k * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i + 1;
+            const IndexType vertex2 = k * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i + 1;
+            const IndexType vertex3 = k * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i;
+            const IndexType vertex4 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i;
+            const IndexType vertex5 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i + 1;
+            const IndexType vertex6 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i + 1;
+            const IndexType vertex7 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i;
+
+            const HexahedronMeshEntityType& cell = mesh.getCell( cellIdx++ );
+            EXPECT_EQ( cell.template getSubentityIndex< 0 >( 0 ), vertex0 );
+            EXPECT_EQ( cell.template getSubentityIndex< 0 >( 1 ), vertex1 );
+            EXPECT_EQ( cell.template getSubentityIndex< 0 >( 2 ), vertex2 );
+            EXPECT_EQ( cell.template getSubentityIndex< 0 >( 3 ), vertex3 );
+            EXPECT_EQ( cell.template getSubentityIndex< 0 >( 4 ), vertex4 );
+            EXPECT_EQ( cell.template getSubentityIndex< 0 >( 5 ), vertex5 );
+            EXPECT_EQ( cell.template getSubentityIndex< 0 >( 6 ), vertex6 );
+            EXPECT_EQ( cell.template getSubentityIndex< 0 >( 7 ), vertex7 );
+         }
+
+   // Test vertices -> cells superentities
+   for( IndexType k = 0; k < zSize; k++ )
+      for( IndexType j = 0; j <= ySize; j++ )
+         for( IndexType i = 0; i <= xSize; i++ )
+         {
+            const IndexType vertexIndex = k * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i;
+            const VertexMeshEntityType& vertex = mesh.template getEntity< 0 >( vertexIndex );
+
+            if( ( i == 0 || i == xSize ) && ( j == 0 || j == ySize ) && ( k == 0 || k == zSize ) ) {
+               EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 3 );
+               EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 3 );
+               EXPECT_EQ( vertex.template getNumberOfSuperentities< 3 >(), 1 );
+               EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 0 ),   ( k - ( k == zSize ) ) * xSize * ySize + ( j - ( j == ySize ) ) * xSize + i - ( i == xSize ) );
+            }
+            else if( i == 0 || i == xSize || j == 0 || j == ySize || k == 0 || k == zSize ) {
+               if( ( i != 0 && i != xSize && j != 0 && j != ySize ) ||
+                   ( i != 0 && i != xSize && k != 0 && k != zSize ) ||
+                   ( j != 0 && j != ySize && k != 0 && k != zSize ) )
+               {
+                  EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 5 );
+                  EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 8 );
+                  EXPECT_EQ( vertex.template getNumberOfSuperentities< 3 >(), 4 );
+                  if( k == 0 || k == zSize ) {
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 0 ),   ( k - ( k == zSize ) ) * xSize * ySize + ( j - 1 ) * xSize + i - 1 );
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 1 ),   ( k - ( k == zSize ) ) * xSize * ySize + ( j - 1 ) * xSize + i     );
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 2 ),   ( k - ( k == zSize ) ) * xSize * ySize + ( j     ) * xSize + i - 1 );
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 3 ),   ( k - ( k == zSize ) ) * xSize * ySize + ( j     ) * xSize + i     );
+                  }
+                  else if( j == 0 || j == ySize ) {
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 0 ),   ( k - 1 ) * xSize * ySize + ( j - ( j == ySize ) ) * xSize + i - 1 );
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 1 ),   ( k - 1 ) * xSize * ySize + ( j - ( j == ySize ) ) * xSize + i     );
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 2 ),   ( k     ) * xSize * ySize + ( j - ( j == ySize ) ) * xSize + i - 1 );
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 3 ),   ( k     ) * xSize * ySize + ( j - ( j == ySize ) ) * xSize + i     );
+                  }
+                  else {
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 0 ),   ( k - 1 ) * xSize * ySize + ( j - 1 ) * xSize + i - ( i == xSize ) );
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 1 ),   ( k - 1 ) * xSize * ySize + ( j     ) * xSize + i - ( i == xSize ) );
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 2 ),   ( k     ) * xSize * ySize + ( j - 1 ) * xSize + i - ( i == xSize ) );
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 3 ),   ( k     ) * xSize * ySize + ( j     ) * xSize + i - ( i == xSize ) );
+                  }
+               }
+               else {
+                  EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 4 );
+                  EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 5 );
+                  EXPECT_EQ( vertex.template getNumberOfSuperentities< 3 >(), 2 );
+                  if( k != 0 && k != zSize ) {
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 0 ),   ( k - 1 ) * xSize * ySize + ( j - ( j == ySize ) ) * xSize + i - ( i == xSize ) );
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 1 ),   ( k     ) * xSize * ySize + ( j - ( j == ySize ) ) * xSize + i - ( i == xSize ) );
+                  }
+                  else if( j != 0 && j != ySize ) {
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 0 ),   ( k - ( k == zSize ) ) * xSize * ySize + ( j - 1 ) * xSize + i - ( i == xSize ) );
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 1 ),   ( k - ( k == zSize ) ) * xSize * ySize + ( j     ) * xSize + i - ( i == xSize ) );
+                  }
+                  else {
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 0 ),   ( k - ( k == zSize ) ) * xSize * ySize + ( j - ( j == ySize ) ) * xSize + i - 1 );
+                     EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 1 ),   ( k - ( k == zSize ) ) * xSize * ySize + ( j - ( j == ySize ) ) * xSize + i     );
+                  }
+               }
+            }
+            else {
+               EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 6 );
+               EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 12 );
+               EXPECT_EQ( vertex.template getNumberOfSuperentities< 3 >(), 8 );
+               EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 0 ),   ( k - 1 ) * xSize * ySize + ( j - 1 ) * xSize + i - 1 );
+               EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 1 ),   ( k - 1 ) * xSize * ySize + ( j - 1 ) * xSize + i     );
+               EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 2 ),   ( k - 1 ) * xSize * ySize + ( j     ) * xSize + i - 1 );
+               EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 3 ),   ( k - 1 ) * xSize * ySize + ( j     ) * xSize + i     );
+               EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 4 ),   ( k     ) * xSize * ySize + ( j - 1 ) * xSize + i - 1 );
+               EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 5 ),   ( k     ) * xSize * ySize + ( j - 1 ) * xSize + i     );
+               EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 6 ),   ( k     ) * xSize * ySize + ( j     ) * xSize + i - 1 );
+               EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 7 ),   ( k     ) * xSize * ySize + ( j     ) * xSize + i     );
+            }
+         }
 
    //meshInitializer.initMesh( mesh );
    /*ASSERT_TRUE( mesh.save( "mesh-test.tnl" ) );
