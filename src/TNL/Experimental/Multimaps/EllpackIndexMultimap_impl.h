@@ -96,8 +96,9 @@ allocate( const LocalIndexType& maxValuesCount )
    this->maxValuesCount = maxValuesCount;
    if( ! this->values.setSize( this->keysRange * ( this->maxValuesCount + 1 ) ) )
       return false;
-   // TODO: it's necessary to reset just the local row sizes - maybe they should be stored differently?
-   this->values.setValue( 0 );
+   // TODO: maybe the local sizes should be stored differently?
+   for( IndexType i = 0; i < this->keysRange; i++ )
+      this->getValues( i ).setSize( maxValuesCount );
    return true;
 }
 
@@ -118,8 +119,9 @@ allocate( const ValuesAllocationVectorType& valuesCounts )
                         << " this->valuesRange = " << this->valuesRange );
    if( ! this->values.setSize( this->keysRange * ( this->maxValuesCount + 1 ) ) )
       return false;
-   // TODO: it's necessary to reset just the local row sizes - maybe they should be stored differently?
-   this->values.setValue( 0 );
+   // TODO: maybe the local sizes should be stored differently?
+   for( IndexType i = 0; i < this->keysRange; i++ )
+      this->getValues( i ).setSize( valuesCounts[ i ] );
    return true;
 }
 

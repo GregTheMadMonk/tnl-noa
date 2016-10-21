@@ -43,6 +43,11 @@ TEST( MultimapTest, TestSettingSizes )
       auto values = map.getValues( i );
       const auto constValues = ( (const MultimapType) map ).getValues( i );
 
+      // uninitialized should be equal to the value from the allocation vector
+      ASSERT_EQ( values.getSize(), allocationRanges[ i ] );
+      ASSERT_EQ( constValues.getSize(), allocationRanges[ i ] );
+
+      // setting lower sizes
       ASSERT_TRUE( values.setSize( valuesLocalMax ) );
       ASSERT_EQ( values.getSize(), valuesLocalMax );
       ASSERT_EQ( constValues.getSize(), valuesLocalMax );
@@ -51,12 +56,8 @@ TEST( MultimapTest, TestSettingSizes )
       ASSERT_FALSE( values.setSize( valuesGlobalMax + 1 ) );
       ASSERT_EQ( values.getSize(), valuesLocalMax );
       ASSERT_EQ( constValues.getSize(), valuesLocalMax );
-   }
 
-   for( IndexType i = 0; i < inputs; i++ ) {
-      auto values = map.getValues( i );
-      const auto constValues = ( (const MultimapType) map ).getValues( i );
-
+      // setting global max should succeed
       ASSERT_TRUE( values.setSize( valuesGlobalMax ) );
       ASSERT_EQ( values.getSize(), valuesGlobalMax );
       ASSERT_EQ( constValues.getSize(), valuesGlobalMax );
