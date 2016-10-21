@@ -370,8 +370,8 @@ void
 MeshEntity< MeshConfig, MeshVertexTopology >::
 print( std::ostream& str ) const
 {
-   str << "\t Mesh entity dimension: " << MeshVertexTopology::dimensions << std::endl;
-   str << "\t Coordinates = ( " << point << " )";
+   str << "\t Mesh entity dimensions: " << MeshVertexTopology::dimensions << std::endl;
+   str << "\t Coordinates = " << point << std::endl;
    MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::print( str );
 }
 

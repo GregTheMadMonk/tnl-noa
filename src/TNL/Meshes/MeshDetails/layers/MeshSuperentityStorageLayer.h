@@ -154,7 +154,7 @@ protected:
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << std::endl << "\t Superentities with " << DimensionsTag::value << " dimensions are: " << this->superentitiesIndices << ".";
+      str << "\t Superentities with " << DimensionsTag::value << " dimensions are: " << this->superentitiesIndices << "." << std::endl;
    }
 
    bool operator==( const MeshSuperentityStorageLayer& layer  ) const

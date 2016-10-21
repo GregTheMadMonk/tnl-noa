@@ -187,14 +187,13 @@ void
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 print( std::ostream& str ) const
 {
-   if( this->getSize() == 0 )
+   str << "[ ";
+   if( this->getSize() > 0 )
    {
-      str << "[]";
-      return;
+      str << this->getValue( 0 );
+      for( Index i = 1; i < this->getSize(); i++ )
+         str << ", " << this->getValue( i );
    }
-   str << "[ " << this->getValue( 0 );
-   for( Index i = 1; i < this->getSize(); i++ )
-      str << ", " << this->getValue( i );
    str << " ]";
 }
 

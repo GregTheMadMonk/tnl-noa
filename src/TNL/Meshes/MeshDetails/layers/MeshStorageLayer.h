@@ -127,12 +127,7 @@ class MeshStorageLayer< MeshConfig,
          BaseType::print( str );
          str << "The entities with " << DimensionTag::value << " dimensions are: " << std::endl;
          for( GlobalIndexType i = 0; i < entities.getSize();i ++ )
-         {
-            str << i << " ";
-            entities[ i ].print( str );
-            str << std::endl;
-         }
-         SuperentityStorageBaseType::print( str );
+            str << i << " " << entities[ i ] << std::endl;
       }
 
       bool operator==( const MeshStorageLayer& meshLayer ) const
@@ -288,10 +283,7 @@ public:
    {
       str << "The mesh vertices are: " << std::endl;
       for( GlobalIndexType i = 0; i < vertices.getSize();i ++ )
-      {
          str << i << vertices[ i ] << std::endl;
-      }
-      SuperentityStorageBaseType::print( str );
    }
 
    bool operator==( const MeshStorageLayer& meshLayer ) const

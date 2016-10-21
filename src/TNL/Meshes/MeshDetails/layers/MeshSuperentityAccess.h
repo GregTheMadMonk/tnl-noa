@@ -181,9 +181,8 @@ public:
 
    void print( std::ostream& str ) const
    {
-      str << "Superentities with " << DimensionsTag::value << " dimensions are: " <<
-         this->superentityIndices << std::endl;
       BaseType::print( str );
+      str << "\t Superentities with " << DimensionsTag::value << " dimensions are: " << this->superentityIndices << "." << std::endl;
    }
 
    //bool operator == ( const MeshSuperentityAccessLayer< MeshConfig, EntityTopology, Dimensions, tnlStorageTraits< true > >& l ) { return true; } // TODO: fix
