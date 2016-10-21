@@ -19,7 +19,7 @@ template< typename Index,
           typename LocalIndex >
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 EllpackIndexMultimap()
-: keysRange( 0 ), valuesRange( 0 ), maxValuesCount( 0 )
+: keysRange( 0 ), maxValuesCount( 0 )
 {
 }
 
@@ -54,13 +54,10 @@ template< typename Index,
           typename LocalIndex >
 void
 EllpackIndexMultimap< Index, Device, LocalIndex >::
-setRanges( const IndexType inputs,
-           const LocalIndexType outputs )
+setKeysRange( const IndexType& keysRange )
 {
-   Assert( inputs >= 0, );
-   Assert( outputs >= 0, );
-   this->keysRange = inputs;
-   this->valuesRange = outputs;
+   Assert( keysRange >= 0, );
+   this->keysRange = keysRange;
 }
 
 template< typename Index,
@@ -76,23 +73,11 @@ getKeysRange() const
 template< typename Index,
           typename Device,
           typename LocalIndex >
-const LocalIndex
-EllpackIndexMultimap< Index, Device, LocalIndex >::
-getValuesRange() const
-{
-   return this->valuesRange;
-}
-
-template< typename Index,
-          typename Device,
-          typename LocalIndex >
 bool
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 allocate( const LocalIndexType& maxValuesCount )
 {
-   Assert( maxValuesCount >= 0 && maxValuesCount <= this->valuesRange,
-              std::cerr << "maxValuesCount = " << maxValuesCount
-                        << " this->valuesRange = " << this->valuesRange );
+   Assert( maxValuesCount >= 0, );
    this->maxValuesCount = maxValuesCount;
    if( ! this->values.setSize( this->keysRange * ( this->maxValuesCount + 1 ) ) )
       return false;
@@ -114,9 +99,8 @@ allocate( const ValuesAllocationVectorType& valuesCounts )
                         << "this->keysRange = " << this->keysRange );
    this->maxValuesCount = valuesCounts.max();
  
-   Assert( this->maxValuesCount >= 0 && this->maxValuesCount <= this->valuesRange,
-              std::cerr << "this->maxValuesCount = " << this->maxValuesCount
-                        << " this->valuesRange = " << this->valuesRange );
+   Assert( this->maxValuesCount >= 0,
+              std::cerr << "this->maxValuesCount = " << this->maxValuesCount << std::endl; );
    if( ! this->values.setSize( this->keysRange * ( this->maxValuesCount + 1 ) ) )
       return false;
    // TODO: maybe the local sizes should be stored differently?

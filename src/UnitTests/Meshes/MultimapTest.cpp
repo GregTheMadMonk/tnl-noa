@@ -25,18 +25,18 @@ TEST( MultimapTest, TestSettingSizes )
    using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
 
    IndexType inputs = 10;
-   LocalIndexType valuesRange = 4;
    LocalIndexType valuesGlobalMax = 3;
    LocalIndexType valuesLocalMax = 2;
 
    MultimapType map;
-   map.setRanges( inputs, valuesRange );
+   map.setKeysRange( inputs );
    ASSERT_EQ( map.getKeysRange(), inputs );
-   ASSERT_EQ( map.getValuesRange(), valuesRange );
 
    typename MultimapType::ValuesAllocationVectorType allocationRanges;
    ASSERT_TRUE( allocationRanges.setSize( inputs ) );
    allocationRanges.setValue( valuesGlobalMax );
+   allocationRanges[ 0 ] = 0;
+   allocationRanges[ 1 ] = 1;
    ASSERT_TRUE( map.allocate( allocationRanges ) );
 
    for( IndexType i = 0; i < inputs; i++ ) {
@@ -69,13 +69,11 @@ TEST( MultimapTest, TestSettingValues )
    using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
 
    IndexType inputs = 10;
-   LocalIndexType values = 4;
    LocalIndexType allocatedValues = 2;
 
    MultimapType map;
-   map.setRanges( inputs, values );
+   map.setKeysRange( inputs );
    ASSERT_EQ( map.getKeysRange(), inputs );
-   ASSERT_EQ( map.getValuesRange(), values );
 
    typename MultimapType::ValuesAllocationVectorType allocationRanges;
    ASSERT_TRUE( allocationRanges.setSize( inputs ) );

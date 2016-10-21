@@ -450,7 +450,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
     * Tests for the superentities layer.
     */
    StorageNetwork< TestTriangleMeshConfig, MeshVertexTopology, 1 > vertexEdgeSuperentities;
-   vertexEdgeSuperentities.setRanges( 4, 3 );
+   vertexEdgeSuperentities.setKeysRange( 4 );
    vertexEdgeSuperentities.allocate( 3 );
 
    vertexEntities[ 0 ].template bindSuperentitiesStorageNetwork< 1 >( vertexEdgeSuperentities.getValues( 0 ) );
@@ -475,7 +475,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
 
 
    StorageNetwork< TestTriangleMeshConfig, MeshVertexTopology, 2 > vertexCellSuperentities;
-   vertexCellSuperentities.setRanges( 4, 2 );
+   vertexCellSuperentities.setKeysRange( 4 );
    vertexCellSuperentities.allocate( 2 );
 
    vertexEntities[ 1 ].template bindSuperentitiesStorageNetwork< 2 >( vertexCellSuperentities.getValues( 1 ) );
@@ -489,7 +489,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
 
 
    StorageNetwork< TestTriangleMeshConfig, MeshEdgeTopology, 2 > edgeCellSuperentities;
-   edgeCellSuperentities.setRanges( 5, 2 );
+   edgeCellSuperentities.setKeysRange( 5 );
    edgeCellSuperentities.allocate( 2 );
 
    edgeEntities[ 0 ].template bindSuperentitiesStorageNetwork< 2 >( edgeCellSuperentities.getValues( 0 ) );
