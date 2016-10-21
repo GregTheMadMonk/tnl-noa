@@ -230,9 +230,9 @@ protected:
                                          const SuperentityAccessorType& storage ) {}
    void setNumberOfSuperentities( DimensionsTag,
                                   const LocalIndexType size ) {}
-   LocalIndexType getNumberOfSuperentities( DimensionsTag ) const {}
-   GlobalIndexType getSuperentityIndex( DimensionsTag,
-                                        const LocalIndexType localIndex ) {}
+   void getNumberOfSuperentities( DimensionsTag ) const {}
+   void getSuperentityIndex( DimensionsTag,
+                             const LocalIndexType localIndex ) const {}
    void setSuperentityIndex( DimensionsTag,
                              const LocalIndexType& localIndex,
                              const GlobalIndexType& globalIndex ) {}
@@ -269,9 +269,9 @@ protected:
                                          const SuperentityAccessorType& storage ) {}
    void setNumberOfSuperentities( DimensionsTag,
                                   const LocalIndexType size ) {}
-   LocalIndexType getNumberOfSuperentities( DimensionsTag ) const {}
-   GlobalIndexType getSuperentityIndex( DimensionsTag,
-                                        const LocalIndexType localIndex ) {}
+   void getNumberOfSuperentities( DimensionsTag ) const {}
+   void getSuperentityIndex( DimensionsTag,
+                             const LocalIndexType localIndex ) const {}
    void setSuperentityIndex( DimensionsTag,
                              const LocalIndexType& localIndex,
                              const GlobalIndexType& globalIndex ) {}

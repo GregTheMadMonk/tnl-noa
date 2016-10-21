@@ -17,7 +17,8 @@
 #pragma once
 
 #include <algorithm>
-#include <vector>
+#include <set>
+#include <map>
 
 #include <TNL/Meshes/MeshDimensionsTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshSuperentityTraits.h>
@@ -44,130 +45,128 @@ template< typename MeshConfig,
           typename EntityTopology,
           typename DimensionTag >
 class MeshSuperentityStorageInitializerLayer< MeshConfig,
-                                          EntityTopology,
-                                          DimensionTag,
-                                          true >
+                                              EntityTopology,
+                                              DimensionsTag,
+                                              true >
    : public MeshSuperentityStorageInitializerLayer< MeshConfig,
-                                                EntityTopology,
-                                                typename DimensionTag::Decrement >
+                                                    EntityTopology,
+                                                    typename DimensionsTag::Decrement >
 {
-   typedef MeshSuperentityStorageInitializerLayer< MeshConfig,
-                                                      EntityTopology,
-                                                      typename DimensionTag::Decrement >      BaseType;
+   using BaseType = MeshSuperentityStorageInitializerLayer< MeshConfig,
+                                                            EntityTopology,
+                                                            typename DimensionsTag::Decrement >;
 
-   static const int Dimension = DimensionTag::value;
-   typedef MeshDimensionTag< EntityTopology::dimensions >                                       EntityDimension;
-	
-   typedef MeshTraits< MeshConfig >                                                             MeshTraitsType;
-   typedef typename MeshTraitsType::GlobalIdArrayType                                           GlobalIdArrayType; 
-   typedef typename MeshTraitsType::GlobalIndexType                                             GlobalIndexType;
-   typedef typename MeshTraitsType::LocalIndexType                                              LocalIndexType;
-   typedef MeshInitializer< MeshConfig >                                                        MeshInitializerType;
-   typedef typename MeshTraitsType::template SuperentityTraits< EntityTopology, Dimension >    SuperentityTraitsType;
-   typedef typename SuperentityTraitsType::StorageNetworkType                                   SuperentityStorageNetwork;
+   static const int Dimensions = DimensionsTag::value;
+   using EntityDimensions          = MeshDimensionsTag< EntityTopology::dimensions >;
+   using EntityType                = MeshEntity< MeshConfig, EntityTopology >;
+
+   using MeshTraitsType            = MeshTraits< MeshConfig >;
+   using GlobalIdArrayType         = typename MeshTraitsType::GlobalIdArrayType;
+   using GlobalIndexType           = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType            = typename MeshTraitsType::LocalIndexType;
+   using MeshInitializerType       = MeshInitializer< MeshConfig >;
+   using SuperentityTraitsType     = typename MeshTraitsType::template SuperentityTraits< EntityTopology, Dimensions >;
+   using SuperentityStorageNetwork = typename SuperentityTraitsType::StorageNetworkType;
 
    public:
       using BaseType::addSuperentity;
-	
-      void addSuperentity( DimensionTag, GlobalIndexType entityIndex, GlobalIndexType superentityIndex)
+
+      void addSuperentity( DimensionsTag, GlobalIndexType entityIndex, GlobalIndexType superentityIndex)
       {
-         //cout << "Adding superentity with " << DimensionTag::value << " dimensions of enity with " << EntityDimension::value << " ... " << std::endl;
-         indexPairs.push_back( IndexPair{ entityIndex, superentityIndex } );
+         //std::cout << "Adding superentity with " << DimensionsTag::value << " dimensions of entity with " << EntityDimensions::value << " dimensions ... " << std::endl;
+         auto& indexSet = this->dynamicStorageNetwork[ entityIndex ];
+         Assert( indexSet.count( superentityIndex ) == 0,
+                    std::cerr << "Superentity " << superentityIndex << " with dimensions " << DimensionsTag::value
+                              << " of entity " << entityIndex << " with dimensions " << EntityDimensions::value
+                              << " has been already added. This is probably a bug in the mesh initializer." << std::endl; );
+         indexSet.insert( superentityIndex );
       }
 
       using BaseType::initSuperentities;
       void initSuperentities( MeshInitializerType& meshInitializer )
       {
-         throw( 0 ); // TODO: fix this - or it may work with newer version of gcc
-         /*std::sort( indexPairs.begin(),
-                    indexPairs.end(),
-                    []( IndexPair pair0, IndexPair pair1 ){ return ( pair0.entityIndex < pair1.entityIndex ); } );*/
-
-         GlobalIdArrayType &superentityIdsArray = meshInitializer.template meshSuperentityIdsArray< EntityDimension, DimensionTag >();
-         superentityIdsArray.setSize( static_cast< GlobalIndexType >( indexPairs.size() )  );
-         GlobalIndexType currentBegin = 0;
-         GlobalIndexType lastEntityIndex = 0;
-        std::cout << "There are " << superentityIdsArray.getSize() << " superentities with " << DimensionTag::value << " dimensions of enities with " << EntityDimension::value << " ... " << std::endl;
-         for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
-         {
-            superentityIdsArray[ i ] = indexPairs[i].superentityIndex;
- 
-            //cout << "Adding superentity " << indexPairs[i].superentityIndex << " to entity " << lastEntityIndex << std::endl;
-            if( indexPairs[ i ].entityIndex != lastEntityIndex )
-            {
-               meshInitializer.template superentityIdsArray< DimensionTag >( meshInitializer.template meshEntitiesArray< EntityDimension >()[ lastEntityIndex ] ).bind( superentityIdsArray, currentBegin, i - currentBegin );
-               currentBegin = i;
-               lastEntityIndex = indexPairs[ i ].entityIndex;
+         if( ! dynamicStorageNetwork.empty() ) {
+            GlobalIndexType maxEntityIndex = 0;
+            for( auto it = dynamicStorageNetwork.cbegin(); it != dynamicStorageNetwork.cend(); it++ ) {
+               if( it->first > maxEntityIndex )
+                  maxEntityIndex = it->first;
             }
+
+            Assert( (size_t) maxEntityIndex == dynamicStorageNetwork.size() - 1,
+                       std::cerr << "Superentities for some entities are missing." << std::endl; );
+
+            // TODO: what's this supposed to do?
+//            std::cout << "There are " << superentityIdsArray.getSize() << " superentities with " << DimensionsTag::value << " dimensions of enities with dimension " << EntityDimensions::value << " ... " << std::endl;
+//            GlobalIdArrayType &superentityIdsArray = meshInitializer.template meshSuperentityIdsArray< EntityDimensions, DimensionsTag >();
+//            superentityIdsArray.setSize( dynamicStorageNetwork.size() );
+//            GlobalIndexType currentBegin = 0;
+//            GlobalIndexType lastEntityIndex = 0;
+//            for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
+//            {
+//               superentityIdsArray[ i ] = indexPairs[i].superentityIndex;
+//
+//               //cout << "Adding superentity " << indexPairs[i].superentityIndex << " to entity " << lastEntityIndex << std::endl;
+//               if( indexPairs[ i ].entityIndex != lastEntityIndex )
+//               {
+//                  meshInitializer.template superentityIdsArray< DimensionsTag >( meshInitializer.template meshEntitiesArray< EntityDimensions >()[ lastEntityIndex ] ).bind( superentityIdsArray, currentBegin, i - currentBegin );
+//                  currentBegin = i;
+//                  lastEntityIndex = indexPairs[ i ].entityIndex;
+//               }
+//            }
+//
+//            meshInitializer.template superentityIdsArray< DimensionsTag >( meshInitializer.template meshEntitiesArray< EntityDimensions >()[ lastEntityIndex ] ).bind( superentityIdsArray, currentBegin, superentityIdsArray.getSize() - currentBegin );
+//            indexPairs.clear();
+
+            /****
+             * Network initializer
+             */
+            SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< EntityTopology, DimensionsTag >();
+            superentityStorageNetwork.setKeysRange( maxEntityIndex + 1 );
+            typename SuperentityStorageNetwork::ValuesAllocationVectorType storageNetworkAllocationVector;
+            storageNetworkAllocationVector.setSize( maxEntityIndex + 1 );
+            for( auto it = dynamicStorageNetwork.cbegin(); it != dynamicStorageNetwork.cend(); it++ )
+               storageNetworkAllocationVector[ it->first ] = it->second.size();
+            superentityStorageNetwork.allocate( storageNetworkAllocationVector );
+
+            GlobalIndexType entityIndex = 0;
+            for( auto it = dynamicStorageNetwork.cbegin(); it != dynamicStorageNetwork.cend(); it++ ) {
+               auto superentitiesIndices = superentityStorageNetwork.getValues( it->first );
+               LocalIndexType i = 0;
+               for( auto v_it = it->second.cbegin(); v_it != it->second.cend(); v_it++ )
+                  superentitiesIndices[ i++ ] = *v_it;
+
+               EntityType& entity = meshInitializer.template meshEntitiesArray< EntityDimensions >()[ entityIndex ];
+               meshInitializer.template bindSuperentitiesStorageNetwork< DimensionsTag::value >( entity, superentityStorageNetwork.getValues( entityIndex++ ) );
+            }
+
+            dynamicStorageNetwork.clear();
          }
 
-         meshInitializer.template superentityIdsArray< DimensionTag >( meshInitializer.template meshEntitiesArray< EntityDimension >()[ lastEntityIndex ] ).bind( superentityIdsArray, currentBegin, superentityIdsArray.getSize() - currentBegin );
-         indexPairs.clear();
- 
-         /****
-          * Network initializer
-          */
-         SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< EntityTopology, DimensionTag >();
-         //GlobalIndexType lastEntityIndex( 0 );
-         superentityStorageNetwork.setRanges(
-            meshInitializer.template meshEntitiesArray< EntityDimension >().getSize(),
-            meshInitializer.template meshEntitiesArray< DimensionTag >().getSize() );
-         lastEntityIndex = 0;
-         typename SuperentityStorageNetwork::ValuesAllocationVectorType storageNetworkAllocationVector;
-         storageNetworkAllocationVector.setSize( meshInitializer.template meshEntitiesArray< EntityDimension >().getSize() );
-         storageNetworkAllocationVector.setValue( 0 );
-         for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
-         {
-            if( indexPairs[ i ].entityIndex == lastEntityIndex )
-               storageNetworkAllocationVector[ lastEntityIndex ]++;
-            else
-               lastEntityIndex++;
-         }
-         superentityStorageNetwork.allocate( storageNetworkAllocationVector );
-         lastEntityIndex = 0;
-         LocalIndexType superentitiesCount( 0 );
-         typename SuperentityStorageNetwork::ValuesAccessorType superentitiesIndecis =
-            superentityStorageNetwork.getValues( lastEntityIndex );
-         for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
-         {
-            if( indexPairs[ i ].entityIndex != lastEntityIndex )
-            {
-               superentitiesIndecis = superentityStorageNetwork.getValues( ++lastEntityIndex );
-               superentitiesCount = 0;
-            }
-            superentitiesIndecis[ superentitiesCount++ ] =  indexPairs[ i ].superentityIndex;
-         }
          BaseType::initSuperentities( meshInitializer );
       }
 
    private:
-      struct IndexPair
-      {
-         GlobalIndexType entityIndex;
-         GlobalIndexType superentityIndex;
-      };
-
-      std::vector< IndexPair > indexPairs;
- 
+      using DynamicIndexSet = std::set< GlobalIndexType >;
+      std::map< GlobalIndexType, DynamicIndexSet > dynamicStorageNetwork;
 };
 
 template< typename MeshConfig,
           typename EntityTopology,
           typename DimensionTag >
 class MeshSuperentityStorageInitializerLayer< MeshConfig,
-                                          EntityTopology,
-                                          DimensionTag,
-                                          false >
+                                              EntityTopology,
+                                              DimensionsTag,
+                                              false >
    : public MeshSuperentityStorageInitializerLayer< MeshConfig,
-                                                EntityTopology,
-                                                typename DimensionTag::Decrement >
+                                                    EntityTopology,
+                                                    typename DimensionsTag::Decrement >
 {
-   typedef MeshSuperentityStorageInitializerLayer< MeshConfig,
-                                                EntityTopology,
-                                                typename DimensionTag::Decrement > BaseType;
-   typedef MeshInitializer< MeshConfig >                                      MeshInitializerType;
- 
-   public:
+   using BaseType = MeshSuperentityStorageInitializerLayer< MeshConfig,
+                                                            EntityTopology,
+                                                            typename DimensionsTag::Decrement >;
+   using MeshInitializerType = MeshInitializer< MeshConfig >;
+
+public:
    void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
    using BaseType::initSuperentities;
    void initSuperentities( MeshInitializerType& ) { std::cerr << "***" << std::endl;}
@@ -180,10 +179,11 @@ class MeshSuperentityStorageInitializerLayer< MeshConfig,
                                           MeshDimensionTag< EntityTopology::dimensions >,
                                           true >
 {
-   typedef MeshInitializer< MeshConfig >                                      MeshInitializerType;
- 
-   public:
-   void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
+   using MeshInitializerType = MeshInitializer< MeshConfig >;
+
+public:
+   // Necessary due to 'using BaseType::...;' in the derived classes.
+   void addSuperentity() {}
    void initSuperentities( MeshInitializerType& ) {}
 };
 
@@ -194,10 +194,11 @@ class MeshSuperentityStorageInitializerLayer< MeshConfig,
                                           MeshDimensionTag< EntityTopology::dimensions >,
                                           false >
 {
-   typedef MeshInitializer< MeshConfig >                                      MeshInitializerType;
+   using MeshInitializerType = MeshInitializer< MeshConfig >;
 
-   public:
-   void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
+public:
+   // Necessary due to 'using BaseType::...;' in the derived classes.
+   void addSuperentity() {}
    void initSuperentities( MeshInitializerType& ) {}
 };
 

@@ -499,6 +499,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
 
    ASSERT_EQ( edgeEntities[ 0 ].template getNumberOfSuperentities< 2 >(),  2 );
    ASSERT_EQ( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 0 ),    0 );
+   ASSERT_EQ( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 1 ),    1 );
 }
 
 #endif

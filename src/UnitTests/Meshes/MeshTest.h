@@ -58,10 +58,18 @@ public:
 
 TEST( MeshTest, TwoTrianglesTest )
 {
-   typedef MeshEntity< TestTriangleMeshConfig, MeshTriangleTopology > TriangleMeshEntityType;
-   typedef MeshEntity< TestTriangleMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
-   typedef MeshEntity< TestTriangleMeshConfig, MeshVertexTopology > VertexMeshEntityType;
-   typedef typename VertexMeshEntityType::PointType PointType;
+   using TriangleMeshEntityType = MeshEntity< TestTriangleMeshConfig, MeshTriangleTopology >;
+   using EdgeMeshEntityType = typename TriangleMeshEntityType::SubentityTraits< 1 >::SubentityType;
+   using VertexMeshEntityType = typename TriangleMeshEntityType::SubentityTraits< 0 >::SubentityType;
+
+   static_assert( TriangleMeshEntityType::SubentityTraits< 1 >::storageEnabled, "Testing triangle entity does not store edges as required." );
+   static_assert( TriangleMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing triangle entity does not store vertices as required." );
+   static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
+   static_assert( EdgeMeshEntityType::SuperentityTraits< 2 >::storageEnabled, "Testing edge entity does not store triangles as required." );
+   static_assert( VertexMeshEntityType::SuperentityTraits< 2 >::storageEnabled, "Testing vertex entity does not store triangles as required." );
+   static_assert( VertexMeshEntityType::SuperentityTraits< 1 >::storageEnabled, "Testing vertex entity does not store edges as required." );
+
+   using PointType = typename VertexMeshEntityType::PointType;
    ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
 
    /****
@@ -83,14 +91,19 @@ TEST( MeshTest, TwoTrianglesTest )
             point0   edge2        point1
     */
 
+   PointType point0( 0.0, 0.0 ),
+             point1( 1.0, 0.0 ),
+             point2( 0.0, 1.0 ),
+             point3( 1.0, 1.0 );
+
    typedef Mesh< TestTriangleMeshConfig > TriangleTestMesh;
    TriangleTestMesh mesh, mesh2;
    MeshBuilder< TriangleTestMesh > meshBuilder;
    meshBuilder.setPointsCount( 4 );
-   meshBuilder.setPoint( 0, PointType( 0.0, 0.0 ) );
-   meshBuilder.setPoint( 1, PointType( 1.0, 0.0 ) );
-   meshBuilder.setPoint( 2, PointType( 0.0, 1.0 ) );
-   meshBuilder.setPoint( 3, PointType( 1.0, 1.0 ) );
+   meshBuilder.setPoint( 0, point0 );
+   meshBuilder.setPoint( 1, point1 );
+   meshBuilder.setPoint( 2, point2 );
+   meshBuilder.setPoint( 3, point3 );
 
    meshBuilder.setCellsCount( 2 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
@@ -101,9 +114,59 @@ TEST( MeshTest, TwoTrianglesTest )
    meshBuilder.getCellSeed( 1 ).setCornerId( 2, 3 );
    meshBuilder.build( mesh );
 
-   ASSERT_TRUE( mesh.getNumberOfEntities< 2 >() == 2 );
-   ASSERT_TRUE( mesh.getNumberOfEntities< 1 >() == 5 );
-   ASSERT_TRUE( mesh.getNumberOfEntities< 0 >() == 4 );
+   EXPECT_EQ( mesh.getNumberOfEntities< 2 >(),  2 );
+   EXPECT_EQ( mesh.getNumberOfEntities< 1 >(),  5 );
+   EXPECT_EQ( mesh.getNumberOfEntities< 0 >(),  4 );
+
+   EXPECT_EQ( mesh.template getEntity< 0 >( 0 ).getPoint(),  point0 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).getPoint(),  point1 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 2 ).getPoint(),  point2 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 3 ).getPoint(),  point3 );
+
+   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).getVertexIndex( 0 ),  1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).getVertexIndex( 1 ),  2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 1 ).getVertexIndex( 0 ),  2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 1 ).getVertexIndex( 1 ),  0 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).getVertexIndex( 0 ),  0 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).getVertexIndex( 1 ),  1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 3 ).getVertexIndex( 0 ),  2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 3 ).getVertexIndex( 1 ),  3 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 4 ).getVertexIndex( 0 ),  3 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 4 ).getVertexIndex( 1 ),  1 );
+
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 0 >( 0 ),  0 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 0 >( 1 ),  1 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 0 >( 2 ),  2 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 1 >( 0 ),  0 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 1 >( 1 ),  1 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 1 >( 2 ),  2 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 0 >( 0 ),  1 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 0 >( 1 ),  2 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 0 >( 2 ),  3 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 1 >( 0 ),  3 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 1 >( 1 ),  4 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 1 >( 2 ),  0 );
+
+   /*
+    * Tests for the superentities layer.
+    */
+   ASSERT_EQ( mesh.template getEntity< 0 >( 0 ).template getNumberOfSuperentities< 1 >(),  2 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 0 ).template getSuperentityIndex< 1 >( 0 ),    1 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 0 ).template getSuperentityIndex< 1 >( 1 ),    2 );
+
+   ASSERT_EQ( mesh.template getEntity< 0 >( 1 ).template getNumberOfSuperentities< 1 >(),  3 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentityIndex< 1 >( 0 ),    0 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentityIndex< 1 >( 1 ),    2 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentityIndex< 1 >( 2 ),    4 );
+
+   ASSERT_EQ( mesh.template getEntity< 0 >( 1 ).template getNumberOfSuperentities< 2 >(),  2 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentityIndex< 2 >( 0 ),    0 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentityIndex< 2 >( 1 ),    1 );
+
+   ASSERT_EQ( mesh.template getEntity< 1 >( 0 ).template getNumberOfSuperentities< 2 >(),  2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSuperentityIndex< 2 >( 0 ),    0 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSuperentityIndex< 2 >( 1 ),    1 );
+
 
    //ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
    //ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
