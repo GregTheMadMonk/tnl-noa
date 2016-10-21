@@ -203,12 +203,9 @@ std::ostream& StaticArray< Size, Element >::write( std::ostream& str, const char
 template< int Size, typename Element >
 std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Element >& a )
 {
-   a.write( str, "," );
-   /*for( int i = 0; i < Size - 1; i ++ )
-   {
-      str << a[ i ] << ", ";
-   }
-   str << a[ Size - 1 ];*/
+   str << "[ ";
+   a.write( str, ", " );
+   str << " ]";
    return str;
 };
 
