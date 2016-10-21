@@ -381,7 +381,10 @@ class MeshInitializerLayer< MeshConfig,
          BaseType::initEntities(initializer, points);
       }
 
-      void createEntityReferenceOrientations() const {}
+      void createEntityReferenceOrientations()
+      {
+         BaseType::createEntityReferenceOrientations();
+      }
    private:
 
       typedef  typename MeshEntityTraits< MeshConfig, DimensionsTag::value >::SeedIndexedSetType                     SeedIndexedSet;
@@ -505,14 +508,14 @@ class MeshInitializerLayer< MeshConfig,
 
       void createEntityReferenceOrientations()
       {
-         //cout << " Creating entity reference orientations with " << DimensionTag::value << " dimensions ... " << std::endl;
+         //std::cout << " Creating entity reference orientations with " << DimensionsTag::value << " dimensions ... " << std::endl;
          SeedArrayType seedsArray;
          seedsArray.setSize( this->seedsIndexedSet.getSize() );
          this->seedsIndexedSet.toArray( seedsArray );
          this->referenceOrientations.setSize( seedsArray.getSize() );
          for( GlobalIndexType i = 0; i < seedsArray.getSize(); i++ )
          {
-            //cout << "  Creating reference orientation for entity " << i << std::endl;
+            //std::cout << "  Creating reference orientation for entity " << i << std::endl;
             this->referenceOrientations[ i ] = ReferenceOrientationType( seedsArray[ i ] );
          }
          BaseType::createEntityReferenceOrientations();
