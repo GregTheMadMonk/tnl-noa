@@ -439,8 +439,8 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
       {
          const IndexType vertex0 = j * ( xSize + 1 ) + i;
          const IndexType vertex1 = j * ( xSize + 1 ) + i + 1;
-         const IndexType vertex2 = ( j + 1 ) * ( xSize + 1 ) + i;
-         const IndexType vertex3 = ( j + 1 ) * ( xSize + 1 ) + i + 1;
+         const IndexType vertex2 = ( j + 1 ) * ( xSize + 1 ) + i + 1;
+         const IndexType vertex3 = ( j + 1 ) * ( xSize + 1 ) + i;
 
          meshBuilder.getCellSeed( cellIdx   ).setCornerId( 0, vertex0 );
          meshBuilder.getCellSeed( cellIdx   ).setCornerId( 1, vertex1 );
@@ -459,7 +459,7 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
 TEST( MeshTest, RegularMeshOfHexahedronsTest )
 {
    using HexahedronMeshEntityType = MeshEntity< TestHexahedronMeshConfig, MeshHexahedronTopology >;
-   using TriangleMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 2 >::SubentityType;
+   using QuadrilateralMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 2 >::SubentityType;
    using EdgeMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 1 >::SubentityType;
    using VertexMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 0 >::SubentityType;
 

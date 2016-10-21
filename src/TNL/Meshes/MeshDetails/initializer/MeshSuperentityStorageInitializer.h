@@ -73,7 +73,7 @@ class MeshSuperentityStorageInitializerLayer< MeshConfig,
 
       void addSuperentity( DimensionsTag, GlobalIndexType entityIndex, GlobalIndexType superentityIndex)
       {
-         //std::cout << "Adding superentity with " << DimensionsTag::value << " dimensions of entity with " << EntityDimensions::value << " dimensions ... " << std::endl;
+         //std::cout << "Adding superentity with " << DimensionsTag::value << " dimensions of entity with " << EntityDimensions::value << " dimensions: entityIndex = " << entityIndex << ", superentityIndex = " << superentityIndex << std::endl;
          auto& indexSet = this->dynamicStorageNetwork[ entityIndex ];
          Assert( indexSet.count( superentityIndex ) == 0,
                     std::cerr << "Superentity " << superentityIndex << " with dimensions " << DimensionsTag::value
