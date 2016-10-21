@@ -178,10 +178,14 @@ TEST( MeshTest, TwoTrianglesTest )
 
 TEST( MeshTest, TetrahedronsTest )
 {
-   typedef MeshEntity< TestTetrahedronMeshConfig, MeshTriangleTopology > TriangleMeshEntityType;
-   typedef MeshEntity< TestTetrahedronMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
-   typedef MeshEntity< TestTetrahedronMeshConfig, MeshVertexTopology > VertexMeshEntityType;
-   typedef typename VertexMeshEntityType::PointType PointType;
+   using TetrahedronMeshEntityType = MeshEntity< TestTetrahedronMeshConfig, MeshTetrahedronTopology >;
+   using TriangleMeshEntityType = typename TetrahedronMeshEntityType::SubentityTraits< 2 >::SubentityType;
+   using EdgeMeshEntityType = typename TetrahedronMeshEntityType::SubentityTraits< 1 >::SubentityType;
+   using VertexMeshEntityType = typename TetrahedronMeshEntityType::SubentityTraits< 0 >::SubentityType;
+
+   using PointType = typename VertexMeshEntityType::PointType;
+   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 3, RealType >::getType() ) );
+
    typedef Mesh< TestTetrahedronMeshConfig > TestTetrahedronMesh;
    TestTetrahedronMesh mesh;
    MeshBuilder< TestTetrahedronMesh > meshBuilder;
@@ -343,16 +347,18 @@ TEST( MeshTest, TetrahedronsTest )
 
 TEST( MeshTest, RegularMeshOfTrianglesTest )
 {
-   typedef MeshEntity< TestTriangleMeshConfig, MeshTriangleTopology > TriangleMeshEntityType;
-   typedef MeshEntity< TestTriangleMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
-   typedef MeshEntity< TestTriangleMeshConfig, MeshVertexTopology > VertexMeshEntityType;
-   typedef typename VertexMeshEntityType::PointType PointType;
+   using TriangleMeshEntityType = MeshEntity< TestTriangleMeshConfig, MeshTriangleTopology >;
+   using EdgeMeshEntityType = typename TriangleMeshEntityType::SubentityTraits< 1 >::SubentityType;
+   using VertexMeshEntityType = typename TriangleMeshEntityType::SubentityTraits< 0 >::SubentityType;
+
+   using PointType = typename VertexMeshEntityType::PointType;
+   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
 
    const IndexType xSize( 5 ), ySize( 5 );
    const RealType width( 1.0 ), height( 1.0 );
    const RealType hx( width / ( RealType ) xSize ),
                   hy( height / ( RealType ) ySize );
-   const IndexType numberOfCells = 2*xSize * ySize;
+   const IndexType numberOfCells = 2 * xSize * ySize;
    const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
 
    typedef Mesh< TestTriangleMeshConfig > TestTriangleMesh;
@@ -366,7 +372,7 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
     */
    for( IndexType j = 0; j <= ySize; j++ )
       for( IndexType i = 0; i <= xSize; i++ )
-         meshBuilder.setPoint(  j * ( xSize + 1 ) + i, PointType( i * hx, j * hy ) );
+         meshBuilder.setPoint( j * ( xSize + 1 ) + i, PointType( i * hx, j * hy ) );
 
    /****
     * Setup cells
@@ -396,11 +402,12 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
 
 TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
 {
-#ifdef UNDEF
-   typedef MeshEntity< TestQuadrilateralMeshConfig, MeshQuadrilateralTopology > QuadrilateralMeshEntityType;
-   typedef MeshEntity< TestQuadrilateralMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
-   typedef MeshEntity< TestQuadrilateralMeshConfig, MeshVertexTopology > VertexMeshEntityType;
-   typedef typename VertexMeshEntityType::PointType PointType;
+   using QuadrilateralMeshEntityType = MeshEntity< TestQuadrilateralMeshConfig, MeshQuadrilateralTopology >;
+   using EdgeMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 1 >::SubentityType;
+   using VertexMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 0 >::SubentityType;
+
+   using PointType = typename VertexMeshEntityType::PointType;
+   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
 
    const IndexType xSize( 5 ), ySize( 5 );
    const RealType width( 1.0 ), height( 1.0 );
@@ -409,50 +416,53 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    const IndexType numberOfCells = xSize * ySize;
    const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
 
-   Mesh< TestQuadrilateralMeshConfig > mesh, mesh2;
-   mesh.setNumberOfCells( numberOfCells );
-   mesh.setNumberOfVertices( numberOfVertices );
+   typedef Mesh< TestQuadrilateralMeshConfig > TestQuadrilateralMesh;
+   TestQuadrilateralMesh mesh, mesh2;
+   MeshBuilder< TestQuadrilateralMesh > meshBuilder;
+   meshBuilder.setPointsCount( numberOfVertices );
+   meshBuilder.setCellsCount( numberOfCells );
 
    /****
     * Setup vertices
     */
-   for( IndexType i = 0; i <= xSize; i++ )
-      for( IndexType j = 0; j <= ySize; j++ )
-         mesh.setVertex(  j*xSize + i, PointType( i * hx, j * hy ) );
+   for( IndexType j = 0; j <= ySize; j++ )
+      for( IndexType i = 0; i <= xSize; i++ )
+         meshBuilder.setPoint( j * ( xSize + 1 ) + i, PointType( i * hx, j * hy ) );
 
    /****
     * Setup cells
     */
    IndexType cellIdx( 0 );
-   for( IndexType i = 0; i < xSize; i++ )
-      for( IndexType j = 0; j < ySize; j++ )
+   for( IndexType j = 0; j < ySize; j++ )
+      for( IndexType i = 0; i < xSize; i++ )
       {
          IndexType vertex0 = j * xSize + i;
          IndexType vertex1 = j * xSize + i + 1;
          IndexType vertex2 = ( j + 1 ) * xSize + i;
          IndexType vertex3 = ( j + 1 ) * xSize + i + 1;
-         mesh.getEntities< 2 >()[ cellIdx   ].getVerticesIndices()[ 0 ] = vertex0;
-         mesh.getEntities< 2 >()[ cellIdx   ].getVerticesIndices()[ 1 ] = vertex1;
-         mesh.getEntities< 2 >()[ cellIdx   ].getVerticesIndices()[ 2 ] = vertex2;
-         mesh.getEntities< 2 >()[ cellIdx++ ].getVerticesIndices()[ 3 ] = vertex3;
+         meshBuilder.getCellSeed( cellIdx   ).setCornerId( 0, vertex0 );
+         meshBuilder.getCellSeed( cellIdx   ).setCornerId( 1, vertex1 );
+         meshBuilder.getCellSeed( cellIdx   ).setCornerId( 2, vertex2 );
+         meshBuilder.getCellSeed( cellIdx++ ).setCornerId( 3, vertex3 );
       }
 
-   MeshInitializer< TestQuadrilateralMeshConfig > meshInitializer;
-   //meshInitializer.initMesh( mesh );
-   ASSERT_TRUE( mesh.save( "mesh-test.tnl" ) );
-   ASSERT_TRUE( mesh2.load( "mesh-test.tnl" ) );
-   ASSERT_TRUE( mesh == mesh2 );
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
+
+   //ASSERT_TRUE( mesh.save( "mesh-test.tnl" ) );
+   //ASSERT_TRUE( mesh2.load( "mesh-test.tnl" ) );
+   //ASSERT_TRUE( mesh == mesh2 );
    //mesh.print(std::cout );
-#endif
 }
 
 TEST( MeshTest, RegularMeshOfHexahedronsTest )
 {
-#ifdef UNDEF
-   typedef MeshEntity< TestHexahedronMeshConfig, MeshHexahedronTopology > HexahedronMeshEntityType;
-   typedef MeshEntity< TestHexahedronMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
-   typedef MeshEntity< TestHexahedronMeshConfig, MeshVertexTopology > VertexMeshEntityType;
-   typedef typename VertexMeshEntityType::PointType PointType;
+   using HexahedronMeshEntityType = MeshEntity< TestHexahedronMeshConfig, MeshHexahedronTopology >;
+   using TriangleMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 2 >::SubentityType;
+   using EdgeMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 1 >::SubentityType;
+   using VertexMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 0 >::SubentityType;
+
+   using PointType = typename VertexMeshEntityType::PointType;
+   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 3, RealType >::getType() ) );
 
    const IndexType xSize( 5 ), ySize( 5 ), zSize( 5 );
    const RealType width( 1.0 ), height( 1.0 ), depth( 1.0 );
@@ -462,25 +472,27 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
    const IndexType numberOfCells = xSize * ySize * zSize;
    const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 ) * ( zSize + 1 );
 
-   Mesh< TestHexahedronMeshConfig > mesh, mesh2;
-   mesh.setNumberOfCells( numberOfCells );
-   mesh.setNumberOfVertices( numberOfVertices );
+   typedef Mesh< TestHexahedronMeshConfig > TestHexahedronMesh;
+   TestHexahedronMesh mesh, mesh2;
+   MeshBuilder< TestHexahedronMesh > meshBuilder;
+   meshBuilder.setPointsCount( numberOfVertices );
+   meshBuilder.setCellsCount( numberOfCells );
 
    /****
     * Setup vertices
     */
-   for( IndexType i = 0; i <= xSize; i++ )
+   for( IndexType k = 0; k <= zSize; k++ )
       for( IndexType j = 0; j <= ySize; j++ )
-         for( IndexType k = 0; k <= zSize; k++ )
-            mesh.setVertex(  k * xSize * ySize + j * xSize + i, PointType( i * hx, j * hy, k * hz ) );
+         for( IndexType i = 0; i <= xSize; i++ )
+            meshBuilder.setPoint( k * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i, PointType( i * hx, j * hy, k * hz ) );
 
    /****
     * Setup cells
     */
    IndexType cellIdx( 0 );
-   for( IndexType i = 0; i < xSize; i++ )
+   for( IndexType k = 0; k < zSize; k++ )
       for( IndexType j = 0; j < ySize; j++ )
-         for( IndexType k = 0; k < zSize; k++ )
+         for( IndexType i = 0; i < xSize; i++ )
          {
             IndexType vertex0 = k * xSize * ySize + j * xSize + i;
             IndexType vertex1 = k * xSize * ySize + j * xSize + i + 1;
@@ -489,25 +501,25 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
             IndexType vertex4 = ( k + 1 ) * xSize * ySize + j * xSize + i;
             IndexType vertex5 = ( k + 1 ) * xSize * ySize + j * xSize + i + 1;
             IndexType vertex6 = ( k + 1 ) * xSize * ySize + ( j + 1 ) * xSize + i;
-            IndexType vertex7 = ( k + 1 )* xSize * ySize + ( j + 1 ) * xSize + i + 1;
+            IndexType vertex7 = ( k + 1 ) * xSize * ySize + ( j + 1 ) * xSize + i + 1;
 
-            mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 0 ] = vertex0;
-            mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 1 ] = vertex1;
-            mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 2 ] = vertex2;
-            mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 3 ] = vertex3;
-            mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 4 ] = vertex4;
-            mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 5 ] = vertex5;
-            mesh.getEntities< 3 >()[ cellIdx   ].getVerticesIndices()[ 6 ] = vertex6;
-            mesh.getEntities< 3 >()[ cellIdx++ ].getVerticesIndices()[ 7 ] = vertex7;
+            meshBuilder.getCellSeed( cellIdx   ).setCornerId( 0, vertex0 );
+            meshBuilder.getCellSeed( cellIdx   ).setCornerId( 1, vertex1 );
+            meshBuilder.getCellSeed( cellIdx   ).setCornerId( 2, vertex2 );
+            meshBuilder.getCellSeed( cellIdx   ).setCornerId( 3, vertex3 );
+            meshBuilder.getCellSeed( cellIdx   ).setCornerId( 4, vertex4 );
+            meshBuilder.getCellSeed( cellIdx   ).setCornerId( 5, vertex5 );
+            meshBuilder.getCellSeed( cellIdx   ).setCornerId( 6, vertex6 );
+            meshBuilder.getCellSeed( cellIdx++ ).setCornerId( 7, vertex7 );
          }
 
-   MeshInitializer< TestHexahedronMeshConfig > meshInitializer;
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
+
    //meshInitializer.initMesh( mesh );
    /*ASSERT_TRUE( mesh.save( "mesh-test.tnl" ) );
    ASSERT_TRUE( mesh2.load( "mesh-test.tnl" ) );
    ASSERT_TRUE( mesh == mesh2 );*/
    //mesh.print(std::cout );
-#endif
 }
 
 #endif
