@@ -86,22 +86,33 @@ class MeshBuilder
 
       bool validate() const
       {
-         if( !allPointsSet() )
+         if( ! allPointsSet() )
          {
             std::cerr << "Mesh builder error: Not all points were set." << std::endl;
             return false;
          }
 
+         std::unordered_set< GlobalIndexType > assignedPoints;
          for( GlobalIndexType i = 0; i < getCellsCount(); i++ )
          {
             auto cornerIds = this->cellSeeds[ i ].getCornerIds();
             for( LocalIndexType j = 0; j < cornerIds.getSize(); j++ )
+            {
+               assignedPoints.insert( cornerIds[ j ] );
                if( cornerIds[ j ] < 0 || getPointsCount() <= cornerIds[ j ] )
                {
                   std::cerr << "Cell seed " << i << " is referencing unavailable point " << cornerIds[ j ] << std::endl;
                   return false;
                }
+            }
          }
+
+         if( (GlobalIndexType) assignedPoints.size() != this->getPointsCount() )
+         {
+            std::cerr << "Mesh builder error: Some points were not used for cells." << std::endl;
+            return false;
+         }
+
          return true;
       }
 
@@ -109,7 +120,7 @@ class MeshBuilder
       bool allPointsSet() const
       {
          for( GlobalIndexType i = 0; i < this->points.getSize(); i++ )
-            if (! this->pointsSet[ i ] )
+            if( ! this->pointsSet[ i ] )
                return false;
          return true;
       }

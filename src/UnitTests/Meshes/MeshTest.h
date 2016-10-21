@@ -381,10 +381,11 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
    for( IndexType j = 0; j < ySize; j++ )
       for( IndexType i = 0; i < xSize; i++ )
       {
-         IndexType vertex0 = j * xSize + i;
-         IndexType vertex1 = j * xSize + i + 1;
-         IndexType vertex2 = ( j + 1 ) * xSize + i;
-         IndexType vertex3 = ( j + 1 ) * xSize + i + 1;
+         const IndexType vertex0 = j * ( xSize + 1 ) + i;
+         const IndexType vertex1 = j * ( xSize + 1 ) + i + 1;
+         const IndexType vertex2 = ( j + 1 ) * ( xSize + 1 ) + i;
+         const IndexType vertex3 = ( j + 1 ) * ( xSize + 1 ) + i + 1;
+
          meshBuilder.getCellSeed( cellIdx   ).setCornerId( 0, vertex0 );
          meshBuilder.getCellSeed( cellIdx   ).setCornerId( 1, vertex1 );
          meshBuilder.getCellSeed( cellIdx++ ).setCornerId( 2, vertex2 );
@@ -436,10 +437,11 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    for( IndexType j = 0; j < ySize; j++ )
       for( IndexType i = 0; i < xSize; i++ )
       {
-         IndexType vertex0 = j * xSize + i;
-         IndexType vertex1 = j * xSize + i + 1;
-         IndexType vertex2 = ( j + 1 ) * xSize + i;
-         IndexType vertex3 = ( j + 1 ) * xSize + i + 1;
+         const IndexType vertex0 = j * ( xSize + 1 ) + i;
+         const IndexType vertex1 = j * ( xSize + 1 ) + i + 1;
+         const IndexType vertex2 = ( j + 1 ) * ( xSize + 1 ) + i;
+         const IndexType vertex3 = ( j + 1 ) * ( xSize + 1 ) + i + 1;
+
          meshBuilder.getCellSeed( cellIdx   ).setCornerId( 0, vertex0 );
          meshBuilder.getCellSeed( cellIdx   ).setCornerId( 1, vertex1 );
          meshBuilder.getCellSeed( cellIdx   ).setCornerId( 2, vertex2 );
@@ -494,14 +496,14 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
       for( IndexType j = 0; j < ySize; j++ )
          for( IndexType i = 0; i < xSize; i++ )
          {
-            IndexType vertex0 = k * xSize * ySize + j * xSize + i;
-            IndexType vertex1 = k * xSize * ySize + j * xSize + i + 1;
-            IndexType vertex2 = k * xSize * ySize + ( j + 1 ) * xSize + i;
-            IndexType vertex3 = k * xSize * ySize + ( j + 1 ) * xSize + i + 1;
-            IndexType vertex4 = ( k + 1 ) * xSize * ySize + j * xSize + i;
-            IndexType vertex5 = ( k + 1 ) * xSize * ySize + j * xSize + i + 1;
-            IndexType vertex6 = ( k + 1 ) * xSize * ySize + ( j + 1 ) * xSize + i;
-            IndexType vertex7 = ( k + 1 ) * xSize * ySize + ( j + 1 ) * xSize + i + 1;
+            const IndexType vertex0 = k * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i;
+            const IndexType vertex1 = k * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i + 1;
+            const IndexType vertex2 = k * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i;
+            const IndexType vertex3 = k * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i + 1;
+            const IndexType vertex4 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i;
+            const IndexType vertex5 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + j * ( xSize + 1 ) + i + 1;
+            const IndexType vertex6 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i;
+            const IndexType vertex7 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i + 1;
 
             meshBuilder.getCellSeed( cellIdx   ).setCornerId( 0, vertex0 );
             meshBuilder.getCellSeed( cellIdx   ).setCornerId( 1, vertex1 );
