@@ -47,13 +47,6 @@ class MeshSuperentityAccess
    using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimensions >;
 
 public:
-   bool operator == ( const MeshSuperentityAccess< MeshConfig, EntityTopology >& a ) const { return true; } // TODO: fix
-
-   void print( std::ostream& str ) const
-   {
-      BaseType::print( str );
-   }
-
    template< int Superdimensions >
    void bindSuperentitiesStorageNetwork( const typename SuperentityTraits< Superdimensions >::SuperentityAccessorType& storage )
    {
@@ -97,6 +90,16 @@ public:
       return BaseType::getSuperentityIndex( MeshDimensionsTag< Superdimensions >(),
                                             localIndex );
    }
+
+   bool operator==( const MeshSuperentityAccess& other ) const
+   {
+      return BaseType::operator==( other );
+   }
+
+   void print( std::ostream& str ) const
+   {
+      BaseType::print( str );
+   }
 };
 
 template< typename MeshConfig,
@@ -127,6 +130,8 @@ public:
    using BaseType::getNumberOfSuperentities;
    using BaseType::setSuperentityIndex;
    using BaseType::getSuperentityIndex;
+
+   MeshSuperentityAccessLayer& operator = ( const MeshSuperentityAccessLayer& layer ) = delete;
 
    /****
     * Define setter/getter for the current level of the superentities
@@ -172,13 +177,16 @@ public:
       return this->superentityIndices;
    }
 
+   bool operator==( const MeshSuperentityAccessLayer& other ) const
+   {
+      return ( BaseType::operator==( other ) && superentityIndices == other.superentityIndices );
+   }
+
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
       str << "\t Superentities with " << DimensionsTag::value << " dimensions are: " << this->superentityIndices << "." << std::endl;
    }
-
-   //bool operator == ( const MeshSuperentityAccessLayer< MeshConfig, EntityTopology, Dimensions, tnlStorageTraits< true > >& l ) { return true; } // TODO: fix
 
 private:
    SuperentityAccessorType superentityIndices;
@@ -228,6 +236,11 @@ protected:
 
    void getSuperentityIndices() {}
 
+   bool operator==( const MeshSuperentityAccess< MeshConfig, EntityTopology >& other ) const
+   {
+      return true;
+   }
+
    void print( std::ostream& str ) const {}
 };
 
@@ -263,6 +276,11 @@ protected:
                              const GlobalIndexType& globalIndex ) {}
 
    void getSuperentityIndices() {}
+
+   bool operator==( const MeshSuperentityAccessLayer& other ) const
+   {
+      return true;
+   }
 
    void print( std::ostream& str ) const {}
 };

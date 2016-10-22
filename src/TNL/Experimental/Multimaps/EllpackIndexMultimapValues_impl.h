@@ -183,6 +183,21 @@ operator[]( const LocalIndexType& portIndex ) const
 template< typename Index,
           typename Device,
           typename LocalIndex >
+bool
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
+operator==( const ThisType& other ) const
+{
+   if( this->getSize() != other.getSize() )
+      return false;
+   for( LocalIndexType i = 0; i < this->getSize(); i++ )
+      if( this->operator[]( i ) != other[ i ] )
+         return false;
+   return true;
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
 void
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 print( std::ostream& str ) const

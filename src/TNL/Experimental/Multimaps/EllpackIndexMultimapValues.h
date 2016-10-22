@@ -57,6 +57,8 @@ class EllpackIndexMultimapValues
 
       const IndexType& operator[]( const LocalIndexType& portIndex ) const;
 
+      bool operator==( const ThisType& other ) const;
+
       void print( std::ostream& str ) const;
 
    protected:

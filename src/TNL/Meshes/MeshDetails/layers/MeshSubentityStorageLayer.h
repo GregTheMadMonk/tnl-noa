@@ -115,7 +115,7 @@ protected:
       str << "\t Subentities with " << DimensionsTag::value << " dimensions are: " << subentitiesIndices << "." << std::endl;
    }
 
-   bool operator==( const MeshSubentityStorageLayer& layer  ) const
+   bool operator==( const MeshSubentityStorageLayer& layer ) const
    {
       return ( BaseType::operator==( layer ) &&
                subentitiesIndices == layer.subentitiesIndices );
@@ -235,7 +235,7 @@ protected:
       str << "\t Subentities with " << DimensionsTag::value << " dimensions are: " << subentitiesIndices << "." << std::endl;
    }
 
-   bool operator==( const MeshSubentityStorageLayer& layer  ) const
+   bool operator==( const MeshSubentityStorageLayer& layer ) const
    {
       return ( BaseType::operator==( layer ) &&
                subentitiesIndices == layer.subentitiesIndices );
@@ -348,7 +348,7 @@ protected:
       str << "\t Subentities with " << DimensionsTag::value << " dimensions are: " << this->verticesIndices << "." << std::endl;
    }
 
-   bool operator==( const MeshSubentityStorageLayer& layer  ) const
+   bool operator==( const MeshSubentityStorageLayer& layer ) const
    {
       return ( verticesIndices == layer.verticesIndices );
    }
