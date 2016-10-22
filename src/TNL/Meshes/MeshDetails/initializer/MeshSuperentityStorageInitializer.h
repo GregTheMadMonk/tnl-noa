@@ -111,9 +111,6 @@ class MeshSuperentityStorageInitializerLayer< MeshConfig,
                LocalIndexType i = 0;
                for( auto v_it = it->second.cbegin(); v_it != it->second.cend(); v_it++ )
                   superentitiesIndices[ i++ ] = *v_it;
-
-               EntityType& entity = meshInitializer.template meshEntitiesArray< EntityDimensions::value >()[ entityIndex ];
-               meshInitializer.template bindSuperentitiesStorageNetwork< DimensionsTag::value >( entity, superentityStorageNetwork.getValues( entityIndex++ ) );
             }
 
             dynamicStorageNetwork.clear();

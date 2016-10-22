@@ -130,13 +130,6 @@ class MeshInitializer
          return mesh->template getSuperentityStorageNetwork< EntityTopology, SuperdimensionsTag >();
       }
 
-      template< int Superdimensions, typename MeshEntity, typename Storage >
-      static void
-      bindSuperentitiesStorageNetwork( MeshEntity& entity, const Storage& storage )
-      {
-         entity.template bindSuperentitiesStorageNetwork< Superdimensions >( storage );
-      }
-
       static void
       setVertexPoint( typename MeshType::VertexType& vertex, const typename MeshType::PointType& point )
       {

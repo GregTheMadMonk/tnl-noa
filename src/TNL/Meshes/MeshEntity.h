@@ -24,6 +24,7 @@
 #include <TNL/Meshes/Topologies/MeshVertexTopology.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSubentityStorageLayer.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSuperentityAccess.h>
+#include <TNL/Meshes/MeshDetails/layers/MeshSuperentityStorageRebinder.h>
 #include <TNL/Meshes/MeshDetails/initializer/MeshEntitySeed.h>
 
 namespace TNL {
@@ -127,6 +128,9 @@ class MeshEntity
       typename SubentityTraits< Subdimensions >::OrientationArrayType& subentityOrientationsArray();
  
    friend MeshInitializer< MeshConfig >;
+
+   template< typename Mesh, typename DimensionsTag, typename SuperdimensionsTag >
+   friend struct MeshSuperentityStorageRebinderWorker;
 };
 
 /****
@@ -187,6 +191,9 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       PointType point;
  
    friend MeshInitializer< MeshConfig >;
+
+   template< typename Mesh, typename DimensionsTag, typename SuperdimensionsTag >
+   friend struct MeshSuperentityStorageRebinderWorker;
 };
 
 template< typename MeshConfig,

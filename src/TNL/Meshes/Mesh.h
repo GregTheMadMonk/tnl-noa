@@ -23,6 +23,7 @@
 #include <TNL/Meshes/MeshDetails/layers/MeshStorageLayer.h>
 #include <TNL/Meshes/MeshDetails/config/MeshConfigValidator.h>
 #include <TNL/Meshes/MeshDetails/initializer/MeshInitializer.h>
+#include <TNL/Meshes/MeshDetails/layers/MeshSuperentityStorageRebinder.h>
 
 namespace TNL {
 namespace Meshes {
@@ -96,6 +97,9 @@ class Mesh
       MeshConfigValidator< MeshConfig > configValidator;
 
       friend MeshInitializer< MeshConfig >;
+
+      template< typename Mesh, typename DimensionsTag, typename SuperdimensionsTag >
+      friend struct MeshSuperentityStorageRebinderWorker;
 };
 
 template< typename MeshConfig >

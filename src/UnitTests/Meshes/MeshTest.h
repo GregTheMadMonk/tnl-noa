@@ -168,12 +168,9 @@ TEST( MeshTest, TwoTrianglesTest )
    EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSuperentityIndex< 2 >( 1 ),    1 );
 
 
-   //ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
-   //ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
-   //ASSERT_TRUE( mesh == mesh2 );
-
-   //mesh.print(std::cout );
-   //mesh2.print(std::cout );
+   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
+   ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
+   ASSERT_EQ( mesh, mesh2 );
 };
 
 TEST( MeshTest, TetrahedronsTest )
@@ -187,7 +184,7 @@ TEST( MeshTest, TetrahedronsTest )
    ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 3, RealType >::getType() ) );
 
    typedef Mesh< TestTetrahedronMeshConfig > TestTetrahedronMesh;
-   TestTetrahedronMesh mesh;
+   TestTetrahedronMesh mesh, mesh2;
    MeshBuilder< TestTetrahedronMesh > meshBuilder;
    meshBuilder.setPointsCount( 13 );
    meshBuilder.setPoint(  0, PointType(  0.000000, 0.000000, 0.000000 ) );
@@ -339,10 +336,9 @@ TEST( MeshTest, TetrahedronsTest )
 
    ASSERT_TRUE( meshBuilder.build( mesh ) );
 
-   /*ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
+   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
    ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
-   ASSERT_TRUE( mesh == mesh2 );*/
-   //mesh.print(std::cout );
+   ASSERT_EQ( mesh, mesh2 );
 }
 
 TEST( MeshTest, RegularMeshOfTrianglesTest )
@@ -362,7 +358,7 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
    const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
 
    typedef Mesh< TestTriangleMeshConfig > TestTriangleMesh;
-   Mesh< TestTriangleMeshConfig > mesh;
+   Mesh< TestTriangleMeshConfig > mesh, mesh2;
    MeshBuilder< TestTriangleMesh > meshBuilder;
    meshBuilder.setPointsCount( numberOfVertices );
    meshBuilder.setCellsCount( numberOfCells );
@@ -442,10 +438,9 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
          }
       }
 
-   //ASSERT_TRUE( mesh.save( "mesh-test.tnl" ) );
-   //ASSERT_TRUE( mesh2.load( "mesh-test.tnl" ) );
-   //ASSERT_TRUE( mesh == mesh2 );
-   //mesh.print(std::cout );
+   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
+   ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
+   ASSERT_EQ( mesh, mesh2 );
 }
 
 TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
@@ -542,10 +537,9 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
          }
       }
 
-   //ASSERT_TRUE( mesh.save( "mesh-test.tnl" ) );
-   //ASSERT_TRUE( mesh2.load( "mesh-test.tnl" ) );
-   //ASSERT_TRUE( mesh == mesh2 );
-   //mesh.print(std::cout );
+   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
+   ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
+   ASSERT_EQ( mesh, mesh2 );
 }
 
 TEST( MeshTest, RegularMeshOfHexahedronsTest )
@@ -709,11 +703,9 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
             }
          }
 
-   //meshInitializer.initMesh( mesh );
-   /*ASSERT_TRUE( mesh.save( "mesh-test.tnl" ) );
-   ASSERT_TRUE( mesh2.load( "mesh-test.tnl" ) );
-   ASSERT_TRUE( mesh == mesh2 );*/
-   //mesh.print(std::cout );
+   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
+   ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
+   ASSERT_EQ( mesh, mesh2 );
 }
 
 #endif
