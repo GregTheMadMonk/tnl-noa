@@ -69,6 +69,8 @@ class MeshEntity
       void print( std::ostream& str ) const;
 
       bool operator==( const MeshEntity& entity ) const;
+
+      bool operator!=( const MeshEntity& entity ) const;
  
       constexpr int getEntityDimension() const;
 
@@ -165,6 +167,8 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       void print( std::ostream& str ) const;
 
       bool operator==( const MeshEntity& entity ) const;
+
+      bool operator!=( const MeshEntity& entity ) const;
  
       constexpr int getEntityDimension() const;
 

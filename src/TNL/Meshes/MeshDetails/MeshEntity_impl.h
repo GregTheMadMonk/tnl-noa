@@ -103,6 +103,15 @@ operator==( const MeshEntity& entity ) const
 
 template< typename MeshConfig,
           typename EntityTopology >
+bool
+MeshEntity< MeshConfig, EntityTopology >::
+operator!=( const MeshEntity& entity ) const
+{
+   return ! ( *this == entity );
+}
+
+template< typename MeshConfig,
+          typename EntityTopology >
 constexpr int
 MeshEntity< MeshConfig, EntityTopology >::
 getEntityDimension() const
@@ -338,6 +347,14 @@ operator==( const MeshEntity& entity ) const
             MeshEntityId< typename MeshConfig::IdType,
                           typename MeshConfig::GlobalIndexType >::operator==( entity ) &&
             point == entity.point );
+}
+
+template< typename MeshConfig >
+bool
+MeshEntity< MeshConfig, MeshVertexTopology >::
+operator!=( const MeshEntity& entity ) const
+{
+   return ! ( *this == entity );
 }
 
 template< typename MeshConfig >

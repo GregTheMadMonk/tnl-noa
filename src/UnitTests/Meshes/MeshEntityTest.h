@@ -502,4 +502,125 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    ASSERT_EQ( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 1 ),    1 );
 }
 
+TEST( MeshEntityTest, OneTriangleComparisonTest )
+{
+   using TriangleMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, MeshTriangleTopology >;
+   using EdgeMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, typename TriangleMeshEntityType::SubentityTraits< 1 >::SubentityTopology >;
+   using VertexMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, typename TriangleMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
+
+   static_assert( TriangleMeshEntityType::SubentityTraits< 1 >::storageEnabled, "Testing triangle entity does not store edges as required." );
+   static_assert( TriangleMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing triangle entity does not store vertices as required." );
+   static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
+   static_assert( EdgeMeshEntityType::SuperentityTraits< 2 >::storageEnabled, "Testing edge entity does not store triangles as required." );
+   static_assert( VertexMeshEntityType::SuperentityTraits< 2 >::storageEnabled, "Testing vertex entity does not store triangles as required." );
+   static_assert( VertexMeshEntityType::SuperentityTraits< 1 >::storageEnabled, "Testing vertex entity does not store edges as required." );
+
+   using PointType = typename VertexMeshEntityType::PointType;
+   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
+
+   PointType point0( 0.0, 0.0 ),
+             point1( 1.0, 0.0 ),
+             point2( 0.0, 1.0 );
+
+   Containers::StaticArray< 3, VertexMeshEntityType > vertices;
+   vertices[ 0 ].setPoint( point0 );
+   vertices[ 1 ].setPoint( point1 );
+   vertices[ 2 ].setPoint( point2 );
+
+   Containers::StaticArray< 3, EdgeMeshEntityType > edges;
+   edges[ 0 ].template setSubentityIndex< 0 >( 0, 1 );
+   edges[ 0 ].template setSubentityIndex< 0 >( 1, 2 );
+   edges[ 1 ].template setSubentityIndex< 0 >( 0, 2 );
+   edges[ 1 ].template setSubentityIndex< 0 >( 1, 0 );
+   edges[ 2 ].template setSubentityIndex< 0 >( 0, 0 );
+   edges[ 2 ].template setSubentityIndex< 0 >( 1, 1 );
+
+   TriangleMeshEntityType triangle;
+   triangle.template setSubentityIndex< 0 >( 0 , 0 );
+   triangle.template setSubentityIndex< 0 >( 1 , 1 );
+   triangle.template setSubentityIndex< 0 >( 2 , 2 );
+   triangle.template setSubentityIndex< 1 >( 0 , 0 );
+   triangle.template setSubentityIndex< 1 >( 1 , 1 );
+   triangle.template setSubentityIndex< 1 >( 2 , 2 );
+
+
+   StorageNetwork< TestTriangleMeshConfig, MeshVertexTopology, 1 > vertexEdgeSuperentities;
+   vertexEdgeSuperentities.setKeysRange( 3 );
+   vertexEdgeSuperentities.allocate( 2 );
+
+   vertices[ 0 ].template bindSuperentitiesStorageNetwork< 1 >( vertexEdgeSuperentities.getValues( 0 ) );
+   vertices[ 0 ].template setNumberOfSuperentities< 1 >( 2 );
+   vertices[ 0 ].template setSuperentityIndex< 1 >( 0, 2 );
+   vertices[ 0 ].template setSuperentityIndex< 1 >( 1, 1 );
+
+   vertices[ 1 ].template bindSuperentitiesStorageNetwork< 1 >( vertexEdgeSuperentities.getValues( 1 ) );
+   vertices[ 1 ].template setNumberOfSuperentities< 1 >( 2 );
+   vertices[ 1 ].template setSuperentityIndex< 1 >( 0, 0 );
+   vertices[ 1 ].template setSuperentityIndex< 1 >( 1, 2 );
+
+   vertices[ 2 ].template bindSuperentitiesStorageNetwork< 1 >( vertexEdgeSuperentities.getValues( 2 ) );
+   vertices[ 2 ].template setNumberOfSuperentities< 1 >( 2 );
+   vertices[ 2 ].template setSuperentityIndex< 1 >( 0, 0 );
+   vertices[ 2 ].template setSuperentityIndex< 1 >( 1, 1 );
+
+
+   StorageNetwork< TestTriangleMeshConfig, MeshVertexTopology, 2 > vertexCellSuperentities;
+   vertexCellSuperentities.setKeysRange( 3 );
+   vertexCellSuperentities.allocate( 1 );
+
+   vertices[ 0 ].template bindSuperentitiesStorageNetwork< 2 >( vertexCellSuperentities.getValues( 0 ) );
+   vertices[ 0 ].template setNumberOfSuperentities< 2 >( 1 );
+   vertices[ 0 ].template setSuperentityIndex< 2 >( 0, 0 );
+
+   vertices[ 1 ].template bindSuperentitiesStorageNetwork< 2 >( vertexCellSuperentities.getValues( 1 ) );
+   vertices[ 1 ].template setNumberOfSuperentities< 2 >( 1 );
+   vertices[ 1 ].template setSuperentityIndex< 2 >( 0, 0 );
+
+   vertices[ 2 ].template bindSuperentitiesStorageNetwork< 2 >( vertexCellSuperentities.getValues( 2 ) );
+   vertices[ 2 ].template setNumberOfSuperentities< 2 >( 1 );
+   vertices[ 2 ].template setSuperentityIndex< 2 >( 0, 0 );
+
+
+   StorageNetwork< TestTriangleMeshConfig, MeshEdgeTopology, 2 > edgeCellSuperentities;
+   edgeCellSuperentities.setKeysRange( 3 );
+   edgeCellSuperentities.allocate( 1 );
+
+   edges[ 0 ].template bindSuperentitiesStorageNetwork< 2 >( edgeCellSuperentities.getValues( 0 ) );
+   edges[ 0 ].template setNumberOfSuperentities< 2 >( 1 );
+   edges[ 0 ].template setSuperentityIndex< 2 >( 0, 0 );
+
+   edges[ 1 ].template bindSuperentitiesStorageNetwork< 2 >( edgeCellSuperentities.getValues( 1 ) );
+   edges[ 1 ].template setNumberOfSuperentities< 2 >( 1 );
+   edges[ 1 ].template setSuperentityIndex< 2 >( 0, 0 );
+
+   edges[ 2 ].template bindSuperentitiesStorageNetwork< 2 >( edgeCellSuperentities.getValues( 2 ) );
+   edges[ 2 ].template setNumberOfSuperentities< 2 >( 1 );
+   edges[ 2 ].template setSuperentityIndex< 2 >( 0, 0 );
+
+
+   /*
+    * Tests for MeshEntity::operator==
+    */
+   EXPECT_EQ( vertices[ 0 ], vertices[ 0 ] );
+   EXPECT_NE( vertices[ 0 ], vertices[ 1 ] );
+   vertices[ 0 ].setPoint( point1 );
+   vertices[ 0 ].template setSuperentityIndex< 1 >( 0, 0 );
+   vertices[ 0 ].template setSuperentityIndex< 1 >( 1, 2 );
+   EXPECT_EQ( vertices[ 0 ], vertices[ 1 ] );
+   vertices[ 0 ].template setSuperentityIndex< 2 >( 0, 1 );
+   EXPECT_NE( vertices[ 0 ], vertices[ 1 ] );
+   vertices[ 1 ].template setSuperentityIndex< 2 >( 0, 1 );
+   EXPECT_EQ( vertices[ 0 ], vertices[ 1 ] );
+
+   EXPECT_EQ( edges[ 0 ], edges[ 0 ] );
+   EXPECT_NE( edges[ 0 ], edges[ 1 ] );
+   edges[ 0 ].template setSubentityIndex< 0 >( 0, 2 );
+   edges[ 0 ].template setSubentityIndex< 0 >( 1, 0 );
+   EXPECT_EQ( edges[ 0 ], edges[ 1 ] );
+   edges[ 0 ].template setSuperentityIndex< 2 >( 0, 1 );
+   EXPECT_NE( edges[ 0 ], edges[ 1 ] );
+   edges[ 1 ].template setSuperentityIndex< 2 >( 0, 1 );
+   EXPECT_EQ( edges[ 0 ], edges[ 1 ] );
+}
+
 #endif

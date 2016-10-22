@@ -133,7 +133,17 @@ public:
    using BaseType::getSuperentityIndex;
    using BaseType::getSuperentityIndices;
 
-   MeshSuperentityAccessLayer& operator = ( const MeshSuperentityAccessLayer& layer ) = delete;
+   MeshSuperentityAccessLayer() = default;
+
+   explicit MeshSuperentityAccessLayer( const MeshSuperentityAccessLayer& layer )
+   {
+      this->superentityIndices.bind( layer.superentityIndices );
+   }
+
+   MeshSuperentityAccessLayer& operator=( const MeshSuperentityAccessLayer& layer )
+   {
+      this->superentityIndices.bind( layer.superentityIndices );
+   }
 
    /****
     * Define setter/getter for the current level of the superentities
