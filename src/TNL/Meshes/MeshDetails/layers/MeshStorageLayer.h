@@ -36,6 +36,24 @@ template< typename MeshConfig >
 class MeshStorageLayers
    : public MeshStorageLayer< MeshConfig, typename MeshTraits< MeshConfig >::DimensionTag >
 {
+   using MeshTraitsType   = MeshTraits< MeshConfig >;
+   using BaseType         = MeshStorageLayer< MeshConfig, typename MeshTraitsType::DimensionsTag >;
+   template< int Dimensions >
+   using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimensions >;
+
+protected:
+   template< int Dimensions >
+   typename EntityTraits< Dimensions >::StorageArrayType& getEntitiesArray()
+   {
+      return BaseType::getEntitiesArray( MeshDimensionsTag< Dimensions >() );
+   }
+
+   template< typename EntityTopology, typename SuperdimensionsTag >
+   typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
+   getSuperentityStorageNetwork()
+   {
+      return BaseType::template getSuperentityStorageNetwork< SuperdimensionsTag >( MeshDimensionsTag< EntityTopology::dimensions >() );
+   }
 };
 
 
@@ -142,11 +160,9 @@ protected:
 
    AccessArrayType entitiesAccess;
 
-// TODO: this is only for the mesh initializer - fix it
-public:
-   using BaseType::entitiesArray;
-
-   typename EntityTraitsType::StorageArrayType& entitiesArray( DimensionsTag )
+   // Methods for the mesh initializer
+   using BaseType::getEntitiesArray;
+   typename EntityTraitsType::StorageArrayType& getEntitiesArray( DimensionsTag )
    {
       return entities;
    }
@@ -285,14 +301,13 @@ public:
       return ( SuperentityStorageBaseType::operator==( meshLayer ) && vertices == meshLayer.vertices );
    }
 
-private:
+protected:
    StorageArrayType vertices;
 
    AccessArrayType verticesAccess;
 
-// TODO: this is only for the mesh initializer - fix it
-public:
-   typename EntityTraitsType::StorageArrayType& entitiesArray( DimensionsTag )
+   // Methods for the mesh initializer
+   typename EntityTraitsType::StorageArrayType& getEntitiesArray( DimensionsTag )
    {
       return vertices;
    }

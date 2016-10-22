@@ -116,11 +116,11 @@ class MeshInitializer
          return entity.template subentityOrientationsArray< SubDimensionTag::value >();
       }
 
-      template< typename DimensionTag >
-      typename MeshTraitsType::template EntityTraits< DimensionTag::value >::StorageArrayType&
+      template< int Dimensions >
+      typename MeshTraitsType::template EntityTraits< Dimensions >::StorageArrayType&
       meshEntitiesArray()
       {
-         return mesh->template entitiesArray< DimensionTag >();
+         return mesh->template getEntitiesArray< Dimensions >();
       }
 
       template< typename EntityTopology, typename SuperdimensionsTag >
@@ -209,8 +209,8 @@ class MeshInitializerLayer< MeshConfig,
 
       void initEntities( InitializerType &initializer, const PointArrayType &points, const CellSeedArrayType &cellSeeds)
       {
-         StorageArrayType &entityArray = initializer.template meshEntitiesArray< DimensionTag >();
-         //cout << " Initiating entities with " << DimensionTag::value << " dimensions ... " << std::endl;
+         StorageArrayType &entityArray = initializer.template meshEntitiesArray< Dimensions >();
+         //cout << " Initiating entities with " << DimensionsTag::value << " dimensions ... " << std::endl;
          entityArray.setSize( cellSeeds.getSize() );
          for( GlobalIndexType i = 0; i < entityArray.getSize(); i++ )
          {
@@ -356,8 +356,8 @@ class MeshInitializerLayer< MeshConfig,
 
       void initEntities( InitializerType& initializer, const PointArrayType& points )
       {
-         StorageArrayType &entityArray = initializer.template meshEntitiesArray< DimensionTag >();
-         //cout << " Initiating entities with " << DimensionTag::value << " dimensions ... " << std::endl;
+         StorageArrayType &entityArray = initializer.template meshEntitiesArray< Dimensions >();
+         //cout << " Initiating entities with " << DimensionsTag::value << " dimensions ... " << std::endl;
          entityArray.setSize( this->seedsIndexedSet.getSize() );
          EntitySeedArrayType seedsArray;
          seedsArray.setSize( this->seedsIndexedSet.getSize() );
@@ -475,8 +475,8 @@ class MeshInitializerLayer< MeshConfig,
 
       void initEntities( InitializerType& initializer, const PointArrayType& points )
       {
-         EntityArrayType &entityArray = initializer.template meshEntitiesArray< DimensionTag >();
-         //cout << " Initiating entities with " << DimensionTag::value << " dimensions ... " << std::endl;
+         EntityArrayType &entityArray = initializer.template meshEntitiesArray< DimensionsTag::value >();
+         //cout << " Initiating entities with " << DimensionsTag::value << " dimensions ... " << std::endl;
          entityArray.setSize( this->seedsIndexedSet.getSize() );
          SeedArrayType seedsArray;
          seedsArray.setSize( this->seedsIndexedSet.getSize() );
@@ -594,7 +594,7 @@ class MeshInitializerLayer< MeshConfig,
 
       void initEntities( InitializerType& initializer, const PointArrayType& points )
       {
-         EntityArrayType &vertexArray = initializer.template meshEntitiesArray< DimensionTag >();
+         EntityArrayType &vertexArray = initializer.template meshEntitiesArray< DimensionsTag::value >();
          vertexArray.setSize( points.getSize() );
          for( GlobalIndexType i = 0; i < vertexArray.getSize(); i++ )
             EntityInitializerType::setVertexPoint( vertexArray[i], points[i], initializer );

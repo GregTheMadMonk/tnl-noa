@@ -85,22 +85,17 @@ class Mesh
 
       bool operator==( const Mesh& mesh ) const;
 
-      // TODO: this is only for mesh intializer - remove it if possible
-      template< typename DimensionsTag >
-      typename EntityTraits< DimensionsTag::value >::StorageArrayType& entitiesArray();
-
-      template< typename EntityTopology, typename SuperdimensionsTag >
-      typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
-      getSuperentityStorageNetwork()
-      {
-         return StorageBaseType::template getSuperentityStorageNetwork< SuperdimensionsTag >( MeshDimensionsTag< EntityTopology::dimensions >() );
-      }
- 
       bool init( const typename MeshTraitsType::PointArrayType& points,
                  const typename MeshTraitsType::CellSeedArrayType& cellSeeds );
  
    protected:
+      // Methods for the mesh initializer
+      using StorageBaseType::getEntitiesArray;
+      using StorageBaseType::getSuperentityStorageNetwork;
+
       MeshConfigValidator< MeshConfig > configValidator;
+
+      friend MeshInitializer< MeshConfig >;
 };
 
 template< typename MeshConfig >

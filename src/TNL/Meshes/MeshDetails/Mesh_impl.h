@@ -150,15 +150,6 @@ operator==( const Mesh& mesh ) const
 }
 
 template< typename MeshConfig >
-   template< typename DimensionTag >
-typename Mesh< MeshConfig >::template EntityTraits< DimensionTag::value >::StorageArrayType&
-Mesh< MeshConfig >::
-entitiesArray()
-{
-   return StorageBaseType::entitiesArray( DimensionsTag() );
-}
-
-template< typename MeshConfig >
 bool
 Mesh< MeshConfig >::
 init( const typename Mesh< MeshConfig >::MeshTraitsType::PointArrayType& points,
