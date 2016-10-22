@@ -345,7 +345,7 @@ bool
 MeshEntity< MeshConfig, MeshVertexTopology >::
 operator==( const MeshEntity& entity ) const
 {
-   return ( //MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::operator==( entity ) &&
+   return ( MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::operator==( entity ) &&
             MeshEntityId< typename MeshConfig::IdType,
                           typename MeshConfig::GlobalIndexType >::operator==( entity ) &&
             point == entity.point );

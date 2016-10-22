@@ -49,20 +49,20 @@ class MeshStorageLayer< MeshConfig,
                                           typename MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::EntityTopology >
 {
    public:
+      static constexpr int Dimensions = DimensionsTag::value;
+      using BaseType = MeshStorageLayer< MeshConfig, typename DimensionsTag::Decrement >;
+      using MeshTraitsType   = MeshTraits< MeshConfig >;
+      using EntityTraitsType = typename MeshTraitsType::template EntityTraits< Dimensions >;
+      using StorageArrayType = typename EntityTraitsType::StorageArrayType;
+      using AccessArrayType  = typename EntityTraitsType::AccessArrayType;
+      using GlobalIndexType  = typename EntityTraitsType::GlobalIndexType;
+      using EntityType       = typename EntityTraitsType::EntityType;
+      using EntityTopology   = typename EntityTraitsType::EntityTopology;
+      using SuperentityStorageBaseType = MeshSuperentityStorageLayers< MeshConfig, EntityTopology >;
 
-      static const int Dimensions = DimensionsTag::value;
-      typedef MeshStorageLayer< MeshConfig, typename DimensionsTag::Decrement >  BaseType;
-      typedef MeshSuperentityStorageLayers< MeshConfig,
-                                            typename MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::EntityTopology > SuperentityStorageBaseType;
-      typedef MeshTraits< MeshConfig >                                           MeshTraitsType;
-      typedef typename MeshTraitsType::template EntityTraits< Dimensions >       EntityTraitsType;
-
-      typedef typename EntityTraitsType::StorageArrayType                        StorageArrayType;
-      typedef typename EntityTraitsType::AccessArrayType                         AccessArrayType;
-      typedef typename EntityTraitsType::GlobalIndexType                         GlobalIndexType;
-      typedef typename EntityTraitsType::EntityType                              EntityType;
-      typedef typename EntityTraitsType::EntityTopology                          EntityTopology;
-
+      /****
+        * Make visible getters of the lower layer
+        */
       using BaseType::getNumberOfEntities;
       using BaseType::getEntity;
       using BaseType::getEntities;
@@ -132,31 +132,31 @@ class MeshStorageLayer< MeshConfig,
 
       bool operator==( const MeshStorageLayer& meshLayer ) const
       {
-         return ( BaseType::operator==( meshLayer ) && entities == meshLayer.entities );
+         return ( BaseType::operator==( meshLayer ) && SuperentityStorageBaseType::operator==( meshLayer ) && entities == meshLayer.entities );
       }
 
    protected:
       StorageArrayType entities;
 
       AccessArrayType entitiesAccess;
- 
+
    // TODO: this is only for the mesh initializer - fix it
    public:
       using BaseType::entitiesArray;
- 
-      typename EntityTraitsType::StorageArrayType& entitiesArray( DimensionTag )
+
+      typename EntityTraitsType::StorageArrayType& entitiesArray( DimensionsTag )
       {
          return entities;
       }
- 
+
       using BaseType::superentityIdsArray;
-	
-      template< typename SuperDimensionTag >
-      typename MeshTraitsType::GlobalIdArrayType& superentityIdsArray( DimensionTag )
+
+      template< typename SuperDimensionsTag >
+      typename MeshTraitsType::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
       {
          return SuperentityStorageBaseType::superentityIdsArray( SuperDimensionTag() );
       }
- 
+
       using BaseType::getSuperentityStorageNetwork;
       template< typename SuperdimensionsTag >
       typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
@@ -180,21 +180,20 @@ class MeshStorageLayer< MeshConfig, MeshDimensionsTag< 0 >, true >
 
 {
 public:
-   typedef MeshDimensionsTag< 0 >                                 DimensionsTag;
- 
-   typedef MeshSuperentityStorageLayers< MeshConfig,
-                                         MeshVertexTopology >     SuperentityStorageBaseType;
+   using DimensionsTag              = MeshDimensionsTag< 0 >;
 
-   typedef MeshTraits< MeshConfig >                               MeshTraitsType;
-   typedef typename MeshTraitsType::template EntityTraits< 0 >    EntityTraitsType;
- 
-   typedef typename EntityTraitsType::StorageArrayType            StorageArrayType;
-   typedef typename EntityTraitsType::AccessArrayType             AccessArrayType;
-   typedef typename EntityTraitsType::GlobalIndexType             GlobalIndexType;
-   typedef typename EntityTraitsType::EntityType                  VertexType;
-   typedef typename VertexType::PointType                         PointType;
-   typedef MeshVertexTopology                                     EntityTopology;
- 
+   using SuperentityStorageBaseType = MeshSuperentityStorageLayers< MeshConfig, MeshVertexTopology >;
+
+   using MeshTraitsType             = MeshTraits< MeshConfig >;
+   using EntityTraitsType           = typename MeshTraitsType::template EntityTraits< 0 >;
+
+   using StorageArrayType           = typename EntityTraitsType::StorageArrayType;
+   using AccessArrayType            = typename EntityTraitsType::AccessArrayType;
+   using GlobalIndexType            = typename EntityTraitsType::GlobalIndexType;
+   using VertexType                 = typename EntityTraitsType::EntityType;
+   using PointType                  = typename VertexType::PointType;
+   using EntityTopology             = MeshVertexTopology;
+
    MeshStorageLayer()
    {
    }
@@ -282,13 +281,13 @@ public:
    void print( std::ostream& str ) const
    {
       str << "The mesh vertices are: " << std::endl;
-      for( GlobalIndexType i = 0; i < vertices.getSize();i ++ )
+      for( GlobalIndexType i = 0; i < vertices.getSize(); i++ )
          str << i << vertices[ i ] << std::endl;
    }
 
    bool operator==( const MeshStorageLayer& meshLayer ) const
    {
-      return ( vertices == meshLayer.vertices );
+      return ( SuperentityStorageBaseType::operator==( meshLayer ) && vertices == meshLayer.vertices );
    }
 
 private:
@@ -296,7 +295,7 @@ private:
    StorageArrayType vertices;
 
    AccessArrayType verticesAccess;
- 
+
    // TODO: this is only for the mesh initializer - fix it
    public:
       typename EntityTraitsType::StorageArrayType& entitiesArray( DimensionsTag )
@@ -304,9 +303,8 @@ private:
          return vertices;
       }
 
- 
-      template< typename SuperDimensionTag >
-      typename MeshTraitsType::GlobalIdArrayType& superentityIdsArray( DimensionTag )
+      template< typename SuperDimensionsTag >
+      typename MeshTraitsType::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
       {
          return SuperentityStorageBaseType::superentityIdsArray( SuperDimensionTag() );
       }
