@@ -99,8 +99,8 @@ private:
  
    // TODO: this is only for the mesh initializer - fix it
    public:
-      using BaseType::getStorageNetwork;
-      StorageNetworkType& getStorageNetwork( DimensionTag )
+      using BaseType::getSuperentityStorageNetwork;
+      StorageNetworkType& getSuperentityStorageNetwork( DimensionsTag )
       {
          return this->storageNetwork;
       }
@@ -149,7 +149,7 @@ protected:
       return true;
    }
  
-   void getStorageNetwork( DimensionsTag ) {}
+   void getSuperentityStorageNetwork( DimensionsTag ) {}
 };
 
 template< typename MeshConfig,
@@ -190,7 +190,7 @@ protected:
       return true;
    }
  
-   void getStorageNetwork( DimensionsTag ) {}
+   void getSuperentityStorageNetwork( DimensionsTag ) {}
 };
 
 } // namespace Meshes

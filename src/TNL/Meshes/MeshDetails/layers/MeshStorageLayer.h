@@ -90,12 +90,12 @@ class MeshStorageLayer< MeshConfig,
 
       AccessArrayType& getEntities( DimensionTag )
       {
-         return this->sharedEntities;
+         return this->entitiesAccess;
       }
 
       const AccessArrayType& getEntities( DimensionTag ) const
       {
-         return this->sharedEntities;
+         return this->entitiesAccess;
       }
 
       bool save( File& file ) const
@@ -157,7 +157,7 @@ class MeshStorageLayer< MeshConfig,
       typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
       getSuperentityStorageNetwork( MeshDimensionTag< EntityTopology::dimensions > )
       {
-         return SuperentityStorageBaseType::getStorageNetwork( SuperdimensionsTag() );
+         return SuperentityStorageBaseType::getSuperentityStorageNetwork( SuperdimensionsTag() );
       }
 };
 
@@ -244,12 +244,12 @@ public:
 
    AccessArrayType& getEntities( DimensionTag )
    {
-      return this->sharedVertices;
+      return this->verticesAccess;
    }
 
    const AccessArrayType& getEntities( DimensionTag ) const
    {
-      return this->sharedVertices;
+      return this->verticesAccess;
    }
 
    bool save( File& file ) const
@@ -306,7 +306,7 @@ private:
       typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
       getSuperentityStorageNetwork( MeshDimensionsTag< EntityTopology::dimensions > )
       {
-         return SuperentityStorageBaseType::getStorageNetwork( SuperdimensionsTag() );
+         return SuperentityStorageBaseType::getSuperentityStorageNetwork( SuperdimensionsTag() );
       }
 };
 
