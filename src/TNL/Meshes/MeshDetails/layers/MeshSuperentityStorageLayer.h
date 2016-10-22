@@ -57,16 +57,7 @@ protected:
    using LocalIndexType     = typename SuperentityTraitsType::LocalIndexType;
    using StorageNetworkType = typename SuperentityTraitsType::StorageNetworkType;
  
-   /****
-     * Make visible setters and getters of the lower superentities
-     */
-   using BaseType::setNumberOfSuperentities;
-   using BaseType::getNumberOfSuperentities;
-   using BaseType::setSuperentityIndex;
-   using BaseType::getSuperentityIndex;
-   using BaseType::getSuperentityIndices;
-
-   MeshSuperentityStorageLayer& operator = ( const MeshSuperentityStorageLayer& layer ) = delete;
+   MeshSuperentityStorageLayer& operator=( const MeshSuperentityStorageLayer& layer ) = delete;
 
    bool save( File& file ) const
    {
@@ -141,25 +132,12 @@ protected:
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */
-   void setNumberOfSuperentities( DimensionsTag,
-                                  const LocalIndexType size ) {}
-   void getNumberOfSuperentities( DimensionsTag ) const {}
-   void getSuperentityIndex( DimensionsTag,
-                             const LocalIndexType localIndex ) {}
-   void setSuperentityIndex( DimensionsTag,
-                             const LocalIndexType localIndex,
-                             const GlobalIndexType globalIndex ) {}
-
    void print( std::ostream& str ) const {}
 
    bool operator==( const ThisType& layer ) const
    {
       return true;
    }
-
-   void getSuperentityIndices() {}
-
-   void getSuperentityIndices() const {}
 
    bool save( File& file ) const
    {
@@ -195,25 +173,12 @@ protected:
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */
-   void setNumberOfSuperentities( DimensionsTag,
-                                  const LocalIndexType size ) {}
-   void getNumberOfSuperentities( DimensionsTag ) const {}
-   void getSuperentityIndex( DimensionsTag,
-                             const LocalIndexType localIndex ) {}
-   void setSuperentityIndex( DimensionsTag,
-                             const LocalIndexType localIndex,
-                             const GlobalIndexType globalIndex ) {}
-
    void print( std::ostream& str ) const {}
 
    bool operator==( const ThisType& layer ) const
    {
       return true;
    }
-
-   void getSuperentityIndices() {}
-
-   void getSuperentityIndices() const {}
 
    bool save( File& file ) const
    {

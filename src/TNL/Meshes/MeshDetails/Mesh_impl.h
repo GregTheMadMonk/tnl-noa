@@ -159,15 +159,6 @@ entitiesArray()
 }
 
 template< typename MeshConfig >
-   template< typename DimensionTag, typename SuperDimensionTag >
-typename Mesh< MeshConfig >::MeshTraitsType::GlobalIdArrayType&
-Mesh< MeshConfig >::
-superentityIdsArray()
-{
-   return entitiesStorage.template superentityIdsArray< SuperDimensionTag >( DimensionTag() );
-}
-
-template< typename MeshConfig >
 bool
 Mesh< MeshConfig >::
 init( const typename Mesh< MeshConfig >::MeshTraitsType::PointArrayType& points,

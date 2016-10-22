@@ -130,6 +130,7 @@ public:
    using BaseType::getNumberOfSuperentities;
    using BaseType::setSuperentityIndex;
    using BaseType::getSuperentityIndex;
+   using BaseType::getSuperentityIndices;
 
    MeshSuperentityAccessLayer& operator = ( const MeshSuperentityAccessLayer& layer ) = delete;
 
@@ -166,7 +167,6 @@ public:
       return this->superentityIndices[ localIndex ];
    }
 
-   using BaseType::getSuperentityIndices;
    const SuperentityAccessorType& getSuperentityIndices( DimensionsTag ) const
    {
       return this->superentityIndices;

@@ -86,10 +86,6 @@ class Mesh : public Object/*,
       template< typename DimensionsTag >
       typename EntityTraits< DimensionsTag::value >::StorageArrayType& entitiesArray();
 
- 
-      template< typename DimensionsTag, typename SuperDimensionsTag >
-      typename MeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray();
- 
       template< typename EntityTopology, typename SuperdimensionsTag >
       typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
       getSuperentityStorageNetwork()

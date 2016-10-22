@@ -152,14 +152,6 @@ class MeshStorageLayer< MeshConfig,
          return entities;
       }
 
-      using BaseType::superentityIdsArray;
-
-      template< typename SuperDimensionsTag >
-      typename MeshTraitsType::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
-      {
-         return SuperentityStorageBaseType::superentityIdsArray( SuperDimensionTag() );
-      }
-
       using BaseType::getSuperentityStorageNetwork;
       template< typename SuperdimensionsTag >
       typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
@@ -308,12 +300,6 @@ private:
       typename EntityTraitsType::StorageArrayType& entitiesArray( DimensionsTag )
       {
          return vertices;
-      }
-
-      template< typename SuperDimensionsTag >
-      typename MeshTraitsType::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
-      {
-         return SuperentityStorageBaseType::superentityIdsArray( SuperDimensionTag() );
       }
 
       template< typename SuperdimensionsTag >
