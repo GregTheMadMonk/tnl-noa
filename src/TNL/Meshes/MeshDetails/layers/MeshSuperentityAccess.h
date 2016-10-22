@@ -36,12 +36,12 @@ class MeshSuperentityAccess
                                         EntityTopology,
                                         MeshDimensionsTag< MeshTraits< MeshConfig >::meshDimensions > >
 {
-   typedef MeshSuperentityAccessLayer< MeshConfig,
-                                       EntityTopology,
-                                       MeshDimensionsTag< MeshTraits< MeshConfig >::meshDimensions > > BaseType;
+   using BaseType = MeshSuperentityAccessLayer< MeshConfig,
+                                                EntityTopology,
+                                                MeshDimensionsTag< MeshTraits< MeshConfig >::meshDimensions > >;
 
-   static const int Dimensions = MeshTraits< MeshConfig >::meshDimensions;
-   typedef MeshTraits< MeshConfig >                                                          MeshTraitsType;
+   static constexpr int Dimensions = MeshTraits< MeshConfig >::meshDimensions;
+   using MeshTraitsType = MeshTraits< MeshConfig >;
 
    template< int Superdimensions >
    using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimensions >;
@@ -108,17 +108,17 @@ class MeshSuperentityAccessLayer< MeshConfig,
                                   true >
    : public MeshSuperentityAccessLayer< MeshConfig, EntityTopology, typename DimensionsTag::Decrement >
 {
-	typedef MeshSuperentityAccessLayer< MeshConfig, EntityTopology, typename DimensionsTag::Decrement > BaseType;
+	using BaseType = MeshSuperentityAccessLayer< MeshConfig, EntityTopology, typename DimensionsTag::Decrement >;
 
-   typedef MeshTraits< MeshConfig >                                                             MeshTraitsType;
-   typedef typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionsTag::value > SuperentityTraitsType;
+   using MeshTraitsType = MeshTraits< MeshConfig >;
+   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionsTag::value >;
 
 public:
-   typedef typename MeshTraitsType::IdArrayAccessorType                                         IdArrayAccessorType;
-   typedef typename SuperentityTraitsType::GlobalIndexType                                      GlobalIndexType;
-   typedef typename SuperentityTraitsType::LocalIndexType                                       LocalIndexType;
-   typedef typename SuperentityTraitsType::StorageNetworkType                                   StorageNetworkType;
-   typedef typename SuperentityTraitsType::SuperentityAccessorType                              SuperentityAccessorType;
+   using IdArrayAccessorType     = typename MeshTraitsType::IdArrayAccessorType;
+   using GlobalIndexType         = typename SuperentityTraitsType::GlobalIndexType;
+   using LocalIndexType          = typename SuperentityTraitsType::LocalIndexType;
+   using StorageNetworkType      = typename SuperentityTraitsType::StorageNetworkType;
+   using SuperentityAccessorType = typename SuperentityTraitsType::SuperentityAccessorType;
 
    /****
      * Make visible setters and getters of the lower superentities
@@ -212,15 +212,15 @@ class MeshSuperentityAccessLayer< MeshConfig,
                                   MeshDimensionsTag< EntityTopology::dimensions >,
                                   false >
 {
-   static const int Dimensions = EntityTopology::dimensions;
-   typedef MeshDimensionsTag< EntityTopology::dimensions >     DimensionsTag;
-   typedef MeshTraits< MeshConfig >                                                             MeshTraitsType;
-   typedef typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionsTag::value > SuperentityTraitsType;
+   static constexpr int Dimensions = EntityTopology::dimensions;
+   using DimensionsTag = MeshDimensionsTag< EntityTopology::dimensions >;
+   using MeshTraitsType = MeshTraits< MeshConfig >;
+   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionsTag::value >;
 
 protected:
-   typedef typename SuperentityTraitsType::GlobalIndexType           GlobalIndexType;
-   typedef typename SuperentityTraitsType::LocalIndexType            LocalIndexType;
-   typedef typename SuperentityTraitsType::SuperentityAccessorType   SuperentityAccessorType;
+   using GlobalIndexType         = typename SuperentityTraitsType::GlobalIndexType;
+   using LocalIndexType          = typename SuperentityTraitsType::LocalIndexType;
+   using SuperentityAccessorType = typename SuperentityTraitsType::SuperentityAccessorType;
 
    /***
     * Necessary because of 'using BaseType::...;' in the derived classes
@@ -251,15 +251,15 @@ class MeshSuperentityAccessLayer< MeshConfig,
                                   MeshDimensionsTag< EntityTopology::dimensions >,
                                   true >
 {
-   static const int Dimensions = EntityTopology::dimensions;
-   typedef MeshDimensionsTag< EntityTopology::dimensions >     DimensionsTag;
-   typedef MeshTraits< MeshConfig >                                                             MeshTraitsType;
-   typedef typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionsTag::value > SuperentityTraitsType;
+   static constexpr int Dimensions = EntityTopology::dimensions;
+   using DimensionsTag = MeshDimensionsTag< EntityTopology::dimensions >;
+   using MeshTraitsType = MeshTraits< MeshConfig >;
+   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionsTag::value >;
 
 protected:
-   typedef typename SuperentityTraitsType::GlobalIndexType           GlobalIndexType;
-   typedef typename SuperentityTraitsType::LocalIndexType            LocalIndexType;
-   typedef typename SuperentityTraitsType::SuperentityAccessorType   SuperentityAccessorType;
+   using GlobalIndexType         = typename SuperentityTraitsType::GlobalIndexType;
+   using LocalIndexType          = typename SuperentityTraitsType::LocalIndexType;
+   using SuperentityAccessorType = typename SuperentityTraitsType::SuperentityAccessorType;
 
    /***
     * Necessary because of 'using BaseType::...;' in the derived classes
