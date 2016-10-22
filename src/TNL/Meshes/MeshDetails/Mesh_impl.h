@@ -46,10 +46,10 @@ getMeshDimension()
 }
 
 template< typename MeshConfig >
-   template< int Dimension >
-bool
+   template< int Dimensions >
+constexpr bool
 Mesh< MeshConfig >::
-entitiesAvalable() const
+entitiesAvailable()
 {
    return MeshTraitsType::template EntityTraits< Dimension >::available;
 }

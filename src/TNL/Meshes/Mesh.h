@@ -52,8 +52,8 @@ class Mesh : public Object/*,
  
       static constexpr int getMeshDimension();
 
-      template< int Dimension >
-      bool entitiesAvalable() const;
+      template< int Dimensions >
+      static constexpr bool entitiesAvailable();
  
       GlobalIndexType getNumberOfCells() const;
 
