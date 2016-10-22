@@ -39,6 +39,7 @@ freeMemory( Element* data )
    delete[] data;
    return true;
 }
+
 template< typename Element >
 void
 ArrayOperations< Devices::Host >::
@@ -95,7 +96,9 @@ copyMemory( DestinationElement* destination,
             const SourceElement* source,
             const Index size )
 {
-   if( std::is_same< DestinationElement, SourceElement >::value )
+   if( std::is_same< DestinationElement, SourceElement >::value &&
+       ( std::is_fundamental< DestinationElement >::value ||
+         std::is_pointer< DestinationElement >::value ) )
       memcpy( destination, source, size * sizeof( DestinationElement ) );
    else
       for( Index i = 0; i < size; i ++ )
@@ -112,7 +115,9 @@ compareMemory( const DestinationElement* destination,
                const SourceElement* source,
                const Index size )
 {
-   if( std::is_same< DestinationElement, SourceElement >::value )
+   if( std::is_same< DestinationElement, SourceElement >::value &&
+       ( std::is_fundamental< DestinationElement >::value ||
+         std::is_pointer< DestinationElement >::value ) )
    {
       if( memcmp( destination, source, size * sizeof( DestinationElement ) ) != 0 )
          return false;
