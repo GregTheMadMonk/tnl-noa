@@ -77,7 +77,8 @@ public:
 
    static void initEntity( EntityType &entity, GlobalIndexType entityIndex, const SeedType &entitySeed, InitializerType &initializer)
    {
-      entity = EntityType( entitySeed );
+      for( LocalIndexType i = 0; i < entitySeed.getCornerIds().getSize(); i++ )
+         initializer.template setSubentityIndex< 0 >( entity, i, entitySeed.getCornerIds()[ i ] );
       BaseType::initSubentities( entity, entityIndex, entitySeed, initializer );
    }
 

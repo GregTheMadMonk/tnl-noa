@@ -95,8 +95,15 @@ class MeshInitializer
          return true;
       }
 
-      template<typename SubDimensionTag, typename EntityType >
-      static typename MeshTraitsType::template SubentityTraits< typename EntityType::EntityTopology, SubDimensionTag::value >::IdArrayType&
+      template<int Subdimensions, typename EntityType, typename LocalIndex, typename GlobalIndex >
+      void
+      setSubentityIndex( EntityType& entity, const LocalIndex& localIndex, const GlobalIndex& globalIndex )
+      {
+         entity.template setSubentityIndex< Subdimensions >( localIndex, globalIndex );
+      }
+
+      template<typename SubDimensionsTag, typename EntityType >
+      static typename MeshTraitsType::template SubentityTraits< typename EntityType::EntityTopology, SubDimensionsTag::value >::IdArrayType&
       subentityIdsArray( EntityType& entity )
       {
          return entity.template subentityIdsArray< SubDimensionTag::value >();

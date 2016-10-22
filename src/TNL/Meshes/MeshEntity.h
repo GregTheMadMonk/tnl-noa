@@ -48,7 +48,6 @@ class MeshEntity
       typedef typename MeshTraitsType::GlobalIndexType                GlobalIndexType;
       typedef typename MeshTraitsType::LocalIndexType                 LocalIndexType;
       typedef typename MeshTraitsType::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
-      typedef MeshEntitySeed< MeshConfig, EntityTopology >            SeedType;
 
       template< int Subdimensions >
       using SubentityTraits = typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimensions >;
@@ -56,8 +55,6 @@ class MeshEntity
       template< int SuperDimensions >
       using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimensions >;
  
-      MeshEntity( const SeedType& entitySeed );
-
       MeshEntity();
  
       ~MeshEntity();
@@ -152,7 +149,6 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       typedef typename MeshTraitsType::LocalIndexType                 LocalIndexType;
       typedef typename MeshTraitsType::PointType                      PointType;
       typedef typename MeshTraitsType::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
-      typedef MeshEntitySeed< MeshConfig, EntityTopology >     SeedType;
  
       template< int SuperDimensions >
       using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimensions >;

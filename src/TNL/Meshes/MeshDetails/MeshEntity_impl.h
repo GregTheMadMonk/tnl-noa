@@ -24,17 +24,6 @@ namespace Meshes {
 template< typename MeshConfig,
           typename EntityTopology >
 MeshEntity< MeshConfig, EntityTopology >::
-MeshEntity( const SeedType& entitySeed )
-{
-   typedef typename SeedType::LocalIndexType LocalIndexType;
-   for( LocalIndexType i = 0; i < entitySeed.getCornerIds().getSize(); i++ )
-      this->template setSubentityIndex< 0 >( i, entitySeed.getCornerIds()[ i ] );
-}
-
-
-template< typename MeshConfig,
-          typename EntityTopology >
-MeshEntity< MeshConfig, EntityTopology >::
 MeshEntity()
 {
 }
