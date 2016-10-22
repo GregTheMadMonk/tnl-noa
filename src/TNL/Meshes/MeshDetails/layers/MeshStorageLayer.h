@@ -101,6 +101,7 @@ class MeshStorageLayer< MeshConfig,
       bool save( File& file ) const
       {
          if( ! BaseType::save( file ) ||
+             ! SuperentityStorageBaseType::save( file ) ||
              ! this->entities.save( file ) )
          {
             std::cerr << "Saving of the mesh entities with " << DimensionTag::value << " dimensions failed." << std::endl;
@@ -111,8 +112,8 @@ class MeshStorageLayer< MeshConfig,
 
       bool load( File& file )
       {
-         //cout << "Loading mesh layer with dimensions " << DimensionTag::value << std::endl;
          if( ! BaseType::load( file ) ||
+             ! SuperentityStorageBaseType::load( file ) ||
              ! this->entities.load( file ) )
          {
             std::cerr << "Loading of the mesh entities with " << DimensionTag::value << " dimensions failed." << std::endl;
@@ -128,6 +129,8 @@ class MeshStorageLayer< MeshConfig,
          str << "The entities with " << DimensionTag::value << " dimensions are: " << std::endl;
          for( GlobalIndexType i = 0; i < entities.getSize();i ++ )
             str << i << " " << entities[ i ] << std::endl;
+         SuperentityStorageBaseType::print( str );
+         str << std::endl;
       }
 
       bool operator==( const MeshStorageLayer& meshLayer ) const
@@ -259,7 +262,8 @@ public:
 
    bool save( File& file ) const
    {
-      if( ! this->vertices.save( file ) )
+      if( ! SuperentityStorageBaseType::save( file ) ||
+          ! this->vertices.save( file ) )
       {
          std::cerr << "Saving of the mesh entities with " << DimensionTag::value << " dimensions failed." << std::endl;
          return false;
@@ -269,7 +273,8 @@ public:
 
    bool load( File& file )
    {
-      if( ! this->vertices.load( file ) )
+      if( ! SuperentityStorageBaseType::load( file ) ||
+          ! this->vertices.load( file ) )
       {
          std::cerr << "Loading of the mesh entities with " << DimensionTag::value << " dimensions failed." << std::endl;
          return false;
@@ -283,6 +288,8 @@ public:
       str << "The mesh vertices are: " << std::endl;
       for( GlobalIndexType i = 0; i < vertices.getSize(); i++ )
          str << i << vertices[ i ] << std::endl;
+      SuperentityStorageBaseType::print( str );
+      str << std::endl;
    }
 
    bool operator==( const MeshStorageLayer& meshLayer ) const
