@@ -95,28 +95,6 @@ class MeshSuperentityStorageInitializerLayer< MeshConfig,
             Assert( (size_t) maxEntityIndex == dynamicStorageNetwork.size() - 1,
                        std::cerr << "Superentities for some entities are missing." << std::endl; );
 
-            // TODO: what's this supposed to do?
-//            std::cout << "There are " << superentityIdsArray.getSize() << " superentities with " << DimensionsTag::value << " dimensions of enities with dimension " << EntityDimensions::value << " ... " << std::endl;
-//            GlobalIdArrayType &superentityIdsArray = meshInitializer.template meshSuperentityIdsArray< EntityDimensions, DimensionsTag >();
-//            superentityIdsArray.setSize( dynamicStorageNetwork.size() );
-//            GlobalIndexType currentBegin = 0;
-//            GlobalIndexType lastEntityIndex = 0;
-//            for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
-//            {
-//               superentityIdsArray[ i ] = indexPairs[i].superentityIndex;
-//
-//               //cout << "Adding superentity " << indexPairs[i].superentityIndex << " to entity " << lastEntityIndex << std::endl;
-//               if( indexPairs[ i ].entityIndex != lastEntityIndex )
-//               {
-//                  meshInitializer.template superentityIdsArray< DimensionsTag >( meshInitializer.template meshEntitiesArray< EntityDimensions >()[ lastEntityIndex ] ).bind( superentityIdsArray, currentBegin, i - currentBegin );
-//                  currentBegin = i;
-//                  lastEntityIndex = indexPairs[ i ].entityIndex;
-//               }
-//            }
-//
-//            meshInitializer.template superentityIdsArray< DimensionsTag >( meshInitializer.template meshEntitiesArray< EntityDimensions >()[ lastEntityIndex ] ).bind( superentityIdsArray, currentBegin, superentityIdsArray.getSize() - currentBegin );
-//            indexPairs.clear();
-
             /****
              * Network initializer
              */
@@ -167,9 +145,9 @@ class MeshSuperentityStorageInitializerLayer< MeshConfig,
    using MeshInitializerType = MeshInitializer< MeshConfig >;
 
 public:
-   void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
-   using BaseType::initSuperentities;
-   void initSuperentities( MeshInitializerType& ) { std::cerr << "***" << std::endl;}
+   // Necessary due to 'using BaseType::...;' in the derived classes.
+   void addSuperentity() {}
+   void initSuperentities( MeshInitializerType& ) {}
 };
 
 template< typename MeshConfig,

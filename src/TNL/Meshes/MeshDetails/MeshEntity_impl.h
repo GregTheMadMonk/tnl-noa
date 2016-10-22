@@ -189,30 +189,6 @@ getSubentityIndices() const
 
 template< typename MeshConfig,
           typename EntityTopology >
-   template< int SuperDimensions >
-typename MeshEntity< MeshConfig, EntityTopology >::template SuperentityTraits< SuperDimensions >::AccessArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-getSuperentityIndices()
-{
-   static_assert( SuperentityTraits< SuperDimension >::storageEnabled, "You try to get superentities which are not configured for storage." );
-   typedef MeshSuperentityAccess< MeshConfig, EntityTopology >  SuperentityBaseType;
-   return SuperentityBaseType::getSuperentityIndices( MeshDimensionsTag< SuperDimensions >() );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int SuperDimension >
-const typename MeshEntity< MeshConfig, EntityTopology >::template SuperentityTraits< SuperDimension >::AccessArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-getSuperentityIndices() const
-{
-   static_assert( SuperentityTraits< SuperDimension >::storageEnabled, "You try to get superentities which are not configured for storage." );
-   typedef MeshSuperentityAccess< MeshConfig, EntityTopology >  SuperentityBaseType;
-   return SuperentityBaseType::getSuperentityIndices( MeshDimensionsTag< SuperDimensions >() );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
 constexpr typename MeshEntity< MeshConfig, EntityTopology >::LocalIndexType
 MeshEntity< MeshConfig, EntityTopology >::
 getNumberOfVertices() const
@@ -293,17 +269,6 @@ subentityIdsArray()
 {
    typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >       SubentityStorageLayers;
    return SubentityStorageLayers::subentityIdsArray( MeshDimensionsTag< Subdimensions >() );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Superdimensions >
-typename MeshEntity< MeshConfig, EntityTopology >::IdArrayAccessorType&
-MeshEntity< MeshConfig, EntityTopology >::
-superentityIdsArray()
-{
-   typedef MeshSuperentityAccess< MeshConfig, EntityTopology >            SuperentityAccessBase;
-   return SuperentityAccessBase::superentityIdsArray( MeshDimensionsTag< Superdimensions >());
 }
 
 template< typename MeshConfig,
@@ -395,26 +360,6 @@ getEntityDimension() const
 }
 
 template< typename MeshConfig >
-   template< int Superdimensions >
-typename MeshEntity< MeshConfig, MeshVertexTopology >::template SuperentityTraits< Superdimensions >::AccessArrayType&
-MeshEntity< MeshConfig, MeshVertexTopology >::
-getSuperentityIndices()
-{
-   typedef MeshSuperentityAccess< MeshConfig, MeshVertexTopology >  SuperentityBaseType;
-   return SuperentityBaseType::getSuperentityIndices( MeshDimensionsTag< Superdimensions >() );
-}
-
-template< typename MeshConfig >
-   template< int Superdimensions >
-const typename MeshEntity< MeshConfig, MeshVertexTopology >::template SuperentityTraits< Superdimensions >::AccessArrayType&
-MeshEntity< MeshConfig, MeshVertexTopology >::
-getSuperentityIndices() const
-{
-   typedef MeshSuperentityAccess< MeshConfig, MeshVertexTopology >  SuperentityBaseType;
-   return SuperentityBaseType::getSuperentityIndices( MeshDimensionsTag< Superdimensions >() );
-}
-
-template< typename MeshConfig >
 typename MeshEntity< MeshConfig, MeshVertexTopology >::PointType
 MeshEntity< MeshConfig, MeshVertexTopology >::
 getPoint() const
@@ -428,15 +373,6 @@ MeshEntity< MeshConfig, MeshVertexTopology >::
 setPoint( const PointType& point )
 {
    this->point = point;
-}
-
-template< typename MeshConfig >
-   template< int Superdimensions >
-typename MeshEntity< MeshConfig, MeshVertexTopology >::MeshTraitsType::IdArrayAccessorType&
-MeshEntity< MeshConfig, MeshVertexTopology >::
-superentityIdsArray()
-{
-   return SuperentityAccessBase::superentityIdsArray( MeshDimensionTag< Superdimensions >());
 }
 
 template< typename MeshConfig,

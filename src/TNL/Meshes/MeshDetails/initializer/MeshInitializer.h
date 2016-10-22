@@ -102,15 +102,8 @@ class MeshInitializer
          return entity.template subentityIdsArray< SubDimensionTag::value >();
       }
 
-      template< typename SuperDimensionTag, typename MeshEntity>
-      static typename MeshTraitsType::IdArrayAccessorType&
-      superentityIdsArray( MeshEntity& entity )
-      {
-         return entity.template superentityIdsArray< SuperDimensionTag::value >();
-      }
-
-      template<typename SubDimensionTag, typename MeshEntity >
-      static typename MeshTraitsType::template SubentityTraits< typename MeshEntity::EntityTopology, SubDimensionTag::value >::OrientationArrayType&
+      template<typename SubDimensionsTag, typename MeshEntity >
+      static typename MeshTraitsType::template SubentityTraits< typename MeshEntity::EntityTopology, SubDimensionsTag::value >::OrientationArrayType&
       subentityOrientationsArray( MeshEntity &entity )
       {
          return entity.template subentityOrientationsArray< SubDimensionTag::value >();
@@ -121,13 +114,6 @@ class MeshInitializer
       meshEntitiesArray()
       {
          return mesh->template entitiesArray< DimensionTag >();
-      }
-
-      template< typename DimensionTag, typename SuperDimensionTag >
-      typename MeshTraitsType::GlobalIdArrayType&
-      meshSuperentityIdsArray()
-      {
-         return mesh->template superentityIdsArray< DimensionTag, SuperDimensionTag >();
       }
 
       template< typename EntityTopology, typename SuperdimensionsTag >

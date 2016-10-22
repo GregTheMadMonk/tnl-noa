@@ -100,13 +100,6 @@ class MeshEntity
       using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::getNumberOfSuperentities;
       using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::getSuperentityIndex;
 
-      // TODO: used only in MeshInitializer, should be removed
-      template< int SuperDimensions >
-      typename SuperentityTraits< SuperDimensions >::AccessArrayType& getSuperentityIndices();
-
-      template< int SuperDimensions >
-      const typename SuperentityTraits< SuperDimensions >::AccessArrayType& getSuperentityIndices() const;
-
       /****
        * Vertices
        */
@@ -125,8 +118,6 @@ class MeshEntity
       /****
        * Methods for the mesh initialization
        */
-      typedef typename MeshTraitsType::IdArrayAccessorType                   IdArrayAccessorType;
-
       using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::bindSuperentitiesStorageNetwork;
       using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::setNumberOfSuperentities;
       using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::setSuperentityIndex;
@@ -137,9 +128,6 @@ class MeshEntity
  
       template< int Subdimensions >
       typename SubentityTraits< Subdimensions >::IdArrayType& subentityIdsArray();
-
-      template< int Superdimensions >
-      IdArrayAccessorType& superentityIdsArray();
 
       template< int Subdimensions >
       typename SubentityTraits< Subdimensions >::OrientationArrayType& subentityOrientationsArray();
@@ -191,13 +179,6 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::getNumberOfSuperentities;
       using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::getSuperentityIndex;
 
-      // TODO: used only in MeshInitializer, should be removed
-      template< int Superdimensions >
-      typename SuperentityTraits< Superdimensions >::AccessArrayType& getSuperentityIndices();
-
-      template< int Superdimensions >
-      const typename SuperentityTraits< Superdimensions >::AccessArrayType& getSuperentityIndices() const;
-
       /****
        * Points
        */
@@ -210,12 +191,6 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::setNumberOfSuperentities;
       using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::setSuperentityIndex;
  
-      typedef typename MeshTraitsType::IdArrayAccessorType                IdArrayAccessorType;
-      typedef MeshSuperentityAccess< MeshConfig, MeshVertexTopology >     SuperentityAccessBase;
-
-      template< int Superdimensions >
-      IdArrayAccessorType& superentityIdsArray();
-
       PointType point;
  
    friend MeshInitializer< MeshConfig >;

@@ -81,12 +81,6 @@ public:
       BaseType::initSubentities( entity, entityIndex, entitySeed, initializer );
    }
 
-   template< typename SuperentityDimensionTag >
-   typename MeshSuperentityTraits< MeshConfig, EntityTopology, SuperentityDimensionTag::value >::SharedContainerType& getSuperentityContainer( SuperentityDimensionTag )
-   {
-      return this->entity->template getSuperentityIndices< SuperentityDimensionTag::value >();
-   }
-
    static void setEntityVertex( EntityType& entity,
                                 LocalIndexType localIndex,
                                 GlobalIndexType globalIndex )

@@ -114,7 +114,6 @@ class MeshSuperentityAccessLayer< MeshConfig,
    using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionsTag::value >;
 
 public:
-   using IdArrayAccessorType     = typename MeshTraitsType::IdArrayAccessorType;
    using GlobalIndexType         = typename SuperentityTraitsType::GlobalIndexType;
    using LocalIndexType          = typename SuperentityTraitsType::LocalIndexType;
    using StorageNetworkType      = typename SuperentityTraitsType::StorageNetworkType;
@@ -162,12 +161,6 @@ public:
       return this->superentityIndices[ localIndex ];
    }
 
-   using BaseType::superentityIds;
-   IdArrayAccessorType superentityIds( DimensionsTag ) const { return m_superentityIndices; }
-
-   using BaseType::superentityIdsArray;
-   IdArrayAccessorType &superentityIdsArray( DimensionsTag ) { return m_superentityIndices; }
-
    using BaseType::getSuperentityIndices;
    const SuperentityAccessorType& getSuperentityIndices( DimensionsTag ) const
    {
@@ -188,9 +181,6 @@ public:
    //bool operator == ( const MeshSuperentityAccessLayer< MeshConfig, EntityTopology, Dimensions, tnlStorageTraits< true > >& l ) { return true; } // TODO: fix
 
 private:
-   // TODO: used only in mesh initializer, should be removed
-   IdArrayAccessorType m_superentityIndices;
-
    SuperentityAccessorType superentityIndices;
 };
 
@@ -236,9 +226,6 @@ protected:
                              const LocalIndexType& localIndex,
                              const GlobalIndexType& globalIndex ) {}
 
-   void superentityIds()      {}
-   void superentityIdsArray() {}
-
    void getSuperentityIndices() {}
 
    void print( std::ostream& str ) const {}
@@ -274,9 +261,6 @@ protected:
    void setSuperentityIndex( DimensionsTag,
                              const LocalIndexType& localIndex,
                              const GlobalIndexType& globalIndex ) {}
-
-   void superentityIds()      {}
-   void superentityIdsArray() {}
 
    void getSuperentityIndices() {}
 

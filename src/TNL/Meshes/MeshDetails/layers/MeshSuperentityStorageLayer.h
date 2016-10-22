@@ -54,7 +54,6 @@ class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionTag, tru
 
 protected:
    typedef typename SuperentityTraitsType::StorageArrayType       StorageArrayType;
-   typedef typename SuperentityTraitsType::AccessArrayType        AccessArrayType;
    typedef typename SuperentityTraitsType::GlobalIndexType        GlobalIndexType;
    typedef typename SuperentityTraitsType::LocalIndexType         LocalIndexType;
 
@@ -77,56 +76,13 @@ protected:
    {
       std::cerr << "      Destroying " << this->superentitiesIndices.getSize() << " superentities with "<< DimensionsTag::value << " dimensions." << std::endl;
       std::cerr << "         this->superentitiesIndices.getName() = " << this->superentitiesIndices.getName() << std::endl;
-      std::cerr << "         this->sharedSuperentitiesIndices.getName() = " << this->sharedSuperentitiesIndices.getName() << std::endl;
    }*/
 
    MeshSuperentityStorageLayer& operator = ( const MeshSuperentityStorageLayer& layer )
    {
       this->superentitiesIndices.setSize( layer.superentitiesIndices.getSize() );
       this->superentitiesIndices = layer.superentitiesIndices;
-      this->sharedSuperentitiesIndices.bind( this->superentitiesIndices );
       return *this;
-   }
-
-   /****
-    * Define setter/getter for the current level of the superentities
-    */
-   bool setNumberOfSuperentities( DimensionsTag,
-                                  const LocalIndexType size )
-   {
-      if( ! this->superentitiesIndices.setSize( size ) )
-         return false;
-      this->superentitiesIndices.setValue( -1 );
-      this->sharedSuperentitiesIndices.bind( this->superentitiesIndices );
-      return true;
-   }
-
-   LocalIndexType getNumberOfSuperentities( DimensionsTag ) const
-   {
-      return this->superentitiesIndices.getSize();
-   }
-
-   void setSuperentityIndex( DimensionsTag,
-                             const LocalIndexType localIndex,
-                             const GlobalIndexType globalIndex )
-   {
-      this->superentitiesIndices[ localIndex ] = globalIndex;
-   }
-
-   GlobalIndexType getSuperentityIndex( DimensionsTag,
-                                        const LocalIndexType localIndex ) const
-   {
-      return this->superentitiesIndices[ localIndex ];
-   }
-
-   AccessArrayType& getSuperentityIndices( DimensionsTag )
-   {
-      return this->sharedSuperentitiesIndices;
-   }
-
-   const AccessArrayType& getSuperentityIndices( DimensionsTag ) const
-   {
-      return this->sharedSuperentitiesIndices;
    }
 
    bool save( File& file ) const
@@ -166,20 +122,10 @@ protected:
 private:
     StorageArrayType superentitiesIndices;
 
-    // TODO: removed even from MeshSubentityStorageLayer
-    AccessArrayType sharedSuperentitiesIndices;
- 
-    // TODO: unused???
     StorageNetworkType storageNetwork;
  
    // TODO: this is only for the mesh initializer - fix it
    public:
-      using BaseType::superentityIdsArray;
-      typename MeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray( DimensionTag )
-      {
-         return this->superentitiesIndices;
-      }
- 
       using BaseType::getStorageNetwork;
       StorageNetworkType& getStorageNetwork( DimensionTag )
       {
