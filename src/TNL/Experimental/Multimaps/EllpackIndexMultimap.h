@@ -19,6 +19,7 @@ template< typename Index = int,
           typename Device = Devices::Host,
           typename LocalIndex = Index >
 class EllpackIndexMultimap
+   : public virtual Object
 {
    public:
       using DeviceType                 = Device;
@@ -46,12 +47,29 @@ class EllpackIndexMultimap
 
       ConstValuesAccessorType getValues( const IndexType& inputIndex ) const;
 
+      bool operator==( const EllpackIndexMultimap< Index, Device, LocalIndex >& other ) const;
+
+      bool save( File& file ) const;
+
+      bool load( File& file );
+
+      using Object::load;
+
+      using Object::save;
+
+      void print( std::ostream& str ) const;
+
    protected:
       Containers::Vector< IndexType, DeviceType, IndexType > values;
 
       IndexType keysRange;
       LocalIndexType maxValuesCount;
 };
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimap< Index, Device, LocalIndex >& multimap );
 
 } // namespace TNL
 

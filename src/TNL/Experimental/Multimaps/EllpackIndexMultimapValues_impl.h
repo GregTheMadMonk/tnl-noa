@@ -191,7 +191,7 @@ print( std::ostream& str ) const
    if( this->getSize() > 0 )
    {
       str << this->getValue( 0 );
-      for( Index i = 1; i < this->getSize(); i++ )
+      for( typename std::remove_const< Index >::type i = 1; i < this->getSize(); i++ )
          str << ", " << this->getValue( i );
    }
    str << " ]";

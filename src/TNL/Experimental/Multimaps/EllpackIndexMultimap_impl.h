@@ -129,5 +129,79 @@ getValues( const IndexType& inputIndex ) const
    return ConstValuesAccessorType( this->values.getData(), inputIndex, this->maxValuesCount );
 }
 
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+bool
+EllpackIndexMultimap< Index, Device, LocalIndex >::
+operator==( const EllpackIndexMultimap< Index, Device, LocalIndex >& other ) const
+{
+   return ( this->keysRange == other.keysRange &&
+            this->maxValuesCount == other.maxValuesCount &&
+            this->values == other.values );
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+bool
+EllpackIndexMultimap< Index, Device, LocalIndex >::
+save( File& file ) const
+{
+   if( ! Object::save( file ) )
+      return false;
+   if( ! file.write( &this->keysRange ) )
+      return false;
+   if( ! file.write( &this->maxValuesCount ) )
+      return false;
+   if( ! this->values.save( file ) )
+      return false;
+   return true;
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+bool
+EllpackIndexMultimap< Index, Device, LocalIndex >::
+load( File& file )
+{
+   if( ! Object::load( file ) )
+      return false;
+   if( ! file.read( &this->keysRange ) )
+      return false;
+   if( ! file.read( &this->maxValuesCount ) )
+      return false;
+   if( ! this->values.load( file ) )
+      return false;
+   return true;
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+void
+EllpackIndexMultimap< Index, Device, LocalIndex >::
+print( std::ostream& str ) const
+{
+   str << "[ ";
+   if( this->getKeysRange() > 0 )
+   {
+      str << this->getValues( 0 );
+      for( Index i = 1; i < this->getKeysRange(); i++ )
+         str << ",\n  " << this->getValues( i );
+   }
+   str << " ]";
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimap< Index, Device, LocalIndex >& multimap )
+{
+   multimap.print( str );
+   return str;
+}
+
 } // namespace TNL
 
