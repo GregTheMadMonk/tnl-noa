@@ -53,10 +53,6 @@ class MeshEntity
  
       template< int SuperDimensions >
       using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimensions >;
- 
-      MeshEntity();
- 
-      ~MeshEntity();
 
       static String getType();
 
@@ -153,12 +149,10 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
  
       template< int SuperDimensions >
       using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimensions >;
-
+ 
       static String getType();
 
       String getTypeVirtual() const;
-
-      ~MeshEntity();
 
       bool save( File& file ) const;
 

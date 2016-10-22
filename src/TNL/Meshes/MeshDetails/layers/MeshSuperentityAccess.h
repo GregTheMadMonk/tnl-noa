@@ -136,12 +136,14 @@ public:
    MeshSuperentityAccessLayer() = default;
 
    explicit MeshSuperentityAccessLayer( const MeshSuperentityAccessLayer& layer )
+      : BaseType( layer )
    {
       this->superentityIndices.bind( layer.superentityIndices );
    }
 
    MeshSuperentityAccessLayer& operator=( const MeshSuperentityAccessLayer& layer )
    {
+      BaseType::operator=( layer );
       this->superentityIndices.bind( layer.superentityIndices );
    }
 

@@ -23,26 +23,11 @@ namespace Meshes {
 
 template< typename MeshConfig,
           typename EntityTopology >
-MeshEntity< MeshConfig, EntityTopology >::
-MeshEntity()
-{
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-MeshEntity< MeshConfig, EntityTopology >::
-~MeshEntity()
-{
-   //cerr << "   Destroying entity with " << EntityTopology::dimensions << " dimensions..." << std::endl;
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
 String
 MeshEntity< MeshConfig, EntityTopology >::
 getType()
 {
-   return String( "Mesh< ... >" );
+   return String( "MeshEntity< ... >" );
 }
 
 template< typename MeshConfig,
@@ -297,13 +282,6 @@ MeshEntity< MeshConfig, MeshVertexTopology >::
 getTypeVirtual() const
 {
    return this->getType();
-}
-
-template< typename MeshConfig >
-MeshEntity< MeshConfig, MeshVertexTopology >::
-~MeshEntity()
-{
-   //cerr << "   Destroying entity with " << MeshVertexTopology::dimensions << " dimensions..." << std::endl;
 }
 
 template< typename MeshConfig >

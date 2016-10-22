@@ -621,6 +621,25 @@ TEST( MeshEntityTest, OneTriangleComparisonTest )
    EXPECT_NE( edges[ 0 ], edges[ 1 ] );
    edges[ 1 ].template setSuperentityIndex< 2 >( 0, 1 );
    EXPECT_EQ( edges[ 0 ], edges[ 1 ] );
+
+
+   /*
+    * Tests for copy-assignment
+    */
+   VertexMeshEntityType v1( vertices[ 0 ] );
+   EXPECT_EQ( v1, vertices[ 0 ] );
+   VertexMeshEntityType v2 = vertices[ 0 ];
+   EXPECT_EQ( v2, vertices[ 0 ] );
+
+   EdgeMeshEntityType e1( edges[ 0 ] );
+   EXPECT_EQ( e1, edges[ 0 ] );
+   EdgeMeshEntityType e2 = edges[ 0 ];
+   EXPECT_EQ( e2, edges[ 0 ] );
+
+   TriangleMeshEntityType t1( triangle );
+   EXPECT_EQ( t1, triangle );
+   TriangleMeshEntityType t2 = triangle;
+   EXPECT_EQ( t2, triangle );
 }
 
 #endif
