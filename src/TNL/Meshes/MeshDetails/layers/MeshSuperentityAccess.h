@@ -17,6 +17,7 @@
 #pragma once
 
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <TNL/Meshes/MeshDetails/traits/MeshSuperentityTraits.h>
 
 namespace TNL {
 namespace Meshes {

@@ -19,8 +19,6 @@
 #include <TNL/File.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDetails/layers/MeshSubentityStorageLayer.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSuperentityStorageLayer.h>
 
 namespace TNL {

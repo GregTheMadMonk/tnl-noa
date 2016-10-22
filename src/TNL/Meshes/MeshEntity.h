@@ -23,7 +23,6 @@
 #include <TNL/Meshes/MeshDimensionTag.h>
 #include <TNL/Meshes/Topologies/MeshVertexTopology.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSubentityStorageLayer.h>
-#include <TNL/Meshes/MeshDetails/layers/MeshSuperentityStorageLayer.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSuperentityAccess.h>
 #include <TNL/Meshes/MeshDetails/initializer/MeshEntitySeed.h>
 
