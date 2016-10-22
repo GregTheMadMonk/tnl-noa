@@ -29,9 +29,12 @@ namespace Meshes {
 
 template< typename MeshConfig > //,
           //typename Device = Devices::Host >
-class Mesh : public Object/*,
-                public MeshStorageLayers< MeshConfig >*/
+class Mesh
+   : public Object,
+     protected MeshStorageLayers< MeshConfig >
 {
+      using StorageBaseType = MeshStorageLayers< MeshConfig >;
+
    public:
  
       typedef MeshConfig                                        Config;
@@ -90,17 +93,13 @@ class Mesh : public Object/*,
       typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
       getSuperentityStorageNetwork()
       {
-         return entitiesStorage.template getSuperentityStorageNetwork< SuperdimensionsTag >( MeshDimensionTag< EntityTopology::dimensions >() );
+         return StorageBaseType::template getSuperentityStorageNetwork< SuperdimensionsTag >( MeshDimensionsTag< EntityTopology::dimensions >() );
       }
  
       bool init( const typename MeshTraitsType::PointArrayType& points,
                  const typename MeshTraitsType::CellSeedArrayType& cellSeeds );
  
- 
    protected:
- 
-      MeshStorageLayers< MeshConfig > entitiesStorage;
- 
       MeshConfigValidator< MeshConfig > configValidator;
 };
 

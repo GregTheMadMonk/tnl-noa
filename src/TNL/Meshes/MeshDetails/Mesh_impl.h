@@ -60,7 +60,7 @@ typename Mesh< MeshConfig >::GlobalIndexType
 Mesh< MeshConfig >::
 getNumberOfEntities() const
 {
-   return entitiesStorage.getNumberOfEntities( MeshDimensionTag< Dimension >() );
+   return StorageBaseType::getNumberOfEntities( MeshDimensionsTag< Dimensions >() );
 }
 
 template< typename MeshConfig >
@@ -68,7 +68,7 @@ typename Mesh< MeshConfig >::GlobalIndexType
 Mesh< MeshConfig >::
 template getNumberOfCells() const
 {
-   return entitiesStorage.getNumberOfEntities( MeshDimensionTag< dimensions >() );
+   return StorageBaseType::getNumberOfEntities( MeshDimensionsTag< dimensions >() );
 }
 
 template< typename MeshConfig >
@@ -76,7 +76,7 @@ typename Mesh< MeshConfig >::CellType&
 Mesh< MeshConfig >::
 getCell( const GlobalIndexType cellIndex )
 {
-   return entitiesStorage.getEntity( MeshDimensionTag< dimensions >(), cellIndex );
+   return StorageBaseType::getEntity( MeshDimensionsTag< dimensions >(), cellIndex );
 }
 
 template< typename MeshConfig >
@@ -84,7 +84,7 @@ const typename Mesh< MeshConfig >::CellType&
 Mesh< MeshConfig >::
 getCell( const GlobalIndexType cellIndex ) const
 {
-   return entitiesStorage.getEntity( MeshDimensionTag< dimensions >(), cellIndex );
+   return StorageBaseType::getEntity( MeshDimensionsTag< dimensions >(), cellIndex );
 }
 
 template< typename MeshConfig >
@@ -93,7 +93,7 @@ typename Mesh< MeshConfig >::template EntityType< Dimension >&
 Mesh< MeshConfig >::
 getEntity( const GlobalIndexType entityIndex )
 {
-   return entitiesStorage.getEntity( MeshDimensionTag< Dimension >(), entityIndex );
+   return StorageBaseType::getEntity( MeshDimensionsTag< Dimensions >(), entityIndex );
 }
 
 template< typename MeshConfig >
@@ -102,7 +102,7 @@ const typename Mesh< MeshConfig >::template EntityType< Dimension >&
 Mesh< MeshConfig >::
 getEntity( const GlobalIndexType entityIndex ) const
 {
-   return entitiesStorage.getEntity( MeshDimensionTag< Dimension >(), entityIndex );
+   return StorageBaseType::getEntity( MeshDimensionsTag< Dimensions >(), entityIndex );
 }
  
 template< typename MeshConfig >
@@ -111,7 +111,7 @@ Mesh< MeshConfig >::
 save( File& file ) const
 {
    if( ! Object::save( file ) ||
-       ! entitiesStorage.save( file ) )
+       ! StorageBaseType::save( file ) )
    {
       std::cerr << "Mesh saving failed." << std::endl;
       return false;
@@ -125,7 +125,7 @@ Mesh< MeshConfig >::
 load( File& file )
 {
    if( ! Object::load( file ) ||
-       ! entitiesStorage.load( file ) )
+       ! StorageBaseType::load( file ) )
    {
       std::cerr << "Mesh loading failed." << std::endl;
       return false;
@@ -138,7 +138,7 @@ void
 Mesh< MeshConfig >::
 print( std::ostream& str ) const
 {
-   entitiesStorage.print( str );
+   StorageBaseType::print( str );
 }
 
 template< typename MeshConfig >
@@ -146,7 +146,7 @@ bool
 Mesh< MeshConfig >::
 operator==( const Mesh& mesh ) const
 {
-   return entitiesStorage.operator==( mesh.entitiesStorage );
+   return StorageBaseType::operator==( mesh );
 }
 
 template< typename MeshConfig >
@@ -155,7 +155,7 @@ typename Mesh< MeshConfig >::template EntityTraits< DimensionTag::value >::Stora
 Mesh< MeshConfig >::
 entitiesArray()
 {
-   return entitiesStorage.entitiesArray( DimensionTag() );
+   return StorageBaseType::entitiesArray( DimensionsTag() );
 }
 
 template< typename MeshConfig >
