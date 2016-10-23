@@ -1,6 +1,8 @@
 #pragma once
 
 #ifdef HAVE_GTEST
+#include <sstream>
+
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshConfigBase.h>
@@ -55,6 +57,15 @@ public:
    template< typename EntityTopology > static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimensions ) {  return ( SubentityDimensions % 2 != 0 ); };
    template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; };
 };
+
+template< typename Object1, typename Object2 >
+void compareStringRepresentation( const Object1& obj1, const Object2& obj2 )
+{
+   std::stringstream str1, str2;
+   str1 << obj1;
+   str2 << obj2;
+   EXPECT_EQ( str1.str(), str2.str() );
+}
 
 TEST( MeshTest, TwoTrianglesTest )
 {
@@ -171,6 +182,7 @@ TEST( MeshTest, TwoTrianglesTest )
    ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
    ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
    ASSERT_EQ( mesh, mesh2 );
+   compareStringRepresentation( mesh, mesh2 );
 };
 
 TEST( MeshTest, TetrahedronsTest )
@@ -339,6 +351,7 @@ TEST( MeshTest, TetrahedronsTest )
    ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
    ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
    ASSERT_EQ( mesh, mesh2 );
+   compareStringRepresentation( mesh, mesh2 );
 }
 
 TEST( MeshTest, RegularMeshOfTrianglesTest )
@@ -441,6 +454,7 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
    ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
    ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
    ASSERT_EQ( mesh, mesh2 );
+   compareStringRepresentation( mesh, mesh2 );
 }
 
 TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
@@ -540,6 +554,7 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
    ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
    ASSERT_EQ( mesh, mesh2 );
+   compareStringRepresentation( mesh, mesh2 );
 }
 
 TEST( MeshTest, RegularMeshOfHexahedronsTest )
@@ -706,6 +721,7 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
    ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
    ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
    ASSERT_EQ( mesh, mesh2 );
+   compareStringRepresentation( mesh, mesh2 );
 }
 
 #endif
