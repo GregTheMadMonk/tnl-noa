@@ -185,8 +185,6 @@ class MeshInitializerLayer< MeshConfig,
 
    using InitializerType              = MeshInitializer< MeshConfig >;
    using EntityInitializerType        = MeshEntityInitializer< MeshConfig, EntityTopology >;
-   using CellInitializerType          = MeshEntityInitializer< MeshConfig, EntityTopology >;
-   using CellInitializerContainerType = Containers::Array< CellInitializerType, Devices::Host, GlobalIndexType >;
    using CellSeedArrayType            = typename MeshTraitsType::CellSeedArrayType;
    using LocalIndexType               = typename MeshTraitsType::LocalIndexType;
    using PointArrayType               = typename MeshTraitsType::PointArrayType;
@@ -291,8 +289,6 @@ class MeshInitializerLayer< MeshConfig,
 
    using InitializerType              = MeshInitializer< MeshConfig >;
    using EntityInitializerType        = MeshEntityInitializer< MeshConfig, EntityTopology >;
-   using CellInitializerType          = MeshEntityInitializer< MeshConfig, EntityTopology >;
-   using CellInitializerContainerType = Containers::Array< CellInitializerType, Devices::Host, GlobalIndexType >;
    using EntitySeedArrayType          = typename EntityTraitsType::SeedArrayType;
    using CellSeedArrayType            = typename MeshTraitsType::CellSeedArrayType;
    using LocalIndexType               = typename MeshTraitsType::LocalIndexType;
@@ -300,17 +296,7 @@ class MeshInitializerLayer< MeshConfig,
    using SeedType                     = MeshEntitySeed< MeshConfig, EntityTopology >;
    using SuperentityInitializerType   = MeshSuperentityStorageInitializer< MeshConfig, EntityTopology >;
 
-   using SubentitiesContainerType = typename MeshSubentityTraits< MeshConfig,
-                                                                  typename MeshConfig::CellTopology,
-                                                                  DimensionsTag::value >::SubentityContainerType;
-
    public:
-
-      using BaseType::getEntityInitializer;
-      EntityInitializerType& getEntityInitializer( DimensionTag, GlobalIndexType index )
-      {
-         //return entityInitializerContainer[ index ];
-      }
 
       void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds )
       {
@@ -398,16 +384,11 @@ class MeshInitializerLayer< MeshConfig,
 
    using EntityTraitsType               = typename MeshType::template EntityTraits< DimensionsTag::value >;
    using EntityTopology                 = typename EntityTraitsType::EntityTopology;
-   using EntityType                     = typename EntityTraitsType::EntityType;
-   using ContainerType                  = typename EntityTraitsType::StorageArrayType;
-   using UniqueContainerType            = typename EntityTraitsType::UniqueContainerType;
-   using GlobalIndexType                = typename ContainerType::IndexType;
+   using GlobalIndexType                = typename MeshTraitsType::GlobalIndexType;
    using CellTopology                   = typename MeshTraitsType::CellTopology;
 
    using InitializerType                = MeshInitializer< MeshConfig >;
-   using CellInitializerType            = MeshEntityInitializer< MeshConfig, CellTopology >;
    using EntityInitializerType          = MeshEntityInitializer< MeshConfig, EntityTopology >;
-   using EntityInitializerContainerType = Containers::Array< EntityInitializerType, Devices::Host, GlobalIndexType >;
    using CellSeedArrayType              = typename MeshTraitsType::CellSeedArrayType;
    using LocalIndexType                 = typename MeshTraitsType::LocalIndexType;
    using PointArrayType                 = typename MeshTraitsType::PointArrayType;
@@ -418,17 +399,7 @@ class MeshInitializerLayer< MeshConfig,
    using ReferenceOrientationType       = typename EntityTraitsType::ReferenceOrientationType;
    using ReferenceOrientationArrayType  = typename EntityTraitsType::ReferenceOrientationArrayType;
 
-   using SubentitiesContainerType = typename MeshSubentityTraits< MeshConfig,
-                                                                  typename MeshConfig::CellTopology,
-                                                                  DimensionsTag::value >::SubentityContainerType;
-
    public:
-
-      using BaseType::getEntityInitializer;
-      EntityInitializerType& getEntityInitializer( DimensionTag, GlobalIndexType index )
-      {
-         //return entityInitializerContainer[ index ];
-      }
 
       void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds )
       {
@@ -543,15 +514,11 @@ class MeshInitializerLayer< MeshConfig,
    using EntityTraitsType               = typename MeshType::template EntityTraits< DimensionsTag::value >;
    using EntityTopology                 = typename EntityTraitsType::EntityTopology;
    using ContainerType                  = typename EntityTraitsType::StorageArrayType;
-   using SharedContainerType            = typename EntityTraitsType::AccessArrayType;
    using GlobalIndexType                = typename ContainerType::IndexType;
 
    using CellTopology                   = typename MeshTraitsType::CellTopology;
 
    using InitializerType                = MeshInitializer< MeshConfig >;
-   using CellInitializerType            = MeshEntityInitializer< MeshConfig, CellTopology >;
-   using VertexInitializerType          = MeshEntityInitializer< MeshConfig, EntityTopology >;
-   using VertexInitializerContainerType = Containers::Array< VertexInitializerType, Devices::Host, GlobalIndexType >;
    using CellSeedArrayType              = typename MeshTraits< MeshConfig >::CellSeedArrayType;
    using LocalIndexType                 = typename MeshTraits< MeshConfig >::LocalIndexType;
    using PointArrayType                 = typename MeshTraits< MeshConfig >::PointArrayType;
@@ -572,14 +539,6 @@ class MeshInitializerLayer< MeshConfig,
          return *( this->mesh );
       }
 
-      VertexInitializerType& getEntityInitializer( DimensionTag, GlobalIndexType index )
-      {
-         Assert( index >= 0 && index < vertexInitializerContainer.getSize(),
-                    std::cerr << " index = " << index
-                              << " vertexInitializerContainer.getSize() = " << vertexInitializerContainer.getSize() << std::endl; );
-         return vertexInitializerContainer[ index ];
-      }
-
       void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds ) {}
 
       void initEntities( InitializerType& initializer, const PointArrayType& points )
@@ -595,11 +554,6 @@ class MeshInitializerLayer< MeshConfig,
       // This method is due to 'using BaseType::findEntityIndex;' in the derived class.
       void findEntitySeedIndex() const {}
 
-      void createEntityInitializers()
-      {
-         vertexInitializerContainer.setSize( this->getMesh().template getNumberOfEntities< DimensionTag::value >() );
-      }
-
       SuperentityInitializerType& getSuperentityInitializer( DimensionsTag )
       {
          return this->superentityInitializer;
@@ -612,8 +566,6 @@ class MeshInitializerLayer< MeshConfig,
    private:
 
       SuperentityInitializerType superentityInitializer;
-
-      VertexInitializerContainerType vertexInitializerContainer;
 
       MeshType* mesh;
 };

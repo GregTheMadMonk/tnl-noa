@@ -428,7 +428,6 @@ class MeshEntityInitializerLayer< MeshConfig,
    using EntityDimensionsTag       = MeshDimensionsTag< EntityTopology::dimensions >;
    using EntityType                = MeshEntity< MeshConfig, EntityTopology >;
    using SeedType                  = MeshEntitySeed< MeshConfig, EntityTopology >;
-   using SubentitySeedsCreatorType = MeshSubentitySeedsCreator< MeshConfig, EntityTopology, DimensionsTag >;
    using IdArrayType               = typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionsTag::value >::IdArrayType;
 
 protected:
