@@ -37,28 +37,31 @@ class Mesh
       using StorageBaseType = MeshStorageLayers< MeshConfig >;
 
    public:
- 
-      typedef MeshConfig                                        Config;
-      typedef MeshTraits< MeshConfig >                          MeshTraitsType;
-      typedef typename MeshTraitsType::DeviceType               DeviceType;
-      typedef typename MeshTraitsType::GlobalIndexType          GlobalIndexType;
-      typedef typename MeshTraitsType::LocalIndexType           LocalIndexType;
-      typedef typename MeshTraitsType::CellType                 CellType;
-      typedef typename MeshTraitsType::VertexType               VertexType;
-      typedef typename MeshTraitsType::PointType                PointType;
-      static const int dimension = MeshTraitsType::meshDimension;
-      template< int Dimension > using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
-      template< int Dimension > using EntityType = typename EntityTraits< Dimension >::EntityType;
+      using Config          = MeshConfig;
+      using MeshTraitsType  = MeshTraits< MeshConfig >;
+      using DeviceType      = typename MeshTraitsType::DeviceType;
+      using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
+      using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
+      using CellType        = typename MeshTraitsType::CellType;
+      using VertexType      = typename MeshTraitsType::VertexType;
+      using PointType       = typename MeshTraitsType::PointType;
+      static constexpr int dimensions = MeshTraitsType::meshDimensions;
+
+      template< int Dimensions >
+      using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimensions >;
+
+      template< int Dimensions >
+      using EntityType = typename EntityTraits< Dimensions >::EntityType;
 
       static String getType();
- 
+
       virtual String getTypeVirtual() const;
- 
-      static constexpr int getMeshDimension();
+
+      static constexpr int getDimensions();
 
       template< int Dimensions >
       static constexpr bool entitiesAvailable();
- 
+
       GlobalIndexType getNumberOfCells() const;
 
       // TODO: rename to getEntitiesCount
@@ -71,24 +74,24 @@ class Mesh
 
       template< int Dimensions >
       EntityType< Dimensions >& getEntity( const GlobalIndexType entityIndex );
- 
-      template< int Dimension >
-      const EntityType< Dimension >& getEntity( const GlobalIndexType entityIndex ) const;
+
+      template< int Dimensions >
+      const EntityType< Dimensions >& getEntity( const GlobalIndexType entityIndex ) const;
 
       bool save( File& file ) const;
 
       bool load( File& file );
- 
+
       using Object::load;
       using Object::save;
- 
+
       void print( std::ostream& str ) const;
 
       bool operator==( const Mesh& mesh ) const;
 
       bool init( const typename MeshTraitsType::PointArrayType& points,
                  const typename MeshTraitsType::CellSeedArrayType& cellSeeds );
- 
+
    protected:
       // Methods for the mesh initializer
       using StorageBaseType::getEntitiesArray;

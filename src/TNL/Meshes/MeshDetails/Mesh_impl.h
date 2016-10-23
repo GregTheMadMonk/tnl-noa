@@ -66,7 +66,7 @@ getNumberOfEntities() const
 template< typename MeshConfig >
 typename Mesh< MeshConfig >::GlobalIndexType
 Mesh< MeshConfig >::
-template getNumberOfCells() const
+getNumberOfCells() const
 {
    return StorageBaseType::getNumberOfEntities( MeshDimensionsTag< dimensions >() );
 }

@@ -68,8 +68,6 @@ class MeshEntityInitializer
    using InitializerType  = MeshInitializer< MeshConfig >;
    using SeedType         = MeshEntitySeed< MeshConfig, EntityTopology >;
 
-   template< typename > class SubentitiesCreator;
-
 public:
    static String getType() { return "MeshEntityInitializer"; };
 

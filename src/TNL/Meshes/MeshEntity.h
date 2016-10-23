@@ -42,16 +42,15 @@ class MeshEntity
                           typename MeshConfig::GlobalIndexType >
 {
    public:
-
-      typedef MeshTraits< MeshConfig >                                MeshTraitsType;
-      typedef EntityTopology_                                         EntityTopology;
-      typedef typename MeshTraitsType::GlobalIndexType                GlobalIndexType;
-      typedef typename MeshTraitsType::LocalIndexType                 LocalIndexType;
-      typedef typename MeshTraitsType::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
+      using MeshTraitsType                 = MeshTraits< MeshConfig >;
+      using EntityTopology                 = EntityTopology_;
+      using GlobalIndexType                = typename MeshTraitsType::GlobalIndexType;
+      using LocalIndexType                 = typename MeshTraitsType::LocalIndexType;
+      using IdPermutationArrayAccessorType = typename MeshTraitsType::IdPermutationArrayAccessorType;
 
       template< int Subdimensions >
       using SubentityTraits = typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimensions >;
- 
+
       template< int SuperDimensions >
       using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimensions >;
 
@@ -68,8 +67,8 @@ class MeshEntity
       bool operator==( const MeshEntity& entity ) const;
 
       bool operator!=( const MeshEntity& entity ) const;
- 
-      constexpr int getEntityDimension() const;
+
+      constexpr int getEntityDimensions() const;
 
       /****
        * Subentities
@@ -108,7 +107,7 @@ class MeshEntity
 
       template< int Dimension >
       IdPermutationArrayAccessorType subentityOrientation( LocalIndexType index ) const;
- 
+
    protected:
       /****
        * Methods for the mesh initialization
@@ -120,13 +119,13 @@ class MeshEntity
       template< int Subdimensions >
       void setSubentityIndex( const LocalIndexType& localIndex,
                               const GlobalIndexType& globalIndex );
- 
+
       template< int Subdimensions >
       typename SubentityTraits< Subdimensions >::IdArrayType& subentityIdsArray();
 
       template< int Subdimensions >
       typename SubentityTraits< Subdimensions >::OrientationArrayType& subentityOrientationsArray();
- 
+
    friend MeshInitializer< MeshConfig >;
 
    template< typename Mesh, typename DimensionsTag, typename SuperdimensionsTag >
@@ -143,17 +142,16 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
                           typename MeshConfig::GlobalIndexType >
 {
    public:
+      using MeshTraitsType                 = MeshTraits< MeshConfig >;
+      using EntityTopology                 = MeshVertexTopology;
+      using GlobalIndexType                = typename MeshTraitsType::GlobalIndexType;
+      using LocalIndexType                 = typename MeshTraitsType::LocalIndexType;
+      using PointType                      = typename MeshTraitsType::PointType;
+      using IdPermutationArrayAccessorType = typename MeshTraitsType::IdPermutationArrayAccessorType;
 
-      typedef MeshTraits< MeshConfig >                                MeshTraitsType;
-      typedef MeshVertexTopology                                      EntityTopology;
-      typedef typename MeshTraitsType::GlobalIndexType                GlobalIndexType;
-      typedef typename MeshTraitsType::LocalIndexType                 LocalIndexType;
-      typedef typename MeshTraitsType::PointType                      PointType;
-      typedef typename MeshTraitsType::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
- 
       template< int SuperDimensions >
       using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimensions >;
- 
+
       static String getType();
 
       String getTypeVirtual() const;
@@ -167,8 +165,8 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       bool operator==( const MeshEntity& entity ) const;
 
       bool operator!=( const MeshEntity& entity ) const;
- 
-      constexpr int getEntityDimension() const;
+
+      constexpr int getEntityDimensions() const;
 
       /****
        * Superentities
@@ -187,9 +185,9 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::bindSuperentitiesStorageNetwork;
       using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::setNumberOfSuperentities;
       using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::setSuperentityIndex;
- 
+
       PointType point;
- 
+
    friend MeshInitializer< MeshConfig >;
 
    template< typename Mesh, typename DimensionsTag, typename SuperdimensionsTag >
@@ -199,6 +197,7 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
 template< typename MeshConfig,
           typename EntityTopology >
 std::ostream& operator <<( std::ostream& str, const MeshEntity< MeshConfig, EntityTopology >& entity );
+
 } // namespace Meshes
 
 /****
