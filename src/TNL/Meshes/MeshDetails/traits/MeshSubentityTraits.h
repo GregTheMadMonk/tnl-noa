@@ -25,7 +25,8 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename MeshConfig, typename EntityTopology > class MeshEntityOrientation;
+template< typename MeshConfig, typename EntityTopology >
+class MeshEntityOrientation;
 
 template< typename MeshConfig,
           typename EntityTopology,

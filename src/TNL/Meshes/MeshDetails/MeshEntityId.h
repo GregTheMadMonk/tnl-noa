@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <TNL/Assert.h>
+
 namespace TNL {
 namespace Meshes {
 
@@ -23,13 +25,12 @@ template< typename IDType,
           typename GlobalIndexType >
 class MeshEntityId
 {
-   public:
-
+public:
    MeshEntityId()
       : id( -1 )
    {}
 
-   const IDType &getId() const
+   const IDType& getId() const
    {
       TNL_ASSERT( this->id >= 0, );
       return this->id;
@@ -45,14 +46,14 @@ class MeshEntityId
       return ( this->id == id.id );
    }
 
-   protected:
+protected:
    IDType id;
 };
 
 template< typename GlobalIndexType >
 class MeshEntityId< void, GlobalIndexType >
 {
-   public:
+public:
    void setId( GlobalIndexType )
    {}
 
