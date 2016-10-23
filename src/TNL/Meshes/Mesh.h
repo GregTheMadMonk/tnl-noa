@@ -106,7 +106,7 @@ class Mesh
 };
 
 template< typename MeshConfig >
-std::ostream& operator <<( std::ostream& str, const Mesh< MeshConfig >& mesh );
+std::ostream& operator<<( std::ostream& str, const Mesh< MeshConfig >& mesh );
 
 } // namespace Meshes
 } // namespace TNL

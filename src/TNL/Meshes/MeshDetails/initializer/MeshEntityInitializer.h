@@ -73,7 +73,7 @@ public:
 
    MeshEntityInitializer() : entity(0), entityIndex( -1 ) {}
 
-   static void initEntity( EntityType &entity, GlobalIndexType entityIndex, const SeedType &entitySeed, InitializerType &initializer)
+   static void initEntity( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed, InitializerType& initializer)
    {
       for( LocalIndexType i = 0; i < entitySeed.getCornerIds().getSize(); i++ )
          initializer.template setSubentityIndex< 0 >( entity, i, entitySeed.getCornerIds()[ i ] );
@@ -216,8 +216,8 @@ protected:
       //std::cout << "   Initiating subentities with " << DimensionsTag::value << " dimensions ... " << std::endl;
       auto subentitySeeds = SubentitySeedsCreatorType::create( entitySeed );
 
-      IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionTag >( entity );
-      OrientationArrayType &subentityOrientationsArray = InitializerType::template subentityOrientationsArray< DimensionTag >( entity );
+      IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >( entity );
+      OrientationArrayType& subentityOrientationsArray = InitializerType::template subentityOrientationsArray< DimensionsTag >( entity );
       for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
       {
          GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
@@ -279,8 +279,8 @@ protected:
       //std::cout << "   Initiating subentities with " << DimensionsTag::value << " dimensions ... " << std::endl;
       auto subentitySeeds = SubentitySeedsCreatorType::create( entitySeed );
 
-      IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionTag >( entity );
-      OrientationArrayType &subentityOrientationsArray = InitializerType::template subentityOrientationsArray< DimensionTag >( entity );
+      IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >( entity );
+      OrientationArrayType& subentityOrientationsArray = InitializerType::template subentityOrientationsArray< DimensionsTag >( entity );
       for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
       {
          subentityIdsArray[ i ] = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
@@ -436,7 +436,7 @@ protected:
                                 InitializerType& meshInitializer )
    {
       //std::cout << "   Initiating subentities with " << DimensionsTag::value << " dimensions ... " << std::endl;
-      const IdArrayType &subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >(entity);
+      const IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >(entity);
       for( LocalIndexType i = 0; i < subentityIdsArray.getSize(); i++ )
          meshInitializer.template getSuperentityInitializer< DimensionsTag >().addSuperentity( EntityDimensionsTag(), subentityIdsArray[ i ], entityIndex);
 	}

@@ -196,7 +196,7 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
 
 template< typename MeshConfig,
           typename EntityTopology >
-std::ostream& operator <<( std::ostream& str, const MeshEntity< MeshConfig, EntityTopology >& entity );
+std::ostream& operator<<( std::ostream& str, const MeshEntity< MeshConfig, EntityTopology >& entity );
 
 } // namespace Meshes
 

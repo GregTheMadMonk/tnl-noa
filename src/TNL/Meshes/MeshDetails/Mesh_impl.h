@@ -167,7 +167,7 @@ init( const typename Mesh< MeshConfig >::MeshTraitsType::PointArrayType& points,
 
 
 template< typename MeshConfig >
-std::ostream& operator <<( std::ostream& str, const Mesh< MeshConfig >& mesh )
+std::ostream& operator<<( std::ostream& str, const Mesh< MeshConfig >& mesh )
 {
    mesh.print( str );
    return str;

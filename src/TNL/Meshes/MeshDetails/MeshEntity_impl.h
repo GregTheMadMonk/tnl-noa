@@ -361,7 +361,7 @@ setPoint( const PointType& point )
 
 template< typename MeshConfig,
           typename EntityTopology >
-std::ostream& operator <<( std::ostream& str, const MeshEntity< MeshConfig, EntityTopology >& entity )
+std::ostream& operator<<( std::ostream& str, const MeshEntity< MeshConfig, EntityTopology >& entity )
 {
    entity.print( str );
    return str;
