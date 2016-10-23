@@ -299,7 +299,7 @@ bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file
       if( verbose )
          cout << " Counting the matrix elements ... " << numberOfElements / 1000 << " thousands      \r" << flush;
       rowLengths[ row - 1 ]++;
-      if( rowLengths[ row - 1 ] >= columns )
+      if( rowLengths[ row - 1 ] > columns )
       {
          cerr << "There are more elements than the matrix columns at the row " << row << "." << endl;
          return false;

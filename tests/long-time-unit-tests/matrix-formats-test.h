@@ -52,7 +52,7 @@ void setupConfig( tnlConfigDescription& config )
 
 
 template< typename Matrix >
-bool testMatrix( const tnlParameterContainer& parameters )
+bool testMatrix( const tnlParameterContainer& parameters, bool sym )
 {
    Matrix matrix;
    typedef typename Matrix::RealType RealType;
@@ -68,7 +68,7 @@ bool testMatrix( const tnlParameterContainer& parameters )
       cerr << "Cannot open the file " << fileName << endl;
       return false;
    }
-   if( ! tnlMatrixReader< Matrix >::readMtxFile( file, matrix, verbose ) )
+   if( ! tnlMatrixReader< Matrix >::readMtxFile( file, matrix, verbose, sym ) )
       return false;
    //if( ! tnlMatrixReader< Matrix >::verifyMtxFile( file, matrix, verbose ) )
    //   return false;
@@ -147,43 +147,43 @@ int main( int argc, char* argv[] )
    const tnlString& matrixFormat = parameters.GetParameter< tnlString >( "matrix-format" );
    if( matrixFormat == "dense" )
    {
-       if( !testMatrix< tnlDenseMatrix< double, tnlHost, int > >( parameters ) )
+       if( !testMatrix< tnlDenseMatrix< double, tnlHost, int > >( parameters, false ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "ellpack" )
    {
-       if( !testMatrix< tnlEllpackMatrix< double, tnlHost, int > >( parameters ) )
+       if( !testMatrix< tnlEllpackMatrix< double, tnlHost, int > >( parameters, false ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "sliced-ellpack" )
    {
-       if( !testMatrix< tnlSlicedEllpackMatrix< double, tnlHost, int > >( parameters ) )
+       if( !testMatrix< tnlSlicedEllpackMatrix< double, tnlHost, int > >( parameters, false ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "chunked-ellpack" )
    {
-       if( !testMatrix< tnlChunkedEllpackMatrix< double, tnlHost, int > >( parameters ) )
+       if( !testMatrix< tnlChunkedEllpackMatrix< double, tnlHost, int > >( parameters, false ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "csr" )
    {
-       if( !testMatrix< tnlCSRMatrix< double, tnlHost, int > >( parameters ) )
+       if( !testMatrix< tnlCSRMatrix< double, tnlHost, int > >( parameters, false ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "bi-ell" )
    {
-       if( !testMatrix< tnlBiEllpackMatrix< double, tnlHost, int > >( parameters ) )
+       if( !testMatrix< tnlBiEllpackMatrix< double, tnlHost, int > >( parameters, false ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
-   if( matrixFormatt == "bi-ell-sym" )
+   if( matrixFormat == "bi-ell-sym" )
    {
-       if( !testMatrix< tnlBiEllpackSymMatrix< double, tnlHost, int > >( parameters ) )
+       if( !testMatrix< tnlBiEllpackSymMatrix< double, tnlHost, int > >( parameters, true ) )
            return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }

@@ -452,6 +452,9 @@ Real tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::getElement( const 
                        << " this->getColumns() = " << this->getColumns()
                        << "this->getName() = " << this->getName() << endl );
 
+    if( row > column )
+        return this->getElement( column, row );
+
     const IndexType strip = row / this->warpSize;
     const IndexType groupBegin = strip * ( this->logWarpSize + 1 );
     const IndexType rowStripPerm = this->rowPermArray.getElement( row ) - strip * this->warpSize;
@@ -642,7 +645,7 @@ void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::vectorProductHost(
                     }
                     RealType result = tempStripOutVector.getElement( currentRow % cudaBlockSize );
                     result += inVector[ this->columnIndexes.getElement( elementPtr ) ] * this->values.getElement( elementPtr );
-                    outVector[ this->columnIndexes[ elementPtr ] ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ] );
+                    outVector[ this->columnIndexes[ elementPtr ] ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
                     tempStripOutVector.setElement( currentRow % cudaBlockSize, result );
                     elementPtr += this->warpSize;
                 }
