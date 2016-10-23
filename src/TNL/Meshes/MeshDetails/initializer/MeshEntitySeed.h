@@ -25,23 +25,22 @@ template< typename MeshConfig,
           typename EntityTopology >
 class MeshEntitySeed
 {
-   typedef MeshTraits< MeshConfig >      MeshConfigTraits;
-   typedef typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, 0 > SubvertexTraits;
+   using MeshConfigTraits = MeshTraits< MeshConfig >;
+   using SubvertexTraits = typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, 0 >;
 
    public:
-      typedef typename MeshTraits< MeshConfig >::GlobalIndexType                                      GlobalIndexType;
-      typedef typename MeshTraits< MeshConfig >::LocalIndexType                                       LocalIndexType;
-      typedef typename MeshTraits< MeshConfig >::IdArrayAccessorType                                  IdArrayAccessorType;
-      typedef typename SubvertexTraits::IdArrayType                                                      IdArrayType;
+      using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
+      using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
+      using IdArrayType     = typename SubvertexTraits::IdArrayType;
 
       static String getType() { return String( "MeshEntitySeed<>" ); }
- 
+
       static constexpr LocalIndexType getCornersCount()
       {
          return SubvertexTraits::count;
       }
 
-      void setCornerId( LocalIndexType cornerIndex, GlobalIndexType pointIndex )
+      void setCornerId( const LocalIndexType& cornerIndex, const GlobalIndexType& pointIndex )
       {
          TNL_ASSERT( 0 <= cornerIndex && cornerIndex < getCornersCount(), std::cerr << "cornerIndex = " << cornerIndex );
          TNL_ASSERT( 0 <= pointIndex, std::cerr << "pointIndex = " << pointIndex );
@@ -49,28 +48,22 @@ class MeshEntitySeed
          this->cornerIds[ cornerIndex ] = pointIndex;
       }
 
-      IdArrayAccessorType getCornerIds()
+      IdArrayType& getCornerIds()
       {
-         IdArrayAccessorType accessor;
-         accessor.bind( this->corners.getData(), this->corners.getSize() );
-         return accessor;
+         return cornerIds;
       }
 
- 
-      const IdArrayAccessorType getCornerIds() const
+      const IdArrayType& getCornerIds() const
       {
-         IdArrayAccessorType accessor;
-         accessor.bind( this->cornerIds.getData(), this->cornerIds.getSize() );
-         return accessor;
+         return cornerIds;
       }
 
    private:
-	
       IdArrayType cornerIds;
 };
 
 template< typename MeshConfig, typename EntityTopology >
-std::ostream& operator << ( std::ostream& str, const MeshEntitySeed< MeshConfig, EntityTopology >& e )
+std::ostream& operator<<( std::ostream& str, const MeshEntitySeed< MeshConfig, EntityTopology >& e )
 {
    str << e.getCornerIds();
    return str;

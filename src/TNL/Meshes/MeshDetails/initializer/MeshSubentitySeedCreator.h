@@ -29,7 +29,6 @@ class MeshSubentitySeedsCreator
 	typedef typename MeshTraits< MeshConfig >::LocalIndexType                                                      LocalIndexType;
 	typedef typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, SubDimensionTag::value > SubentityTraits;
 	typedef typename SubentityTraits::SubentityTopology                                                               SubentityTopology;
-	typedef typename MeshTraits< MeshConfig >::IdArrayAccessorType                                                 IdArrayAccessorType;
 	typedef typename MeshTraits< MeshConfig >::template SubentityTraits< SubentityTopology, 0 >                    SubentityVertexTraits;
 
 	static const LocalIndexType SUBENTITIES_COUNT = SubentityTraits::count;
@@ -38,10 +37,11 @@ class MeshSubentitySeedsCreator
    public:
       typedef typename SubentityTraits::SeedArrayType SubentitySeedArray;
       typedef MeshEntitySeed< MeshConfig, EntityTopology >  EntitySeed;
-      //typedef typename MeshEntityTraits< MeshConfig, SubDimensionTag >::SeedIndexedSetType                     SeedIndexedSet;
+      typedef typename EntitySeed::IdArrayType IdArrayType;
+      //typedef typename MeshEntityTraits< MeshConfig, SubDimensionsTag >::SeedIndexedSetType                     SeedIndexedSet;
 
       //template< typename SeedIndexedSet >
-      static SubentitySeedArray create( const EntitySeed &entitySeed  )
+      static SubentitySeedArray create( const EntitySeed& entitySeed  )
       {
          SubentitySeedArray subentitySeeds;
          StaticFor< LocalIndexType, 0, SUBENTITIES_COUNT, CreateSubentitySeeds >::exec( subentitySeeds, entitySeed.getCornerIds() );
@@ -57,8 +57,8 @@ class MeshSubentitySeedsCreator
       class CreateSubentitySeeds
       {
          public:
-            static void exec( SubentitySeedArray &subentitySeeds, IdArrayAccessorType vertexIds )
-            //static void exec( SeedIndexedSet& indexedSet, IdArrayAccessorType vertexIds )
+            static void exec( SubentitySeedArray& subentitySeeds, const IdArrayType& vertexIds )
+            //static void exec( SeedIndexedSet& indexedSet, const IdArrayType& vertexIds )
             {
                //EntitySeed seed;
                StaticFor< LocalIndexType, 0, SUBENTITY_VERTICES_COUNT, SetSubentitySeedVertex >::exec( subentitySeeds[ subentityIndex ], vertexIds );
@@ -70,7 +70,7 @@ class MeshSubentitySeedsCreator
             class SetSubentitySeedVertex
             {
                public:
-                  static void exec( SubentitySeed &subentitySeed, IdArrayAccessorType vertexIds )
+                  static void exec( SubentitySeed& subentitySeed, const IdArrayType& vertexIds )
                   {
                      static const LocalIndexType VERTEX_INDEX = SubentityTraits::template Vertex< subentityIndex, subentityVertexIndex >::index;
                      subentitySeed.setCornerId( subentityVertexIndex, vertexIds[ VERTEX_INDEX ] );

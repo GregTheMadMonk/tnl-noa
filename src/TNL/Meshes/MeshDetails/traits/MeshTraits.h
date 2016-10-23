@@ -53,7 +53,6 @@ public:
    using PointArrayType                 = Containers::Array< PointType, Devices::Host, GlobalIndexType >;
    using CellSeedArrayType              = Containers::Array< CellSeedType, Devices::Host, GlobalIndexType >;
    using GlobalIdArrayType              = Containers::Array< GlobalIndexType, Devices::Host, GlobalIndexType >;
-   using IdArrayAccessorType            = Containers::tnlConstSharedArray< GlobalIndexType, Devices::Host, LocalIndexType >;
    using IdPermutationArrayAccessorType = Containers::tnlConstSharedArray< LocalIndexType, Devices::Host, LocalIndexType >;
 
    template< int Dimensions >
