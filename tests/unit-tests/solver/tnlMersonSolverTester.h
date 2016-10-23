@@ -1,26 +1,19 @@
 /***************************************************************************
-                          tnlMersonSolverTester.h
+                          MersonTester.h
                              -------------------
     begin                : Feb 1, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMERSONSOLVERTESTER_H_
-#define TNLMERSONSOLVERTESTER_H_
+#ifndef MersonTESTER_H_
+#define MersonTESTER_H_
 
-#include <legacy/mesh/tnlGridOld.h>
-#include <solvers/ode/tnlMersonSolver.h>
-#include <core/mfilename.h>
+#include <TNL/legacy/mesh/GridOld.h>
+#include <TNL/Solvers/ODE/Merson.h>
+#include <TNL/FileName.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
@@ -72,43 +65,43 @@ __global__ void heatEquationRHSKernel( const Index xSize,
 
 
 template< typename Real, typename Device, typename Index = int >
-class tnlMersonSolverTester : public CppUnit :: TestCase
+class MersonTester : public CppUnit :: TestCase
 {
    public:
 
-   tnlMersonSolverTester( ){};
+   MersonTester( ){};
 
-   tnlMersonSolverTester( const tnlString& s ){};
+   MersonTester( const String& s ){};
 
-   tnlString getType() const
+   String getType() const
    {
-      return tnlString( "tnlMersonSolverTester< " ) +
+      return String( "MersonTester< " ) +
              getType( Real( 0 ) ) +
-             tnlString( ", ") +
+             String( ", ") +
              Device :: getDeviceType() +
-             tnlString( ", ") +
+             String( ", ") +
              getType( Index( 0 ) ) +
-             tnlString( " >" );
+             String( " >" );
    };
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlMersonSolverTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "MersonTester" );
       CppUnit :: TestResult result;
 
       Real param;
-      tnlString test_name = tnlString( "testUpdateU< " ) + getType( param ) + tnlString( " >" );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlMersonSolverTester< Real, Device, Index > >(
+      String test_name = String( "testUpdateU< " ) + getType( param ) + String( " >" );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< MersonTester< Real, Device, Index > >(
                test_name. getString(),
-               & tnlMersonSolverTester< Real, Device, Index > :: testUpdateU )
+               & MersonTester< Real, Device, Index > :: testUpdateU )
       );
 
       return suiteOfTests;
    };
 
    void GetExplicitRHS( const Real& time,
-                        tnlGridOld< 2, Real, tnlHost, int >& u,
-                        tnlGridOld< 2, Real, tnlHost, int >& fu )
+                        GridOld< 2, Real, Devices::Host, int >& u,
+                        GridOld< 2, Real, Devices::Host, int >& fu )
    {
       const Index xSize = u. getDimensions(). x();
       const Index ySize = u. getDimensions(). y();
@@ -123,8 +116,8 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
    }
 
    void GetExplicitRHS( const Real& time,
-                        tnlGridOld< 2, Real, tnlCuda, int >& u,
-                        tnlGridOld< 2, Real, tnlCuda, int >& fu )
+                        GridOld< 2, Real, Devices::Cuda, int >& u,
+                        GridOld< 2, Real, Devices::Cuda, int >& fu )
    {
 #ifdef HAVE_CUDA
       const Index xSize = u. getDimensions(). x();
@@ -145,10 +138,10 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
    {
       const Index size = 128;
 
-      tnlGridOld< 2, Real, tnlHost, int > hostU( "hostU");
-      hostU. setDimensions( tnlStaticVector< 2, Index >( size, size ) );
-      hostU. setDomain( tnlStaticVector< 2, Real >( 0.0, 0.0 ),
-                        tnlStaticVector< 2, Real >( 1.0, 1.0 ) );
+      GridOld< 2, Real, Devices::Host, int > hostU( "hostU");
+      hostU. setDimensions( StaticVector< 2, Index >( size, size ) );
+      hostU. setDomain( StaticVector< 2, Real >( 0.0, 0.0 ),
+                        StaticVector< 2, Real >( 1.0, 1.0 ) );
       const Real hx = hostU. getSpaceSteps(). x();
       const Real hy = hostU. getSpaceSteps(). y();
       for( Index i = 0; i < size; i ++ )
@@ -156,11 +149,11 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
          {
             Real x = i * hx - 0.5;
             Real y = j * hy - 0.5;
-            hostU( i, j ) = Sign( 0.25 - sqrt( x * x + y * y ) );
+            hostU( i, j ) = sign( 0.25 - ::sqrt( x * x + y * y ) );
          }
       hostU. draw( "u-ini", "gnuplot" );
 
-      tnlMersonSolver< tnlMersonSolverTester< Real, Device, Index > >
+      Merson< MersonTester< Real, Device, Index > >
                        mersonSolver( "mersonSolver" );
       mersonSolver. setVerbosity( 2 );
       mersonSolver. setAdaptivity( 0.001 );
@@ -168,18 +161,18 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       mersonSolver. setTau( 0.001 );
 
 
-      tnlGridOld< 2, Real, tnlCuda, int > deviceU( "deviceU" );
+      GridOld< 2, Real, Devices::Cuda, int > deviceU( "deviceU" );
       deviceU. setLike( hostU );
       deviceU = hostU;
 
-      tnlGridOld< 2, Real, tnlHost, int > hostAuxU( "hostAuxU" );
+      GridOld< 2, Real, Devices::Host, int > hostAuxU( "hostAuxU" );
       hostAuxU. setLike( hostU );
 
 #ifdef HAVE_CUDA
-      /*tnlMersonSolver< tnlMersonSolverTester< Real, Device, Index >,
-                       tnlGridOld< 2, Real, tnlCuda, Index >,
+      /*Merson< MersonTester< Real, Device, Index >,
+                       GridOld< 2, Real, Devices::Cuda, Index >,
                        Real,
-                       tnlCuda,
+                       Devices::Cuda,
                        Index > mersonSolverCUDA( "mersonSolverCuda" );
       mersonSolverCUDA. setVerbosity( 2 );
       mersonSolverCUDA. setAdaptivity( 0.001 );
@@ -194,10 +187,10 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       while( time < finalTime )
       {
          iteration ++;
-         cout << "Starting the Merson solver with stop time " << time << endl;
+        std::cout << "Starting the Merson solver with stop time " << time << std::endl;
          mersonSolver. setStopTime( time );
          mersonSolver. solve( *this, hostU );
-         cout << "Starting the CUDA Merson solver with stop time " << time << endl;
+        std::cout << "Starting the CUDA Merson solver with stop time " << time << std::endl;
 #ifdef HAVE_CUDA
          //mersonSolverCUDA. setStopTime( time );
          //mersonSolverCUDA. solve( *this, deviceU );
@@ -207,18 +200,18 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
          Real l1Norm = hostU. getDifferenceLpNorm( hostAuxU, ( Real ) 1.0 );
          Real l2Norm =  hostU. getDifferenceLpNorm( hostAuxU, ( Real ) 2.0 );
          Real maxNorm = hostU. getDifferenceAbsMax( hostAuxU );
-         cout << endl;
-         cout << "Errors: L1 " << l1Norm << " L2 " << l2Norm << " max." << maxNorm << endl;
+        std::cout << std::endl;
+        std::cout << "Errors: L1 " << l1Norm << " L2 " << l2Norm << " max." << maxNorm << std::endl;
 
-         cout << "Writing file ... ";
-         tnlString fileName;
+        std::cout << "Writing file ... ";
+         String fileName;
          FileNameBaseNumberEnding(
                   "u",
                   iteration,
                   5,
                   ".gplt",
                   fileName );
-         cout << fileName << endl;
+        std::cout << fileName << std::endl;
          hostAuxU. draw( fileName, "gnuplot" );
 
 
@@ -227,4 +220,4 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
    };
 };
 
-#endif /* TNLMERSONSOLVERCUDATESTER_H_ */
+#endif /* MersonCUDATESTER_H_ */

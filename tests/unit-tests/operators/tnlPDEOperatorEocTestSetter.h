@@ -6,20 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLPDEOPERATOREOCTESTSETTER_H_
 #define TNLPDEOPERATOREOCTESTSETTER_H_
 
-#include <mesh/tnlGrid.h>
-#include <functions/tnlExpBumpFunction.h>
+#include <TNL/Meshes/Grid.h>
+#include <TNL/Functions/Analytic/ExpBump.h>
+
+using namespace TNL;
 
 template< typename ApproximateOperator,
           typename ExactOperator,
@@ -36,19 +31,19 @@ template< typename ApproximateOperator,
           typename Index >
 class tnlPDEOperatorEocTestSetter< ApproximateOperator,
                                    ExactOperator,
-                                   tnlGrid< 1, Real, Device, Index >,
-                                   tnlExpBumpFunction< 1, Real > >
+                                   Meshes::Grid< 1, Real, Device, Index >,
+                                   ExpBump< 1, Real > >
 {
    public:
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlGrid< 1, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
       typedef ExactOperator ExactOperatorType;
       typedef ApproximateOperator ApproximateOperatorType;
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef tnlExpBumpFunction< 1, Real > FunctionType;
+      typedef ExpBump< 1, Real > FunctionType;
 
    static void setMesh( MeshType& mesh,
                         const IndexType& size )
@@ -77,19 +72,19 @@ template< typename ApproximateOperator,
           typename Index >
 class tnlPDEOperatorEocTestSetter< ApproximateOperator,
                                    ExactOperator,
-                                   tnlGrid< 2, Real, Device, Index >,
-                                   tnlExpBumpFunction< 2, Real > >
+                                   Meshes::Grid< 2, Real, Device, Index >,
+                                   ExpBump< 2, Real > >
 {
    public:
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlGrid< 2, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
       typedef ExactOperator ExactOperatorType;
       typedef ApproximateOperator ApproximateOperatorType;
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef tnlExpBumpFunction< 2, Real > FunctionType;
+      typedef ExpBump< 2, Real > FunctionType;
 
    static void setMesh( MeshType& mesh,
                         const IndexType& size )
@@ -121,19 +116,19 @@ template< typename ApproximateOperator,
           typename Index >
 class tnlPDEOperatorEocTestSetter< ApproximateOperator,
                                    ExactOperator,
-                                   tnlGrid< 3, Real, Device, Index >,
-                                   tnlExpBumpFunction< 3, Real > >
+                                   Meshes::Grid< 3, Real, Device, Index >,
+                                   ExpBump< 3, Real > >
 {
    public:
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlGrid< 3, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 3, Real, Device, Index > MeshType;
       typedef ExactOperator ExactOperatorType;
       typedef ApproximateOperator ApproximateOperatorType;
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef tnlExpBumpFunction< 3, Real > FunctionType;
+      typedef ExpBump< 3, Real > FunctionType;
 
    static void setMesh( MeshType& mesh,
                         const IndexType& size )

@@ -5,10 +5,10 @@
 #include <map>
 #include <vector>
 
-#include <core/tnlTimerRT.h>
-#include <core/tnlString.h>
+#include <TNL/Timer.h>
+#include <TNL/String.h>
 
-namespace tnl
+namespace TNL
 {
 namespace benchmarks
 {
@@ -23,7 +23,7 @@ timeFunction( ComputeFunction compute,
               const int & loops )
 {
     // the timer is constructed zero-initialized and stopped
-    tnlTimerRT timer;
+    Timer timer;
 
     reset();
     for(int i = 0; i < loops; ++i) {
@@ -42,7 +42,7 @@ timeFunction( ComputeFunction compute,
         reset();
     }
 
-    return timer.getTime();
+    return timer.getRealTime();
 }
 
 
@@ -52,11 +52,11 @@ struct InternalError {};
 class Logging
 {
 public:
-    using MetadataElement = std::pair< const char*, tnlString >;
-    using MetadataMap = std::map< const char*, tnlString >;
+    using MetadataElement = std::pair< const char*, String >;
+    using MetadataMap = std::map< const char*, String >;
     using MetadataColumns = std::vector<MetadataElement>;
 
-    using HeaderElements = std::initializer_list< tnlString >;
+    using HeaderElements = std::initializer_list< String >;
     using RowElements = std::initializer_list< double >;
 
     Logging( bool verbose = true )
@@ -64,7 +64,7 @@ public:
     { }
 
     void
-    writeTitle( const tnlString & title )
+    writeTitle( const String & title )
     {
         if( verbose )
             std::cout << std::endl << "== " << title << " ==" << std::endl << std::endl;
@@ -87,33 +87,33 @@ public:
     }
 
     void
-    writeTableHeader( const tnlString & spanningElement,
+    writeTableHeader( const String & spanningElement,
                       const HeaderElements & subElements )
     {
         using namespace std;
 
         if( verbose && header_changed ) {
             for( auto & it : metadataColumns ) {
-                cout << setw( 20 ) << it.first;
+               std::cout << std::setw( 20 ) << it.first;
             }
 
             // spanning element is printed as usual column to stdout,
             // but is excluded from header
-            cout << setw( 15 ) << "";
+           std::cout << std::setw( 15 ) << "";
 
             for( auto & it : subElements ) {
-                cout << setw( 15 ) << it;
+               std::cout << std::setw( 15 ) << it;
             }
-            cout << endl;
+           std::cout << std::endl;
 
             header_changed = false;
         }
 
         // initial indent string
         header_indent = "!";
-        log << endl;
+        log << std::endl;
         for( auto & it : metadataColumns ) {
-            log << header_indent << " " << it.first << endl;
+            log << header_indent << " " << it.first << std::endl;
         }
 
         // dump stacked spanning columns
@@ -122,16 +122,16 @@ public:
                 horizontalGroups.pop_back();
                 header_indent.pop_back();
             }
-        for( int i = 0; i < horizontalGroups.size(); i++ ) {
+        for( size_t i = 0; i < horizontalGroups.size(); i++ ) {
             if( horizontalGroups[ i ].second > 0 ) {
-                log << header_indent << " " << horizontalGroups[ i ].first << endl;
+                log << header_indent << " " << horizontalGroups[ i ].first << std::endl;
                 header_indent += "!";
             }
         }
 
-        log << header_indent << " " << spanningElement << endl;
+        log << header_indent << " " << spanningElement << std::endl;
         for( auto & it : subElements ) {
-            log << header_indent << "! " << it << endl;
+            log << header_indent << "! " << it << std::endl;
         }
 
         if( horizontalGroups.size() > 0 ) {
@@ -141,44 +141,85 @@ public:
     }
 
     void
-    writeTableRow( const tnlString & spanningElement,
+    writeTableRow( const String & spanningElement,
                    const RowElements & subElements )
     {
         using namespace std;
 
         if( verbose ) {
             for( auto & it : metadataColumns ) {
-                cout << setw( 20 ) << it.second;
+               std::cout << std::setw( 20 ) << it.second;
             }
             // spanning element is printed as usual column to stdout
-            cout << setw( 15 ) << spanningElement;
+           std::cout << std::setw( 15 ) << spanningElement;
             for( auto & it : subElements ) {
-                cout << setw( 15 );
-                if( it != 0.0 ) cout << it;
-                else cout << "N/A";
+               std::cout << std::setw( 15 );
+                if( it != 0.0 )std::cout << it;
+                else std::cout << "N/A";
             }
-            cout << endl;
+           std::cout << std::endl;
         }
 
         // only when changed (the header has been already adjusted)
         // print each element on separate line
         for( auto & it : metadataColumns ) {
-            log << it.second << endl;
+            log << it.second << std::endl;
         }
 
         // benchmark data are indented
-        const tnlString indent = "    ";
+        const String indent = "    ";
         for( auto & it : subElements ) {
-            if( it != 0.0 ) log << indent << it << endl;
-            else log << indent << "N/A" << endl;
+            if( it != 0.0 ) log << indent << it << std::endl;
+            else log << indent << "N/A" << std::endl;
         }
+    }
+
+    void
+    writeErrorMessage( const char* msg,
+                       const int & colspan = 1 )
+    {
+        // initial indent string
+        header_indent = "!";
+        log << std::endl;
+        for( auto & it : metadataColumns ) {
+            log << header_indent << " " << it.first << std::endl;
+        }
+
+        // make sure there is a header column for the message
+        if( horizontalGroups.size() == 0 )
+            horizontalGroups.push_back( {"", 1} );
+
+        // dump stacked spanning columns
+        while( horizontalGroups.back().second <= 0 ) {
+            horizontalGroups.pop_back();
+            header_indent.pop_back();
+        }
+        for( size_t i = 0; i < horizontalGroups.size(); i++ ) {
+            if( horizontalGroups[ i ].second > 0 ) {
+                log << header_indent << " " << horizontalGroups[ i ].first << std::endl;
+                header_indent += "!";
+            }
+        }
+        if( horizontalGroups.size() > 0 ) {
+            horizontalGroups.back().second -= colspan;
+            header_indent.pop_back();
+        }
+
+        // only when changed (the header has been already adjusted)
+        // print each element on separate line
+        for( auto & it : metadataColumns ) {
+            log << it.second << std::endl;
+        }
+        log << msg << std::endl;
     }
 
     void
     closeTable()
     {
+        log << std::endl;
         header_indent = body_indent = "";
         header_changed = true;
+        horizontalGroups.clear();
     }
 
     bool save( std::ostream & logFile )
@@ -186,7 +227,7 @@ public:
         closeTable();
         logFile << log.str();
         if( logFile.good() ) {
-            log.str() ="";
+            log.str() = "";
             return true;
         }
         return false;
@@ -194,8 +235,8 @@ public:
 
 protected:
 
-    // manual double -> tnlString conversion with fixed precision
-    static tnlString
+    // manual double -> String conversion with fixed precision
+    static String
     _to_string( const double & num, const int & precision = 0, bool fixed = false )
     {
         std::stringstream str;
@@ -204,7 +245,7 @@ protected:
         if( precision )
             str << std::setprecision( precision );
         str << num;
-        return tnlString( str.str().data() );
+        return String( str.str().data() );
     }
 
     std::stringstream log;
@@ -214,7 +255,7 @@ protected:
     bool verbose;
     MetadataColumns metadataColumns;
     bool header_changed = true;
-    std::vector< std::pair< tnlString, int > > horizontalGroups;
+    std::vector< std::pair< String, int > > horizontalGroups;
 };
 
 
@@ -241,7 +282,7 @@ public:
 
     // Marks the start of a new benchmark
     void
-    newBenchmark( const tnlString & title )
+    newBenchmark( const String & title )
     {
         closeTable();
         writeTitle( title );
@@ -249,13 +290,13 @@ public:
 
     // Marks the start of a new benchmark (with custom metadata)
     void
-    newBenchmark( const tnlString & title,
+    newBenchmark( const String & title,
                   MetadataMap metadata )
     {
         closeTable();
         writeTitle( title );
         // add loops to metadata
-        metadata["loops"] = tnlString(loops);
+        metadata["loops"] = String(loops);
         writeMetadata( metadata );
     }
 
@@ -276,11 +317,11 @@ public:
     //  - Order of operations inside a "Benchmark" does not matter, rows can be
     //    easily sorted while converting to HTML.)
     void
-    setOperation( const tnlString & operation,
+    setOperation( const String & operation,
                   const double & datasetSize = 0.0, // in GB
                   const double & baseTime = 0.0 )
     {
-        if( metadataColumns.size() > 0 && tnlString(metadataColumns[ 0 ].first) == "operation" ) {
+        if( metadataColumns.size() > 0 && String(metadataColumns[ 0 ].first) == "operation" ) {
             metadataColumns[ 0 ].second = operation;
         }
         else {
@@ -302,7 +343,7 @@ public:
     // of columns in the "Benchmark", implies column spanning.
     // (Useful e.g. for SpMV formats, different configurations etc.)
     void
-    createHorizontalGroup( const tnlString & name,
+    createHorizontalGroup( const String & name,
                            const int & subcolumns )
     {
         if( horizontalGroups.size() == 0 ) {
@@ -330,7 +371,7 @@ public:
               typename ComputeFunction >
     double
     time( ResetFunction reset,
-          const tnlString & performer,
+          const String & performer,
           ComputeFunction & compute )
     {
         const double time = timeFunction( compute, reset, loops );
@@ -352,13 +393,24 @@ public:
               typename... NextComputations >
     inline double
     time( ResetFunction reset,
-          const tnlString & performer,
+          const String & performer,
           ComputeFunction & compute,
           NextComputations & ... nextComputations )
     {
         time( reset, performer, compute );
         time( reset, nextComputations... );
         return this->baseTime;
+    }
+
+    // Adds an error message to the log. Should be called in places where the
+    // "time" method could not be called (e.g. due to failed allocation).
+    void
+    addErrorMessage( const char* msg,
+                     const int & numberOfComputations = 1 )
+    {
+        // each computation has 3 subcolumns
+        const int colspan = 3 * numberOfComputations;
+        writeErrorMessage( msg, colspan );
     }
 
     using Logging::save;

@@ -1,32 +1,34 @@
 #ifndef advectionPROBLEM_IMPL_H_
 #define advectionPROBLEM_IMPL_H_
 
-#include <core/mfilename.h>
-#include <matrices/tnlMatrixSetter.h>
-#include <solvers/pde/tnlExplicitUpdater.h>
-#include <solvers/pde/tnlLinearSystemAssembler.h>
-#include <solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/FileName.h>
+#include <TNL/Matrices/MatrixSetter.h>
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "advectionProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "advectionProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
-   return tnlString( "advection" );
+   return String( "advection" );
 }
 
 template< typename Mesh,
@@ -35,7 +37,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
+writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
     * Add data you want to have in the computation report (log) as follows:
@@ -49,10 +51,12 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const tnlParameterContainer& parameters )
+setup( const MeshPointer& meshPointer,
+       const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
-   if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
-       ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
+   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
+       ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
    return true;
 }
@@ -63,13 +67,13 @@ template< typename Mesh,
           typename DifferentialOperator >
 typename advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getDofs( const MeshType& mesh ) const
+getDofs( const MeshPointer& mesh ) const
 {
    /****
     * Return number of  DOFs (degrees of freedom) i.e. number
     * of unknowns to be resolved by the main solver.
     */
-   return mesh.template getEntitiesCount< typename MeshType::Cell >();
+   return mesh->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
@@ -78,8 +82,8 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-bindDofs( const MeshType& mesh,
-          DofVectorType& dofVector )
+bindDofs( const MeshPointer& mesh,
+          DofVectorPointer& dofVector )
 {
 }
 
@@ -89,11 +93,12 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setInitialCondition( const tnlParameterContainer& parameters,
-                     const MeshType& mesh,
-                     DofVectorType& dofs,
-                     MeshDependentDataType& meshDependentData )
+setInitialCondition( const Config::ParameterContainer& parameters,
+                     const MeshPointer& mesh,
+                     DofVectorPointer& dofs,
+                     MeshDependentDataPointer& meshDependentData )
 {
+<<<<<<< HEAD
    typedef typename MeshType::Cell Cell;
    int dimensions = parameters.getParameter< int >( "dimension" );
    int count = mesh.template getEntitiesCount< Cell >();
@@ -108,9 +113,21 @@ setInitialCondition( const tnlParameterContainer& parameters,
    this->size = size;
    this->schemeSize =parameters.getParameter< RealType >( "realSize" );
    if (beginChoice == "square")
+=======
+   std::cout << "vaules adding";
+   typedef typename MeshType::Cell Cell;
+   int dimensions = parameters.getParameter< int >( "dimension" );
+   int count = mesh->template getEntitiesCount< Cell >();
+   const RealType& size = parameters.getParameter< double >( "realSize" ) / ::pow(count, 1.0/dimensions);
+   const String& beginChoice = parameters.getParameter< String >( "begin" );
+   std::cout << beginChoice << " " << dimensions << "   " << size << "   " << count << "   "<< 1/dimensions << std::endl;
+   getchar();
+   if (beginChoice == "sin_square")
+>>>>>>> develop
       {
 	   if (dimensions == 1)
 	       {
+<<<<<<< HEAD
 		   dofs[0] = 0;
 		   for (IndexType i = 1; i < count-2; i++)
 		   {
@@ -140,11 +157,27 @@ setInitialCondition( const tnlParameterContainer& parameters,
 			expValue = exp(-pow(10/(size*count)*(size*i-0.2*size*count),2));
 			if ((i>0.4*count) && (i<0.5*count)) constantFunction=1; else constantFunction=0;
 			if (expValue>constantFunction) dofs[i] = expValue; else dofs[i] = constantFunction;
+=======
+                  std::cout << "adding DOFS" << std::endl;
+		   ( *dofs )[0] = 0;
+		   double expValue;
+		   for (IndexType i = 1; i < count-2; i++)
+		   {
+			expValue = std::exp(-std::pow(size*i-2,2));
+			if( (i>0.4*count) && (i<0.5*count))
+                            constantFunction=1;
+                        else
+                            constantFunction=0;
+			if(expValue>constantFunction)
+                           ( *dofs )[i] = expValue;
+                        else ( *dofs )[i] = constantFunction;
+>>>>>>> develop
 		   };
-		   dofs[count-1] = 0;
+		   ( *dofs )[count-1] = 0;
 		}
 	    else if (dimensions == 2)
 	       {
+<<<<<<< HEAD
 		   RealType expValue;
 		   for (IndexType i = 0; i < inverseSquareCount-1; i++)
                       for (IndexType j = 0; j < inverseSquareCount-1; j++)
@@ -154,6 +187,20 @@ setInitialCondition( const tnlParameterContainer& parameters,
                         constantFunction=1; else constantFunction=0;
 			if (expValue>constantFunction) dofs[i * inverseSquareCount + j] = expValue; else dofs[i * inverseSquareCount + j]
                          = constantFunction;
+=======
+                   count = std::sqrt(count);
+		   double expValue;
+		   for (IndexType i = 0; i < count-1; i++)
+                      for (IndexType j = 0; j < count-1; j++)
+		      {
+			expValue = std::exp(-std::pow(size*i-2,2)-std::pow(size*j-2,2));
+			if( (i>0.4*count) && (i<0.5*count) && (j>0.4*count) && (j<0.5*count) )
+                           constantFunction=1;
+                        else constantFunction=0;
+			if( expValue>constantFunction)
+                            ( *dofs )[i * count + j] = expValue;
+                        else ( *dofs )[i * count + j] = constantFunction;
+>>>>>>> develop
 		      };
 		};
        }
@@ -161,15 +208,20 @@ setInitialCondition( const tnlParameterContainer& parameters,
       {
 	   if (dimensions == 1)
 	      {
-		   dofs[0] = 0;
+		   ( *dofs )[0] = 0;
 		   for (IndexType i = 1; i < count-2; i++)
 		   {
+<<<<<<< HEAD
 			dofs[i] = exp(-pow(10/(size*count)*(size*i-0.2*size*count),2));
+=======
+			( *dofs )[i] = std::exp(-std::pow(size*i-2,2));
+>>>>>>> develop
 		   };
-		   dofs[count-1] = 0;
+		   ( *dofs )[count-1] = 0;
 		}
 	    else if (dimensions == 2)
 	       {
+<<<<<<< HEAD
 		   for (IndexType i = 0; i < inverseSquareCount-1; i++)
 		      for (IndexType j = 0; j < inverseSquareCount-1; j++)
 		      {
@@ -201,12 +253,27 @@ setInitialCondition( const tnlParameterContainer& parameters,
      };
    //setting velocity field   
    /*const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
+=======
+                   count = ::sqrt(count);
+		   for (IndexType i = 1; i < count-1; i++)
+		      for (IndexType j = 1; j < count-1; j++)
+		      {
+			   ( *dofs )[i * count + j] = std::exp(-std::pow(size*i-2,2)-std::pow(size*j-2,2));
+		      };
+		};
+     };
+   //setting velocity field
+   std::cout << *dofs << std::endl;
+   getchar();
+   /*const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
+>>>>>>> develop
    if( ! dofs.load( initialConditionFile ) )
    {
-      cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
+      std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
    }
    return true;*/
+<<<<<<< HEAD
    dofs.save( "dofs.tnl" );
    tnlString velocityType = parameters.getParameter< tnlString >( "move" );
    RealType artificalViscosity = parameters.getParameter< RealType >( "artifical-viscosity" );
@@ -240,6 +307,17 @@ setInitialCondition( const tnlParameterContainer& parameters,
    };
    differentialOperator.setAdvectionSpeedX(velocityX);      
    differentialOperator.setAdvectionSpeedY(velocityY);
+=======
+   dofs->save( "dofs.tnl" );
+   this->velocityType = parameters.getParameter< String >( "move" );
+   const double artificalViscosity = parameters.getParameter< double >( "artifical-viscosity" );
+   differentialOperatorPointer->setViscosity(artificalViscosity);
+   const double advectionSpeedX = parameters.getParameter< double >( "advection-speedX" );
+   differentialOperatorPointer->setAdvectionSpeedX(advectionSpeedX);
+   const double advectionSpeedY = parameters.getParameter< double >( "advection-speedY" );
+   differentialOperatorPointer->setAdvectionSpeedY(advectionSpeedY);
+   std::cout << "vaules added";
+>>>>>>> develop
    return true;
 }
 
@@ -250,21 +328,21 @@ template< typename Mesh,
    template< typename Matrix >
 bool
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setupLinearSystem( const MeshType& mesh,
+setupLinearSystem( const MeshPointer& mesh,
                    Matrix& matrix )
 {
    const IndexType dofs = this->getDofs( mesh );
-   typedef typename Matrix::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   CompressedRowsLengthsVectorType rowLengths;
-   if( ! rowLengths.setSize( dofs ) )
+   typedef typename Matrix::ObjectType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
+   SharedPointer< CompressedRowsLengthsVectorType > rowLengths;
+   if( ! rowLengths->setSize( dofs ) )
       return false;
-   tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
+   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >( mesh,
-                                                                          differentialOperator,
-                                                                          boundaryCondition,
+                                                                          differentialOperatorPointer,
+                                                                          boundaryConditionPointer,
                                                                           rowLengths );
-   matrix.setDimensions( dofs, dofs );
-   if( ! matrix.setCompressedRowsLengths( rowLengths ) )
+   matrix->setDimensions( dofs, dofs );
+   if( ! matrix->setCompressedRowsLengths( *rowLengths ) )
       return false;
    return true;
 }
@@ -277,12 +355,13 @@ bool
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
-              const MeshType& mesh,
-              DofVectorType& dofs,
-              MeshDependentDataType& meshDependentData )
+              const MeshPointer& mesh,
+              DofVectorPointer& dofs,
+              MeshDependentDataPointer& meshDependentData )
 {
-   cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
+   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
+<<<<<<< HEAD
    tnlString fileName;
    MeshFunctionType dofsh;
    dofsh.bind(mesh,dofs);
@@ -291,6 +370,13 @@ makeSnapshot( const RealType& time,
       return false;
    FileNameBaseNumberEnding( "a-", step, 5, ".tnl", fileName );
    if( ! this->analyt.save( fileName ) )
+=======
+   FileName fileName;
+   fileName.setFileNameBase( "u-" );
+   fileName.setExtension( "tnl" );
+   fileName.setIndex( step );
+   if( ! dofs->save( fileName.getFileName() ) )
+>>>>>>> develop
       return false;
    return true;
 }
@@ -303,11 +389,12 @@ void
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
-                const MeshType& mesh,
-                DofVectorType& _u,
-                DofVectorType& _fu,
-                MeshDependentDataType& meshDependentData )
+                const MeshPointer& mesh,
+                DofVectorPointer& _u,
+                DofVectorPointer& _fu,
+                MeshDependentDataPointer& meshDependentData )
 {
+<<<<<<< HEAD
    step++;
    typedef typename MeshType::Cell Cell;
    double count = mesh.template getEntitiesCount< Cell >();
@@ -419,19 +506,54 @@ getExplicitRHS( const RealType& time,
    cout << tau << endl;
    cout << this->speedX << endl;
    cout << step * 10 * tau * this->speedX<< endl;*/
+=======
+   /****
+    * If you use an explicit solver like Euler or Merson, you
+    * need to implement this method. Compute the right-hand side of
+    *
+    *   d/dt u(x) = fu( x, u )
+    *
+    * You may use supporting mesh dependent data if you need.
+    */
+   typedef typename MeshType::Cell Cell;
+   int count = ::sqrt(mesh->template getEntitiesCount< Cell >());
+//   const RealType& size = parameters.getParameter< double >( "realSize" ) / ::pow(count, 0.5);
+/*   if (this->velocityType == "rotation")
+   {
+      double radius;
+      for (int i =1; i < count; i++)
+         for (int j =1; j < count; j++)
+            {
+               radius = ::sqrt(pow(i-1-(count/2.0),2) + ::pow(j-1-(count/2.0),2));
+            if (radius != 0.0)
+               _fu[(i-1)*count+j-1] =(0.25*tau)*differentialOperator.artificalViscosity*			//smoothening part
+               (_u[(i-1)*count-2+j]+_u[(i-1)*count+j]+
+               _u[i*count+j-1]+_u[(i-2)*count+j-1]- 
+               4.0*_u[(i-1)*count+j-1])
+               -((1.0/(2.0*count))*differentialOperator.advectionSpeedX						//X addition
+               *radius*(-1)*((j-1-(count/2.0))/radius)
+	       *(_u[(i-1)*count+j]-_u[(i-1)*count+j-2])) 
+	       -((1.0/(2.0*count))*differentialOperator.advectionSpeedY						//Y addition
+               *radius*((i-1-(count/2.0))/radius)
+	       *(_u[i*count+j-1]-_u[(i-2)*count+j-1]))
+            ;}
+  }
+   else if (this->velocityType == "advection")
+*/  { 
+>>>>>>> develop
    this->bindDofs( mesh, _u );
-   tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   MeshFunctionType u( mesh, _u ); 
-   MeshFunctionType fu( mesh, _fu );
-   differentialOperator.setTau(tau); 
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+   SharedPointer< MeshFunctionType > u( mesh, _u ); 
+   SharedPointer< MeshFunctionType > fu( mesh, _fu );
+   differentialOperatorPointer->setTau(tau); 
    explicitUpdater.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           this->differentialOperator,
-                                                           this->boundaryCondition,
-                                                           this->rightHandSide,
+                                                           this->differentialOperatorPointer,
+                                                           this->boundaryConditionPointer,
+                                                           this->rightHandSidePointer,
                                                            u,
                                                            fu );
-/*   tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
+/*   BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
    boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
       this->boundaryCondition, 
       time + tau, 
@@ -447,22 +569,22 @@ void
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const MeshType& mesh,
-                      DofVectorType& _u,
+                      const MeshPointer& mesh,
+                      DofVectorPointer& _u,
                       Matrix& matrix,
-                      DofVectorType& b,
-                      MeshDependentDataType& meshDependentData )
+                      DofVectorPointer& b,
+                      MeshDependentDataPointer& meshDependentData )
 {
-   /*tnlLinearSystemAssembler< Mesh,
+   /*LinearSystemAssembler< Mesh,
                              MeshFunctionType,
                              DifferentialOperator,
                              BoundaryCondition,
                              RightHandSide,
-                             tnlBackwardTimeDiscretisation,
+                             BackwardTimeDiscretisation,
                              Matrix,
                              DofVectorType > systemAssembler;
 
-   tnlMeshFunction< Mesh > u( mesh, _u );
+   MeshFunction< Mesh > u( mesh, _u );
    systemAssembler.template assembly< typename Mesh::Cell >( time,
                                                              tau,
                                                              mesh,
@@ -473,5 +595,7 @@ assemblyLinearSystem( const RealType& time,
                                                              matrix,
                                                              b );*/
 }
+
+} // namespace TNL
 
 #endif /* advectionPROBLEM_IMPL_H_ */

@@ -3,6 +3,19 @@
 import sys
 import collections
 
+def getSortKey(value):
+    # try to convert to number if possible
+    try:
+        return int(value)
+    except ValueError:
+        try:
+            return float(value)
+        except ValueError:
+            if value:
+                return value
+            # None or empty string
+            return 0
+
 class columnFormating:
 
     def __init__( self, data ):
@@ -253,7 +266,7 @@ class logToHtmlConvertor:
         elements = [line.strip() for line in body]
 
         if len(elements) != len(leafColumns):
-            raise Exception("Error in the table format: header has {} leaf columns, but the corresponding row has {} elements.".format(len(leafColumns), len(row)))
+            raise Exception("Error in the table format: header has {} leaf columns, but the corresponding row has {} elements.".format(len(leafColumns), len(elements)))
 
         row = collections.OrderedDict()
         for element, column in zip(elements, leafColumns):
@@ -305,7 +318,7 @@ class logToHtmlConvertor:
         # TODO: check this
         # sort again (just in case, previous sorting might compare values from
         # different columns)
-        self.tableRows.sort(key=lambda row: list(row.values()))
+        self.tableRows.sort(key=lambda row: [getSortKey(value) for value in row.values()])
 
     def countSubcolumns( self ):
         for path, col in self.tableColumns.items():

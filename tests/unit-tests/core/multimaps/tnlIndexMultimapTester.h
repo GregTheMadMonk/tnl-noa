@@ -6,17 +6,21 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLINDEXMULTIMAPTESTER_H_
 #define TNLINDEXMULTIMAPTESTER_H_
+
+#ifdef HAVE_CPPUNIT
+#include <cppunit/TestSuite.h>
+#include <cppunit/TestResult.h>
+#include <cppunit/TestCaller.h>
+#include <cppunit/TestCase.h>
+#include <cppunit/Message.h>
+#include <TNL/File.h>
+#include <TNL/Containers/Vector.h>
+
+using namespace TNL;
 
 template< typename Multimap,
           typename TestSetup >
@@ -30,14 +34,6 @@ class tnlIndexMultimapTesterSetter
    }
 };
 
-#ifdef HAVE_CPPUNIT
-#include <cppunit/TestSuite.h>
-#include <cppunit/TestResult.h>
-#include <cppunit/TestCaller.h>
-#include <cppunit/TestCase.h>
-#include <cppunit/Message.h>
-#include <core/tnlFile.h>
-#include <core/vectors/tnlVector.h>
 
 #ifdef HAVE_CUDA
 template< typename IndexMultimapType >
@@ -95,9 +91,9 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
       typedef tnlIndexMultimapTester< IndexMultimapType, IndexMultimapSetup >              TesterType;
       typedef tnlIndexMultimapTesterSetter< IndexMultimapType, IndexMultimapSetup > IndexMultimapSetter;
       typedef typename CppUnit::TestCaller< TesterType >                 TestCallerType;
-      
+ 
       typedef typename IndexMultimapType::ValuesAllocationVectorType  ValuesAllocationVectorType;
-      typedef typename IndexMultimapType::ValuesAccessorType                  ValuesAccessorType; 
+      typedef typename IndexMultimapType::ValuesAccessorType                  ValuesAccessorType;
 
       tnlIndexMultimapTester(){};
 
@@ -106,7 +102,7 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
 
       static CppUnit :: Test* suite()
       {
-         tnlString testSuiteName( "tnlIndexMultimapTester< " );
+         String testSuiteName( "tnlIndexMultimapTester< " );
          testSuiteName += IndexMultimapType::getType() + " >";
 
          CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( testSuiteName.getString() );
@@ -169,7 +165,7 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
          IndexMultimapType n;
          IndexMultimapSetter::setup( n );
          n.setRanges( 10, 10 );
-         
+ 
          ValuesAllocationVectorType portsAllocationVector;
          portsAllocationVector.setSize( n.getKeysRange() );
          portsAllocationVector.setValue( 7 );
@@ -199,28 +195,28 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
       rowLengths.setValue( 7 );
       m.setCompressedRowsLengths( rowLengths );
 
-      if( DeviceType::getDevice() == tnlHostDevice )
+      if( DeviceType::getDevice() == Devices::HostDevice )
       {
          for( int i = 0; i < 7; i++ )
             CPPUNIT_ASSERT( m.setElementFast( 0, i, i ) );
          //CPPUNIT_ASSERT( m.setElementFast( 0, 8, 8 ) == false );
       }
 
-      if( DeviceType::getDevice() == tnlCudaDevice )
+      if( DeviceType::getDevice() == Devices::CudaDevice )
       {
 #ifdef HAVE_CUDA
-         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          tnlIndexMultimapTester__setElementFastTestCudaKernel< IndexMultimapType >
                                                             <<< cudaGridSize, cudaBlockSize >>>
                                                             ( kernel_graph,
                                                               kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_graph );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_graph );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -264,26 +260,26 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
       rowLengths.setValue( 7 );
       m.setCompressedRowsLengths( rowLengths );
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::HostDevice )
       {
          for( int i = 0; i < 10; i++ )
             m.setElementFast( i, i, i );
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::CudaDevice )
       {
 #ifdef HAVE_CUDA
-         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          tnlIndexMultimapTester__setElementFast_DiagonalIndexMultimapTestCudaKernel< IndexMultimapType >
                                                                            <<< cudaGridSize, cudaBlockSize >>>
                                                                            ( kernel_graph,
                                                                              kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_graph );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_graph );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -345,7 +341,7 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
       rowLengths.setValue( 10 );
       m.setCompressedRowsLengths( rowLengths );
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::HostDevice )
       {
          for( int i = 0; i < 10; i++ )
             m.setElementFast( i, i, i );
@@ -353,21 +349,21 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
             for( int j = 0; j < 10; j++ )
                m.addElementFast( i, j, 1, 0.5 );
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::CudaDevice )
       {
 #ifdef HAVE_CUDA
-         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          tnlIndexMultimapTester__setElementFast_DenseIndexMultimapTestCudaKernel1< IndexMultimapType >
                                                                          <<< cudaGridSize, cudaBlockSize >>>
                                                                          ( kernel_graph,
                                                                            kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_graph );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_graph );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -382,27 +378,27 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
       m.reset();
       m.setDimensions( 10, 10 );
       m.setCompressedRowsLengths( rowLengths );
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::HostDevice )
       {
          for( int i = 9; i >= 0; i-- )
             for( int j = 9; j >= 0; j-- )
                m.setElementFast( i, j, i+j );
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::CudaDevice )
       {
 #ifdef HAVE_CUDA
-         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          tnlIndexMultimapTester__setElementFast_DenseIndexMultimapTestCudaKernel2< IndexMultimapType >
                                                                          <<< cudaGridSize, cudaBlockSize >>>
                                                                          ( kernel_graph,
                                                                            kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_graph );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_graph );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -461,27 +457,27 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
          rowLengths.setElement( i, i+1 );
       m.setCompressedRowsLengths( rowLengths );
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::HostDevice )
       {
          for( int i = 0; i < 10; i++ )
             for( int j = 0; j <= i; j++ )
                m.setElementFast( i, j, i + j );
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::CudaDevice )
       {
 #ifdef HAVE_CUDA
-         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          tnlIndexMultimapTester__setElementFast_LowerTriangularIndexMultimapTestCudaKernel1< IndexMultimapType >
                                                                                    <<< cudaGridSize, cudaBlockSize >>>
                                                                                    ( kernel_graph,
                                                                                      kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_graph );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_graph );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -496,27 +492,27 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
       m.reset();
       m.setDimensions( 10, 10 );
       m.setCompressedRowsLengths( rowLengths );
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::HostDevice )
       {
          for( int i = 9; i >= 0; i-- )
             for( int j = i; j >= 0; j-- )
                m.setElementFast( i, j, i + j );
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::CudaDevice )
       {
 #ifdef HAVE_CUDA
-         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          tnlIndexMultimapTester__setElementFast_LowerTriangularIndexMultimapTestCudaKernel2< IndexMultimapType >
                                                                                    <<< cudaGridSize, cudaBlockSize >>>
                                                                                    ( kernel_graph,
                                                                                      kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_graph );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_graph );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -602,7 +598,7 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
       m.setCompressedRowsLengths( rowLengths );
 
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::HostDevice )
       {
          RealType values[ 1 ];
          IndexType columnIndexes[ 1 ];
@@ -613,12 +609,12 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, 1 );
          }
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::CudaDevice )
       {
 #ifdef HAVE_CUDA
-         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
@@ -626,9 +622,9 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
                                                                        <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                        ( kernel_graph,
                                                                          kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_graph );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_graph );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -707,7 +703,7 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          columnIndexes[ i ] = i;
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::HostDevice )
       {
          for( int i = 0; i < 10; i++ )
          {
@@ -720,12 +716,12 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, 10 );
          }
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::CudaDevice )
       {
 #ifdef HAVE_CUDA
-         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
@@ -733,9 +729,9 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
                                                                         <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                         ( kernel_graph,
                                                                           kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_graph );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_graph );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -751,7 +747,7 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
       m.setDimensions( 10, 10 );
       m.setCompressedRowsLengths( rowLengths );
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::HostDevice )
       {
          for( int i = 9; i >= 0; i-- )
          {
@@ -760,12 +756,12 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, 10 );
          }
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::CudaDevice )
       {
 #ifdef HAVE_CUDA
-         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
@@ -773,9 +769,9 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
                                                                      <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                      ( kernel_graph,
                                                                        kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_graph );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_graph );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -852,7 +848,7 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          columnIndexes[ i ] = i;
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::HostDevice )
       {
          for( int i = 0; i < 10; i++ )
          {
@@ -861,12 +857,12 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, i + 1 );
          }
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::CudaDevice )
       {
 #ifdef HAVE_CUDA
-         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
@@ -874,9 +870,9 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
                                                                               <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                               ( kernel_graph,
                                                                                 kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_graph );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_graph );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -892,7 +888,7 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
       m.setDimensions( 10, 10 );
       m.setCompressedRowsLengths( rowLengths );
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::HostDevice )
       {
          for( int i = 9; i >= 0; i-- )
          {
@@ -901,12 +897,12 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, i + 1 );
          }
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( DeviceType::DeviceType == ( int ) Devices::CudaDevice )
       {
 #ifdef HAVE_CUDA
-         IndexMultimapType* kernel_graph = tnlCuda::passToDevice( m );
+         IndexMultimapType* kernel_graph = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
@@ -914,9 +910,9 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
                                                                               <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                               ( kernel_graph,
                                                                                 kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_graph );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_graph );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }

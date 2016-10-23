@@ -1,9 +1,9 @@
-#include <tnlConfig.h>
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlBuildConfigTags.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include <operators/tnlNeumannBoundaryConditions.h>
-#include <functions/tnlConstantFunction.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/Solvers/Solver.h>
+#include <TNL/Solvers/BuildConfigTags.h>
+#include <TNL/Operators/DirichletBoundaryConditions.h>
+#include <TNL/Operators/NeumannBoundaryConditions.h>
+#include <TNL/Functions/Analytic/Constant.h>
 #include "eulerProblem.h"
 #include "LaxFridrichs.h"
 #include "tnlMyMixedBoundaryConditions.h"
@@ -11,6 +11,8 @@
 
 #include "eulerRhs.h"
 #include "eulerBuildConfigTag.h"
+
+using namespace TNL;
 
 typedef eulerBuildConfigTag BuildConfig;
 
@@ -27,14 +29,20 @@ typedef eulerBuildConfigTag BuildConfig;
 template< typename ConfigTag >class eulerConfig
 {
    public:
-      static void configSetup( tnlConfigDescription & config )
+      static void configSetup( Config::ConfigDescription & config )
       {
          config.addDelimiter( "euler settings:" );
+<<<<<<< HEAD
          config.addEntry< tnlString >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
             config.addEntryEnum< tnlString >( "dirichlet" );
             config.addEntryEnum< tnlString >( "neumann" );
             config.addEntryEnum< tnlString >( "mymixed" );
             config.addEntryEnum< tnlString >( "myneumann" );
+=======
+         config.addEntry< String >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
+            config.addEntryEnum< String >( "dirichlet" );
+            config.addEntryEnum< String >( "neumann" );
+>>>>>>> develop
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< double >( "left-density", "This sets a value of left density." );
          config.addEntry< double >( "left-velocity", "This sets a value of left velocity." );
@@ -66,42 +74,43 @@ class eulerSetter
       typedef Device DeviceType;
       typedef Index IndexType;
 
-      static bool run( const tnlParameterContainer & parameters )
+      static bool run( const Config::ParameterContainer & parameters )
       {
           enum { Dimensions = MeshType::getMeshDimensions() };
           typedef LaxFridrichs< MeshType, Real, Index > ApproximateOperator;
           typedef eulerRhs< MeshType, Real > RightHandSide;
-          typedef tnlStaticVector < MeshType::getMeshDimensions(), Real > Vertex;
+          typedef Containers::StaticVector < MeshType::getMeshDimensions(), Real > Vertex;
 
          /****
           * Resolve the template arguments of your solver here.
           * The following code is for the Dirichlet and the Neumann boundary conditions.
-          * Both can be constant or defined as descrete values of tnlVector.
+          * Both can be constant or defined as descrete values of Vector.
           */
-          tnlString boundaryConditionsType = parameters.getParameter< tnlString >( "boundary-conditions-type" );
+          String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )
           {
-             typedef tnlConstantFunction< Dimensions, Real > ConstantFunction;
+             typedef Functions::Analytic::Constant< Dimensions, Real > Constant;
              if( boundaryConditionsType == "dirichlet" )
              {
-                typedef tnlDirichletBoundaryConditions< MeshType, ConstantFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+                typedef Operators::DirichletBoundaryConditions< MeshType, Constant, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
                 typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
              }
-             typedef tnlNeumannBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
+             typedef Operators::NeumannBoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
              typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
-          typedef tnlMeshFunction< MeshType > MeshFunction;
+          typedef Functions::MeshFunction< MeshType > MeshFunction;
           if( boundaryConditionsType == "dirichlet" )
           {
-             typedef tnlDirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+             typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
              typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
+<<<<<<< HEAD
           if( boundaryConditionsType == "mymixed" )
           {
              typedef tnlMyMixedBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
@@ -124,14 +133,22 @@ class eulerSetter
              return solverStarter.template run< Problem >( parameters );
           }
         }
+=======
+          typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
+          typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+          SolverStarter solverStarter;
+          return solverStarter.template run< Problem >( parameters );
+      }
+>>>>>>> develop
 
 };
 
 int main( int argc, char* argv[] )
 {
-   tnlSolver< eulerSetter, eulerConfig, BuildConfig > solver;
+   Solvers::Solver< eulerSetter, eulerConfig, BuildConfig > solver;
    if( ! solver. run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }
+
 

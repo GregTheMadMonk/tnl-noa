@@ -1,24 +1,27 @@
 #ifndef EulerVelGetter_H
 #define EulerVelGetter_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Meshes/Grid.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class EulerVelGetter
-: public tnlDomain< Mesh::getMeshDimensions(), MeshDomain >
+: public Functions::Domain< Mesh::getMeshDimensions(), Functions::MeshDomain >
 {
    public:
       
       typedef Mesh MeshType;
+      typedef typename MeshType::DeviceType DeviceType;
       typedef Real RealType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       
       EulerVelGetter( const MeshFunctionType& rho,
                       const MeshFunctionType& rhoVel)
@@ -47,5 +50,7 @@ class EulerVelGetter
       const MeshFunctionType& rhoVel;
 
 };
+
+} // namespace TNL
 
 #endif	/* EulerVelGetter_H */

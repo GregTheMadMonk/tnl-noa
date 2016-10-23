@@ -1,37 +1,39 @@
 #ifndef eulerPROBLEM_IMPL_H_
 #define eulerPROBLEM_IMPL_H_
 
-#include <core/mfilename.h>
-#include <matrices/tnlMatrixSetter.h>
-#include <solvers/pde/tnlExplicitUpdater.h>
-#include <solvers/pde/tnlLinearSystemAssembler.h>
-#include <solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/FileName.h>
+#include <TNL/Matrices/MatrixSetter.h>
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsMomentum.h"
 #include "LaxFridrichsEnergy.h"
 #include "EulerVelGetter.h"
 #include "EulerPressureGetter.h"
 
+namespace TNL {
+
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "eulerProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "eulerProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
-   return tnlString( "euler" );
+   return String( "euler" );
 }
 
 template< typename Mesh,
@@ -40,7 +42,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
+writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
     * Add data you want to have in the computation report (log) as follows:
@@ -54,10 +56,12 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const tnlParameterContainer& parameters )
+setup( const MeshPointer& meshPointer,
+       const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
-   if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
-       ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
+   if( ! this->boundaryConditionsPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
+       ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
    return true;
 }
@@ -68,13 +72,13 @@ template< typename Mesh,
           typename DifferentialOperator >
 typename eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getDofs( const MeshType& mesh ) const
+getDofs( const MeshPointer& mesh ) const
 {
    /****
     * Return number of  DOFs (degrees of freedom) i.e. number
     * of unknowns to be resolved by the main solver.
     */
-   return 3*mesh.template getEntitiesCount< typename MeshType::Cell >();
+   return 3*mesh->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
@@ -83,8 +87,8 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-bindDofs( const MeshType& mesh,
-          DofVectorType& dofVector )
+bindDofs( const MeshPointer& mesh,
+          DofVectorPointer& dofVector )
 {
 }
 
@@ -94,11 +98,15 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setInitialCondition( const tnlParameterContainer& parameters,
-                     const MeshType& mesh,
-                     DofVectorType& dofs,
-                     MeshDependentDataType& meshDependentData )
+setInitialCondition( const Config::ParameterContainer& parameters,
+                     const MeshPointer& mesh,
+                     DofVectorPointer& dofs,
+                     MeshDependentDataPointer& meshDependentData )
 {
+<<<<<<< HEAD
+=======
+  std::cout << std::endl << "get conditions from CML";
+>>>>>>> develop
    typedef typename MeshType::Cell Cell;
    this->gamma = parameters.getParameter< RealType >( "gamma" );
    RealType rhoL = parameters.getParameter< RealType >( "left-density" );
@@ -112,6 +120,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
    RealType eR = ( preR / ( rhoR * (gamma - 1) ) );
    //RealType eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * velR * velR;
    RealType x0 = parameters.getParameter< RealType >( "riemann-border" );
+<<<<<<< HEAD
    int count = mesh.template getEntitiesCount< Cell >();
    uRho.bind(mesh, dofs, 0);
    uRhoVelocity.bind(mesh, dofs, count);
@@ -120,28 +129,48 @@ setInitialCondition( const tnlParameterContainer& parameters,
    data.setSize(2*count);
    velocity.bind( mesh, data, 0);
    pressure.bind( mesh, data, count );  
+=======
+   std::cout << std::endl << gamma << " " << rhoL << " " << velL << " " << preL << " " << eL << " " << rhoR << " " << velR << " " << preR << " " << eR << " " << x0 << " " << gamma << std::endl;
+   int count = mesh->template getEntitiesCount< Cell >();
+   std::cout << count << std::endl;
+   uRho->bind( mesh, *dofs, 0);
+   uRhoVelocity->bind( mesh, *dofs, count);
+   uEnergy->bind( mesh, *dofs, 2 * count);
+   Containers::Vector < RealType, DeviceType, IndexType > data;
+   data.setSize(2*count);
+   velocity->bind( mesh, data, 0);
+   pressure->bind( mesh, data, count );
+   std::cout << std::endl << "set conditions from CML"<< std::endl;   
+>>>>>>> develop
    for(IndexType i = 0; i < count; i++)
       if (i < x0 * count )
          {
-            uRho[i] = rhoL;
-            uRhoVelocity[i] = rhoL * velL;
-            uEnergy[i] = eL;
-            velocity[i] = velL;
-            pressure[i] = preL;
+            ( *uRho )[i] = rhoL;
+            ( *uRhoVelocity )[i] = rhoL * velL;
+            ( *uEnergy )[i] = eL;
+            ( *velocity )[i] = velL;
+            ( *pressure )[i] = preL;
          }
       else
          {
-            uRho[i] = rhoR;
-            uRhoVelocity[i] = rhoR * velR;
-            uEnergy[i] = eR;
-            velocity[i] = velR;
-            pressure[i] = preR;
+            ( *uRho )[i] = rhoR;
+            ( *uRhoVelocity )[i] = rhoR * velR;
+            ( *uEnergy )[i] = eR;
+            ( *velocity )[i] = velR;
+            ( *pressure )[i] = preR;
          };
+<<<<<<< HEAD
+=======
+   std::cout << "dofs = " << *dofs << std::endl;
+   getchar();
+  
+   
+>>>>>>> develop
    /*
-   const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
+   const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if( ! dofs.load( initialConditionFile ) )
    {
-      cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
+      std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
    }
    */
@@ -154,7 +183,7 @@ template< typename Mesh,
    template< typename Matrix >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setupLinearSystem( const MeshType& mesh,
+setupLinearSystem( const MeshPointer& mesh,
                    Matrix& matrix )
 {
 /*   const IndexType dofs = this->getDofs( mesh );
@@ -162,7 +191,7 @@ setupLinearSystem( const MeshType& mesh,
    CompressedRowsLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
-   tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
+   MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >( mesh,
                                                                           differentialOperator,
                                                                           boundaryCondition,
@@ -181,22 +210,59 @@ bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
-              const MeshType& mesh,
-              DofVectorType& dofs,
-              MeshDependentDataType& meshDependentData )
+              const MeshPointer& mesh,
+              DofVectorPointer& dofs,
+              MeshDependentDataPointer& meshDependentData )
 {
-   cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
+  std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
+<<<<<<< HEAD
    tnlString fileName;
+=======
+   typedef typename MeshType::Cell Cell;
+   int count = mesh->template getEntitiesCount< Cell >();
+   std::ofstream vysledek;
+/*  std::cout << "pressure:" << std::endl;
+   for (IndexType i = 0; i<count; i++)std::cout << this->pressure[i] << " " << i ;
+      vysledek.open("pressure" + to_string(step) + ".txt");
+   for (IndexType i = 0; i<count; i++)
+      vysledek << 0.01*i << " " << pressure[i] << std::endl;
+   vysledek.close();
+  std::cout << " " << std::endl;
+  std::cout << "velocity:" << std::endl;
+   for (IndexType i = 0; i<count; i++)std::cout << this->velocity[i] << " " ;
+      vysledek.open("velocity" + to_string(step) + ".txt");
+   for (IndexType i = 0; i<count; i++)
+      vysledek << 0.01*i << " " << pressure[i] << std::endl;
+   vysledek.close();
+  std::cout << "energy:" << std::endl;
+   for (IndexType i = 0; i<count; i++)std::cout << this->uEnergy[i] << " " ;
+      vysledek.open("energy" + to_string(step) + ".txt");
+   for (IndexType i = 0; i<count; i++)
+      vysledek << 0.01*i << " " << uEnergy[i] << std::endl;
+   vysledek.close();
+  std::cout << " " << std::endl;
+  std::cout << "density:" << std::endl;
+   for (IndexType i = 0; i<count; i++)std::cout << this->uRho[i] << " " ;
+      vysledek.open("density" + to_string(step) + ".txt");
+   for (IndexType i = 0; i<count; i++)
+      vysledek << 0.01*i << " " << uRho[i] << std::endl;
+   vysledek.close();
+*/   getchar();
+>>>>>>> develop
 
-   FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
-   if( ! uRho.save( fileName ) )
+   FileName fileName;
+   fileName.setExtension( "tnl" );
+   fileName.setIndex( step );
+   fileName.setFileNameBase( "rho-" );
+   
+   if( ! uRho->save( fileName.getFileName() ) )
       return false;
-   FileNameBaseNumberEnding( "rhoVel-", step, 5, ".tnl", fileName );
-   if( ! uRhoVelocity.save( fileName ) )
+   fileName.setFileNameBase( "rhoVel-" );
+   if( ! uRhoVelocity->save( fileName.getFileName() ) )
       return false;
-   FileNameBaseNumberEnding( "energy-", step, 5, ".tnl", fileName );
-   if( ! uEnergy.save( fileName ) )
+   fileName.setFileNameBase( "energy-" );
+   if( ! uEnergy->save( fileName.getFileName() ) )
       return false;
    FileNameBaseNumberEnding( "velocity-", step, 5, ".tnl", fileName );
    if( ! velocity.save( fileName ) )
@@ -215,28 +281,54 @@ void
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
-                const MeshType& mesh,
-                DofVectorType& _u,
-                DofVectorType& _fu,
-                MeshDependentDataType& meshDependentData )
+                const MeshPointer& mesh,
+                DofVectorPointer& _u,
+                DofVectorPointer& _fu,
+                MeshDependentDataPointer& meshDependentData )
 {
+<<<<<<< HEAD
     typedef typename MeshType::Cell Cell;
     int count = mesh.template getEntitiesCount< Cell >();
 	//bind _fu
     this->fuRho.bind(mesh, _fu, 0);
     this->fuRhoVelocity.bind(mesh, _fu, count);
     this->fuEnergy.bind(mesh, _fu, 2 * count);
+=======
+    std::cout << "explicitRHS" << std::endl;
+    typedef typename MeshType::Cell Cell;
+    int count = mesh->template getEntitiesCount< Cell >();
+	//bind _u
+    this->uRho->bind(mesh, _u, 0);
+    this->uRhoVelocity->bind(mesh, _u ,count);
+    this->uEnergy->bind(mesh, _u, 2 * count);
+		
+	//bind _fu
+    this->fuRho->bind(mesh, _u, 0);
+    this->fuRhoVelocity->bind(mesh, _u, count);
+    this->fuEnergy->bind(mesh, _u, 2 * count);
+>>>>>>> develop
 
    //generating Differential operator object
-   Continuity lF1DContinuity;
-   Momentum lF1DMomentum;
-   Energy lF1DEnergy;
+   SharedPointer< Continuity > lF1DContinuity;
+   SharedPointer< Momentum > lF1DMomentum;
+   SharedPointer< Energy > lF1DEnergy;
 
+<<<<<<< HEAD
    //rho
    this->bindDofs( mesh, _u );
    lF1DContinuity.setTau(tau);
    lF1DContinuity.setVelocity(velocity);
    tnlExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity;   
+=======
+   
+   
+   std::cout << "explicitRHSrho" << std::endl;   
+   //rho
+   this->bindDofs( mesh, _u );
+   lF1DContinuity->setTau(tau);
+   lF1DContinuity->setVelocity( *velocity);
+   /*ExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity;
+>>>>>>> develop
    explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF1DContinuity,
@@ -245,29 +337,37 @@ getExplicitRHS( const RealType& time,
                                                            uRho,
                                                            fuRho );
 
+<<<<<<< HEAD
+=======
+   std::cout << "explicitRHSrhovel" << std::endl;
+>>>>>>> develop
    //rhoVelocity
-   lF1DMomentum.setTau(tau);
-   lF1DMomentum.setVelocity(velocity);
-   lF1DMomentum.setPressure(pressure);
-   tnlExplicitUpdater< Mesh, MeshFunctionType, Momentum, BoundaryCondition, RightHandSide > explicitUpdaterMomentum;
+   lF1DMomentum->setTau(tau);
+   lF1DMomentum->setVelocity( *velocity);
+   lF1DMomentum->setPressure( *pressure);
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Momentum, BoundaryCondition, RightHandSide > explicitUpdaterMomentum;
    explicitUpdaterMomentum.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF1DMomentum,
-                                                           this->boundaryCondition,
-                                                           this->rightHandSide,
+                                                           this->boundaryConditionsPointer,
+                                                           this->rightHandSidePointer,
                                                            uRhoVelocity,
                                                            fuRhoVelocity );
    
+<<<<<<< HEAD
+=======
+   std::cout << "explicitRHSenergy" << std::endl;
+>>>>>>> develop
    //energy
-   lF1DEnergy.setTau(tau);
-   lF1DEnergy.setPressure(pressure);
-   lF1DEnergy.setVelocity(velocity);
-   tnlExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
+   lF1DEnergy->setTau(tau);
+   lF1DEnergy->setPressure( *pressure);
+   lF1DEnergy->setVelocity( *velocity);
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
    explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF1DEnergy,
-                                                           this->boundaryCondition,
-                                                           this->rightHandSide,
+                                                           this->boundaryConditionsPointer,
+                                                           this->rightHandSidePointer,
                                                            uEnergy,
                                                            fuEnergy ); 
  }
@@ -281,22 +381,22 @@ void
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const MeshType& mesh,
-                      DofVectorType& _u,
+                      const MeshPointer& mesh,
+                      DofVectorPointer& _u,
                       Matrix& matrix,
-                      DofVectorType& b,
-                      MeshDependentDataType& meshDependentData )
+                      DofVectorPointer& b,
+                      MeshDependentDataPointer& meshDependentData )
 {
-/*   tnlLinearSystemAssembler< Mesh,
+/*   LinearSystemAssembler< Mesh,
                              MeshFunctionType,
                              DifferentialOperator,
                              BoundaryCondition,
                              RightHandSide,
-                             tnlBackwardTimeDiscretisation,
+                             BackwardTimeDiscretisation,
                              Matrix,
                              DofVectorType > systemAssembler;
 
-   tnlMeshFunction< Mesh > u( mesh, _u );
+   MeshFunction< Mesh > u( mesh, _u );
    systemAssembler.template assembly< typename Mesh::Cell >( time,
                                                              tau,
                                                              mesh,
@@ -315,17 +415,29 @@ bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 postIterate( const RealType& time,
              const RealType& tau,
-             const MeshType& mesh,
-             DofVectorType& dofs,
-             MeshDependentDataType& meshDependentData )
+             const MeshPointer& mesh,
+             DofVectorPointer& dofs,
+             MeshDependentDataPointer& meshDependentData )
 {
    //velocity
+<<<<<<< HEAD
    Velocity velocityGetter( uRho, uRhoVelocity );
    this->velocity = velocityGetter;
    //pressure
    Pressure pressureGetter( uRho, uRhoVelocity, uEnergy, gamma );
    this->pressure = pressureGetter;
    return true;
+=======
+   this->velocity->setMesh( mesh );
+   Velocity velocityGetter( *uRho, *uRhoVelocity );
+   *this->velocity = velocityGetter;
+   //pressure
+   this->pressure->setMesh( mesh );
+   Pressure pressureGetter( *uRho, *uRhoVelocity, *uEnergy, gamma );
+   *this->pressure = pressureGetter;
+>>>>>>> develop
 }
+
+} // namespace TNL
 
 #endif /* eulerPROBLEM_IMPL_H_ */

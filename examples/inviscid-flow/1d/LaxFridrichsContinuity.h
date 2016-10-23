@@ -1,8 +1,10 @@
 #ifndef LaxFridrichsContinuity_H
 #define LaxFridrichsContinuity_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Meshes/Grid.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -16,18 +18,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichsContinuity< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsContinuity< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocity;
 
@@ -47,8 +49,8 @@ class LaxFridrichsContinuity< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, In
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
@@ -70,18 +72,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichsContinuity< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsContinuity< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocity;
 
@@ -102,8 +104,8 @@ class LaxFridrichsContinuity< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, In
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
@@ -125,18 +127,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichsContinuity< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsContinuity< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocity;
 
@@ -157,8 +159,8 @@ class LaxFridrichsContinuity< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, In
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
@@ -175,6 +177,7 @@ class LaxFridrichsContinuity< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, In
                                MatrixRow& matrixRow ) const;
 };
 
+} // namespace TNL
 
 #include "LaxFridrichsContinuity_impl.h"
 
