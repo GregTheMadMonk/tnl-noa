@@ -187,8 +187,6 @@ protected:
    typedef typename MeshTraitsType::GlobalIndexType                                          GlobalIndexType;
    typedef typename MeshTraitsType::LocalIndexType                                           LocalIndexType;
    typedef typename SubentityTraitsType::IdArrayType                                         IdArrayType;
-   typedef typename SubentityTraitsType::OrientationArrayType                                OrientationArrayType;
-   typedef typename MeshTraitsType::IdPermutationArrayAccessorType                           IdPermutationArrayAccessorType;
 
    MeshSubentityStorageLayer()
    {
