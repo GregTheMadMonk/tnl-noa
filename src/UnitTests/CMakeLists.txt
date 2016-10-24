@@ -6,8 +6,7 @@ TARGET_LINK_LIBRARIES( UniquePointerTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRAR
                                                            tnl${mpiExt}${debugExt}-${tnlVersion} )
 
 IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( FileTest${mpiExt}${debugExt} FileTest.h FileTest.cu )
-   SET_TARGET_PROPERTIES( FileTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS}" )
+   CUDA_ADD_EXECUTABLE( FileTest${mpiExt}${debugExt} FileTest.h FileTest.cu OPTIONS "${CXX_TESTS_FLAGS}" )
    TARGET_LINK_LIBRARIES( FileTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
                                                            tnl${mpiExt}${debugExt}-${tnlVersion} )
 ELSE(  BUILD_CUDA )               

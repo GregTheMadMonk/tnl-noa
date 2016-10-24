@@ -24,47 +24,23 @@ using namespace TNL;
 TEST( FileTest, WriteAndRead )
 {
    File file;
-   if( ! file. open( String( "test-file.tnl" ), tnlWriteMode ) )
-   {
-      std::cerr << "Unable to create file test-file.tnl for the testing." << std::endl;
-      return;
-   }
-   int intData( 5 );
-#ifdef HAVE_NOT_CXX11
-   file. write< int, Devices::Host >( &intData );
-#else
-   file. write( &intData );
-#endif
-   double doubleData[ 3 ] = { 1.0, 2.0, 3.0 };
-#ifdef HAVE_NOT_CXX11
-   file. write< double, Devices::Host >( doubleData, 3 );
-#else
-   file. write( doubleData, 3 );
-#endif
-   if( ! file. close() )
-   {
-      std::cerr << "Unable to close the file test-file.tnl" << std::endl;
-      return;
-   }
+   ASSERT_TRUE( file.open( String( "test-file.tnl" ), tnlWriteMode ) );
 
-   if( ! file. open( String( "test-file.tnl" ), tnlReadMode ) )
-   {
-      std::cerr << "Unable to open the file test-file.tnl for the testing." << std::endl;
-      return;
-   }
+   int intData( 5 );
+   double doubleData[ 3 ] = { 1.0, 2.0, 3.0 };
+   ASSERT_TRUE( file.write( &intData ) );
+   ASSERT_TRUE( file.write( doubleData, 3 ) );
+   ASSERT_TRUE( file.close() );
+
+   ASSERT_TRUE( file.open( String( "test-file.tnl" ), tnlReadMode ) );
    int newIntData;
    double newDoubleData[ 3 ];
-#ifdef HAVE_NOT_CXX11
-   file. read< int, Devices::Host >( &newIntData );
-   file. read< double, Devices::Host >( newDoubleData, 3 );
-#else
-   file. read( &newIntData, 1 );
-   file. read( newDoubleData, 3 );
-#endif
+   ASSERT_TRUE( file.read( &newIntData, 1 ) );
+   ASSERT_TRUE( file.read( newDoubleData, 3 ) );
 
-   ASSERT_EQ( newIntData, intData );
+   EXPECT_EQ( newIntData, intData );
    for( int i = 0; i < 3; i ++ )
-      ASSERT_EQ( newDoubleData[ i ], doubleData[ i ] );
+      EXPECT_EQ( newDoubleData[ i ], doubleData[ i ] );
 };
 
 #ifdef HAVE_CUDA
@@ -85,34 +61,27 @@ TEST( FileTest, WriteAndReadCUDA )
                floatData,
                3 * sizeof( float ),
                cudaMemcpyHostToDevice );
+
    File file;
-   if( ! file. open( String( "test-file.tnl" ), tnlWriteMode ) )
-   {
-      std::cerr << "Unable to create file test-file.tnl for the testing." << std::endl;
-      return;
-   }
+   ASSERT_TRUE( file.open( String( "test-file.tnl" ), tnlWriteMode ) );
 
-   file. write< int, Devices::Cuda >( cudaIntData );
-   file. write< float, Devices::Cuda, int >( cudaFloatData, 3 );
-   if( ! file. close() )
-   {
-      std::cerr << "Unable to close the file test-file.tnl" << std::endl;
-      return;
-   }
+   bool status = file.write< int, Devices::Cuda >( cudaIntData );
+   ASSERT_TRUE( status );
+   status = file.write< float, Devices::Cuda, int >( cudaFloatData, 3 );
+   ASSERT_TRUE( status );
+   ASSERT_TRUE( file.close() );
 
-   if( ! file. open( String( "test-file.tnl" ), tnlReadMode ) )
-   {
-      std::cerr << "Unable to open the file test-file.tnl for the testing." << std::endl;
-      return;
-   }
+   ASSERT_TRUE( file.open( String( "test-file.tnl" ), tnlReadMode ) );
    int newIntData;
    float newFloatData[ 3 ];
    int* newCudaIntData;
    float* newCudaFloatData;
    cudaMalloc( ( void** ) &newCudaIntData, sizeof( int ) );
    cudaMalloc( ( void** ) &newCudaFloatData, 3 * sizeof( float ) );
-   file. read< int, Devices::Cuda >( newCudaIntData, 1 );
-   file. read< float, Devices::Cuda, int >( newCudaFloatData, 3 );
+   status = file.read< int, Devices::Cuda >( newCudaIntData, 1 );
+   ASSERT_TRUE( status );
+   status = file.read< float, Devices::Cuda, int >( newCudaFloatData, 3 );
+   ASSERT_TRUE( status );
    cudaMemcpy( &newIntData,
                newCudaIntData,
                sizeof( int ),
@@ -122,9 +91,9 @@ TEST( FileTest, WriteAndReadCUDA )
                3 * sizeof( float ),
                cudaMemcpyDeviceToHost );
 
-   ASSERT_EQ( newIntData, intData );
+   EXPECT_EQ( newIntData, intData );
    for( int i = 0; i < 3; i ++ )
-      ASSERT_EQ( newFloatData[ i ], floatData[ i ] );
+      EXPECT_EQ( newFloatData[ i ], floatData[ i ] );
 };
 #endif
 #endif
