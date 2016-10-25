@@ -94,7 +94,6 @@ class MeshEntity
        * Methods for the mesh initialization
        */
       using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::setSubentityIndex;
-      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::subentityIdsArray;
       using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::subentityOrientationsArray;
 
       using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::bindSuperentitiesStorageNetwork;

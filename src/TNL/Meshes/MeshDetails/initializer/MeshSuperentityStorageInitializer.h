@@ -60,7 +60,6 @@ class MeshSuperentityStorageInitializerLayer< MeshConfig,
    using EntityType                = MeshEntity< MeshConfig, EntityTopology >;
 
    using MeshTraitsType            = MeshTraits< MeshConfig >;
-   using GlobalIdArrayType         = typename MeshTraitsType::GlobalIdArrayType;
    using GlobalIndexType           = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType            = typename MeshTraitsType::LocalIndexType;
    using MeshInitializerType       = MeshInitializer< MeshConfig >;

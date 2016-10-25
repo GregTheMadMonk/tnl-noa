@@ -134,7 +134,7 @@ String
 MeshEntity< MeshConfig, MeshVertexTopology >::
 getType()
 {
-   return String( "Mesh< ... >" );
+   return String( "MeshEntity< ... >" );
 }
 
 template< typename MeshConfig >

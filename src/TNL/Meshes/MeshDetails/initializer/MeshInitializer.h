@@ -96,17 +96,10 @@ class MeshInitializer
       }
 
       template<int Subdimensions, typename EntityType, typename LocalIndex, typename GlobalIndex >
-      void
+      static void
       setSubentityIndex( EntityType& entity, const LocalIndex& localIndex, const GlobalIndex& globalIndex )
       {
          entity.template setSubentityIndex< Subdimensions >( localIndex, globalIndex );
-      }
-
-      template<typename SubDimensionsTag, typename EntityType >
-      static typename MeshTraitsType::template SubentityTraits< typename EntityType::EntityTopology, SubDimensionsTag::value >::IdArrayType&
-      subentityIdsArray( EntityType& entity )
-      {
-         return entity.template subentityIdsArray< SubDimensionTag::value >();
       }
 
       template<typename SubDimensionsTag, typename MeshEntity >

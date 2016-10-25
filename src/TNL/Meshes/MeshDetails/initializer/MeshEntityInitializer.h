@@ -147,7 +147,6 @@ class MeshEntityInitializerLayer< MeshConfig,
    using EntityType                = MeshEntity< MeshConfig, EntityTopology >;
    using SeedType                  = MeshEntitySeed< MeshConfig, EntityTopology >;
    using SubentitySeedsCreatorType = MeshSubentitySeedsCreator< MeshConfig, EntityTopology, DimensionsTag >;
-   using IdArrayType               = typename SubentityTraitsType::IdArrayType;
    using LocalIndexType            = typename MeshTraitsType::LocalIndexType;
 
 protected:
@@ -157,14 +156,14 @@ protected:
       //std::cout << "   Initiating subentities with " << DimensionsTag::value << " dimensions ... " << std::endl;
       auto subentitySeeds = SubentitySeedsCreatorType::create( entitySeed );
 
-      IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionTag >( entity );
       for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
       {
-         subentityIdsArray[ i ] = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
-         //std::cout << "    Adding subentity " << subentityIdsArray[ i ] << std::endl;
+         const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
+         InitializerType::template setSubentityIndex< DimensionsTag::value >( entity, i, subentityIndex );
+         //std::cout << "    Adding subentity " << subentityIndex << std::endl;
          meshInitializer.
-            template getSuperentityInitializer< DimensionTag >().
-               addSuperentity( EntityDimensionTag(), subentityIdsArray[ i ], entityIndex );
+            template getSuperentityInitializer< DimensionsTag >().
+               addSuperentity( EntityDimensionsTag(), subentityIndex, entityIndex );
       }
 
       BaseType::initSubentities( entity, entityIndex, entitySeed, meshInitializer );
@@ -205,7 +204,6 @@ class MeshEntityInitializerLayer< MeshConfig,
    using EntityType                = MeshEntity< MeshConfig, EntityTopology >;
    using SeedType                  = MeshEntitySeed< MeshConfig, EntityTopology >;
    using SubentitySeedsCreatorType = MeshSubentitySeedsCreator< MeshConfig, EntityTopology, DimensionsTag >;
-   using IdArrayType               = typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionsTag::value >::IdArrayType;
    using LocalIndexType            = typename MeshTraits< MeshConfig >::LocalIndexType;
    using OrientationArrayType      = typename SubentitiesTraits::OrientationArrayType;
 
@@ -216,18 +214,17 @@ protected:
       //std::cout << "   Initiating subentities with " << DimensionsTag::value << " dimensions ... " << std::endl;
       auto subentitySeeds = SubentitySeedsCreatorType::create( entitySeed );
 
-      IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >( entity );
       OrientationArrayType& subentityOrientationsArray = InitializerType::template subentityOrientationsArray< DimensionsTag >( entity );
       for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
       {
-         GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
-         subentityIdsArray[ i ] = subentityIndex;
-         //std::cout << "    Adding subentity " << subentityIdsArray[ i ] << std::endl;
+         const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
+         InitializerType::template setSubentityIndex< DimensionsTag::value >( entity, i, subentityIndex );
+         //std::cout << "    Adding subentity " << subentityIndex << std::endl;
          subentityOrientationsArray[ i ] = meshInitializer.template getReferenceOrientation< DimensionsTag >( subentityIndex ).createOrientation( subentitySeeds[ i ] );
          //std::cout << "    Subentity orientation = " << subentityOrientationsArray[ i ].getSubvertexPermutation() << std::endl;
          meshInitializer.
-            template getSuperentityInitializer< DimensionTag >().
-               addSuperentity( EntityDimensionTag(), subentityIdsArray[ i ], entityIndex );
+            template getSuperentityInitializer< DimensionsTag >().
+               addSuperentity( EntityDimensionsTag(), subentityIndex, entityIndex );
       }
 
       BaseType::initSubentities( entity, entityIndex, entitySeed, meshInitializer );
@@ -268,7 +265,6 @@ class MeshEntityInitializerLayer< MeshConfig,
    using EntityType                = MeshEntity< MeshConfig, EntityTopology >;
    using SeedType                  = MeshEntitySeed< MeshConfig, EntityTopology >;
    using SubentitySeedsCreatorType = MeshSubentitySeedsCreator< MeshConfig, EntityTopology, DimensionsTag >;
-   using IdArrayType               = typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionsTag >::IdArrayType;
    using LocalIndexType            = typename MeshTraits< MeshConfig >::LocalIndexType;
    using OrientationArrayType      = typename SubentitiesTraits::OrientationArrayType;
 
@@ -279,12 +275,12 @@ protected:
       //std::cout << "   Initiating subentities with " << DimensionsTag::value << " dimensions ... " << std::endl;
       auto subentitySeeds = SubentitySeedsCreatorType::create( entitySeed );
 
-      IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >( entity );
       OrientationArrayType& subentityOrientationsArray = InitializerType::template subentityOrientationsArray< DimensionsTag >( entity );
       for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
       {
-         subentityIdsArray[ i ] = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
-         //std::cout << "    Adding subentity " << subentityIdsArray[ i ] << std::endl;
+         const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
+         InitializerType::template setSubentityIndex< DimensionsTag::value >( entity, i, subentityIndex );
+         //std::cout << "    Adding subentity " << subentityIndex << std::endl;
          subentityOrientationsArray[ i ] = meshInitializer.template getReferenceOrientation< DimensionsTag >( subentitySeeds[ i ] ).createOrientation( subentitySeeds[ i ] );
       }
 
@@ -323,7 +319,6 @@ class MeshEntityInitializerLayer< MeshConfig,
    using EntityType                = MeshEntity< MeshConfig, EntityTopology >;
    using SeedType                  = MeshEntitySeed< MeshConfig, EntityTopology >;
    using SubentitySeedsCreatorType = MeshSubentitySeedsCreator< MeshConfig, EntityTopology, DimensionsTag >;
-   using IdArrayType               = typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionsTag >::IdArrayType;
 
 protected:
    static void initSubentities( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed,
@@ -332,11 +327,13 @@ protected:
       //std::cout << "   Initiating subentities with " << DimensionsTag::value << " dimensions ... " << std::endl;
       auto subentitySeeds = SubentitySeedsCreatorType::create( entitySeed );
 
-		IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionTag >( entity );
-		for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++)
-			subentityIdsArray[ i ] = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
+      for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++)
+      {
+         const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
+         InitializerType::template setSubentityIndex< DimensionsTag::value >( entity, i, subentityIndex );
+      }
 
-		BaseType::initSubentities(entity, entityIndex, entitySeed, meshInitializer);
+      BaseType::initSubentities(entity, entityIndex, entitySeed, meshInitializer);
    }
 };
 
@@ -371,7 +368,6 @@ class MeshEntityInitializerLayer< MeshConfig,
    using EntityType                = MeshEntity< MeshConfig, EntityTopology >;
    using SeedType                  = MeshEntitySeed< MeshConfig, EntityTopology >;
    using SubentitySeedsCreatorType = MeshSubentitySeedsCreator< MeshConfig, EntityTopology, DimensionsTag >;
-   using IdArrayType               = typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionsTag >::IdArrayType;
 
 protected:
    static void initSubentities( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed,
@@ -379,10 +375,10 @@ protected:
    {
       //std::cout << "   Initiating subentities with " << DimensionsTag::value << " dimensions ... " << std::endl;
       auto subentitySeeds = SubentitySeedsCreatorType::create( entitySeed );
-      IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >( entity );
+
       for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++)
       {
-         GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
+         const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
          meshInitializer.
             template getSuperentityInitializer< DimensionsTag >().
                addSuperentity( EntityDimensionsTag(), subentityIndex, entityIndex );
@@ -420,25 +416,26 @@ class MeshEntityInitializerLayer< MeshConfig,
                                                   EntityTopology,
                                                   DimensionsTag::value >;
 
-   using SharedContainerType       = typename SubentitiesTraits::AccessArrayType;
-   using GlobalIndexType           = typename SharedContainerType::ElementType;
-   using LocalIndexType            = typename MeshTraits< MeshConfig >::LocalIndexType;
-   using InitializerType           = MeshInitializer< MeshConfig >;
-   using EntityInitializerType     = MeshEntityInitializer< MeshConfig, EntityTopology >;
-   using EntityDimensionsTag       = MeshDimensionsTag< EntityTopology::dimensions >;
-   using EntityType                = MeshEntity< MeshConfig, EntityTopology >;
-   using SeedType                  = MeshEntitySeed< MeshConfig, EntityTopology >;
-   using IdArrayType               = typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionsTag::value >::IdArrayType;
+   using SharedContainerType   = typename SubentitiesTraits::AccessArrayType;
+   using GlobalIndexType       = typename SharedContainerType::ElementType;
+   using LocalIndexType        = typename MeshTraits< MeshConfig >::LocalIndexType;
+   using InitializerType       = MeshInitializer< MeshConfig >;
+   using EntityInitializerType = MeshEntityInitializer< MeshConfig, EntityTopology >;
+   using EntityDimensionsTag   = MeshDimensionsTag< EntityTopology::dimensions >;
+   using EntityType            = MeshEntity< MeshConfig, EntityTopology >;
+   using SeedType              = MeshEntitySeed< MeshConfig, EntityTopology >;
 
 protected:
    static void initSubentities( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed,
                                 InitializerType& meshInitializer )
    {
       //std::cout << "   Initiating subentities with " << DimensionsTag::value << " dimensions ... " << std::endl;
-      const IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >(entity);
-      for( LocalIndexType i = 0; i < subentityIdsArray.getSize(); i++ )
-         meshInitializer.template getSuperentityInitializer< DimensionsTag >().addSuperentity( EntityDimensionsTag(), subentityIdsArray[ i ], entityIndex);
-	}
+      for( LocalIndexType i = 0; i < entity.template getNumberOfSubentities< DimensionsTag::value >(); i++ )
+      {
+         const GlobalIndexType subentityIndex = entity.template getSubentityIndex< DimensionsTag::value >( i );
+         meshInitializer.template getSuperentityInitializer< DimensionsTag >().addSuperentity( EntityDimensionsTag(), subentityIndex, entityIndex);
+      }
+   }
 };
 
 template< typename MeshConfig,
@@ -450,13 +447,13 @@ class MeshEntityInitializerLayer< MeshConfig,
                                   false,
                                   false >
 {
-   using InitializerType           = MeshInitializer< MeshConfig >;
-   using DimensionsTag             = MeshDimensionsTag< 0 >;
-   using SubentitiesTraits         = MeshSubentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >;
-   using SharedContainerType       = typename SubentitiesTraits::SharedContainerType;
-   using GlobalIndexType           = typename SharedContainerType::ElementType;
-   using EntityType                = MeshEntity< MeshConfig, EntityTopology >;
-   using SeedType                  = MeshEntitySeed< MeshConfig, EntityTopology >;
+   using InitializerType     = MeshInitializer< MeshConfig >;
+   using DimensionsTag       = MeshDimensionsTag< 0 >;
+   using SubentitiesTraits   = MeshSubentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >;
+   using SharedContainerType = typename SubentitiesTraits::SharedContainerType;
+   using GlobalIndexType     = typename SharedContainerType::ElementType;
+   using EntityType          = MeshEntity< MeshConfig, EntityTopology >;
+   using SeedType            = MeshEntitySeed< MeshConfig, EntityTopology >;
 
 protected:
    static void initSubentities( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed,

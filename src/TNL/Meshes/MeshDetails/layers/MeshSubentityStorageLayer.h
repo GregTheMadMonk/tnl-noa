@@ -86,12 +86,6 @@ public:
    }
 
    template< int Subdimensions >
-   typename SubentityTraits< Subdimensions >::IdArrayType& subentityIdsArray()
-   {
-      return BaseType::subentityIdsArray( MeshDimensionsTag< Subdimensions >() );
-   }
-
-   template< int Subdimensions >
    typename SubentityTraits< Subdimensions >::OrientationArrayType& subentityOrientationsArray()
    {
       return BaseType::subentityOrientationsArray( MeshDimensionsTag< Subdimensions >() );
@@ -199,9 +193,6 @@ protected:
    {
       return this->subentitiesIndices[ localIndex ];
    }
-
-   using BaseType::subentityIdsArray;
-   IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
 
    using BaseType::subentityOrientation;
    IdPermutationArrayAccessorType subentityOrientation( DimensionTag, LocalIndexType index) const
@@ -313,9 +304,6 @@ protected:
       return this->subentitiesIndices[ localIndex ];
    }
 
-   using BaseType::subentityIdsArray;
-   IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
-
    using BaseType::subentityOrientationsArray;
    void subentityOrientationsArray() {}
 
@@ -408,8 +396,6 @@ protected:
    {
       this->verticesIndices[ localIndex ] = globalIndex;
    }
-
-   IdArrayType& subentityIdsArray( DimensionsTag ) { return this->verticesIndices; }
 
 protected:
    /***
