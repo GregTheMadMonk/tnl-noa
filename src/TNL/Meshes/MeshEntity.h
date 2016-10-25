@@ -79,12 +79,6 @@ class MeshEntity
       template< int Subdimensions >
       GlobalIndexType getSubentityIndex( const LocalIndexType localIndex) const;
 
-      template< int Subdimensions >
-      typename SubentityTraits< Subdimensions >::AccessArrayType& getSubentityIndices();
-
-      template< int Subdimensions >
-      const typename SubentityTraits< Subdimensions >::AccessArrayType& getSubentityIndices() const;
-
       /****
        * Superentities
        */
@@ -98,11 +92,7 @@ class MeshEntity
 
       GlobalIndexType getVertexIndex( const LocalIndexType localIndex ) const;
 
-      typename SubentityTraits< 0 >::AccessArrayType& getVerticesIndices();
-
-      const typename SubentityTraits< 0 >::AccessArrayType& getVerticesIndices() const;
-
-      template< int Dimension >
+      template< int Dimensions >
       IdPermutationArrayAccessorType subentityOrientation( LocalIndexType index ) const;
 
    protected:

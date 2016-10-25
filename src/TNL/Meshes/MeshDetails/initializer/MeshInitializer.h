@@ -238,15 +238,15 @@ class MeshInitializerLayer< MeshConfig,
                  i < this->getMesh().getCell( cell ).getNumberOfVertices();
                  i++ )
             {
-               if( this->getMesh().getCell( cell ).getVerticesIndices()[ i ] == - 1 )
+               if( this->getMesh().getCell( cell ).getVertexIndex( i ) == - 1 )
                {
                   std::cerr << "The cell number " << cell << " does not have properly set vertex index number " << i << "." << std::endl;
                   return false;
                }
-               if( this->getMesh().getCell( cell ).getVerticesIndices()[ i ] >= numberOfVertices )
+               if( this->getMesh().getCell( cell ).getVertexIndex( i ) >= numberOfVertices )
                {
                   std::cerr << "The cell number " << cell << " does not have properly set vertex index number " << i
-                       << ". The index " << this->getMesh().getCell( cell ).getVerticesIndices()[ i ]
+                       << ". The index " << this->getMesh().getCell( cell ).getVertexIndex( i )
                        << "is higher than the number of all vertices ( " << numberOfVertices
                        << " )." << std::endl;
                   return false;

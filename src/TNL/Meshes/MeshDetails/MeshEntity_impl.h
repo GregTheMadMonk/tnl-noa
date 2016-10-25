@@ -136,32 +136,6 @@ getSubentityIndex( const LocalIndexType localIndex) const
 
 template< typename MeshConfig,
           typename EntityTopology >
-   template< int Subdimensions >
-typename MeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< Subdimensions >::AccessArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-getSubentityIndices()
-{
-   static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to get subentities which are not configured for storage." );
-   typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >  SubentityBaseType;
-   // FIXME: method does not exist
-   return SubentityBaseType::getSubentityIndices( MeshDimensionsTag< Subdimensions >() );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Subdimensions >
-const typename MeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< Subdimensions >::AccessArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-getSubentityIndices() const
-{
-   static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to set subentities which are not configured for storage." );
-   typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >  SubentityBaseType;
-   // FIXME: method does not exist
-   return SubentityBaseType::getSubentityIndices( MeshDimensionsTag< Subdimensions >() );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
 constexpr typename MeshEntity< MeshConfig, EntityTopology >::LocalIndexType
 MeshEntity< MeshConfig, EntityTopology >::
 getNumberOfVertices() const
@@ -180,25 +154,7 @@ getVertexIndex( const LocalIndexType localIndex ) const
 
 template< typename MeshConfig,
           typename EntityTopology >
-typename MeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< 0 >::AccessArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-getVerticesIndices()
-{
-   return this->getSubentityIndices< 0 >();
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-const typename MeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< 0 >::AccessArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-getVerticesIndices() const
-{
-   return this->getSubentityIndices< 0 >();
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Dimension >
+   template< int Dimensions >
 typename MeshEntity< MeshConfig, EntityTopology >::IdPermutationArrayAccessorType
 MeshEntity< MeshConfig, EntityTopology >::
 subentityOrientation( LocalIndexType index ) const
