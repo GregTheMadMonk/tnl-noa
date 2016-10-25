@@ -29,20 +29,15 @@ class MeshEntityOrientation
    friend class MeshEntityReferenceOrientation;
 
    public:
-      using IdPermutationArrayAccessorType = typename MeshTraits< MeshConfig >::IdPermutationArrayAccessorType;
-
-      IdPermutationArrayAccessorType getSubvertexPermutation() const
-      {
-         IdPermutationArrayAccessorType accessor;
-         accessor.bind( this->subvertexPermutation );
-         return accessor;
-         //return this->subvertexPermutation.subarray( 0, this->subvertexPermutation.getSize() );
-      }
-
-   private:
       using LocalIndexType = typename MeshTraits< MeshConfig >::LocalIndexType;
       using IdPermutationArrayType = typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, 0 >::IdPermutationArrayType;
 
+      const IdPermutationArrayType& getSubvertexPermutation() const
+      {
+         return subvertexPermutation;
+      }
+
+   private:
       void setPermutationValue( LocalIndexType index, LocalIndexType value )
       {
          this->subvertexPermutation[ index ] = value;

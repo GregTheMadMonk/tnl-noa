@@ -92,10 +92,10 @@ public:
    }
 
    template< int Subdimensions >
-   typename MeshTraitsType::IdPermutationArrayAccessorType subentityOrientation( typename SubentityTraits< Subdimensions >::LocalIndexType index ) const
+   typename SubentityTraits< Subdimensions >::IdPermutationArrayType getSubentityOrientation( typename SubentityTraits< Subdimensions >::LocalIndexType index ) const
    {
       Assert( 0 <= index && index < SubentityTraits< Subdimensions >::count, );
-      return BaseType::subentityOrientation( MeshDimensionsTag< Subdimensions >(), index );
+      return BaseType::getSubentityOrientation( MeshDimensionsTag< Subdimensions >(), index );
    }
 };
 
@@ -118,13 +118,13 @@ class MeshSubentityStorageLayer< MeshConfig,
 
 protected:
    static constexpr int Dimensions = DimensionsTag::value;
-   using MeshTraitsType                 = MeshTraits< MeshConfig >;
-   using SubentityTraitsType            = typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimensions >;
-   using GlobalIndexType                = typename MeshTraitsType::GlobalIndexType;
-   using LocalIndexType                 = typename MeshTraitsType::LocalIndexType;
-   using IdArrayType                    = typename SubentityTraitsType::IdArrayType;
-   using OrientationArrayType           = typename SubentityTraitsType::OrientationArrayType;
-   using IdPermutationArrayAccessorType = typename MeshTraitsType::IdPermutationArrayAccessorType;
+   using MeshTraitsType         = MeshTraits< MeshConfig >;
+   using SubentityTraitsType    = typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimensions >;
+   using GlobalIndexType        = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType         = typename MeshTraitsType::LocalIndexType;
+   using IdArrayType            = typename SubentityTraitsType::IdArrayType;
+   using OrientationArrayType   = typename SubentityTraitsType::OrientationArrayType;
+   using IdPermutationArrayType = typename SubentityTraitsType::IdPermutationArrayType;
 
    MeshSubentityStorageLayer()
    {
@@ -194,8 +194,8 @@ protected:
       return this->subentitiesIndices[ localIndex ];
    }
 
-   using BaseType::subentityOrientation;
-   IdPermutationArrayAccessorType subentityOrientation( DimensionTag, LocalIndexType index) const
+   using BaseType::getSubentityOrientation;
+   const IdPermutationArrayType& getSubentityOrientation( DimensionsTag, LocalIndexType index) const
    {
       Assert( 0 <= index && index < SubentityTraitsType::count, );
 
@@ -401,7 +401,7 @@ protected:
    /***
     *  Necessary because of 'using BaseType::...;' in the derived classes
     */
-   void subentityOrientation() {}
+   void getSubentityOrientation() {}
    void subentityOrientationsArray() {}
 
    IdArrayType verticesIndices;

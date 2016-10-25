@@ -74,7 +74,7 @@ class MeshEntity
        */
       using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::getNumberOfSubentities;
       using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::getSubentityIndex;
-      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::subentityOrientation;
+      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::getSubentityOrientation;
 
       /****
        * Superentities
@@ -116,12 +116,11 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
                           typename MeshConfig::GlobalIndexType >
 {
    public:
-      using MeshTraitsType                 = MeshTraits< MeshConfig >;
-      using EntityTopology                 = MeshVertexTopology;
-      using GlobalIndexType                = typename MeshTraitsType::GlobalIndexType;
-      using LocalIndexType                 = typename MeshTraitsType::LocalIndexType;
-      using PointType                      = typename MeshTraitsType::PointType;
-      using IdPermutationArrayAccessorType = typename MeshTraitsType::IdPermutationArrayAccessorType;
+      using MeshTraitsType  = MeshTraits< MeshConfig >;
+      using EntityTopology  = MeshVertexTopology;
+      using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
+      using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
+      using PointType       = typename MeshTraitsType::PointType;
 
       template< int SuperDimensions >
       using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimensions >;
