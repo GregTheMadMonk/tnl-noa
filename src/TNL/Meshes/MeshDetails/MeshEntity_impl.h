@@ -110,16 +110,6 @@ getEntityDimension() const
 template< typename MeshConfig,
           typename EntityTopology >
    template< int Subdimensions >
-constexpr bool
-MeshEntity< MeshConfig, EntityTopology >::
-subentitiesAvailable() const
-{
-   return SubentityTraits< Subdimensions >::storageEnabled;
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Subdimensions >
 constexpr typename MeshEntity< MeshConfig, EntityTopology >::LocalIndexType
 MeshEntity< MeshConfig, EntityTopology >::
 getNumberOfSubentities() const

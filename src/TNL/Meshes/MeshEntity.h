@@ -74,9 +74,6 @@ class MeshEntity
        * Subentities
        */
       template< int Subdimensions >
-      constexpr bool subentitiesAvailable() const;
-
-      template< int Subdimensions >
       constexpr LocalIndexType getNumberOfSubentities() const;
 
       template< int Subdimensions >
