@@ -61,6 +61,7 @@ class EllpackIndexMultimap
 
    protected:
       Containers::Vector< IndexType, DeviceType, IndexType > values;
+      Containers::Vector< LocalIndexType, DeviceType, IndexType > valuesCounts;
 
       IndexType keysRange;
       LocalIndexType maxValuesCount;

@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <type_traits>
 #include <ostream>
 
 namespace TNL {
@@ -59,18 +60,25 @@ class EllpackIndexMultimapValues
 
       bool operator==( const ThisType& other ) const;
 
+      bool operator!=( const ThisType& other ) const;
+
       void print( std::ostream& str ) const;
 
    protected:
+      using ValuesCountType = typename std::conditional< std::is_const< IndexType >::value,
+                                                         typename std::add_const< LocalIndexType >::type,
+                                                         LocalIndexType >::type;
+
       EllpackIndexMultimapValues( IndexType* values,
+                                  ValuesCountType* valuesCounts,
                                   const IndexType& input,
                                   const LocalIndexType& allocatedSize );
 
       IndexType* values;
 
-      // TODO: step is unused
-//      LocalIndexType step;
+      ValuesCountType* valuesCount;
 
+      // TODO: this is useless for a const-accessor (without setSize etc.)
       LocalIndexType allocatedSize;
 
       friend EllpackIndexMultimap< IndexType, DeviceType, LocalIndexType >;

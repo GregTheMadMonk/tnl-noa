@@ -79,11 +79,11 @@ allocate( const LocalIndexType& maxValuesCount )
 {
    Assert( maxValuesCount >= 0, );
    this->maxValuesCount = maxValuesCount;
-   if( ! this->values.setSize( this->keysRange * ( this->maxValuesCount + 1 ) ) )
+   if( ! this->values.setSize( this->keysRange * this->maxValuesCount ) )
       return false;
-   // TODO: maybe the local sizes should be stored differently?
-   for( IndexType i = 0; i < this->keysRange; i++ )
-      this->getValues( i ).setSize( maxValuesCount );
+   if( ! this->valuesCounts.setSize( this->keysRange ) )
+      return false;
+   this->valuesCounts.setValue( maxValuesCount );
    return true;
 }
 
@@ -101,11 +101,11 @@ allocate( const ValuesAllocationVectorType& valuesCounts )
  
    Assert( this->maxValuesCount >= 0,
               std::cerr << "this->maxValuesCount = " << this->maxValuesCount << std::endl; );
-   if( ! this->values.setSize( this->keysRange * ( this->maxValuesCount + 1 ) ) )
+   if( ! this->values.setSize( this->keysRange * this->maxValuesCount ) )
       return false;
-   // TODO: maybe the local sizes should be stored differently?
-   for( IndexType i = 0; i < this->keysRange; i++ )
-      this->getValues( i ).setSize( valuesCounts[ i ] );
+   if( ! this->valuesCounts.setSize( this->keysRange ) )
+      return false;
+   this->valuesCounts = valuesCounts;
    return true;
 }
 
@@ -116,7 +116,7 @@ typename EllpackIndexMultimap< Index, Device, LocalIndex >::ValuesAccessorType
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex )
 {
-   return ValuesAccessorType( this->values.getData(), inputIndex, this->maxValuesCount );
+   return ValuesAccessorType( this->values.getData(), this->valuesCounts.getData(), inputIndex, this->maxValuesCount );
 }
 
 template< typename Index,
@@ -126,7 +126,7 @@ typename EllpackIndexMultimap< Index, Device, LocalIndex >::ConstValuesAccessorT
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex ) const
 {
-   return ConstValuesAccessorType( this->values.getData(), inputIndex, this->maxValuesCount );
+   return ConstValuesAccessorType( this->values.getData(), this->valuesCounts.getData(), inputIndex, this->maxValuesCount );
 }
 
 template< typename Index,
@@ -136,9 +136,15 @@ bool
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 operator==( const EllpackIndexMultimap< Index, Device, LocalIndex >& other ) const
 {
-   return ( this->keysRange == other.keysRange &&
-            this->maxValuesCount == other.maxValuesCount &&
-            this->values == other.values );
+   if( ! ( this->keysRange == other.keysRange &&
+           this->maxValuesCount == other.maxValuesCount &&
+           this->valuesCounts == other.valuesCounts ) )
+      return false;
+   // compare values for each key separately - the sizes may vary
+   for( IndexType i = 0; i < this->keysRange; i++ )
+      if( this->getValues( i ) != other.getValues( i ) )
+         return false;
+   return true;
 }
 
 template< typename Index,
@@ -155,6 +161,8 @@ save( File& file ) const
    if( ! file.write( &this->maxValuesCount ) )
       return false;
    if( ! this->values.save( file ) )
+      return false;
+   if( ! this->valuesCounts.save( file ) )
       return false;
    return true;
 }
@@ -173,6 +181,8 @@ load( File& file )
    if( ! file.read( &this->maxValuesCount ) )
       return false;
    if( ! this->values.load( file ) )
+      return false;
+   if( ! this->valuesCounts.load( file ) )
       return false;
    return true;
 }

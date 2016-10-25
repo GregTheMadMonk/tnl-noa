@@ -21,7 +21,7 @@ template< typename Index,
           typename LocalIndex >
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 EllpackIndexMultimapValues()
-: values( nullptr ), allocatedSize( 0 )
+: values( nullptr ), valuesCount( nullptr ), allocatedSize( 0 )
 {
 }
 
@@ -30,9 +30,10 @@ template< typename Index,
           typename LocalIndex >
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 EllpackIndexMultimapValues( ThisType&& other )
-: values( other.values ), allocatedSize( other.allocatedSize )
+: values( other.values ), valuesCount( other.valuesCount ), allocatedSize( other.allocatedSize )
 {
    other.values = nullptr;
+   other.valuesCount = nullptr;
    other.allocatedSize = 0;
 }
 
@@ -59,8 +60,10 @@ EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator=( ThisType&& other )
 {
    this->values = other.values;
+   this->valuesCount = other.valuesCount;
    this->allocatedSize = other.allocatedSize;
    other.values = nullptr;
+   other.valuesCount = nullptr;
    other.allocatedSize = 0;
    return *this;
 }
@@ -73,6 +76,7 @@ EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 bind( const ThisType& other )
 {
    this->values = other.values;
+   this->valuesCount = other.valuesCount;
    this->allocatedSize = other.allocatedSize;
 }
 
@@ -81,11 +85,14 @@ template< typename Index,
           typename LocalIndex >
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 EllpackIndexMultimapValues( IndexType* values,
+                            ValuesCountType* valuesCounts,
                             const IndexType& input,
                             const LocalIndexType& allocatedSize )
 {
-   this->values = &values[ input * ( allocatedSize + 1 ) ];
+   this->values = &values[ input * allocatedSize ];
+   this->valuesCount = &valuesCounts[ input ];
    this->allocatedSize = allocatedSize;
+   Assert( *(this->valuesCount) <= allocatedSize, );
 }
 
 template< typename Index,
@@ -95,9 +102,9 @@ bool
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 setSize( const LocalIndexType& size )
 {
-   if( ! this->values || size > this->allocatedSize )
+   if( ! this->valuesCount || size > this->allocatedSize )
       return false;
-   this->values[ this->allocatedSize ] = size;
+   *valuesCount = size;
    return true;
 }
 
@@ -108,9 +115,9 @@ LocalIndex
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 getSize() const
 {
-   if( ! this->values )
+   if( ! valuesCount )
       return 0;
-   return this->values[ this->allocatedSize ];
+   return *valuesCount;
 }
 
 template< typename Index,
@@ -193,6 +200,16 @@ operator==( const ThisType& other ) const
       if( this->operator[]( i ) != other[ i ] )
          return false;
    return true;
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+bool
+EllpackIndexMultimapValues< Index, Device, LocalIndex >::
+operator!=( const ThisType& other ) const
+{
+   return ! ( *this == other );
 }
 
 template< typename Index,
