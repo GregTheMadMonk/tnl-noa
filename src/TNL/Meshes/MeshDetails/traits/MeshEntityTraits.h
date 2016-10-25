@@ -83,8 +83,6 @@ public:
    using SeedIndexedSetType            = Containers::IndexedSet< SeedType, GlobalIndexType, Key >;
    using SeedArrayType                 = Containers::Array< SeedType, Devices::Host, GlobalIndexType >;
    using ReferenceOrientationArrayType = Containers::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType >;
-
-   using SharedArrayType               = Containers::tnlConstSharedArray< EntityType, Devices::Host, GlobalIndexType >;
 };
 
 } // namespace Meshes
