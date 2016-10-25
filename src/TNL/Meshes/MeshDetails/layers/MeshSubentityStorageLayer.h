@@ -61,26 +61,21 @@ class MeshSubentityStorageLayer< MeshConfig,
                                       typename DimensionsTag::Decrement > BaseType;
 
 protected:
-   static const int Dimensions = DimensionsTag::value;
-   typedef MeshTraits< MeshConfig >                                                          MeshTraitsType;
-   typedef typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimensions >   SubentityTraitsType;
-   typedef typename MeshTraitsType::GlobalIndexType                                          GlobalIndexType;
-   typedef typename MeshTraitsType::LocalIndexType                                           LocalIndexType;
-   typedef typename SubentityTraitsType::IdArrayType                                         IdArrayType;
-   typedef typename SubentityTraitsType::OrientationArrayType                                OrientationArrayType;
-   typedef typename MeshTraitsType::IdPermutationArrayAccessorType                           IdPermutationArrayAccessorType;
+   static constexpr int Dimensions = DimensionsTag::value;
+   using MeshTraitsType                 = MeshTraits< MeshConfig >;
+   using SubentityTraitsType            = typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimensions >;
+   using GlobalIndexType                = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType                 = typename MeshTraitsType::LocalIndexType;
+   using IdArrayType                    = typename SubentityTraitsType::IdArrayType;
+   using OrientationArrayType           = typename SubentityTraitsType::OrientationArrayType;
+   using IdPermutationArrayAccessorType = typename MeshTraitsType::IdPermutationArrayAccessorType;
 
    MeshSubentityStorageLayer()
    {
       this->subentitiesIndices.setValue( -1 );
    }
 
-   ~MeshSubentityStorageLayer()
-   {
-      //cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionTag::value << " dimensions." << std::endl;
-   }
-
-   MeshSubentityStorageLayer& operator = ( const MeshSubentityStorageLayer& layer )
+   MeshSubentityStorageLayer& operator=( const MeshSubentityStorageLayer& layer )
    {
       BaseType::operator=( layer );
       this->subentitiesIndices = layer.subentitiesIndices;
@@ -144,19 +139,19 @@ protected:
    }
 
    using BaseType::subentityIdsArray;
-   IdArrayType& subentityIdsArray( DimensionTag ) { return this->subentitiesIndices; }
- 
+   IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
+
    using BaseType::subentityOrientation;
    IdPermutationArrayAccessorType subentityOrientation( DimensionTag, LocalIndexType index) const
    {
-      TNL_ASSERT( 0 <= index && index < SubentityTraitsType::count, );
- 
+      Assert( 0 <= index && index < SubentityTraitsType::count, );
+
       return this->subentityOrientations[ index ].getSubvertexPermutation();
    }
 
    using BaseType::subentityOrientationsArray;
-	OrientationArrayType& subentityOrientationsArray( DimensionTag ) { return this->subentityOrientations; }
- 
+	OrientationArrayType& subentityOrientationsArray( DimensionsTag ) { return this->subentityOrientations; }
+
 private:
    IdArrayType subentitiesIndices;
 
@@ -181,24 +176,19 @@ class MeshSubentityStorageLayer< MeshConfig,
                                       typename DimensionsTag::Decrement > BaseType;
 
 protected:
-   static const int Dimensions = DimensionsTag::value;
-   typedef MeshTraits< MeshConfig >                                                          MeshTraitsType;
-   typedef typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimensions >   SubentityTraitsType;
-   typedef typename MeshTraitsType::GlobalIndexType                                          GlobalIndexType;
-   typedef typename MeshTraitsType::LocalIndexType                                           LocalIndexType;
-   typedef typename SubentityTraitsType::IdArrayType                                         IdArrayType;
+   static constexpr int Dimensions = DimensionsTag::value;
+   using MeshTraitsType      = MeshTraits< MeshConfig >;
+   using SubentityTraitsType = typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimensions >;
+   using GlobalIndexType     = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType      = typename MeshTraitsType::LocalIndexType;
+   using IdArrayType         = typename SubentityTraitsType::IdArrayType;
 
    MeshSubentityStorageLayer()
    {
       this->subentitiesIndices.setValue( -1 );
    }
 
-   ~MeshSubentityStorageLayer()
-   {
-      //cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionTag::value << " dimensions." << std::endl;
-   }
-
-   MeshSubentityStorageLayer& operator = ( const MeshSubentityStorageLayer& layer )
+   MeshSubentityStorageLayer& operator=( const MeshSubentityStorageLayer& layer )
    {
       BaseType::operator=( layer );
       this->subentitiesIndices = layer.subentitiesIndices;
@@ -262,11 +252,11 @@ protected:
    }
 
    using BaseType::subentityIdsArray;
-   IdArrayType& subentityIdsArray( DimensionTag ) { return this->subentitiesIndices; }
- 
+   IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
+
    using BaseType::subentityOrientationsArray;
    void subentityOrientationsArray() {}
- 
+
 private:
    IdArrayType subentitiesIndices;
 };
@@ -297,25 +287,19 @@ class MeshSubentityStorageLayer< MeshConfig,
    typedef MeshDimensionTag< 0 >                           DimensionTag;
 
 protected:
-   static const int Dimensions = 0;
-   typedef MeshTraits< MeshConfig >                                                          MeshTraitsType;
-   typedef typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimension >   SubentityTraitsType;
-   typedef typename MeshTraitsType::GlobalIndexType                                          GlobalIndexType;
-   typedef typename MeshTraitsType::LocalIndexType                                           LocalIndexType;
-   typedef typename SubentityTraitsType::IdArrayType                                         IdArrayType;
+   static constexpr int Dimensions = 0;
+   using MeshTraitsType      = MeshTraits< MeshConfig >;
+   using SubentityTraitsType = typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimensions >;
+   using GlobalIndexType     = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType      = typename MeshTraitsType::LocalIndexType;
+   using IdArrayType         = typename SubentityTraitsType::IdArrayType;
 
    MeshSubentityStorageLayer()
    {
       this->verticesIndices.setValue( -1 );
    }
 
-   ~MeshSubentityStorageLayer()
-   {
-      //cout << "      Destroying " << this->sharedVerticesIndices.getSize() << " subentities with "<< DimensionTag::value << " dimensions." << std::endl;
-   }
-
-
-   MeshSubentityStorageLayer& operator = ( const MeshSubentityStorageLayer& layer )
+   MeshSubentityStorageLayer& operator=( const MeshSubentityStorageLayer& layer )
    {
       this->verticesIndices = layer.verticesIndices;
       return *this;
@@ -363,13 +347,13 @@ protected:
       this->verticesIndices[ localIndex ] = globalIndex;
    }
 
-   IdArrayType& subentityIdsArray( DimensionTag ) { return this->verticesIndices; }
- 
+   IdArrayType& subentityIdsArray( DimensionsTag ) { return this->verticesIndices; }
+
 protected:
    /***
-    *  Necessary because of 'using TBase::...;' in the derived classes
+    *  Necessary because of 'using BaseType::...;' in the derived classes
     */
-   void subentityOrientation()       {}
+   void subentityOrientation() {}
    void subentityOrientationsArray() {}
 
    IdArrayType verticesIndices;
