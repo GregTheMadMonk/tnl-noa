@@ -36,17 +36,16 @@ class MeshInitializer;
 template< typename MeshConfig,
           typename EntityTopology_ >
 class MeshEntity
-   : public MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >,
+   : protected MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >,
      protected MeshSuperentityAccess< MeshConfig, EntityTopology_ >,
      public MeshEntityId< typename MeshConfig::IdType,
                           typename MeshConfig::GlobalIndexType >
 {
    public:
-      using MeshTraitsType                 = MeshTraits< MeshConfig >;
-      using EntityTopology                 = EntityTopology_;
-      using GlobalIndexType                = typename MeshTraitsType::GlobalIndexType;
-      using LocalIndexType                 = typename MeshTraitsType::LocalIndexType;
-      using IdPermutationArrayAccessorType = typename MeshTraitsType::IdPermutationArrayAccessorType;
+      using MeshTraitsType  = MeshTraits< MeshConfig >;
+      using EntityTopology  = EntityTopology_;
+      using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
+      using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
 
       template< int Subdimensions >
       using SubentityTraits = typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimensions >;
@@ -73,11 +72,9 @@ class MeshEntity
       /****
        * Subentities
        */
-      template< int Subdimensions >
-      constexpr LocalIndexType getNumberOfSubentities() const;
-
-      template< int Subdimensions >
-      GlobalIndexType getSubentityIndex( const LocalIndexType localIndex) const;
+      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::getNumberOfSubentities;
+      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::getSubentityIndex;
+      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::subentityOrientation;
 
       /****
        * Superentities
@@ -92,26 +89,17 @@ class MeshEntity
 
       GlobalIndexType getVertexIndex( const LocalIndexType localIndex ) const;
 
-      template< int Dimensions >
-      IdPermutationArrayAccessorType subentityOrientation( LocalIndexType index ) const;
-
    protected:
       /****
        * Methods for the mesh initialization
        */
+      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::setSubentityIndex;
+      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::subentityIdsArray;
+      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::subentityOrientationsArray;
+
       using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::bindSuperentitiesStorageNetwork;
       using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::setNumberOfSuperentities;
       using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::setSuperentityIndex;
-
-      template< int Subdimensions >
-      void setSubentityIndex( const LocalIndexType& localIndex,
-                              const GlobalIndexType& globalIndex );
-
-      template< int Subdimensions >
-      typename SubentityTraits< Subdimensions >::IdArrayType& subentityIdsArray();
-
-      template< int Subdimensions >
-      typename SubentityTraits< Subdimensions >::OrientationArrayType& subentityOrientationsArray();
 
    friend MeshInitializer< MeshConfig >;
 

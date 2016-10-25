@@ -109,33 +109,6 @@ getEntityDimension() const
  */
 template< typename MeshConfig,
           typename EntityTopology >
-   template< int Subdimensions >
-constexpr typename MeshEntity< MeshConfig, EntityTopology >::LocalIndexType
-MeshEntity< MeshConfig, EntityTopology >::
-getNumberOfSubentities() const
-{
-   return SubentityTraits< Subdimensions >::count;
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Subdimensions >
-typename MeshEntity< MeshConfig, EntityTopology >::GlobalIndexType
-MeshEntity< MeshConfig, EntityTopology >::
-getSubentityIndex( const LocalIndexType localIndex) const
-{
-   static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to get subentity which is not configured for storage." );
-   Assert( 0 <= localIndex && localIndex < SubentityTraits< Subdimensions >::count,
-              std::cerr << "localIndex = " << localIndex
-                        << " subentitiesCount = "
-                        << SubentityTraits< Subdimensions >::count );
-   typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >  SubentityBaseType;
-   return SubentityBaseType::getSubentityIndex( MeshDimensionTag< Subdimensions >(),
-                                                localIndex );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
 constexpr typename MeshEntity< MeshConfig, EntityTopology >::LocalIndexType
 MeshEntity< MeshConfig, EntityTopology >::
 getNumberOfVertices() const
@@ -149,67 +122,9 @@ typename MeshEntity< MeshConfig, EntityTopology >::GlobalIndexType
 MeshEntity< MeshConfig, EntityTopology >::
 getVertexIndex( const LocalIndexType localIndex ) const
 {
-   return this->getSubentityIndex< 0 >( localIndex  );
+   return this->template getSubentityIndex< 0 >( localIndex  );
 }
 
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Dimensions >
-typename MeshEntity< MeshConfig, EntityTopology >::IdPermutationArrayAccessorType
-MeshEntity< MeshConfig, EntityTopology >::
-subentityOrientation( LocalIndexType index ) const
-{
-   static const LocalIndexType subentitiesCount = SubentityTraits< Dimension >::count;
-   TNL_ASSERT( 0 <= index && index < subentitiesCount, );
-
-   typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >       SubentityStorageLayers;
-   return SubentityStorageLayers::subentityOrientation( MeshDimensionsTag< Dimensions >(), index );
-}
-
-/****
- * Mesh initialization method
- */
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Subdimensions >
-void
-MeshEntity< MeshConfig, EntityTopology >::
-setSubentityIndex( const LocalIndexType& localIndex,
-                   const GlobalIndexType& globalIndex )
-{
-   static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to set subentity which is not configured for storage." );
-   Assert( 0 <= localIndex && localIndex < SubentityTraits< Subdimensions >::count,
-              std::cerr << "localIndex = " << localIndex
-                        << " subentitiesCount = "
-                        << SubentityTraits< Subdimensions >::count );
-   typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >  SubentityBaseType;
-   SubentityBaseType::setSubentityIndex( MeshDimensionTag< Subdimensions >(),
-                                         localIndex,
-                                         globalIndex );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Subdimensions >
-typename MeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< Subdimensions >::IdArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-subentityIdsArray()
-{
-   typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >       SubentityStorageLayers;
-   return SubentityStorageLayers::subentityIdsArray( MeshDimensionsTag< Subdimensions >() );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Subdimensions >
-typename MeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< Subdimensions >::OrientationArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-subentityOrientationsArray()
-{
-   typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >       SubentityStorageLayers;
-   return SubentityStorageLayers::subentityOrientationsArray( MeshDimensionsTag< Subdimensions >() );
-}
 
 /****
  * Vertex entity specialization

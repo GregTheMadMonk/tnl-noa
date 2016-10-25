@@ -41,6 +41,68 @@ class MeshSubentityStorageLayers
                                        EntityTopology,
                                        MeshDimensionsTag< EntityTopology::dimensions - 1 > >
 {
+   using BaseType = MeshSubentityStorageLayer< MeshConfig,
+                                               EntityTopology,
+                                               MeshDimensionsTag< EntityTopology::dimensions - 1 > >;
+
+   static constexpr int Dimensions = EntityTopology::dimensions;
+   using MeshTraitsType = MeshTraits< MeshConfig >;
+
+   template< int Subdimensions >
+   using SubentityTraits = typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimensions >;
+
+public:
+   template< int Subdimensions >
+   constexpr typename SubentityTraits< Subdimensions >::LocalIndexType getNumberOfSubentities() const
+   {
+      return SubentityTraits< Subdimensions >::count;
+   }
+
+   template< int Subdimensions >
+   void setSubentityIndex( const typename SubentityTraits< Subdimensions >::LocalIndexType& localIndex,
+                           const typename SubentityTraits< Subdimensions >::GlobalIndexType& globalIndex )
+   {
+      static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to set subentity which is not configured for storage." );
+      Assert( 0 <= localIndex && localIndex < SubentityTraits< Subdimensions >::count,
+                 std::cerr << "localIndex = " << localIndex
+                           << " subentitiesCount = "
+                           << SubentityTraits< Subdimensions >::count );
+      BaseType::setSubentityIndex( MeshDimensionsTag< Subdimensions >(),
+                                   localIndex,
+                                   globalIndex );
+   }
+
+   template< int Subdimensions >
+   typename SubentityTraits< Subdimensions >::GlobalIndexType
+   getSubentityIndex( const typename SubentityTraits< Subdimensions >::LocalIndexType localIndex ) const
+   {
+      static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to get subentity which is not configured for storage." );
+      Assert( 0 <= localIndex && localIndex < SubentityTraits< Subdimensions >::count,
+                 std::cerr << "localIndex = " << localIndex
+                           << " subentitiesCount = "
+                           << SubentityTraits< Subdimensions >::count );
+      return BaseType::getSubentityIndex( MeshDimensionsTag< Subdimensions >(),
+                                          localIndex );
+   }
+
+   template< int Subdimensions >
+   typename SubentityTraits< Subdimensions >::IdArrayType& subentityIdsArray()
+   {
+      return BaseType::subentityIdsArray( MeshDimensionsTag< Subdimensions >() );
+   }
+
+   template< int Subdimensions >
+   typename SubentityTraits< Subdimensions >::OrientationArrayType& subentityOrientationsArray()
+   {
+      return BaseType::subentityOrientationsArray( MeshDimensionsTag< Subdimensions >() );
+   }
+
+   template< int Subdimensions >
+   typename MeshTraitsType::IdPermutationArrayAccessorType subentityOrientation( typename SubentityTraits< Subdimensions >::LocalIndexType index ) const
+   {
+      Assert( 0 <= index && index < SubentityTraits< Subdimensions >::count, );
+      return BaseType::subentityOrientation( MeshDimensionsTag< Subdimensions >(), index );
+   }
 };
 
 
