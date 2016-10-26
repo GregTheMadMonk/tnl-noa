@@ -105,9 +105,9 @@ class MeshSubentityStorageLayer< MeshConfig,
                                        EntityTopology,
                                        typename DimensionsTag::Decrement >
 {
-   typedef MeshSubentityStorageLayer< MeshConfig,
-                                      EntityTopology,
-                                      typename DimensionsTag::Decrement > BaseType;
+   using BaseType = MeshSubentityStorageLayer< MeshConfig,
+                                               EntityTopology,
+                                               typename DimensionsTag::Decrement >;
 
 protected:
    static constexpr int Dimensions = DimensionsTag::value;
@@ -216,9 +216,9 @@ class MeshSubentityStorageLayer< MeshConfig,
                                        EntityTopology,
                                        typename DimensionsTag::Decrement >
 {
-   typedef MeshSubentityStorageLayer< MeshConfig,
-                                      EntityTopology,
-                                      typename DimensionsTag::Decrement > BaseType;
+   using BaseType = MeshSubentityStorageLayer< MeshConfig,
+                                               EntityTopology,
+                                               typename DimensionsTag::Decrement >;
 
 protected:
    static constexpr int Dimensions = DimensionsTag::value;
@@ -326,7 +326,7 @@ class MeshSubentityStorageLayer< MeshConfig,
                                  true,
                                  false >
 {
-   typedef MeshDimensionTag< 0 >                           DimensionTag;
+   using DimensionsTag = MeshDimensionsTag< 0 >;
 
 protected:
    static constexpr int Dimensions = 0;
