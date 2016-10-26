@@ -63,10 +63,6 @@ public:
                            const typename SubentityTraits< Subdimensions >::GlobalIndexType& globalIndex )
    {
       static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to set subentity which is not configured for storage." );
-      Assert( 0 <= localIndex && localIndex < SubentityTraits< Subdimensions >::count,
-                 std::cerr << "localIndex = " << localIndex
-                           << " subentitiesCount = "
-                           << SubentityTraits< Subdimensions >::count );
       BaseType::setSubentityIndex( MeshDimensionsTag< Subdimensions >(),
                                    localIndex,
                                    globalIndex );
@@ -77,10 +73,6 @@ public:
    getSubentityIndex( const typename SubentityTraits< Subdimensions >::LocalIndexType localIndex ) const
    {
       static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to get subentity which is not configured for storage." );
-      Assert( 0 <= localIndex && localIndex < SubentityTraits< Subdimensions >::count,
-                 std::cerr << "localIndex = " << localIndex
-                           << " subentitiesCount = "
-                           << SubentityTraits< Subdimensions >::count );
       return BaseType::getSubentityIndex( MeshDimensionsTag< Subdimensions >(),
                                           localIndex );
    }
@@ -88,13 +80,14 @@ public:
    template< int Subdimensions >
    typename SubentityTraits< Subdimensions >::OrientationArrayType& subentityOrientationsArray()
    {
+      static_assert( SubentityTraits< Subdimensions >::orientationEnabled, "You try to get subentity orientation which is not configured for storage." );
       return BaseType::subentityOrientationsArray( MeshDimensionsTag< Subdimensions >() );
    }
 
    template< int Subdimensions >
    typename SubentityTraits< Subdimensions >::IdPermutationArrayType getSubentityOrientation( typename SubentityTraits< Subdimensions >::LocalIndexType index ) const
    {
-      Assert( 0 <= index && index < SubentityTraits< Subdimensions >::count, );
+      static_assert( SubentityTraits< Subdimensions >::orientationEnabled, "You try to get subentity orientation which is not configured for storage." );
       return BaseType::getSubentityOrientation( MeshDimensionsTag< Subdimensions >(), index );
    }
 };
@@ -198,7 +191,6 @@ protected:
    const IdPermutationArrayType& getSubentityOrientation( DimensionsTag, LocalIndexType index) const
    {
       Assert( 0 <= index && index < SubentityTraitsType::count, );
-
       return this->subentityOrientations[ index ].getSubvertexPermutation();
    }
 
