@@ -1,3 +1,5 @@
+ADD_SUBDIRECTORY( UnitTests )
+
 set( headers FlopsCounter.h
              Quad.h
              Quadcpp.h

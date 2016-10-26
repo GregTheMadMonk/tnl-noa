@@ -221,6 +221,29 @@ else()
    set( JPEG_LIBRARIES "" )
 endif()
 
+####
+# Test for GMP 
+#
+if (GMP_INCLUDES AND GMP_LIBRARIES)
+   set(GMP_FIND_QUIETLY TRUE)
+endif (GMP_INCLUDES AND GMP_LIBRARIES)
+
+find_path(GMP_INCLUDES
+   NAMES
+   gmp.h
+   PATHS
+   $ENV{GMPDIR}
+   ${INCLUDE_INSTALL_DIR}
+)
+
+find_library(GMP_LIBRARIES gmp PATHS $ENV{GMPDIR} ${LIB_INSTALL_DIR})
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(GMP DEFAULT_MSG
+                                   GMP_INCLUDES GMP_LIBRARIES)
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GMP_INCLUDES} -DHAVE_GMP" )
+set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${GMP_LIBRARIES}" )
+mark_as_advanced(GMP_INCLUDES GMP_LIBRARIES)
 
 ####
 # Check for some system header
@@ -266,29 +289,6 @@ if( WITH_TESTS STREQUAL "yes" )
    if( GTEST_FOUND )
       set( CXX_TESTS_FLAGS "-DHAVE_GTEST" )
    endif( GTEST_FOUND )
-
-   ####
-   # Test for GMP 
-   #
-   if (GMP_INCLUDES AND GMP_LIBRARIES)
-      set(GMP_FIND_QUIETLY TRUE)
-   endif (GMP_INCLUDES AND GMP_LIBRARIES)
-
-   find_path(GMP_INCLUDES
-      NAMES
-      gmp.h
-      PATHS
-      $ENV{GMPDIR}
-      ${INCLUDE_INSTALL_DIR}
-   )
-
-   find_library(GMP_LIBRARIES gmp PATHS $ENV{GMPDIR} ${LIB_INSTALL_DIR})
-
-   include(FindPackageHandleStandardArgs)
-   find_package_handle_standard_args(GMP DEFAULT_MSG
-                                      GMP_INCLUDES GMP_LIBRARIES)
-   mark_as_advanced(GMP_INCLUDES GMP_LIBRARIES)
-
 
 endif( WITH_TESTS STREQUAL "yes" )
 
