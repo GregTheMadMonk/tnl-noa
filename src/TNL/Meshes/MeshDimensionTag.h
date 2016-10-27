@@ -40,21 +40,22 @@ namespace Meshes {
 template< int Dimension >
 class MeshDimensionTag
 {
-   public:
+   static_assert( Dimensions >= 0, "The value of the dimensions cannot be negative." );
 
-      static const int value = Dimension;
+public:
+   static constexpr int value = Dimensions;
 
-      typedef MeshDimensionTag< Dimension - 1 > Decrement;
-
-      static_assert( value >= 0, "The value of the dimensions cannot be negative." );
+   using Decrement = MeshDimensionsTag< Dimensions - 1 >;
+   using Increment = MeshDimensionsTag< Dimensions + 1 >;
 };
 
 template<>
 class MeshDimensionTag< 0 >
 {
-   public:
- 
-      static const int value = 0;
+public:
+   static const int value = 0;
+
+   using Increment = MeshDimensionsTag< 1 >;
 };
 
 } // namespace Meshes
