@@ -137,9 +137,7 @@ class MeshEntityInitializerLayer< MeshConfig,
    static constexpr int Dimensions = DimensionsTag::value;
    using MeshTraitsType            = MeshTraits< MeshConfig >;
    using SubentityTraitsType       = typename MeshTraitsType::template SubentityTraits< EntityTopology, Dimensions >;
-   using SubentityContainerType    = typename SubentityTraitsType::SubentityContainerType;
-   using SharedContainerType       = typename SubentityTraitsType::AccessArrayType;
-   using GlobalIndexType           = typename SharedContainerType::ElementType;
+   using GlobalIndexType           = typename SubentityTraitsType::GlobalIndexType;
 
    using InitializerType           = MeshInitializer< MeshConfig >;
    using EntityInitializerType     = MeshEntityInitializer< MeshConfig, EntityTopology >;
@@ -194,9 +192,7 @@ class MeshEntityInitializerLayer< MeshConfig,
                                                 typename DimensionsTag::Decrement >;
 
    using SubentitiesTraits         = MeshSubentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >;
-   using SubentityContainerType    = typename SubentitiesTraits::SubentityContainerType;
-   using SharedContainerType       = typename SubentitiesTraits::AccessArrayType;
-   using GlobalIndexType           = typename SharedContainerType::ElementType;
+   using GlobalIndexType           = typename SubentitiesTraits::GlobalIndexType;
 
    using InitializerType           = MeshInitializer< MeshConfig >;
    using EntityInitializerType     = MeshEntityInitializer< MeshConfig, EntityTopology >;
@@ -255,9 +251,7 @@ class MeshEntityInitializerLayer< MeshConfig,
                                                 typename DimensionsTag::Decrement >;
 
    using SubentitiesTraits         = MeshSubentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >;
-   using SubentityContainerType    = typename SubentitiesTraits::SubentityContainerType;
-   using SharedContainerType       = typename SubentitiesTraits::SharedContainerType;
-   using GlobalIndexType           = typename SharedContainerType::ElementType;
+   using GlobalIndexType           = typename SubentitiesTraits::GlobalIndexType;
 
    using InitializerType           = MeshInitializer< MeshConfig >;
    using EntityInitializerType     = MeshEntityInitializer< MeshConfig, EntityTopology >;
@@ -305,14 +299,8 @@ class MeshEntityInitializerLayer< MeshConfig,
    using BaseType = MeshEntityInitializerLayer< MeshConfig,
                                                 EntityTopology,
                                                 typename DimensionsTag::Decrement >;
-   using SubentityContainerType = typename MeshSubentityTraits< MeshConfig,
-                                                                EntityTopology,
-                                                                DimensionsTag::value >::SubentityContainerType;
-   using SharedContainerType = typename MeshSubentityTraits< MeshConfig,
-                                                             EntityTopology,
-                                                             DimensionsTag::value >::SharedContainerType;
-
-   using GlobalIndexType           = typename SharedContainerType::ElementType;
+   using SubentitiesTraits         = MeshSubentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >;
+   using GlobalIndexType           = typename SubentitiesTraits::GlobalIndexType;
    using LocalIndexType            = typename MeshTraits< MeshConfig >::LocalIndexType;
    using InitializerType           = MeshInitializer< MeshConfig >;
    using EntityInitializerType     = MeshEntityInitializer< MeshConfig, EntityTopology >;
@@ -353,14 +341,9 @@ class MeshEntityInitializerLayer< MeshConfig,
    using BaseType = MeshEntityInitializerLayer< MeshConfig,
                                                 EntityTopology,
                                                 typename DimensionsTag::Decrement >;
-   using SubentityContainerType = typename MeshSubentityTraits< MeshConfig,
-                                                                EntityTopology,
-                                                                DimensionsTag::value >::SubentityContainerType;
-   using SharedContainerType = typename MeshSubentityTraits< MeshConfig,
-                                                             EntityTopology,
-                                                             DimensionsTag::value >::SharedContainerType;
 
-   using GlobalIndexType           = typename SharedContainerType::DataType;
+   using SubentitiesTraits         = MeshSubentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >;
+   using GlobalIndexType           = typename SubentitiesTraits::GlobalIndexType;
    using LocalIndexType            = typename MeshTraits< MeshConfig >::LocalIndexType;
    using InitializerType           = MeshInitializer< MeshConfig >;
    using EntityInitializerType     = MeshEntityInitializer< MeshConfig, EntityTopology >;
@@ -412,12 +395,8 @@ class MeshEntityInitializerLayer< MeshConfig,
                                   true >
 {
    using DimensionsTag = MeshDimensionsTag< 0 >;
-   using SubentitiesTraits = MeshSubentityTraits< MeshConfig,
-                                                  EntityTopology,
-                                                  DimensionsTag::value >;
-
-   using SharedContainerType   = typename SubentitiesTraits::AccessArrayType;
-   using GlobalIndexType       = typename SharedContainerType::ElementType;
+   using SubentitiesTraits     = MeshSubentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >;
+   using GlobalIndexType       = typename SubentitiesTraits::GlobalIndexType;
    using LocalIndexType        = typename MeshTraits< MeshConfig >::LocalIndexType;
    using InitializerType       = MeshInitializer< MeshConfig >;
    using EntityInitializerType = MeshEntityInitializer< MeshConfig, EntityTopology >;
@@ -450,8 +429,7 @@ class MeshEntityInitializerLayer< MeshConfig,
    using InitializerType     = MeshInitializer< MeshConfig >;
    using DimensionsTag       = MeshDimensionsTag< 0 >;
    using SubentitiesTraits   = MeshSubentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >;
-   using SharedContainerType = typename SubentitiesTraits::SharedContainerType;
-   using GlobalIndexType     = typename SharedContainerType::ElementType;
+   using GlobalIndexType     = typename SubentitiesTraits::GlobalIndexType;
    using EntityType          = MeshEntity< MeshConfig, EntityTopology >;
    using SeedType            = MeshEntitySeed< MeshConfig, EntityTopology >;
 
@@ -474,8 +452,7 @@ class MeshEntityInitializerLayer< MeshConfig,
    using EntityInitializerType = MeshEntityInitializer< MeshConfig, EntityTopology >;
    using DimensionsTag         = MeshDimensionsTag< 0 >;
    using SubentitiesTraits     = MeshSubentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >;
-   using SharedContainerType   = typename SubentitiesTraits::SharedContainerType;
-   using GlobalIndexType       = typename SharedContainerType::ElementType;
+   using GlobalIndexType       = typename SubentitiesTraits::GlobalIndexType;
    using EntityType            = MeshEntity< MeshConfig, EntityTopology >;
 
 protected:
@@ -496,8 +473,7 @@ class MeshEntityInitializerLayer< MeshConfig,
    using EntityInitializerType = MeshEntityInitializer< MeshConfig, EntityTopology >;
    using DimensionsTag         = MeshDimensionsTag< 0 >;
    using SubentitiesTraits     = MeshSubentityTraits< MeshConfig, EntityTopology, DimensionsTag::value >;
-   using SharedContainerType   = typename SubentitiesTraits::SharedContainerType;
-   using GlobalIndexType       = typename SharedContainerType::ElementType;
+   using GlobalIndexType       = typename SubentitiesTraits::GlobalIndexType;
    using EntityType            = MeshEntity< MeshConfig, EntityTopology >;
 
 protected:

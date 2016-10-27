@@ -43,26 +43,11 @@ public:
    using SuperentityTopology = typename EntityTraits::EntityTopology;
    using SuperentityType     = typename EntityTraits::EntityType;
 
-
    /****
     * Type of container for storing of the superentities indices.
     */
-   using StorageArrayType        = Containers::Array< GlobalIndexType, Devices::Host, LocalIndexType >;
-
    using StorageNetworkType      = EllpackIndexMultimap< GlobalIndexType, Devices::Host, LocalIndexType >;
    using SuperentityAccessorType = typename StorageNetworkType::ValuesAccessorType;
-
-   /****
-    * Type for passing the superentities indices by the getSuperentityIndices()
-    * method. We introduce it because of the compatibility with the subentities
-    * which are usually stored in static array.
-    */
-   using AccessArrayType = Containers::SharedArray< GlobalIndexType, Devices::Host, LocalIndexType >;
-
-   /****
-    * This is used by the mesh initializer.
-    */
-   using GrowableContainerType = List< GlobalIndexType >;
 };
 
 } // namespace Meshes

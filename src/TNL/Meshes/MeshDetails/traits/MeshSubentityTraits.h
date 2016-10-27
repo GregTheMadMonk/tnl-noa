@@ -37,21 +37,18 @@ public:
    static constexpr bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimensions );
    static constexpr bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimensions );
 
-   using GlobalIndexType        = typename MeshConfig::GlobalIndexType;
-   using LocalIndexType         = typename MeshConfig::LocalIndexType;
-   using Subtopology            = MeshSubtopology< EntityTopology, Dimensions >;
-   using SubentityTopology      = typename Subtopology::Topology;
-   using SubentityType          = MeshEntity< MeshConfig, SubentityTopology >;
-   using Seed                   = MeshEntitySeed< MeshConfig, SubentityTopology >;
-   using Orientation            = MeshEntityOrientation< MeshConfig, SubentityTopology >;
+   using GlobalIndexType   = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType    = typename MeshConfig::LocalIndexType;
+   using SubentityTopology = typename MeshEntityTraits< MeshConfig, Dimensions >::EntityTopology;
+   using SubentityType     = typename MeshEntityTraits< MeshConfig, Dimensions >::EntityType;
+   using Seed              = MeshEntitySeed< MeshConfig, SubentityTopology >;
+   using Orientation       = MeshEntityOrientation< MeshConfig, SubentityTopology >;
 
 
-   static constexpr int count = Subtopology::count;
+   static constexpr int count = MeshSubtopology< EntityTopology, Dimensions >::count;
 
    using StorageArrayType       = Containers::StaticArray< count, GlobalIndexType >;
-   using AccessArrayType        = Containers::SharedArray< GlobalIndexType, Devices::Host, LocalIndexType >;
    using IdArrayType            = Containers::StaticArray< count, GlobalIndexType >;
-   using SubentityContainerType = Containers::StaticArray< count, SubentityType >;
    using SeedArrayType          = Containers::StaticArray< count, Seed >;
    using OrientationArrayType   = Containers::StaticArray< count, Orientation >;
    using IdPermutationArrayType = Containers::StaticArray< count, LocalIndexType >;
