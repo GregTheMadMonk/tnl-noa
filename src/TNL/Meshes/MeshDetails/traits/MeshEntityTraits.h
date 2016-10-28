@@ -66,7 +66,10 @@ class MeshEntityTraits
 {
 public:
    static constexpr bool storageEnabled = MeshConfig::entityStorage( Dimensions );
-   static constexpr bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, MeshDimensionsTag< Dimensions > >::value;
+   // FIXME
+//   static constexpr bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, MeshDimensionsTag< Dimensions > >::value;
+//   static constexpr bool orientationNeeded = false;
+   static constexpr bool orientationNeeded = ( Dimensions > 0 && Dimensions < MeshConfig::meshDimensions );
 
    using GlobalIndexType               = typename MeshConfig::GlobalIndexType;
    using LocalIndexType                = typename MeshConfig::LocalIndexType;
@@ -78,7 +81,6 @@ public:
    using Key                           = MeshEntitySeedKey< MeshConfig, EntityTopology >;
 
    using StorageArrayType              = Containers::Array< EntityType, Devices::Host, GlobalIndexType >;
-   using AccessArrayType               = Containers::SharedArray< EntityType, Devices::Host, GlobalIndexType >;
    using UniqueContainerType           = Containers::IndexedSet< EntityType, GlobalIndexType, Key >;
    using SeedIndexedSetType            = Containers::IndexedSet< SeedType, GlobalIndexType, Key >;
    using SeedArrayType                 = Containers::Array< SeedType, Devices::Host, GlobalIndexType >;

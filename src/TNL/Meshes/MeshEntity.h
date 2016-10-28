@@ -22,9 +22,9 @@
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDimensionTag.h>
 #include <TNL/Meshes/Topologies/MeshVertexTopology.h>
-#include <TNL/Meshes/MeshDetails/layers/MeshSubentityStorageLayer.h>
+#include <TNL/Meshes/MeshDetails/layers/MeshSubentityAccess.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSuperentityAccess.h>
-#include <TNL/Meshes/MeshDetails/layers/MeshSuperentityStorageRebinder.h>
+#include <TNL/Meshes/MeshDetails/layers/MeshEntityStorageRebinder.h>
 #include <TNL/Meshes/MeshDetails/initializer/MeshEntitySeed.h>
 
 namespace TNL {
@@ -36,7 +36,7 @@ class MeshInitializer;
 template< typename MeshConfig,
           typename EntityTopology_ >
 class MeshEntity
-   : protected MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >,
+   : protected MeshSubentityAccess< MeshConfig, EntityTopology_ >,
      protected MeshSuperentityAccess< MeshConfig, EntityTopology_ >,
      public MeshEntityId< typename MeshConfig::IdType,
                           typename MeshConfig::GlobalIndexType >
@@ -72,9 +72,9 @@ class MeshEntity
       /****
        * Subentities
        */
-      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::getNumberOfSubentities;
-      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::getSubentityIndex;
-      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::getSubentityOrientation;
+      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::getNumberOfSubentities;
+      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::getSubentityIndex;
+      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::getSubentityOrientation;
 
       /****
        * Superentities
@@ -93,8 +93,9 @@ class MeshEntity
       /****
        * Methods for the mesh initialization
        */
-      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::setSubentityIndex;
-      using MeshSubentityStorageLayers< MeshConfig, EntityTopology_ >::subentityOrientationsArray;
+      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::bindSubentitiesStorageNetwork;
+      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::setSubentityIndex;
+      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::subentityOrientationsArray;
 
       using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::bindSuperentitiesStorageNetwork;
       using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::setNumberOfSuperentities;
@@ -103,7 +104,7 @@ class MeshEntity
    friend MeshInitializer< MeshConfig >;
 
    template< typename Mesh, typename DimensionsTag, typename SuperdimensionsTag >
-   friend struct MeshSuperentityStorageRebinderWorker;
+   friend struct MeshEntityStorageRebinderWorker;
 };
 
 /****
@@ -164,7 +165,7 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
    friend MeshInitializer< MeshConfig >;
 
    template< typename Mesh, typename DimensionsTag, typename SuperdimensionsTag >
-   friend struct MeshSuperentityStorageRebinderWorker;
+   friend struct MeshEntityStorageRebinderWorker;
 };
 
 template< typename MeshConfig,

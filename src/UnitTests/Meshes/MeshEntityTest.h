@@ -50,7 +50,10 @@ public:
 };
 
 template< typename MeshConfig, typename EntityTopology, int Dimensions >
-using StorageNetwork = typename MeshSuperentityTraits< MeshConfig, EntityTopology, Dimensions >::StorageNetworkType;
+using SubentityStorage = typename MeshSubentityTraits< MeshConfig, EntityTopology, Dimensions >::StorageNetworkType;
+
+template< typename MeshConfig, typename EntityTopology, int Dimensions >
+using SuperentityStorage = typename MeshSuperentityTraits< MeshConfig, EntityTopology, Dimensions >::StorageNetworkType;
 
 // stupid wrapper around MeshEntity to expose protected members needed for tests
 template< typename MeshConfig, typename EntityTopology >
@@ -60,6 +63,12 @@ class TestMeshEntity
    using BaseType = MeshEntity< MeshConfig, EntityTopology >;
 
 public:
+   template< int Subdimensions, typename Storage >
+   void bindSubentitiesStorageNetwork( const Storage& storage )
+   {
+      BaseType::template bindSubentitiesStorageNetwork< Subdimensions >( storage );
+   }
+
    template< int Subdimensions >
    void setSubentityIndex( const typename BaseType::LocalIndexType& localIndex,
                            const typename BaseType::GlobalIndexType& globalIndex )
@@ -134,10 +143,17 @@ TEST( MeshEntityTest, EdgeMeshEntityTest )
    ASSERT_TRUE( vertexEntities[ 2 ].getPoint() == point2 );
 
    Containers::StaticArray< 3, EdgeMeshEntityType > edgeEntities;
+   SubentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 0 > edgeVertexSubentities;
+   edgeVertexSubentities.setKeysRange( 3 );
+   ASSERT_TRUE( edgeVertexSubentities.allocate() );
+
+   edgeEntities[ 0 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 0 ) );
    edgeEntities[ 0 ].template setSubentityIndex< 0 >( 0, 0 );
    edgeEntities[ 0 ].template setSubentityIndex< 0 >( 1, 1 );
+   edgeEntities[ 1 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 1 ) );
    edgeEntities[ 1 ].template setSubentityIndex< 0 >( 0, 1 );
    edgeEntities[ 1 ].template setSubentityIndex< 0 >( 1, 2 );
+   edgeEntities[ 2 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 2 ) );
    edgeEntities[ 2 ].template setSubentityIndex< 0 >( 0, 2 );
    edgeEntities[ 2 ].template setSubentityIndex< 0 >( 1, 0 );
    edgeEntities[ 0 ].setId( 0 );
@@ -182,10 +198,17 @@ TEST( MeshEntityTest, TriangleMeshEntityTest )
    ASSERT_TRUE( vertexEntities[ 2 ].getPoint() == point2 );
 
    Containers::StaticArray< 3, EdgeMeshEntityType > edgeEntities;
+   SubentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 0 > edgeVertexSubentities;
+   edgeVertexSubentities.setKeysRange( 3 );
+   ASSERT_TRUE( edgeVertexSubentities.allocate() );
+
+   edgeEntities[ 0 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 0 ) );
    edgeEntities[ 0 ].template setSubentityIndex< 0 >( 0, tnlSubentityVertex< MeshTriangleTopology, MeshEdgeTopology, 0, 0 >::index );
    edgeEntities[ 0 ].template setSubentityIndex< 0 >( 1, tnlSubentityVertex< MeshTriangleTopology, MeshEdgeTopology, 0, 1 >::index );
+   edgeEntities[ 1 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 1 ) );
    edgeEntities[ 1 ].template setSubentityIndex< 0 >( 0, tnlSubentityVertex< MeshTriangleTopology, MeshEdgeTopology, 1, 0 >::index );
    edgeEntities[ 1 ].template setSubentityIndex< 0 >( 1, tnlSubentityVertex< MeshTriangleTopology, MeshEdgeTopology, 1, 1 >::index );
+   edgeEntities[ 2 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 2 ) );
    edgeEntities[ 2 ].template setSubentityIndex< 0 >( 0, tnlSubentityVertex< MeshTriangleTopology, MeshEdgeTopology, 2, 0 >::index );
    edgeEntities[ 2 ].template setSubentityIndex< 0 >( 1, tnlSubentityVertex< MeshTriangleTopology, MeshEdgeTopology, 2, 1 >::index );
 
@@ -197,7 +220,14 @@ TEST( MeshEntityTest, TriangleMeshEntityTest )
    ASSERT_TRUE( edgeEntities[ 2 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< MeshTriangleTopology, MeshEdgeTopology, 2, 1 >::index ) );
 
    TriangleMeshEntityType triangleEntity;
+   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 0 > triangleVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 1 > triangleEdgeSubentities;
+   triangleVertexSubentities.setKeysRange( 1 );
+   triangleEdgeSubentities.setKeysRange( 1 );
+   ASSERT_TRUE( triangleVertexSubentities.allocate() );
+   ASSERT_TRUE( triangleEdgeSubentities.allocate() );
 
+   triangleEntity.template bindSubentitiesStorageNetwork< 0 >( triangleVertexSubentities.getValues( 0 ) );
    triangleEntity.template setSubentityIndex< 0 >( 0 , 0 );
    triangleEntity.template setSubentityIndex< 0 >( 1 , 1 );
    triangleEntity.template setSubentityIndex< 0 >( 2 , 2 );
@@ -206,6 +236,7 @@ TEST( MeshEntityTest, TriangleMeshEntityTest )
    ASSERT_TRUE( triangleEntity.template getSubentityIndex< 0 >( 1 ) == 1 );
    ASSERT_TRUE( triangleEntity.template getSubentityIndex< 0 >( 2 ) == 2 );
 
+   triangleEntity.template bindSubentitiesStorageNetwork< 1 >( triangleEdgeSubentities.getValues( 0 ) );
    triangleEntity.template setSubentityIndex< 1 >( 0 , 0 );
    triangleEntity.template setSubentityIndex< 1 >( 1 , 1 );
    triangleEntity.template setSubentityIndex< 1 >( 2 , 2 );
@@ -255,17 +286,27 @@ TEST( MeshEntityTest, TetragedronMeshEntityTest )
    ASSERT_TRUE( vertexEntities[ 3 ].getPoint() == point3 );
 
    Containers::StaticArray< MeshSubtopology< MeshTetrahedronTopology, 1 >::count,
-                   EdgeMeshEntityType > edgeEntities;
+                            EdgeMeshEntityType > edgeEntities;
+   SubentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 0 > edgeVertexSubentities;
+   edgeVertexSubentities.setKeysRange( 6 );
+   ASSERT_TRUE( edgeVertexSubentities.allocate() );
+
+   edgeEntities[ 0 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 0 ) );
    edgeEntities[ 0 ].template setSubentityIndex< 0 >( 0, tnlSubentityVertex< MeshTetrahedronTopology, MeshEdgeTopology, 0, 0 >::index );
    edgeEntities[ 0 ].template setSubentityIndex< 0 >( 1, tnlSubentityVertex< MeshTetrahedronTopology, MeshEdgeTopology, 0, 1 >::index );
+   edgeEntities[ 1 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 1 ) );
    edgeEntities[ 1 ].template setSubentityIndex< 0 >( 0, tnlSubentityVertex< MeshTetrahedronTopology, MeshEdgeTopology, 1, 0 >::index );
    edgeEntities[ 1 ].template setSubentityIndex< 0 >( 1, tnlSubentityVertex< MeshTetrahedronTopology, MeshEdgeTopology, 1, 1 >::index );
+   edgeEntities[ 2 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 2 ) );
    edgeEntities[ 2 ].template setSubentityIndex< 0 >( 0, tnlSubentityVertex< MeshTetrahedronTopology, MeshEdgeTopology, 2, 0 >::index );
    edgeEntities[ 2 ].template setSubentityIndex< 0 >( 1, tnlSubentityVertex< MeshTetrahedronTopology, MeshEdgeTopology, 2, 1 >::index );
+   edgeEntities[ 3 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 3 ) );
    edgeEntities[ 3 ].template setSubentityIndex< 0 >( 0, tnlSubentityVertex< MeshTetrahedronTopology, MeshEdgeTopology, 3, 0 >::index );
    edgeEntities[ 3 ].template setSubentityIndex< 0 >( 1, tnlSubentityVertex< MeshTetrahedronTopology, MeshEdgeTopology, 3, 1 >::index );
+   edgeEntities[ 4 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 4 ) );
    edgeEntities[ 4 ].template setSubentityIndex< 0 >( 0, tnlSubentityVertex< MeshTetrahedronTopology, MeshEdgeTopology, 4, 0 >::index );
    edgeEntities[ 4 ].template setSubentityIndex< 0 >( 1, tnlSubentityVertex< MeshTetrahedronTopology, MeshEdgeTopology, 4, 1 >::index );
+   edgeEntities[ 5 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 5 ) );
    edgeEntities[ 5 ].template setSubentityIndex< 0 >( 0, tnlSubentityVertex< MeshTetrahedronTopology, MeshEdgeTopology, 5, 0 >::index );
    edgeEntities[ 5 ].template setSubentityIndex< 0 >( 1, tnlSubentityVertex< MeshTetrahedronTopology, MeshEdgeTopology, 5, 1 >::index );
 
@@ -283,16 +324,24 @@ TEST( MeshEntityTest, TetragedronMeshEntityTest )
    ASSERT_TRUE( edgeEntities[ 5 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< MeshTetrahedronTopology, MeshEdgeTopology, 5, 1 >::index ) );
 
    Containers::StaticArray< MeshSubtopology< MeshTetrahedronTopology, 2 >::count,
-                   TriangleMeshEntityType > triangleEntities;
+                            TriangleMeshEntityType > triangleEntities;
+   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 0 > triangleVertexSubentities;
+   triangleVertexSubentities.setKeysRange( 4 );
+   ASSERT_TRUE( triangleVertexSubentities.allocate() );
+
+   triangleEntities[ 0 ].template bindSubentitiesStorageNetwork< 0 >( triangleVertexSubentities.getValues( 0 ) );
    triangleEntities[ 0 ].template setSubentityIndex< 0 >( 0, tnlSubentityVertex< MeshTetrahedronTopology, MeshTriangleTopology, 0, 0 >::index );
    triangleEntities[ 0 ].template setSubentityIndex< 0 >( 1, tnlSubentityVertex< MeshTetrahedronTopology, MeshTriangleTopology, 0, 1 >::index );
    triangleEntities[ 0 ].template setSubentityIndex< 0 >( 2, tnlSubentityVertex< MeshTetrahedronTopology, MeshTriangleTopology, 0, 2 >::index );
+   triangleEntities[ 1 ].template bindSubentitiesStorageNetwork< 0 >( triangleVertexSubentities.getValues( 1 ) );
    triangleEntities[ 1 ].template setSubentityIndex< 0 >( 0, tnlSubentityVertex< MeshTetrahedronTopology, MeshTriangleTopology, 1, 0 >::index );
    triangleEntities[ 1 ].template setSubentityIndex< 0 >( 1, tnlSubentityVertex< MeshTetrahedronTopology, MeshTriangleTopology, 1, 1 >::index );
    triangleEntities[ 1 ].template setSubentityIndex< 0 >( 2, tnlSubentityVertex< MeshTetrahedronTopology, MeshTriangleTopology, 1, 2 >::index );
+   triangleEntities[ 2 ].template bindSubentitiesStorageNetwork< 0 >( triangleVertexSubentities.getValues( 2 ) );
    triangleEntities[ 2 ].template setSubentityIndex< 0 >( 0, tnlSubentityVertex< MeshTetrahedronTopology, MeshTriangleTopology, 2, 0 >::index );
    triangleEntities[ 2 ].template setSubentityIndex< 0 >( 1, tnlSubentityVertex< MeshTetrahedronTopology, MeshTriangleTopology, 2, 1 >::index );
    triangleEntities[ 2 ].template setSubentityIndex< 0 >( 2, tnlSubentityVertex< MeshTetrahedronTopology, MeshTriangleTopology, 2, 2 >::index );
+   triangleEntities[ 3 ].template bindSubentitiesStorageNetwork< 0 >( triangleVertexSubentities.getValues( 3 ) );
    triangleEntities[ 3 ].template setSubentityIndex< 0 >( 0, tnlSubentityVertex< MeshTetrahedronTopology, MeshTriangleTopology, 3, 0 >::index );
    triangleEntities[ 3 ].template setSubentityIndex< 0 >( 1, tnlSubentityVertex< MeshTetrahedronTopology, MeshTriangleTopology, 3, 1 >::index );
    triangleEntities[ 3 ].template setSubentityIndex< 0 >( 2, tnlSubentityVertex< MeshTetrahedronTopology, MeshTriangleTopology, 3, 2 >::index );
@@ -308,6 +357,17 @@ TEST( MeshEntityTest, TetragedronMeshEntityTest )
    ASSERT_TRUE( triangleEntities[ 2 ].getVertexIndex( 2 ) == ( tnlSubentityVertex< MeshTetrahedronTopology, MeshTriangleTopology, 2, 2 >::index ) );
 
    TetrahedronMeshEntityType tetrahedronEntity;
+   SubentityStorage< TestTriangleMeshConfig, MeshTetrahedronTopology, 0 > tetrahedronVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, MeshTetrahedronTopology, 1 > tetrahedronEdgeSubentities;
+   SubentityStorage< TestTriangleMeshConfig, MeshTetrahedronTopology, 2 > tetrahedronTriangleSubentities;
+   tetrahedronVertexSubentities.setKeysRange( 1 );
+   tetrahedronEdgeSubentities.setKeysRange( 1 );
+   tetrahedronTriangleSubentities.setKeysRange( 1 );
+   ASSERT_TRUE( tetrahedronVertexSubentities.allocate() );
+   ASSERT_TRUE( tetrahedronEdgeSubentities.allocate() );
+   ASSERT_TRUE( tetrahedronTriangleSubentities.allocate() );
+
+   tetrahedronEntity.template bindSubentitiesStorageNetwork< 0 >( tetrahedronVertexSubentities.getValues( 0 ) );
    tetrahedronEntity.template setSubentityIndex< 0 >( 0, 0 );
    tetrahedronEntity.template setSubentityIndex< 0 >( 1, 1 );
    tetrahedronEntity.template setSubentityIndex< 0 >( 2, 2 );
@@ -318,6 +378,7 @@ TEST( MeshEntityTest, TetragedronMeshEntityTest )
    ASSERT_TRUE( tetrahedronEntity.getVertexIndex( 2 ) == 2 );
    ASSERT_TRUE( tetrahedronEntity.getVertexIndex( 3 ) == 3 );
 
+   tetrahedronEntity.template bindSubentitiesStorageNetwork< 2 >( tetrahedronTriangleSubentities.getValues( 0 ) );
    tetrahedronEntity.template setSubentityIndex< 2 >( 0, 0 );
    tetrahedronEntity.template setSubentityIndex< 2 >( 1, 1 );
    tetrahedronEntity.template setSubentityIndex< 2 >( 2, 2 );
@@ -328,6 +389,7 @@ TEST( MeshEntityTest, TetragedronMeshEntityTest )
    ASSERT_TRUE( tetrahedronEntity.template getSubentityIndex< 2 >( 2 ) == 2 );
    ASSERT_TRUE( tetrahedronEntity.template getSubentityIndex< 2 >( 3 ) == 3 );
 
+   tetrahedronEntity.template bindSubentitiesStorageNetwork< 1 >( tetrahedronEdgeSubentities.getValues( 0 ) );
    tetrahedronEntity.template setSubentityIndex< 1 >( 0, 0 );
    tetrahedronEntity.template setSubentityIndex< 1 >( 1, 1 );
    tetrahedronEntity.template setSubentityIndex< 1 >( 2, 2 );
@@ -395,14 +457,23 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    ASSERT_TRUE( vertexEntities[ 3 ].getPoint() == point3 );
 
    Containers::StaticArray< 5, EdgeMeshEntityType > edgeEntities;
+   SubentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 0 > edgeVertexSubentities;
+   edgeVertexSubentities.setKeysRange( 5 );
+   ASSERT_TRUE( edgeVertexSubentities.allocate() );
+
+   edgeEntities[ 0 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 0 ) );
    edgeEntities[ 0 ].template setSubentityIndex< 0 >( 0, 1 );
    edgeEntities[ 0 ].template setSubentityIndex< 0 >( 1, 2 );
+   edgeEntities[ 1 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 1 ) );
    edgeEntities[ 1 ].template setSubentityIndex< 0 >( 0, 2 );
    edgeEntities[ 1 ].template setSubentityIndex< 0 >( 1, 0 );
+   edgeEntities[ 2 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 2 ) );
    edgeEntities[ 2 ].template setSubentityIndex< 0 >( 0, 0 );
    edgeEntities[ 2 ].template setSubentityIndex< 0 >( 1, 1 );
+   edgeEntities[ 3 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 3 ) );
    edgeEntities[ 3 ].template setSubentityIndex< 0 >( 0, 2 );
    edgeEntities[ 3 ].template setSubentityIndex< 0 >( 1, 3 );
+   edgeEntities[ 4 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 4 ) );
    edgeEntities[ 4 ].template setSubentityIndex< 0 >( 0, 3 );
    edgeEntities[ 4 ].template setSubentityIndex< 0 >( 1, 1 );
 
@@ -418,16 +489,26 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    ASSERT_TRUE( edgeEntities[ 4 ].getVertexIndex( 1 ) == 1 );
 
    Containers::StaticArray< 2, TriangleMeshEntityType > triangleEntities;
+   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 0 > triangleVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 1 > triangleEdgeSubentities;
+   triangleVertexSubentities.setKeysRange( 2 );
+   ASSERT_TRUE( triangleVertexSubentities.allocate() );
+   triangleEdgeSubentities.setKeysRange( 2 );
+   ASSERT_TRUE( triangleEdgeSubentities.allocate() );
 
+   triangleEntities[ 0 ].template bindSubentitiesStorageNetwork< 0 >( triangleVertexSubentities.getValues( 0 ) );
    triangleEntities[ 0 ].template setSubentityIndex< 0 >( 0 , 0 );
    triangleEntities[ 0 ].template setSubentityIndex< 0 >( 1 , 1 );
    triangleEntities[ 0 ].template setSubentityIndex< 0 >( 2 , 2 );
+   triangleEntities[ 0 ].template bindSubentitiesStorageNetwork< 1 >( triangleEdgeSubentities.getValues( 0 ) );
    triangleEntities[ 0 ].template setSubentityIndex< 1 >( 0 , 0 );
    triangleEntities[ 0 ].template setSubentityIndex< 1 >( 1 , 1 );
    triangleEntities[ 0 ].template setSubentityIndex< 1 >( 2 , 2 );
+   triangleEntities[ 1 ].template bindSubentitiesStorageNetwork< 0 >( triangleVertexSubentities.getValues( 1 ) );
    triangleEntities[ 1 ].template setSubentityIndex< 0 >( 0 , 1 );
    triangleEntities[ 1 ].template setSubentityIndex< 0 >( 1 , 2 );
    triangleEntities[ 1 ].template setSubentityIndex< 0 >( 2 , 3 );
+   triangleEntities[ 1 ].template bindSubentitiesStorageNetwork< 1 >( triangleEdgeSubentities.getValues( 1 ) );
    triangleEntities[ 1 ].template setSubentityIndex< 1 >( 0 , 3 );
    triangleEntities[ 1 ].template setSubentityIndex< 1 >( 1 , 4 );
    triangleEntities[ 1 ].template setSubentityIndex< 1 >( 2 , 0 );
@@ -449,7 +530,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    /*
     * Tests for the superentities layer.
     */
-   StorageNetwork< TestTriangleMeshConfig, MeshVertexTopology, 1 > vertexEdgeSuperentities;
+   SuperentityStorage< TestTriangleMeshConfig, MeshVertexTopology, 1 > vertexEdgeSuperentities;
    vertexEdgeSuperentities.setKeysRange( 4 );
    vertexEdgeSuperentities.allocate( 3 );
 
@@ -474,7 +555,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 2 ),    4 );
 
 
-   StorageNetwork< TestTriangleMeshConfig, MeshVertexTopology, 2 > vertexCellSuperentities;
+   SuperentityStorage< TestTriangleMeshConfig, MeshVertexTopology, 2 > vertexCellSuperentities;
    vertexCellSuperentities.setKeysRange( 4 );
    vertexCellSuperentities.allocate( 2 );
 
@@ -488,7 +569,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 1 ),    1 );
 
 
-   StorageNetwork< TestTriangleMeshConfig, MeshEdgeTopology, 2 > edgeCellSuperentities;
+   SuperentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 2 > edgeCellSuperentities;
    edgeCellSuperentities.setKeysRange( 5 );
    edgeCellSuperentities.allocate( 2 );
 
@@ -528,23 +609,39 @@ TEST( MeshEntityTest, OneTriangleComparisonTest )
    vertices[ 2 ].setPoint( point2 );
 
    Containers::StaticArray< 3, EdgeMeshEntityType > edges;
+   SubentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 0 > edgeVertexSubentities;
+   edgeVertexSubentities.setKeysRange( 3 );
+   ASSERT_TRUE( edgeVertexSubentities.allocate() );
+
+   edges[ 0 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 0 ) );
    edges[ 0 ].template setSubentityIndex< 0 >( 0, 1 );
    edges[ 0 ].template setSubentityIndex< 0 >( 1, 2 );
+   edges[ 1 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 1 ) );
    edges[ 1 ].template setSubentityIndex< 0 >( 0, 2 );
    edges[ 1 ].template setSubentityIndex< 0 >( 1, 0 );
+   edges[ 2 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 2 ) );
    edges[ 2 ].template setSubentityIndex< 0 >( 0, 0 );
    edges[ 2 ].template setSubentityIndex< 0 >( 1, 1 );
 
    TriangleMeshEntityType triangle;
+   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 0 > triangleVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 1 > triangleEdgeSubentities;
+   triangleVertexSubentities.setKeysRange( 1 );
+   triangleEdgeSubentities.setKeysRange( 1 );
+   ASSERT_TRUE( triangleVertexSubentities.allocate() );
+   ASSERT_TRUE( triangleEdgeSubentities.allocate() );
+
+   triangle.template bindSubentitiesStorageNetwork< 0 >( triangleVertexSubentities.getValues( 0 ) );
    triangle.template setSubentityIndex< 0 >( 0 , 0 );
    triangle.template setSubentityIndex< 0 >( 1 , 1 );
    triangle.template setSubentityIndex< 0 >( 2 , 2 );
+   triangle.template bindSubentitiesStorageNetwork< 1 >( triangleVertexSubentities.getValues( 0 ) );
    triangle.template setSubentityIndex< 1 >( 0 , 0 );
    triangle.template setSubentityIndex< 1 >( 1 , 1 );
    triangle.template setSubentityIndex< 1 >( 2 , 2 );
 
 
-   StorageNetwork< TestTriangleMeshConfig, MeshVertexTopology, 1 > vertexEdgeSuperentities;
+   SuperentityStorage< TestTriangleMeshConfig, MeshVertexTopology, 1 > vertexEdgeSuperentities;
    vertexEdgeSuperentities.setKeysRange( 3 );
    vertexEdgeSuperentities.allocate( 2 );
 
@@ -564,7 +661,7 @@ TEST( MeshEntityTest, OneTriangleComparisonTest )
    vertices[ 2 ].template setSuperentityIndex< 1 >( 1, 1 );
 
 
-   StorageNetwork< TestTriangleMeshConfig, MeshVertexTopology, 2 > vertexCellSuperentities;
+   SuperentityStorage< TestTriangleMeshConfig, MeshVertexTopology, 2 > vertexCellSuperentities;
    vertexCellSuperentities.setKeysRange( 3 );
    vertexCellSuperentities.allocate( 1 );
 
@@ -581,7 +678,7 @@ TEST( MeshEntityTest, OneTriangleComparisonTest )
    vertices[ 2 ].template setSuperentityIndex< 2 >( 0, 0 );
 
 
-   StorageNetwork< TestTriangleMeshConfig, MeshEdgeTopology, 2 > edgeCellSuperentities;
+   SuperentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 2 > edgeCellSuperentities;
    edgeCellSuperentities.setKeysRange( 3 );
    edgeCellSuperentities.allocate( 1 );
 

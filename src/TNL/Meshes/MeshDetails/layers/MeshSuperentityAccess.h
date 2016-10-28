@@ -145,6 +145,7 @@ public:
    {
       BaseType::operator=( layer );
       this->superentityIndices.bind( layer.superentityIndices );
+      return *this;
    }
 
    /****
@@ -223,7 +224,6 @@ class MeshSuperentityAccessLayer< MeshConfig,
                                   MeshDimensionsTag< EntityTopology::dimensions >,
                                   false >
 {
-   static constexpr int Dimensions = EntityTopology::dimensions;
    using DimensionsTag = MeshDimensionsTag< EntityTopology::dimensions >;
    using MeshTraitsType = MeshTraits< MeshConfig >;
    using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionsTag::value >;
@@ -246,7 +246,6 @@ protected:
    void setSuperentityIndex( DimensionsTag,
                              const LocalIndexType& localIndex,
                              const GlobalIndexType& globalIndex ) {}
-
    void getSuperentityIndices() {}
 
    bool operator==( const MeshSuperentityAccess< MeshConfig, EntityTopology >& other ) const
@@ -264,7 +263,6 @@ class MeshSuperentityAccessLayer< MeshConfig,
                                   MeshDimensionsTag< EntityTopology::dimensions >,
                                   true >
 {
-   static constexpr int Dimensions = EntityTopology::dimensions;
    using DimensionsTag = MeshDimensionsTag< EntityTopology::dimensions >;
    using MeshTraitsType = MeshTraits< MeshConfig >;
    using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionsTag::value >;
@@ -287,7 +285,6 @@ protected:
    void setSuperentityIndex( DimensionsTag,
                              const LocalIndexType& localIndex,
                              const GlobalIndexType& globalIndex ) {}
-
    void getSuperentityIndices() {}
 
    bool operator==( const MeshSuperentityAccessLayer& other ) const

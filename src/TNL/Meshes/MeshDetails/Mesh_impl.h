@@ -131,7 +131,7 @@ load( File& file )
       return false;
    }
    // update pointers from entities into the superentity storage network
-   MeshSuperentityStorageRebinder< Mesh< MeshConfig > >::exec( *this );
+   MeshEntityStorageRebinder< Mesh< MeshConfig > >::exec( *this );
    return true;
 }
 
@@ -154,14 +154,14 @@ operator==( const Mesh& mesh ) const
 template< typename MeshConfig >
 bool
 Mesh< MeshConfig >::
-init( const typename Mesh< MeshConfig >::MeshTraitsType::PointArrayType& points,
-      const typename Mesh< MeshConfig >::MeshTraitsType::CellSeedArrayType& cellSeeds )
+init( const typename MeshTraitsType::PointArrayType& points,
+      const typename MeshTraitsType::CellSeedArrayType& cellSeeds )
 {
    MeshInitializer< MeshConfig> meshInitializer;
    if( ! meshInitializer.createMesh( points, cellSeeds, *this ) )
       return false;
    // update pointers from entities into the superentity storage network
-   MeshSuperentityStorageRebinder< Mesh< MeshConfig > >::exec( *this );
+   MeshEntityStorageRebinder< Mesh< MeshConfig > >::exec( *this );
    return true;
 }
 

@@ -21,6 +21,7 @@
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshConfigBase.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
+#include <TNL/Experimental/Multimaps/StaticEllpackIndexMultimap.h>
 
 namespace TNL {
 namespace Meshes {
@@ -46,6 +47,12 @@ public:
 
 
    static constexpr int count = MeshSubtopology< EntityTopology, Dimensions >::count;
+
+   /****
+    * Type of container for storing of the superentities indices.
+    */
+   using StorageNetworkType     = StaticEllpackIndexMultimap< count, GlobalIndexType, Devices::Host, LocalIndexType >;
+   using SubentityAccessorType  = typename StorageNetworkType::ValuesAccessorType;
 
    using StorageArrayType       = Containers::StaticArray< count, GlobalIndexType >;
    using IdArrayType            = Containers::StaticArray< count, GlobalIndexType >;

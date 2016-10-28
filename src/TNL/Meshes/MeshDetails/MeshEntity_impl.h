@@ -45,7 +45,7 @@ bool
 MeshEntity< MeshConfig, EntityTopology >::
 save( File& file ) const
 {
-   if( ! MeshSubentityStorageLayers< MeshConfig, EntityTopology >::save( file ) /*||
+   if( ! MeshSubentityAccess< MeshConfig, EntityTopology >::save( file ) /*||
        ! MeshSuperentityStorageLayers< MeshConfig, EntityTopology >::save( file )*/ )
       return false;
    return true;
@@ -57,7 +57,7 @@ bool
 MeshEntity< MeshConfig, EntityTopology >::
 load( File& file )
 {
-   if( ! MeshSubentityStorageLayers< MeshConfig, EntityTopology >::load( file ) /*||
+   if( ! MeshSubentityAccess< MeshConfig, EntityTopology >::load( file ) /*||
        ! MeshSuperentityStorageLayers< MeshConfig, EntityTopology >::load( file ) */ )
       return false;
    return true;
@@ -69,8 +69,8 @@ void
 MeshEntity< MeshConfig, EntityTopology >::
 print( std::ostream& str ) const
 {
-   str << "\t Mesh entity dimension: " << EntityTopology::dimensions << std::endl;
-   MeshSubentityStorageLayers< MeshConfig, EntityTopology >::print( str );
+   str << "\t Mesh entity dimensions: " << EntityTopology::dimensions << std::endl;
+   MeshSubentityAccess< MeshConfig, EntityTopology >::print( str );
    MeshSuperentityAccess< MeshConfig, EntityTopology >::print( str );
 }
 
@@ -80,7 +80,7 @@ bool
 MeshEntity< MeshConfig, EntityTopology >::
 operator==( const MeshEntity& entity ) const
 {
-   return ( MeshSubentityStorageLayers< MeshConfig, EntityTopology >::operator==( entity ) &&
+   return ( MeshSubentityAccess< MeshConfig, EntityTopology >::operator==( entity ) &&
             MeshSuperentityAccess< MeshConfig, EntityTopology >::operator==( entity ) &&
             MeshEntityId< typename MeshConfig::IdType,
                           typename MeshConfig::GlobalIndexType >::operator==( entity ) );

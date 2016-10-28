@@ -55,7 +55,6 @@ class MeshSuperentityStorageInitializerLayer< MeshConfig,
                                                             EntityTopology,
                                                             typename DimensionsTag::Decrement >;
 
-   static const int Dimensions = DimensionsTag::value;
    using EntityDimensions          = MeshDimensionsTag< EntityTopology::dimensions >;
    using EntityType                = MeshEntity< MeshConfig, EntityTopology >;
 
@@ -63,7 +62,7 @@ class MeshSuperentityStorageInitializerLayer< MeshConfig,
    using GlobalIndexType           = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType            = typename MeshTraitsType::LocalIndexType;
    using MeshInitializerType       = MeshInitializer< MeshConfig >;
-   using SuperentityTraitsType     = typename MeshTraitsType::template SuperentityTraits< EntityTopology, Dimensions >;
+   using SuperentityTraitsType     = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionsTag::value >;
    using SuperentityStorageNetwork = typename SuperentityTraitsType::StorageNetworkType;
 
    public:
@@ -96,7 +95,7 @@ class MeshSuperentityStorageInitializerLayer< MeshConfig,
             /****
              * Network initializer
              */
-            SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< EntityTopology, DimensionsTag >();
+            SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< EntityTopology, DimensionsTag::value >();
             superentityStorageNetwork.setKeysRange( maxEntityIndex + 1 );
             typename SuperentityStorageNetwork::ValuesAllocationVectorType storageNetworkAllocationVector;
             storageNetworkAllocationVector.setSize( maxEntityIndex + 1 );
