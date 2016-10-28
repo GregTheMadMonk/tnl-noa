@@ -38,13 +38,10 @@ template< typename MeshConfig,
           typename SuperDimensionTag = MeshDimensionTag< MeshConfig::meshDimension > >
 class MeshEntityOrientationNeeded
 {
-	static_assert( 0 <= DimensionTag::value && DimensionTag::value < MeshConfig::CellTopology::dimensions, "invalid dimensions" );
-	static_assert( DimensionTag::value < SuperDimensionTag::value && SuperDimensionTag::value <= MeshConfig::CellTopology::dimensions, "invalid superentity dimension");
+   using SuperentityTopology = typename MeshTraits< MeshConfig >::template EntityTraits< SuperDimensionsTag::value >::EntityTopology;
 
-	typedef typename MeshTraits< MeshConfig >::template EntityTraits< SuperDimensionTag::value >::EntityTopology SuperentityTopology;
-
-	static constexpr bool previousSuperDimensionsValue = MeshEntityOrientationNeeded< MeshConfig, DimensionsTag, typename SuperDimensionsTag::Decrement >::value;
-	static constexpr bool thisSuperDimensionsValue = MeshTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, DimensionsTag::value >::orientationEnabled;
+   static constexpr bool previousSuperDimensionsValue = MeshEntityOrientationNeeded< MeshConfig, DimensionsTag, typename SuperDimensionsTag::Decrement >::value;
+   static constexpr bool thisSuperDimensionsValue = MeshTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, DimensionsTag::value >::orientationEnabled;
 
 public:
    static constexpr bool value = ( previousSuperDimensionsValue || thisSuperDimensionsValue );
@@ -53,8 +50,6 @@ public:
 template< typename MeshConfig, typename DimensionTag >
 class MeshEntityOrientationNeeded< MeshConfig, DimensionTag, DimensionTag >
 {
-	static_assert( 0 <= DimensionTag::value && DimensionTag::value <= MeshConfig::CellTopology::dimensions, "invalid dimensions" );
-
 public:
    static constexpr bool value = false;
 };
@@ -66,10 +61,7 @@ class MeshEntityTraits
 {
 public:
    static constexpr bool storageEnabled = MeshConfig::entityStorage( Dimensions );
-   // FIXME
-//   static constexpr bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, MeshDimensionsTag< Dimensions > >::value;
-//   static constexpr bool orientationNeeded = false;
-   static constexpr bool orientationNeeded = ( Dimensions > 0 && Dimensions < MeshConfig::meshDimensions );
+   static constexpr bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, MeshDimensionsTag< Dimensions > >::value;
 
    using GlobalIndexType               = typename MeshConfig::GlobalIndexType;
    using LocalIndexType                = typename MeshConfig::LocalIndexType;
@@ -85,6 +77,8 @@ public:
    using SeedIndexedSetType            = Containers::IndexedSet< SeedType, GlobalIndexType, Key >;
    using SeedArrayType                 = Containers::Array< SeedType, Devices::Host, GlobalIndexType >;
    using ReferenceOrientationArrayType = Containers::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType >;
+
+   static_assert( 0 <= Dimensions && Dimensions <= MeshConfig::meshDimensions, "invalid dimensions" );
 };
 
 } // namespace Meshes
