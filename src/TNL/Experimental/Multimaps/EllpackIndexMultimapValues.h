@@ -25,8 +25,6 @@ template< typename Index,
           typename LocalIndex >
 class EllpackIndexMultimapValues
 {
-      using ThisType       = EllpackIndexMultimapValues< Index, Device, LocalIndex >;
-
    public:
       using DeviceType     = Device;
       using IndexType      = Index;
@@ -35,13 +33,13 @@ class EllpackIndexMultimapValues
 
       EllpackIndexMultimapValues();
 
-      EllpackIndexMultimapValues( ThisType&& other );
+      EllpackIndexMultimapValues( EllpackIndexMultimapValues&& other );
 
-      ThisType& operator=( const ThisType& );
+      EllpackIndexMultimapValues& operator=( const EllpackIndexMultimapValues& );
 
-      ThisType& operator=( ThisType&& other );
+      EllpackIndexMultimapValues& operator=( EllpackIndexMultimapValues&& other );
 
-      void bind( const ThisType& other );
+      void bind( const EllpackIndexMultimapValues& other );
 
       bool setSize( const LocalIndexType& portsCount );
 
@@ -58,9 +56,9 @@ class EllpackIndexMultimapValues
 
       const IndexType& operator[]( const LocalIndexType& portIndex ) const;
 
-      bool operator==( const ThisType& other ) const;
+      bool operator==( const EllpackIndexMultimapValues& other ) const;
 
-      bool operator!=( const ThisType& other ) const;
+      bool operator!=( const EllpackIndexMultimapValues& other ) const;
 
       void print( std::ostream& str ) const;
 

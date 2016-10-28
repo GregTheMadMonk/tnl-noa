@@ -29,7 +29,7 @@ template< typename Index,
           typename Device,
           typename LocalIndex >
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
-EllpackIndexMultimapValues( ThisType&& other )
+EllpackIndexMultimapValues( EllpackIndexMultimapValues&& other )
 : values( other.values ), valuesCount( other.valuesCount ), allocatedSize( other.allocatedSize )
 {
    other.values = nullptr;
@@ -42,7 +42,7 @@ template< typename Index,
           typename LocalIndex >
 EllpackIndexMultimapValues< Index, Device, LocalIndex >&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
-operator=( const ThisType& other )
+operator=( const EllpackIndexMultimapValues& other )
 {
    Assert( this->getSize() == other.getSize(), );
    if( this->values != other.values ) {
@@ -57,7 +57,7 @@ template< typename Index,
           typename LocalIndex >
 EllpackIndexMultimapValues< Index, Device, LocalIndex >&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
-operator=( ThisType&& other )
+operator=( EllpackIndexMultimapValues&& other )
 {
    this->values = other.values;
    this->valuesCount = other.valuesCount;
@@ -73,7 +73,7 @@ template< typename Index,
           typename LocalIndex >
 void
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
-bind( const ThisType& other )
+bind( const EllpackIndexMultimapValues& other )
 {
    this->values = other.values;
    this->valuesCount = other.valuesCount;
@@ -192,7 +192,7 @@ template< typename Index,
           typename LocalIndex >
 bool
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
-operator==( const ThisType& other ) const
+operator==( const EllpackIndexMultimapValues& other ) const
 {
    if( this->getSize() != other.getSize() )
       return false;
@@ -207,7 +207,7 @@ template< typename Index,
           typename LocalIndex >
 bool
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
-operator!=( const ThisType& other ) const
+operator!=( const EllpackIndexMultimapValues& other ) const
 {
    return ! ( *this == other );
 }
