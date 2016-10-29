@@ -51,7 +51,7 @@ constexpr bool
 Mesh< MeshConfig >::
 entitiesAvailable()
 {
-   return MeshTraitsType::template EntityTraits< Dimension >::available;
+   return MeshTraitsType::template EntityTraits< Dimensions >::storageEnabled;
 }
 
 template< typename MeshConfig >
@@ -64,47 +64,47 @@ getNumberOfEntities() const
 }
 
 template< typename MeshConfig >
+   template< int Dimensions >
+typename Mesh< MeshConfig >::template EntityType< Dimensions >&
+Mesh< MeshConfig >::
+getEntity( const GlobalIndexType& entityIndex )
+{
+   return StorageBaseType::getEntity( MeshDimensionsTag< Dimensions >(), entityIndex );
+}
+
+template< typename MeshConfig >
+   template< int Dimensions >
+const typename Mesh< MeshConfig >::template EntityType< Dimensions >&
+Mesh< MeshConfig >::
+getEntity( const GlobalIndexType& entityIndex ) const
+{
+   return StorageBaseType::getEntity( MeshDimensionsTag< Dimensions >(), entityIndex );
+}
+
+template< typename MeshConfig >
 typename Mesh< MeshConfig >::GlobalIndexType
 Mesh< MeshConfig >::
 getNumberOfCells() const
 {
-   return StorageBaseType::getNumberOfEntities( MeshDimensionsTag< dimensions >() );
+   return this->template getNumberOfEntities< dimensions >();
 }
 
 template< typename MeshConfig >
 typename Mesh< MeshConfig >::CellType&
 Mesh< MeshConfig >::
-getCell( const GlobalIndexType cellIndex )
+getCell( const GlobalIndexType& cellIndex )
 {
-   return StorageBaseType::getEntity( MeshDimensionsTag< dimensions >(), cellIndex );
+   return this->template getEntity< dimensions >( cellIndex );
 }
 
 template< typename MeshConfig >
 const typename Mesh< MeshConfig >::CellType&
 Mesh< MeshConfig >::
-getCell( const GlobalIndexType cellIndex ) const
+getCell( const GlobalIndexType& cellIndex ) const
 {
-   return StorageBaseType::getEntity( MeshDimensionsTag< dimensions >(), cellIndex );
+   return this->template getEntity< dimensions >( cellIndex );
 }
 
-template< typename MeshConfig >
-   template< int Dimension >
-typename Mesh< MeshConfig >::template EntityType< Dimension >&
-Mesh< MeshConfig >::
-getEntity( const GlobalIndexType entityIndex )
-{
-   return StorageBaseType::getEntity( MeshDimensionsTag< Dimensions >(), entityIndex );
-}
-
-template< typename MeshConfig >
-   template< int Dimension >
-const typename Mesh< MeshConfig >::template EntityType< Dimension >&
-Mesh< MeshConfig >::
-getEntity( const GlobalIndexType entityIndex ) const
-{
-   return StorageBaseType::getEntity( MeshDimensionsTag< Dimensions >(), entityIndex );
-}
- 
 template< typename MeshConfig >
 bool
 Mesh< MeshConfig >::

@@ -62,21 +62,21 @@ class Mesh
       template< int Dimensions >
       static constexpr bool entitiesAvailable();
 
-      GlobalIndexType getNumberOfCells() const;
-
       // TODO: rename to getEntitiesCount
       template< int Dimension >
       GlobalIndexType getNumberOfEntities() const;
 
-      CellType& getCell( const GlobalIndexType entityIndex );
-
-      const CellType& getCell( const GlobalIndexType entityIndex ) const;
+      template< int Dimensions >
+      EntityType< Dimensions >& getEntity( const GlobalIndexType& entityIndex );
 
       template< int Dimensions >
-      EntityType< Dimensions >& getEntity( const GlobalIndexType entityIndex );
+      const EntityType< Dimensions >& getEntity( const GlobalIndexType& entityIndex ) const;
 
-      template< int Dimensions >
-      const EntityType< Dimensions >& getEntity( const GlobalIndexType entityIndex ) const;
+      GlobalIndexType getNumberOfCells() const;
+
+      CellType& getCell( const GlobalIndexType& entityIndex );
+
+      const CellType& getCell( const GlobalIndexType& entityIndex ) const;
 
       bool save( File& file ) const;
 
@@ -94,6 +94,7 @@ class Mesh
 
    protected:
       // Methods for the mesh initializer
+      using StorageBaseType::setNumberOfEntities;
       using StorageBaseType::getSubentityStorageNetwork;
       using StorageBaseType::getSuperentityStorageNetwork;
 
