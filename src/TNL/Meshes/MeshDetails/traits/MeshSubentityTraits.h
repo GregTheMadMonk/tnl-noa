@@ -35,6 +35,9 @@ template< typename MeshConfig,
 class MeshSubentityTraits
 {
 public:
+   static_assert( 0 <= Dimensions && Dimensions <= MeshConfig::meshDimensions, "invalid dimensions" );
+   static_assert( EntityTopology::dimensions > Dimensions, "Subentity dimensions must be smaller than the entity dimensions." );
+
    static constexpr bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimensions );
    static constexpr bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimensions );
 
@@ -71,8 +74,6 @@ public:
                                          subentityIndex,
                                          subentityVertexIndex>::index };
    };
-
-   static_assert( EntityTopology::dimensions > Dimensions, "You try to create subentities traits where subentity dimensions are not smaller than the entity dimensions." );
 };
 
 } // namespace Meshes

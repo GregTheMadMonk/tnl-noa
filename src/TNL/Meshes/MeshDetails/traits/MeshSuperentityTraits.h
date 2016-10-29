@@ -34,6 +34,10 @@ template< typename MeshConfig,
 class MeshSuperentityTraits
 {
 public:
+   static_assert( 0 <= Dimensions && Dimensions <= MeshConfig::meshDimensions, "invalid dimensions" );
+   // FIXME: this would break MeshSuperentityAccess, but it should be possible to implement it similarly to MeshSubentityAccess
+   //static_assert( EntityTopology::dimensions < Dimensions, "Superentity dimensions must be higher than the entity dimensions." );
+
    static constexpr bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimensions );
 
    using GlobalIndexType     = typename MeshConfig::GlobalIndexType;

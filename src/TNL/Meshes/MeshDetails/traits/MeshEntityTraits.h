@@ -60,6 +60,8 @@ template< typename MeshConfig,
 class MeshEntityTraits
 {
 public:
+   static_assert( 0 <= Dimensions && Dimensions <= MeshConfig::meshDimensions, "invalid dimensions" );
+
    static constexpr bool storageEnabled = MeshConfig::entityStorage( Dimensions );
    static constexpr bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, MeshDimensionsTag< Dimensions > >::value;
 
@@ -77,8 +79,6 @@ public:
    using SeedIndexedSetType            = Containers::IndexedSet< SeedType, GlobalIndexType, Key >;
    using SeedArrayType                 = Containers::Array< SeedType, Devices::Host, GlobalIndexType >;
    using ReferenceOrientationArrayType = Containers::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType >;
-
-   static_assert( 0 <= Dimensions && Dimensions <= MeshConfig::meshDimensions, "invalid dimensions" );
 };
 
 } // namespace Meshes
