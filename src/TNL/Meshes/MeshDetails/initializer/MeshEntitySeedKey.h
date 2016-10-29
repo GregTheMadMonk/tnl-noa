@@ -38,19 +38,15 @@ template< typename MeshConfig,
           typename EntityTopology >
 class MeshEntitySeedKey
 {
-   typedef
-      MeshEntitySeed< MeshConfig, EntityTopology >                               EntitySeedType;
+   using EntitySeedType = MeshEntitySeed< MeshConfig, EntityTopology >;
+   using IdArrayType = typename MeshSubentityTraits< MeshConfig,
+                                                     EntityTopology,
+                                                     0 >::IdArrayType;
 
-   typedef typename
-      MeshSubentityTraits< MeshConfig,
-                                EntityTopology,
-                                0 >::StorageArrayType  StorageArrayType;
-
-   public:
-
+public:
    explicit MeshEntitySeedKey( const EntitySeedType& entitySeed )
    {
-      for( typename StorageArrayType::IndexType i = 0;
+      for( typename IdArrayType::IndexType i = 0;
            i < entitySeed.getCornersCount();
            i++ )
          this->sortedCorners[ i ] = entitySeed.getCornerIds()[ i ];
@@ -59,8 +55,8 @@ class MeshEntitySeedKey
 
    bool operator<( const MeshEntitySeedKey& other ) const
    {
-      for( typename StorageArrayType::IndexType i = 0;
-           i < StorageArrayType::size;
+      for( typename IdArrayType::IndexType i = 0;
+           i < IdArrayType::size;
            i++)
       {
          if( sortedCorners[ i ] < other.sortedCorners[ i ] )
@@ -72,9 +68,8 @@ class MeshEntitySeedKey
       return false;
    }
 
-   private:
-
-   StorageArrayType sortedCorners;
+private:
+   IdArrayType sortedCorners;
 };
 
 } // namespace Meshes

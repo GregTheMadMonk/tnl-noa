@@ -49,14 +49,16 @@ public:
    static constexpr int count = MeshSubtopology< EntityTopology, Dimensions >::count;
 
    /****
-    * Type of container for storing of the superentities indices.
+    * Type of container for storing of the subentities indices.
     */
    using StorageNetworkType     = StaticEllpackIndexMultimap< count, GlobalIndexType, Devices::Host, LocalIndexType >;
    using SubentityAccessorType  = typename StorageNetworkType::ValuesAccessorType;
 
-   using StorageArrayType       = Containers::StaticArray< count, GlobalIndexType >;
+   // static arrays used by MeshEntitySeed etc.
    using IdArrayType            = Containers::StaticArray< count, GlobalIndexType >;
    using SeedArrayType          = Containers::StaticArray< count, Seed >;
+
+   // orientation and its accessor
    using OrientationArrayType   = Containers::StaticArray< count, Orientation >;
    using IdPermutationArrayType = Containers::StaticArray< count, LocalIndexType >;
 
