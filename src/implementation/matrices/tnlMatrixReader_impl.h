@@ -64,6 +64,11 @@ bool tnlMatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
    if( ! readMtxHeader( file, rows, columns, symmetricMatrix, verbose ) )
       return false;
 
+   if( symReader && !symmetricMatrix )
+   {
+      cout << "Matrix is not symmetric, but flag for symmetric matrix is given. Aborting." << endl;
+      return false;
+   }
 
    if( ! matrix.setDimensions( rows, columns ) ||
        ! rowLengths.setSize( rows ) )
@@ -298,7 +303,13 @@ bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file
       }
       if( verbose )
          cout << " Counting the matrix elements ... " << numberOfElements / 1000 << " thousands      \r" << flush;
-      rowLengths[ row - 1 ]++;
+
+      if( !symReader ||
+          ( symReader && row >= column ) )
+         rowLengths[ row - 1 ]++;
+      else if( symReader && row < column )
+         rowLengths[ column - 1 ]++;
+
       if( rowLengths[ row - 1 ] > columns )
       {
          cerr << "There are more elements than the matrix columns at the row " << row << "." << endl;
@@ -308,7 +319,7 @@ bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file
       {
          continue;
       }
-      else if( symmetricMatrix && row != column )
+      else if( symmetricMatrix && row != column && !symReader )
       {
           rowLengths[ column - 1 ]++;
       }
@@ -347,13 +358,19 @@ bool tnlMatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& fil
       RealType value;
       if( ! parseMtxLineWithElement( line, row, column, value ) )
          return false;
-      matrix.setElement( row - 1, column - 1, value );
+
+      if( !symReader ||
+          ( symReader && row >= column ) )
+         matrix.setElement( row - 1, column - 1, value );
+      else if( symReader && row < column )
+         matrix.setElement( column - 1, row - 1, value );
+
       processedElements++;
       if( symmetricMatrix && row != column && symReader )
       {
           continue;
       }
-      else if( symmetricMatrix && row != column )
+      else if( symmetricMatrix && row != column && !symReader )
       {
           matrix.setElement( column - 1, row - 1, value );
           processedElements++;
