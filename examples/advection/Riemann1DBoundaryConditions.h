@@ -1,4 +1,4 @@
-/*** coppied and changed
+//** coppied and changed
 /***************************************************************************
                           tnlRiemann1DBoundaryConditions.h  -  description
                              -------------------
@@ -16,25 +16,31 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLRiemann1DBOUNDARYCONDITIONS_H_
-#define TNLRiemann1DBOUNDARYCONDITIONS_H_
+#ifndef TNLRIEMANN1DBOUNDARYCONDITIONS_H_
+#define TNLRIEMANN1DBOUNDARYCONDITIONS_H_
 
-#include <operators/tnlOperator.h>
-#include <functions/tnlConstantFunction.h>
-#include <functions/tnlFunctionAdapter.h>
+#pragma once
+
+#include <TNL/Operators/Operator.h>
+#include <TNL/Functions/Analytic/Constant.h>
+#include <TNL/Functions/FunctionAdapter.h>
+#include <TNL/Functions/MeshFunction.h>
+
+namespace TNL {
+namespace Operators {
 
 template< typename Mesh,
-          typename Function = tnlConstantFunction< Mesh::getMeshDimensions(), typename Mesh::RealType >,
+          typename Function = Functions::Analytic::Constant< Mesh::getMeshDimensions(), typename Mesh::RealType >,
           int MeshEntitiesDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class tnlRiemann1DBoundaryConditions
-: public tnlOperator< Mesh,
-                      MeshBoundaryDomain,
-                      MeshEntitiesDimensions,
-                      MeshEntitiesDimensions,
-                      Real,
-                      Index >
+class Riemann1DBoundaryConditions
+: public Operator< Mesh,
+                   Functions::MeshBoundaryDomain,
+                   MeshEntitiesDimensions,
+                   MeshEntitiesDimensions,
+                   Real,
+                   Index >
 {
    public:
 
@@ -43,22 +49,24 @@ class tnlRiemann1DBoundaryConditions
       typedef Real RealType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef Index IndexType;
-
-      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      
+      typedef SharedPointer< Mesh > MeshPointer;
+      typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::VertexType VertexType;
 
       static constexpr int getMeshDimensions() { return MeshType::meshDimensions; }
 
-      static void configSetup( tnlConfigDescription& config,
-                               const tnlString& prefix = "" )
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" )
       {
          Function::configSetup( config, prefix );
       }
-      
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" )
+ 
+      bool setup( const MeshPointer& meshPointer,
+                  const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
       {
-         return this->function.setup( parameters, prefix );
+         return Functions::FunctionAdapter< MeshType, FunctionType >::template setup< MeshPointer >( this->function, meshPointer, parameters, prefix );
       }
 
       void setFunction( const Function& function )
@@ -70,7 +78,7 @@ class tnlRiemann1DBoundaryConditions
       {
          return this->function;
       }
-      
+ 
       const Function& getFunction() const
       {
          return this->function;
@@ -117,23 +125,26 @@ class tnlRiemann1DBoundaryConditions
          typename Matrix::MatrixRow matrixRow = matrix.getRow( entity.getIndex() );
          const IndexType& index = entity.getIndex();
          matrixRow.setElement( 0, index, 1.0 );
-         b[ index ] = tnlFunctionAdapter< MeshType, Function >::getValue( this->function, entity, time );
+         b[ index ] = Functions::FunctionAdapter< MeshType, Function >::getValue( this->function, entity, time );
       }
-   
+ 
 
    protected:
 
       Function function;
-   
+ 
    //static_assert( Device::DeviceType == Function::Device::DeviceType );
 };
 
+
 template< typename Mesh,
           typename Function >
-ostream& operator << ( ostream& str, const tnlRiemann1DBoundaryConditions< Mesh, Function >& bc )
+std::ostream& operator << ( std::ostream& str, const Riemann1DBoundaryConditions< Mesh, Function >& bc )
 {
    str << "Riemann1D boundary conditions: vector = " << bc.getVector();
    return str;
 }
 
-#endif /* TNLRiemann1DBOUNDARYCONDITIONS_H_ */
+} // namespace Operators
+} // namespace TNL
+#endif /* TNLRIEMANN1DBOUNDARYCONDITIONS_H_ */

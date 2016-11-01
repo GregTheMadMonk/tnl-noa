@@ -1,5 +1,5 @@
-#ifndef EulerVelYGetter_IMPL_H
-#define EulerVelYGetter_IMPL_H
+#ifndef LaxFridrichsMomentumZ_IMPL_H
+#define LaxFridrichsMomentumZ_IMPL_H
 
 namespace TNL {
 
@@ -12,10 +12,10 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-EulerVelYGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentumZ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return String( "EulerVelYGetter< " ) +
+   return String( "LaxFridrichsMomentumZ< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";
@@ -29,7 +29,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-EulerVelYGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentumZ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -57,7 +57,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-EulerVelYGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentumZ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -80,7 +80,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-EulerVelYGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentumZ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -115,10 +115,10 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-EulerVelYGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentumZ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return String( "EulerVelYGetter< " ) +
+   return String( "LaxFridrichsMomentumZ< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";
@@ -132,14 +132,33 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-EulerVelYGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentumZ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
 {
-   //velY
+   /****
+    * Implement your explicit form of the differential operator here.
+    * The following example is the Laplace operator approximated 
+    * by the Finite difference method.
+    */
+    static_assert( MeshEntity::entityDimensions == 2, "Wrong mesh entity dimensions." ); 
+    static_assert( MeshFunction::getEntitiesDimensions() == 2, "Wrong preimage function" ); 
+    const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
+
+   //rhoVelZ
+   const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1, 0 >(); 
+   const RealType& hyInverse = entity.getMesh().template getSpaceStepsProducts< 0, -1 >(); 
    const IndexType& center = entity.getIndex(); 
-   return ( rhoVelY[ center ] / rho[ center ]);
+   const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0 >(); 
+   const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0 >(); 
+   const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >(); 
+   const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >(); 
+   return (0.25 / this->tau) * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] - 4.0 * u[ center ] ) 
+          - 0.5 * hxInverse * (( u[ east ] * this->velocityX[ east ] )
+			      -( u[ west ] * this->velocityX[ west ] ))
+          - 0.5 * hyInverse * (( u[ north ] * this->velocityY[ north ] + this->pressure[ north ] )
+			      -( u[ south ] * this->velocityY[ south ] + this->pressure[ south ]));
 }
 
 template< typename MeshReal,
@@ -150,7 +169,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-EulerVelYGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentumZ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -173,7 +192,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-EulerVelYGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentumZ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -213,10 +232,10 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-EulerVelYGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentumZ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return String( "EulerVelYGetter< " ) +
+   return String( "LaxFridrichsMomentumZ< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";
@@ -230,7 +249,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-EulerVelYGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentumZ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -244,9 +263,9 @@ operator()( const MeshFunction& u,
     static_assert( MeshFunction::getEntitiesDimensions() == 3, "Wrong preimage function" ); 
     const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
 
-   const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >(); 
-   const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts<  0, -2,  0 >(); 
-   const RealType& hzSquareInverse = entity.getMesh().template getSpaceStepsProducts<  0,  0, -2 >(); 
+   const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1,  0,  0 >(); 
+   const RealType& hyInverse = entity.getMesh().template getSpaceStepsProducts<  0, -1,  0 >(); 
+   const RealType& hzInverse = entity.getMesh().template getSpaceStepsProducts<  0,  0, -1 >(); 
    const IndexType& center = entity.getIndex(); 
    const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0,  0 >(); 
    const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0,  0 >(); 
@@ -254,9 +273,13 @@ operator()( const MeshFunction& u,
    const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1,  0 >(); 
    const IndexType& up    = neighbourEntities.template getEntityIndex<  0,  0,  1 >(); 
    const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >(); 
-   return ( u[ west ] - 2.0 * u[ center ] + u[ east ]  ) * hxSquareInverse +
-          ( u[ south ] - 2.0 * u[ center ] + u[ north ] ) * hySquareInverse +
-          ( u[ up ] - 2.0 * u[ center ] + u[ down ] ) * hzSquareInverse;
+   return (0.25 / this->tau) * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] - 4.0 * u[ center ] ) 
+          - 0.5 * hxInverse * (( u[ east ] * this->velocityX[ east ] )
+			      -( u[ west ] * this->velocityX[ west ] ))
+          - 0.5 * hyInverse * (( u[ north ] * this->velocityX[ north ] )
+			      -( u[ south ] * this->velocityX[ south ] ))
+          - 0.5 * hzInverse * (( u[ up ] * this->velocityY[ up ] + this->pressure[ up ] )
+			      -( u[ down ] * this->velocityY[ down ] + this->pressure[ down ]));
 }
 
 template< typename MeshReal,
@@ -267,7 +290,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-EulerVelYGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentumZ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -290,7 +313,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-EulerVelYGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentumZ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -326,7 +349,7 @@ updateLinearSystem( const RealType& time,
    matrixRow.setElement( 6, up,     -lambdaZ );
 }
 
-} // namespace TNL
+} //namespace TNL
 
-#endif	/* EulerVelYGetterIMPL_H */
+#endif	/* LaxFridrichsMomentumZIMPL_H */
 

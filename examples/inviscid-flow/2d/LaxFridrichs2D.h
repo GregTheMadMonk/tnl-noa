@@ -1,21 +1,23 @@
-#ifndef LaxFridrichs_H
-#define LaxFridrichs_H
+#ifndef LaxFridrichs2D_H
+#define LaxFridrichs2D_H
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
 
 #include "LaxFridrichsContinuity.h"
-#include "LaxFridrichsMomentum.h"
 #include "LaxFridrichsEnergy.h"
-#include "EulerVelGetter.h"
+#include "LaxFridrichsMomentumX.h"
+#include "LaxFridrichsMomentumY.h"
 #include "EulerPressureGetter.h"
+#include "Euler2DVelXGetter.h"
+#include "EulerVelGetter.h"
 
 namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class LaxFridrichs
+class LaxFridrichs2D
 {
    public:
       typedef Real RealType;
@@ -24,13 +26,15 @@ class LaxFridrichs
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
  
       typedef LaxFridrichsContinuity< Mesh, Real, Index > Continuity;
-      typedef LaxFridrichsMomentum< Mesh, Real, Index > Momentum;
+      typedef LaxFridrichsMomentumX< Mesh, Real, Index > MomentumX;
+      typedef LaxFridrichsMomentumY< Mesh, Real, Index > MomentumY;
       typedef LaxFridrichsEnergy< Mesh, Real, Index > Energy;
+      typedef EulerVelXGetter< Mesh, Real, Index > VelocityX;
       typedef EulerVelGetter< Mesh, Real, Index > Velocity;
       typedef EulerPressureGetter< Mesh, Real, Index > Pressure;
    
 };
 
-} // namespace TNL
+} //namespace TNL
 
-#endif	/* LaxFridrichs_H */
+#endif	/* LaxFridrichs2D_H */

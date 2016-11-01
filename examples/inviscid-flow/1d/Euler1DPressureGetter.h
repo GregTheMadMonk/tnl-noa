@@ -1,15 +1,16 @@
-#ifndef EulerVelGetter_H
-#define EulerVelGetter_H
+#ifndef EulerPressureGetter_H
+#define EulerPressureGetter_H
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class EulerVelGetter
+class EulerPressureGetter
 : public Functions::Domain< Mesh::getMeshDimensions(), Functions::MeshDomain >
 {
    public:
@@ -23,10 +24,11 @@ class EulerVelGetter
 
       static String getType();
       
-      EulerVelGetter( const MeshFunctionType& rho,
-                      const MeshFunctionType& rhoVelX,
-                      const MeshFunctionType& rhoVelY)
-      : rho( rho ), rhoVelX( rhoVelX ), rhoVelY( rhoVelY )
+      EulerPressureGetter( const MeshFunctionType& rho,
+                           const MeshFunctionType& rhoVel,
+                           const MeshFunctionType& energy,
+                           const RealType& gamma)
+      : rho( rho ), rhoVel( rhoVel ), energy( energy ), gamma( gamma )
       {}
 
       template< typename MeshEntity >
@@ -40,7 +42,9 @@ class EulerVelGetter
       __cuda_callable__
       Real operator[]( const IndexType& idx ) const
       {
-         if (this->rho[ idx ]==0) return 0; else return std::sqrt( std::pow( this->rhoVelX[ idx ] / this->rho[ idx ], 2) + std::pow( this->rhoVelY[ idx ] / this->rho[ idx ], 2) ) ;
+          //if (this->rho[ idx ]==0) return 0; else return ( this->gamma - 1.0 ) * ( this->energy[ idx ] - 0.5 * this->rhoVel[ idx ] * this->rhoVel[ idx ] / this->rho[ idx ]);
+          return ( this->gamma - 1.0 ) * this->energy[ idx ] * this->rho[ idx ];
+
       }
 
       
@@ -48,12 +52,14 @@ class EulerVelGetter
       
       const MeshFunctionType& rho;
       
-      const MeshFunctionType& rhoVelX;
+      const MeshFunctionType& rhoVel;
+      
+      const MeshFunctionType& energy;
 
-      const MeshFunctionType& rhoVelY;
+      RealType gamma;
 
 };
 
-} // namespace TNL
+} //namespace TNL
 
-#endif	/* EulerVelGetter_H */
+#endif	/* EulerPressureGetter_H */

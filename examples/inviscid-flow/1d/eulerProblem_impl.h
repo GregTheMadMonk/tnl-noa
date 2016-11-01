@@ -9,8 +9,8 @@
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsMomentum.h"
 #include "LaxFridrichsEnergy.h"
-#include "EulerVelGetter.h"
-#include "EulerPressureGetter.h"
+#include "Euler1DVelGetter.h"
+#include "Euler1DPressureGetter.h"
 
 namespace TNL {
 
@@ -103,10 +103,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                      DofVectorPointer& dofs,
                      MeshDependentDataPointer& meshDependentData )
 {
-<<<<<<< HEAD
-=======
   std::cout << std::endl << "get conditions from CML";
->>>>>>> develop
    typedef typename MeshType::Cell Cell;
    this->gamma = parameters.getParameter< RealType >( "gamma" );
    RealType rhoL = parameters.getParameter< RealType >( "left-density" );
@@ -120,19 +117,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    RealType eR = ( preR / ( rhoR * (gamma - 1) ) );
    //RealType eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * velR * velR;
    RealType x0 = parameters.getParameter< RealType >( "riemann-border" );
-<<<<<<< HEAD
-   int count = mesh.template getEntitiesCount< Cell >();
-   uRho.bind(mesh, dofs, 0);
-   uRhoVelocity.bind(mesh, dofs, count);
-   uEnergy.bind(mesh, dofs, 2 * count);
-   tnlVector < RealType, DeviceType, IndexType > data;
-   data.setSize(2*count);
-   velocity.bind( mesh, data, 0);
-   pressure.bind( mesh, data, count );  
-=======
-   std::cout << std::endl << gamma << " " << rhoL << " " << velL << " " << preL << " " << eL << " " << rhoR << " " << velR << " " << preR << " " << eR << " " << x0 << " " << gamma << std::endl;
    int count = mesh->template getEntitiesCount< Cell >();
-   std::cout << count << std::endl;
    uRho->bind( mesh, *dofs, 0);
    uRhoVelocity->bind( mesh, *dofs, count);
    uEnergy->bind( mesh, *dofs, 2 * count);
@@ -141,7 +126,6 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    velocity->bind( mesh, data, 0);
    pressure->bind( mesh, data, count );
    std::cout << std::endl << "set conditions from CML"<< std::endl;   
->>>>>>> develop
    for(IndexType i = 0; i < count; i++)
       if (i < x0 * count )
          {
@@ -159,13 +143,6 @@ setInitialCondition( const Config::ParameterContainer& parameters,
             ( *velocity )[i] = velR;
             ( *pressure )[i] = preR;
          };
-<<<<<<< HEAD
-=======
-   std::cout << "dofs = " << *dofs << std::endl;
-   getchar();
-  
-   
->>>>>>> develop
    /*
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if( ! dofs.load( initialConditionFile ) )
@@ -214,48 +191,12 @@ makeSnapshot( const RealType& time,
               DofVectorPointer& dofs,
               MeshDependentDataPointer& meshDependentData )
 {
-  std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
+   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
-<<<<<<< HEAD
-   tnlString fileName;
-=======
-   typedef typename MeshType::Cell Cell;
-   int count = mesh->template getEntitiesCount< Cell >();
-   std::ofstream vysledek;
-/*  std::cout << "pressure:" << std::endl;
-   for (IndexType i = 0; i<count; i++)std::cout << this->pressure[i] << " " << i ;
-      vysledek.open("pressure" + to_string(step) + ".txt");
-   for (IndexType i = 0; i<count; i++)
-      vysledek << 0.01*i << " " << pressure[i] << std::endl;
-   vysledek.close();
-  std::cout << " " << std::endl;
-  std::cout << "velocity:" << std::endl;
-   for (IndexType i = 0; i<count; i++)std::cout << this->velocity[i] << " " ;
-      vysledek.open("velocity" + to_string(step) + ".txt");
-   for (IndexType i = 0; i<count; i++)
-      vysledek << 0.01*i << " " << pressure[i] << std::endl;
-   vysledek.close();
-  std::cout << "energy:" << std::endl;
-   for (IndexType i = 0; i<count; i++)std::cout << this->uEnergy[i] << " " ;
-      vysledek.open("energy" + to_string(step) + ".txt");
-   for (IndexType i = 0; i<count; i++)
-      vysledek << 0.01*i << " " << uEnergy[i] << std::endl;
-   vysledek.close();
-  std::cout << " " << std::endl;
-  std::cout << "density:" << std::endl;
-   for (IndexType i = 0; i<count; i++)std::cout << this->uRho[i] << " " ;
-      vysledek.open("density" + to_string(step) + ".txt");
-   for (IndexType i = 0; i<count; i++)
-      vysledek << 0.01*i << " " << uRho[i] << std::endl;
-   vysledek.close();
-*/   getchar();
->>>>>>> develop
-
    FileName fileName;
    fileName.setExtension( "tnl" );
    fileName.setIndex( step );
    fileName.setFileNameBase( "rho-" );
-   
    if( ! uRho->save( fileName.getFileName() ) )
       return false;
    fileName.setFileNameBase( "rhoVel-" );
@@ -264,11 +205,11 @@ makeSnapshot( const RealType& time,
    fileName.setFileNameBase( "energy-" );
    if( ! uEnergy->save( fileName.getFileName() ) )
       return false;
-   FileNameBaseNumberEnding( "velocity-", step, 5, ".tnl", fileName );
-   if( ! velocity.save( fileName ) )
+   fileName.setFileNameBase( "velocity-" );
+   if( ! velocity->save( fileName.getFileName() ) )
       return false;
-   FileNameBaseNumberEnding( "pressure-", step, 5, ".tnl", fileName );
-   if( ! pressure.save( fileName ) )
+   fileName.setFileNameBase( "pressure-" );
+   if( ! pressure->save( fileName.getFileName() ) )
       return false;
    return true;
 }
@@ -286,61 +227,32 @@ getExplicitRHS( const RealType& time,
                 DofVectorPointer& _fu,
                 MeshDependentDataPointer& meshDependentData )
 {
-<<<<<<< HEAD
-    typedef typename MeshType::Cell Cell;
-    int count = mesh.template getEntitiesCount< Cell >();
-	//bind _fu
-    this->fuRho.bind(mesh, _fu, 0);
-    this->fuRhoVelocity.bind(mesh, _fu, count);
-    this->fuEnergy.bind(mesh, _fu, 2 * count);
-=======
-    std::cout << "explicitRHS" << std::endl;
     typedef typename MeshType::Cell Cell;
     int count = mesh->template getEntitiesCount< Cell >();
-	//bind _u
-    this->uRho->bind(mesh, _u, 0);
-    this->uRhoVelocity->bind(mesh, _u ,count);
-    this->uEnergy->bind(mesh, _u, 2 * count);
-		
 	//bind _fu
     this->fuRho->bind(mesh, _u, 0);
     this->fuRhoVelocity->bind(mesh, _u, count);
     this->fuEnergy->bind(mesh, _u, 2 * count);
->>>>>>> develop
 
    //generating Differential operator object
    SharedPointer< Continuity > lF1DContinuity;
    SharedPointer< Momentum > lF1DMomentum;
    SharedPointer< Energy > lF1DEnergy;
 
-<<<<<<< HEAD
-   //rho
-   this->bindDofs( mesh, _u );
-   lF1DContinuity.setTau(tau);
-   lF1DContinuity.setVelocity(velocity);
-   tnlExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity;   
-=======
-   
-   
-   std::cout << "explicitRHSrho" << std::endl;   
    //rho
    this->bindDofs( mesh, _u );
    lF1DContinuity->setTau(tau);
    lF1DContinuity->setVelocity( *velocity);
-   /*ExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity;
->>>>>>> develop
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity;
    explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF1DContinuity,
-                                                           this->boundaryCondition,
-                                                           this->rightHandSide,
+                                                           this->boundaryConditionsPointer,
+                                                           this->rightHandSidePointer,
                                                            uRho,
                                                            fuRho );
 
-<<<<<<< HEAD
-=======
-   std::cout << "explicitRHSrhovel" << std::endl;
->>>>>>> develop
+
    //rhoVelocity
    lF1DMomentum->setTau(tau);
    lF1DMomentum->setVelocity( *velocity);
@@ -354,10 +266,6 @@ getExplicitRHS( const RealType& time,
                                                            uRhoVelocity,
                                                            fuRhoVelocity );
    
-<<<<<<< HEAD
-=======
-   std::cout << "explicitRHSenergy" << std::endl;
->>>>>>> develop
    //energy
    lF1DEnergy->setTau(tau);
    lF1DEnergy->setPressure( *pressure);
@@ -420,14 +328,6 @@ postIterate( const RealType& time,
              MeshDependentDataPointer& meshDependentData )
 {
    //velocity
-<<<<<<< HEAD
-   Velocity velocityGetter( uRho, uRhoVelocity );
-   this->velocity = velocityGetter;
-   //pressure
-   Pressure pressureGetter( uRho, uRhoVelocity, uEnergy, gamma );
-   this->pressure = pressureGetter;
-   return true;
-=======
    this->velocity->setMesh( mesh );
    Velocity velocityGetter( *uRho, *uRhoVelocity );
    *this->velocity = velocityGetter;
@@ -435,7 +335,7 @@ postIterate( const RealType& time,
    this->pressure->setMesh( mesh );
    Pressure pressureGetter( *uRho, *uRhoVelocity, *uEnergy, gamma );
    *this->pressure = pressureGetter;
->>>>>>> develop
+   return true;
 }
 
 } // namespace TNL

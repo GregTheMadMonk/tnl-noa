@@ -8,8 +8,8 @@
 #include "LaxFridrichs.h"
 #include "advectionRhs.h"
 #include "advectionBuildConfigTag.h"
-#include "tnlRiemann1DBoundaryConditions.h"
-#include "tnlRiemann2DBoundaryConditions.h"
+#include "Riemann1DBoundaryConditions.h"
+#include "Riemann2DBoundaryConditions.h"
 
 using namespace TNL;
 
@@ -31,37 +31,28 @@ template< typename ConfigTag >class advectionConfig
       static void configSetup( Config::ConfigDescription & config )
       {
          config.addDelimiter( "advection settings:" );
-<<<<<<< HEAD
-         config.addEntry< tnlString >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
-            config.addEntryEnum< tnlString >( "dirichlet" );
-            config.addEntryEnum< tnlString >( "neumann" );
-            config.addEntryEnum< tnlString >( "riemann1D" );
-            config.addEntryEnum< tnlString >( "riemann2D" );
-         config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
-	 config.addEntry< double >( "artifical-viscosity", "This sets value of artifical viscosity (default 1)", 1.0);
-	 config.addEntry< tnlString >( "begin", "choose begin type", "sin");
-	    config.addEntryEnum< tnlString >( "exp");
-	    config.addEntryEnum< tnlString >( "exp_square");
-	    config.addEntryEnum< tnlString >( "square");
-	    config.addEntryEnum< tnlString >( "riemann");
-=======
          config.addEntry< String >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
             config.addEntryEnum< String >( "dirichlet" );
             config.addEntryEnum< String >( "neumann" );
+            config.addEntryEnum< String >( "riemann1D" );
+            config.addEntryEnum< String >( "riemann2D" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
 	 config.addEntry< double >( "artifical-viscosity", "This sets value of artifical viscosity (default 1)", 1.0);
 	 config.addEntry< String >( "begin", "choose begin type", "sin");
-	    config.addEntryEnum< String >( "sin");
-	    config.addEntryEnum< String >( "sin_square");
->>>>>>> develop
+	    config.addEntryEnum< String >( "exp");
+	    config.addEntryEnum< String >( "exp_square");
+	    config.addEntryEnum< String >( "square");
+	    config.addEntryEnum< String >( "riemann");
 	 config.addEntry< double >( "advection-speedX", "This sets value of advection speed in X direction (default 1)" , 1.0);
 	 config.addEntry< double >( "advection-speedY", "This sets value of advection speed in Y direction (default 1)" , 1.0);
+	 config.addEntry< double >( "advection-speedZ", "This sets value of advection speed in Z direction (default 1)" , 1.0);
 	 config.addEntry< String >( "move", "choose movement type", "advection");
 	    config.addEntryEnum< String >( "advection");
 	    config.addEntryEnum< String >( "rotation");
 	 config.addEntry< int >( "dimension", "choose movement typeproblem dimension", 1);
 	    config.addEntryEnum< int >( 1 );
 	    config.addEntryEnum< int >( 2 );
+            config.addEntryEnum< int >( 3 );
 	 config.addEntry< double >( "realSize", "Real size of scheme", 1.0);
 
          /****
@@ -114,43 +105,35 @@ class advectionSetter
              return solverStarter.template run< Problem >( parameters );
           }
           typedef Functions::MeshFunction< MeshType > MeshFunction;
-          if( boundaryConditionsType == "dirichlet" )
+	  if( boundaryConditionsType == "dirichlet" )
           {
              typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
              typedef advectionProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
-<<<<<<< HEAD
           if( boundaryConditionsType == "riemann1D" )
           {
-             typedef tnlRiemann1DBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+             typedef Operators::Riemann1DBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
              typedef advectionProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
           if( boundaryConditionsType == "riemann2D" )
           {
-             typedef tnlRiemann2DBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+             typedef Operators::Riemann2DBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
              typedef advectionProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
           if( boundaryConditionsType == "neumann" )
           {
-             typedef tnlNeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
+             typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
              typedef advectionProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
-=======
-          typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
-          typedef advectionProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
-          SolverStarter solverStarter;
-          return solverStarter.template run< Problem >( parameters );
->>>>>>> develop
-      }
-
+      return true;}
 };
 
 int main( int argc, char* argv[] )

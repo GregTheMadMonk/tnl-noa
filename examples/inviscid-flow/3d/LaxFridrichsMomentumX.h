@@ -1,5 +1,5 @@
-#ifndef EulerVelXGetter_H
-#define EulerVelXGetter_H
+#ifndef LaxFridrichsMomentumX_H
+#define LaxFridrichsMomentumX_H
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
@@ -9,14 +9,7 @@ namespace TNL {
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class EulerVelXGetter
-<<<<<<< HEAD
-: public tnlDomain< Mesh::getMeshDimensions(), MeshDomain >
-{
-   public:
-      
-      typedef Mesh MeshType;
-=======
+class LaxFridrichsMomentumX
 {
 };
 
@@ -25,44 +18,48 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelXGetter< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumX< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
->>>>>>> develop
       typedef Real RealType;
+      typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-<<<<<<< HEAD
-      static tnlString getType();
-      
-      EulerVelXGetter( const MeshFunctionType& rho,
-                      const MeshFunctionType& rhoVel)
-      : rho( rho ), rhoVel( rhoVel )
-      {}
-
-      template< typename MeshEntity >
-      __cuda_callable__
-      Real operator()( const MeshEntity& entity,
-                       const RealType& time = 0.0 ) const
-=======
       static String getType();
-      MeshFunctionType rhoVelX;
-      MeshFunctionType rho;
+      Real tau;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType velocityZ;
+      MeshFunctionType pressure;
 
-      void setRhoVelX(const MeshFunctionType& rhoVelX)
+      void setTau(const Real& tau)
       {
-          this->rhoVelX = rhoVelX;
+          this->tau = tau;
       };
 
-      void setRho(const MeshFunctionType& rho)
+      void setVelocityX(MeshFunctionType& velocityX)
       {
-          this->rho = rho;
+          this->velocityX.bind(velocityX);
       };
 
+      void setVelocityY(MeshFunctionType& velocityY)
+      {
+          this->velocityY.bind(velocityY);
+      };
+
+      void setVelocityZ(MeshFunctionType& velocityZ)
+      {
+          this->velocityZ.bind(velocityZ);
+      };
+
+      void setPressure(MeshFunctionType& pressure)
+      {
+          this->pressure.bind(pressure);
+      };
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -93,7 +90,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelXGetter< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumX< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
@@ -105,19 +102,39 @@ class EulerVelXGetter< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Inde
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static String getType();
-      MeshFunctionType rhoVelX;
-      MeshFunctionType rho;
+      Real tau;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType velocityZ;
+      MeshFunctionType pressure;
 
-      void setRhoVelX(const MeshFunctionType& rhoVelX)
->>>>>>> develop
+      void setTau(const Real& tau)
       {
-         return this->operator[]( entity.getIndex() );
-      }
-      
+          this->tau = tau;
+      };
+
+      void setVelocityX(MeshFunctionType& velocityX)
+      {
+          this->velocityX.bind(velocityX);
+      };
+
+      void setVelocityY(MeshFunctionType& velocityY)
+      {
+          this->velocityY.bind(velocityY);
+      };
+
+      void setVelocityZ(MeshFunctionType& velocityZ)
+      {
+          this->velocityZ.bind(velocityZ);
+      };
+
+      void setPressure(MeshFunctionType& pressure)
+      {
+          this->pressure.bind(pressure);
+      };
+
+      template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
-<<<<<<< HEAD
-      Real operator[]( const IndexType& idx ) const
-=======
       Real operator()( const MeshFunction& u,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
@@ -145,7 +162,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelXGetter< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumX< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
@@ -157,37 +174,64 @@ class EulerVelXGetter< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Inde
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static String getType();
-      MeshFunctionType rhoVelX;
-      MeshFunctionType rho;
+      Real tau;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType velocityZ;
+      MeshFunctionType pressure;
 
-      void setRhoVelX(const MeshFunctionType& rhoVelX)
->>>>>>> develop
+      void setTau(const Real& tau)
       {
-         if (this->rho[ idx ]==0) return 0; else return (this->rhoVel[ idx ] / this->rho[ idx ]);
-      }
+          this->tau = tau;
+      };
 
-<<<<<<< HEAD
-      
-   protected:
-      
-      const MeshFunctionType& rho;
-      
-      const MeshFunctionType& rhoVel;
-=======
+      void setVelocityX(MeshFunctionType& velocityX)
+      {
+          this->velocityX.bind(velocityX);
+      };
+
+      void setVelocityY(MeshFunctionType& velocityY)
+      {
+          this->velocityY.bind(velocityY);
+      };
+
+      void setVelocityZ(MeshFunctionType& velocityZ)
+      {
+          this->velocityZ.bind(velocityZ);
+      };
+
+      void setPressure(MeshFunctionType& pressure)
+      {
+          this->pressure.bind(pressure);
+      };
+
+      template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
+      Real operator()( const MeshFunction& u,
+                       const MeshEntity& entity,
+                       const RealType& time = 0.0 ) const;
+
       template< typename MeshEntity >
       __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
->>>>>>> develop
 
+      template< typename MeshEntity, typename Vector, typename MatrixRow >
+      __cuda_callable__
+      void updateLinearSystem( const RealType& time,
+                               const RealType& tau,
+                               const MeshType& mesh,
+                               const IndexType& index,
+                               const MeshEntity& entity,
+                               const MeshFunctionType& u,
+                               Vector& b,
+                               MatrixRow& matrixRow ) const;
 };
 
-<<<<<<< HEAD
-=======
+
 } // namespace TNL
 
-#include "EulerVelXGetter_impl.h"
+#include "LaxFridrichsMomentumX_impl.h"
 
->>>>>>> develop
-#endif	/* EulerVelXGetter_H */
+#endif	/* LaxFridrichsMomentumX_H */

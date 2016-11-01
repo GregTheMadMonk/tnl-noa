@@ -1,4 +1,4 @@
-/*** coppied and changed
+//** coppied and changed
 /***************************************************************************
                           tnlMyNeumannBoundaryConditions.h  -  description
                              -------------------
@@ -16,25 +16,31 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMyNeumannBoundaryConditions_H_
-#define TNLMyNeumannBoundaryConditions_H_
+#ifndef MYNEUMANNBOUNDARYCONDITIONS_H_
+#define MYNEUMANNBOUNDARYCONDITIONS_H_
 
-#include <operators/tnlOperator.h>
-#include <functions/tnlConstantFunction.h>
-#include <functions/tnlFunctionAdapter.h>
+#pragma once
+
+#include <TNL/Operators/Operator.h>
+#include <TNL/Functions/Analytic/Constant.h>
+#include <TNL/Functions/FunctionAdapter.h>
+#include <TNL/Functions/MeshFunction.h>
+
+namespace TNL {
+namespace Operators {
 
 template< typename Mesh,
-          typename Function = tnlConstantFunction< Mesh::getMeshDimensions(), typename Mesh::RealType >,
+          typename Function = Functions::Analytic::Constant< Mesh::getMeshDimensions(), typename Mesh::RealType >,
           int MeshEntitiesDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class tnlMyNeumannBoundaryConditions
-: public tnlOperator< Mesh,
-                      MeshBoundaryDomain,
-                      MeshEntitiesDimensions,
-                      MeshEntitiesDimensions,
-                      Real,
-                      Index >
+class MyNeumannBoundaryConditions
+: public Operator< Mesh,
+                   Functions::MeshBoundaryDomain,
+                   MeshEntitiesDimensions,
+                   MeshEntitiesDimensions,
+                   Real,
+                   Index >
 {
    public:
 
@@ -43,22 +49,24 @@ class tnlMyNeumannBoundaryConditions
       typedef Real RealType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef Index IndexType;
-
-      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      
+      typedef SharedPointer< Mesh > MeshPointer;
+      typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::VertexType VertexType;
 
       static constexpr int getMeshDimensions() { return MeshType::meshDimensions; }
 
-      static void configSetup( tnlConfigDescription& config,
-                               const tnlString& prefix = "" )
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" )
       {
          Function::configSetup( config, prefix );
       }
-      
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" )
+ 
+      bool setup( const MeshPointer& meshPointer,
+                  const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
       {
-         return this->function.setup( parameters, prefix );
+         return Functions::FunctionAdapter< MeshType, FunctionType >::template setup< MeshPointer >( this->function, meshPointer, parameters, prefix );
       }
 
       void setFunction( const Function& function )
@@ -70,7 +78,7 @@ class tnlMyNeumannBoundaryConditions
       {
          return this->function;
       }
-      
+ 
       const Function& getFunction() const
       {
          return this->function;
@@ -85,11 +93,16 @@ class tnlMyNeumannBoundaryConditions
       {
       const MeshType& mesh = entity.getMesh();
       const auto& neighbourEntities = entity.getNeighbourEntities();
-      const IndexType& index = entity.getIndex();
+      typedef typename MeshType::Cell Cell;
+      int count = mesh.template getEntitiesCount< Cell >();
+      count = std::sqrt(count);
       if( entity.getCoordinates().x() == 0 )
-         return u[ neighbourEntities.template getEntityIndex< 1 >() ];
-      else
-         return u[ neighbourEntities.template getEntityIndex< -1 >() ];  
+         return u[ neighbourEntities.template getEntityIndex< 1, 0 >() ];
+         else if( entity.getCoordinates().x() == count-1 )
+            return u[ neighbourEntities.template getEntityIndex< -1, 0 >() ];
+            else if( entity.getCoordinates().y() == 0 )
+               return u[ neighbourEntities.template getEntityIndex< 0, 1 >() ];
+               else return u[ neighbourEntities.template getEntityIndex< 0, -1 >() ];
          //tady se asi delaji okrajove podminky
          //static_assert( EntityType::getDimensions() == MeshEntitiesDimensions, "Wrong mesh entity dimensions." );
       }
@@ -118,23 +131,27 @@ class tnlMyNeumannBoundaryConditions
          typename Matrix::MatrixRow matrixRow = matrix.getRow( entity.getIndex() );
          const IndexType& index = entity.getIndex();
          matrixRow.setElement( 0, index, 1.0 );
-         b[ index ] = tnlFunctionAdapter< MeshType, Function >::getValue( this->function, entity, time );
+         b[ index ] = Functions::FunctionAdapter< MeshType, Function >::getValue( this->function, entity, time );
       }
-   
+ 
 
    protected:
 
       Function function;
-   
+ 
    //static_assert( Device::DeviceType == Function::Device::DeviceType );
 };
 
+
 template< typename Mesh,
           typename Function >
-ostream& operator << ( ostream& str, const tnlMyNeumannBoundaryConditions< Mesh, Function >& bc )
+std::ostream& operator << ( std::ostream& str, const MyNeumannBoundaryConditions< Mesh, Function >& bc )
 {
-   str << "MyMixed boundary conditions: vector = " << bc.getVector();
+   str << "MyNeumann boundary conditions: vector = " << bc.getVector();
    return str;
 }
 
-#endif /* TNLMyNeumannBoundaryConditions_H_ */
+} // namespace Operators
+} // namespace TNL
+
+#endif /* MYNEUMANNBOUNDARYCONDITIONS_H_ */

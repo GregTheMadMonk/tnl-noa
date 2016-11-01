@@ -5,7 +5,7 @@
 #include <TNL/Operators/NeumannBoundaryConditions.h>
 #include <TNL/Functions/Analytic/Constant.h>
 #include "eulerProblem.h"
-#include "LaxFridrichs2D.h"
+#include "LaxFridrichs3D.h"
 #include "eulerRhs.h"
 #include "eulerBuildConfigTag.h"
 #include "MyMixedBoundaryConditions.h"
@@ -37,23 +37,39 @@ template< typename ConfigTag >class eulerConfig
             config.addEntryEnum< String >( "mymixed" );
             config.addEntryEnum< String >( "myneumann" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
-         config.addEntry< double >( "NW-density", "This sets a value of northwest density." );
-         config.addEntry< double >( "NW-velocityX", "This sets a value of northwest x velocity." );
-         config.addEntry< double >( "NW-velocityY", "This sets a value of northwest y velocity." );
-         config.addEntry< double >( "NW-pressure", "This sets a value of northwest pressure." );
-         config.addEntry< double >( "SW-density", "This sets a value of southwest density." );
-         config.addEntry< double >( "SW-velocityX", "This sets a value of southwest x velocity." );
-         config.addEntry< double >( "SW-velocityY", "This sets a value of southwest y velocity." );
-         config.addEntry< double >( "SW-pressure", "This sets a value of southwest pressure." );
+         config.addEntry< double >( "NWU-density", "This sets a value of northwest up density." );
+         config.addEntry< double >( "NWU-velocityX", "This sets a value of northwest up x velocity." );
+         config.addEntry< double >( "NWU-velocityY", "This sets a value of northwest up y velocity." );
+         config.addEntry< double >( "NWU-pressure", "This sets a value of northwest up pressure." );
+         config.addEntry< double >( "SWU-density", "This sets a value of southwest up density." );
+         config.addEntry< double >( "SWU-velocityX", "This sets a value of southwest up x velocity." );
+         config.addEntry< double >( "SWU-velocityY", "This sets a value of southwest up y velocity." );
+         config.addEntry< double >( "SWU-pressure", "This sets a value of southwest up pressure." );
+         config.addEntry< double >( "NWD-density", "This sets a value of northwest down density." );
+         config.addEntry< double >( "NWD-velocityX", "This sets a value of northwest down x velocity." );
+         config.addEntry< double >( "NWD-velocityY", "This sets a value of northwest down y velocity." );
+         config.addEntry< double >( "NWD-pressure", "This sets a value of northwest down pressure." );
+         config.addEntry< double >( "SWD-density", "This sets a value of southwest down density." );
+         config.addEntry< double >( "SWD-velocityX", "This sets a value of southwest down x velocity." );
+         config.addEntry< double >( "SWD-velocityY", "This sets a value of southwest down y velocity." );
+         config.addEntry< double >( "SWD-pressure", "This sets a value of southwest down pressure." );
          config.addEntry< double >( "riemann-border", "This sets a position of discontinuity cross." );
-         config.addEntry< double >( "NE-density", "This sets a value of northeast density." );
-         config.addEntry< double >( "NE-velocityX", "This sets a value of northeast x velocity." );
-         config.addEntry< double >( "NE-velocityY", "This sets a value of northeast y velocity." );
-         config.addEntry< double >( "NE-pressure", "This sets a value of northeast pressure." );
-         config.addEntry< double >( "SE-density", "This sets a value of southeast density." );
-         config.addEntry< double >( "SE-velocityX", "This sets a value of southeast x velocity." );
-         config.addEntry< double >( "SE-velocityY", "This sets a value of southeast y velocity." );
-         config.addEntry< double >( "SE-pressure", "This sets a value of southeast pressure." );
+         config.addEntry< double >( "NEU-density", "This sets a value of northeast up density." );
+         config.addEntry< double >( "NEU-velocityX", "This sets a value of northeast up x velocity." );
+         config.addEntry< double >( "NEU-velocityY", "This sets a value of northeast up y velocity." );
+         config.addEntry< double >( "NEU-pressure", "This sets a value of northeast up pressure." );
+         config.addEntry< double >( "SEU-density", "This sets a value of southeast up density." );
+         config.addEntry< double >( "SEU-velocityX", "This sets a value of southeast up x velocity." );
+         config.addEntry< double >( "SEU-velocityY", "This sets a value of southeast up y velocity." );
+         config.addEntry< double >( "SEU-pressure", "This sets a value of southeast up pressure." );
+         config.addEntry< double >( "NED-density", "This sets a value of northeast down density." );
+         config.addEntry< double >( "NED-velocityX", "This sets a value of northeast down x velocity." );
+         config.addEntry< double >( "NED-velocityY", "This sets a value of northeast down y velocity." );
+         config.addEntry< double >( "NED-pressure", "This sets a value of northeast down pressure." );
+         config.addEntry< double >( "SED-density", "This sets a value of southeast down density." );
+         config.addEntry< double >( "SED-velocityX", "This sets a value of southeast down x velocity." );
+         config.addEntry< double >( "SED-velocityY", "This sets a value of southeast down y velocity." );
+         config.addEntry< double >( "SED-pressure", "This sets a value of southeast down pressure." );
          config.addEntry< double >( "gamma", "This sets a value of gamma constant." );
 
          /****
@@ -80,7 +96,7 @@ class eulerSetter
       static bool run( const Config::ParameterContainer & parameters )
       {
           enum { Dimensions = MeshType::getMeshDimensions() };
-          typedef LaxFridrichs2D< MeshType, Real, Index > ApproximateOperator;
+          typedef LaxFridrichs3D< MeshType, Real, Index > ApproximateOperator;
           typedef eulerRhs< MeshType, Real > RightHandSide;
           typedef Containers::StaticVector < MeshType::getMeshDimensions(), Real > Vertex;
 

@@ -1,17 +1,14 @@
-#pragma once
-
 #include <TNL/FileName.h>
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
-
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsEnergy.h"
 #include "LaxFridrichsMomentumX.h"
 #include "LaxFridrichsMomentumY.h"
 #include "EulerPressureGetter.h"
-#include "EulerVelXGetter.h"
+#include "Euler2DVelXGetter.h"
 #include "EulerVelGetter.h"
 
 namespace TNL {
@@ -106,139 +103,90 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                      MeshDependentDataPointer& meshDependentData )
 {
    typedef typename MeshType::Cell Cell;
-<<<<<<< HEAD
    gamma = parameters.getParameter< RealType >( "gamma" );
-   RealType rhoLu = parameters.getParameter< RealType >( "left-up-density" );
-   RealType velLuX = parameters.getParameter< RealType >( "left-up-velocityX" );
-   RealType velLuY = parameters.getParameter< RealType >( "left-up-velocityY" );
-   RealType preLu = parameters.getParameter< RealType >( "left-up-pressure" );
+   RealType rhoLu = parameters.getParameter< RealType >( "NW-density" );
+   RealType velLuX = parameters.getParameter< RealType >( "NW-velocityX" );
+   RealType velLuY = parameters.getParameter< RealType >( "NW-velocityY" );
+   RealType preLu = parameters.getParameter< RealType >( "NW-pressure" );
    RealType eLu = ( preLu / ( rhoLu * (gamma - 1) ) );
    //RealType eLu = ( preLu / (gamma - 1) ) + 0.5 * rhoLu * pow(velLuX,2)+pow(velLuY,2);
-   RealType rhoLd = parameters.getParameter< RealType >( "left-down-density" );
-   RealType velLdX = parameters.getParameter< RealType >( "left-down-velocityX" );
-   RealType velLdY = parameters.getParameter< RealType >( "left-down-velocityY" );
-   RealType preLd = parameters.getParameter< RealType >( "left-down-pressure" );
+   RealType rhoLd = parameters.getParameter< RealType >( "SW-density" );
+   RealType velLdX = parameters.getParameter< RealType >( "SW-velocityX" );
+   RealType velLdY = parameters.getParameter< RealType >( "SW-velocityY" );
+   RealType preLd = parameters.getParameter< RealType >( "SW-pressure" );
    RealType eLd = ( preLd / ( rhoLd * (gamma - 1) ) );
    //RealType eLd = ( preLd / (gamma - 1) ) + 0.5 * rhoLd * pow(velLdX,2)+pow(velLdY,2);
-   RealType rhoRu = parameters.getParameter< RealType >( "right-up-density" );
-   RealType velRuX = parameters.getParameter< RealType >( "right-up-velocityX" );
-   RealType velRuY = parameters.getParameter< RealType >( "right-up-velocityY" );
-   RealType preRu = parameters.getParameter< RealType >( "right-up-pressure" );
+   RealType rhoRu = parameters.getParameter< RealType >( "NE-density" );
+   RealType velRuX = parameters.getParameter< RealType >( "NE-velocityX" );
+   RealType velRuY = parameters.getParameter< RealType >( "NE-velocityY" );
+   RealType preRu = parameters.getParameter< RealType >( "NE-pressure" );
    RealType eRu = ( preRu / ( rhoRu * (gamma - 1) ) );
    //RealType eRu = ( preRu / (gamma - 1) ) + 0.5 * rhoRu * pow(velRuX,2)+pow(velRuY,2);
-   RealType rhoRd = parameters.getParameter< RealType >( "right-down-density" );
-   RealType velRdX = parameters.getParameter< RealType >( "right-down-velocityX" );
-   RealType velRdY = parameters.getParameter< RealType >( "right-down-velocityY" );
-   RealType preRd = parameters.getParameter< RealType >( "right-down-pressure" );
+   RealType rhoRd = parameters.getParameter< RealType >( "SE-density" );
+   RealType velRdX = parameters.getParameter< RealType >( "SE-velocityX" );
+   RealType velRdY = parameters.getParameter< RealType >( "SE-velocityY" );
+   RealType preRd = parameters.getParameter< RealType >( "SE-pressure" );
    RealType eRd = ( preRd / ( rhoRd * (gamma - 1) ) );
    //RealType eRd = ( preRd / (gamma - 1) ) + 0.5 * rhoRd * pow(velRdX,2)+pow(velRdY,2);
    RealType x0 = parameters.getParameter< RealType >( "riemann-border" );
-   int size = mesh.template getEntitiesCount< Cell >();
-   uRho.bind(mesh, dofs, 0);
-   uRhoVelocityX.bind(mesh, dofs, size);
-   uRhoVelocityY.bind(mesh, dofs, 2*size);
-   uEnergy.bind(mesh, dofs, 3*size);
-   tnlVector< RealType, DeviceType, IndexType > data;
-   data.setSize(4*size);
-   pressure.bind(mesh, data, 0);
-   velocity.bind(mesh, data, size);
-   velocityX.bind(mesh, data, 2*size);
-   velocityY.bind(mesh, data, 3*size);
-   for(IndexType j = 0; j < sqrt(size); j++)   
-      for(IndexType i = 0; i < sqrt(size); i++)
-         if ((i <= x0 * sqrt(size))&&(j <= x0 * sqrt(size)) )
-            {
-               uRho[j*sqrt(size)+i] = rhoLd;
-               uRhoVelocityX[j*sqrt(size)+i] = rhoLd * velLdX;
-               uRhoVelocityY[j*sqrt(size)+i] = rhoLd * velLdY;
-               uEnergy[j*sqrt(size)+i] = eLd;
-               velocity[j*sqrt(size)+i] = sqrt(pow(velLdX,2)+pow(velLdY,2));
-               velocityX[j*sqrt(size)+i] = velLdX;
-               velocityY[j*sqrt(size)+i] = velLdY;
-               pressure[j*sqrt(size)+i] = preLd;
-=======
-   double gamma = parameters.getParameter< double >( "gamma" );
-   double rhoL = parameters.getParameter< double >( "left-density" );
-   double velLX = parameters.getParameter< double >( "left-velocityX" );
-   double velLY = parameters.getParameter< double >( "left-velocityY" );
-   double preL = parameters.getParameter< double >( "left-pressure" );
-   double eL = ( preL / (gamma - 1) ) + 0.5 * rhoL * ::pow(velLX,2) + ::pow(velLY,2);
-   double rhoR = parameters.getParameter< double >( "right-density" );
-   double velRX = parameters.getParameter< double >( "right-velocityX" );
-   double velRY = parameters.getParameter< double >( "right-velocityY" );
-   double preR = parameters.getParameter< double >( "right-pressure" );
-   double eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * ::pow(velRX,2) + ::pow(velRY,2);
-   double x0 = parameters.getParameter< double >( "riemann-border" );
    int size = mesh->template getEntitiesCount< Cell >();
-   int size2 = size * size;
-   this->rho.bind( *dofs, 0, size2 );
-   this->rhoVelX.bind( *dofs, size2,size2);
-   this->rhoVelY.bind( *dofs, 2*size2,size2);
-   this->energy.bind( *dofs,3*size2,size2);
-   this->data.setSize( 4*size2);
-   this->pressure.bind(this->data,0,size2);
-   this->velocity.bind(this->data,size2,size2);
-   this->velocityX.bind(this->data,2*size2,size2);
-   this->velocityY.bind(this->data,3*size2,size2);
-   for(long int j = 0; j < size; j++)   
-      for(long int i = 0; i < size; i++)
-         if ((i < x0 * size)&&(j < x0 * size) )
+   uRho->bind(mesh, dofs, 0);
+   uRhoVelocityX->bind(mesh, dofs, size);
+   uRhoVelocityY->bind(mesh, dofs, 2*size);
+   uEnergy->bind(mesh, dofs, 3*size);
+   Containers::Vector< RealType, DeviceType, IndexType > data;
+   data.setSize(4*size);
+   pressure->bind(mesh, data, 0);
+   velocity->bind(mesh, data, size);
+   velocityX->bind(mesh, data, 2*size);
+   velocityY->bind(mesh, data, 3*size);
+   for(IndexType j = 0; j < std::sqrt(size); j++)   
+      for(IndexType i = 0; i < std::sqrt(size); i++)
+         if ((i <= x0 * std::sqrt(size))&&(j <= x0 * std::sqrt(size)) )
             {
-               this->rho[j*size+i] = rhoL;
-               this->rhoVelX[j*size+i] = rhoL * velLX;
-               this->rhoVelY[j*size+i] = rhoL * velLY;
-               this->energy[j*size+i] = eL;
-               this->velocity[j*size+i] = ::sqrt( ::pow(velLX,2) + ::pow(velLY,2) );
-               this->velocityX[j*size+i] = velLX;
-               this->velocityY[j*size+i] = velLY;
-               this->pressure[j*size+i] = preL;
->>>>>>> develop
+               (* uRho)[j*std::sqrt(size)+i] = rhoLd;
+               (* uRhoVelocityX)[j*std::sqrt(size)+i] = rhoLd * velLdX;
+               (* uRhoVelocityY)[j*std::sqrt(size)+i] = rhoLd * velLdY;
+               (* uEnergy)[j*std::sqrt(size)+i] = eLd;
+               (* velocity)[j*std::sqrt(size)+i] = std::sqrt(std::pow(velLdX,2)+std::pow(velLdY,2));
+               (* velocityX)[j*std::sqrt(size)+i] = velLdX;
+               (* velocityY)[j*std::sqrt(size)+i] = velLdY;
+               (* pressure)[j*std::sqrt(size)+i] = preLd;
             }
          else
-         if ((i <= x0 * sqrt(size))&&(j > x0 * sqrt(size)) )
+         if ((i <= x0 * std::sqrt(size))&&(j > x0 * std::sqrt(size)) )
             {
-<<<<<<< HEAD
-               uRho[j*sqrt(size)+i] = rhoLu;
-               uRhoVelocityX[j*sqrt(size)+i] = rhoLu * velLuX;
-               uRhoVelocityY[j*sqrt(size)+i] = rhoLu * velLuY;
-               uEnergy[j*sqrt(size)+i] = eLu;
-               velocity[j*sqrt(size)+i] = sqrt(pow(velLuX,2)+pow(velLuY,2));
-               velocityX[j*sqrt(size)+i] = velLuX;
-               velocityY[j*sqrt(size)+i] = velLuY;
-               pressure[j*sqrt(size)+i] = preLu;
+               (* uRho)[j*std::sqrt(size)+i] = rhoLu;
+               (* uRhoVelocityX)[j*std::sqrt(size)+i] = rhoLu * velLuX;
+               (* uRhoVelocityY)[j*std::sqrt(size)+i] = rhoLu * velLuY;
+               (* uEnergy)[j*std::sqrt(size)+i] = eLu;
+               (* velocity)[j*std::sqrt(size)+i] = std::sqrt(std::pow(velLuX,2)+std::pow(velLuY,2));
+               (* velocityX)[j*std::sqrt(size)+i] = velLuX;
+               (* velocityY)[j*std::sqrt(size)+i] = velLuY;
+               (* pressure)[j*std::sqrt(size)+i] = preLu;
             }
          else
-         if ((i > x0 * sqrt(size))&&(j > x0 * sqrt(size)) )
+         if ((i > x0 * std::sqrt(size))&&(j > x0 * std::sqrt(size)) )
             {
-               uRho[j*sqrt(size)+i] = rhoRu;
-               uRhoVelocityX[j*sqrt(size)+i] = rhoRu * velRuX;
-               uRhoVelocityY[j*sqrt(size)+i] = rhoRu * velRuY;
-               uEnergy[j*sqrt(size)+i] = eRu;
-               velocity[j*sqrt(size)+i] = sqrt(pow(velRuX,2)+pow(velRuY,2));
-               velocityX[j*sqrt(size)+i] = velRuX;
-               velocityY[j*sqrt(size)+i] = velRuY;
-               pressure[j*sqrt(size)+i] = preRu;
+               (* uRho)[j*std::sqrt(size)+i] = rhoRu;
+               (* uRhoVelocityX)[j*std::sqrt(size)+i] = rhoRu * velRuX;
+               (* uRhoVelocityY)[j*std::sqrt(size)+i] = rhoRu * velRuY;
+               (* uEnergy)[j*std::sqrt(size)+i] = eRu;
+               (* velocity)[j*std::sqrt(size)+i] = std::sqrt(std::pow(velRuX,2)+std::pow(velRuY,2));
+               (* velocityX)[j*std::sqrt(size)+i] = velRuX;
+               (* velocityY)[j*std::sqrt(size)+i] = velRuY;
+               (* pressure)[j*std::sqrt(size)+i] = preRu;
             }
          else
             {
-               uRho[j*sqrt(size)+i] = rhoRd;
-               uRhoVelocityX[j*sqrt(size)+i] = rhoRd * velRdX;
-               uRhoVelocityY[j*sqrt(size)+i] = rhoRd * velRdY;
-               uEnergy[j*sqrt(size)+i] = eRd;
-               velocity[j*sqrt(size)+i] = sqrt(pow(velRdX,2)+pow(velRdY,2));
-               velocityX[j*sqrt(size)+i] = velRdX;
-               velocityY[j*sqrt(size)+i] = velRdY;
-               pressure[j*sqrt(size)+i] = preRd;
-=======
-               this->rho[j*size+i] = rhoR;
-               this->rhoVelX[j*size+i] = rhoR * velRX;
-               this->rhoVelY[j*size+i] = rhoR * velRY;
-               this->energy[j*size+i] = eR;
-               this->velocity[j*size+i] = ::sqrt( ::pow(velRX,2) + :: pow(velRY,2) );
-               this->velocityX[j*size+i] = velRX;
-               this->velocityY[j*size+i] = velRY;
-               this->pressure[j*size+i] = preR;
->>>>>>> develop
+               (* uRho)[j*std::sqrt(size)+i] = rhoRd;
+               (* uRhoVelocityX)[j*std::sqrt(size)+i] = rhoRd * velRdX;
+               (* uRhoVelocityY)[j*std::sqrt(size)+i] = rhoRd * velRdY;
+               (* uEnergy)[j*std::sqrt(size)+i] = eRd;
+               (* velocity)[j*std::sqrt(size)+i] = std::sqrt(std::pow(velRdX,2)+std::pow(velRdY,2));
+               (* velocityX)[j*std::sqrt(size)+i] = velRdX;
+               (* velocityY)[j*std::sqrt(size)+i] = velRdY;
+               (* pressure)[j*std::sqrt(size)+i] = preRd;
             };
    return true; 
 }
@@ -282,48 +230,32 @@ makeSnapshot( const RealType& time,
               MeshDependentDataPointer& meshDependentData )
 {
   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
-   this->bindDofs( mesh, dofs );
-<<<<<<< HEAD
-   tnlString fileName;
-   FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
-   if( ! this->uRho.save( fileName ) )
-      return false;
-   FileNameBaseNumberEnding( "rhoVelX-", step, 5, ".tnl", fileName );
-   if( ! this->uRhoVelocityX.save( fileName ) )
-      return false;
-   FileNameBaseNumberEnding( "rhoVelY-", step, 5, ".tnl", fileName );
-   if( ! this->uRhoVelocityY.save( fileName ) )
-      return false;
-   FileNameBaseNumberEnding( "energy-", step, 5, ".tnl", fileName );
-   if( ! this->uEnergy.save( fileName ) )
-=======
    FileName fileName;
    fileName.setExtension( "tnl" );
    fileName.setIndex( step );
    fileName.setFileNameBase( "rho-" );
-   if( ! this->rho.save( fileName.getFileName() ) )
+   if( ! uRho->save( fileName.getFileName() ) )
       return false;
    fileName.setFileNameBase( "rhoVelX-" );
-   if( ! this->rhoVelX.save( fileName.getFileName() ) )
+   if( ! uRhoVelocityX->save( fileName.getFileName() ) )
       return false;
    fileName.setFileNameBase( "rhoVelY-" );
-   if( ! this->rhoVelY.save( fileName.getFileName() ) )
+   if( ! uRhoVelocityY->save( fileName.getFileName() ) )
       return false;
    fileName.setFileNameBase( "energy-" );
-   if( ! this->energy.save( fileName.getFileName() ) )
->>>>>>> develop
+   if( ! uEnergy->save( fileName.getFileName() ) )
       return false;
    fileName.setFileNameBase( "velocityX-" );
-   if( ! this->velocityX.save( fileName.getFileName() ) )
+   if( ! velocityX->save( fileName.getFileName() ) )
       return false;
    fileName.setFileNameBase( "velocityY-" );
-   if( ! this->velocityY.save( fileName.getFileName() ) )
+   if( ! velocityY->save( fileName.getFileName() ) )
       return false;
    fileName.setFileNameBase( "velocity-" );
-   if( ! this->velocity.save( fileName.getFileName() ) )
+   if( ! velocity->save( fileName.getFileName() ) )
       return false;
    fileName.setFileNameBase( "pressue-" );
-   if( ! this->pressure.save( fileName.getFileName() ) )
+   if( ! pressure->save( fileName.getFileName() ) )
       return false;
 
    return true;
@@ -343,41 +275,12 @@ getExplicitRHS( const RealType& time,
                 MeshDependentDataPointer& meshDependentData )
 {
     typedef typename MeshType::Cell Cell;
-<<<<<<< HEAD
-    int count = mesh.template getEntitiesCount< Cell >();
+    int count = mesh->template getEntitiesCount< Cell >();
    //bind MeshFunctionType fu
-   fuRho.bind( mesh, _fu, 0 );
-   fuRhoVelocityX.bind( mesh, _fu, count );
-   fuRhoVelocityY.bind( mesh, _fu, 2*count );
-   fuEnergy.bind( mesh, _fu, 3*count );
-=======
-    int count = mesh->template getEntitiesCount< Cell >()/4;
-	//bind _u
-    this->_uRho.bind( *_u,0,count);
-    this->_uRhoVelocityX.bind( *_u,count,count);
-    this->_uRhoVelocityY.bind( *_u,2 * count,count);
-    this->_uEnergy.bind( *_u,3 * count,count);
-		
-	//bind _fu
-    this->_fuRho.bind( *_u,0,count);
-    this->_fuRhoVelocityX.bind( *_u,count,count);
-    this->_fuRhoVelocityY.bind( *_u,2 * count,count);
-    this->_fuEnergy.bind( *_u,3 * count,count);
-   //bind MeshFunctionType
-   MeshFunctionPointer velocity( mesh, this->velocity );
-   MeshFunctionPointer velocityX( mesh, this->velocityX );
-   MeshFunctionPointer velocityY( mesh, this->velocityY );
-   MeshFunctionPointer pressure( mesh, this->pressure );
-   MeshFunctionPointer uRho( mesh, _uRho ); 
-   MeshFunctionPointer fuRho( mesh, _fuRho );
-   MeshFunctionPointer uRhoVelocityX( mesh, _uRhoVelocityX ); 
-   MeshFunctionPointer fuRhoVelocityX( mesh, _fuRhoVelocityX );
-   MeshFunctionPointer uRhoVelocityY( mesh, _uRhoVelocityY ); 
-   MeshFunctionPointer fuRhoVelocityY( mesh, _fuRhoVelocityY );
-   MeshFunctionPointer uEnergy( mesh, _uEnergy ); 
-   MeshFunctionPointer fuEnergy( mesh, _fuEnergy );
->>>>>>> develop
-   //generate Operators
+   fuRho->bind( mesh, _fu, 0 );
+   fuRhoVelocityX->bind( mesh, _fu, count );
+   fuRhoVelocityY->bind( mesh, _fu, 2*count );
+   fuEnergy->bind( mesh, _fu, 3*count );
    SharedPointer< Continuity > lF2DContinuity;
    SharedPointer< MomentumX > lF2DMomentumX;
    SharedPointer< MomentumY > lF2DMomentumY;
@@ -514,72 +417,26 @@ postIterate( const RealType& time,
              DofVectorPointer& dofs,
              MeshDependentDataPointer& meshDependentData )
 {
-<<<<<<< HEAD
 
    //velocityX
-   VelocityX velocityXGetter( uRho, uRhoVelocityX );
-   this->velocityX = velocityXGetter;
+   this->velocityX->setMesh( mesh );
+   VelocityX velocityXGetter( *uRho, *uRhoVelocityX );
+   *this->velocityX = velocityXGetter;
 
    //velocityY
-   VelocityX velocityYGetter( uRho, uRhoVelocityY );
-   this->velocityY = velocityYGetter;
+   this->velocityY->setMesh( mesh );
+   VelocityX velocityYGetter( *uRho, *uRhoVelocityY );
+   *this->velocityY = velocityYGetter;
 
    //velocity
-   Velocity velocityGetter( uRho, uRhoVelocityX, uRhoVelocityY );
-   this->velocity = velocityGetter;
+   this->velocity->setMesh( mesh );
+   Velocity velocityGetter( *uRho, *uRhoVelocityX, *uRhoVelocityY );
+   *this->velocity = velocityGetter;
 
    //pressure
-   Pressure pressureGetter( uRho, uRhoVelocityX, uRhoVelocityY, uEnergy, gamma );
-   this->pressure = pressureGetter;
-=======
-    typedef typename MeshType::Cell Cell;
-    int count = mesh->template getEntitiesCount< Cell >()/4;
-	//bind _u
-    this->_uRho.bind( *dofs, 0, count);
-    this->_uRhoVelocityX.bind( *dofs, count, count);
-    this->_uRhoVelocityY.bind( *dofs, 2 * count, count);
-    this->_uEnergy.bind( *dofs, 3 * count, count);
-
-   MeshFunctionType velocity( mesh, this->velocity );
-   MeshFunctionType velocityX( mesh, this->velocityX );
-   MeshFunctionType velocityY( mesh, this->velocityY );
-   MeshFunctionType pressure( mesh, this->pressure );
-   MeshFunctionType uRho( mesh, _uRho ); 
-   MeshFunctionType uRhoVelocityX( mesh, _uRhoVelocityX ); 
-   MeshFunctionType uRhoVelocityY( mesh, _uRhoVelocityY ); 
-   MeshFunctionType uEnergy( mesh, _uEnergy ); 
-   //Generating differential operators
-   Velocity euler2DVelocity;
-   VelocityX euler2DVelocityX;
-   VelocityY euler2DVelocityY;
-   Pressure euler2DPressure;
-
-   //velocityX
-   euler2DVelocityX.setRhoVelX(uRhoVelocityX);
-   euler2DVelocityX.setRho(uRho);
-//   OperatorFunction< VelocityX, MeshFunction, void, true > OFVelocityX;
-//   velocityX = OFVelocityX;
-
-   //velocityY
-   euler2DVelocityY.setRhoVelY(uRhoVelocityY);
-   euler2DVelocityY.setRho(uRho);
-//   OperatorFunction< VelocityY, MeshFunction, void, time > OFVelocityY;
-//   velocityY = OFVelocityY;
-
-   //velocity
-   euler2DVelocity.setVelX(velocityX);
-   euler2DVelocity.setVelY(velocityY);
-//   OperatorFunction< Velocity, MeshFunction, void, time > OFVelocity;
-//   velocity = OFVelocity;
-
-   //pressure
-   euler2DPressure.setGamma(gamma);
-   euler2DPressure.setVelocity(velocity);
-   euler2DPressure.setEnergy(uEnergy);
-   euler2DPressure.setRho(uRho);
-//   OperatorFunction< euler2DPressure, MeshFunction, void, time > OFPressure;
-//   pressure = OFPressure;
->>>>>>> develop
+   this->pressure->setMesh( mesh );
+   Pressure pressureGetter( *uRho, *uRhoVelocityX, *uRhoVelocityY, *uEnergy, gamma );
+   *this->pressure = pressureGetter;
 
    return true;
 }

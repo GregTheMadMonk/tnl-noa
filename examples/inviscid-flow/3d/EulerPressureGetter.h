@@ -27,9 +27,10 @@ class EulerPressureGetter
       EulerPressureGetter( const MeshFunctionType& rho,
                            const MeshFunctionType& rhoVelX,
                            const MeshFunctionType& rhoVelY,
+                           const MeshFunctionType& rhoVelZ,
                            const MeshFunctionType& energy,
                            const RealType& gamma )
-      : rho( rho ), rhoVelX( rhoVelX ), rhoVelY( rhoVelY ), energy( energy ), gamma( gamma )
+      : rho( rho ), rhoVelX( rhoVelX ), rhoVelY( rhoVelY ), rhoVelZ( rhoVelZ ), energy( energy ), gamma( gamma )
       {}
 
       template< typename MeshEntity >
@@ -45,7 +46,7 @@ class EulerPressureGetter
             {
 /*         if (this->rho[ idx ]==0) return 0; 
          else return ( this->gamma - 1.0 ) * ( this->energy[ idx ] - 0.5 * this->rho[ idx ] * 
-         ( this->rhoVelX[ idx ] / this->rho[ idx ] + this->rhoVelY[ idx ] / this->rho[ idx ]) );
+         ( std::pow(this->rhoVelX[ idx ] / this->rho[ idx ],2) + std::pow(this->rhoVelY[ idx ] / this->rho[ idx ],2) + std::pow(this->rhoVelZ[ idx ] / this->rho[ idx ],2) );
 */       return ( this->gamma - 1.0 ) * ( this->energy[ idx ] * this->rho[ idx ] );
       }
 
@@ -57,6 +58,8 @@ class EulerPressureGetter
       const MeshFunctionType& rhoVelX;
       
       const MeshFunctionType& rhoVelY;
+
+      const MeshFunctionType& rhoVelZ;
 
       const MeshFunctionType& energy;
 

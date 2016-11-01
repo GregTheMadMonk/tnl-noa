@@ -1,16 +1,15 @@
-#ifndef EulerPressureGetter_H
-#define EulerPressureGetter_H
+#ifndef EulerVelGetter_H
+#define EulerVelGetter_H
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class EulerPressureGetter
+class EulerVelGetter
 : public Functions::Domain< Mesh::getMeshDimensions(), Functions::MeshDomain >
 {
    public:
@@ -24,11 +23,11 @@ class EulerPressureGetter
 
       static String getType();
       
-      EulerPressureGetter( const MeshFunctionType& rho,
-                           const MeshFunctionType& rhoVel,
-                           const MeshFunctionType& energy,
-                           const RealType& gamma )
-      : rho( rho ), rhoVel( rhoVel ), energy( energy ), gamma( gamma )
+      EulerVelGetter( const MeshFunctionType& rho,
+                      const MeshFunctionType& rhoVelX,
+                      const MeshFunctionType& rhoVelY,
+                      const MeshFunctionType& rhoVelZ)
+      : rho( rho ), rhoVelX( rhoVelX ), rhoVelY( rhoVelY ), rhoVelZ( rhoVelZ )
       {}
 
       template< typename MeshEntity >
@@ -42,24 +41,22 @@ class EulerPressureGetter
       __cuda_callable__
       Real operator[]( const IndexType& idx ) const
       {
-          //if (this->rho[ idx ]==0) return 0; else return ( this->gamma - 1.0 ) * ( this->energy[ idx ] - 0.5 * this->rhoVel[ idx ] * this->rhoVel[ idx ] / this->rho[ idx ]);
-          return ( this->gamma - 1.0 ) * this->energy[ idx ] * this->rho[ idx ];
-
+         if (this->rho[ idx ]==0) return 0; else return std::sqrt( std::pow( this->rhoVelX[ idx ] / this->rho[ idx ], 2) + std::pow( this->rhoVelY[ idx ] / this->rho[ idx ], 2) + std::pow( this->rhoVelZ[ idx ] / this->rho[ idx ], 2) ) ;
       }
 
       
    protected:
       
-      Real gamma;
-      
       const MeshFunctionType& rho;
       
-      const MeshFunctionType& rhoVel;
-      
-      const MeshFunctionType& energy;
+      const MeshFunctionType& rhoVelX;
+
+      const MeshFunctionType& rhoVelY;
+
+      const MeshFunctionType& rhoVelZ;
 
 };
 
-} //namespace TNL
+} // namespace TNL
 
-#endif	/* EulerPressureGetter_H */
+#endif	/* EulerVelGetter_H */

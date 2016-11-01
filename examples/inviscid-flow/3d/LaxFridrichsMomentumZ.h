@@ -1,5 +1,5 @@
-#ifndef EulerVelYGetter_H
-#define EulerVelYGetter_H
+#ifndef LaxFridrichsMomentumZ_H
+#define LaxFridrichsMomentumZ_H
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
@@ -9,7 +9,7 @@ namespace TNL {
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class EulerVelYGetter
+class LaxFridrichsMomentumZ
 {
 };
 
@@ -18,7 +18,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelYGetter< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumZ< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
@@ -30,17 +30,35 @@ class EulerVelYGetter< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Inde
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static String getType();
-      MeshFunctionType rhoVelY;
-      MeshFunctionType rho;
+      Real tau;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType velocityZ;
+      MeshFunctionType pressure;
 
-      void setRhoVelY(const MeshFunctionType& rhoVelY)
+      void setTau(const Real& tau)
       {
-          this->rhoVelY = rhoVelY;
+          this->tau = tau;
       };
 
-      void setRho(const MeshFunctionType& rho)
+      void setVelocityX(MeshFunctionType& velocityX)
       {
-          this->rho = rho;
+          this->velocityX.bind(velocityX);
+      };
+
+      void setVelocityY(MeshFunctionType& velocityY)
+      {
+          this->velocityY.bind(velocityY);
+      };
+
+      void setVelocityZ(MeshFunctionType& velocityZ)
+      {
+          this->velocityZ.bind(velocityZ);
+      };
+
+      void setPressure(MeshFunctionType& pressure)
+      {
+          this->pressure.bind(pressure);
       };
 
       template< typename MeshFunction, typename MeshEntity >
@@ -72,7 +90,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelYGetter< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumZ< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
@@ -84,17 +102,35 @@ class EulerVelYGetter< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Inde
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static String getType();
-      MeshFunctionType rhoVelY;
-      MeshFunctionType rho;
+      Real tau;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType velocityZ;
+      MeshFunctionType pressure;
 
-      void setRhoVelY(const MeshFunctionType& rhoVelY)
+      void setTau(const Real& tau)
       {
-          this->rhoVelY = rhoVelY;
+          this->tau = tau;
       };
 
-      void setRho(const MeshFunctionType& rho)
+      void setVelocityX(MeshFunctionType& velocityX)
       {
-          this->rho = rho;
+          this->velocityX.bind(velocityX);
+      };
+
+      void setVelocityY(MeshFunctionType& velocityY)
+      {
+          this->velocityY.bind(velocityY);
+      };
+
+      void setVelocityZ(MeshFunctionType& velocityZ)
+      {
+          this->velocityZ.bind(velocityZ);
+      };
+
+      void setPressure(MeshFunctionType& pressure)
+      {
+          this->pressure.bind(pressure);
       };
 
       template< typename MeshFunction, typename MeshEntity >
@@ -126,7 +162,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelYGetter< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumZ< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
@@ -138,17 +174,35 @@ class EulerVelYGetter< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Inde
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static String getType();
-      MeshFunctionType rhoVelY;
-      MeshFunctionType rho;
+      Real tau;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType velocityZ;
+      MeshFunctionType pressure;
 
-      void setRhoVelY(const MeshFunctionType& rhoVelY)
+      void setTau(const Real& tau)
       {
-          this->rhoVelY = rhoVelY;
+          this->tau = tau;
       };
 
-      void setRho(const MeshFunctionType& rho)
+      void setVelocityX(MeshFunctionType& velocityX)
       {
-          this->rho = rho;
+          this->velocityX.bind(velocityX);
+      };
+
+      void setVelocityY(MeshFunctionType& velocityY)
+      {
+          this->velocityY.bind(velocityY);
+      };
+
+      void setVelocityZ(MeshFunctionType& velocityZ)
+      {
+          this->velocityZ.bind(velocityZ);
+      };
+
+      void setPressure(MeshFunctionType& pressure)
+      {
+          this->pressure.bind(pressure);
       };
 
       template< typename MeshFunction, typename MeshEntity >
@@ -175,9 +229,8 @@ class EulerVelYGetter< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Inde
                                MatrixRow& matrixRow ) const;
 };
 
-} //namespace TNL
+} // namespace TNL
 
+#include "LaxFridrichsMomentumZ_impl.h"
 
-#include "EulerVelYGetter_impl.h"
-
-#endif	/* EulerVelYGetter_H */
+#endif	/* LaxFridrichsMomentumZ_H */

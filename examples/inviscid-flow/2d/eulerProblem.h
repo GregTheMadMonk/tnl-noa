@@ -44,11 +44,7 @@ class eulerProblem:
       typedef typename DifferentialOperator::VelocityX VelocityX;
       typedef typename DifferentialOperator::Pressure Pressure;
 
-<<<<<<< HEAD
-      static tnlString getTypeStatic();
-=======
       static String getTypeStatic();
->>>>>>> develop
 
       String getPrologHeader() const;
 
@@ -103,47 +99,17 @@ class eulerProblem:
 
    protected:
 
-<<<<<<< HEAD
-      DifferentialOperator differentialOperator;
-      BoundaryCondition boundaryCondition;
-      RightHandSide rightHandSide;
-
-      MeshFunctionType uRho, uRhoVelocityX, uRhoVelocityY, uEnergy;
-      MeshFunctionType fuRho, fuRhoVelocityX, fuRhoVelocityY, fuEnergy;
-      
-      MeshFunctionType pressure, velocity, velocityX, velocityY;
-      
-      RealType gamma;
-
-=======
       DifferentialOperatorPointer differentialOperatorPointer;
       BoundaryConditionPointer boundaryConditionPointer;
       RightHandSidePointer rightHandSidePointer;
+
+      MeshFunctionPointer uRho, uRhoVelocityX, uRhoVelocityY, uEnergy;
+      MeshFunctionPointer fuRho, fuRhoVelocityX, fuRhoVelocityY, fuEnergy;
       
-      //definition
-	   Containers::Vector< RealType, DeviceType, IndexType > _uRho;
-	   Containers::Vector< RealType, DeviceType, IndexType > _uRhoVelocityX;
-	   Containers::Vector< RealType, DeviceType, IndexType > _uRhoVelocityY;
-	   Containers::Vector< RealType, DeviceType, IndexType > _uEnergy;
-
-	   Containers::Vector< RealType, DeviceType, IndexType > _fuRho;
-	   Containers::Vector< RealType, DeviceType, IndexType > _fuRhoVelocityX;
-	   Containers::Vector< RealType, DeviceType, IndexType > _fuRhoVelocityY;
-	   Containers::Vector< RealType, DeviceType, IndexType > _fuEnergy;
-
-      Containers::Vector< RealType, DeviceType, IndexType > rho;
-      Containers::Vector< RealType, DeviceType, IndexType > rhoVelX;
-      Containers::Vector< RealType, DeviceType, IndexType > rhoVelY;
-      Containers::Vector< RealType, DeviceType, IndexType > energy;
-      Containers::Vector< RealType, DeviceType, IndexType > data;
-      Containers::Vector< RealType, DeviceType, IndexType > pressure;
-      Containers::Vector< RealType, DeviceType, IndexType > velocity;
-      Containers::Vector< RealType, DeviceType, IndexType > velocityX;
-      Containers::Vector< RealType, DeviceType, IndexType > velocityY;
-      double gamma;
-
+      MeshFunctionPointer pressure, velocity, velocityX, velocityY;
       
->>>>>>> develop
+      RealType gamma;
+
 };
 
 } // namespace TNL

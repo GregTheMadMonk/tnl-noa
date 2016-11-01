@@ -1,5 +1,5 @@
-#ifndef LaxFridrichs_H
-#define LaxFridrichs_H
+#ifndef LaxFridrichsMomentumY_H
+#define LaxFridrichsMomentumY_H
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
@@ -9,7 +9,7 @@ namespace TNL {
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class LaxFridrichs
+class LaxFridrichsMomentumY
 {
 };
 
@@ -18,7 +18,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichs< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumY< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
@@ -28,38 +28,38 @@ class LaxFridrichs< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
+
+      static String getType();
       Real tau;
-      Real artificalViscosity;
-      MeshFunctionType advectionSpeedX;
-      MeshFunctionType advectionSpeedY;
-      MeshFunctionType advectionSpeedZ;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType velocityZ;
+      MeshFunctionType pressure;
 
-      void setAdvectionSpeedZ(MeshFunctionType& advectionSpeed)
-      {
-	   this->advectionSpeedZ.bind(advectionSpeed);
-      }
-
-      void setAdvectionSpeedY(MeshFunctionType& advectionSpeed)
-      {
-	   this->advectionSpeedY.bind(advectionSpeed);
-      }
-
-      void setAdvectionSpeedX(MeshFunctionType& advectionSpeed)
-      {
-	   this->advectionSpeedX.bind(advectionSpeed);
-      }
-
-      void setViscosity(const Real& artificalViscosity)
-      {
-	   this->artificalViscosity = artificalViscosity;
-      }
-      
       void setTau(const Real& tau)
       {
           this->tau = tau;
       };
 
-      static String getType();
+      void setVelocityX(MeshFunctionType& velocityX)
+      {
+          this->velocityX.bind(velocityX);
+      };
+
+      void setVelocityY(MeshFunctionType& velocityY)
+      {
+          this->velocityY.bind(velocityY);
+      };
+
+      void setVelocityZ(MeshFunctionType& velocityZ)
+      {
+          this->velocityZ.bind(velocityZ);
+      };
+
+      void setPressure(MeshFunctionType& pressure)
+      {
+          this->pressure.bind(pressure);
+      };
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -90,7 +90,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichs< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumY< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
@@ -100,41 +100,38 @@ class LaxFridrichs< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
+
+      static String getType();
       Real tau;
-      Real artificalViscosity;
-      MeshFunctionType advectionSpeedX;
-      MeshFunctionType advectionSpeedY;
-      MeshFunctionType advectionSpeedZ;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType velocityZ;
+      MeshFunctionType pressure;
 
-
-      void setAdvectionSpeedZ(MeshFunctionType& advectionSpeed)
-      {
-	   this->advectionSpeedZ.bind(advectionSpeed);
-      }
-
-
-      void setAdvectionSpeedY(MeshFunctionType& advectionSpeed)
-      {
-	   this->advectionSpeedY.bind(advectionSpeed);
-      }
-
-
-      void setAdvectionSpeedX(MeshFunctionType& advectionSpeed)
-      {
-	   this->advectionSpeedX.bind(advectionSpeed);
-      }
-
-      void setViscosity(const Real& artificalViscosity)
-      {
-	   this->artificalViscosity = artificalViscosity;
-      }
-      
       void setTau(const Real& tau)
       {
           this->tau = tau;
       };
 
-      static String getType();
+      void setVelocityX(MeshFunctionType& velocityX)
+      {
+          this->velocityX.bind(velocityX);
+      };
+
+      void setVelocityY(MeshFunctionType& velocityY)
+      {
+          this->velocityY.bind(velocityY);
+      };
+
+      void setVelocityZ(MeshFunctionType& velocityZ)
+      {
+          this->velocityZ.bind(velocityZ);
+      };
+
+      void setPressure(MeshFunctionType& pressure)
+      {
+          this->pressure.bind(pressure);
+      };
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -165,7 +162,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichs< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumY< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
@@ -175,40 +172,38 @@ class LaxFridrichs< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
+
+      static String getType();
       Real tau;
-      Real artificalViscosity;
-      MeshFunctionType advectionSpeedX;
-      MeshFunctionType advectionSpeedY;
-      MeshFunctionType advectionSpeedZ;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType velocityZ;
+      MeshFunctionType pressure;
 
-      void setAdvectionSpeedZ(MeshFunctionType& advectionSpeed)
-      {
-	   this->advectionSpeedZ.bind(advectionSpeed);
-      }
-
-
-      void setAdvectionSpeedY(MeshFunctionType& advectionSpeed)
-      {
-	   this->advectionSpeedY.bind(advectionSpeed);
-      }
-
-
-      void setAdvectionSpeedX(MeshFunctionType& advectionSpeed)
-      {
-	   this->advectionSpeedX.bind(advectionSpeed);
-      }
-
-      void setViscosity(const Real& artificalViscosity)
-      {
-	   this->artificalViscosity = artificalViscosity;
-      }
-      
       void setTau(const Real& tau)
       {
           this->tau = tau;
       };
 
-      static String getType();
+      void setVelocityX(MeshFunctionType& velocityX)
+      {
+          this->velocityX.bind(velocityX);
+      };
+
+      void setVelocityY(MeshFunctionType& velocityY)
+      {
+          this->velocityY.bind(velocityY);
+      };
+
+      void setVelocityZ(MeshFunctionType& velocityZ)
+      {
+          this->velocityZ.bind(velocityZ);
+      };
+
+      void setPressure(MeshFunctionType& pressure)
+      {
+          this->pressure.bind(pressure);
+      };
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -236,7 +231,6 @@ class LaxFridrichs< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 
 } // namespace TNL
 
+#include "LaxFridrichsMomentumY_impl.h"
 
-#include "LaxFridrichs_impl.h"
-
-#endif	/* LaxFridrichs_H */
+#endif	/* LaxFridrichsMomentumY_H */

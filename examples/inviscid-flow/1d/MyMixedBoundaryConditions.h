@@ -1,4 +1,4 @@
-/*** coppied and changed
+// coppied and changed
 /***************************************************************************
                           tnlMyMixedBoundaryConditions.h  -  description
                              -------------------
@@ -16,25 +16,31 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMyMixedBOUNDARYCONDITIONS_H_
-#define TNLMyMixedBOUNDARYCONDITIONS_H_
+#ifndef MYMIXEDBOUNDARYCONDITIONS_H_
+#define MYMIXEDBOUNDARYCONDITIONS_H_
 
-#include <operators/tnlOperator.h>
-#include <functions/tnlConstantFunction.h>
-#include <functions/tnlFunctionAdapter.h>
+#pragma once
+
+#include <TNL/Operators/Operator.h>
+#include <TNL/Functions/Analytic/Constant.h>
+#include <TNL/Functions/FunctionAdapter.h>
+#include <TNL/Functions/MeshFunction.h>
+
+namespace TNL {
+namespace Operators {
 
 template< typename Mesh,
-          typename Function = tnlConstantFunction< Mesh::getMeshDimensions(), typename Mesh::RealType >,
+          typename Function = Functions::Analytic::Constant< Mesh::getMeshDimensions(), typename Mesh::RealType >,
           int MeshEntitiesDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class tnlMyMixedBoundaryConditions
-: public tnlOperator< Mesh,
-                      MeshBoundaryDomain,
-                      MeshEntitiesDimensions,
-                      MeshEntitiesDimensions,
-                      Real,
-                      Index >
+class MyMixedBoundaryConditions
+: public Operator< Mesh,
+                   Functions::MeshBoundaryDomain,
+                   MeshEntitiesDimensions,
+                   MeshEntitiesDimensions,
+                   Real,
+                   Index >
 {
    public:
 
@@ -43,22 +49,24 @@ class tnlMyMixedBoundaryConditions
       typedef Real RealType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef Index IndexType;
-
-      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      
+      typedef SharedPointer< Mesh > MeshPointer;
+      typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::VertexType VertexType;
 
       static constexpr int getMeshDimensions() { return MeshType::meshDimensions; }
 
-      static void configSetup( tnlConfigDescription& config,
-                               const tnlString& prefix = "" )
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" )
       {
          Function::configSetup( config, prefix );
       }
-      
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" )
+ 
+      bool setup( const MeshPointer& meshPointer,
+                  const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
       {
-         return this->function.setup( parameters, prefix );
+         return Functions::FunctionAdapter< MeshType, FunctionType >::template setup< MeshPointer >( this->function, meshPointer, parameters, prefix );
       }
 
       void setFunction( const Function& function )
@@ -66,16 +74,11 @@ class tnlMyMixedBoundaryConditions
          this->function = function;
       }
 
-      void setX0( const RealType& x0 )
-      {
-         this->x0 = x0;
-      }
-
       Function& getFunction()
       {
          return this->function;
       }
-      
+ 
       const Function& getFunction() const
       {
          return this->function;
@@ -90,32 +93,11 @@ class tnlMyMixedBoundaryConditions
       {
       const MeshType& mesh = entity.getMesh();
       const auto& neighbourEntities = entity.getNeighbourEntities();
-      typedef typename MeshType::Cell Cell;
-      int count = mesh.template getEntitiesCount< Cell >();
-      count = sqrt(count);
+      const IndexType& index = entity.getIndex();
       if( entity.getCoordinates().x() == 0 )
-      {
-         if ( entity.getCoordinates().y() < count * x0 )
-            return u[ neighbourEntities.template getEntityIndex< 0, 0 >() ];
-         else if( entity.getCoordinates().y() < count -1 )
-            return u[ neighbourEntities.template getEntityIndex< 1, 0 >() ];
-         else if( entity.getCoordinates().y() == count )
-            return u[ neighbourEntities.template getEntityIndex< 0, 0 >() ];
-      }
-      else if( entity.getCoordinates().y() == 0 )
-      {
-         if ( entity.getCoordinates().x() < count * x0 )
-            return u[ neighbourEntities.template getEntityIndex< 0, 0 >() ];
-         else if( entity.getCoordinates().x() < count -1 )
-            return u[ neighbourEntities.template getEntityIndex< 0, 1 >() ];
-         else if( entity.getCoordinates().y() == count )
-            return u[ neighbourEntities.template getEntityIndex< 0, 0 >() ];
-      }
-      else if( entity.getCoordinates().x() == count ) 
-            return u[ neighbourEntities.template getEntityIndex< -1, 0 >() ];
-      else if( entity.getCoordinates().y() == count ) 
-            return u[ neighbourEntities.template getEntityIndex< 0, -1 >() ];
-      else return u[ neighbourEntities.template getEntityIndex< 0, 0 >() ];
+         return u[ neighbourEntities.template getEntityIndex< 0 >() ];
+      else
+         return u[ neighbourEntities.template getEntityIndex< -1 >() ];  
          //tady se asi delaji okrajove podminky
          //static_assert( EntityType::getDimensions() == MeshEntitiesDimensions, "Wrong mesh entity dimensions." );
       }
@@ -144,25 +126,27 @@ class tnlMyMixedBoundaryConditions
          typename Matrix::MatrixRow matrixRow = matrix.getRow( entity.getIndex() );
          const IndexType& index = entity.getIndex();
          matrixRow.setElement( 0, index, 1.0 );
-         b[ index ] = tnlFunctionAdapter< MeshType, Function >::getValue( this->function, entity, time );
+         b[ index ] = Functions::FunctionAdapter< MeshType, Function >::getValue( this->function, entity, time );
       }
-   
+ 
 
    protected:
 
       Function function;
-      
-      RealType x0 = 0.3;
-   
+ 
    //static_assert( Device::DeviceType == Function::Device::DeviceType );
 };
 
+
 template< typename Mesh,
           typename Function >
-ostream& operator << ( ostream& str, const tnlMyMixedBoundaryConditions< Mesh, Function >& bc )
+std::ostream& operator << ( std::ostream& str, const MyMixedBoundaryConditions< Mesh, Function >& bc )
 {
    str << "MyMixed boundary conditions: vector = " << bc.getVector();
    return str;
 }
 
-#endif /* TNLMyMixedBOUNDARYCONDITIONS_H_ */
+} // namespace Operators
+} // namespace TNL
+
+#endif /* MYMIXEDBOUNDARYCONDITIONS_H_ */

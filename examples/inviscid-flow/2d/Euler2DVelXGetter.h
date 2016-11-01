@@ -1,5 +1,5 @@
-#ifndef EulerVelGetter_H
-#define EulerVelGetter_H
+#ifndef EulerVelXGetter_H
+#define EulerVelXGetter_H
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
@@ -9,7 +9,7 @@ namespace TNL {
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class EulerVelGetter
+class EulerVelXGetter
 : public Functions::Domain< Mesh::getMeshDimensions(), Functions::MeshDomain >
 {
    public:
@@ -23,10 +23,9 @@ class EulerVelGetter
 
       static String getType();
       
-      EulerVelGetter( const MeshFunctionType& rho,
-                      const MeshFunctionType& rhoVelX,
-                      const MeshFunctionType& rhoVelY)
-      : rho( rho ), rhoVelX( rhoVelX ), rhoVelY( rhoVelY )
+      EulerVelXGetter( const MeshFunctionType& rho,
+                       const MeshFunctionType& rhoVel)
+      : rho( rho ), rhoVel( rhoVel )
       {}
 
       template< typename MeshEntity >
@@ -40,7 +39,7 @@ class EulerVelGetter
       __cuda_callable__
       Real operator[]( const IndexType& idx ) const
       {
-         if (this->rho[ idx ]==0) return 0; else return std::sqrt( std::pow( this->rhoVelX[ idx ] / this->rho[ idx ], 2) + std::pow( this->rhoVelY[ idx ] / this->rho[ idx ], 2) ) ;
+          if (this->rho[ idx ]==0) return 0; else return this->rhoVel[ idx ] / this->rho[ idx ];
       }
 
       
@@ -48,12 +47,10 @@ class EulerVelGetter
       
       const MeshFunctionType& rho;
       
-      const MeshFunctionType& rhoVelX;
-
-      const MeshFunctionType& rhoVelY;
+      const MeshFunctionType& rhoVel;
 
 };
 
 } // namespace TNL
 
-#endif	/* EulerVelGetter_H */
+#endif	/* EulerVelXGetter_H */

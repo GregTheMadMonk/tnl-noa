@@ -1,5 +1,5 @@
-#ifndef EulerVelGetter_IMPL_H
-#define EulerVelGetter_IMPL_H
+#ifndef LaxFridrichsContinuity_IMPL_H
+#define LaxFridrichsContinuity_IMPL_H
 
 namespace TNL {
 
@@ -12,10 +12,10 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-EulerVelGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsContinuity< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return String( "EulerVelGetter< " ) +
+   return String( "LaxFridrichsContinuity< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";
@@ -29,7 +29,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-EulerVelGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsContinuity< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -42,10 +42,10 @@ operator()( const MeshFunction& u,
     static_assert( MeshEntity::entityDimensions == 1, "Wrong mesh entity dimensions." ); 
     static_assert( MeshFunction::getEntitiesDimensions() == 1, "Wrong preimage function" ); 
     const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
-   const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -1 >(); 
-   const IndexType& center = entity.getIndex(); 
-   const IndexType& east = neighbourEntities.template getEntityIndex< 1 >(); 
-   const IndexType& west = neighbourEntities.template getEntityIndex< -1 >(); 
+    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -1 >(); 
+    const IndexType& center = entity.getIndex(); 
+    const IndexType& east = neighbourEntities.template getEntityIndex< 1 >(); 
+    const IndexType& west = neighbourEntities.template getEntityIndex< -1 >(); 
    return ( u[ west ] - 2.0 * u[ center ]  + u[ east ] ) * hxSquareInverse;
 }
 
@@ -57,7 +57,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-EulerVelGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsContinuity< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -80,7 +80,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-EulerVelGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsContinuity< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -115,10 +115,10 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-EulerVelGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsContinuity< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return String( "EulerVelGetter< " ) +
+   return String( "LaxFridrichsContinuity< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";
@@ -132,7 +132,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-EulerVelGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsContinuity< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -145,9 +145,18 @@ operator()( const MeshFunction& u,
     static_assert( MeshEntity::entityDimensions == 2, "Wrong mesh entity dimensions." ); 
     static_assert( MeshFunction::getEntitiesDimensions() == 2, "Wrong preimage function" ); 
     const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
-   //vel
+
+   //rho
+   const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1, 0 >(); 
+   const RealType& hyInverse = entity.getMesh().template getSpaceStepsProducts< 0, -1 >(); 
    const IndexType& center = entity.getIndex(); 
-   return ::sqrt(pow( velX[ center ],2)+pow( velY[ center ],2));
+   const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0 >(); 
+   const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0 >(); 
+   const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >(); 
+   const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >(); 
+   return (0.25 / this->tau) * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] - 4.0 * u[ center ] ) 
+          - 0.5 * hxInverse * ( u[ east ] * this->velocityX[ east ] - u[ west ] * this->velocityX[ west ] )
+          - 0.5 * hyInverse * ( u[ north ] * this->velocityY[ north ] - u[ south ] * this->velocityY[ south ] );
 }
 
 template< typename MeshReal,
@@ -158,7 +167,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-EulerVelGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsContinuity< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -181,7 +190,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-EulerVelGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsContinuity< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -221,10 +230,10 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-EulerVelGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsContinuity< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return String( "EulerVelGetter< " ) +
+   return String( "LaxFridrichsContinuity< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";
@@ -238,7 +247,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-EulerVelGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsContinuity< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -252,9 +261,9 @@ operator()( const MeshFunction& u,
     static_assert( MeshFunction::getEntitiesDimensions() == 3, "Wrong preimage function" ); 
     const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
 
-   const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >(); 
-   const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts<  0, -2,  0 >(); 
-   const RealType& hzSquareInverse = entity.getMesh().template getSpaceStepsProducts<  0,  0, -2 >(); 
+   const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1,  0,  0 >(); 
+   const RealType& hyInverse = entity.getMesh().template getSpaceStepsProducts<  0, -1,  0 >(); 
+   const RealType& hzInverse = entity.getMesh().template getSpaceStepsProducts<  0,  0, -1 >(); 
    const IndexType& center = entity.getIndex(); 
    const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0,  0 >(); 
    const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0,  0 >(); 
@@ -262,9 +271,10 @@ operator()( const MeshFunction& u,
    const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1,  0 >(); 
    const IndexType& up    = neighbourEntities.template getEntityIndex<  0,  0,  1 >(); 
    const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >(); 
-   return ( u[ west ] - 2.0 * u[ center ] + u[ east ]  ) * hxSquareInverse +
-          ( u[ south ] - 2.0 * u[ center ] + u[ north ] ) * hySquareInverse +
-          ( u[ up ] - 2.0 * u[ center ] + u[ down ] ) * hzSquareInverse;
+   return ((1.0/6.0) / this->tau) * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] + u[ up ] + u[ down ] - 6.0 * u[ center ] ) 
+          - 0.5 * hxInverse * ( u[ east ] * this->velocityX[ east ] - u[ west ] * this->velocityX[ west ] )
+          - 0.5 * hyInverse * ( u[ north ] * this->velocityY[ north ] - u[ south ] * this->velocityY[ south ] )
+          - 0.5 * hzInverse * ( u[ up ] * this->velocityZ[ up ] - u[ down ] * this->velocityZ[ down ] );
 }
 
 template< typename MeshReal,
@@ -275,7 +285,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-EulerVelGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsContinuity< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -298,7 +308,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-EulerVelGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsContinuity< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -336,5 +346,5 @@ updateLinearSystem( const RealType& time,
 
 } //namespace TNL
 
-#endif	/* EulerVelGetterIMPL_H */
+#endif	/* LaxFridrichsContinuityIMPL_H */
 
