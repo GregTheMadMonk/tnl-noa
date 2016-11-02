@@ -49,9 +49,6 @@ class MeshEntityInitializer
    using BaseType = MeshEntityInitializerLayer< MeshConfig,
                                                 EntityTopology,
                                                 MeshDimensionsTag< EntityTopology::dimensions - 1 > >;
-   using SubentityBaseType = MeshEntityInitializerLayer< MeshConfig,
-                                                         EntityTopology,
-                                                         MeshDimensionsTag< EntityTopology::dimensions - 1 > >;
    using SuperentityBaseType = MeshSuperentityStorageInitializerLayer< MeshConfig,
                                                                        EntityTopology,
                                                                        typename MeshTraits< MeshConfig >::DimensionsTag >;
@@ -60,9 +57,7 @@ class MeshEntityInitializer
    using GlobalIndexType  = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType   = typename MeshTraitsType::LocalIndexType;
    using EntityTraitsType = typename MeshTraitsType::template EntityTraits< DimensionsTag::value >;
-
    using EntityType       = typename EntityTraitsType::EntityType;
-   using SubvertexTraits  = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >;
 
    using InitializerType  = MeshInitializer< MeshConfig >;
    using SeedType         = MeshEntitySeed< MeshConfig, EntityTopology >;
@@ -70,25 +65,12 @@ class MeshEntityInitializer
 public:
    static String getType() { return "MeshEntityInitializer"; };
 
-   MeshEntityInitializer() : entity(0), entityIndex( -1 ) {}
-
    static void initEntity( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed, InitializerType& initializer)
    {
       for( LocalIndexType i = 0; i < entitySeed.getCornerIds().getSize(); i++ )
          initializer.template setSubentityIndex< 0 >( entity, entityIndex, i, entitySeed.getCornerIds()[ i ] );
       BaseType::initSubentities( entity, entityIndex, entitySeed, initializer );
    }
-
-   static void setEntityVertex( EntityType& entity,
-                                LocalIndexType localIndex,
-                                GlobalIndexType globalIndex )
-   {
-      entity.setVertexIndex( localIndex, globalIndex );
-   }
-
-private:
-   EntityType *entity;
-   GlobalIndexType entityIndex;
 };
 
 template< typename MeshConfig >
