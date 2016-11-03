@@ -4,6 +4,7 @@ SET( headers tnlMatrix.h
              tnlMultidiagonalMatrix.h
              tnlSparseMatrix.h
              tnlEllpackMatrix.h
+             tnlEllpackSymMatrix.h
              tnlSlicedEllpackMatrix.h
              tnlChunkedEllpackMatrix.h
              tnlCSRMatrix.h 
