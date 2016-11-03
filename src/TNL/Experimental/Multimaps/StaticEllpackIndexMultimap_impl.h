@@ -94,7 +94,13 @@ typename StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::V
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex )
 {
-   Assert( inputIndex < this->getKeysRange(), );
+   Assert( inputIndex < this->getKeysRange(),
+              std::cerr << "inputIndex = " << inputIndex << std::endl
+                        << "this->getKeysRange() = " << this->getKeysRange() << std::endl; );
+   Assert( this->getKeysRange() * ValuesCount == this->values.getSize(),
+              std::cerr << "The map has not been reallocated after calling setKeysRange()." << std::endl
+                        << "this->getKeysRange() = " << this->getKeysRange() << std::endl
+                        << "this->values.getSize() = " << this->values.getSize() << std::endl; );
    return ValuesAccessorType( this->values.getData(), inputIndex );
 }
 
@@ -106,7 +112,13 @@ typename StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::C
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex ) const
 {
-   Assert( inputIndex < this->getKeysRange(), );
+   Assert( inputIndex < this->getKeysRange(),
+              std::cerr << "inputIndex = " << inputIndex << std::endl
+                        << "this->getKeysRange() = " << this->getKeysRange() << std::endl; );
+   Assert( this->getKeysRange() * ValuesCount == this->values.getSize(),
+              std::cerr << "The map has not been reallocated after calling setKeysRange()." << std::endl
+                        << "this->getKeysRange() = " << this->getKeysRange() << std::endl
+                        << "this->values.getSize() = " << this->values.getSize() << std::endl; );
    return ConstValuesAccessorType( this->values.getData(), inputIndex );
 }
 
