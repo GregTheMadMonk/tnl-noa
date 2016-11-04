@@ -30,23 +30,94 @@
 namespace TNL {
 namespace Meshes {
 
+template< typename Mesh,
+          typename DimensionsTag,
+          typename SuperdimensionsTag,
+          bool Enabled =
+             Mesh::MeshTraitsType::template SuperentityTraits< typename Mesh::template EntityType< DimensionsTag::value >::EntityTopology,
+                                                               SuperdimensionsTag::value >::storageEnabled
+          >
+struct MeshEntityStorageRebinderSuperentityWorker
+{
+   template< typename Worker >
+   static void exec( Mesh& mesh )
+   {
+      // If the reader is wondering why the code is in the Worker and not here:
+      // that's because we're accessing protected method bindSuperentitiesStorageNetwork
+      // and friend templates in GCC 6.1 apparently don't play nice with partial
+      // template specializations.
+      Worker::bindSuperentities( mesh );
+   }
+};
+
+template< typename Mesh,
+          typename DimensionsTag,
+          typename SuperdimensionsTag >
+struct MeshEntityStorageRebinderSuperentityWorker< Mesh, DimensionsTag, SuperdimensionsTag, false >
+{
+   template< typename Worker >
+   static void exec( Mesh& mesh ) {}
+};
+
+
+template< typename Mesh,
+          typename DimensionsTag,
+          typename SuperdimensionsTag,
+          bool Enabled =
+             Mesh::MeshTraitsType::template SubentityTraits< typename Mesh::template EntityType< SuperdimensionsTag::value >::EntityTopology,
+                                                             DimensionsTag::value >::storageEnabled
+          >
+struct MeshEntityStorageRebinderSubentityWorker
+{
+   template< typename Worker >
+   static void exec( Mesh& mesh )
+   {
+      // If the reader is wondering why the code is in the Worker and not here:
+      // that's because we're accessing protected method bindSubentitiesStorageNetwork
+      // and friend templates in GCC 6.1 apparently don't play nice with partial
+      // template specializations.
+      Worker::bindSubentities( mesh );
+   }
+};
+
+template< typename Mesh,
+          typename DimensionsTag,
+          typename SuperdimensionsTag >
+struct MeshEntityStorageRebinderSubentityWorker< Mesh, DimensionsTag, SuperdimensionsTag, false >
+{
+   template< typename Worker >
+   static void exec( Mesh& mesh ) {}
+};
+
+
 template< typename Mesh, typename DimensionsTag, typename SuperdimensionsTag >
 struct MeshEntityStorageRebinderWorker
 {
    static void exec( Mesh& mesh )
+   {
+      MeshEntityStorageRebinderSuperentityWorker< Mesh, DimensionsTag, SuperdimensionsTag >::
+         template exec< MeshEntityStorageRebinderWorker >( mesh );
+      MeshEntityStorageRebinderSubentityWorker< Mesh, DimensionsTag, SuperdimensionsTag >::
+         template exec< MeshEntityStorageRebinderWorker >( mesh );
+   }
+
+   static void bindSuperentities( Mesh& mesh )
+   {
+      for( typename Mesh::GlobalIndexType i = 0; i < mesh.template getNumberOfEntities< DimensionsTag::value >(); i++ )
+      {
+         auto& subentity = mesh.template getEntity< DimensionsTag::value >( i );
+         auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< DimensionsTag::value, SuperdimensionsTag::value >();
+         subentity.template bindSuperentitiesStorageNetwork< SuperdimensionsTag::value >( superentitiesStorage.getValues( i ) );
+      }
+   }
+
+   static void bindSubentities( Mesh& mesh )
    {
       for( typename Mesh::GlobalIndexType i = 0; i < mesh.template getNumberOfEntities< SuperdimensionsTag::value >(); i++ )
       {
          auto& superentity = mesh.template getEntity< SuperdimensionsTag::value >( i );
          auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< SuperdimensionsTag::value, DimensionsTag::value >();
          superentity.template bindSubentitiesStorageNetwork< DimensionsTag::value >( subentitiesStorage.getValues( i ) );
-      }
-
-      for( typename Mesh::GlobalIndexType i = 0; i < mesh.template getNumberOfEntities< DimensionsTag::value >(); i++ )
-      {
-         auto& subentity = mesh.template getEntity< DimensionsTag::value >( i );
-         auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< DimensionsTag::value, SuperdimensionsTag::value >();
-         subentity.template bindSuperentitiesStorageNetwork< SuperdimensionsTag::value >( superentitiesStorage.getValues( i ) );
       }
    }
 };
