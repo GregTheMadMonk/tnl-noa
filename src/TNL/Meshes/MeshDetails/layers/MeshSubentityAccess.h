@@ -55,7 +55,7 @@ public:
    }
 
    template< int Subdimensions >
-   constexpr typename SubentityTraits< Subdimensions >::LocalIndexType getNumberOfSubentities() const
+   static constexpr typename SubentityTraits< Subdimensions >::LocalIndexType getNumberOfSubentities()
    {
       return SubentityTraits< Subdimensions >::count;
    }
@@ -509,6 +509,43 @@ class MeshSubentityAccessLayer< MeshConfig,
                                 false,
                                 false >
 {
+protected:
+   /***
+    * Necessary because of 'using BaseType::...;' in the derived classes
+    */
+   template< typename SubentityAccessorType >
+   void bindSubentitiesStorageNetwork( DimensionsTag,
+                                       const SubentityAccessorType& storage ) {}
+   void getNumberOfSubentities( DimensionsTag ) const {}
+   template< typename LocalIndexType >
+   void getSubentityIndex( DimensionsTag,
+                           const LocalIndexType localIndex ) const {}
+   template< typename LocalIndexType, typename GlobalIndexType >
+   void setSubentityIndex( DimensionsTag,
+                           const LocalIndexType& localIndex,
+                           const GlobalIndexType& globalIndex ) {}
+   void getSubentityIndices() {}
+
+   template< typename LocalIndexType >
+   void getSubentityOrientation( DimensionsTag, LocalIndexType index) const {}
+	void subentityOrientationsArray( DimensionsTag ) {}
+
+   bool save( File& file ) const
+   {
+      return true;
+   }
+
+   bool load( File& file )
+   {
+      return true;
+   }
+
+   bool operator==( const MeshSubentityAccessLayer& other ) const
+   {
+      return true;
+   }
+
+   void print( std::ostream& str ) const {}
 };
 
 } // namespace Meshes

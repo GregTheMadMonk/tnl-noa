@@ -48,6 +48,7 @@ public:
    typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimensions >::StorageNetworkType&
    getSuperentityStorageNetwork( MeshDimensionsTag< EntityTopology::dimensions > )
    {
+      static_assert( EntityTopology::dimensions < Superdimensions, "Invalid combination of Dimensions and Superdimensions." );
       return BaseType::getSuperentityStorageNetwork( MeshDimensionsTag< Superdimensions >() );
    }
 };
