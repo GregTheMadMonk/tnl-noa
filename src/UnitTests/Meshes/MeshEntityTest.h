@@ -79,6 +79,7 @@ public:
    using BaseType::bindSuperentitiesStorageNetwork;
    using BaseType::setNumberOfSuperentities;
    using BaseType::setSuperentityIndex;
+   using BaseType::setId;
 };
  
 TEST( MeshEntityTest, VertexMeshEntityTest )

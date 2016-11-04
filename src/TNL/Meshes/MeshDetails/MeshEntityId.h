@@ -36,17 +36,17 @@ public:
       return this->id;
    }
 
-   void setId( GlobalIndexType id )
-   {
-      this->id = id;
-   }
-
    bool operator==( const MeshEntityId< IDType, GlobalIndexType >& id ) const
    {
       return ( this->id == id.id );
    }
 
 protected:
+   void setId( GlobalIndexType id )
+   {
+      this->id = id;
+   }
+
    IDType id;
 };
 
@@ -54,13 +54,14 @@ template< typename GlobalIndexType >
 class MeshEntityId< void, GlobalIndexType >
 {
 public:
-   void setId( GlobalIndexType )
-   {}
-
    bool operator==( const MeshEntityId< void, GlobalIndexType >& id ) const
    {
       return true;
    }
+
+protected:
+   void setId( GlobalIndexType )
+   {}
 };
 
 } // namespace Meshes
