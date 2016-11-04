@@ -21,6 +21,8 @@
 #include <sstream>
 #include <iomanip>
 
+#include <TNL/String.h>
+
 namespace TNL {
 namespace Meshes {
 
@@ -41,7 +43,7 @@ class MeshWriterNetgen
          return false;
       }
       outputFile << std::setprecision( 6 );
-      outputFile << fixed;
+      outputFile << std::fixed;
 
       const int meshDimension = MeshType::meshDimension;
       typedef typename MeshType::template EntitiesTraits< 0 >::GlobalIndexType VerticesIndexType;
