@@ -18,7 +18,6 @@
 
 #include <TNL/File.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSubentityStorageLayer.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSuperentityStorageLayer.h>
 
@@ -26,8 +25,8 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
-          typename DimensionTag,
-          bool EntityStorage = MeshEntityTraits< MeshConfig, DimensionTag::value >::storageEnabled >
+          typename DimensionsTag,
+          bool EntityStorage = MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::storageEnabled >
 class MeshStorageLayer;
 
 

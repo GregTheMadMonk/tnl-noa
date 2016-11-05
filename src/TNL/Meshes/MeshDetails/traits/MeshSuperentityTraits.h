@@ -41,9 +41,8 @@ public:
    using GlobalIndexType     = typename MeshConfig::GlobalIndexType;
    using LocalIndexType      = typename MeshConfig::LocalIndexType;
    using EntityType          = MeshEntity< MeshConfig, EntityTopology >;
-   using EntityTraits        = MeshEntityTraits< MeshConfig, Dimensions >;
-   using SuperentityTopology = typename EntityTraits::EntityTopology;
-   using SuperentityType     = typename EntityTraits::EntityType;
+   using SuperentityTopology = typename MeshEntityTraits< MeshConfig, Dimensions >::EntityTopology;
+   using SuperentityType     = typename MeshEntityTraits< MeshConfig, Dimensions >::EntityType;
 
    /****
     * Type of container for storing of the superentities indices.

@@ -16,10 +16,7 @@
 
 #pragma once
 
-#include <TNL/Meshes/MeshDimensionTag.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshSubentityTraits.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshSuperentityTraits.h>
+#include <TNL/Meshes/MeshDimensionsTag.h>
 #include <TNL/Meshes/MeshDetails/initializer/MeshEntityInitializer.h>
 #include <TNL/Meshes/MeshDetails/initializer/MeshSubentitySeedCreator.h>
 #include <TNL/Meshes/MeshDetails/initializer/MeshSuperentityStorageInitializer.h>
@@ -70,7 +67,7 @@ class Mesh;
 template< typename MeshConfig,
           typename DimensionTag,
           bool EntityStorage =
-             MeshEntityTraits< MeshConfig, DimensionTag::value >::storageEnabled,
+             MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::storageEnabled,
           bool EntityReferenceOrientationStorage =
              MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::orientationNeeded >
 class MeshInitializerLayer;
@@ -285,7 +282,7 @@ class MeshInitializerLayer< MeshConfig,
    using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
    using PointArrayType        = typename MeshTraitsType::PointArrayType;
    using SeedType              = MeshEntitySeed< MeshConfig, EntityTopology >;
-   using SeedIndexedSet = typename MeshEntityTraits< MeshConfig, DimensionsTag::value >::SeedIndexedSetType;
+   using SeedIndexedSet        = typename MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::SeedIndexedSetType;
 
    public:
 
@@ -438,7 +435,7 @@ class MeshInitializerLayer< MeshConfig,
 
    private:
 
-      using SeedIndexedSet = typename MeshEntityTraits< MeshConfig, DimensionsTag::value >::SeedIndexedSetType;
+      using SeedIndexedSet = typename MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::SeedIndexedSetType;
       SeedIndexedSet seedsIndexedSet;
       ReferenceOrientationArrayType referenceOrientations;
 };
