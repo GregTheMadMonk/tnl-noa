@@ -71,10 +71,11 @@ struct MeshConfigBase
    static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions )
    {
       /****
-       *  Vertices must always be stored
+       *  Subvertices of all stored entities must always be stored
        */
-      return true;
-      //return ( SubentityDimensions == 0 );
+      return entityStorage( EntityTopology::dimensions );
+      //return entityStorage( EntityTopology::dimensions ) &&
+      //       SubentityDimensions == 0;
    }
 
    /****
@@ -93,7 +94,7 @@ struct MeshConfigBase
    template< typename EntityTopology >
    static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions )
    {
-      return true;
+      return entityStorage( EntityTopology::dimensions );
       //return false;
    }
 };

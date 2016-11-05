@@ -45,8 +45,8 @@ template< typename MeshConfig,
 class MeshConfigValidatorSubtopologyLayer< MeshConfig, EntityTopology, MeshDimensionsTag< 0 > >
 {
    static_assert( ! MeshConfig::subentityStorage( EntityTopology(), 0 ) ||
-                    MeshConfig::entityStorage( 0 ),
-                  "entities that are stored as subentities must be stored" );
+                    MeshConfig::entityStorage( EntityTopology::dimensions ),
+                  "entities of which subvertices are stored must be stored" );
    static_assert( ! MeshConfig::subentityOrientationStorage( EntityTopology(), 0 ),
                   "storage of vertex orientation does not make sense" );
 };
@@ -58,10 +58,10 @@ template< typename MeshConfig,
 class MeshConfigValidatorSupertopologyLayer
    : public MeshConfigValidatorSupertopologyLayer< MeshConfig, EntityTopology, typename dimensions::Decrement >
 {
-   static_assert( ! MeshConfig::superentityStorage( EntityTopology(), 0 ) ||
+   static_assert( ! MeshConfig::superentityStorage( EntityTopology(), dimensions::value ) ||
                     MeshConfig::entityStorage( EntityTopology::dimensions ),
                   "entities of which superentities are stored must be stored");
-   static_assert( ! MeshConfig::superentityStorage( EntityTopology(), 0 ) ||
+   static_assert( ! MeshConfig::superentityStorage( EntityTopology(), dimensions::value ) ||
                     MeshConfig::entityStorage( dimensions::value ),
                   "entities that are stored as superentities must be stored");
 };
