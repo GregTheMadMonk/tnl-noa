@@ -44,6 +44,7 @@ protected:
    template< int Dimensions >
    bool setNumberOfEntities( const typename EntityTraits< Dimensions >::GlobalIndexType& entitiesCount )
    {
+      static_assert( EntityTraits< Dimensions >::storageEnabled, "You try to set number of entities which are not configured for storage." );
       return BaseType::setNumberOfEntities( MeshDimensionsTag< Dimensions >(), entitiesCount );
    }
 
@@ -51,6 +52,7 @@ protected:
    typename MeshTraitsType::template SubentityTraits< typename EntityTraits< Dimensions >::EntityTopology, Subdimensions >::StorageNetworkType&
    getSubentityStorageNetwork()
    {
+      static_assert( EntityTraits< Dimensions >::storageEnabled, "You try to get subentity storage of entities which are not configured for storage." );
       static_assert( Dimensions > Subdimensions, "Invalid combination of Dimensions and Subdimensions." );
       using BaseType = MeshSubentityStorageLayers< MeshConfig,
                                                    typename MeshTraits< MeshConfig >::template EntityTraits< Dimensions >::EntityTopology >;
@@ -61,6 +63,7 @@ protected:
    typename MeshTraitsType::template SuperentityTraits< typename EntityTraits< Dimensions >::EntityTopology, Superdimensions >::StorageNetworkType&
    getSuperentityStorageNetwork()
    {
+      static_assert( EntityTraits< Dimensions >::storageEnabled, "You try to get superentity storage of entities which are not configured for storage." );
       static_assert( Dimensions < Superdimensions, "Invalid combination of Dimensions and Superdimensions." );
       using BaseType = MeshSuperentityStorageLayers< MeshConfig,
                                                      typename MeshTraits< MeshConfig >::template EntityTraits< Dimensions >::EntityTopology >;

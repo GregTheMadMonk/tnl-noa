@@ -60,6 +60,7 @@ typename Mesh< MeshConfig >::GlobalIndexType
 Mesh< MeshConfig >::
 getNumberOfEntities() const
 {
+   static_assert( EntityTraits< Dimensions >::storageEnabled, "You try to get number of entities which are not configured for storage." );
    return StorageBaseType::getNumberOfEntities( MeshDimensionsTag< Dimensions >() );
 }
 
@@ -69,6 +70,7 @@ typename Mesh< MeshConfig >::template EntityType< Dimensions >&
 Mesh< MeshConfig >::
 getEntity( const GlobalIndexType& entityIndex )
 {
+   static_assert( EntityTraits< Dimensions >::storageEnabled, "You try to get entity which is not configured for storage." );
    return StorageBaseType::getEntity( MeshDimensionsTag< Dimensions >(), entityIndex );
 }
 
@@ -78,6 +80,7 @@ const typename Mesh< MeshConfig >::template EntityType< Dimensions >&
 Mesh< MeshConfig >::
 getEntity( const GlobalIndexType& entityIndex ) const
 {
+   static_assert( EntityTraits< Dimensions >::storageEnabled, "You try to get entity which is not configured for storage." );
    return StorageBaseType::getEntity( MeshDimensionsTag< Dimensions >(), entityIndex );
 }
 

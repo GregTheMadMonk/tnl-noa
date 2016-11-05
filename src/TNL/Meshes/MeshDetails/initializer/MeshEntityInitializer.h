@@ -37,7 +37,7 @@ template< typename MeshConfig,
           // storage in the superentity
           bool SubentityStorage =
                MeshConfig::subentityStorage( typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionsTag::value >::EntityTopology(),
-                                             SubdimensionsTag::value ), 
+                                             SubdimensionsTag::value ),
           bool SubentityOrientationStorage =
                MeshConfig::subentityOrientationStorage( typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionsTag::value >::EntityTopology(),
                                                         SubdimensionsTag::value ) &&
