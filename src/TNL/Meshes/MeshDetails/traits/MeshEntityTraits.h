@@ -28,7 +28,6 @@ namespace Meshes {
 
 template< typename MeshConfig, typename EntityTopology > class MeshEntity;
 template< typename MeshConfig, typename EntityTopology > class MeshEntitySeed;
-template< typename MeshConfig, typename EntityTopology > class MeshEntitySeedKey;
 template< typename MeshConfig, typename EntityTopology > class MeshEntityReferenceOrientation;
 
 template< typename MeshConfig,
@@ -70,10 +69,9 @@ public:
    using EntityType                    = MeshEntity< MeshConfig, EntityTopology >;
    using SeedType                      = MeshEntitySeed< MeshConfig, EntityTopology >;
    using ReferenceOrientationType      = MeshEntityReferenceOrientation< MeshConfig, EntityTopology >;
-   using Key                           = MeshEntitySeedKey< MeshConfig, EntityTopology >;
 
    using StorageArrayType              = Containers::Array< EntityType, Devices::Host, GlobalIndexType >;
-   using SeedIndexedSetType            = Containers::IndexedSet< Key, GlobalIndexType >;
+   using SeedIndexedSetType            = Containers::IndexedSet< typename SeedType::KeyType, GlobalIndexType >;
    using SeedArrayType                 = Containers::Array< SeedType, Devices::Host, GlobalIndexType >;
    using ReferenceOrientationArrayType = Containers::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType >;
 };

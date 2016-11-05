@@ -16,7 +16,8 @@
 
 #pragma once
 
-#include <TNL/Meshes/MeshDimensionTag.h>
+#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/MeshDetails/traits/MeshSubentityTraits.h>
 
 namespace TNL {
 namespace Meshes {
@@ -24,11 +25,6 @@ namespace Meshes {
 template< typename MeshConfig,
           typename EntityTopology >
 class MeshEntitySeed;
-
-template< typename MeshConfig,
-          typename EntityTopology,
-          int Dimension >
-class MeshSubentityTraits;
 
 /****
  * Unique identification of a mesh entity by its vertices.

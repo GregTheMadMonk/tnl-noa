@@ -25,7 +25,6 @@
 #include <TNL/Meshes/MeshDetails/initializer/MeshSuperentityStorageInitializer.h>
 #include <TNL/Meshes/MeshDetails/MeshEntityReferenceOrientation.h>
 #include <TNL/Meshes/MeshDetails/initializer/MeshEntitySeed.h>
-#include <TNL/Meshes/MeshDetails/initializer/MeshEntitySeedKey.h>
 
 namespace TNL {
 namespace Meshes {

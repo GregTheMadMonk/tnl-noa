@@ -17,6 +17,7 @@
 #pragma once
 
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <TNL/Meshes/MeshDetails/initializer/MeshEntitySeedKey.h>
 
 namespace TNL {
 namespace Meshes {
@@ -32,6 +33,7 @@ class MeshEntitySeed
       using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
       using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
       using IdArrayType     = typename SubvertexTraits::IdArrayType;
+      using KeyType         = MeshEntitySeedKey< MeshConfig, EntityTopology >;
 
       static String getType() { return String( "MeshEntitySeed<>" ); }
 
@@ -71,6 +73,7 @@ class MeshEntitySeed< MeshConfig, MeshVertexTopology >
       using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
       using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
       using IdArrayType     = Containers::StaticArray< 1, GlobalIndexType >;
+      using KeyType         = MeshEntitySeedKey< MeshConfig, MeshVertexTopology >;
 
       static String getType() { return String( "MeshEntitySeed<>" ); }
 
