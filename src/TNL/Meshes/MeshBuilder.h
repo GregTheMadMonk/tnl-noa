@@ -71,7 +71,7 @@ class MeshBuilder
       return this->cellSeeds[ index ];
    }
 
-   bool build( MeshType& mesh ) const
+   bool build( MeshType& mesh )
    {
       if( ! this->validate() )
          return false;

@@ -17,66 +17,92 @@
 #pragma once
 
 #include <TNL/StaticFor.h>
+#include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
-          typename EntityTopology,
-          typename SubDimensionTag >
+          typename EntityDimensionsTag,
+          typename SubentityDimensionsTag >
 class MeshSubentitySeedsCreator
 {
-	typedef typename MeshTraits< MeshConfig >::LocalIndexType                                                      LocalIndexType;
-	typedef typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, SubDimensionTag::value > SubentityTraits;
-	typedef typename SubentityTraits::SubentityTopology                                                               SubentityTopology;
-	typedef typename MeshTraits< MeshConfig >::template SubentityTraits< SubentityTopology, 0 >                    SubentityVertexTraits;
+   using MeshTraitsType        = MeshTraits< MeshConfig >;
+   using GlobalIndexType       = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
+   using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityDimensionsTag::value >;
+   using EntityType            = typename EntityTraitsType::EntityType;
+   using EntityTopology        = typename EntityTraitsType::EntityTopology;
+   using SubvertexAccessorType = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >::SubentityAccessorType;
+   using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, SubentityDimensionsTag::value >;
+   using SubentityType         = typename SubentityTraits::SubentityType;
+   using SubentityTopology     = typename SubentityTraits::SubentityTopology;
 
-	static const LocalIndexType SUBENTITIES_COUNT = SubentityTraits::count;
-	static const LocalIndexType SUBENTITY_VERTICES_COUNT = SubentityVertexTraits::count;
+   static const LocalIndexType SUBENTITIES_COUNT = EntityType::template getNumberOfSubentities< SubentityDimensionsTag::value >();
+   static const LocalIndexType SUBENTITY_VERTICES_COUNT = SubentityType::template getNumberOfSubentities< 0 >();
 
-   public:
-      typedef typename SubentityTraits::SeedArrayType SubentitySeedArray;
-      typedef MeshEntitySeed< MeshConfig, EntityTopology >  EntitySeed;
-      typedef typename EntitySeed::IdArrayType IdArrayType;
-      //typedef typename MeshEntityTraits< MeshConfig, SubDimensionsTag >::SeedIndexedSetType                     SeedIndexedSet;
+public:
+   using SubentitySeedArray = typename SubentityTraits::SeedArrayType;
 
-      //template< typename SeedIndexedSet >
-      static SubentitySeedArray create( const EntitySeed& entitySeed  )
-      {
-         SubentitySeedArray subentitySeeds;
-         StaticFor< LocalIndexType, 0, SUBENTITIES_COUNT, CreateSubentitySeeds >::exec( subentitySeeds, entitySeed.getCornerIds() );
-         //StaticFor< LocalIndexType, 0, SUBENTITIES_COUNT, CreateSubentitySeeds >::exec( indexedSet, entitySeed.getCornerIds() );
- 
-         return subentitySeeds;
-      }
+   static SubentitySeedArray create( const SubvertexAccessorType& subvertices )
+   {
+      SubentitySeedArray subentitySeeds;
+      StaticFor< LocalIndexType, 0, SUBENTITIES_COUNT, CreateSubentitySeeds >::exec( subentitySeeds, subvertices );
 
-   private:
-      typedef MeshEntitySeed< MeshConfig, SubentityTopology > SubentitySeed;
+      return subentitySeeds;
+   }
 
-      template< LocalIndexType subentityIndex >
-      class CreateSubentitySeeds
-      {
-         public:
-            static void exec( SubentitySeedArray& subentitySeeds, const IdArrayType& vertexIds )
-            //static void exec( SeedIndexedSet& indexedSet, const IdArrayType& vertexIds )
-            {
-               //EntitySeed seed;
-               StaticFor< LocalIndexType, 0, SUBENTITY_VERTICES_COUNT, SetSubentitySeedVertex >::exec( subentitySeeds[ subentityIndex ], vertexIds );
-               //indexedSet.insert( seed );
-            }
+private:
+   using SubentitySeed = MeshEntitySeed< MeshConfig, SubentityTopology >;
 
-         private:
-            template< LocalIndexType subentityVertexIndex >
-            class SetSubentitySeedVertex
-            {
-               public:
-                  static void exec( SubentitySeed& subentitySeed, const IdArrayType& vertexIds )
-                  {
-                     static const LocalIndexType VERTEX_INDEX = SubentityTraits::template Vertex< subentityIndex, subentityVertexIndex >::index;
-                     subentitySeed.setCornerId( subentityVertexIndex, vertexIds[ VERTEX_INDEX ] );
-                  }
-            };
-      };
+   template< LocalIndexType subentityIndex >
+   class CreateSubentitySeeds
+   {
+      public:
+         static void exec( SubentitySeedArray& subentitySeeds, const SubvertexAccessorType& subvertices )
+         {
+            StaticFor< LocalIndexType, 0, SUBENTITY_VERTICES_COUNT, SetSubentitySeedVertex >::exec( subentitySeeds[ subentityIndex ], subvertices );
+         }
+
+      private:
+         template< LocalIndexType subentityVertexIndex >
+         class SetSubentitySeedVertex
+         {
+            public:
+               static void exec( SubentitySeed& subentitySeed, const SubvertexAccessorType& subvertices )
+               {
+                  static const LocalIndexType VERTEX_INDEX = SubentityTraits::template Vertex< subentityIndex, subentityVertexIndex >::index;
+                  subentitySeed.setCornerId( subentityVertexIndex, subvertices[ VERTEX_INDEX ] );
+               }
+         };
+   };
+};
+
+template< typename MeshConfig,
+          typename EntityDimensionsTag >
+class MeshSubentitySeedsCreator< MeshConfig, EntityDimensionsTag, MeshDimensionsTag< 0 > >
+{
+   using MeshTraitsType        = MeshTraits< MeshConfig >;
+   using GlobalIndexType       = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
+   using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityDimensionsTag::value >;
+   using EntityType            = typename EntityTraitsType::EntityType;
+   using EntityTopology        = typename EntityTraitsType::EntityTopology;
+   using SubvertexAccessorType = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >::SubentityAccessorType;
+   using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >;
+
+   static const LocalIndexType SUBENTITIES_COUNT = EntityType::template getNumberOfSubentities< 0 >();
+
+public:
+   using SubentitySeedArray = typename SubentityTraits::SeedArrayType;
+
+   static SubentitySeedArray create( const SubvertexAccessorType& subvertices )
+   {
+      SubentitySeedArray seeds;
+      for( LocalIndexType i = 0; i < seeds.getSize(); i++ )
+         seeds[ i ].setCornerId( 0, subvertices[ i ] );
+      return seeds;
+   }
 };
 
 } // namespace Meshes

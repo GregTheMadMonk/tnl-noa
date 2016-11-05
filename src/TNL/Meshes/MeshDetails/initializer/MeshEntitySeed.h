@@ -62,6 +62,45 @@ class MeshEntitySeed
       IdArrayType cornerIds;
 };
 
+template< typename MeshConfig >
+class MeshEntitySeed< MeshConfig, MeshVertexTopology >
+{
+   using MeshConfigTraits = MeshTraits< MeshConfig >;
+
+   public:
+      using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
+      using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
+      using IdArrayType     = Containers::StaticArray< 1, GlobalIndexType >;
+
+      static String getType() { return String( "MeshEntitySeed<>" ); }
+
+      static constexpr LocalIndexType getCornersCount()
+      {
+         return 1;
+      }
+
+      void setCornerId( const LocalIndexType& cornerIndex, const GlobalIndexType& pointIndex )
+      {
+         Assert( cornerIndex == 0, std::cerr << "cornerIndex = " << cornerIndex );
+         Assert( 0 <= pointIndex, std::cerr << "pointIndex = " << pointIndex );
+
+         this->cornerIds[ cornerIndex ] = pointIndex;
+      }
+
+      IdArrayType& getCornerIds()
+      {
+         return cornerIds;
+      }
+
+      const IdArrayType& getCornerIds() const
+      {
+         return cornerIds;
+      }
+
+   private:
+      IdArrayType cornerIds;
+};
+
 template< typename MeshConfig, typename EntityTopology >
 std::ostream& operator<<( std::ostream& str, const MeshEntitySeed< MeshConfig, EntityTopology >& e )
 {

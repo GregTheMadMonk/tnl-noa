@@ -44,7 +44,7 @@ class MeshEntitySeedKey
                                                      0 >::IdArrayType;
 
 public:
-   explicit MeshEntitySeedKey( const EntitySeedType& entitySeed )
+   MeshEntitySeedKey( const EntitySeedType& entitySeed )
    {
       for( typename IdArrayType::IndexType i = 0;
            i < entitySeed.getCornersCount();

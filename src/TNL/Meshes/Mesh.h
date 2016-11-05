@@ -89,8 +89,9 @@ class Mesh
 
       bool operator==( const Mesh& mesh ) const;
 
-      bool init( const typename MeshTraitsType::PointArrayType& points,
-                 const typename MeshTraitsType::CellSeedArrayType& cellSeeds );
+      // The points and cellSeeds arrays will be reset when not needed to save memory.
+      bool init( typename MeshTraitsType::PointArrayType& points,
+                 typename MeshTraitsType::CellSeedArrayType& cellSeeds );
 
    protected:
       // Methods for the mesh initializer

@@ -154,8 +154,8 @@ operator==( const Mesh& mesh ) const
 template< typename MeshConfig >
 bool
 Mesh< MeshConfig >::
-init( const typename MeshTraitsType::PointArrayType& points,
-      const typename MeshTraitsType::CellSeedArrayType& cellSeeds )
+init( typename MeshTraitsType::PointArrayType& points,
+      typename MeshTraitsType::CellSeedArrayType& cellSeeds )
 {
    MeshInitializer< MeshConfig> meshInitializer;
    if( ! meshInitializer.createMesh( points, cellSeeds, *this ) )
