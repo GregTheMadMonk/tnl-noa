@@ -38,9 +38,7 @@ template< typename MeshConfig,
           bool EntityStorage =
              MeshEntityTraits< MeshConfig, DimensionTag::value >::storageEnabled,
           bool EntityReferenceOrientationStorage =
-             // FIXME
-//             MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::orientationNeeded >
-             false >
+             MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::orientationNeeded >
 class MeshInitializerLayer;
 
 
@@ -308,11 +306,6 @@ class MeshInitializerLayer< MeshConfig,
          BaseType::initEntities( initializer, points, mesh );
       }
 
-//      void createEntityReferenceOrientations()
-//      {
-//         BaseType::createEntityReferenceOrientations();
-//      }
-
       using BaseType::getReferenceOrientation;
       using ReferenceOrientationType = typename EntityTraitsType::ReferenceOrientationType;
       const ReferenceOrientationType& getReferenceOrientation( DimensionsTag, GlobalIndexType index ) const {}
@@ -357,23 +350,19 @@ class MeshInitializerLayer< MeshConfig,
 
    public:
 
-      void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds )
+      GlobalIndexType getNumberOfEntities( InitializerType& initializer, MeshType& mesh )
       {
-         typedef MeshSubentitySeedsCreator< MeshConfig, CellTopology, DimensionsTag >  SubentitySeedsCreator;
-         //std::cout << " Creating mesh entities with " << DimensionsTag::value << " dimensions ... " << std::endl;
-         for( GlobalIndexType i = 0; i < cellSeeds.getSize(); i++ )
+         using SubentitySeedsCreator = MeshSubentitySeedsCreator< MeshConfig, MeshDimensionsTag< CellTopology::dimensions >, DimensionsTag >;
+         std::set< typename SeedIndexedSet::key_type > seedSet;
+
+         for( GlobalIndexType i = 0; i < mesh.getNumberOfCells(); i++ )
          {
-            //std::cout << "  Creating mesh entities from cell number " << i << " : " << cellSeeds[ i ] << std::endl;
-            typedef typename SubentitySeedsCreator::SubentitySeedArray SubentitySeedArray;
-            SubentitySeedArray subentytiSeeds( SubentitySeedsCreator::create( cellSeeds[ i ] ) );
-            for( LocalIndexType j = 0; j < subentytiSeeds.getSize(); j++ )
-            {
-               //std::cout << "Creating subentity seed no. " << j << " : " << subentytiSeeds[ j ] << std::endl;
-               //MeshEntitySeed< MeshConfigBase< CellTopology >, EntityTopology >& entitySeed = subentytiSeeds[ j ];
-               this->seedsIndexedSet.insert( subentytiSeeds[ j ] );
-            }
+            auto subentitySeeds = SubentitySeedsCreator::create( initializer.getSubvertices( mesh.getCell( i ), i ) );
+            for( LocalIndexType j = 0; j < subentitySeeds.getSize(); j++ )
+               seedSet.insert( subentitySeeds[ j ] );
          }
-//         BaseType::createEntitySeedsFromCellSeeds( cellSeeds );
+
+         return seedSet.size();
       }
 
       using BaseType::findEntitySeedIndex;
@@ -382,23 +371,33 @@ class MeshInitializerLayer< MeshConfig,
          return this->seedsIndexedSet.insert( seed );
       }
 
-      void initEntities( InitializerType& initializer, const PointArrayType& points, const CellSeedArrayType& cellSeeds, MeshType& mesh )
+      void initEntities( InitializerType& initializer, PointArrayType& points, MeshType& mesh )
       {
-         createEntitySeedsFromCellSeeds( cellSeeds );
-         createEntityReferenceOrientations();
          //std::cout << " Initiating entities with " << DimensionsTag::value << " dimensions ... " << std::endl;
-         initializer.template setNumberOfEntities< DimensionsTag::value >( this->seedsIndexedSet.getSize() );
-         SeedArrayType seedsArray;
-         seedsArray.setSize( this->seedsIndexedSet.getSize() );
-         this->seedsIndexedSet.toArray( seedsArray );
-         for( GlobalIndexType i = 0; i < this->seedsIndexedSet.getSize(); i++ )
-         {
-            //std::cout << "  Initiating entity " << i << std::endl;
-            EntityInitializerType::initEntity( mesh.template getEntity< DimensionsTag::value >( i ), i, seedsArray[ i ], initializer );
-         }
-         this->seedsIndexedSet.reset();
+         const GlobalIndexType numberOfEntities = getNumberOfEntities( initializer, mesh );
+         initializer.template setNumberOfEntities< DimensionsTag::value >( numberOfEntities );
+         this->referenceOrientations.setSize( numberOfEntities );
 
-         BaseType::initEntities( initializer, points, cellSeeds, mesh );
+         using SubentitySeedsCreator = MeshSubentitySeedsCreator< MeshConfig, MeshDimensionsTag< CellTopology::dimensions >, DimensionsTag >;
+         for( GlobalIndexType i = 0; i < mesh.getNumberOfCells(); i++ )
+         {
+            auto subentitySeeds = SubentitySeedsCreator::create( initializer.getSubvertices( mesh.getCell( i ), i ) );
+            for( LocalIndexType j = 0; j < subentitySeeds.getSize(); j++ )
+            {
+               auto& seed = subentitySeeds[ j ];
+               if( this->seedsIndexedSet.count( seed ) == 0 ) {
+                  const GlobalIndexType entityIndex = this->seedsIndexedSet.insert( seed );
+                  EntityInitializerType::initEntity( mesh.template getEntity< DimensionsTag::value >( entityIndex ), entityIndex, seed, initializer );
+                  this->referenceOrientations[ entityIndex ] = ReferenceOrientationType( seed );
+               }
+            }
+         }
+
+         EntityInitializerType::initSuperentities( initializer, mesh );
+         this->seedsIndexedSet.clear();
+         this->referenceOrientations.reset();
+
+         BaseType::initEntities( initializer, points, mesh );
       }
 
       using BaseType::getReferenceOrientation;
@@ -406,21 +405,6 @@ class MeshInitializerLayer< MeshConfig,
       {
          return this->referenceOrientations[ index ];
       }
-
-      void createEntityReferenceOrientations()
-      {
-         //std::cout << " Creating entity reference orientations with " << DimensionsTag::value << " dimensions ... " << std::endl;
-         SeedArrayType seedsArray;
-         seedsArray.setSize( this->seedsIndexedSet.getSize() );
-         this->seedsIndexedSet.toArray( seedsArray );
-         this->referenceOrientations.setSize( seedsArray.getSize() );
-         for( GlobalIndexType i = 0; i < seedsArray.getSize(); i++ )
-         {
-            //std::cout << "  Creating reference orientation for entity " << i << std::endl;
-            this->referenceOrientations[ i ] = ReferenceOrientationType( seedsArray[ i ] );
-         }
-//         BaseType::createEntityReferenceOrientations();
-		}
 
    private:
 
@@ -488,8 +472,6 @@ class MeshInitializerLayer< MeshConfig,
 
       // This method is due to 'using BaseType::findEntityIndex;' in the derived class.
       void findEntitySeedIndex() {}
-
-//      void createEntityReferenceOrientations() const {}
 
       using ReferenceOrientationType = typename EntityTraitsType::ReferenceOrientationType;
       const ReferenceOrientationType& getReferenceOrientation( DimensionsTag, GlobalIndexType index ) const {}
