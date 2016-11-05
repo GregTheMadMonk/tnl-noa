@@ -26,6 +26,41 @@
 #include <TNL/Meshes/MeshDetails/MeshEntityReferenceOrientation.h>
 #include <TNL/Meshes/MeshDetails/initializer/MeshEntitySeed.h>
 
+/*
+ * How this beast works:
+ *
+ * The algorithm is optimized for memory requirements. Therefore, the mesh is
+ * not allocated at once, but by parts (by dimensions). The flow is roughly the
+ * following:
+ *
+ *  - Allocate cells and set their subvertex indices (but not other subentity
+ *    indices), deallocate cell seeds (the cells will be used later).
+ *  - For all dimensions D from (cell dimension - 1) to 1:
+ *     - Create intermediate entity seeds, count the number of entities with
+ *       current dimension.
+ *     - Allocate entities and set their subvertex indices. Create an indexed
+ *       set of entity seeds and reference orientations (if applicable).
+ *     - For all superdimensions S > D:
+ *        - Iterate over entities with dimension S and initialize their
+ *          subentity indices with dimension D. Inverse mapping (D->S) is
+ *          recorded in the process.
+ *        - For entities with dimension D, initialize their superentity indices
+ *          with dimension S.
+ *     - Deallocate all intermediate data structures.
+ *  - Allocate vertices and set their physical coordinates, deallocate input
+ *    array of points.
+ *  - For all superdimensions S > 0, repeat the same steps as above.
+ *
+ * Optimization notes:
+ *   - Recomputing the seed key involves sorting all subvertex indices, but the
+ *     cost is negligible compared to memory consumption incurred by storing
+ *     both the key and original seed in the indexed set.
+ *   - Since std::set and std::map don't provide a shrink_to_fit method like
+ *     std::vector, these dynamic structures should be kept as local variables
+ *     if possible. This is probably the only way to be sure that the unused
+ *     space is not wasted.
+ */
+
 namespace TNL {
 namespace Meshes {
 
@@ -40,10 +75,6 @@ template< typename MeshConfig,
              MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::orientationNeeded >
 class MeshInitializerLayer;
 
-
-template< typename MeshConfig,
-          typename EntityTopology>
-class MeshEntityInitializer;
 
 template< typename MeshConfig >
 class MeshInitializer
