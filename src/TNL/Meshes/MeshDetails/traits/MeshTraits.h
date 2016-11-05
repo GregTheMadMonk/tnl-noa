@@ -18,9 +18,7 @@
 
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/SharedArray.h>
-#include <TNL/Containers/ConstSharedArray.h>
-#include <TNL/Meshes/MeshDimensionTag.h>
+#include <TNL/Meshes/MeshDimensionsTag.h>
 
 namespace TNL {
 namespace Meshes {

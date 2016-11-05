@@ -18,8 +18,6 @@
 
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/SharedArray.h>
-//#include <TNL/Containers/ConstSharedArray.h>
 #include <TNL/Containers/IndexedSet.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
 #include <TNL/Meshes/MeshConfigBase.h>
@@ -75,8 +73,7 @@ public:
    using Key                           = MeshEntitySeedKey< MeshConfig, EntityTopology >;
 
    using StorageArrayType              = Containers::Array< EntityType, Devices::Host, GlobalIndexType >;
-   using UniqueContainerType           = Containers::IndexedSet< EntityType, GlobalIndexType, Key >;
-   using SeedIndexedSetType            = Containers::IndexedSet< SeedType, GlobalIndexType, Key >;
+   using SeedIndexedSetType            = Containers::IndexedSet< Key, GlobalIndexType >;
    using SeedArrayType                 = Containers::Array< SeedType, Devices::Host, GlobalIndexType >;
    using ReferenceOrientationArrayType = Containers::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType >;
 };

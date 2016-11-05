@@ -17,8 +17,6 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/ConstSharedArray.h>
-#include <TNL/Containers/List.h>
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshConfigBase.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
