@@ -1,4 +1,5 @@
 SET( headers
+         FPE.h
          MemoryUsage.h
          StackBacktrace.h
 )
