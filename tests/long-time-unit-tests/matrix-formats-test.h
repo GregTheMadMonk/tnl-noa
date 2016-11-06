@@ -27,6 +27,7 @@
 #include <config/tnlParameterContainer.h>
 #include <matrices/tnlDenseMatrix.h>
 #include <matrices/tnlEllpackMatrix.h>
+#include <matrices/tnlEllpackSymMatrix.h>
 #include <matrices/tnlSlicedEllpackMatrix.h>
 #include <matrices/tnlChunkedEllpackMatrix.h>
 #include <matrices/tnlCSRMatrix.h>
@@ -40,6 +41,7 @@ void setupConfig( tnlConfigDescription& config )
     config.addEntry< tnlString >( "matrix-format", "Matrix format." );
        config.addEntryEnum< tnlString >( "dense" );
        config.addEntryEnum< tnlString >( "ellpack" );
+       config.addEntryEnum< tnlString >( "ellpack-sym" );
        config.addEntryEnum< tnlString >( "sliced-ellpack" );
        config.addEntryEnum< tnlString >( "chunked-ellpack" );
        config.addEntryEnum< tnlString >( "csr" );
@@ -154,6 +156,12 @@ int main( int argc, char* argv[] )
    if( matrixFormat == "ellpack" )
    {
        if( !testMatrix< tnlEllpackMatrix< double, tnlHost, int > >( parameters, false ) )
+          return EXIT_FAILURE;
+       return EXIT_SUCCESS;
+   }
+   if( matrixFormat == "ellpack-sym" )
+   {
+       if( !testMatrix< tnlEllpackSymMatrix< double, tnlHost, int > >( parameters, false ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
