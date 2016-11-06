@@ -2,7 +2,7 @@
                           DummyMesh.h  -  description
                              -------------------
     begin                : Apr 17, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    copyright            : (C) 2013 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 

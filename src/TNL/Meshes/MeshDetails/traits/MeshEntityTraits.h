@@ -2,7 +2,7 @@
                           MeshEntityTraits.h  -  description
                              -------------------
     begin                : Feb 13, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
