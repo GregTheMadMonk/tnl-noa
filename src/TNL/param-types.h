@@ -18,6 +18,7 @@ namespace TNL {
 template< typename T >
 String getType() { return T::getType(); };
 
+template<> inline String getType< void >() { return String( "void" ); };
 template<> inline String getType< bool >() { return String( "bool" ); };
 template<> inline String getType< short int >() { return String( "short int" ); };
 template<> inline String getType< int >() { return String( "int" ); };

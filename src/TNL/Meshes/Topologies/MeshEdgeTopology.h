@@ -24,7 +24,12 @@ namespace Meshes {
    
 struct MeshEdgeTopology
 {
-   static const int dimensions = 1;
+   static constexpr int dimensions = 1;
+
+   static String getType()
+   {
+      return "MeshEdgeTopology";
+   }
 };
 
 
@@ -33,7 +38,7 @@ struct MeshSubtopology< MeshEdgeTopology, 0 >
 {
    typedef MeshVertexTopology Topology;
 
-   static const int count = 2;
+   static constexpr int count = 2;
 };
 
 } // namespace Meshes

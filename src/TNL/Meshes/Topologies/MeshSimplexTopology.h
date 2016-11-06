@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <TNL/String.h>
+
 namespace TNL {
 namespace Meshes {
 
@@ -24,7 +26,12 @@ template< int dimensions_ >
 class MeshSimplexTopology
 {
    public:
-	   static const int dimensions = dimensions_;
+      static constexpr int dimensions = dimensions_;
+
+      static String getType()
+      {
+         return String( "MeshSimplexTopology< " ) + String( dimensions ) + " >";
+      }
 };
 
 template< unsigned int n, unsigned int k >
@@ -37,26 +44,26 @@ template< int dimensions,
           int subtopologyDim >
 class MeshSubtopology< MeshSimplexTopology< dimensions >, subtopologyDim >
 {
-	static_assert( 0 < subtopologyDim && subtopologyDim < dim, "invalid subtopology dimension" );
+   static_assert( 0 < subtopologyDim && subtopologyDim < dim, "invalid subtopology dimension" );
 
-	static const int topologyVertexCount = MeshSubtopology< MeshSimplexTopology< dimensions >, 0 >::count;
-	static const int subtopologyVertexCount = MeshSubtopology< MeshSimplexTopology< subtopologyDim >, 0>::count;
+   static constexpr int topologyVertexCount = MeshSubtopology< MeshSimplexTopology< dimensions >, 0 >::count;
+   static constexpr int subtopologyVertexCount = MeshSubtopology< MeshSimplexTopology< subtopologyDim >, 0>::count;
 
    public:
-	   typedef MeshSimplexTopology< subtopologyDim > Topology;
+      typedef MeshSimplexTopology< subtopologyDim > Topology;
 
-	   static const int count = tnlNumCombinations< topologyVertexCount, subtopologyVertexCount >::value;
+      static constexpr int count = tnlNumCombinations< topologyVertexCount, subtopologyVertexCount >::value;
 };
 
 template< int dimensions >
 class MeshSubtopology< MeshSimplexTopology< dimensions >, 0 >
 {
-	static_assert(0 < dim, "invalid dimension");
+   static_assert(0 < dim, "invalid dimension");
 
    public:
-	   typedef MeshVertexTopology Topology;
+      typedef MeshVertexTopology Topology;
 
-   	static const int count = dim + 1;
+      static constexpr int count = dim + 1;
 };
 
 
@@ -67,44 +74,44 @@ template< int dimensions,
 struct tnlSubentityVertex< MeshSimplexTopology< dimensions >, Subtopology, subtopologyIndex, vertexIndex >
 {
    private:
-	   static const int subtopologyCount = Subtopology< MeshSimplexTopology< dimensions >, Subtopology::dimensions >::count;
-	   static const int topologyVertexCount = Subtopology< MeshSimplex< dimensions >, 0 >::count;
-	   static const int subtopologyVertexCount = Subtopology< Subtopology, 0 >::count;
+      static constexpr int subtopologyCount = Subtopology< MeshSimplexTopology< dimensions >, Subtopology::dimensions >::count;
+      static constexpr int topologyVertexCount = Subtopology< MeshSimplex< dimensions >, 0 >::count;
+      static constexpr int subtopologyVertexCount = Subtopology< Subtopology, 0 >::count;
 
-	   static_assert(1 < dimensions, "subtopology vertex can be specified for topologies of dimension 2 or higher");
-	   static_assert(0 <= subtopologyIndex && subtopologyIndex < subtopologyCount, "invalid subtopology index");
-	   static_assert(0 <= vertexIndex && vertexIndex < subtopologyVertexCount, "invalid subtopology vertex index");
+      static_assert(1 < dimensions, "subtopology vertex can be specified for topologies of dimension 2 or higher");
+      static_assert(0 <= subtopologyIndex && subtopologyIndex < subtopologyCount, "invalid subtopology index");
+      static_assert(0 <= vertexIndex && vertexIndex < subtopologyVertexCount, "invalid subtopology vertex index");
 
    public:
-	   static const int index = CombinationValue< topologyVertexCount, subtopologyVertexCount, subtopologyIndex, vertexIndex>::value;
+      static constexpr int index = CombinationValue< topologyVertexCount, subtopologyVertexCount, subtopologyIndex, vertexIndex>::value;
 };
 
 template< unsigned int n, unsigned int k >
 class tnlStaticNumCombinations
 {
-	static_assert(0 < k && k < n, "invalid argument");
+   static_assert(0 < k && k < n, "invalid argument");
 
    public:
-	   static const unsigned int value = tnlNumCombinations< n - 1, k - 1 >::value + tnlNumCombinations< n - 1, k >::value;
+      static const unsigned int value = tnlNumCombinations< n - 1, k - 1 >::value + tnlNumCombinations< n - 1, k >::value;
 };
 
 // Nummber of combinations (n choose k)
 template< unsigned int n >
 class tnlNumCombinations< n, 0 >
 {
-	static_assert(0 <= n, "invalid argument");
+   static_assert(0 <= n, "invalid argument");
 
    public:
-	   static const unsigned int value = 1;
+      static const unsigned int value = 1;
 };
 
 template< unsigned int n >
 class tnlNumCombinations< n, n >
 {
-	static_assert(0 < n, "invalid argument");
+   static_assert(0 < n, "invalid argument");
 
    public:
-	   static const unsigned int value = 1;
+      static const unsigned int value = 1;
 };
 
 //     Compile-time generation of combinations
@@ -123,14 +130,14 @@ template< unsigned int n,
           unsigned int valueIndex >
 class tnlCombinationValue
 {
-	static_assert( combinationIndex < NumCombinations< n, k >::value, "invalid combination index" );
-	static_assert( valueIndex < k, "invalid value index" );
+   static_assert( combinationIndex < NumCombinations< n, k >::value, "invalid combination index" );
+   static_assert( valueIndex < k, "invalid value index" );
 
-	static const unsigned int incrementValueIndex = tnlCombinationIncrement< n, k, combinationIndex - 1>::valueIndex;
+   static const unsigned int incrementValueIndex = tnlCombinationIncrement< n, k, combinationIndex - 1>::valueIndex;
 
    public:
-	   static const unsigned int value = ( valueIndex < incrementValueIndex ? tnlCombinationValue< n, k, combinationIndex - 1, valueIndex >::value :
-	                                       tnlCombinationValue< n, k, combinationIndex - 1, incrementValueIndex >::value +
+      static const unsigned int value = ( valueIndex < incrementValueIndex ? tnlCombinationValue< n, k, combinationIndex - 1, valueIndex >::value :
+                                          tnlCombinationValue< n, k, combinationIndex - 1, incrementValueIndex >::value +
                                           valueIndex - incrementValueIndex + 1);
 };
 
@@ -139,12 +146,12 @@ template< unsigned int n,
           unsigned int valueIndex >
 class tnlCombinationValue< n, k, 0, valueIndex >
 {
-	static_assert( valueIndex < k, "invalid value index" );
+   static_assert( valueIndex < k, "invalid value index" );
 
-	static const unsigned int incrementValueIndex = tnlCombinationIncrement< n, k, 0 >::valueIndex;
+   static const unsigned int incrementValueIndex = tnlCombinationIncrement< n, k, 0 >::valueIndex;
 
    public:
-	   static const unsigned int value = valueIndex;
+      static const unsigned int value = valueIndex;
 };
 
 // The CombinationIncrement class determines value index of the particular combination which will be incremented when generating the next combination
@@ -154,12 +161,12 @@ template< unsigned int n,
           unsigned int valueIndex >
 class tnlCombinationIncrementImpl
 {
-	static_assert( combinationIndex < tnlNumCombinations< n, k >::value - 1, "nothing to increment" );
+   static_assert( combinationIndex < tnlNumCombinations< n, k >::value - 1, "nothing to increment" );
 
-	static const bool incrementPossible = ( tnlCombinationValue< n, k, combinationIndex, valueIndex >::value + k - valueIndex < n );
+   static const bool incrementPossible = ( tnlCombinationValue< n, k, combinationIndex, valueIndex >::value + k - valueIndex < n );
 
    public:
-	   static const int valueIndex = ( incrementPossible ? valueIndex : tnlCombinationIncrementImpl< n, k, combinationIndex, valueIndex - 1 >::valueIndex );
+      static constexpr int valueIndex = ( incrementPossible ? valueIndex : tnlCombinationIncrementImpl< n, k, combinationIndex, valueIndex - 1 >::valueIndex );
 };
 
 template< unsigned int n,
@@ -167,10 +174,10 @@ template< unsigned int n,
           unsigned int combinationIndex >
 class tnlCombinationIncrementImpl< n, k, combinationIndex, 0 >
 {
-	static_assert( combinationIndex < tnlNumCombinations<n, k>::value - 1, "nothing to increment" );
+   static_assert( combinationIndex < tnlNumCombinations<n, k>::value - 1, "nothing to increment" );
 
    public:
-	   static const int valueIndex = 0;
+      static constexpr int valueIndex = 0;
 };
 
 template< unsigned int n,
@@ -178,10 +185,10 @@ template< unsigned int n,
           unsigned int combinationIndex >
 class tnlCombinationIncrement
 {
-	static_assert( combinationIndex < tnlNumCombinations< n, k >::value - 1, "nothing to increment" );
+   static_assert( combinationIndex < tnlNumCombinations< n, k >::value - 1, "nothing to increment" );
 
    public:
-	   static const unsigned int valueIndex = tnlCombinationIncrementImpl< n, k, combinationIndex, k - 1 >::valueIndex;
+      static const unsigned int valueIndex = tnlCombinationIncrementImpl< n, k, combinationIndex, k - 1 >::valueIndex;
 };
 
 } // namespace Meshes

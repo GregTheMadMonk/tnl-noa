@@ -27,7 +27,9 @@ String
 MeshEntity< MeshConfig, EntityTopology >::
 getType()
 {
-   return String( "MeshEntity< ... >" );
+   return String( "MeshEntity< " ) +
+          MeshConfig::getType() + ", " +
+          EntityTopology::getType() + " >";
 }
 
 template< typename MeshConfig,
@@ -45,8 +47,7 @@ bool
 MeshEntity< MeshConfig, EntityTopology >::
 save( File& file ) const
 {
-   if( ! MeshSubentityAccess< MeshConfig, EntityTopology >::save( file ) /*||
-       ! MeshSuperentityStorageLayers< MeshConfig, EntityTopology >::save( file )*/ )
+   if( ! MeshSubentityAccess< MeshConfig, EntityTopology >::save( file ) )
       return false;
    return true;
 }
@@ -57,8 +58,7 @@ bool
 MeshEntity< MeshConfig, EntityTopology >::
 load( File& file )
 {
-   if( ! MeshSubentityAccess< MeshConfig, EntityTopology >::load( file ) /*||
-       ! MeshSuperentityStorageLayers< MeshConfig, EntityTopology >::load( file ) */ )
+   if( ! MeshSubentityAccess< MeshConfig, EntityTopology >::load( file ) )
       return false;
    return true;
 }

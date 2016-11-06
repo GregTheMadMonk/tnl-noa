@@ -16,12 +16,19 @@
 
 #pragma once
 
+#include <TNL/String.h>
+
 namespace TNL {
 namespace Meshes {
 
 struct MeshVertexTopology
 {
-   static const int dimensions = 0;
+   static constexpr int dimensions = 0;
+
+   static String getType()
+   {
+      return "MeshVertexTopology";
+   }
 };
 
 } // namespace Meshes

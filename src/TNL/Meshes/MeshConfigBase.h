@@ -17,6 +17,7 @@
 #pragma once
 
 #include <TNL/String.h>
+#include <TNL/param-types.h>
 
 namespace TNL {
 namespace Meshes {
@@ -49,7 +50,13 @@ struct MeshConfigBase
 
    static String getType()
    {
-      return String( "MeshConfigBase< >");
+      return String( "Meshes::MeshConfigBase< " ) +
+             Cell::getType() + ", " +
+             String( WorldDimensions ) + ", " +
+             TNL::getType< Real >() + ", " +
+             TNL::getType< GlobalIndex >() + ", " +
+             TNL::getType< LocalIndex >() + ", " +
+             TNL::getType< Id >() + " >";
    };
  
    /****

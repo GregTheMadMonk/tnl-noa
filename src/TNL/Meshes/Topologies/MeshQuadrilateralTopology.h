@@ -23,7 +23,12 @@ namespace Meshes {
 
 struct MeshQuadrilateralTopology
 {
-   static const int dimensions = 2;
+   static constexpr int dimensions = 2;
+
+   static String getType()
+   {
+      return "MeshQuadrilateralTopology";
+   }
 };
 
 
@@ -32,7 +37,7 @@ struct MeshSubtopology< MeshQuadrilateralTopology, 0 >
 {
    typedef MeshVertexTopology Topology;
 
-   static const int count = 4;
+   static constexpr int count = 4;
 };
 
 template<>
@@ -40,7 +45,7 @@ struct MeshSubtopology< MeshQuadrilateralTopology, 1 >
 {
    typedef MeshEdgeTopology Topology;
 
-   static const int count = 4;
+   static constexpr int count = 4;
 };
 
 

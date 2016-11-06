@@ -23,7 +23,12 @@ namespace Meshes {
 
 struct MeshTetrahedronTopology
 {
-   static const int dimensions = 3;
+   static constexpr int dimensions = 3;
+
+   static String getType()
+   {
+      return "MeshTetrahedronTopology";
+   }
 };
 
 template<>
@@ -31,7 +36,7 @@ struct MeshSubtopology< MeshTetrahedronTopology, 0 >
 {
    typedef MeshVertexTopology Topology;
 
-   static const int count = 4;
+   static constexpr int count = 4;
 };
 
 template<>
@@ -39,7 +44,7 @@ struct MeshSubtopology< MeshTetrahedronTopology, 1 >
 {
    typedef MeshEdgeTopology Topology;
 
-   static const int count = 6;
+   static constexpr int count = 6;
 };
 
 template<>
@@ -47,7 +52,7 @@ struct MeshSubtopology< MeshTetrahedronTopology, 2 >
 {
    typedef MeshTriangleTopology Topology;
 
-   static const int count = 4;
+   static constexpr int count = 4;
 };
 
 
