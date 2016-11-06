@@ -714,6 +714,7 @@ typename Vector::RealType tnlEllpackSymMatrix< Real, Device, Index >::rowVectorP
     return result;
 }
 
+#ifdef HAVE_CUDA
 template< typename Real,
           typename Device,
           typename Index >
@@ -737,6 +738,7 @@ void tnlEllpackSymMatrix< Real, Device, Index >::spmvCuda( const InVector& inVec
         i += step;
     }
 };
+#endif
 
 #ifdef HAVE_CUDA
 template< typename Real,
