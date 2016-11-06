@@ -30,7 +30,8 @@ namespace Debugging {
  *
  * See the proc(5) manual on Linux for details.
  */
-void printMemoryUsage( std::ostream& str = std::cerr )
+static void
+printMemoryUsage( std::ostream& str = std::cerr )
 {
    std::ifstream meminfo("/proc/self/status");
    if( meminfo.fail() ) {

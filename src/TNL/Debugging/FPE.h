@@ -18,7 +18,8 @@
 namespace TNL {
 namespace Debugging {
 
-void printStackBacktraceAndAbort( int sig = 0 )
+static void
+printStackBacktraceAndAbort( int sig = 0 )
 {
    if( sig == SIGSEGV )
       fprintf(stderr, "Invalid memory reference, printing backtrace and aborting...\n");
@@ -56,7 +57,8 @@ void printStackBacktraceAndAbort( int sig = 0 )
  *    [start some computation here...]
  * }
  */
-void trackFloatingPointExceptions()
+static void
+trackFloatingPointExceptions()
 {
    signal( SIGSEGV, printStackBacktraceAndAbort );
    signal( SIGFPE,  printStackBacktraceAndAbort );
