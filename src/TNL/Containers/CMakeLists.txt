@@ -17,7 +17,6 @@ set( headers Array.h
              MultiArray4D_impl.h             
              SharedArray.h
              SharedArray_impl.h
-             ConstSharedArray.h
              StaticArray.h 
              StaticArray_impl.h
              StaticArray1D_impl.h
