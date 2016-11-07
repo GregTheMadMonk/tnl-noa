@@ -1,3 +1,13 @@
+/***************************************************************************
+                          CudaMultireductionKernel.h  -  description
+                             -------------------
+    begin                : Oct 4, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
 #pragma once
 
 #ifdef HAVE_CUDA
@@ -216,10 +226,10 @@ CudaMultireductionKernelLauncher( Operation& operation,
       throw 1;
    }
 
-   // create reference to the reduction buffer singleton and set default size
+   // create reference to the reduction buffer singleton and set size
    // (make an overestimate to avoid reallocation on every call if n is increased by 1 each time)
    const size_t buf_size = 8 * ( n / 8 + 1 ) * desGridSizeX * sizeof( ResultType );
-   CudaReductionBuffer & cudaReductionBuffer = CudaReductionBuffer::getInstance();
+   CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
    if( ! cudaReductionBuffer.setSize( buf_size ) )
       throw 1;
    output = cudaReductionBuffer.template getData< ResultType >();

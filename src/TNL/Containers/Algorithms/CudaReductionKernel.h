@@ -10,15 +10,35 @@
 
 #pragma once
 
+#ifdef HAVE_CUDA
+#include <cuda.h>
+#endif
+
+#include <TNL/Assert.h>
+#include <TNL/Math.h>
+#include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Containers/Algorithms/CudaReductionBuffer.h>
+
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
 #ifdef HAVE_CUDA
+/****
+ * The performance of this kernel is very sensitive to register usage.
+ * Compile with --ptxas-options=-v and configure these constants for given
+ * architecture so that there are no local memory spills.
+ */
+static constexpr int Reduction_maxThreadsPerBlock = 256;  // must be a power of 2
+#if (__CUDA_ARCH__ >= 300 )
+   static constexpr int Reduction_minBlocksPerMultiprocessor = 6;
+#else
+   static constexpr int Reduction_minBlocksPerMultiprocessor = 4;
+#endif
 
 template< typename Operation, int blockSize >
-__global__
-void
+__global__ void
+__launch_bounds__( Reduction_maxThreadsPerBlock, Reduction_minBlocksPerMultiprocessor )
 CudaReductionKernel( Operation& operation,
                      const typename Operation::IndexType size,
                      const typename Operation::RealType* input1,
@@ -164,19 +184,32 @@ CudaReductionKernelLauncher( Operation& operation,
    typedef typename Operation::RealType RealType;
    typedef typename Operation::ResultType ResultType;
 
-   // TODO: optimize similarly to multireduction
-   const int minGPUReductionDataSize = 256;
-   const IndexType desGridSize( minGPUReductionDataSize );
+   // The number of blocks should be a multiple of the number of multiprocessors
+   // to ensure optimum balancing of the load. This is very important, because
+   // we run the kernel with a fixed number of blocks, so the amount of work per
+   // block increases with enlarging the problem, so even small imbalance can
+   // cost us dearly.
+   // On Tesla K40c, desGridSize = 4 * 6 * 15 = 360.
+//   const IndexType desGridSize = 4 * Reduction_minBlocksPerMultiprocessor
+//                                   * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
+   // On Tesla K40c, desGridSize = 6 * 15 = 90.
+   const IndexType desGridSize = Reduction_minBlocksPerMultiprocessor
+                               * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
    dim3 blockSize( 256 ), gridSize( 0 );
    gridSize.x = min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
 
-   // create reference to the reduction buffer singleton and set default size
-   CudaReductionBuffer & cudaReductionBuffer = CudaReductionBuffer::getInstance( 8 * minGPUReductionDataSize );
-
-   if( ! cudaReductionBuffer.setSize( gridSize.x * sizeof( ResultType ) ) )
-      return false;
+   // create reference to the reduction buffer singleton and set size
+   const size_t buf_size = desGridSize * sizeof( ResultType );
+   CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
+   if( ! cudaReductionBuffer.setSize( buf_size ) )
+      throw 1;
    output = cudaReductionBuffer.template getData< ResultType >();
-   IndexType shmem = blockSize.x * sizeof( ResultType );
+
+   // when there is only one warp per blockSize.x, we need to allocate two warps
+   // worth of shared memory so that we don't index shared memory out of bounds
+   const IndexType shmem = (blockSize.x <= 32)
+            ? 2 * blockSize.x * sizeof( ResultType )
+            : blockSize.x * sizeof( ResultType );
 
    /***
     * Depending on the blockSize we generate appropriate template instance.
@@ -188,34 +221,50 @@ CudaReductionKernelLauncher( Operation& operation,
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case 256:
+         cudaFuncSetCacheConfig(CudaReductionKernel< Operation, 256 >, cudaFuncCachePreferShared);
+
          CudaReductionKernel< Operation, 256 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case 128:
+         cudaFuncSetCacheConfig(CudaReductionKernel< Operation, 128 >, cudaFuncCachePreferShared);
+
          CudaReductionKernel< Operation, 128 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case  64:
+         cudaFuncSetCacheConfig(CudaReductionKernel< Operation,  64 >, cudaFuncCachePreferShared);
+
          CudaReductionKernel< Operation,  64 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case  32:
+         cudaFuncSetCacheConfig(CudaReductionKernel< Operation,  32 >, cudaFuncCachePreferShared);
+
          CudaReductionKernel< Operation,  32 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case  16:
+         cudaFuncSetCacheConfig(CudaReductionKernel< Operation,  16 >, cudaFuncCachePreferShared);
+
          CudaReductionKernel< Operation,  16 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
      case   8:
+         cudaFuncSetCacheConfig(CudaReductionKernel< Operation,   8 >, cudaFuncCachePreferShared);
+
          CudaReductionKernel< Operation,   8 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case   4:
+         cudaFuncSetCacheConfig(CudaReductionKernel< Operation,   4 >, cudaFuncCachePreferShared);
+
          CudaReductionKernel< Operation,   4 >
         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
         break;
       case   2:
+         cudaFuncSetCacheConfig(CudaReductionKernel< Operation,   2 >, cudaFuncCachePreferShared);
+
          CudaReductionKernel< Operation,   2 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
@@ -224,8 +273,10 @@ CudaReductionKernelLauncher( Operation& operation,
       default:
          Assert( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
    }
-   //checkCudaDevice;
-   return gridSize. x;
+   checkCudaDevice;
+
+   // return the size of the output array on the CUDA device
+   return gridSize.x;
 }
 #endif
 
