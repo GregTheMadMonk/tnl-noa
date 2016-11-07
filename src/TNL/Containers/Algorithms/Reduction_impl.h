@@ -1,8 +1,8 @@
 /***************************************************************************
-                          cuda-reduction_impl.h  -  description
+                          Reduction_impl.h  -  description
                              -------------------
     begin                : Mar 24, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    copyright            : (C) 2013 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 

@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/Containers/Algorithms/reduction-operations.h>
-#include <TNL/Containers/Algorithms/cuda-reduction.h>
+#include <TNL/Containers/Algorithms/Reduction.h>
 
 namespace TNL {
 namespace Containers {

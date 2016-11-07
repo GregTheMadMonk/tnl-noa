@@ -2,8 +2,6 @@ ADD_SUBDIRECTORY( TemplateExplicitInstantiation )
 
 set( headers cuda-prefix-sum.h
              cuda-prefix-sum_impl.h
-             cuda-reduction.h             
-             cuda-reduction_impl.h
              reduction-operations.h
              CublasWrapper.h
              CudaMultireductionKernel.h
@@ -11,6 +9,8 @@ set( headers cuda-prefix-sum.h
              CudaReductionKernel.h
              Multireduction.h
              Multireduction_impl.h
+             Reduction.h
+             Reduction_impl.h
    )
 
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Containers/Algorithms )

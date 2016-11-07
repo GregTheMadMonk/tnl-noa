@@ -10,7 +10,7 @@
 
 #pragma once 
 
-#include <TNL/Containers/Algorithms/cuda-reduction.h>
+#include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>

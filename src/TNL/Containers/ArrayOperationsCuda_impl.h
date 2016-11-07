@@ -13,7 +13,7 @@
 #include <iostream>
 #include <TNL/tnlConfig.h>
 #include <TNL/Math.h>
-#include <TNL/Containers/Algorithms/cuda-reduction.h>
+#include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
 
 namespace TNL {
