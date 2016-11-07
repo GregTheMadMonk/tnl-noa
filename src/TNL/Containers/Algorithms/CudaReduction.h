@@ -32,23 +32,6 @@ class CudaReduction
                                      const RealType* input2,
                                      ResultType* output );
 };
- 
-/*template< typename Real, typename Index, int blockSize >
-class CudaReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize >
-{
-   public:
- 
-      typedef tnlParallelReductionScalarProduct< Real, Index > Operation;
-      typedef typename Operation::IndexType IndexType;
-      typedef typename Operation::RealType RealType;
-      typedef typename Operation::ResultType ResultType;
- 
-      __device__ static void reduce( Operation operation,
-                                     const IndexType size,
-                                     const RealType* input1,
-                                     const RealType* input2,
-                                     ResultType* output );
-};*/
 
 #endif
 
