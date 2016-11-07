@@ -5,11 +5,10 @@ set( headers cuda-prefix-sum.h
              cuda-reduction.h             
              cuda-reduction_impl.h
              reduction-operations.h
-             CudaReduction.h
-             CudaReduction_impl.h
-             CudaReductionBuffer.h
              CublasWrapper.h
              CudaMultireductionKernel.h
+             CudaReductionBuffer.h
+             CudaReductionKernel.h
              Multireduction.h
              Multireduction_impl.h
    )

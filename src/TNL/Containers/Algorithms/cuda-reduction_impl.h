@@ -20,7 +20,7 @@
 #include <TNL/Containers/ArrayOperations.h>
 #include <TNL/Math.h>
 #include <TNL/Containers/Algorithms/CudaReductionBuffer.h>
-#include <TNL/Containers/Algorithms/CudaReduction.h>
+#include <TNL/Containers/Algorithms/CudaReductionKernel.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
 #include <iostream>
@@ -40,92 +40,6 @@ namespace Algorithms {
 const int minGPUReductionDataSize = 256;//65536; //16384;//1024;//256;
 
 #ifdef HAVE_CUDA
-
-template< typename Operation, int blockSize >
-__global__ void
-CudaReductionKernel( Operation operation,
-                     const typename Operation::IndexType size,
-                     const typename Operation::RealType* input1,
-                     const typename Operation::RealType* input2,
-                     typename Operation::ResultType* output )
-{
-   typedef CudaReduction< Operation, blockSize > Reduction;
-   Reduction::reduce( operation, size, input1, input2, output );
-};
-
-template< typename Operation >
-typename Operation::IndexType
-reduceOnCudaDevice( Operation& operation,
-                    const typename Operation::IndexType size,
-                    const typename Operation::RealType* input1,
-                    const typename Operation::RealType* input2,
-                    typename Operation::ResultType*& output)
-{
-   typedef typename Operation::IndexType IndexType;
-   typedef typename Operation::RealType RealType;
-   typedef typename Operation::ResultType ResultType;
- 
-   const IndexType desGridSize( minGPUReductionDataSize );
-   dim3 blockSize( 256 ), gridSize( 0 );
-   gridSize.x = min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
- 
-   // create reference to the reduction buffer singleton and set default size
-   CudaReductionBuffer & cudaReductionBuffer = CudaReductionBuffer::getInstance( 8 * minGPUReductionDataSize );
- 
-   if( ! cudaReductionBuffer.setSize( gridSize.x * sizeof( ResultType ) ) )
-      return false;
-   output = cudaReductionBuffer.template getData< ResultType >();
-   IndexType shmem = blockSize.x * sizeof( ResultType );
- 
-   /***
-    * Depending on the blockSize we generate appropriate template instance.
-    */
-   switch( blockSize.x )
-   {
-      case 512:
-         CudaReductionKernel< Operation, 512 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case 256:
-         CudaReductionKernel< Operation, 256 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case 128:
-         CudaReductionKernel< Operation, 128 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case  64:
-         CudaReductionKernel< Operation,  64 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case  32:
-         CudaReductionKernel< Operation,  32 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case  16:
-         CudaReductionKernel< Operation,  16 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-     case   8:
-         CudaReductionKernel< Operation,   8 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case   4:
-         CudaReductionKernel< Operation,   4 >
-        <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-        break;
-      case   2:
-         CudaReductionKernel< Operation,   2 >
-         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-         break;
-      case   1:
-         Assert( false, std::cerr << "blockSize should not be 1." << std::endl );
-      default:
-         Assert( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
-   }
-   //checkCudaDevice;
-   return gridSize. x;
-}
 #endif
 
 template< typename Operation >
@@ -172,11 +86,11 @@ reductionOnCudaDevice( Operation& operation,
     * Reduce the data on the CUDA device.
     */
    ResultType* deviceAux1( 0 );
-   IndexType reducedSize = reduceOnCudaDevice( operation,
-                                               size,
-                                               deviceInput1,
-                                               deviceInput2,
-                                               deviceAux1 );
+   IndexType reducedSize = CudaReductionKernelLauncher( operation,
+                                                        size,
+                                                        deviceInput1,
+                                                        deviceInput2,
+                                                        deviceAux1 );
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
       std::cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << std::endl;
