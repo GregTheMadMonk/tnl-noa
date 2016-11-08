@@ -1,5 +1,6 @@
 ADD_SUBDIRECTORY( Config )
 ADD_SUBDIRECTORY( Containers )
+ADD_SUBDIRECTORY( Debugging )
 ADD_SUBDIRECTORY( Devices )
 ADD_SUBDIRECTORY( Experimental )
 ADD_SUBDIRECTORY( Functions )
