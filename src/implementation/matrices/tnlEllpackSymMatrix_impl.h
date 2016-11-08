@@ -76,8 +76,8 @@ bool tnlEllpackSymMatrix< Real, Device, Index >::setRowLengths( const RowLengths
 {
    tnlAssert( this->getRows() > 0, );
    tnlAssert( this->getColumns() > 0, );
-   tnlAssert( this->rowLengths > 0,
-              cerr << "this->rowLengths = " << this->rowLengths );
+   //tnlAssert( this->rowLengths > 0,
+   //           cerr << "this->rowLengths = " << this->rowLengths );
    this->rowLengths = this->maxRowLength = rowLengths.max();
    return allocateElements();
 }
@@ -394,6 +394,9 @@ template< typename Real,
 Real tnlEllpackSymMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                               const IndexType column ) const
 {
+   if( row < column )
+       return this->getElementFast( column, row );
+
    typedef tnlEllpackSymMatrixDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPtr = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
@@ -413,6 +416,9 @@ template< typename Real,
 Real tnlEllpackSymMatrix< Real, Device, Index >::getElement( const IndexType row,
                                                           const IndexType column ) const
 {
+   if( row < column )
+       return this->getElement( column, row );
+
    typedef tnlEllpackSymMatrixDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPtr = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
@@ -642,7 +648,8 @@ class tnlEllpackSymMatrixDeviceDependentCode< tnlHost >
       static Index getRowEnd( const tnlEllpackSymMatrix< Real, Device, Index >& matrix,
                                 const Index row )
       {
-         return ( row + 1 ) * matrix.rowLengths;
+         //return row * matrix.rowLengths + row + 1;
+         return min(row * matrix.rowLengths + row + 1, ( row + 1 ) * matrix.rowLengths );
       }
 
       template< typename Real,
@@ -734,7 +741,7 @@ void tnlEllpackSymMatrix< Real, Device, Index >::spmvCuda( const InVector& inVec
         const IndexType column = this->columnIndexes.getElemnt( i );
         outVector[ rowId ] += this->values.getElement( i ) * inVector[ column ];
         if( rowId != column )
-            outVector[ column ] += this->values.getElement( i ) * inVector[ row ];
+            outVector[ column ].add( this->values.getElement( i ) * inVector[ row ] );
         i += step;
     }
 };
@@ -784,7 +791,8 @@ class tnlEllpackSymMatrixDeviceDependentCode< tnlCuda >
       static Index getRowEnd( const tnlEllpackSymMatrix< Real, Device, Index >& matrix,
                                 const Index row )
       {
-         return row + getElementStep( matrix ) * matrix.rowLengths;
+         // TODO: fix this: return row + getElementStep( matrix ) * matrix.rowLengths;
+         return min( row + getElementStep( matrix ) * matrix.rowLengths, row + ( row + 1 ) * getElementStep( matrix ) );
       }
 
       template< typename Real,
