@@ -1,7 +1,8 @@
 #!/bin/bash
 
 TARGET=TNL
-PREFIX=${HOME}/local
+PREFIX=${HOME}/.local
+WITH_CLANG="no"
 WITH_CUDA="yes"
 WITH_TESTS="yes"
 
@@ -12,6 +13,7 @@ INSTANTIATE_INT="yes"
 INSTANTIATE_LONG_DOUBLE="no"
 INSTANTIATE_DOUBLE="yes"
 INSTANTIATE_FLOAT="no"
+OPTIMIZED_VECTOR_HOST_OPERATIONS="no"
 CMAKE="cmake"
 CMAKE_ONLY="no"
 HELP="no"
@@ -25,6 +27,7 @@ do
     case $option in
         --prefix=*                       ) PREFIX="${option#*=}" ;;
         --build=*                        ) BUILD="${option#*=}" ;;
+        --with-clang=*                   ) WITH_CLANG="${option#*=}" ;;
         --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
         --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
         --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;
@@ -40,6 +43,7 @@ do
                                            INSTANTIATE_DOUBLE="yes"
                                            INSTANTIATE_FLOAT="no"
                                            WITH_CUDA_ARCH="auto" ;;
+        --optimize-vector-host-operations=* ) OPTIMIZED_VECTOR_HOST_OPERATIONS="yes" ;;
         --with-cmake=*                   ) CMAKE="${option#*=}" ;;
         --build-jobs=*                   ) BUILD_JOBS="${option#*=}" ;;
         --cmake-only=*                   ) CMAKE_ONLY="${option#*=}" ;;
@@ -73,6 +77,13 @@ then
     exit 1
 fi
 
+if test ${WITH_CLANG} = "yes";
+then
+   export CXX=clang++
+   export CC=clang
+fi
+
+
 echo "Configuring ${BUILD} $TARGET ..."
 
 ${CMAKE} ${ROOT_DIR} \
@@ -88,7 +99,8 @@ ${CMAKE} ${ROOT_DIR} \
          -DINSTANTIATE_DOUBLE=${INSTANTIATE_DOUBLE} \
          -DINSTANTIATE_LONG_DOUBLE=${INSTANTIATE_LONG_DOUBLE} \
          -DINSTANTIATE_INT=${INSTANTIATE_INT} \
-         -DINSTANTIATE_LONG_INT=${INSTANTIATE_LONG_INT}
+         -DINSTANTIATE_LONG_INT=${INSTANTIATE_LONG_INT} \
+         -DOPTIMIZED_VECTOR_HOST_OPERATIONS=${OPTIMIZED_VECTOR_HOST_OPERATIONS}
 
 if test $? != 0; then
     echo "Error: cmake exited with error code."

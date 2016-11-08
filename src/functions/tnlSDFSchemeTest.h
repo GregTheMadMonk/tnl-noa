@@ -18,8 +18,8 @@
 #ifndef TNLSDFSCHEMETEST_H_
 #define TNLSDFSCHEMETEST_H_
 
-#include <config/tnlParameterContainer.h>
-#include <core/vectors/tnlStaticVector.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Containers/StaticVector.h>
 #include <functions/tnlSDFSinWaveFunction.h>
 #include <functions/tnlSDFSinWaveFunctionSDF.h>
 #include <functions/tnlSDFSinBumpsFunction.h>

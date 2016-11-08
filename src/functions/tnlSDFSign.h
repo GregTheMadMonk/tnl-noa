@@ -18,8 +18,8 @@
 #ifndef TNLSDFSIGN_H_
 #define TNLSDFSIGN_H_
 
-#include <config/tnlParameterContainer.h>
-#include <core/vectors/tnlStaticVector.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Containers/StaticVector.h>
 
 template< typename Real = double >
 class tnlSDFSignBase

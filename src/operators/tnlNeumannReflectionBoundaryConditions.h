@@ -1,8 +1,8 @@
 #pragma once
 
-#include <core/vectors/tnlStaticVector.h>
+#include <TNL/Containers/StaticVector.h>
 #include <core/vectors/tnlSharedVector.h>
-#include <config/tnlParameterContainer.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <functions/tnlConstantFunction.h>
 
 template< typename Mesh,

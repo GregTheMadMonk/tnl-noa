@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNL_BENCHMARK_SPMV_H_
 #define TNL_BENCHMARK_SPMV_H_
@@ -25,188 +18,190 @@
 #include <cusparse.h>
 #endif
 
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
-#include <matrices/tnlCSRMatrix.h>
-#include <matrices/tnlEllpackMatrix.h>
-#include <matrices/tnlSlicedEllpackMatrix.h>
-#include <matrices/tnlChunkedEllpackMatrix.h>
-#include <matrices/tnlMatrixReader.h>
-#include <core/tnlTimerRT.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Matrices/CSR.h>
+#include <TNL/Matrices/Ellpack.h>
+#include <TNL/Matrices/SlicedEllpack.h>
+#include <TNL/Matrices/ChunkedEllpack.h>
+#include <TNL/Matrices/MatrixReader.h>
+#include <TNL/Timer.h>
 #include "tnlCusparseCSRMatrix.h"
 
 using namespace std;
+using namespace TNL;
+using namespace TNL::Matrices;
 
-void setupConfig( tnlConfigDescription& config )
+void setupConfig( Config::ConfigDescription& config )
 {
    config.addDelimiter                            ( "General settings:" );
-   config.addRequiredEntry< tnlString >( "test" , "Test to be performed." );
-      config.addEntryEnum< tnlString >( "mtx" );
-      config.addEntryEnum< tnlString >( "tnl" );
-   config.addRequiredEntry< tnlString >( "input-file" , "Input file name." );
-   config.addEntry< tnlString >( "log-file", "Log file name.", "tnl-benchmark-spmv.log");
-   config.addEntry< tnlString >( "precision", "Precision of the arithmetics.", "double" );
+   config.addRequiredEntry< String >( "test" , "Test to be performed." );
+      config.addEntryEnum< String >( "mtx" );
+      config.addEntryEnum< String >( "tnl" );
+   config.addRequiredEntry< String >( "input-file" , "Input file name." );
+   config.addEntry< String >( "log-file", "Log file name.", "tnl-benchmark-spmv.log");
+   config.addEntry< String >( "precision", "Precision of the arithmetics.", "double" );
    config.addEntry< double >( "stop-time", "Seconds to iterate the SpMV operation.", 1.0 );
    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
 }
 
-bool initLogFile( fstream& logFile, const tnlString& fileName )
+bool initLogFile( std::fstream& logFile, const String& fileName )
 {
    if( access( fileName.getString(), F_OK ) == -1 )
    {
-      logFile.open( fileName.getString(), ios::out );
+      logFile.open( fileName.getString(), std::ios::out );
       if( ! logFile )
          return false;
-      const tnlString fillingColoring = " : COLORING 0 #FFF8DC 20 #FFFF00 40 #FFD700 60 #FF8C0 80 #FF0000 100";
-      const tnlString speedupColoring = " : COLORING #0099FF 1 #FFFFFF 2 #00FF99 4 #33FF99 8 #33FF22 16 #FF9900";
-      const tnlString paddingColoring = " : COLORING #FFFFFF 1 #FFFFCC 10 #FFFF99 100 #FFFF66 1000 #FFFF33 10000 #FFFF00";
-      logFile << "#Matrix file " << endl;
-      logFile << "#Rows" << endl;
-      logFile << "#Columns" << endl;
-      logFile << "#Non-zero elements" << endl;
-      logFile << "#Filling (in %)" << fillingColoring << endl;
-      logFile << "#CSR Format" << endl;
-      logFile << "# CPU" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << endl;
+      const String fillingColoring = " : COLORING 0 #FFF8DC 20 #FFFF00 40 #FFD700 60 #FF8C0 80 #FF0000 100";
+      const String speedupColoring = " : COLORING #0099FF 1 #FFFFFF 2 #00FF99 4 #33FF99 8 #33FF22 16 #FF9900";
+      const String paddingColoring = " : COLORING #FFFFFF 1 #FFFFCC 10 #FFFF99 100 #FFFF66 1000 #FFFF33 10000 #FFFF00";
+      logFile << "#Matrix file " << std::endl;
+      logFile << "#Rows" << std::endl;
+      logFile << "#Columns" << std::endl;
+      logFile << "#Non-zero elements" << std::endl;
+      logFile << "#Filling (in %)" << fillingColoring << std::endl;
+      logFile << "#CSR Format" << std::endl;
+      logFile << "# CPU" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << std::endl;
 #ifdef HAVE_CUDA
-      logFile << "# Cusparse CSR" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - cusparse-csr-speedup.txt" << endl;
-      logFile << "# CUDA" << endl;
-      logFile << "#  Scalar" << endl;
-      logFile << "#   Gflops" << endl;
-      logFile << "#   Throughput" << endl;
-      logFile << "#   Speedup" << speedupColoring << " SORT - csr-scalar-cuda-speedup.txt" << endl;
-      logFile << "#  Vector" << endl;
-      logFile << "#   Warp Size 1" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-1-cuda-speedup.txt" << endl;
-      logFile << "#   Warp Size 2" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-2-cuda-speedup.txt" << endl;
-      logFile << "#   Warp Size 4" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-4-cuda-speedup.txt" << endl;
-      logFile << "#   Warp Size 8" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-8-cuda-speedup.txt" << endl;
-      logFile << "#   Warp Size 16" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-16-cuda-speedup.txt" << endl;
-      logFile << "#   Warp Size 32" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-32-cuda-speedup.txt" << endl;
-      logFile << "#  Hybrid" << endl;
-      logFile << "#   Split 2" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-2-cuda-speedup.txt" << endl;
-      logFile << "#   Split 4" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-4-cuda-speedup.txt" << endl;
-      logFile << "#   Split 8" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-8-cuda-speedup.txt" << endl;
-      logFile << "#   Split 16" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-16-cuda-speedup.txt" << endl;
-      logFile << "#   Split 32" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-32-cuda-speedup.txt" << endl;
-      logFile << "#   Split 64" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-64-cuda-speedup.txt" << endl;
+      logFile << "# Cusparse CSR" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - cusparse-csr-speedup.txt" << std::endl;
+      logFile << "# CUDA" << std::endl;
+      logFile << "#  Scalar" << std::endl;
+      logFile << "#   Gflops" << std::endl;
+      logFile << "#   Throughput" << std::endl;
+      logFile << "#   Speedup" << speedupColoring << " SORT - csr-scalar-cuda-speedup.txt" << std::endl;
+      logFile << "#  Vector" << std::endl;
+      logFile << "#   Warp Size 1" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-1-cuda-speedup.txt" << std::endl;
+      logFile << "#   Warp Size 2" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-2-cuda-speedup.txt" << std::endl;
+      logFile << "#   Warp Size 4" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-4-cuda-speedup.txt" << std::endl;
+      logFile << "#   Warp Size 8" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-8-cuda-speedup.txt" << std::endl;
+      logFile << "#   Warp Size 16" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-16-cuda-speedup.txt" << std::endl;
+      logFile << "#   Warp Size 32" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-32-cuda-speedup.txt" << std::endl;
+      logFile << "#  Hybrid" << std::endl;
+      logFile << "#   Split 2" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-2-cuda-speedup.txt" << std::endl;
+      logFile << "#   Split 4" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-4-cuda-speedup.txt" << std::endl;
+      logFile << "#   Split 8" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-8-cuda-speedup.txt" << std::endl;
+      logFile << "#   Split 16" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-16-cuda-speedup.txt" << std::endl;
+      logFile << "#   Split 32" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-32-cuda-speedup.txt" << std::endl;
+      logFile << "#   Split 64" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-64-cuda-speedup.txt" << std::endl;
 #endif
-      logFile << "#Ellpack Format" << endl;
-      logFile << "# Padding (in %)" << paddingColoring << endl;
-      logFile << "# CPU" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - ellpack-host-speedup.txt" << endl;
+      logFile << "#Ellpack Format" << std::endl;
+      logFile << "# Padding (in %)" << paddingColoring << std::endl;
+      logFile << "# CPU" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - ellpack-host-speedup.txt" << std::endl;
 #ifdef HAVE_CUDA
-      logFile << "# CUDA" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - ellpack-cuda-speedup.txt" << endl;
+      logFile << "# CUDA" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - ellpack-cuda-speedup.txt" << std::endl;
 #endif
-      logFile << "#SlicedEllpack Format" << endl;
-      logFile << "# Padding (in %)" << paddingColoring << endl;
-      logFile << "# CPU" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - sliced-ellpack-host-speedup.txt" << endl;
+      logFile << "#SlicedEllpack Format" << std::endl;
+      logFile << "# Padding (in %)" << paddingColoring << std::endl;
+      logFile << "# CPU" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - sliced-ellpack-host-speedup.txt" << std::endl;
 #ifdef HAVE_CUDA
-      logFile << "# CUDA" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - sliced-ellpack-cuda-speedup.txt" << endl;
+      logFile << "# CUDA" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - sliced-ellpack-cuda-speedup.txt" << std::endl;
 #endif
-      logFile << "#ChunkedEllpack Format" << endl;
-      logFile << "# Padding (in %)" << paddingColoring << endl;
-      logFile << "# CPU" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - chunked-ellpack-host-speedup.txt" << endl;
+      logFile << "#ChunkedEllpack Format" << std::endl;
+      logFile << "# Padding (in %)" << paddingColoring << std::endl;
+      logFile << "# CPU" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - chunked-ellpack-host-speedup.txt" << std::endl;
 #ifdef HAVE_CUDA
-      logFile << "# CUDA" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - chunked-ellpack-cuda-speedup.txt" << endl;
+      logFile << "# CUDA" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - chunked-ellpack-cuda-speedup.txt" << std::endl;
 #endif
       return true;
    }
-   logFile.open( fileName.getString(), ios::out | ios::app );
-   //logFile << setprecision( 2 );
+   logFile.open( fileName.getString(), std::ios::out | std::ios::app );
+   //logFile << std::setprecision( 2 );
    if( ! logFile )
       return false;
    return true;
 }
 
 template< typename Matrix >
-void printMatrixInfo( const tnlString& inputFileName,
+void printMatrixInfo( const String& inputFileName,
                       const Matrix& matrix,
-                      ostream& str )
+                      std::ostream& str )
 {
-   str << " Rows: " << setw( 8 ) << matrix.getRows();
-   str << " Columns: " << setw( 8 ) << matrix.getColumns();
-   str << " Nonzero Elements: " << setw( 10 ) << matrix.getNumberOfNonzeroMatrixElements();
+   str << " Rows: " << std::setw( 8 ) << matrix.getRows();
+   str << " Columns: " << std::setw( 8 ) << matrix.getColumns();
+   str << " Nonzero Elements: " << std::setw( 10 ) << matrix.getNumberOfNonzeroMatrixElements();
    const double fillingRatio = ( double ) matrix.getNumberOfNonzeroMatrixElements() / ( double ) matrix.getNumberOfMatrixElements();
-   str << " Filling: " << setw( 5 ) << 100.0 * fillingRatio << "%" << endl;
-   str << setw( 25 ) << "Format"
-       << setw( 15 ) << "Padding"
-       << setw( 15 ) << "Time"
-       << setw( 15 ) << "GFLOPS"
-       << setw( 15 ) << "Throughput"
-       << setw( 15 ) << "Speedup" << endl;
+   str << " Filling: " << std::setw( 5 ) << 100.0 * fillingRatio << "%" << std::endl;
+   str << std::setw( 25 ) << "Format"
+       << std::setw( 15 ) << "Padding"
+       << std::setw( 15 ) << "Time"
+       << std::setw( 15 ) << "GFLOPS"
+       << std::setw( 15 ) << "Throughput"
+       << std::setw( 15 ) << "Speedup" << std::endl;
 }
 
 template< typename Matrix >
-bool writeMatrixInfo( const tnlString& inputFileName,
+bool writeMatrixInfo( const String& inputFileName,
                       const Matrix& matrix,
-                      ostream& logFile )
+                      std::ostream& logFile )
 {
-   logFile << endl;
-   logFile << inputFileName << endl;
-   logFile << " " << matrix.getRows() << endl;
-   logFile << " " << matrix.getColumns() << endl;
-   logFile << " " << matrix.getNumberOfNonzeroMatrixElements() << endl;
+   logFile << std::endl;
+   logFile << inputFileName << std::endl;
+   logFile << " " << matrix.getRows() << std::endl;
+   logFile << " " << matrix.getColumns() << std::endl;
+   logFile << " " << matrix.getNumberOfNonzeroMatrixElements() << std::endl;
    const double fillingRatio = ( double ) matrix.getNumberOfNonzeroMatrixElements() / ( double ) matrix.getNumberOfMatrixElements();
-   logFile << " " << 100.0 * fillingRatio << endl;
-   logFile << flush;
+   logFile << " " << 100.0 * fillingRatio << std::endl;
+   logFile << std::flush;
    if( ! logFile.good() )
       return false;
    return true;
@@ -238,20 +233,20 @@ double benchmarkMatrix( const Matrix& matrix,
                         const double& stopTime,
                         const double& baseline,
                         int verbose,
-                        fstream& logFile )
+                        std::fstream& logFile )
 {
-   tnlTimerRT timer;
-   timer.reset();
+   Timer timer;
+   timer.start();
    double time( 0.0 );
    int iterations( 0 );
    while( time < stopTime )
    {
       matrix.vectorProduct( x, b );
 #ifdef HAVE_CUDA
-      if( ( tnlDeviceEnum ) Matrix::DeviceType::DeviceType == tnlCudaDevice )
+      if( std::is_same< typename Matrix::DeviceType, Devices::Cuda >::value )
          cudaThreadSynchronize();
 #endif
-      time = timer.getTime();
+      time = timer.getRealTime();
       iterations++;
    }
    const double gflops = computeGflops( nonzeroElements, iterations, time );
@@ -260,93 +255,93 @@ double benchmarkMatrix( const Matrix& matrix,
    const double padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
    if( verbose )
    {
-      cout << setw( 25 ) << format
-           << setw( 15 ) << padding
-           << setw( 15 ) << time
-           << setw( 15 ) << gflops
-           << setw( 15 ) << throughput;
+     std::cout << std::setw( 25 ) << format
+           << std::setw( 15 ) << padding
+           << std::setw( 15 ) << time
+           << std::setw( 15 ) << gflops
+           << std::setw( 15 ) << throughput;
       if( baseline )
-         cout << setw( 15 ) << gflops / baseline << endl;
+        std::cout << std::setw( 15 ) << gflops / baseline << std::endl;
       else
-         cout << setw( 15 ) << "N/A" << endl;
+        std::cout << std::setw( 15 ) << "N/A" << std::endl;
    }
-   logFile << "  " << gflops << endl;
-   logFile << "  " << throughput << endl;
+   logFile << "  " << gflops << std::endl;
+   logFile << "  " << throughput << std::endl;
    if( baseline )
-      logFile << gflops / baseline << endl;
+      logFile << gflops / baseline << std::endl;
    else
-      logFile << "N/A" << endl;
+      logFile << "N/A" << std::endl;
    return gflops;
 }
 
-void writeTestFailed( fstream& logFile,
+void writeTestFailed( std::fstream& logFile,
                       int repeat )
 {
    for( int i = 0; i < repeat; i++ )
-      logFile << "N/A" << endl;
+      logFile << "N/A" << std::endl;
 }
 
 template< typename Real >
-bool setupBenchmark( const tnlParameterContainer& parameters )
+bool setupBenchmark( const Config::ParameterContainer& parameters )
 {
-   const tnlString& test = parameters.getParameter< tnlString >( "test" );
-   const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-file" );
-   const tnlString& logFileName = parameters.getParameter< tnlString >( "log-file" );
+   const String& test = parameters.getParameter< String >( "test" );
+   const String& inputFileName = parameters.getParameter< String >( "input-file" );
+   const String& logFileName = parameters.getParameter< String >( "log-file" );
    const int verbose = parameters.getParameter< int >( "verbose" );
    const double stopTime = parameters.getParameter< double >( "stop-time" );
-   fstream logFile;
+   std::fstream logFile;
    if( ! initLogFile( logFile, logFileName ) )
    {
-      cerr << "I am not able to open the file " << logFileName << "." << endl;
+      std::cerr << "I am not able to open the file " << logFileName << "." << std::endl;
       return false;
    }
    if( test == "mtx" )
    {
-      typedef tnlCSRMatrix< Real, tnlHost, int > CSRMatrixType;
-      CSRMatrixType csrMatrix;
+      typedef Matrices::CSR< Real, Devices::Host, int > CSRType;
+      CSRType csrMatrix;
       try
       {
-         if( ! tnlMatrixReader< CSRMatrixType >::readMtxFile( inputFileName, csrMatrix ) )
+         if( ! MatrixReader< CSRType >::readMtxFile( inputFileName, csrMatrix ) )
          {
-            cerr << "I am not able to read the matrix file " << inputFileName << "." << endl;
-            logFile << endl;
-            logFile << inputFileName << endl;
-            logFile << "Benchmark failed: Unable to read the matrix." << endl;
+            std::cerr << "I am not able to read the matrix file " << inputFileName << "." << std::endl;
+            logFile << std::endl;
+            logFile << inputFileName << std::endl;
+            logFile << "Benchmark failed: Unable to read the matrix." << std::endl;
             return false;
          }
       }
       catch( std::bad_alloc )
       {
-         cerr << "Not enough memory to read the matrix." << endl;
-         logFile << endl;
-         logFile << inputFileName << endl;
-         logFile << "Benchmark failed: Not enough memory." << endl;
+         std::cerr << "Not enough memory to read the matrix." << std::endl;
+         logFile << std::endl;
+         logFile << inputFileName << std::endl;
+         logFile << "Benchmark failed: Not enough memory." << std::endl;
          return false;
       }
       if( verbose )
-         printMatrixInfo( inputFileName, csrMatrix, cout );
+         printMatrixInfo( inputFileName, csrMatrix,std::cout );
       if( ! writeMatrixInfo( inputFileName, csrMatrix, logFile ) )
       {
-         cerr << "I am not able to write new matrix to the log file." << endl;
+         std::cerr << "I am not able to write new matrix to the log file." << std::endl;
          return false;
       }
       const int rows = csrMatrix.getRows();
       const int columns = csrMatrix.getColumns();
       const long int nonzeroElements = csrMatrix.getNumberOfMatrixElements();
-      tnlVector< int, tnlHost, int > rowLengthsHost;
+      Containers::Vector< int, Devices::Host, int > rowLengthsHost;
       rowLengthsHost.setSize( rows );
       for( int row = 0; row < rows; row++ )
          rowLengthsHost[ row ] = csrMatrix.getRowLength( row );
 
-      typedef tnlVector< Real, tnlHost, int > HostVector;
+      typedef Containers::Vector< Real, Devices::Host, int > HostVector;
       HostVector hostX, hostB;
       hostX.setSize( csrMatrix.getColumns() );
       hostX.setValue( 1.0 );
       hostB.setSize( csrMatrix.getRows() );
 #ifdef HAVE_CUDA
-      typedef tnlVector< Real, tnlCuda, int > CudaVector;
+      typedef Containers::Vector< Real, Devices::Cuda, int > CudaVector;
       CudaVector cudaX, cudaB;
-      tnlVector< int, tnlCuda, int > rowLengthsCuda;
+      Containers::Vector< int, Devices::Cuda, int > rowLengthsCuda;
       cudaX.setSize( csrMatrix.getColumns() );
       cudaX.setValue( 1.0 );
       cudaB.setSize( csrMatrix.getRows() );
@@ -365,19 +360,19 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                                                verbose,
                                                logFile );
 #ifdef HAVE_CUDA
-      typedef tnlCSRMatrix< Real, tnlCuda, int > CSRMatrixCudaType;
-      CSRMatrixCudaType cudaCSRMatrix;
+      typedef CSR< Real, Devices::Cuda, int > CSRCudaType;
+      CSRCudaType cudaCSR;
       //cout << "Copying matrix to GPU... ";
-      if( ! cudaCSRMatrix.copyFrom( csrMatrix, rowLengthsCuda ) )
+      if( ! cudaCSR.copyFrom( csrMatrix, rowLengthsCuda ) )
       {
-         cerr << "I am not able to transfer the matrix on GPU." << endl;
+         std::cerr << "I am not able to transfer the matrix on GPU." << std::endl;
          writeTestFailed( logFile, 21 );
       }
       else
       {
-         tnlCusparseCSRMatrix< Real > cusparseCSRMatrix;
-         cusparseCSRMatrix.init( cudaCSRMatrix, &cusparseHandle );
-         benchmarkMatrix( cusparseCSRMatrix,
+         ::tnlCusparseCSR< Real > cusparseCSR;
+         cusparseCSR.init( cudaCSR, &cusparseHandle );
+         benchmarkMatrix( cusparseCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -388,9 +383,9 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           logFile );
          cusparseDestroy( cusparseHandle );
 
-         cout << " done.   \r";
-         /*cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::scalar );
-         benchmarkMatrix( cudaCSRMatrix,
+        std::cout << " done.   \r";
+         /*cudaCSR.setCudaKernelType( CSRCudaType::scalar );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -399,9 +394,9 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::vector );
-         cudaCSRMatrix.setCudaWarpSize( 1 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaKernelType( CSRCudaType::vector );
+         cudaCSR.setCudaWarpSize( 1 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -410,8 +405,8 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaWarpSize( 2 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaWarpSize( 2 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -420,8 +415,8 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaWarpSize( 4 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaWarpSize( 4 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -430,8 +425,8 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaWarpSize( 8 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaWarpSize( 8 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -440,8 +435,8 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaWarpSize( 16 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaWarpSize( 16 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -450,8 +445,8 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaWarpSize( 32 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaWarpSize( 32 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -460,9 +455,9 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::hybrid );
-         cudaCSRMatrix.setHybridModeSplit( 2 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaKernelType( CSRCudaType::hybrid );
+         cudaCSR.setHybridModeSplit( 2 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -471,8 +466,8 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setHybridModeSplit( 4 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setHybridModeSplit( 4 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -481,8 +476,8 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setHybridModeSplit( 8 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setHybridModeSplit( 8 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -491,8 +486,8 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setHybridModeSplit( 16 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setHybridModeSplit( 16 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -501,8 +496,8 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setHybridModeSplit( 32 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setHybridModeSplit( 32 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -511,8 +506,8 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setHybridModeSplit( 64 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setHybridModeSplit( 64 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -522,20 +517,20 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           verbose,
                           logFile );*/
       }
-      cudaCSRMatrix.reset();
+      cudaCSR.reset();
 #endif
 
       long int allocatedElements;
       double padding;
-      typedef tnlEllpackMatrix< Real, tnlHost, int > EllpackMatrixType;
-      EllpackMatrixType ellpackMatrix;
+      typedef Ellpack< Real, Devices::Host, int > EllpackType;
+      EllpackType ellpackMatrix;
       if( ! ellpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
          writeTestFailed( logFile, 7 );
       else
       {
          allocatedElements = ellpackMatrix.getNumberOfMatrixElements();
          padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
-         logFile << "    " << padding << endl;
+         logFile << "    " << padding << std::endl;
          benchmarkMatrix( ellpackMatrix,
                           hostX,
                           hostB,
@@ -546,18 +541,18 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           verbose,
                           logFile );
 #ifdef HAVE_CUDA
-         typedef tnlEllpackMatrix< Real, tnlCuda, int > EllpackMatrixCudaType;
-         EllpackMatrixCudaType cudaEllpackMatrix;
-         cout << "Copying matrix to GPU... ";
-         if( ! cudaEllpackMatrix.copyFrom( ellpackMatrix, rowLengthsCuda ) )
+         typedef Ellpack< Real, Devices::Cuda, int > EllpackCudaType;
+         EllpackCudaType cudaEllpack;
+        std::cout << "Copying matrix to GPU... ";
+         if( ! cudaEllpack.copyFrom( ellpackMatrix, rowLengthsCuda ) )
          {
-            cerr << "I am not able to transfer the matrix on GPU." << endl;
+            std::cerr << "I am not able to transfer the matrix on GPU." << std::endl;
             writeTestFailed( logFile, 3 );
          }
          else
          {
-            cout << " done.   \r";
-            benchmarkMatrix( cudaEllpackMatrix,
+           std::cout << " done.   \r";
+            benchmarkMatrix( cudaEllpack,
                              cudaX,
                              cudaB,
                              nonzeroElements,
@@ -567,21 +562,21 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                              verbose,
                              logFile );
          }
-         cudaEllpackMatrix.reset();
+         cudaEllpack.reset();
 #endif
          ellpackMatrix.reset();
       }
 
-      typedef tnlSlicedEllpackMatrix< Real, tnlHost, int > SlicedEllpackMatrixType;
-      SlicedEllpackMatrixType slicedEllpackMatrix;
-      if( ! slicedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
+      typedef SlicedEllpack< Real, Devices::Host, int > SlicedEllpackType;
+      SlicedEllpackType slicedEllpack;
+      if( ! slicedEllpack.copyFrom( csrMatrix, rowLengthsHost ) )
          writeTestFailed( logFile, 7 );
       else
       {
-         allocatedElements = slicedEllpackMatrix.getNumberOfMatrixElements();
+         allocatedElements = slicedEllpack.getNumberOfMatrixElements();
          padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
-         logFile << "    " << padding << endl;
-         benchmarkMatrix( slicedEllpackMatrix,
+         logFile << "    " << padding << std::endl;
+         benchmarkMatrix( slicedEllpack,
                           hostX,
                           hostB,
                           nonzeroElements,
@@ -591,18 +586,18 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           verbose,
                           logFile );
 #ifdef HAVE_CUDA
-         typedef tnlSlicedEllpackMatrix< Real, tnlCuda, int > SlicedEllpackMatrixCudaType;
-         SlicedEllpackMatrixCudaType cudaSlicedEllpackMatrix;
-         cout << "Copying matrix to GPU... ";
-         if( ! cudaSlicedEllpackMatrix.copyFrom( slicedEllpackMatrix, rowLengthsCuda ) )
+         typedef SlicedEllpack< Real, Devices::Cuda, int > SlicedEllpackCudaType;
+         SlicedEllpackCudaType cudaSlicedEllpack;
+        std::cout << "Copying matrix to GPU... ";
+         if( ! cudaSlicedEllpack.copyFrom( slicedEllpack, rowLengthsCuda ) )
          {
-            cerr << "I am not able to transfer the matrix on GPU." << endl;
+            std::cerr << "I am not able to transfer the matrix on GPU." << std::endl;
             writeTestFailed( logFile, 3 );
          }
          else
          {
-            cout << " done.   \r";
-            benchmarkMatrix( cudaSlicedEllpackMatrix,
+           std::cout << " done.   \r";
+            benchmarkMatrix( cudaSlicedEllpack,
                              cudaX,
                              cudaB,
                              nonzeroElements,
@@ -612,21 +607,21 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                              verbose,
                              logFile );
          }
-         cudaSlicedEllpackMatrix.reset();
+         cudaSlicedEllpack.reset();
 #endif
-         slicedEllpackMatrix.reset();
+         slicedEllpack.reset();
       }
 
-      typedef tnlChunkedEllpackMatrix< Real, tnlHost, int > ChunkedEllpackMatrixType;
-      ChunkedEllpackMatrixType chunkedEllpackMatrix;
-      if( ! chunkedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
+      typedef ChunkedEllpack< Real, Devices::Host, int > ChunkedEllpackType;
+      ChunkedEllpackType chunkedEllpack;
+      if( ! chunkedEllpack.copyFrom( csrMatrix, rowLengthsHost ) )
          writeTestFailed( logFile, 7 );
       else
       {
-         allocatedElements = chunkedEllpackMatrix.getNumberOfMatrixElements();
+         allocatedElements = chunkedEllpack.getNumberOfMatrixElements();
          padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
-         logFile << "    " << padding << endl;
-         benchmarkMatrix( chunkedEllpackMatrix,
+         logFile << "    " << padding << std::endl;
+         benchmarkMatrix( chunkedEllpack,
                           hostX,
                           hostB,
                           nonzeroElements,
@@ -636,18 +631,18 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           verbose,
                           logFile );
 #ifdef HAVE_CUDA
-         typedef tnlChunkedEllpackMatrix< Real, tnlCuda, int > ChunkedEllpackMatrixCudaType;
-         ChunkedEllpackMatrixCudaType cudaChunkedEllpackMatrix;
-         cout << "Copying matrix to GPU... ";
-         if( ! cudaChunkedEllpackMatrix.copyFrom( chunkedEllpackMatrix, rowLengthsCuda ) )
+         typedef ChunkedEllpack< Real, Devices::Cuda, int > ChunkedEllpackCudaType;
+         ChunkedEllpackCudaType cudaChunkedEllpack;
+        std::cout << "Copying matrix to GPU... ";
+         if( ! cudaChunkedEllpack.copyFrom( chunkedEllpack, rowLengthsCuda ) )
          {
-            cerr << "I am not able to transfer the matrix on GPU." << endl;
+            std::cerr << "I am not able to transfer the matrix on GPU." << std::endl;
             writeTestFailed( logFile, 3 );
          }
          else
          {
-            cout << " done.    \r";
-            benchmarkMatrix( cudaChunkedEllpackMatrix,
+           std::cout << " done.    \r";
+            benchmarkMatrix( cudaChunkedEllpack,
                              cudaX,
                              cudaB,
                              nonzeroElements,
@@ -657,9 +652,9 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                              verbose,
                              logFile );
          }
-         cudaChunkedEllpackMatrix.reset();
+         cudaChunkedEllpack.reset();
 #endif
-         chunkedEllpackMatrix.reset();
+         chunkedEllpack.reset();
       }
    }
    return true;
@@ -667,17 +662,17 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
 
 int main( int argc, char* argv[] )
 {
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription conf_desc;
 
    setupConfig( conf_desc );
-   
+ 
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
-   const tnlString& precision = parameters.getParameter< tnlString >( "precision" );
+   const String& precision = parameters.getParameter< String >( "precision" );
    if( precision == "float" )
       if( ! setupBenchmark< float >( parameters ) )
          return EXIT_FAILURE;

@@ -17,9 +17,9 @@
 
 #pragma once 
 
-#include <config/tnlParameterContainer.h>
-#include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlDomain.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Containers/StaticVector.h>
+#include <TNL/Functions/Domain.h>
 
 template< int dimensions,
           typename Real = double >

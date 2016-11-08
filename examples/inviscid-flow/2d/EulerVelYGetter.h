@@ -1,8 +1,10 @@
 #ifndef EulerVelYGetter_H
 #define EulerVelYGetter_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Meshes/Grid.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -16,18 +18,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelYGetter< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class EulerVelYGetter< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       MeshFunctionType rhoVelY;
       MeshFunctionType rho;
 
@@ -70,18 +72,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelYGetter< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+class EulerVelYGetter< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       MeshFunctionType rhoVelY;
       MeshFunctionType rho;
 
@@ -124,18 +126,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelYGetter< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+class EulerVelYGetter< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       MeshFunctionType rhoVelY;
       MeshFunctionType rho;
 
@@ -172,6 +174,8 @@ class EulerVelYGetter< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
                                Vector& b,
                                MatrixRow& matrixRow ) const;
 };
+
+} //namespace TNL
 
 
 #include "EulerVelYGetter_impl.h"

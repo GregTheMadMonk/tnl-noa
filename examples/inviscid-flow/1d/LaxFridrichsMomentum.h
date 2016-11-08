@@ -1,8 +1,10 @@
 #ifndef LaxFridrichsMomentum_H
 #define LaxFridrichsMomentum_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Meshes/Grid.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -16,18 +18,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichsMomentum< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentum< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocity;
       MeshFunctionType pressure;
@@ -76,18 +78,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichsMomentum< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentum< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocity;
       MeshFunctionType pressure;
@@ -136,18 +138,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichsMomentum< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentum< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocity;
       MeshFunctionType pressure;
@@ -190,6 +192,8 @@ class LaxFridrichsMomentum< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Inde
                                Vector& b,
                                MatrixRow& matrixRow ) const;
 };
+
+} // namespace TNL
 
 
 #include "LaxFridrichsMomentum_impl.h"

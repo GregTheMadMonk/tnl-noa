@@ -1,16 +1,19 @@
 #ifndef HeatEquationBenchmarkPROBLEM_H_
 #define HeatEquationBenchmarkPROBLEM_H_
 
-#include <problems/tnlPDEProblem.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/Problems/PDEProblem.h>
+#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
+
+using namespace TNL;
+using namespace TNL::Problems;
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
            typename DifferentialOperator >
 class HeatEquationBenchmarkProblem:
-   public tnlPDEProblem< Mesh,
-                         TimeDependentProblem,
+   public PDEProblem< Mesh,
                          typename DifferentialOperator::RealType,
                          typename Mesh::DeviceType,
                          typename DifferentialOperator::IndexType >
@@ -20,26 +23,37 @@ class HeatEquationBenchmarkProblem:
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
-      typedef tnlMeshFunction< Mesh > MeshFunctionType;
-      typedef tnlPDEProblem< Mesh, TimeDependentProblem, RealType, DeviceType, IndexType > BaseType;
+      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
+      typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
+      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
+      typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
+      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      
 
       using typename BaseType::MeshType;
-      using typename BaseType::DofVectorType;
+      using typename BaseType::MeshPointer;
+      using typename BaseType::DofVectorPointer;
       using typename BaseType::MeshDependentDataType;
+      using typename BaseType::MeshDependentDataPointer;
 
-      static tnlString getTypeStatic();
+      HeatEquationBenchmarkProblem();
+      
+      static String getTypeStatic();
 
-      tnlString getPrologHeader() const;
+      String getPrologHeader() const;
 
-      void writeProlog( tnlLogger& logger,
-                        const tnlParameterContainer& parameters ) const;
+      void writeProlog( Logger& logger,
+                        const Config::ParameterContainer& parameters ) const;
 
-      bool setup( const tnlParameterContainer& parameters );
+      bool setup( const MeshPointer& meshPointer,
+                  const Config::ParameterContainer& parameters,
+                  const String& prefix );
 
-      bool setInitialCondition( const tnlParameterContainer& parameters,
-                                const MeshType& mesh,
-                                DofVectorType& dofs,
-                                MeshDependentDataType& meshDependentData );
+      bool setInitialCondition( const Config::ParameterContainer& parameters,
+                                const MeshPointer& meshPointer,
+                                DofVectorPointer& dofsPointer,
+                                MeshDependentDataPointer& meshDependentData );
 
       template< typename Matrix >
       bool setupLinearSystem( const MeshType& mesh,
@@ -47,36 +61,50 @@ class HeatEquationBenchmarkProblem:
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
-                         const MeshType& mesh,
-                         DofVectorType& dofs,
-                         MeshDependentDataType& meshDependentData );
+                         const MeshPointer& meshPointer,
+                         DofVectorPointer& dofsPointer,
+                         MeshDependentDataPointer& meshDependentData );
 
-      IndexType getDofs( const MeshType& mesh ) const;
+      IndexType getDofs( const MeshPointer& meshPointer ) const;
 
-      void bindDofs( const MeshType& mesh,
-                     DofVectorType& dofs );
+      void bindDofs( const MeshPointer& meshPointer,
+                     DofVectorPointer& dofsPointer );
 
       void getExplicitRHS( const RealType& time,
                            const RealType& tau,
-                           const MeshType& mesh,
-                           DofVectorType& _u,
-                           DofVectorType& _fu,
-                           MeshDependentDataType& meshDependentData );
+                           const MeshPointer& meshPointer,
+                           DofVectorPointer& _uPointer,
+                           DofVectorPointer& _fuPointer,
+                           MeshDependentDataPointer& meshDependentData );
 
-      template< typename Matrix >
+      template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
-                                 const MeshType& mesh,
-                                 DofVectorType& dofs,
-                                 Matrix& matrix,
-                                 DofVectorType& rightHandSide,
-                                 MeshDependentDataType& meshDependentData );
+                                 const MeshPointer& mesh,
+                                 DofVectorPointer& dofs,
+                                 MatrixPointer& matrix,
+                                 DofVectorPointer& rightHandSide,
+                                 MeshDependentDataPointer& meshDependentData );
+      
+      ~HeatEquationBenchmarkProblem();
 
    protected:
 
-      DifferentialOperator differentialOperator;
-      BoundaryCondition boundaryCondition;
-      RightHandSide rightHandSide;
+      DifferentialOperatorPointer differentialOperatorPointer;
+      BoundaryConditionPointer boundaryConditionPointer;
+      RightHandSidePointer rightHandSidePointer;
+      
+      MeshFunctionPointer fu, u;
+      
+      String cudaKernelType;
+      
+      MeshType* cudaMesh;
+      BoundaryCondition* cudaBoundaryConditions;
+      RightHandSide* cudaRightHandSide;
+      DifferentialOperator* cudaDifferentialOperator;
+      
+      Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+      
 };
 
 #include "HeatEquationBenchmarkProblem_impl.h"

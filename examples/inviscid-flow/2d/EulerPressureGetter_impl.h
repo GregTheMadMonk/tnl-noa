@@ -1,6 +1,8 @@
 #ifndef EulerPressureGetter_IMPL_H
 #define EulerPressureGetter_IMPL_H
 
+namespace TNL {
+
 /****
  * 1D problem
  */
@@ -9,14 +11,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
-EulerPressureGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+String
+EulerPressureGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "EulerPressureGetter< " ) +
+   return String( "EulerPressureGetter< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -27,7 +29,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-EulerPressureGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerPressureGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -55,7 +57,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-EulerPressureGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerPressureGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -78,7 +80,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-EulerPressureGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerPressureGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -112,14 +114,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
-EulerPressureGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+String
+EulerPressureGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "EulerPressureGetter< " ) +
+   return String( "EulerPressureGetter< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -130,7 +132,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-EulerPressureGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerPressureGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -143,7 +145,7 @@ operator()( const MeshFunction& u,
    //pressure
    const IndexType& center = entity.getIndex(); 
 
-   return ( this->gamma - 1 ) * ( energy[ center ] - 0.5 * rho[ center ] * pow( velocity[ center ],2 ));
+   return ( this->gamma - 1 ) * ( energy[ center ] - 0.5 * rho[ center ] * ::pow( velocity[ center ],2 ));
 }
 
 template< typename MeshReal,
@@ -154,7 +156,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-EulerPressureGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerPressureGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -177,7 +179,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-EulerPressureGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerPressureGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -216,14 +218,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
-EulerPressureGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+String
+EulerPressureGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "EulerPressureGetter< " ) +
+   return String( "EulerPressureGetter< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -234,7 +236,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-EulerPressureGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerPressureGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -271,7 +273,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-EulerPressureGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerPressureGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -294,7 +296,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-EulerPressureGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerPressureGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -329,6 +331,8 @@ updateLinearSystem( const RealType& time,
    matrixRow.setElement( 5, north,  -lambdaY );
    matrixRow.setElement( 6, up,     -lambdaZ );
 }
+
+} // namespace TNL
 
 #endif	/* EulerPressureGetterIMPL_H */
 

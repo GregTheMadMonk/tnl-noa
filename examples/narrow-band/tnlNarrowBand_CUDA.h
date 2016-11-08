@@ -16,9 +16,9 @@
 #ifndef TNLNARROWBAND_H_
 #define TNLNARROWBAND_H_
 
-#include <config/tnlParameterContainer.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <core/vectors/tnlVector.h>
-#include <core/vectors/tnlStaticVector.h>
+#include <TNL/Containers/StaticVector.h>
 #include <core/tnlHost.h>
 #include <mesh/tnlGrid.h>
 #include <mesh/grids/tnlGridEntity.h>

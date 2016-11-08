@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-flex++ tnlDebugScanner.l
-bisonc++ tnlDebugParser.y

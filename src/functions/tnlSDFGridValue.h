@@ -18,8 +18,8 @@
 #ifndef TNLSDFGRIDVALUE_H_
 #define TNLSDFGRIDVALUE_H_
 
-#include <config/tnlParameterContainer.h>
-#include <core/vectors/tnlStaticVector.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Containers/StaticVector.h>
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
 #include <mesh/tnlGrid.h>
