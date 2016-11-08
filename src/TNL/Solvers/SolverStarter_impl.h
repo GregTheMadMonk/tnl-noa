@@ -79,12 +79,6 @@ bool SolverStarter< ConfigTag > :: run( const Config::ParameterContainer& parame
        ! Devices::Cuda::setup( parameters ) )
       return false;
    Problem problem;
-   /*if( ! problem.setup( parameters ) )
-   {
-      std::cerr << "The problem initiation failed!" << std::endl;
-      return false;
-   }*/
-
    return tnlUserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
 }
 

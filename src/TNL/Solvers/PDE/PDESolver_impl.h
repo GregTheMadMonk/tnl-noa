@@ -71,7 +71,6 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Setup the problem
     */
-  
    if( ! problem->setup( this->meshPointer, parameters, prefix ) )
    {
       std::cerr << "The problem initiation failed!" << std::endl;

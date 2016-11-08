@@ -278,8 +278,9 @@ assemblyLinearSystem( const RealType& time,
       this->uPointer,
       matrixPointer,
       bPointer );
-   /*matrix.print( cout );
-   cout << endl << b << endl;
+   //matrixPointer->print( std::cout );
+   //getchar();
+   /*cout << endl << b << endl;
    cout << endl << u << endl;
    abort();*/
    /*cout << "Matrix multiplication test ..." << std::endl;
