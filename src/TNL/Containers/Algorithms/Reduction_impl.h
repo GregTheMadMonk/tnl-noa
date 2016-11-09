@@ -98,7 +98,7 @@ reductionOnCudaDevice( Operation& operation,
    /***
     * Transfer the reduced data from device to host.
     */
-   ResultType resultArray[ minGPUReductionDataSize ];
+   ResultType resultArray[ reducedSize ];
    if( ! Containers::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
       return false;
  

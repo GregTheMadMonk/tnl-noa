@@ -39,7 +39,7 @@ static constexpr int Multireduction_maxThreadsPerBlock = 256;  // must be a powe
 template< typename Operation, int blockSizeX >      
 __global__ void
 __launch_bounds__( Multireduction_maxThreadsPerBlock, Multireduction_minBlocksPerMultiprocessor )
-CudaMultireductionKernel( Operation& operation,
+CudaMultireductionKernel( Operation operation,
                           const typename Operation::IndexType n,
                           const typename Operation::IndexType size,
                           const typename Operation::RealType* input1,

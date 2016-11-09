@@ -39,7 +39,7 @@ static constexpr int Reduction_maxThreadsPerBlock = 256;  // must be a power of 
 template< typename Operation, int blockSize >
 __global__ void
 __launch_bounds__( Reduction_maxThreadsPerBlock, Reduction_minBlocksPerMultiprocessor )
-CudaReductionKernel( Operation& operation,
+CudaReductionKernel( Operation operation,
                      const typename Operation::IndexType size,
                      const typename Operation::RealType* input1,
                      const typename Operation::RealType* input2,
