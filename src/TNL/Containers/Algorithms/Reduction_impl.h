@@ -36,9 +36,6 @@ namespace Algorithms {
  */
 const int minGPUReductionDataSize = 256;//65536; //16384;//1024;//256;
 
-#ifdef HAVE_CUDA
-#endif
-
 template< typename Operation >
 bool
 reductionOnCudaDevice( Operation& operation,

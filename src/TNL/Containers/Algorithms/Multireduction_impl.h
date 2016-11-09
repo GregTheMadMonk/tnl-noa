@@ -103,7 +103,7 @@ reduce( Operation& operation,
                                                                    deviceAux1 );
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
-      cout << "   Multireduction of " << n << " datasets on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << endl;
+      std::cout << "   Multireduction of " << n << " datasets on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << std::endl;
       timer.reset();
       timer.start();
    #endif
@@ -117,18 +117,18 @@ reduce( Operation& operation,
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
-      cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << endl;
+      std::cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << std::endl;
       timer.reset();
       timer.start();
    #endif
 
-//   cout << "resultArray = [";
+//   std::cout << "resultArray = [";
 //   for( int i = 0; i < n * reducedSize; i++ ) {
-//      cout << resultArray[ i ];
+//      std::cout << resultArray[ i ];
 //      if( i < n * reducedSize - 1 )
-//         cout << ", ";
+//         std::cout << ", ";
 //   }
-//   cout << "]" << endl;
+//   std::cout << "]" << std::endl;
 
    /***
     * Reduce the data on the host system.
@@ -138,7 +138,7 @@ reduce( Operation& operation,
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
-      cout << "   Multireduction of small data set on CPU took " << timer.getRealTime() << " sec. " << endl;
+      std::cout << "   Multireduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
    #endif
 
    return checkCudaDevice;

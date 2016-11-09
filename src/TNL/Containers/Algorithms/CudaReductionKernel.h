@@ -57,9 +57,9 @@ CudaReductionKernel( Operation operation,
     * gridSize is the number of element processed by all blocks at the
     * same time.
     */
-   IndexType tid = threadIdx. x;
-   IndexType gid = blockIdx. x * blockDim. x + threadIdx. x;
-   IndexType gridSize = blockDim. x * gridDim.x;
+   const IndexType tid = threadIdx.x;
+         IndexType gid = blockIdx.x * blockDim. x + threadIdx.x;
+   const IndexType gridSize = blockDim.x * gridDim.x;
 
    sdata[ tid ] = operation.initialValue();
    /***
@@ -72,13 +72,13 @@ CudaReductionKernel( Operation operation,
       operation.cudaFirstReduction( sdata[ tid ], gid + gridSize,     input1, input2 );
       operation.cudaFirstReduction( sdata[ tid ], gid + 2 * gridSize, input1, input2 );
       operation.cudaFirstReduction( sdata[ tid ], gid + 3 * gridSize, input1, input2 );
-      gid += 4*gridSize;
+      gid += 4 * gridSize;
    }
    while( gid + 2 * gridSize < size )
    {
       operation.cudaFirstReduction( sdata[ tid ], gid,                input1, input2 );
       operation.cudaFirstReduction( sdata[ tid ], gid + gridSize,     input1, input2 );
-      gid += 2*gridSize;
+      gid += 2 * gridSize;
    }
    while( gid < size )
    {
@@ -260,8 +260,8 @@ CudaReductionKernelLauncher( Operation& operation,
          cudaFuncSetCacheConfig(CudaReductionKernel< Operation,   4 >, cudaFuncCachePreferShared);
 
          CudaReductionKernel< Operation,   4 >
-        <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
-        break;
+         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
+         break;
       case   2:
          cudaFuncSetCacheConfig(CudaReductionKernel< Operation,   2 >, cudaFuncCachePreferShared);
 
