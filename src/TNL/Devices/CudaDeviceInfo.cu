@@ -10,6 +10,8 @@
 
 #ifdef HAVE_CUDA
 
+#include <unordered_map>
+
 #include <TNL/Devices/CudaDeviceInfo.h>
 #include <TNL/Devices/Cuda.h>
 
@@ -101,9 +103,15 @@ int
 CudaDeviceInfo::
 getCudaMultiprocessors( int deviceNum )
 {
-    cudaDeviceProp properties;
-    cudaGetDeviceProperties( &properties, deviceNum );
-    return properties.multiProcessorCount;
+    // results are cached because they are used for configuration of some kernels
+    static std::unordered_map< int, int > results;
+    if( results.count( deviceNum ) == 0 ) {
+        cudaDeviceProp properties;
+        cudaGetDeviceProperties( &properties, deviceNum );
+        results.emplace( deviceNum, properties.multiProcessorCount );
+        return properties.multiProcessorCount;
+    }
+    return results[ deviceNum ];
 }
 
 int

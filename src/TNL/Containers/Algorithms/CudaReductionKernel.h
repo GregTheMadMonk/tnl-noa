@@ -31,7 +31,7 @@ namespace Algorithms {
  */
 static constexpr int Reduction_maxThreadsPerBlock = 256;  // must be a power of 2
 #if (__CUDA_ARCH__ >= 300 )
-   static constexpr int Reduction_minBlocksPerMultiprocessor = 6;
+   static constexpr int Reduction_minBlocksPerMultiprocessor = 8;
 #else
    static constexpr int Reduction_minBlocksPerMultiprocessor = 4;
 #endif
