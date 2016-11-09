@@ -24,7 +24,7 @@
 #include <cstring>
 
 
-#define TNL_DEBUG_SHARED_POINTERS
+//#define TNL_DEBUG_SHARED_POINTERS
 
 #ifdef TNL_DEBUG_SHARED_POINTERS
    #include <typeinfo>
@@ -83,7 +83,7 @@ class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
       typedef SharedPointer< Object, Devices::Host, lazy > ThisType;
-      
+
       template< typename... Args >
       explicit  SharedPointer( Args... args )
       : pd( nullptr )

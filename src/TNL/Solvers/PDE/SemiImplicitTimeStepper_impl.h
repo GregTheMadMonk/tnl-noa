@@ -158,7 +158,7 @@ solve( const RealType& time,
    RealType t = time;
    this->linearSystemSolver->setMatrix( this->matrix );
    PreconditionerPointer preconditioner;
-   Linear::Preconditioners::SolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerPointer >
+   Linear::Preconditioners::SolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerType >
        ::run( *(this->linearSystemSolver), preconditioner );
 
    while( t < stopTime )
