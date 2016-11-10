@@ -95,7 +95,7 @@ class Grid< 1, Real, Device, Index > : public Object
    inline const RealType& getCellMeasure() const;
  
    __cuda_callable__
-   inline VertexType getSpaceSteps() const;
+   inline const VertexType& getSpaceSteps() const;
 
    template< int xPow >
    __cuda_callable__
