@@ -723,7 +723,7 @@ class CSRDeviceDependentCode< Devices::Host >
          const InVector* inVectorPtr = &inVector;
          OutVector* outVectorPtr = &outVector;
 #ifdef HAVE_OPENMP
-#pragma omp parallel for firstprivate( matrixPtr, inVectorPtr, outVectorPtr ), schedule(static ), if( Devices::Host::isOMPEnabled() )
+#pragma omp parallel for firstprivate( matrixPtr, inVectorPtr, outVectorPtr ), schedule(dynamic,100), if( Devices::Host::isOMPEnabled() )
 #endif
          for( Index row = 0; row < rows; row ++ )
             ( *outVectorPtr )[ row ] = matrixPtr->rowVectorProduct( row, *inVectorPtr );
