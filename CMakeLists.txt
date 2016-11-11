@@ -336,8 +336,7 @@ CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/TNL/tnlConfig.h" )
 INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.h DESTINATION include/tnl-${tnlVersion}/TNL )
 if( PYTHONINTERP_FOUND )
     CONFIGURE_FILE( "Config.py.in" "${PROJECT_BUILD_PATH}/TNL/Config.py" )
-    INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/Config.py DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/TNL )
-    CONFIGURE_FILE( "python-version.in" "${PROJECT_TOOLS_PATH}/../python-version" )
+    INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/Config.py DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages/TNL )
 endif( PYTHONINTERP_FOUND )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
