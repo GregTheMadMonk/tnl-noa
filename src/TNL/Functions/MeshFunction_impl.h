@@ -47,7 +47,7 @@ template< typename Mesh,
           typename Real >
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
 MeshFunction( const ThisType& meshFunction )
-: meshPointer( meshPointer )
+: meshPointer( meshFunction.meshPointer )
 {
    this->data.bind( meshFunction.getData() );
 }
