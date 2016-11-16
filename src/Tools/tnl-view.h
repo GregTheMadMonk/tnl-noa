@@ -20,7 +20,6 @@
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/MeshFunction.h>
 
-using namespace std;
 using namespace TNL;
 
 bool getOutputFileName( const String& inputFileName,
@@ -50,6 +49,7 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
                         const Config::ParameterContainer& parameters  )
 {
    MeshFunction function( meshPointer );
+   std::cout << "Mesh function: " << function.getType() << std::endl;
    if( ! function.load( inputFileName ) )
    {
       std::cerr << "Unable to load mesh function from a file " << inputFileName << "." << std::endl;
@@ -216,7 +216,10 @@ bool convertObject( const MeshPointer& meshPointer,
       Containers::Vector< Element, Devices::Host, Index > vector;
       if( ! vector. load( inputFileName ) )
          return false;
-      if( ! meshPointer->write( vector, outputFileName, outputFormat ) )
+      using MeshType = typename MeshPointer::ObjectType;
+      Functions::MeshFunction< MeshType, MeshType::meshDimensions, Element > mf;
+      mf.bind( meshPointer, vector );
+      if( ! mf.write( outputFileName, outputFormat ) )
          return false;
    }
 
@@ -288,7 +291,7 @@ bool setIndexType( const MeshPointer& meshPointer,
       return setDimensions< MeshPointer, Element, Real, int >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( indexType == "long-int" )
       return setDimensions< MeshPointer, Element, Real, long int >( meshPointer, inputFileName, parsedObjectType, parameters );
-   cerr << "Unknown index type " << indexType << "." << endl;
+   std::cerr << "Unknown index type " << indexType << "." << std::endl;
    return false;
 }
 
@@ -374,9 +377,10 @@ bool setElementType( const MeshPointer& meshPointer,
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
    }
-   if( parsedElementType[ 0 ] == "Containers::StaticVector" ||
-       parsedElementType[ 0 ] == "tnlStaticVector" )               // TODO: remove deprecated type names
-      return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedElementType, parameters );
+   // FIXME: this does not compile for an unknown reason
+//   if( parsedElementType[ 0 ] == "Containers::StaticVector" ||
+//       parsedElementType[ 0 ] == "tnlStaticVector" )               // TODO: remove deprecated type names
+//      return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedElementType, parameters );
 
    std::cerr << "Unknown element type " << elementType << "." << std::endl;
    return false;

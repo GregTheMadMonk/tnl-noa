@@ -493,8 +493,12 @@ write( const String& fileName,
    }
    if( format == "vtk" )
       return MeshFunctionVTKWriter< ThisType >::write( *this, file );
-   if( format == "gnuplot" )
+   else if( format == "gnuplot" )
       return MeshFunctionGnuplotWriter< ThisType >::write( *this, file );
+   else {
+      std::cerr << "Unknown output format: " << format << std::endl;
+      return false;
+   }
    return true;
 }
  
