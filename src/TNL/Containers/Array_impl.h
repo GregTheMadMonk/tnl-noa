@@ -222,7 +222,10 @@ bind( const ArrayT& array,
       const IndexType& begin,
       const IndexType& size )
 {
-   Assert( ( std::is_same< Device, typename ArrayT::DeviceType>::value ), );
+   // all template parameters of Array must match, otherwise binding does not make sense
+   static_assert( std::is_same< Element, typename ArrayT::ElementType >::value, "ElementType of both arrays must be the same." );
+   static_assert( std::is_same< Device, typename ArrayT::DeviceType >::value, "DeviceType of both arrays must be the same." );
+   static_assert( std::is_same< Index, typename ArrayT::IndexType >::value, "IndexType of both arrays must be the same." );
    Assert( begin <= array.getSize(),
               std::cerr << " begin = " << begin << " array.getSize() = " << array.getSize() );
    Assert( begin + size  <= array.getSize(),
