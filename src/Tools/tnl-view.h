@@ -213,10 +213,12 @@ bool convertObject( const MeshPointer& meshPointer,
        parsedObjectType[ 0 ] == "tnlSharedVector" ||   // TODO: remove deprecated type names
        parsedObjectType[ 0 ] == "tnlVector" )          //
    {
-      Containers::Vector< Element, Devices::Host, Index > vector;
-      if( ! vector. load( inputFileName ) )
-         return false;
       using MeshType = typename MeshPointer::ObjectType;
+      // FIXME: why is MeshType::IndexType not the same as Index?
+//      Containers::Vector< Element, Devices::Host, Index > vector;
+      Containers::Vector< Element, Devices::Host, typename MeshType::IndexType > vector;
+      if( ! vector.load( inputFileName ) )
+         return false;
       Functions::MeshFunction< MeshType, MeshType::meshDimensions, Element > mf;
       mf.bind( meshPointer, vector );
       if( ! mf.write( outputFileName, outputFormat ) )
