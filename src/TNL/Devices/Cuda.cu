@@ -404,7 +404,7 @@ bool Cuda::checkDevice( const char* file_name, int line, cudaError error )
             << "This indicates that the current context is not compatible with this " << std::endl
             << "version of the CUDA Runtime. This can only occur if you are using CUDA " << std::endl
             << "Runtime/Driver interoperability and have created an existing Driver " << std::endl
-            << "context using an older API. Please see \ref CUDART_DRIVER " << std::endl
+            << "context using an older API. Please see \\ref CUDART_DRIVER " << std::endl
             << "\"Interactions with the CUDA Driver API\" for more information. " << std::endl;
          break;
 
@@ -419,6 +419,9 @@ bool Cuda::checkDevice( const char* file_name, int line, cudaError error )
             << "the runtime. Production releases of CUDA should not return such errors. " << std::endl;
          break;
 
+      default:
+         std::cerr << "(detailed description is not available)" << std::endl;
+         break;
    }
    throw EXIT_FAILURE;
    return false;
