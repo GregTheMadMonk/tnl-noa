@@ -140,25 +140,12 @@ __device__ Index Cuda::getInterleaving( const Index index )
    return index + index / Cuda::getNumberOfSharedMemoryBanks();
 }
 
-template< typename Element >
-__device__ getSharedMemory< Element >::operator Element*()
+template< typename Element, size_t Alignment >
+__device__ Element* Cuda::getSharedMemory()
 {
-   extern __shared__ int __sharedMemory[];
-   return ( Element* ) __sharedMemory;
-};
-
-__device__ inline getSharedMemory< double >::operator double*()
-{
-   extern __shared__ double __sharedMemoryDouble[];
-   return ( double* ) __sharedMemoryDouble;
-};
-
-__device__ inline getSharedMemory< long int >::operator long int*()
-{
-   extern __shared__ long int __sharedMemoryLongInt[];
-   return ( long int* ) __sharedMemoryLongInt;
-};
-
+   extern __shared__ __align__ ( Alignment ) unsigned char __sdata[];
+   return reinterpret_cast< Element* >( __sdata );
+}
 #endif /* HAVE_CUDA */
 
 } // namespace Devices

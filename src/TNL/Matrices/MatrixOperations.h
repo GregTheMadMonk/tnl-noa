@@ -90,16 +90,7 @@ GemvCudaKernel( const IndexType m,
    IndexType elementIdx = blockIdx.x * blockDim.x + threadIdx.x;
    const IndexType gridSize = blockDim.x * gridDim.x;
 
-   // NOTE: Plain declaration such as
-   //          extern __shared__ RealType shx[];
-   //       won't work because extern variables must be declared exactly once.
-   //       In templated functions we need to have same variable name with
-   //       different type, which causes the conflict. In CUDA samples they
-   //       solve it using template specialization via classes, but using char
-   //       as the base type and reinterpret_cast works too.
-   //       See http://stackoverflow.com/a/19339004/4180822
-   extern __shared__ __align__ ( 8 ) char __sdata[];
-   RealType* shx = reinterpret_cast< RealType* >( __sdata );
+   RealType* shx = Devices::Cuda::getSharedMemory< RealType >();
 
    if( threadIdx.x < n )
       shx[ threadIdx.x ] = x[ threadIdx.x ];

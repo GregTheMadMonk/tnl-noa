@@ -50,9 +50,7 @@ CudaMultireductionKernel( Operation operation,
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::ResultType ResultType;
 
-   extern __shared__ __align__ ( 8 ) char __sdata[];
-
-   ResultType* sdata = reinterpret_cast< ResultType* >( __sdata );
+   ResultType* sdata = Devices::Cuda::getSharedMemory< ResultType >();
 
    /***
     * Get thread id (tid) and global element id (gid).

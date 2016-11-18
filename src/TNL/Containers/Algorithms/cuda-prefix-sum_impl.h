@@ -31,7 +31,7 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
                                               DataType* output,
                                               DataType* auxArray )
 {
-   DataType* sharedData = TNL::Devices::getSharedMemory< DataType >();
+   DataType* sharedData = TNL::Devices::Cuda::getSharedMemory< DataType >();
    DataType* auxData = &sharedData[ elementsInBlock + elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2 ];
    DataType* warpSums = &auxData[ blockDim. x ];
 

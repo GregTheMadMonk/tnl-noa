@@ -629,7 +629,7 @@ void CSR< Real, Device, Index >::spmvCudaVectorized( const InVector& inVector,
                                                               const IndexType warpEnd,
                                                               const IndexType inWarpIdx ) const
 {
-   volatile Real* aux = Devices::getSharedMemory< Real >();
+   volatile Real* aux = Devices::Cuda::getSharedMemory< Real >();
    for( IndexType row = warpStart; row < warpEnd; row++ )
    {
       aux[ threadIdx.x ] = 0.0;
