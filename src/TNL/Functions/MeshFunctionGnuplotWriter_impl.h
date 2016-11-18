@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Functions/MeshFunctionGnuplotWriter.h>
+
 namespace TNL {
 namespace Functions {
 

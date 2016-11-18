@@ -10,8 +10,12 @@
 
 #pragma once
 
+#include <TNL/Meshes/Grid.h>
+
 namespace TNL {
 namespace Functions {   
+
+template< typename, int, typename > class MeshFunction;
 
 template< typename MeshFunction >
 class MeshFunctionVTKWriter
@@ -207,3 +211,4 @@ class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, Me
 } // namespace Functions
 } // namespace TNL
 
+#include <TNL/Functions/MeshFunctionVTKWriter_impl.h>
