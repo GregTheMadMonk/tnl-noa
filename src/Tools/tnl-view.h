@@ -379,10 +379,9 @@ bool setElementType( const MeshPointer& meshPointer,
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
    }
-   // FIXME: this does not compile for an unknown reason
-//   if( parsedElementType[ 0 ] == "Containers::StaticVector" ||
-//       parsedElementType[ 0 ] == "tnlStaticVector" )               // TODO: remove deprecated type names
-//      return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedElementType, parameters );
+   if( parsedElementType[ 0 ] == "Containers::StaticVector" ||
+       parsedElementType[ 0 ] == "tnlStaticVector" )               // TODO: remove deprecated type names
+      return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedElementType, parameters );
 
    std::cerr << "Unknown element type " << elementType << "." << std::endl;
    return false;

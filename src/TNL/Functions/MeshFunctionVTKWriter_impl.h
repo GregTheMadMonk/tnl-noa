@@ -496,7 +496,7 @@ write( const MeshFunctionType& function,
    const RealType spaceStepY = mesh.getSpaceSteps().y();
    const RealType originZ = mesh.getOrigin().z();
    const RealType spaceStepZ = mesh.getSpaceSteps().z();
-   const RealType entitiesCount = mesh.getDimensions().x() * mesh.getDimensions().y() * mesh.getDimensions().z();
+   const MeshIndex entitiesCount = mesh.template getEntitiesCount< typename MeshType::Cell >();
  
    str << "POINTS " << (mesh.getDimensions().x()+1) * (mesh.getDimensions().y()+1) * (mesh.getDimensions().z()+1) <<
           " float" << std::endl;
@@ -606,8 +606,8 @@ write( const MeshFunctionType& function,
    const RealType spaceStepY = mesh.getSpaceSteps().y();
    const RealType originZ = mesh.getOrigin().z();
    const RealType spaceStepZ = mesh.getSpaceSteps().z();
-   const RealType entitiesCount = mesh.template getEntitiesCount< Face >();
-   const RealType pointsCount = mesh.template getEntitiesCount< Cell >();
+   const MeshIndex entitiesCount = mesh.template getEntitiesCount< Face >();
+   const MeshIndex pointsCount = mesh.template getEntitiesCount< Cell >();
  
    str << "POINTS " << pointsCount <<
           " float" << std::endl;
@@ -784,8 +784,8 @@ write( const MeshFunctionType& function,
    const RealType spaceStepY = mesh.getSpaceSteps().y();
    const RealType originZ = mesh.getOrigin().z();
    const RealType spaceStepZ = mesh.getSpaceSteps().z();
-   const RealType entitiesCount = mesh.template getEntitiesCount< Edge >();
-   const RealType pointsCount = mesh.template getEntitiesCount< Cell >();
+   const MeshIndex entitiesCount = mesh.template getEntitiesCount< Edge >();
+   const MeshIndex pointsCount = mesh.template getEntitiesCount< Cell >();
  
    str << "POINTS " << pointsCount <<
           " float" << std::endl;
