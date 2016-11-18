@@ -13,7 +13,7 @@
 #include <assert.h>
 #include <TNL/String.h>
 #include <TNL/Assert.h>
-#include <TNL/List.h>
+#include <TNL/Containers/List.h>
 #include <TNL/File.h>
 #include <TNL/Math.h>
 #ifdef HAVE_MPI
@@ -421,7 +421,7 @@ bool String :: getLine( std::istream& stream )
    return true;
 }
 
-int String :: parse( List< String >& list, const char separator ) const
+int String :: parse( Containers::List< String >& list, const char separator ) const
 {
    list.reset();
    String copy( *this );

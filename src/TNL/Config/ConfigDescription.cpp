@@ -129,7 +129,7 @@ bool Config::ConfigDescription :: checkMissingEntries( Config::ParameterContaine
 {
    int i;
    const int size = entries. getSize();
-   List< String > missingParameters;
+   Containers::List< String > missingParameters;
    for( i = 0; i < size; i ++ )
    {
       const char* entry_name = entries[ i ] -> name. getString();

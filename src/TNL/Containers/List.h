@@ -10,15 +10,17 @@
 
 #pragma once
 
-#include <TNL/Assert.h>
 #include <stdlib.h>
 #include <iostream>
+
+#include <TNL/Assert.h>
+#include <TNL/File.h>
 #include <TNL/String.h>
 #include <TNL/param-types.h>
 
 namespace TNL {
+namespace Containers {
 
-class File;
 template< class T > class DataElement;
 
 //! Template for double linked lists
@@ -184,6 +186,7 @@ template< class T > class DataElement
 
 };
 
+} // namespace Containers
 } // namespace TNL
 
-#include <TNL/List_impl.h>
+#include <TNL/Containers/List_impl.h>

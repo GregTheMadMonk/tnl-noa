@@ -18,8 +18,10 @@
 
 namespace TNL {
 
-template< class T > class List;
 class File;
+namespace Containers {
+   template< class T > class List;
+}
 
 //! Class for managing strings
 class String
@@ -147,7 +149,7 @@ class String
    bool getLine( std::istream& stream );
 
    //! Parse the string into list of strings w.r.t. given separator.
-   int parse( List< String >& list, const char separator = ' ' ) const;
+   int parse( Containers::List< String >& list, const char separator = ' ' ) const;
 
    friend std::ostream& operator << ( std::ostream& stream, const String& str );
 };

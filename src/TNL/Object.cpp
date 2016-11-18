@@ -10,8 +10,6 @@
 
 #include <TNL/Object.h>
 #include <TNL/Assert.h>
-#include <TNL/File.h>
-#include <TNL/List.h>
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -171,7 +169,7 @@ bool getObjectType( const String& fileName, String& type )
 }
 
 bool parseObjectType( const String& objectType,
-                      List< String >& parsedObjectType )
+                      Containers::List< String >& parsedObjectType )
 {
    parsedObjectType.reset();
    int objectTypeLength = objectType. getLength();

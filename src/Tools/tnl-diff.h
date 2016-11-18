@@ -24,7 +24,7 @@ template< typename MeshPointer, typename Element, typename Real, typename Index 
 bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Config::ParameterContainer& parameters )
 {
    bool verbose = parameters. getParameter< bool >( "verbose" );
-   List< String > inputFiles = parameters. getParameter< List< String > >( "input-files" );
+   Containers::List< String > inputFiles = parameters. getParameter< Containers::List< String > >( "input-files" );
    String mode = parameters. getParameter< String >( "mode" );
    String outputFileName = parameters. getParameter< String >( "output-file" );
    double snapshotPeriod = parameters. getParameter< double >( "snapshot-period" );
@@ -161,7 +161,7 @@ template< typename MeshPointer, typename Element, typename Real, typename Index 
 bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::ParameterContainer& parameters )
 {
    bool verbose = parameters. getParameter< bool >( "verbose" );
-   List< String > inputFiles = parameters. getParameter< List< String > >( "input-files" );
+   Containers::List< String > inputFiles = parameters. getParameter< Containers::List< String > >( "input-files" );
    String mode = parameters. getParameter< String >( "mode" );
    String outputFileName = parameters. getParameter< String >( "output-file" );
    double snapshotPeriod = parameters. getParameter< double >( "snapshot-period" );
@@ -307,7 +307,7 @@ bool computeDifference( const MeshPointer& meshPointer, const String& objectType
 template< typename MeshPointer, typename Element, typename Real >
 bool setIndexType( const MeshPointer& meshPointer,
                    const String& inputFileName,
-                   const List< String >& parsedObjectType,
+                   const Containers::List< String >& parsedObjectType,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
@@ -335,8 +335,8 @@ bool setIndexType( const MeshPointer& meshPointer,
 template< typename MeshPointer >
 bool setTupleType( const MeshPointer& meshPointer,
                    const String& inputFileName,
-                   const List< String >& parsedObjectType,
-                   const List< String >& parsedElementType,
+                   const Containers::List< String >& parsedObjectType,
+                   const Containers::List< String >& parsedElementType,
                    const Config::ParameterContainer& parameters )
 {
    int dimensions = atoi( parsedElementType[ 1 ].getString() );
@@ -386,7 +386,7 @@ bool setTupleType( const MeshPointer& meshPointer,
 template< typename MeshPointer >
 bool setElementType( const MeshPointer& meshPointer,
                      const String& inputFileName,
-                     const List< String >& parsedObjectType,
+                     const Containers::List< String >& parsedObjectType,
                      const Config::ParameterContainer& parameters )
 {
    String elementType;
@@ -410,7 +410,7 @@ bool setElementType( const MeshPointer& meshPointer,
       return setIndexType< MeshPointer, double, double >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "long double" )
       return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-   List< String > parsedElementType;
+   Containers::List< String > parsedElementType;
    if( ! parseObjectType( elementType, parsedElementType ) )
    {
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
@@ -427,7 +427,7 @@ template< typename Mesh >
 bool processFiles( const Config::ParameterContainer& parameters )
 {
    int verbose = parameters. getParameter< int >( "verbose");
-   List< String > inputFiles = parameters. getParameter< List< String > >( "input-files" );
+   Containers::List< String > inputFiles = parameters. getParameter< Containers::List< String > >( "input-files" );
    String& inputFile = inputFiles[ 0 ];
 
    /****
@@ -454,7 +454,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
    if( verbose )
      std::cout << objectType << " detected ... ";
 
-   List< String > parsedObjectType;
+   Containers::List< String > parsedObjectType;
    if( ! parseObjectType( objectType, parsedObjectType ) )
    {
       std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
