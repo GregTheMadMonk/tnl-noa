@@ -49,10 +49,9 @@ inline constexpr int Cuda::getGPUTransferBufferSize()
 }
 
 #ifdef HAVE_CUDA
-template< typename Index >
-__device__ Index Cuda::getGlobalThreadIdx( const Index gridIdx )
+__device__ inline int Cuda::getGlobalThreadIdx( const int gridIdx, const int gridSize )
 {
-   return ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   return ( gridIdx * gridSize + blockIdx.x ) * blockDim.x + threadIdx.x;
 }
 #endif
 

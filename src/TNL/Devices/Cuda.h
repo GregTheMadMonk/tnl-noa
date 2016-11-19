@@ -49,8 +49,9 @@ class Cuda
    static inline constexpr int getGPUTransferBufferSize();
 
 #ifdef HAVE_CUDA
-   template< typename Index >
-   __device__ static Index getGlobalThreadIdx( const Index gridIdx = 0 );
+   __device__ static inline int
+   getGlobalThreadIdx( const int gridIdx = 0,
+                       const int gridSize = getMaxGridSize() );
 #endif
 
    static int getNumberOfBlocks( const int threads,
@@ -111,7 +112,7 @@ class Cuda
     */
    static bool checkDevice( const char* file_name, int line, cudaError error );
 #else
-   static bool checkDevice() { return false;};
+   static bool checkDevice() { return false; };
 #endif
    
    static void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
@@ -132,8 +133,6 @@ class Cuda
    protected:
    
    static SmartPointersRegister smartPointersRegister;
-   
-   
 };
 
 #ifdef HAVE_CUDA
