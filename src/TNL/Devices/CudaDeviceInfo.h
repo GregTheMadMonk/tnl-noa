@@ -15,6 +15,9 @@
 #include <TNL/String.h>
 
 namespace TNL {
+
+class Logger;
+
 namespace Devices {
 
 class CudaDeviceInfo
@@ -47,8 +50,8 @@ class CudaDeviceInfo
 
       static int getCudaCores( int deviceNum );
 
+      static void writeDeviceInfo( Logger& logger );
 };
 
 } // namespace Devices
 } // namespace TNL
-

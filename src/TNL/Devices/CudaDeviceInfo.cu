@@ -13,6 +13,7 @@
 #include <unordered_map>
 
 #include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Logger.h>
 
 namespace TNL {
 namespace Devices {
@@ -156,6 +157,35 @@ getCudaCores( int deviceNum )
 {
     return CudaDeviceInfo::getCudaMultiprocessors( deviceNum ) *
            CudaDeviceInfo::getCudaCoresPerMultiprocessors( deviceNum );
+}
+
+void
+CudaDeviceInfo::
+writeDeviceInfo( Logger& logger )
+{
+   logger.writeParameter< String >( "CUDA GPU info", String("") );
+   // TODO: Printing all devices does not make sense until TNL can actually
+   //       use more than one device for computations. Printing only the active
+   //       device for now...
+//   int devices = getNumberOfDevices();
+//   writeParameter< int >( "Number of devices", devices, 1 );
+//   for( int i = 0; i < devices; i++ )
+//   {
+//      logger.writeParameter< int >( "Device no.", i, 1 );
+      int i = getActiveDevice();
+      logger.writeParameter< String >( "Name", getDeviceName( i ), 2 );
+      String deviceArch = String( getArchitectureMajor( i ) ) + "." +
+                              String( getArchitectureMinor( i ) );
+      logger.writeParameter< String >( "Architecture", deviceArch, 2 );
+      logger.writeParameter< int >( "CUDA cores", getCudaCores( i ), 2 );
+      double clockRate = ( double ) getClockRate( i ) / 1.0e3;
+      logger.writeParameter< double >( "Clock rate (in MHz)", clockRate, 2 );
+      double globalMemory = ( double ) getGlobalMemory( i ) / 1.0e9;
+      logger.writeParameter< double >( "Global memory (in GB)", globalMemory, 2 );
+      double memoryClockRate = ( double ) getMemoryClockRate( i ) / 1.0e3;
+      logger.writeParameter< double >( "Memory clock rate (in Mhz)", memoryClockRate, 2 );
+      logger.writeParameter< bool >( "ECC enabled", getECCEnabled( i ), 2 );
+//   }
 }
 
 } // namespace Devices

@@ -20,9 +20,11 @@
 #include <omp.h>
 #endif
 
+#include <TNL/tnlConfig.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
+#include <TNL/Logger.h>
 
 namespace TNL {
 namespace Devices {   
@@ -90,6 +92,8 @@ Host::getCurrentTime( const char* format )
 int
 Host::getNumberOfProcessors( void )
 {
+   if( numberOfProcessors == 0 )
+      parseCPUInfo();
    return numberOfProcessors;
 }
 
@@ -103,18 +107,24 @@ Host::getOnlineCPUs( void )
 int
 Host::getNumberOfCores( int cpu_id )
 {
+   if( CPUCores == 0 )
+      parseCPUInfo();
    return CPUCores;
 }
 
 int
 Host::getNumberOfThreads( int cpu_id )
 {
+   if( CPUThreads == 0 )
+      parseCPUInfo();
    return CPUThreads;
 }
 
 String
 Host::getCPUModelName( int cpu_id )
 {
+   if( CPUModelName == "" )
+      parseCPUInfo();
    return CPUModelName;
 }
 
@@ -155,6 +165,35 @@ Host::getCPUCacheSizes( int cpu_id )
          sizes.L3 = size;
    }
    return sizes;
+}
+
+void
+Host::
+writeDeviceInfo( Logger& logger )
+{
+   logger.writeParameter< String >( "Host name:", getHostname() );
+   logger.writeParameter< String >( "System:", getSystemName() );
+   logger.writeParameter< String >( "Release:", getSystemRelease() );
+   logger.writeParameter< String >( "Architecture:", getArchitecture() );
+   logger.writeParameter< char* >( "TNL Compiler:", ( char* ) TNL_CPP_COMPILER_NAME );
+   // FIXME: generalize for multi-socket systems, here we consider only the first found CPU
+   const int cpu_id = 0;
+   const int threads = getNumberOfThreads( cpu_id );
+   const int cores = getNumberOfCores( cpu_id );
+   int threadsPerCore = 0;
+   if( cores > 0 )
+      threadsPerCore = threads / cores;
+   logger.writeParameter< String >( "CPU info", String("") );
+   logger.writeParameter< String >( "Model name:", getCPUModelName( cpu_id ), 1 );
+   logger.writeParameter< int >( "Cores:", cores, 1 );
+   logger.writeParameter< int >( "Threads per core:", threadsPerCore, 1 );
+   logger.writeParameter< String >( "Max clock rate (in MHz):", getCPUMaxFrequency( cpu_id ) / 1000, 1 );
+   CacheSizes cacheSizes = getCPUCacheSizes( cpu_id );
+   String cacheInfo = String( cacheSizes.L1data ) + ", "
+                       + String( cacheSizes.L1instruction ) + ", "
+                       + String( cacheSizes.L2 ) + ", "
+                       + String( cacheSizes.L3 );
+   logger.writeParameter< String >( "Cache (L1d, L1i, L2, L3):", cacheInfo, 1 );
 }
 
 void

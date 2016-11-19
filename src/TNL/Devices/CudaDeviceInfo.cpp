@@ -11,6 +11,7 @@
 #ifndef HAVE_CUDA
 
 #include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Logger.h>
 
 namespace TNL {
 namespace Devices {   
@@ -104,6 +105,12 @@ CudaDeviceInfo::
 getCudaCores( int deviceNum )
 {
    return 0;
+}
+
+void
+CudaDeviceInfo::
+writeDeviceInfo( Logger& logger )
+{
 }
 
 } // namespace Devices

@@ -21,6 +21,8 @@ namespace Config {
    class ParameterContainer;
 }
 
+class Logger;
+
 namespace Devices {
 
 struct CacheSizes {
@@ -49,6 +51,8 @@ class Host
       static String getCPUModelName( int cpu_id );
       static int    getCPUMaxFrequency( int cpu_id );
       static CacheSizes getCPUCacheSizes( int cpu_id );
+
+      static void writeDeviceInfo( Logger& logger );
 
       static size_t getFreeMemory();
  
