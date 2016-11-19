@@ -26,11 +26,6 @@ String Cuda::getDeviceType()
    return String( "Cuda" );
 }
 
-int Cuda::getGPUTransferBufferSize()
-{
-   return 1 << 20;
-}
-
 int Cuda::getNumberOfBlocks( const int threads,
                              const int blockSize )
 {

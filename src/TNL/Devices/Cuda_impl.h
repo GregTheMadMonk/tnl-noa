@@ -16,24 +16,36 @@ namespace TNL {
 namespace Devices {   
 
 __cuda_callable__ 
-inline int Cuda::getMaxGridSize()
+inline constexpr int Cuda::getMaxGridSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 65535;
 };
 
 __cuda_callable__
-inline int Cuda::getMaxBlockSize()
+inline constexpr int Cuda::getMaxBlockSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 1024;
 };
 
 __cuda_callable__ 
-inline int Cuda::getWarpSize()
+inline constexpr int Cuda::getWarpSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 32;
+}
+
+__cuda_callable__
+inline constexpr int Cuda::getNumberOfSharedMemoryBanks()
+{
+   // TODO: make it preprocessor macro constant defined in tnlConfig
+   return 32;
+}
+
+inline constexpr int Cuda::getGPUTransferBufferSize()
+{
+   return 1 << 20;
 }
 
 #ifdef HAVE_CUDA
@@ -44,13 +56,6 @@ __device__ Index Cuda::getGlobalThreadIdx( const Index gridIdx )
 }
 #endif
 
-
-__cuda_callable__ 
-inline int Cuda::getNumberOfSharedMemoryBanks()
-{
-   // TODO: make it preprocessor macro constant defined in tnlConfig
-   return 32;
-}
 
 template< typename ObjectType >
 ObjectType* Cuda::passToDevice( const ObjectType& object )

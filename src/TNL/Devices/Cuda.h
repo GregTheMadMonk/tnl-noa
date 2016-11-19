@@ -38,11 +38,15 @@ class Cuda
 
    static String getDeviceType();
 
-   __cuda_callable__ static inline int getMaxGridSize();
+   __cuda_callable__ static inline constexpr int getMaxGridSize();
 
-   __cuda_callable__ static inline int getMaxBlockSize();
+   __cuda_callable__ static inline constexpr int getMaxBlockSize();
 
-   __cuda_callable__ static inline int getWarpSize();
+   __cuda_callable__ static inline constexpr int getWarpSize();
+
+   __cuda_callable__ static inline constexpr int getNumberOfSharedMemoryBanks();
+
+   static inline constexpr int getGPUTransferBufferSize();
 
 #ifdef HAVE_CUDA
    static int getDeviceId();
@@ -50,10 +54,6 @@ class Cuda
    template< typename Index >
    __device__ static Index getGlobalThreadIdx( const Index gridIdx = 0 );
 #endif
-
-   __cuda_callable__ static inline int getNumberOfSharedMemoryBanks();
-
-   static int getGPUTransferBufferSize();
 
    static int getNumberOfBlocks( const int threads,
                                  const int blockSize );
