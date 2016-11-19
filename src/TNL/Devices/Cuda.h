@@ -49,8 +49,6 @@ class Cuda
    static inline constexpr int getGPUTransferBufferSize();
 
 #ifdef HAVE_CUDA
-   static int getDeviceId();
-   
    template< typename Index >
    __device__ static Index getGlobalThreadIdx( const Index gridIdx = 0 );
 #endif

@@ -36,15 +36,6 @@ bool Cuda::setup( const tnlParameterContainer& parameters,
 }
 */
 
-int Cuda::getDeviceId()
-{
-   int id( 0 );
-#ifdef HAVE_CUDA
-   cudaGetDevice( &id );
-#endif
-   return id;
-}
-
 bool Cuda::checkDevice( const char* file_name, int line, cudaError error )
 {   
    if( error == cudaSuccess )
