@@ -65,36 +65,36 @@ class VectorOperations< Devices::Host >
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceMax( const Vector1& v1,
-                                                               const Vector2& v2 );
+                                                             const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceMin( const Vector1& v1,
-                                                               const Vector2& v2 );
+                                                             const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceAbsMax( const Vector1& v1,
-                                                                  const Vector2& v2 );
+                                                                const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceAbsMin( const Vector1& v1,
-                                                                  const Vector2& v2 );
+                                                                const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceL1Norm( const Vector1& v1,
-                                                           const Vector2& v2 );
+                                                                const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceL2Norm( const Vector1& v1,
-                                                           const Vector2& v2 );
+                                                                const Vector2& v2 );
  
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceLpNorm( const Vector1& v1,
-                                                           const Vector2& v2,
-                                                           const typename Vector1::RealType& p );
+                                                                const Vector2& v2,
+                                                                const typename Vector1::RealType& p );
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceSum( const Vector1& v1,
-                                                               const Vector2& v2 );
+                                                             const Vector2& v2 );
  
  
    template< typename Vector >
@@ -103,7 +103,7 @@ class VectorOperations< Devices::Host >
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getScalarProduct( const Vector1& v1,
-                                                         const Vector2& v2 );
+                                                       const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
    static void addVector( Vector1& y,
@@ -128,7 +128,6 @@ class VectorOperations< Devices::Host >
    static void computeExclusivePrefixSum( Vector& v,
                                           const typename Vector::IndexType begin,
                                           const typename Vector::IndexType end );
-
 };
 
 template<>
@@ -178,11 +177,11 @@ class VectorOperations< Devices::Cuda >
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceMin( const Vector1& v1,
-                                                               const Vector2& v2 );
+                                                             const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceAbsMax( const Vector1& v1,
-                                                                  const Vector2& v2 );
+                                                                const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceAbsMin( const Vector1& v1,
@@ -198,12 +197,12 @@ class VectorOperations< Devices::Cuda >
  
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceLpNorm( const Vector1& v1,
-                                                           const Vector2& v2,
-                                                           const typename Vector1::RealType& p );
+                                                                const Vector2& v2,
+                                                                const typename Vector1::RealType& p );
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceSum( const Vector1& v1,
-                                                               const Vector2& v2 );
+                                                             const Vector2& v2 );
  
    template< typename Vector >
    static void vectorScalarMultiplication( Vector& v,
@@ -211,7 +210,7 @@ class VectorOperations< Devices::Cuda >
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getScalarProduct( const Vector1& v1,
-                                                         const Vector2& v2 );
+                                                       const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
    static void addVector( Vector1& y,

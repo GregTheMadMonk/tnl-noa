@@ -20,72 +20,92 @@ static const int OpenMPVectorOperationsThreshold = 65536; // TODO: check this th
 static const int PrefetchDistance = 128;
 
 template< typename Vector >
-void VectorOperations< Devices::Host >::addElement( Vector& v,
-                                                 const typename Vector::IndexType i,
-                                                 const typename Vector::RealType& value )
+void
+VectorOperations< Devices::Host >::
+addElement( Vector& v,
+            const typename Vector::IndexType i,
+            const typename Vector::RealType& value )
 {
    v[ i ] += value;
 }
 
 template< typename Vector >
-void VectorOperations< Devices::Host >::addElement( Vector& v,
-                                                 const typename Vector::IndexType i,
-                                                 const typename Vector::RealType& value,
-                                                 const typename Vector::RealType& thisElementMultiplicator )
+void
+VectorOperations< Devices::Host >::
+addElement( Vector& v,
+            const typename Vector::IndexType i,
+            const typename Vector::RealType& value,
+            const typename Vector::RealType& thisElementMultiplicator )
 {
    v[ i ] = thisElementMultiplicator * v[ i ] + value;
 }
 
 template< typename Vector >
-typename Vector::RealType VectorOperations< Devices::Host >::getVectorMax( const Vector& v )
+typename Vector::RealType
+VectorOperations< Devices::Host >::
+getVectorMax( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
-   Assert( v. getSize() > 0, );
-   Real result = v. getElement( 0 );
-   const Index n = v. getSize();
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
+
+   Assert( v.getSize() > 0, );
+
+   Real result = v.getElement( 0 );
+   const Index n = v.getSize();
    for( Index i = 1; i < n; i ++ )
-      result = max( result, v. getElement( i ) );
+      result = max( result, v.getElement( i ) );
    return result;
 }
 
 template< typename Vector >
-typename Vector :: RealType VectorOperations< Devices::Host > :: getVectorMin( const Vector& v )
+typename Vector::RealType
+VectorOperations< Devices::Host >::
+getVectorMin( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
-   Assert( v. getSize() > 0, );
-   Real result = v. getElement( 0 );
-   const Index n = v. getSize();
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
+
+   Assert( v.getSize() > 0, );
+
+   Real result = v.getElement( 0 );
+   const Index n = v.getSize();
    for( Index i = 1; i < n; i ++ )
-      result = min( result, v. getElement( i ) );
+      result = min( result, v.getElement( i ) );
    return result;
 }
 
 template< typename Vector >
-typename Vector :: RealType VectorOperations< Devices::Host > :: getVectorAbsMax( const Vector& v )
+typename Vector::RealType
+VectorOperations< Devices::Host >::
+getVectorAbsMax( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
-   Assert( v. getSize() > 0, );
-   Real result = std::fabs( v. getElement( 0 ) );
-   const Index n = v. getSize();
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
+
+   Assert( v.getSize() > 0, );
+
+   Real result = std::fabs( v.getElement( 0 ) );
+   const Index n = v.getSize();
    for( Index i = 1; i < n; i ++ )
-      result = max( result, ( Real ) std::fabs( v. getElement( i ) ) );
+      result = max( result, ( Real ) std::fabs( v.getElement( i ) ) );
    return result;
 }
 
 
 template< typename Vector >
-typename Vector :: RealType VectorOperations< Devices::Host > :: getVectorAbsMin( const Vector& v )
+typename Vector::RealType
+VectorOperations< Devices::Host >::
+getVectorAbsMin( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
-   Assert( v. getSize() > 0, );
-   Real result = std::fabs( v. getElement( 0 ) );
-   const Index n = v. getSize();
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
+
+   Assert( v.getSize() > 0, );
+
+   Real result = std::fabs( v.getElement( 0 ) );
+   const Index n = v.getSize();
    for( Index i = 1; i < n; i ++ )
-      result = min( result, ( Real ) std::fabs( v. getElement( i ) ) );
+      result = min( result, ( Real ) std::fabs( v.getElement( i ) ) );
    return result;
 }
 
@@ -94,12 +114,13 @@ typename Vector::RealType
 VectorOperations< Devices::Host >::
 getVectorL1Norm( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
-   Assert( v. getSize() > 0, );
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
+
+   Assert( v.getSize() > 0, );
 
    Real result( 0.0 );
-   const Index n = v. getSize();
+   const Index n = v.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
@@ -113,11 +134,12 @@ typename Vector::RealType
 VectorOperations< Devices::Host >::
 getVectorL2Norm( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
 
-   Assert( v. getSize() > 0, );
-   const Index n = v. getSize();
+   Assert( v.getSize() > 0, );
+
+   const Index n = v.getSize();
 
 #ifdef OPTIMIZED_VECTOR_HOST_OPERATIONS
 #ifdef __GNUC__
@@ -173,20 +195,22 @@ template< typename Vector >
 typename Vector::RealType
 VectorOperations< Devices::Host >::
 getVectorLpNorm( const Vector& v,
-                 const typename Vector :: RealType& p )
+                 const typename Vector::RealType& p )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
-   Assert( v. getSize() > 0, );
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
+
+   Assert( v.getSize() > 0, );
    Assert( p > 0.0,
               std::cerr << " p = " << p );
+
    if( p == 1.0 )
       return getVectorL1Norm( v );
    if( p == 2.0 )
       return getVectorL2Norm( v );
 
    Real result( 0.0 );
-   const Index n = v. getSize();
+   const Index n = v.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
@@ -196,14 +220,17 @@ getVectorLpNorm( const Vector& v,
 }
 
 template< typename Vector >
-typename Vector :: RealType VectorOperations< Devices::Host > :: getVectorSum( const Vector& v )
+typename Vector::RealType
+VectorOperations< Devices::Host >::
+getVectorSum( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
-   Assert( v. getSize() > 0, );
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
+
+   Assert( v.getSize() > 0, );
 
    Real result( 0.0 );
-   const Index n = v. getSize();
+   const Index n = v.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
@@ -213,66 +240,76 @@ typename Vector :: RealType VectorOperations< Devices::Host > :: getVectorSum( c
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType VectorOperations< Devices::Host > :: getVectorDifferenceMax( const Vector1& v1,
-                                                                                       const Vector2& v2 )
+typename Vector1::RealType
+VectorOperations< Devices::Host >::
+getVectorDifferenceMax( const Vector1& v1,
+                        const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
-   Real result = v1. getElement( 0 ) - v2. getElement( 0 );
-   const Index n = v1. getSize();
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
+
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
+
+   Real result = v1.getElement( 0 ) - v2.getElement( 0 );
+   const Index n = v1.getSize();
    for( Index i = 1; i < n; i ++ )
-      result =  max( result, v1. getElement( i ) - v2. getElement( i ) );
+      result =  max( result, v1.getElement( i ) - v2.getElement( i ) );
    return result;
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType VectorOperations< Devices::Host > :: getVectorDifferenceMin( const Vector1& v1,
-                                                                                       const Vector2& v2 )
+typename Vector1::RealType
+VectorOperations< Devices::Host >::
+getVectorDifferenceMin( const Vector1& v1,
+                        const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
-   Real result = v1. getElement( 0 ) - v2. getElement( 0 );
-   const Index n = v1. getSize();
+   Real result = v1.getElement( 0 ) - v2.getElement( 0 );
+   const Index n = v1.getSize();
    for( Index i = 1; i < n; i ++ )
-      result =  min( result, v1. getElement( i ) - v2. getElement( i ) );
+      result =  min( result, v1.getElement( i ) - v2.getElement( i ) );
    return result;
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType VectorOperations< Devices::Host > :: getVectorDifferenceAbsMax( const Vector1& v1,
-                                                                                          const Vector2& v2 )
+typename Vector1::RealType
+VectorOperations< Devices::Host >::
+getVectorDifferenceAbsMax( const Vector1& v1,
+                           const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
-   Real result = std::fabs( v1. getElement( 0 ) - v2. getElement( 0 ) );
-   const Index n = v1. getSize();
+   Real result = std::fabs( v1.getElement( 0 ) - v2.getElement( 0 ) );
+   const Index n = v1.getSize();
    for( Index i = 1; i < n; i ++ )
-      result =  max( result, ( Real ) std::fabs( v1. getElement( i ) - v2. getElement( i ) ) );
+      result =  max( result, ( Real ) std::fabs( v1.getElement( i ) - v2.getElement( i ) ) );
    return result;
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType VectorOperations< Devices::Host > :: getVectorDifferenceAbsMin( const Vector1& v1,
-                                                                                          const Vector2& v2 )
+typename Vector1::RealType
+VectorOperations< Devices::Host >::
+getVectorDifferenceAbsMin( const Vector1& v1,
+                           const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    Real result = std::fabs( v1[ 0 ] - v2[ 0 ] );
-   const Index n = v1. getSize();
+   const Index n = v1.getSize();
    for( Index i = 1; i < n; i ++ )
       result =  min( result, ( Real ) std::fabs( v1[ i ] - v2[ i ] ) );
    return result;
@@ -284,14 +321,14 @@ VectorOperations< Devices::Host >::
 getVectorDifferenceL1Norm( const Vector1& v1,
                            const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    Real result( 0.0 );
-   const Index n = v1. getSize();
+   const Index n = v1.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
@@ -306,14 +343,14 @@ VectorOperations< Devices::Host >::
 getVectorDifferenceL2Norm( const Vector1& v1,
                            const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    Real result( 0.0 );
-   const Index n = v1. getSize();
+   const Index n = v1.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
@@ -333,13 +370,13 @@ getVectorDifferenceLpNorm( const Vector1& v1,
                            const Vector2& v2,
                            const typename Vector1::RealType& p )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
    Assert( p > 0.0,
               std::cerr << " p = " << p );
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    if( p == 1.0 )
       return getVectorDifferenceL1Norm( v1, v2 );
@@ -347,46 +384,50 @@ getVectorDifferenceLpNorm( const Vector1& v1,
       return getVectorDifferenceL2Norm( v1, v2 );
 
    Real result( 0.0 );
-   const Index n = v1. getSize();
+   const Index n = v1.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 0; i < n; i ++ )
-      result += std::pow( std::fabs( v1. getElement( i ) - v2. getElement( i ) ), p );
+      result += std::pow( std::fabs( v1.getElement( i ) - v2.getElement( i ) ), p );
    return std::pow( result, 1.0 / p );
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1::RealType VectorOperations< Devices::Host > :: getVectorDifferenceSum( const Vector1& v1,
-                                                                                     const Vector2& v2 )
+typename Vector1::RealType
+VectorOperations< Devices::Host >::
+getVectorDifferenceSum( const Vector1& v1,
+                        const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    Real result( 0.0 );
-   const Index n = v1. getSize();
+   const Index n = v1.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 0; i < n; i ++ )
-      result += v1. getElement( i ) - v2. getElement( i );
+      result += v1.getElement( i ) - v2.getElement( i );
    return result;
 }
 
 
 template< typename Vector >
-void VectorOperations< Devices::Host > :: vectorScalarMultiplication( Vector& v,
-                                                                   const typename Vector :: RealType& alpha )
+void
+VectorOperations< Devices::Host >::
+vectorScalarMultiplication( Vector& v,
+                            const typename Vector::RealType& alpha )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
 
-   Assert( v. getSize() > 0, );
+   Assert( v.getSize() > 0, );
 
-   const Index n = v. getSize();
+   const Index n = v.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
@@ -396,15 +437,17 @@ void VectorOperations< Devices::Host > :: vectorScalarMultiplication( Vector& v,
 
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType VectorOperations< Devices::Host > :: getScalarProduct( const Vector1& v1,
-                                                                                 const Vector2& v2 )
+typename Vector1::RealType
+VectorOperations< Devices::Host >::
+getScalarProduct( const Vector1& v1,
+                  const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
-   const Index n = v1. getSize();
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
+   const Index n = v1.getSize();
 
 #ifdef OPTIMIZED_VECTOR_HOST_OPERATIONS
 #ifdef __GNUC__
@@ -456,17 +499,20 @@ typename Vector1 :: RealType VectorOperations< Devices::Host > :: getScalarProdu
 }
 
 template< typename Vector1, typename Vector2 >
-void VectorOperations< Devices::Host > :: addVector( Vector1& y,
-                                                  const Vector2& x,
-                                                  const typename Vector2::RealType& alpha,
-                                                  const typename Vector1::RealType& thisMultiplicator )
+void
+VectorOperations< Devices::Host >::
+addVector( Vector1& y,
+           const Vector2& x,
+           const typename Vector2::RealType& alpha,
+           const typename Vector1::RealType& thisMultiplicator )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( x. getSize() > 0, );
-   Assert( x. getSize() == y. getSize(), );
-   const Index n = y. getSize();
+   Assert( x.getSize() > 0, );
+   Assert( x.getSize() == y.getSize(), );
+
+   const Index n = y.getSize();
 
 #ifdef OPTIMIZED_VECTOR_HOST_OPERATIONS
 #ifdef __GNUC__
@@ -530,8 +576,8 @@ addVectors( Vector1& v,
             const typename Vector3::RealType& multiplicator2,
             const typename Vector1::RealType& thisMultiplicator )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
    Assert( v.getSize() > 0, );
    Assert( v.getSize() == v1.getSize(), );
@@ -553,22 +599,28 @@ addVectors( Vector1& v,
 }
 
 template< typename Vector >
-void VectorOperations< Devices::Host >::computePrefixSum( Vector& v,
-                                                       typename Vector::IndexType begin,
-                                                       typename Vector::IndexType end )
+void
+VectorOperations< Devices::Host >::
+computePrefixSum( Vector& v,
+                  typename Vector::IndexType begin,
+                  typename Vector::IndexType end )
 {
    typedef typename Vector::IndexType Index;
+
    for( Index i = begin + 1; i < end; i++ )
       v[ i ] += v[ i - 1 ];
 }
 
 template< typename Vector >
-void VectorOperations< Devices::Host >::computeExclusivePrefixSum( Vector& v,
-                                                                typename Vector::IndexType begin,
-                                                                typename Vector::IndexType end )
+void
+VectorOperations< Devices::Host >::
+computeExclusivePrefixSum( Vector& v,
+                           typename Vector::IndexType begin,
+                           typename Vector::IndexType end )
 {
    typedef typename Vector::IndexType Index;
    typedef typename Vector::RealType Real;
+
    Real aux( v[ begin ] );
    v[ begin ] = 0.0;
    for( Index i = begin + 1; i < end; i++ )
