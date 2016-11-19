@@ -23,8 +23,8 @@ namespace TNL {
 namespace Containers {   
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 Array< Element, Device, Index >::
 Array()
 : size( 0 ),
@@ -35,8 +35,8 @@ Array()
 };
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 Array< Element, Device, Index >::
 Array( const IndexType& size )
 : size( 0 ),
@@ -48,11 +48,11 @@ Array( const IndexType& size )
 }
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 Array< Element, Device, Index >::
 Array( Element* data,
-          const IndexType& size )
+       const IndexType& size )
 : size( size ),
   data( data ),
   allocationPointer( 0 ),
@@ -61,12 +61,12 @@ Array( Element* data,
 }
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 Array< Element, Device, Index >::
 Array( Array< Element, Device, Index >& array,
-          const IndexType& begin,
-          const IndexType& size )
+       const IndexType& begin,
+       const IndexType& size )
 : size( size ),
   data( &array.getData()[ begin ] ),
   allocationPointer( array.allocationPointer ),
@@ -106,8 +106,8 @@ getType()
 };
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 String
 Array< Element, Device, Index >::
 getTypeVirtual() const
@@ -116,8 +116,8 @@ getTypeVirtual() const
 };
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 String
 Array< Element, Device, Index >::
 getSerializationType()
@@ -126,8 +126,8 @@ getSerializationType()
 };
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 String
 Array< Element, Device, Index >::
 getSerializationTypeVirtual() const
@@ -136,8 +136,8 @@ getSerializationTypeVirtual() const
 };
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 void
 Array< Element, Device, Index >::
 releaseData() const
@@ -186,8 +186,8 @@ setSize( const Index size )
 };
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
    template< typename ArrayT >
 bool
 Array< Element, Device, Index >::
@@ -200,8 +200,8 @@ setLike( const ArrayT& array )
 };
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 void
 Array< Element, Device, Index >::
 bind( Element* data,
@@ -213,8 +213,8 @@ bind( Element* data,
 }
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
    template< typename ArrayT >
 void
 Array< Element, Device, Index >::
@@ -255,8 +255,8 @@ bind( const ArrayT& array,
 }
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
    template< int Size >
 void
 Array< Element, Device, Index >::
@@ -303,8 +303,8 @@ getSize() const
 }
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 void
 Array< Element, Device, Index >::
 setElement( const Index& i, const Element& x )
@@ -317,8 +317,8 @@ setElement( const Index& i, const Element& x )
 };
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 Element
 Array< Element, Device, Index >::
 getElement( const Index& i ) const
@@ -346,8 +346,8 @@ operator[] ( const Index& i )
 };
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 __cuda_callable__
 inline const Element&
 Array< Element, Device, Index >::
@@ -361,8 +361,8 @@ operator[] ( const Index& i ) const
 };
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 Array< Element, Device, Index >&
 Array< Element, Device, Index >::
 operator = ( const Array< Element, Device, Index >& array )
@@ -381,8 +381,8 @@ operator = ( const Array< Element, Device, Index >& array )
 };
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
    template< typename ArrayT >
 Array< Element, Device, Index >&
 Array< Element, Device, Index >::
@@ -440,8 +440,8 @@ void Array< Element, Device, Index > :: setValue( const Element& e )
 }
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 __cuda_callable__
 const Element* Array< Element, Device, Index > :: getData() const
 {
@@ -449,8 +449,8 @@ const Element* Array< Element, Device, Index > :: getData() const
 }
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 __cuda_callable__
 Element* Array< Element, Device, Index > :: getData()
 {
@@ -458,8 +458,8 @@ Element* Array< Element, Device, Index > :: getData()
 }
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 Array< Element, Device, Index > :: operator bool() const
 {
    return data != 0;
@@ -467,8 +467,8 @@ Array< Element, Device, Index > :: operator bool() const
 
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
    template< typename IndexType2 >
 void Array< Element, Device, Index > :: touch( IndexType2 touches ) const
 {

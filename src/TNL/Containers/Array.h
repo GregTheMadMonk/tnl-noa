@@ -11,22 +11,13 @@
 #pragma once 
 
 #include <TNL/Object.h>
-#include <TNL/Containers/SharedArray.h>
+#include <TNL/File.h>
+#include <TNL/Devices/Host.h>
 
-// Forward declarations
 namespace TNL {
-class File;
-
-namespace Devices {
-   class Host;
-}
-
-
 namespace Containers {
 
-
-template< typename Element, typename Device, typename Index >
-class SharedArray;
+template< int, typename > class StaticArray;
 
 /****
  * Array handles memory allocation and sharing of the same data between more Arrays.
