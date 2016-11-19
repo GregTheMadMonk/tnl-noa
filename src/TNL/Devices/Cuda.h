@@ -60,8 +60,6 @@ class Cuda
    static int getNumberOfGrids( const int blocks,
                                 const int gridSize = getMaxGridSize() );
 
-   static size_t getFreeMemory();
-
    template< typename ObjectType >
    static ObjectType* passToDevice( const ObjectType& object );
 

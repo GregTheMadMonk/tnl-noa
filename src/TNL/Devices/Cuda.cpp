@@ -38,11 +38,6 @@ int Cuda::getNumberOfGrids( const int blocks,
    return roundUpDivision( blocks, gridSize );
 }
 
-/*size_t Cuda::getFreeMemory()
-{
-
-}*/
-
 void Cuda::configSetup( Config::ConfigDescription& config,
                         const String& prefix )
 {

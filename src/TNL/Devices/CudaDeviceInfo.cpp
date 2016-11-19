@@ -64,6 +64,13 @@ getGlobalMemory( int deviceNum )
    return 0;
 }
 
+size_t
+CudaDeviceInfo::
+getFreeGlobalMemory()
+{
+   return 0;
+}
+
 int
 CudaDeviceInfo::
 getMemoryClockRate( int deviceNum )

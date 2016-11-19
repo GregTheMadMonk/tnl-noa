@@ -81,6 +81,16 @@ getGlobalMemory( int deviceNum )
     return properties.totalGlobalMem;
 }
 
+size_t
+CudaDeviceInfo::
+getFreeGlobalMemory()
+{
+   size_t free = 0;
+   size_t total = 0;
+   cudaMemGetInfo( &free, &total );
+   return free;
+}
+
 int
 CudaDeviceInfo::
 getMemoryClockRate( int deviceNum )

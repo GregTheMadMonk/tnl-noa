@@ -34,6 +34,8 @@ class CudaDeviceInfo
 
       static size_t getGlobalMemory( int deviceNum );
 
+      static size_t getFreeGlobalMemory();
+
       static int getMemoryClockRate( int deviceNum );
 
       static bool getECCEnabled( int deviceNum );
