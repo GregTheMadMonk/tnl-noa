@@ -12,12 +12,10 @@
 
 #include <TNL/Devices/Cuda.h>
 #include <TNL/String.h>
-
+#include <TNL/File.h>
+#include <TNL/Containers/List.h>
 
 namespace TNL {
-
-class File;
-template< class T > class List;
 
 //! This is basic class for all 'large' objects like matrices, meshes, grids, solvers etc.
 /*!
@@ -92,6 +90,6 @@ bool getObjectType( File& file, String& type );
 bool getObjectType( const String& file_name, String& type );
 
 bool parseObjectType( const String& objectType,
-                      List< String >& parsedObjectType );
+                      Containers::List< String >& parsedObjectType );
 
 } // namespace TNL

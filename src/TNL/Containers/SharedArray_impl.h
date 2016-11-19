@@ -14,7 +14,7 @@
 #include <TNL/File.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/StaticArray.h>
-#include <TNL/Containers/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Math.h>
 #include <TNL/param-types.h>
 
@@ -191,7 +191,7 @@ void SharedArray< Element, Device, Index > :: setElement( const Index& i, const 
               std::cerr << "Wrong index for setElement method in SharedArray "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
-   return ArrayOperations< Device >::setMemoryElement( & ( this->data[ i ] ), x );
+   return Algorithms::ArrayOperations< Device >::setMemoryElement( & ( this->data[ i ] ), x );
 };
 
 template< typename Element,
@@ -203,7 +203,7 @@ Element SharedArray< Element, Device, Index > :: getElement( const Index& i ) co
               std::cerr << "Wrong index for getElement method in SharedArray "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
-   return ArrayOperations< Device >::getMemoryElement( &( this->data[ i ] ) );
+   return Algorithms::ArrayOperations< Device >::getMemoryElement( &( this->data[ i ] ) );
 };
 
 template< typename Element,
@@ -241,13 +241,13 @@ SharedArray< Element, Device, Index >&
    Assert( array. getSize() == this->getSize(),
               std::cerr << "Source size: " << array. getSize() << std::endl
                         << "Target size: " << this->getSize() << std::endl );
-   ArrayOperations< Device > ::
-   template copyMemory< Element,
-                        Element,
-                        Index >
-                       ( this->getData(),
-                         array. getData(),
-                         array. getSize() );
+   Algorithms::ArrayOperations< Device > ::
+      template copyMemory< Element,
+                           Element,
+                           Index >
+                          ( this->getData(),
+                            array. getData(),
+                            array. getSize() );
    return ( *this );
 };
 
@@ -260,14 +260,13 @@ SharedArray< Element, Device, Index >& SharedArray< Element, Device, Index > :: 
    Assert( array. getSize() == this->getSize(),
               std::cerr << "Source size: " << array. getSize() << std::endl
                         << "Target size: " << this->getSize() << std::endl );
-   ArrayOperations< typename Array :: DeviceType,
-                       Device > ::
-    template copyMemory< Element,
-                         typename Array :: ElementType,
-                         typename Array :: IndexType >
-                       ( this->getData(),
-                         array. getData(),
-                         array. getSize() );
+   Algorithms::ArrayOperations< typename Array::DeviceType, Device >::
+      template copyMemory< Element,
+                           typename Array :: ElementType,
+                           typename Array :: IndexType >
+                         ( this->getData(),
+                           array. getData(),
+                           array. getSize() );
    return ( *this );
 };
 
@@ -279,14 +278,13 @@ bool SharedArray< Element, Device, Index > :: operator == ( const Array& array )
 {
    if( array. getSize() != this->getSize() )
       return false;
-   return ArrayOperations< Device,
-                              typename Array :: DeviceType > ::
-    template compareMemory< typename Array :: ElementType,
-                            Element,
-                            typename Array :: IndexType >
-                          ( this->getData(),
-                            array. getData(),
-                            array. getSize() );
+   return Algorithms::ArrayOperations< Device, typename Array::DeviceType >::
+      template compareMemory< typename Array :: ElementType,
+                              Element,
+                              typename Array :: IndexType >
+                            ( this->getData(),
+                              array. getData(),
+                              array. getSize() );
 }
 
 template< typename Element,
@@ -304,7 +302,7 @@ template< typename Element,
 void SharedArray< Element, Device, Index > :: setValue( const Element& e )
 {
    Assert( this->size != 0, );
-   ArrayOperations< Device >::template setMemory< Element, Index >
+   Algorithms::ArrayOperations< Device >::template setMemory< Element, Index >
                               ( this->getData(), e, this->getSize() );
 
 }

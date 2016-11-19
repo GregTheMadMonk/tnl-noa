@@ -1,7 +1,12 @@
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Containers/Algorithms/TemplateExplicitInstantiation ) 
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Containers/Algorithms/TemplateExplicitInstantiation )
+set( common_SOURCES
+     ${CURRENT_DIR}/VectorOperationsHost_impl.cpp
+)
 IF( BUILD_CUDA )
    set( tnl_core_cuda_CUDA__SOURCES
         ${common_SOURCES}
+        ${CURRENT_DIR}/ArrayOperationsHost_impl.cu
+        ${CURRENT_DIR}/ArrayOperationsCuda_impl.cu
         ${CURRENT_DIR}/cuda-reduction-sum_impl.cu
         ${CURRENT_DIR}/cuda-reduction-min_impl.cu
         ${CURRENT_DIR}/cuda-reduction-max_impl.cu
@@ -21,13 +26,20 @@ IF( BUILD_CUDA )
         ${CURRENT_DIR}/cuda-reduction-diff-abs-sum_impl.cu
         ${CURRENT_DIR}/cuda-reduction-diff-abs-min_impl.cu
         ${CURRENT_DIR}/cuda-reduction-diff-abs-max_impl.cu
-        ${CURRENT_DIR}/cuda-reduction-diff-l2-norm_impl.cu        
-        ${CURRENT_DIR}/cuda-reduction-diff-lp-norm_impl.cu        
+        ${CURRENT_DIR}/cuda-reduction-diff-l2-norm_impl.cu
+        ${CURRENT_DIR}/cuda-reduction-diff-lp-norm_impl.cu
         ${CURRENT_DIR}/cuda-prefix-sum_impl.cu
-        PARENT_SCOPE ) 
-endif() 
+        ${CURRENT_DIR}/VectorOperationsCuda_impl.cu
+        PARENT_SCOPE )
+ELSE()
+   set( common_SOURCES
+        ${common_SOURCES}
+        ${CURRENT_DIR}/ArrayOperationsHost_impl.cpp
+        ${CURRENT_DIR}/ArrayOperationsCuda_impl.cpp
+   )
+ENDIF()
 
 set( tnl_core_cuda_SOURCES
      ${common_SOURCES}
      ${CURRENT_DIR}/cuda-reduction_impl.cpp
-     PARENT_SCOPE )               
+     PARENT_SCOPE )

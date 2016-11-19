@@ -82,6 +82,27 @@ class Cuda
 #ifdef HAVE_CUDA
    template< typename Index >
    static __device__ Index getInterleaving( const Index index );
+
+   /****
+    * Declaration of variables for dynamic shared memory is difficult in
+    * templated functions. For example, the following does not work for
+    * different types T:
+    *
+    *    template< typename T >
+    *    void foo()
+    *    {
+    *        extern __shared__ T shx[];
+    *    }
+    *
+    * This is because extern variables must be declared exactly once. In
+    * templated functions we need to have same variable name with different
+    * type, which causes the conflict. In CUDA samples they solve the problem
+    * using template specialization via classes, but using one base type and
+    * reinterpret_cast works too.
+    * See http://stackoverflow.com/a/19339004/4180822 for reference.
+    */
+   template< typename Element, size_t Alignment = sizeof( Element ) >
+   static __device__ Element* getSharedMemory();
 #endif
 
 #ifdef HAVE_CUDA
@@ -125,29 +146,6 @@ class Cuda
 
 #define CudaSupportMissingMessage \
    std::cerr << "The CUDA support is missing in the source file " << __FILE__ << " at line " << __LINE__ << ". Please set WITH_CUDA=yes in the install script. " << std::endl;
-
-
-// TODO: This would be nice in Cuda but C++ standard does not allow it.
-#ifdef HAVE_CUDA
-   template< typename Element >
-   struct getSharedMemory
-   {
-       __device__ operator Element*();
-   };
-
-   template<>
-   struct getSharedMemory< double >
-   {
-       inline __device__ operator double*();
-   };
-
-   template<>
-   struct getSharedMemory< long int >
-   {
-       inline __device__ operator long int*();
-   };
-
-#endif
 
 } // namespace Devices
 } // namespace TNL   

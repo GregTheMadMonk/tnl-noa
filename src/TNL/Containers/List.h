@@ -10,16 +10,18 @@
 
 #pragma once
 
-#include <TNL/Assert.h>
 #include <stdlib.h>
 #include <iostream>
+
+#include <TNL/Assert.h>
+#include <TNL/File.h>
 #include <TNL/String.h>
 #include <TNL/param-types.h>
 
 namespace TNL {
+namespace Containers {
 
-class File;
-template< class T > class DataElement;
+template< class T > class ListDataElement;
 
 //! Template for double linked lists
 /*! To acces elements in the list one can use method getSize() and
@@ -114,18 +116,18 @@ template< class T > class List
    protected:
 
       //! Pointer to the first element
-      DataElement< T >* first;
+      ListDataElement< T >* first;
 
       //! Pointer to the last element
       /*! We use pointer to last element while adding new element to keep order of elements
        */
-      DataElement< T >* last;
+      ListDataElement< T >* last;
 
       //! List size
       int size;
 
       //! Iterator
-      mutable DataElement< T >* iterator;
+      mutable ListDataElement< T >* iterator;
 
       //! Iterator index
       mutable int index;
@@ -136,33 +138,33 @@ template< class T > class List
 template< typename T > std::ostream& operator << ( std::ostream& str, const List< T >& list );
 
 //! Data element for List and mStack
-template< class T > class DataElement
+template< class T > class ListDataElement
 {
    //! Main data
    T data;
 
    //! Pointer to the next element
-   DataElement< T >* next;
+   ListDataElement< T >* next;
 
    //! Pointer to the previous element
-   DataElement< T >* previous;
+   ListDataElement< T >* previous;
 
    public:
    //! Basic constructor
-   DataElement()
+   ListDataElement()
       : next( 0 ),
         previous( 0 ){};
 
    //! Constructor with given data and possibly pointer to next element
-   DataElement( const T& dt,
-                   DataElement< T >* prv = 0,
-                   DataElement< T >* nxt = 0 )
+   ListDataElement( const T& dt,
+                    ListDataElement< T >* prv = 0,
+                    ListDataElement< T >* nxt = 0 )
       : data( dt ),
         next( nxt ),
         previous( prv ){};
 
    //! Destructor
-   ~DataElement(){};
+   ~ListDataElement(){};
 
    //! Return data for non-const instances
    T& Data() { return data; };
@@ -171,19 +173,19 @@ template< class T > class DataElement
    const T& Data() const { return data; };
 
    //! Return pointer to the next element for non-const instances
-   DataElement< T >*& Next() { return next; };
+   ListDataElement< T >*& Next() { return next; };
 
    //! Return pointer to the next element for const instances
-   const DataElement< T >* Next() const { return next; };
+   const ListDataElement< T >* Next() const { return next; };
 
    //! Return pointer to the previous element for non-const instances
-   DataElement< T >*& Previous() { return previous; };
+   ListDataElement< T >*& Previous() { return previous; };
 
    //! Return pointer to the previous element for const instances
-   const DataElement< T >* Previous() const { return previous; };
-
+   const ListDataElement< T >* Previous() const { return previous; };
 };
 
+} // namespace Containers
 } // namespace TNL
 
-#include <TNL/List_impl.h>
+#include <TNL/Containers/List_impl.h>

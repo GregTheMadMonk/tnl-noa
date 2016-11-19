@@ -11,17 +11,22 @@
 #pragma once 
 
 #include <iostream>
+
 #include <TNL/tnlConfig.h>
 #include <TNL/Math.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
 
 namespace TNL {
 namespace Containers {   
+namespace Algorithms {
 
 template< typename Element, typename Index >
-bool ArrayOperations< Devices::Cuda >::allocateMemory( Element*& data,
-                                                    const Index size )
+bool
+ArrayOperations< Devices::Cuda >::
+allocateMemory( Element*& data,
+                const Index size )
 {
 #ifdef HAVE_CUDA
    checkCudaDevice;
@@ -36,7 +41,9 @@ bool ArrayOperations< Devices::Cuda >::allocateMemory( Element*& data,
 }
 
 template< typename Element >
-bool ArrayOperations< Devices::Cuda >::freeMemory( Element* data )
+bool
+ArrayOperations< Devices::Cuda >::
+freeMemory( Element* data )
 {
    Assert( data, );
 #ifdef HAVE_CUDA
@@ -50,15 +57,19 @@ bool ArrayOperations< Devices::Cuda >::freeMemory( Element* data )
 }
 
 template< typename Element >
-void ArrayOperations< Devices::Cuda >::setMemoryElement( Element* data,
-                                                      const Element& value )
+void
+ArrayOperations< Devices::Cuda >::
+setMemoryElement( Element* data,
+                  const Element& value )
 {
    Assert( data, );
    ArrayOperations< Devices::Cuda >::setMemory( data, value, 1 );
 }
 
 template< typename Element >
-Element ArrayOperations< Devices::Cuda >::getMemoryElement( const Element* data )
+Element
+ArrayOperations< Devices::Cuda >::
+getMemoryElement( const Element* data )
 {
    Assert( data, );
    Element result;
@@ -67,14 +78,18 @@ Element ArrayOperations< Devices::Cuda >::getMemoryElement( const Element* data 
 }
 
 template< typename Element, typename Index >
-Element& ArrayOperations< Devices::Cuda >::getArrayElementReference( Element* data, const Index i )
+Element&
+ArrayOperations< Devices::Cuda >::
+getArrayElementReference( Element* data, const Index i )
 {
    Assert( data, );
    return data[ i ];
 }
 
 template< typename Element, typename Index >
-const Element& ArrayOperations< Devices::Cuda >::getArrayElementReference( const Element* data, const Index i )
+const
+Element& ArrayOperations< Devices::Cuda >::
+getArrayElementReference( const Element* data, const Index i )
 {
    Assert( data, );
    return data[ i ];
@@ -83,9 +98,10 @@ const Element& ArrayOperations< Devices::Cuda >::getArrayElementReference( const
 
 #ifdef HAVE_CUDA
 template< typename Element, typename Index >
-__global__ void setArrayValueCudaKernel( Element* data,
-                                         const Index size,
-                                         const Element value )
+__global__ void
+setArrayValueCudaKernel( Element* data,
+                         const Index size,
+                         const Element value )
 {
    Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
    const Index maxGridSize = blockDim. x * gridDim. x;
@@ -98,9 +114,11 @@ __global__ void setArrayValueCudaKernel( Element* data,
 #endif
 
 template< typename Element, typename Index >
-bool ArrayOperations< Devices::Cuda >::setMemory( Element* data,
-                    const Element& value,
-                    const Index size )
+bool
+ArrayOperations< Devices::Cuda >::
+setMemory( Element* data,
+           const Element& value,
+           const Index size )
 {
    Assert( data, );
 #ifdef HAVE_CUDA
@@ -120,9 +138,10 @@ bool ArrayOperations< Devices::Cuda >::setMemory( Element* data,
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >
-__global__ void copyMemoryCudaToCudaKernel( DestinationElement* destination,
-                                            const SourceElement* source,
-                                            const Index size )
+__global__ void
+copyMemoryCudaToCudaKernel( DestinationElement* destination,
+                            const SourceElement* source,
+                            const Index size )
 {
    Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
    const Index maxGridSize = blockDim. x * gridDim. x;
@@ -137,9 +156,11 @@ __global__ void copyMemoryCudaToCudaKernel( DestinationElement* destination,
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >
-bool ArrayOperations< Devices::Cuda >::copyMemory( DestinationElement* destination,
-                                                         const SourceElement* source,
-                                                         const Index size )
+bool
+ArrayOperations< Devices::Cuda >::
+copyMemory( DestinationElement* destination,
+            const SourceElement* source,
+            const Index size )
 {
    Assert( destination, );
    Assert( source, );
@@ -170,9 +191,11 @@ bool ArrayOperations< Devices::Cuda >::copyMemory( DestinationElement* destinati
 template< typename Element1,
           typename Element2,
           typename Index >
-bool ArrayOperations< Devices::Cuda >::compareMemory( const Element1* destination,
-                                                   const Element2* source,
-                                                   const Index size )
+bool
+ArrayOperations< Devices::Cuda >::
+compareMemory( const Element1* destination,
+               const Element2* source,
+               const Index size )
 {
    Assert( destination, );
    Assert( source, );
@@ -190,9 +213,11 @@ bool ArrayOperations< Devices::Cuda >::compareMemory( const Element1* destinatio
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >
-bool ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( DestinationElement* destination,
-                                                         const SourceElement* source,
-                                                         const Index size )
+bool
+ArrayOperations< Devices::Host, Devices::Cuda >::
+copyMemory( DestinationElement* destination,
+            const SourceElement* source,
+            const Index size )
 {
    Assert( destination, );
    Assert( source, );
@@ -251,9 +276,11 @@ bool ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( DestinationEle
 template< typename Element1,
           typename Element2,
           typename Index >
-bool ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory( const Element1* destination,
-                                                            const Element2* source,
-                                                            const Index size )
+bool
+ArrayOperations< Devices::Host, Devices::Cuda >::
+compareMemory( const Element1* destination,
+               const Element2* source,
+               const Index size )
 {
    /***
     * Here, destination is on host and source is on CUDA device.
@@ -303,9 +330,11 @@ bool ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory( const Eleme
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >
-bool ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( DestinationElement* destination,
-                                                         const SourceElement* source,
-                                                         const Index size )
+bool
+ArrayOperations< Devices::Cuda, Devices::Host >::
+copyMemory( DestinationElement* destination,
+            const SourceElement* source,
+            const Index size )
 {
    Assert( destination, );
    Assert( source, );
@@ -364,9 +393,11 @@ bool ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( DestinationEle
 template< typename Element1,
           typename Element2,
           typename Index >
-bool ArrayOperations< Devices::Cuda, Devices::Host >::compareMemory( const Element1* hostData,
-                                                            const Element2* deviceData,
-                                                            const Index size )
+bool
+ArrayOperations< Devices::Cuda, Devices::Host >::
+compareMemory( const Element1* hostData,
+               const Element2* deviceData,
+               const Index size )
 {
    Assert( hostData, );
    Assert( deviceData, );
@@ -651,5 +682,6 @@ extern template bool ArrayOperations< Devices::Cuda >::setMemory< long double, l
 
 #endif
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL

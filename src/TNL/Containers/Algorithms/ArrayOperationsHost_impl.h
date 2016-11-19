@@ -11,15 +11,20 @@
 #pragma once 
 
 #include <type_traits>
-#include <TNL/tnlConfig.h>
 #include <string.h>
+
+#include <TNL/tnlConfig.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 
 namespace TNL {
 namespace Containers {   
+namespace Algorithms {
 
 template< typename Element, typename Index >
-bool ArrayOperations< Devices::Host >::allocateMemory( Element*& data,
-                                                      const Index size )
+bool
+ArrayOperations< Devices::Host >::
+allocateMemory( Element*& data,
+                const Index size )
 {
    if( ! ( data = new Element[ size ] ) )
       return false;
@@ -27,42 +32,54 @@ bool ArrayOperations< Devices::Host >::allocateMemory( Element*& data,
 }
 
 template< typename Element >
-bool ArrayOperations< Devices::Host >::freeMemory( Element* data )
+bool
+ArrayOperations< Devices::Host >::
+freeMemory( Element* data )
 {
    delete[] data;
    return true;
 }
 template< typename Element >
-void ArrayOperations< Devices::Host >::setMemoryElement( Element* data,
-                                                        const Element& value )
+void
+ArrayOperations< Devices::Host >::
+setMemoryElement( Element* data,
+                  const Element& value )
 {
    *data = value;
 };
 
 template< typename Element >
-Element ArrayOperations< Devices::Host >::getMemoryElement( Element* data )
+Element
+ArrayOperations< Devices::Host >::
+getMemoryElement( Element* data )
 {
    return *data;
 };
 
 template< typename Element, typename Index >
-Element& ArrayOperations< Devices::Host >::getArrayElementReference( Element* data,
-                                                                  const Index i )
+Element&
+ArrayOperations< Devices::Host >::
+getArrayElementReference( Element* data,
+                          const Index i )
 {
    return data[ i ];
 };
 
 template< typename Element, typename Index >
-const Element& ArrayOperations< Devices::Host >::getArrayElementReference( const Element* data,
-                                                                       const Index i )
+const Element&
+ArrayOperations< Devices::Host >::
+getArrayElementReference( const Element* data,
+                          const Index i )
 {
    return data[ i ];
 };
 
 template< typename Element, typename Index >
-bool ArrayOperations< Devices::Host >::setMemory( Element* data,
-                                               const Element& value,
-                                               const Index size )
+bool
+ArrayOperations< Devices::Host >::
+setMemory( Element* data,
+           const Element& value,
+           const Index size )
 {
    for( Index i = 0; i < size; i ++ )
       data[ i ] = value;
@@ -72,9 +89,11 @@ bool ArrayOperations< Devices::Host >::setMemory( Element* data,
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >
-bool ArrayOperations< Devices::Host >::copyMemory( DestinationElement* destination,
-                                                const SourceElement* source,
-                                                const Index size )
+bool
+ArrayOperations< Devices::Host >::
+copyMemory( DestinationElement* destination,
+            const SourceElement* source,
+            const Index size )
 {
    if( std::is_same< DestinationElement, SourceElement >::value )
       memcpy( destination, source, size * sizeof( DestinationElement ) );
@@ -87,9 +106,11 @@ bool ArrayOperations< Devices::Host >::copyMemory( DestinationElement* destinati
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >
-bool ArrayOperations< Devices::Host >::compareMemory( const DestinationElement* destination,
-                                                   const SourceElement* source,
-                                                   const Index size )
+bool
+ArrayOperations< Devices::Host >::
+compareMemory( const DestinationElement* destination,
+               const SourceElement* source,
+               const Index size )
 {
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
@@ -284,5 +305,6 @@ extern template bool ArrayOperations< Devices::Host >::setMemory< long double, l
 
 #endif
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL

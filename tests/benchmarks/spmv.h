@@ -2,7 +2,7 @@
 
 #include "benchmarks.h"
 
-#include <TNL/List.h>
+#include <TNL/Containers/List.h>
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Matrices/SlicedEllpack.h>
@@ -102,7 +102,7 @@ benchmarkSpMV( Benchmark & benchmark,
     CudaVector deviceVector, deviceVector2;
 
     // create benchmark group
-    List< String > parsedType;
+    Containers::List< String > parsedType;
     parseObjectType( HostMatrix::getType(), parsedType );
     benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
 

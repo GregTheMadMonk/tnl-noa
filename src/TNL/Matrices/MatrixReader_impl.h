@@ -11,7 +11,7 @@
 #pragma once
 
 #include <iomanip>
-#include <TNL/List.h>
+#include <TNL/Containers/List.h>
 #include <TNL/String.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Timer.h>
@@ -162,7 +162,7 @@ template< typename Matrix >
 bool MatrixReader< Matrix >::checkMtxHeader( const String& header,
                                                 bool& symmetric )
 {
-   List< String > parsedLine;
+   Containers::List< String > parsedLine;
    header.parse( parsedLine );
    if( parsedLine.getSize() < 5 )
       return false;
@@ -208,7 +208,7 @@ bool MatrixReader< Matrix >::readMtxHeader( std::istream& file,
    file.seekg( 0, std::ios::beg );
    String line;
    bool headerParsed( false );
-   List< String > parsedLine;
+   Containers::List< String > parsedLine;
    while( true )
    {
       line.getLine( file );
@@ -364,7 +364,7 @@ bool MatrixReader< Matrix >::parseMtxLineWithElement( const String& line,
                                                          IndexType& column,
                                                          RealType& value )
 {
-   List< String > parsedLine;
+   Containers::List< String > parsedLine;
    line.parse( parsedLine );
    if( parsedLine.getSize() != 3 )
    {

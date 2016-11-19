@@ -26,8 +26,6 @@ set( headers
      File_impl.h
      FileName.h
      Object.h
-     List.h
-     List_impl.h
      Logger.h
      Logger_impl.h
      Math.h

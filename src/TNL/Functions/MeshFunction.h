@@ -165,5 +165,3 @@ class MeshFunction :
 } // namespace TNL
 
 #include <TNL/Functions/MeshFunction_impl.h>
-#include <TNL/Functions/MeshFunctionGnuplotWriter_impl.h>
-#include <TNL/Functions/MeshFunctionVTKWriter_impl.h>

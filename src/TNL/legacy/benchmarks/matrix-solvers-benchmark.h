@@ -357,7 +357,7 @@ int main( int argc, char* argv[] )
       std::cerr << "Unable to detect object type in " << inputFile << std::endl;
       return EXIT_FAILURE;
    }
-   List< String > parsedObjectType;
+   Containers::List< String > parsedObjectType;
    parseObjectType( objectType,
                     parsedObjectType );
    String objectClass = parsedObjectType[ 0 ];

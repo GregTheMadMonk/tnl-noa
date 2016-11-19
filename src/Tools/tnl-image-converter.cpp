@@ -37,7 +37,7 @@ void configSetup( Config::ConfigDescription& config )
 
 bool processImages( const Config::ParameterContainer& parameters )
 {
-    const List< String >& inputImages = parameters.getParameter< List< String > >( "input-images" );
+    const Containers::List< String >& inputImages = parameters.getParameter< Containers::List< String > >( "input-images" );
     String meshFile = parameters.getParameter< String >( "mesh-file" );
     bool verbose = parameters.getParameter< bool >( "verbose" );
  
@@ -133,7 +133,7 @@ bool processImages( const Config::ParameterContainer& parameters )
 
 bool processTNLFiles( const Config::ParameterContainer& parameters )
 {
-   const List< String >& inputFiles = parameters.getParameter< List< String > >( "input-files" );
+   const Containers::List< String >& inputFiles = parameters.getParameter< Containers::List< String > >( "input-files" );
    const String& imageFormat = parameters.getParameter< String >( "image-format" );
    String meshFile = parameters.getParameter< String >( "mesh-file" );
    bool verbose = parameters.getParameter< bool >( "verbose" );

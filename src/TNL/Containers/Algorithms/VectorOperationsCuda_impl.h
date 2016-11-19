@@ -11,96 +11,110 @@
 #pragma once
 
 #include <TNL/tnlConfig.h>
+#include <TNL/Containers/Algorithms/VectorOperations.h>
 #include <TNL/Containers/Algorithms/cuda-prefix-sum.h>
 #include <TNL/Containers/Algorithms/CublasWrapper.h>
 
 namespace TNL {
 namespace Containers {   
+namespace Algorithms {
 
 template< typename Vector >
-void VectorOperations< Devices::Cuda >::addElement( Vector& v,
-                                                 const typename Vector::IndexType i,
-                                                 const typename Vector::RealType& value )
+void
+VectorOperations< Devices::Cuda >::
+addElement( Vector& v,
+            const typename Vector::IndexType i,
+            const typename Vector::RealType& value )
 {
    v[ i ] += value;
 }
 
 template< typename Vector >
-void VectorOperations< Devices::Cuda >::addElement( Vector& v,
-                                                 const typename Vector::IndexType i,
-                                                 const typename Vector::RealType& value,
-                                                 const typename Vector::RealType& thisElementMultiplicator )
+void
+VectorOperations< Devices::Cuda >::
+addElement( Vector& v,
+            const typename Vector::IndexType i,
+            const typename Vector::RealType& value,
+            const typename Vector::RealType& thisElementMultiplicator )
 {
    v[ i ] = thisElementMultiplicator * v[ i ] + value;
 }
 
 template< typename Vector >
-typename Vector :: RealType VectorOperations< Devices::Cuda > :: getVectorMax( const Vector& v )
+typename Vector::RealType
+VectorOperations< Devices::Cuda >::
+getVectorMax( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
 
-   Assert( v. getSize() > 0, );
+   Assert( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionMax< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v. getSize(),
-                          v. getData(),
+                          v.getSize(),
+                          v.getData(),
                           ( Real* ) 0,
                           result );
    return result;
 }
 
 template< typename Vector >
-typename Vector :: RealType VectorOperations< Devices::Cuda > :: getVectorMin( const Vector& v )
+typename Vector::RealType
+VectorOperations< Devices::Cuda >::
+getVectorMin( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
 
-   Assert( v. getSize() > 0, );
+   Assert( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionMin< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v. getSize(),
-                          v. getData(),
+                          v.getSize(),
+                          v.getData(),
                           ( Real* ) 0,
                           result );
    return result;
 }
 
 template< typename Vector >
-typename Vector :: RealType VectorOperations< Devices::Cuda > :: getVectorAbsMax( const Vector& v )
+typename Vector::RealType
+VectorOperations< Devices::Cuda >::
+getVectorAbsMax( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
 
-   Assert( v. getSize() > 0, );
+   Assert( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionAbsMax< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v. getSize(),
-                          v. getData(),
+                          v.getSize(),
+                          v.getData(),
                           ( Real* ) 0,
                           result );
    return result;
 }
 
 template< typename Vector >
-typename Vector :: RealType VectorOperations< Devices::Cuda > :: getVectorAbsMin( const Vector& v )
+typename Vector::RealType
+VectorOperations< Devices::Cuda >::
+getVectorAbsMin( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
 
-   Assert( v. getSize() > 0, );
+   Assert( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionAbsMin< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v. getSize(),
-                          v. getData(),
+                          v.getSize(),
+                          v.getData(),
                           ( Real* ) 0,
                           result );
    return result;
@@ -111,16 +125,16 @@ typename Vector::RealType
 VectorOperations< Devices::Cuda >::
 getVectorL1Norm( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
 
-   Assert( v. getSize() > 0, );
+   Assert( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionAbsSum< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v. getSize(),
-                          v. getData(),
+                          v.getSize(),
+                          v.getData(),
                           ( Real* ) 0,
                           result );
    return result;
@@ -131,16 +145,16 @@ typename Vector::RealType
 VectorOperations< Devices::Cuda >::
 getVectorL2Norm( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
 
-   Assert( v. getSize() > 0, );
+   Assert( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionL2Norm< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v. getSize(),
-                          v. getData(),
+                          v.getSize(),
+                          v.getData(),
                           ( Real* ) 0,
                           result );
    return std::sqrt( result );
@@ -153,10 +167,10 @@ VectorOperations< Devices::Cuda >::
 getVectorLpNorm( const Vector& v,
                  const typename Vector::RealType& p )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
 
-   Assert( v. getSize() > 0, );
+   Assert( v.getSize() > 0, );
    Assert( p > 0.0,
               std::cerr << " p = " << p );
  
@@ -166,110 +180,120 @@ getVectorLpNorm( const Vector& v,
       return getVectorL2Norm( v );
    Real result( 0 );
    Algorithms::tnlParallelReductionLpNorm< Real, Index > operation;
-   operation. setPower( p );
+   operation.setPower( p );
    reductionOnCudaDevice( operation,
-                          v. getSize(),
-                          v. getData(),
+                          v.getSize(),
+                          v.getData(),
                           ( Real* ) 0,
                           result );
    return std::pow( result, 1.0 / p );
 }
 
 template< typename Vector >
-typename Vector :: RealType VectorOperations< Devices::Cuda > :: getVectorSum( const Vector& v )
+typename Vector::RealType
+VectorOperations< Devices::Cuda >::
+getVectorSum( const Vector& v )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
 
-   Assert( v. getSize() > 0, );
+   Assert( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionSum< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v. getSize(),
-                          v. getData(),
+                          v.getSize(),
+                          v.getData(),
                           ( Real* ) 0,
                           result );
    return result;
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getVectorDifferenceMax( const Vector1& v1,
-                                                            const Vector2& v2 )
+typename Vector1::RealType
+VectorOperations< Devices::Cuda >::
+getVectorDifferenceMax( const Vector1& v1,
+                        const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffMax< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v1. getSize(),
-                          v1. getData(),
-                          v2. getData(),
+                          v1.getSize(),
+                          v1.getData(),
+                          v2.getData(),
                           result );
    return result;
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getVectorDifferenceMin( const Vector1& v1,
-                                                            const Vector2& v2 )
+typename Vector1::RealType
+VectorOperations< Devices::Cuda >::
+getVectorDifferenceMin( const Vector1& v1,
+                        const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffMin< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v1. getSize(),
-                          v1. getData(),
-                          v2. getData(),
+                          v1.getSize(),
+                          v1.getData(),
+                          v2.getData(),
                           result );
    return result;
 }
 
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getVectorDifferenceAbsMax( const Vector1& v1,
-                                                               const Vector2& v2 )
+typename Vector1::RealType
+VectorOperations< Devices::Cuda >::
+getVectorDifferenceAbsMax( const Vector1& v1,
+                           const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffAbsMax< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v1. getSize(),
-                          v1. getData(),
-                          v2. getData(),
+                          v1.getSize(),
+                          v1.getData(),
+                          v2.getData(),
                           result );
    return result;
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getVectorDifferenceAbsMin( const Vector1& v1,
-                                                            const Vector2& v2 )
+typename Vector1::RealType
+VectorOperations< Devices::Cuda >::
+getVectorDifferenceAbsMin( const Vector1& v1,
+                           const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffAbsMin< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v1. getSize(),
-                          v1. getData(),
-                          v2. getData(),
+                          v1.getSize(),
+                          v1.getData(),
+                          v2.getData(),
                           result );
    return result;
 }
@@ -280,18 +304,18 @@ VectorOperations< Devices::Cuda >::
 getVectorDifferenceL1Norm( const Vector1& v1,
                            const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffAbsSum< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v1. getSize(),
-                          v1. getData(),
-                          v2. getData(),
+                          v1.getSize(),
+                          v1.getData(),
+                          v2.getData(),
                           result );
    return result;
 }
@@ -302,18 +326,18 @@ VectorOperations< Devices::Cuda >::
 getVectorDifferenceL2Norm( const Vector1& v1,
                            const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffL2Norm< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v1. getSize(),
-                          v1. getData(),
-                          v2. getData(),
+                          v1.getSize(),
+                          v1.getData(),
+                          v2.getData(),
                           result );
    return ::sqrt( result );
 }
@@ -324,55 +348,58 @@ typename Vector1::RealType
 VectorOperations< Devices::Cuda >::
 getVectorDifferenceLpNorm( const Vector1& v1,
                            const Vector2& v2,
-                           const typename Vector1 :: RealType& p )
+                           const typename Vector1::RealType& p )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
    Assert( p > 0.0,
               std::cerr << " p = " << p );
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffLpNorm< Real, Index > operation;
    operation.setPower( p );
    reductionOnCudaDevice( operation,
-                          v1. getSize(),
-                          v1. getData(),
-                          v2. getData(),
+                          v1.getSize(),
+                          v1.getData(),
+                          v2.getData(),
                           result );
    return ::pow( result, 1.0 / p );
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getVectorDifferenceSum( const Vector1& v1,
-                                                         const Vector2& v2 )
+typename Vector1::RealType
+VectorOperations< Devices::Cuda >::
+getVectorDifferenceSum( const Vector1& v1,
+                        const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffSum< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v1. getSize(),
-                          v1. getData(),
-                          v2. getData(),
+                          v1.getSize(),
+                          v1.getData(),
+                          v2.getData(),
                           result );
    return result;
 }
 
 #ifdef HAVE_CUDA
 template< typename Real, typename Index >
-__global__ void vectorScalarMultiplicationCudaKernel( Real* data,
-                                                      Index size,
-                                                      Real alpha )
+__global__ void
+vectorScalarMultiplicationCudaKernel( Real* data,
+                                      Index size,
+                                      Real alpha )
 {
-   Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
-   const Index maxGridSize = blockDim. x * gridDim. x;
+   Index elementIdx = blockDim.x * blockIdx.x + threadIdx.x;
+   const Index maxGridSize = blockDim.x * gridDim.x;
    while( elementIdx < size )
    {
       data[ elementIdx ] *= alpha;
@@ -382,20 +409,22 @@ __global__ void vectorScalarMultiplicationCudaKernel( Real* data,
 #endif
 
 template< typename Vector >
-void VectorOperations< Devices::Cuda > :: vectorScalarMultiplication( Vector& v,
-                                                                   const typename Vector::RealType& alpha )
+void
+VectorOperations< Devices::Cuda >::
+vectorScalarMultiplication( Vector& v,
+                            const typename Vector::RealType& alpha )
 {
-   typedef typename Vector :: RealType Real;
-   typedef typename Vector :: IndexType Index;
+   typedef typename Vector::RealType Real;
+   typedef typename Vector::IndexType Index;
 
-   Assert( v. getSize() > 0, );
+   Assert( v.getSize() > 0, );
 
    #ifdef HAVE_CUDA
       dim3 blockSize( 0 ), gridSize( 0 );
       const Index& size = v.getSize();
-      blockSize. x = 256;
-      Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
-      gridSize. x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
+      blockSize.x = 256;
+      Index blocksNumber = ceil( ( double ) size / ( double ) blockSize.x );
+      gridSize.x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
       vectorScalarMultiplicationCudaKernel<<< gridSize, blockSize >>>( v.getData(),
                                                                        size,
                                                                        alpha );
@@ -407,14 +436,16 @@ void VectorOperations< Devices::Cuda > :: vectorScalarMultiplication( Vector& v,
 
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getScalarProduct( const Vector1& v1,
-                                                                                 const Vector2& v2 )
+typename Vector1::RealType
+VectorOperations< Devices::Cuda >::
+getScalarProduct( const Vector1& v1,
+                  const Vector2& v2 )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( v1. getSize() > 0, );
-   Assert( v1. getSize() == v2. getSize(), );
+   Assert( v1.getSize() > 0, );
+   Assert( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
 /*#if defined HAVE_CUBLAS && defined HAVE_CUDA
@@ -425,9 +456,9 @@ typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getScalarProdu
 #endif*/
    Algorithms::tnlParallelReductionScalarProduct< Real, Index > operation;
    reductionOnCudaDevice( operation,
-                          v1. getSize(),
-                          v1. getData(),
-                          v2. getData(),
+                          v1.getSize(),
+                          v1.getData(),
+                          v2.getData(),
                           result );
    return result;
 }
@@ -435,14 +466,15 @@ typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getScalarProdu
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Index >
-__global__ void vectorAddVectorCudaKernel( Real* y,
-                                           const Real* x,
-                                           const Index size,
-                                           const Real alpha,
-                                           const Real thisMultiplicator )
+__global__ void
+vectorAddVectorCudaKernel( Real* y,
+                           const Real* x,
+                           const Index size,
+                           const Real alpha,
+                           const Real thisMultiplicator )
 {
-   Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
-   const Index maxGridSize = blockDim. x * gridDim. x;
+   Index elementIdx = blockDim.x * blockIdx.x + threadIdx.x;
+   const Index maxGridSize = blockDim.x * gridDim.x;
    if( thisMultiplicator == 1.0 )
       while( elementIdx < size )
       {
@@ -455,24 +487,24 @@ __global__ void vectorAddVectorCudaKernel( Real* y,
          y[ elementIdx ] = thisMultiplicator * y[ elementIdx ] + alpha * x[ elementIdx ];
          elementIdx += maxGridSize;
       }
-
 }
 #endif
 
 template< typename Vector1, typename Vector2 >
-void VectorOperations< Devices::Cuda > :: addVector( Vector1& y,
-                                                  const Vector2& x,
-                                                  const typename Vector2::RealType& alpha,
-                                                  const typename Vector1::RealType& thisMultiplicator )
+void
+VectorOperations< Devices::Cuda >::
+addVector( Vector1& y,
+           const Vector2& x,
+           const typename Vector2::RealType& alpha,
+           const typename Vector1::RealType& thisMultiplicator )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
-   Assert( y. getSize() > 0, );
-   Assert( y. getSize() == x. getSize(), );
+   Assert( y.getSize() > 0, );
+   Assert( y.getSize() == x.getSize(), );
    Assert( y.getData() != 0, );
    Assert( x.getData() != 0, );
-
 
    #ifdef HAVE_CUDA
       dim3 blockSize( 0 ), gridSize( 0 );
@@ -496,16 +528,17 @@ void VectorOperations< Devices::Cuda > :: addVector( Vector1& y,
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Index >
-__global__ void vectorAddVectorsCudaKernel( Real* v,
-                                            const Real* v1,
-                                            const Real* v2,
-                                            const Index size,
-                                            const Real multiplicator1,
-                                            const Real multiplicator2,
-                                            const Real thisMultiplicator )
+__global__ void
+vectorAddVectorsCudaKernel( Real* v,
+                            const Real* v1,
+                            const Real* v2,
+                            const Index size,
+                            const Real multiplicator1,
+                            const Real multiplicator2,
+                            const Real thisMultiplicator )
 {
-   Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
-   const Index maxGridSize = blockDim. x * gridDim. x;
+   Index elementIdx = blockDim.x * blockIdx.x + threadIdx.x;
+   const Index maxGridSize = blockDim.x * gridDim.x;
    if( thisMultiplicator == 1.0 )
       while( elementIdx < size )
       {
@@ -524,7 +557,6 @@ __global__ void vectorAddVectorsCudaKernel( Real* v,
 }
 #endif
 
-
 template< typename Vector1,
           typename Vector2,
           typename Vector3 >
@@ -537,8 +569,8 @@ addVectors( Vector1& v,
             const typename Vector3::RealType& multiplicator2,
             const typename Vector1::RealType& thisMultiplicator )
 {
-   typedef typename Vector1 :: RealType Real;
-   typedef typename Vector1 :: IndexType Index;
+   typedef typename Vector1::RealType Real;
+   typedef typename Vector1::IndexType Index;
 
    Assert( v.getSize() > 0, );
    Assert( v.getSize() == v1.getSize(), );
@@ -571,50 +603,54 @@ addVectors( Vector1& v,
 }
 
 template< typename Vector >
-void VectorOperations< Devices::Cuda >::computePrefixSum( Vector& v,
-                                                       typename Vector::IndexType begin,
-                                                       typename Vector::IndexType end )
+void
+VectorOperations< Devices::Cuda >::
+computePrefixSum( Vector& v,
+                  typename Vector::IndexType begin,
+                  typename Vector::IndexType end )
 {
    #ifdef HAVE_CUDA
-   typedef Algorithms::tnlParallelReductionSum< typename Vector::RealType,
-                                    typename Vector::IndexType > OperationType;
+   typedef Algorithms::tnlParallelReductionSum< typename Vector::RealType, typename Vector::IndexType > OperationType;
 
    OperationType operation;
    Algorithms::cudaPrefixSum< typename Vector::RealType,
-                  OperationType,
-                  typename Vector::IndexType >( end - begin,
-                                                256,
-                                                &v.getData()[ begin ],
-                                                &v.getData()[ begin ],
-                                                operation,
-                                                Algorithms::inclusivePrefixSum );
+                              OperationType,
+                              typename Vector::IndexType >
+                                 ( end - begin,
+                                   256,
+                                   &v.getData()[ begin ],
+                                   &v.getData()[ begin ],
+                                   operation,
+                                   Algorithms::inclusivePrefixSum );
    #else
       CudaSupportMissingMessage;;
    #endif
 }
 
 template< typename Vector >
-void VectorOperations< Devices::Cuda >::computeExclusivePrefixSum( Vector& v,
-                                                                typename Vector::IndexType begin,
-                                                                typename Vector::IndexType end )
+void
+VectorOperations< Devices::Cuda >::
+computeExclusivePrefixSum( Vector& v,
+                           typename Vector::IndexType begin,
+                           typename Vector::IndexType end )
 {
 #ifdef HAVE_CUDA
-   typedef Algorithms::tnlParallelReductionSum< typename Vector::RealType,
-                                    typename Vector::IndexType > OperationType;
+   typedef Algorithms::tnlParallelReductionSum< typename Vector::RealType, typename Vector::IndexType > OperationType;
 
    OperationType operation;
-
    Algorithms::cudaPrefixSum< typename Vector::RealType,
-                  OperationType,
-                  typename Vector::IndexType >( end - begin,
-                                                256,
-                                                &v.getData()[ begin ],
-                                                &v.getData()[ begin ],
-                                                operation,
-                                                Algorithms::exclusivePrefixSum );
+                              OperationType,
+                              typename Vector::IndexType >
+                                 ( end - begin,
+                                   256,
+                                   &v.getData()[ begin ],
+                                   &v.getData()[ begin ],
+                                   operation,
+                                   Algorithms::exclusivePrefixSum );
 #endif
 }
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
 
@@ -624,6 +660,7 @@ void VectorOperations< Devices::Cuda >::computeExclusivePrefixSum( Vector& v,
 
 namespace TNL {
 namespace Containers {
+namespace Algorithms {
 
 /****
  * Max
@@ -875,6 +912,7 @@ extern template long double VectorOperations< Devices::Cuda >::getVectorDifferen
 #endif
 #endif
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
 

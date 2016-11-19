@@ -15,7 +15,7 @@
 void setupConfig( Config::ConfigDescription& config )
 {
    config.addEntry< String >( "mesh", "Input mesh file.", "mesh.tnl" );
-   config.addRequiredEntry< List< String > >( "input-files", "The first set of the input files." );
+   config.addRequiredEntry< Containers::List< String > >( "input-files", "The first set of the input files." );
    config.addEntry< String >( "output-file", "File for the output data.", "tnl-diff.log" );
    config.addEntry< String >( "mode", "Mode 'couples' compares two subsequent files. Mode 'sequence' compares the input files against the first one. 'halves' compares the files from the and the second half of the intput files.", "couples" );
       config.addEntryEnum< String >( "couples" );
@@ -56,7 +56,7 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
    }
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
-   List< String > parsedMeshType;
+   Containers::List< String > parsedMeshType;
    if( ! parseObjectType( meshType, parsedMeshType ) )
    {
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;

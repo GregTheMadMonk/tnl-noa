@@ -10,9 +10,10 @@
 
 #pragma once
 
-#include <TNL/File.h>
+#include <TNL/Containers/List.h>
 
 namespace TNL {
+namespace Containers {
 
 template< typename T >
 List< T >::List()
@@ -111,12 +112,12 @@ bool List< T >::Append( const T& data )
    if( ! first )
    {
       Assert( ! last, );
-      first = last = new DataElement< T >( data );
+      first = last = new ListDataElement< T >( data );
       if( ! first ) return false;
    }
    else
    {
-      DataElement< T >* new_element =  new DataElement< T >( data, last, 0 );
+      ListDataElement< T >* new_element =  new ListDataElement< T >( data, last, 0 );
       if( ! new_element ) return false;
       Assert( last, );
       last = last -> Next() = new_element;
@@ -131,12 +132,12 @@ bool List< T >::Prepend( const T& data )
    if( ! first )
    {
       Assert( ! last, );
-      first = last = new DataElement< T >( data );
+      first = last = new ListDataElement< T >( data );
       if( ! first ) return false;
    }
    else
    {
-      DataElement< T >* new_element =  new DataElement< T >( data, 0, first );
+      ListDataElement< T >* new_element =  new ListDataElement< T >( data, 0, first );
       if( ! new_element ) return false;
       first = first -> Previous() = new_element;
    }
@@ -152,8 +153,8 @@ bool List< T >::Insert( const T& data, const int& ind )
    if( ind == 0 ) return Prepend( data );
    if( ind == size ) return Append( data );
    operator[]( ind );
-   DataElement< T >* new_el =
-      new DataElement< T >( data,
+   ListDataElement< T >* new_el =
+      new ListDataElement< T >( data,
                              iterator -> Previous(),
                              iterator );
    if( ! new_el ) return false;
@@ -200,7 +201,7 @@ template< typename T >
 void List< T >::Erase( const int& ind )
 {
    operator[]( ind );
-   DataElement< T >* tmp_it = iterator;
+   ListDataElement< T >* tmp_it = iterator;
    if( iterator -> Next() )
       iterator -> Next() -> Previous() = iterator -> Previous();
    if( iterator -> Previous() )
@@ -229,7 +230,7 @@ template< typename T >
 void List< T >::reset()
 {
    iterator = first;
-   DataElement< T >* tmp_it;
+   ListDataElement< T >* tmp_it;
    while( iterator )
    {
       Assert( iterator, );
@@ -245,7 +246,7 @@ template< typename T >
 void List< T >::DeepEraseAll()
 {
    iterator = first;
-   DataElement< T >* tmp_it;
+   ListDataElement< T >* tmp_it;
    int i( 0 );
    while( iterator )
    {
@@ -381,6 +382,5 @@ std::ostream& operator << ( std::ostream& str, const List< T >& list )
    return str;
 };
 
+} // namespace Containers
 } // namespace TNL
-
-

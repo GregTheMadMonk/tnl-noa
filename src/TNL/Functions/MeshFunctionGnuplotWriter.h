@@ -175,3 +175,4 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device
 } // namespace Functions
 } // namespace TNL
 
+#include <TNL/Functions/MeshFunctionGnuplotWriter_impl.h>

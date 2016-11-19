@@ -51,20 +51,20 @@ class MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
    protected:
 
    static bool resolveMeshDimensions( const Config::ParameterContainer& parameters,
-                                      const List< String >& parsedMeshType );
+                                      const Containers::List< String >& parsedMeshType );
 
    // Overload for disabled dimensions
    template< int MeshDimensions,
              typename = typename std::enable_if< ! ConfigTagDimensions<ConfigTag,MeshDimensions>::enabled >::type,
              typename = void >
    static bool resolveMeshRealType( const Config::ParameterContainer& parameters,
-                                    const List< String >& parsedMeshType );
+                                    const Containers::List< String >& parsedMeshType );
 
    // Overload for enabled dimensions
    template< int MeshDimensions,
              typename = typename std::enable_if< ConfigTagDimensions<ConfigTag,MeshDimensions>::enabled >::type >
    static bool resolveMeshRealType( const Config::ParameterContainer& parameters,
-                                    const List< String >& parsedMeshType );
+                                    const Containers::List< String >& parsedMeshType );
 
    // Overload for disabled real types
    template< int MeshDimensions,
@@ -72,14 +72,14 @@ class MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
              typename = typename std::enable_if< ! ConfigTagReal<ConfigTag, MeshRealType>::enabled >::type,
              typename = void >
    static bool resolveMeshIndexType( const Config::ParameterContainer& parameters,
-                                     const List< String >& parsedMeshType );
+                                     const Containers::List< String >& parsedMeshType );
 
    // Overload for enabled real types
    template< int MeshDimensions,
              typename MeshRealType,
              typename = typename std::enable_if< ConfigTagReal<ConfigTag, MeshRealType>::enabled >::type >
    static bool resolveMeshIndexType( const Config::ParameterContainer& parameters,
-                                     const List< String >& parsedMeshType );
+                                     const Containers::List< String >& parsedMeshType );
 
    // Overload for disabled index types
    template< int MeshDimensions,
@@ -88,7 +88,7 @@ class MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
              typename = typename std::enable_if< ! ConfigTagIndex<ConfigTag, MeshIndexType>::enabled >::type,
              typename = void >
    static bool resolveMeshType( const Config::ParameterContainer& parameters,
-                                const List< String >& parsedMeshType );
+                                const Containers::List< String >& parsedMeshType );
 
    // Overload for enabled index types
    template< int MeshDimensions,
@@ -96,7 +96,7 @@ class MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
              typename MeshIndexType,
              typename = typename std::enable_if< ConfigTagIndex<ConfigTag, MeshIndexType>::enabled >::type >
    static bool resolveMeshType( const Config::ParameterContainer& parameters,
-                                const List< String >& parsedMeshType );
+                                const Containers::List< String >& parsedMeshType );
 
 
 
@@ -115,7 +115,7 @@ class MeshTypeResolverDimensionsSupportChecker< Dimensions, true, MeshTypeResolv
    public:
 
    static bool checkDimensions( const Config::ParameterContainer& parameters,
-                                const List< String >& parsedMeshType );
+                                const Containers::List< String >& parsedMeshType );
 };
 
 template< int Dimensions, typename MeshTypeResolver >
@@ -124,7 +124,7 @@ class MeshTypeResolverDimensionsSupportChecker< Dimensions, false, MeshTypeResol
    public:
 
    static bool checkDimensions( const Config::ParameterContainer& parameters,
-                                const List< String >& parsedMeshType );
+                                const Containers::List< String >& parsedMeshType );
 };*/
 
 } // namespace Solvers

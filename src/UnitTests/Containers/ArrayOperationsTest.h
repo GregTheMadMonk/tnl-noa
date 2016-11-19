@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Containers/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Devices/Cuda.h>
 
 #ifdef HAVE_GTEST 
@@ -19,6 +19,7 @@
 
 using namespace TNL;
 using namespace TNL::Containers;
+using namespace TNL::Containers::Algorithms;
 
 int getTestSize()
 {
