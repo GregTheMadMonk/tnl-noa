@@ -28,9 +28,6 @@ set( headers Array.h
              MultiVector2D_impl.h
              MultiVector3D_impl.h
              MultiVector4D_impl.h
-             VectorOperations.h
-             VectorOperationsHost_impl.h
-             VectorOperationsCuda_impl.h                                      
              SharedVector.h
              SharedVector_impl.h
              StaticVector.h 
@@ -45,7 +42,6 @@ set( common_SOURCES
      ${CURRENT_DIR}/MultiArray_impl.cpp
      ${CURRENT_DIR}/Array_impl.cpp
      ${CURRENT_DIR}/StaticArray_impl.cpp 
-     ${CURRENT_DIR}/VectorOperationsHost_impl.cpp
      ${CURRENT_DIR}/MultiVector_impl.cpp
      ${CURRENT_DIR}/SharedVector_impl.cpp
      ${CURRENT_DIR}/Vector_impl.cpp
@@ -59,7 +55,6 @@ IF( BUILD_CUDA )
         ${CURRENT_DIR}/SharedArray_impl.cu
         ${CURRENT_DIR}/MultiArray_impl.cu
         ${CURRENT_DIR}/StaticArray_impl.cu
-        ${CURRENT_DIR}/VectorOperationsCuda_impl.cu
         ${CURRENT_DIR}/Vector_impl.cu
         ${CURRENT_DIR}/StaticVector_impl.cu 
         PARENT_SCOPE )

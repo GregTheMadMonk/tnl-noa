@@ -14,6 +14,9 @@ set( headers ArrayOperations.h
              Multireduction_impl.h
              Reduction.h
              Reduction_impl.h
+             VectorOperations.h
+             VectorOperationsHost_impl.h
+             VectorOperationsCuda_impl.h
    )
 
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Containers/Algorithms )

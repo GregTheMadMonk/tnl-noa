@@ -10,8 +10,11 @@
 
 #pragma once 
 
+#include <TNL/Containers/Algorithms/VectorOperations.h>
+
 namespace TNL {
 namespace Containers {   
+namespace Algorithms {
 
 static const int OpenMPVectorOperationsThreshold = 65536; // TODO: check this threshold
 static const int PrefetchDistance = 128;
@@ -576,8 +579,9 @@ void VectorOperations< Devices::Host >::computeExclusivePrefixSum( Vector& v,
    }
 }
 
+} // namespace Algorithms
 } // namespace Containers
-} //namespace TNL
+} // namespace TNL
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -585,6 +589,7 @@ void VectorOperations< Devices::Host >::computeExclusivePrefixSum( Vector& v,
 
 namespace TNL {
 namespace Containers {   
+namespace Algorithms {
 
 /****
  * Max
@@ -837,8 +842,8 @@ extern template long double VectorOperations< Devices::Host >::getVectorDifferen
 #endif
 #endif
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
+
 #endif
-
-

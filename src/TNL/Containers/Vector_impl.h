@@ -10,7 +10,8 @@
 
 #pragma once 
 
-#include <TNL/Containers/VectorOperations.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Containers/Algorithms/VectorOperations.h>
 
 namespace TNL {
 namespace Containers {   
@@ -73,7 +74,7 @@ template< typename Real,
 void Vector< Real, Device, Index >::addElement( const IndexType i,
                                                    const RealType& value )
 {
-   VectorOperations< Device >::addElement( *this, i, value );
+   Algorithms::VectorOperations< Device >::addElement( *this, i, value );
 }
 
 template< typename Real,
@@ -83,7 +84,7 @@ void Vector< Real, Device, Index >::addElement( const IndexType i,
                                                    const RealType& value,
                                                    const RealType& thisElementMultiplicator )
 {
-   VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
+   Algorithms::VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
 }
 
 template< typename Real,
@@ -150,7 +151,7 @@ template< typename Real,
           typename Index >
 Vector< Real, Device, Index >& Vector< Real, Device, Index >::operator *= ( const RealType& c )
 {
-   VectorOperations< Device >::vectorScalarMultiplication( *this, c );
+   Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, c );
    return *this;
 }
 
@@ -159,7 +160,7 @@ template< typename Real,
           typename Index >
 Vector< Real, Device, Index >& Vector< Real, Device, Index >::operator /= ( const RealType& c )
 {
-   VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
+   Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
    return *this;
 }
 
@@ -169,7 +170,7 @@ template< typename Real,
           typename Index >
 Real Vector< Real, Device, Index >::max() const
 {
-   return VectorOperations< Device >::getVectorMax( *this );
+   return Algorithms::VectorOperations< Device >::getVectorMax( *this );
 }
 
 template< typename Real,
@@ -177,7 +178,7 @@ template< typename Real,
           typename Index >
 Real Vector< Real, Device, Index >::min() const
 {
-   return VectorOperations< Device >::getVectorMin( *this );
+   return Algorithms::VectorOperations< Device >::getVectorMin( *this );
 }
 
 
@@ -186,7 +187,7 @@ template< typename Real,
           typename Index >
 Real Vector< Real, Device, Index >::absMax() const
 {
-   return VectorOperations< Device >::getVectorAbsMax( *this );
+   return Algorithms::VectorOperations< Device >::getVectorAbsMax( *this );
 }
 
 template< typename Real,
@@ -194,7 +195,7 @@ template< typename Real,
           typename Index >
 Real Vector< Real, Device, Index >::absMin() const
 {
-   return VectorOperations< Device >::getVectorAbsMin( *this );
+   return Algorithms::VectorOperations< Device >::getVectorAbsMin( *this );
 }
 
 template< typename Real,
@@ -202,7 +203,7 @@ template< typename Real,
           typename Index >
 Real Vector< Real, Device, Index >::lpNorm( const Real& p ) const
 {
-   return VectorOperations< Device >::getVectorLpNorm( *this, p );
+   return Algorithms::VectorOperations< Device >::getVectorLpNorm( *this, p );
 }
 
 
@@ -211,7 +212,7 @@ template< typename Real,
           typename Index >
 Real Vector< Real, Device, Index >::sum() const
 {
-   return VectorOperations< Device >::getVectorSum( *this );
+   return Algorithms::VectorOperations< Device >::getVectorSum( *this );
 }
 
 
@@ -221,7 +222,7 @@ template< typename Real,
 template< typename VectorT >
 Real Vector< Real, Device, Index >::differenceMax( const VectorT& v ) const
 {
-   return VectorOperations< Device >::getVectorDifferenceMax( *this, v );
+   return Algorithms::VectorOperations< Device >::getVectorDifferenceMax( *this, v );
 }
 
 
@@ -231,7 +232,7 @@ template< typename Real,
 template< typename VectorT >
 Real Vector< Real, Device, Index >::differenceMin( const VectorT& v ) const
 {
-   return VectorOperations< Device >::getVectorDifferenceMin( *this, v );
+   return Algorithms::VectorOperations< Device >::getVectorDifferenceMin( *this, v );
 }
 
 
@@ -241,7 +242,7 @@ template< typename Real,
 template< typename VectorT >
 Real Vector< Real, Device, Index >::differenceAbsMax( const VectorT& v ) const
 {
-   return VectorOperations< Device >::getVectorDifferenceAbsMax( *this, v );
+   return Algorithms::VectorOperations< Device >::getVectorDifferenceAbsMax( *this, v );
 }
 
 template< typename Real,
@@ -250,7 +251,7 @@ template< typename Real,
 template< typename VectorT >
 Real Vector< Real, Device, Index >::differenceAbsMin( const VectorT& v ) const
 {
-   return VectorOperations< Device >::getVectorDifferenceAbsMin( *this, v );
+   return Algorithms::VectorOperations< Device >::getVectorDifferenceAbsMin( *this, v );
 }
 
 template< typename Real,
@@ -259,7 +260,7 @@ template< typename Real,
 template< typename VectorT >
 Real Vector< Real, Device, Index >::differenceLpNorm( const VectorT& v, const Real& p ) const
 {
-   return VectorOperations< Device >::getVectorDifferenceLpNorm( *this, v, p );
+   return Algorithms::VectorOperations< Device >::getVectorDifferenceLpNorm( *this, v, p );
 }
 
 
@@ -269,7 +270,7 @@ template< typename Real,
 template< typename VectorT >
 Real Vector< Real, Device, Index >::differenceSum( const VectorT& v ) const
 {
-   return VectorOperations< Device >::getVectorDifferenceSum( *this, v );
+   return Algorithms::VectorOperations< Device >::getVectorDifferenceSum( *this, v );
 }
 
 
@@ -278,7 +279,7 @@ template< typename Real,
           typename Index >
 void Vector< Real, Device, Index >::scalarMultiplication( const Real& alpha )
 {
-   VectorOperations< Device >::vectorScalarMultiplication( *this, alpha );
+   Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, alpha );
 }
 
 
@@ -288,7 +289,7 @@ template< typename Real,
 template< typename VectorT >
 Real Vector< Real, Device, Index >::scalarProduct( const VectorT& v ) const
 {
-   return VectorOperations< Device >::getScalarProduct( *this, v );
+   return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
 }
 
 template< typename Real,
@@ -299,7 +300,7 @@ void Vector< Real, Device, Index >::addVector( const VectorT& x,
                                                     const Real& multiplicator,
                                                     const Real& thisMultiplicator )
 {
-   VectorOperations< Device >::addVector( *this, x, multiplicator, thisMultiplicator );
+   Algorithms::VectorOperations< Device >::addVector( *this, x, multiplicator, thisMultiplicator );
 }
 
 template< typename Real,
@@ -314,7 +315,7 @@ addVectors( const VectorT& v1,
             const Real& multiplicator2,
             const Real& thisMultiplicator )
 {
-   VectorOperations< Device >::addVectors( *this, v1, multiplicator1, v2, multiplicator2, thisMultiplicator );
+   Algorithms::VectorOperations< Device >::addVectors( *this, v1, multiplicator1, v2, multiplicator2, thisMultiplicator );
 }
 
 template< typename Real,
@@ -322,7 +323,7 @@ template< typename Real,
           typename Index >
 void Vector< Real, Device, Index >::computePrefixSum()
 {
-   VectorOperations< Device >::computePrefixSum( *this, 0, this->getSize() );
+   Algorithms::VectorOperations< Device >::computePrefixSum( *this, 0, this->getSize() );
 }
 
 template< typename Real,
@@ -331,7 +332,7 @@ template< typename Real,
 void Vector< Real, Device, Index >::computePrefixSum( const IndexType begin,
                                                            const IndexType end )
 {
-   VectorOperations< Device >::computePrefixSum( *this, begin, end );
+   Algorithms::VectorOperations< Device >::computePrefixSum( *this, begin, end );
 }
 
 template< typename Real,
@@ -339,7 +340,7 @@ template< typename Real,
           typename Index >
 void Vector< Real, Device, Index >::computeExclusivePrefixSum()
 {
-   VectorOperations< Device >::computeExclusivePrefixSum( *this, 0, this->getSize() );
+   Algorithms::VectorOperations< Device >::computeExclusivePrefixSum( *this, 0, this->getSize() );
 }
 
 template< typename Real,
@@ -348,7 +349,7 @@ template< typename Real,
 void Vector< Real, Device, Index >::computeExclusivePrefixSum( const IndexType begin,
                                                                     const IndexType end )
 {
-   VectorOperations< Device >::computeExclusivePrefixSum( *this, begin, end );
+   Algorithms::VectorOperations< Device >::computeExclusivePrefixSum( *this, begin, end );
 }
 
 

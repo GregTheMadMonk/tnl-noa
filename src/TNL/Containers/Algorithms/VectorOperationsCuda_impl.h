@@ -11,11 +11,13 @@
 #pragma once
 
 #include <TNL/tnlConfig.h>
+#include <TNL/Containers/Algorithms/VectorOperations.h>
 #include <TNL/Containers/Algorithms/cuda-prefix-sum.h>
 #include <TNL/Containers/Algorithms/CublasWrapper.h>
 
 namespace TNL {
 namespace Containers {   
+namespace Algorithms {
 
 template< typename Vector >
 void VectorOperations< Devices::Cuda >::addElement( Vector& v,
@@ -615,6 +617,7 @@ void VectorOperations< Devices::Cuda >::computeExclusivePrefixSum( Vector& v,
 #endif
 }
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
 
@@ -624,6 +627,7 @@ void VectorOperations< Devices::Cuda >::computeExclusivePrefixSum( Vector& v,
 
 namespace TNL {
 namespace Containers {
+namespace Algorithms {
 
 /****
  * Max
@@ -875,6 +879,7 @@ extern template long double VectorOperations< Devices::Cuda >::getVectorDifferen
 #endif
 #endif
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
 

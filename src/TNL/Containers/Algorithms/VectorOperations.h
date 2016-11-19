@@ -17,6 +17,7 @@
 
 namespace TNL {
 namespace Containers {   
+namespace Algorithms {
 
 template< typename Device >
 class VectorOperations{};
@@ -238,9 +239,9 @@ class VectorOperations< Devices::Cuda >
                                           const typename Vector::IndexType end );
 };
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/VectorOperationsHost_impl.h>
-#include <TNL/Containers/VectorOperationsCuda_impl.h>
-
+#include <TNL/Containers/Algorithms/VectorOperationsHost_impl.h>
+#include <TNL/Containers/Algorithms/VectorOperationsCuda_impl.h>
