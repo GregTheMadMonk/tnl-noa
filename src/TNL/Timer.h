@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include <TNL/Logger.h>
-
 namespace TNL {
+
+class Logger;
 
 class Timer
 {

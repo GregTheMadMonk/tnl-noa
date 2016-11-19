@@ -15,6 +15,7 @@
 #include <TNL/String.h>
 #include <TNL/Assert.h>
 #include <TNL/SmartPointersRegister.h>
+#include <TNL/Timer.h>
 
 namespace TNL {
 
@@ -30,7 +31,6 @@ namespace Devices {
 #else
 #define __cuda_callable__
 #endif
-
 
 class Cuda
 {
@@ -108,10 +108,13 @@ class Cuda
    // called to get the device ID.
    static bool synchronizeDevice( int deviceId = -1 );
    
+   static Timer smartPointersSynchronizationTimer;
+   
    protected:
    
    static SmartPointersRegister smartPointersRegister;
-
+   
+   
 };
 
 #ifdef HAVE_CUDA

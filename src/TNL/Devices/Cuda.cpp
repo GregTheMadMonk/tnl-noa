@@ -19,6 +19,7 @@ namespace TNL {
 namespace Devices {
 
 SmartPointersRegister Cuda::smartPointersRegister;
+Timer Cuda::smartPointersSynchronizationTimer;
 
 String Cuda::getDeviceType()
 {
@@ -67,6 +68,8 @@ bool Cuda::setup( const Config::ParameterContainer& parameters,
       std::cerr << "I cannot activate CUDA device number " << cudaDevice << "." << std::endl;
       return false;
    }
+   smartPointersSynchronizationTimer.reset();
+   smartPointersSynchronizationTimer.stop();
 #endif
    return true;
 }
@@ -85,7 +88,10 @@ bool Cuda::synchronizeDevice( int deviceId )
 {
    if( deviceId < 0 )
       deviceId = Devices::CudaDeviceInfo::getActiveDevice();
-   return smartPointersRegister.synchronizeDevice( deviceId );
+   smartPointersSynchronizationTimer.start();
+   bool b = smartPointersRegister.synchronizeDevice( deviceId );
+   smartPointersSynchronizationTimer.stop();
+   return b;
 }
 
 } // namespace Devices

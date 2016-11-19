@@ -69,8 +69,6 @@ bool
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 writeEpilog( Logger& logger )
 {
-   logger.writeParameter< const char* >( "GPU transfer time:", "" );
-   this->gpuTransferTimer.writeLog( logger, 1 );
    return true;
 }
 
@@ -239,9 +237,9 @@ getExplicitRHS( const RealType& time,
       time + tau,
       this->uPointer );*/
    
-   //uPointer->write( "u.txt", "gnuplot" );
-   //fuPointer->write( "fu.txt", "gnuplot" );
-   //getchar();
+   /*uPointer->write( "u.txt", "gnuplot" );
+   fuPointer->write( "fu.txt", "gnuplot" );
+   getchar();*/
 }
 
 template< typename Mesh,

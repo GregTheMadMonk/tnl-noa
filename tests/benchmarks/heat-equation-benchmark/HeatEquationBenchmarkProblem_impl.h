@@ -354,15 +354,15 @@ heatEquationTemplatedCompact( const GridType* grid,
    {
       GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
       
-      //entity.refresh();
-      /*if( ! entity.isBoundaryEntity() )
+      entity.refresh();
+      if( ! entity.isBoundaryEntity() )
       {
          fu( entity ) = 
             ( *differentialOperator )( u, entity, time );
 
          typedef Functions::FunctionAdapter< GridType, RightHandSide > FunctionAdapter;
          fu( entity ) +=  FunctionAdapter::getValue( *rightHandSide, entity, time );
-      }*/
+      }
    }
 }
 #endif

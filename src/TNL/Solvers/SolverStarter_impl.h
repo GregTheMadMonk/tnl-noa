@@ -478,6 +478,11 @@ bool SolverStarter< ConfigTag > :: writeEpilog( std::ostream& str, const Solver&
       return false;
    logger.writeParameter< const char* >( "Compute time:", "" );
    this->computeTimer.writeLog( logger, 1 );
+   if( std::is_same< typename Solver::DeviceType, TNL::Devices::Cuda >::value )
+   {
+      logger.writeParameter< const char* >( "GPU synchronization time:", "" );
+      TNL::Devices::Cuda::smartPointersSynchronizationTimer.writeLog( logger, 1 );
+   }   
    logger.writeParameter< const char* >( "I/O time:", "" );
    this->ioTimer.writeLog( logger, 1 );
    logger.writeParameter< const char* >( "Total time:", "" );
