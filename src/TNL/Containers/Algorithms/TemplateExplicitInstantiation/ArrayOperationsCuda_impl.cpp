@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Containers/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 
 namespace TNL {
 namespace Containers {    
+namespace Algorithms {
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -290,8 +291,6 @@ template bool ArrayOperations< Devices::Cuda >::setMemory< long double, long int
 
 #endif
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
-
-
-

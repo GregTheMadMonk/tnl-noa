@@ -15,7 +15,7 @@
 #include <TNL/File.h>
 #include <TNL/Math.h>
 #include <TNL/param-types.h>
-#include <TNL/Containers/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/ArrayIO.h>
 #include <TNL/Containers/Array.h>
 
@@ -146,14 +146,14 @@ releaseData() const
    {
       if( --*this->referenceCounter == 0 )
       {
-         ArrayOperations< Device >::freeMemory( this->allocationPointer );
+         Algorithms::ArrayOperations< Device >::freeMemory( this->allocationPointer );
          delete this->referenceCounter;
          //std::cerr << "Deallocating reference counter " << this->referenceCounter << std::endl;
       }
    }
    else
       if( allocationPointer )
-         ArrayOperations< Device >::freeMemory( this->allocationPointer );
+         Algorithms::ArrayOperations< Device >::freeMemory( this->allocationPointer );
    this->allocationPointer = 0;
    this->data = 0;
    this->size = 0;
@@ -172,7 +172,7 @@ setSize( const Index size )
                         << "New size: " << size << std::endl );
    if( this->size == size && allocationPointer && ! referenceCounter ) return true;
    this->releaseData();
-   ArrayOperations< Device >::allocateMemory( this->allocationPointer, size );
+   Algorithms::ArrayOperations< Device >::allocateMemory( this->allocationPointer, size );
    this->data = this->allocationPointer;
    this->size = size;
    if( ! this->allocationPointer )
@@ -313,7 +313,7 @@ setElement( const Index& i, const Element& x )
               std::cerr << "Wrong index for setElement method in Array "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
-   return ArrayOperations< Device > :: setMemoryElement( &( this->data[ i ] ), x );
+   return Algorithms::ArrayOperations< Device > :: setMemoryElement( &( this->data[ i ] ), x );
 };
 
 template< typename Element,
@@ -327,7 +327,7 @@ getElement( const Index& i ) const
               std::cerr << "Wrong index for getElement method in Array "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
-   return ArrayOperations< Device >::getMemoryElement( & ( this->data[ i ] ) );
+   return Algorithms::ArrayOperations< Device >::getMemoryElement( & ( this->data[ i ] ) );
 };
 
 template< typename Element,
@@ -370,13 +370,13 @@ operator = ( const Array< Element, Device, Index >& array )
    Assert( array. getSize() == this->getSize(),
               std::cerr << "Source size: " << array. getSize() << std::endl
                         << "Target size: " << this->getSize() << std::endl );
-   ArrayOperations< Device > ::
-   template copyMemory< Element,
-                        Element,
-                        Index >
-                       ( this->getData(),
-                         array. getData(),
-                         array. getSize() );
+   Algorithms::ArrayOperations< Device >::
+      template copyMemory< Element,
+                           Element,
+                           Index >
+                          ( this->getData(),
+                            array. getData(),
+                            array. getSize() );
    return ( *this );
 };
 
@@ -391,13 +391,13 @@ operator = ( const ArrayT& array )
    Assert( array. getSize() == this->getSize(),
               std::cerr << "Source size: " << array. getSize() << std::endl
                         << "Target size: " << this->getSize() << std::endl );
-   ArrayOperations< Device, typename ArrayT::DeviceType > ::
-    template copyMemory< Element,
-                         typename ArrayT::ElementType,
-                         typename ArrayT::IndexType >
-                       ( this->getData(),
-                         array. getData(),
-                         array. getSize() );
+   Algorithms::ArrayOperations< Device, typename ArrayT::DeviceType >::
+      template copyMemory< Element,
+                           typename ArrayT::ElementType,
+                           typename ArrayT::IndexType >
+                         ( this->getData(),
+                           array. getData(),
+                           array. getSize() );
    return ( *this );
 };
 
@@ -411,13 +411,13 @@ operator == ( const ArrayT& array ) const
 {
    if( array. getSize() != this->getSize() )
       return false;
-   return ArrayOperations< Device, typename ArrayT::DeviceType > ::
-    template compareMemory< typename ArrayT::ElementType,
-                            Element,
-                            typename ArrayT::IndexType >
-                          ( this->getData(),
-                            array.getData(),
-                            array.getSize() );
+   return Algorithms::ArrayOperations< Device, typename ArrayT::DeviceType >::
+      template compareMemory< typename ArrayT::ElementType,
+                              Element,
+                              typename ArrayT::IndexType >
+                            ( this->getData(),
+                              array.getData(),
+                              array.getSize() );
 }
 
 template< typename Element,
@@ -436,7 +436,7 @@ template< typename Element,
 void Array< Element, Device, Index > :: setValue( const Element& e )
 {
    Assert( this->getData(),);
-   ArrayOperations< Device > :: setMemory( this->getData(), e, this->getSize() );
+   Algorithms::ArrayOperations< Device >::setMemory( this->getData(), e, this->getSize() );
 }
 
 template< typename Element,

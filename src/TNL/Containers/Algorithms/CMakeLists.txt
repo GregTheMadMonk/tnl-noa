@@ -1,6 +1,9 @@
 ADD_SUBDIRECTORY( TemplateExplicitInstantiation )
 
-set( headers cuda-prefix-sum.h
+set( headers ArrayOperations.h
+             ArrayOperationsHost_impl.h
+             ArrayOperationsCuda_impl.h
+             cuda-prefix-sum.h
              cuda-prefix-sum_impl.h
              reduction-operations.h
              CublasWrapper.h

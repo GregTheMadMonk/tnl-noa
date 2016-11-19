@@ -15,6 +15,7 @@
 
 namespace TNL {
 namespace Containers {   
+namespace Algorithms {
 
 template< typename DestinationDevice,
           typename SourceDevice = DestinationDevice >
@@ -152,8 +153,9 @@ class ArrayOperations< Devices::Host, Devices::Cuda >
                               const Index size );
 };
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/ArrayOperationsHost_impl.h>
-#include <TNL/Containers/ArrayOperationsCuda_impl.h>
+#include <TNL/Containers/Algorithms/ArrayOperationsHost_impl.h>
+#include <TNL/Containers/Algorithms/ArrayOperationsCuda_impl.h>

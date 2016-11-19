@@ -3,9 +3,6 @@ ADD_SUBDIRECTORY( Algorithms )
 set( headers Array.h
              Array_impl.h
              ArrayIO.h
-             ArrayOperations.h
-             ArrayOperationsHost_impl.h
-             ArrayOperationsCuda_impl.h
              DynamicTypeTag.h
              IndexedSet.h
              IndexedSet_impl.h
@@ -58,8 +55,6 @@ set( common_SOURCES
 IF( BUILD_CUDA )
    set( tnl_containers_CUDA__SOURCES
         ${common_SOURCES}
-        ${CURRENT_DIR}/ArrayOperationsHost_impl.cu
-        ${CURRENT_DIR}/ArrayOperationsCuda_impl.cu
         ${CURRENT_DIR}/Array_impl.cu
         ${CURRENT_DIR}/SharedArray_impl.cu
         ${CURRENT_DIR}/MultiArray_impl.cu
@@ -68,12 +63,6 @@ IF( BUILD_CUDA )
         ${CURRENT_DIR}/Vector_impl.cu
         ${CURRENT_DIR}/StaticVector_impl.cu 
         PARENT_SCOPE )
-ELSE()
-   set( common_SOURCES
-        ${common_SOURCES}
-        ${CURRENT_DIR}/ArrayOperationsHost_impl.cpp
-        ${CURRENT_DIR}/ArrayOperationsCuda_impl.cpp
- )               
 ENDIF()    
 
 set( tnl_containers_SOURCES     

@@ -11,11 +11,14 @@
 #pragma once 
 
 #include <type_traits>
-#include <TNL/tnlConfig.h>
 #include <string.h>
+
+#include <TNL/tnlConfig.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 
 namespace TNL {
 namespace Containers {   
+namespace Algorithms {
 
 template< typename Element, typename Index >
 bool ArrayOperations< Devices::Host >::allocateMemory( Element*& data,
@@ -284,5 +287,6 @@ extern template bool ArrayOperations< Devices::Host >::setMemory< long double, l
 
 #endif
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL

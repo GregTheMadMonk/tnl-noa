@@ -11,13 +11,16 @@
 #pragma once 
 
 #include <iostream>
+
 #include <TNL/tnlConfig.h>
 #include <TNL/Math.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
 
 namespace TNL {
 namespace Containers {   
+namespace Algorithms {
 
 template< typename Element, typename Index >
 bool ArrayOperations< Devices::Cuda >::allocateMemory( Element*& data,
@@ -651,5 +654,6 @@ extern template bool ArrayOperations< Devices::Cuda >::setMemory< long double, l
 
 #endif
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL

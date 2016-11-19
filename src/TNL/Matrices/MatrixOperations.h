@@ -152,7 +152,7 @@ public:
 #ifdef HAVE_CUDA
       Containers::Vector< RealType, Devices::Cuda, IndexType > xDevice;
       xDevice.setSize( n );
-      if( ! Containers::ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< RealType, RealType, IndexType >( xDevice.getData(), x, n ) )
+      if( ! Containers::Algorithms::ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< RealType, RealType, IndexType >( xDevice.getData(), x, n ) )
          throw 1;
 
       dim3 blockSize( 256 );

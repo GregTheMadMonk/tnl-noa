@@ -434,8 +434,8 @@ hauseholder_apply_trunc( HostVector& out,
       // here we duplicate the upper (m+1)x(m+1) submatrix of Y on host for fast access
       RealType* host_yi = &YL[ i * (restarting + 1) ];
       RealType host_z[ i + 1 ];
-      if( ! Containers::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( host_yi, y_i.getData(), restarting + 1 ) ||
-          ! Containers::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( host_z, z.getData(), i + 1 ) )
+      if( ! Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( host_yi, y_i.getData(), restarting + 1 ) ||
+          ! Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( host_z, z.getData(), i + 1 ) )
       {
          std::cerr << "Failed to copy part of device vectors y_i or z to host buffer." << std::endl;
          throw 1;

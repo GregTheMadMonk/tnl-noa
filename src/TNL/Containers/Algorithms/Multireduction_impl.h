@@ -16,7 +16,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
-#include <TNL/Containers/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/CudaMultireductionKernel.h>
 
 #ifdef CUDA_REDUCTION_PROFILING

@@ -13,7 +13,7 @@
 #include <iostream>
 #include <TNL/File.h>
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Math.h>
 #include <TNL/param-types.h>
 
@@ -134,7 +134,7 @@ Element tnlConstSharedArray< Element, Device, Index > :: getElement( Index i ) c
               std::cerr << "Wrong index for getElement method in tnlConstSharedArray with name "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
-   return ArrayOperations< Device >::getMemoryElement( &( this->data[ i ] ) );
+   return Algorithms::ArrayOperations< Device >::getMemoryElement( &( this->data[ i ] ) );
 };
 
 template< typename Element,
@@ -148,7 +148,7 @@ const Element& tnlConstSharedArray< Element, Device, Index > :: operator[] ( Ind
                         << " index is " << i
                         << " and array size is " << this->getSize() );
    // TODO: add static assert - this does not make sense for Devices::CudaDevice
-   return ArrayOperations< Device >::getArrayElementReference( this->data, i );
+   return Algorithms::ArrayOperations< Device >::getArrayElementReference( this->data, i );
 };
 
 template< typename Element,
@@ -179,14 +179,13 @@ bool tnlConstSharedArray< Element, Device, Index > :: operator == ( const Array&
 {
    if( array. getSize() != this->getSize() )
       return false;
-   return ArrayOperations< Device,
-                              typename Array :: DeviceType > ::
-    template compareMemory< typename Array :: ElementType,
-                            Element,
-                            typename Array :: IndexType >
-                          ( this->getData(),
-                            array. getData(),
-                            array. getSize() );
+   return Algorithms::ArrayOperations< Device, typename Array :: DeviceType >::
+      template compareMemory< typename Array :: ElementType,
+                              Element,
+                              typename Array :: IndexType >
+                            ( this->getData(),
+                              array. getData(),
+                              array. getSize() );
 }
 
 template< typename Element,

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ArrayOperationsHost_impl.cpp  -  description
+                          ArrayOperationsHost_impl.cu  -  description
                              -------------------
     begin                : Jul 16, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Containers/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 
 namespace TNL {
-namespace Containers {    
+namespace Containers {
+namespace Algorithms {
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -194,5 +195,6 @@ template bool ArrayOperations< Devices::Host >::setMemory< long double, long int
 
 #endif
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
