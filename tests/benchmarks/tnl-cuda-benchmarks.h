@@ -8,10 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlCudaBENCHMARKS_H_
-#define TNLCUDBENCHMARKS_H_
+#pragma once
 
-#include <TNL/SystemInfo.h>
+#include <TNL/Devices/Host.h>
 #include <TNL/Devices/CudaDeviceInfo.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
@@ -132,9 +131,8 @@ main( int argc, char* argv[] )
     Benchmark benchmark( loops, verbose );
 
     // prepare global metadata
-    SystemInfo systemInfo;
     const int cpu_id = 0;
-    tnlCacheSizes cacheSizes = systemInfo.getCPUCacheSizes( cpu_id );
+    Devices::CacheSizes cacheSizes = Devices::Host::getCPUCacheSizes( cpu_id );
     String cacheInfo = String( cacheSizes.L1data ) + ", "
                         + String( cacheSizes.L1instruction ) + ", "
                         + String( cacheSizes.L2 ) + ", "
@@ -143,15 +141,15 @@ main( int argc, char* argv[] )
     const String deviceArch = String( Devices::CudaDeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
                                  String( Devices::CudaDeviceInfo::getArchitectureMinor( activeGPU ) );
     Benchmark::MetadataMap metadata {
-        { "host name", systemInfo.getHostname() },
-        { "architecture", systemInfo.getArchitecture() },
-        { "system", systemInfo.getSystemName() },
-        { "system release", systemInfo.getSystemRelease() },
-        { "start time", systemInfo.getCurrentTime() },
-        { "CPU model name", systemInfo.getCPUModelName( cpu_id ) },
-        { "CPU cores", systemInfo.getNumberOfCores( cpu_id ) },
-        { "CPU threads per core", systemInfo.getNumberOfThreads( cpu_id ) / systemInfo.getNumberOfCores( cpu_id ) },
-        { "CPU max frequency (MHz)", systemInfo.getCPUMaxFrequency( cpu_id ) / 1e3 },
+        { "host name", Devices::Host::getHostname() },
+        { "architecture", Devices::Host::getArchitecture() },
+        { "system", Devices::Host::getSystemName() },
+        { "system release", Devices::Host::getSystemRelease() },
+        { "start time", Devices::Host::getCurrentTime() },
+        { "CPU model name", Devices::Host::getCPUModelName( cpu_id ) },
+        { "CPU cores", Devices::Host::getNumberOfCores( cpu_id ) },
+        { "CPU threads per core", Devices::Host::getNumberOfThreads( cpu_id ) / Devices::Host::getNumberOfCores( cpu_id ) },
+        { "CPU max frequency (MHz)", Devices::Host::getCPUMaxFrequency( cpu_id ) / 1e3 },
         { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
         { "GPU name", Devices::CudaDeviceInfo::getDeviceName( activeGPU ) },
         { "GPU architecture", deviceArch },
@@ -178,5 +176,3 @@ main( int argc, char* argv[] )
     return EXIT_FAILURE;
 #endif
 }
-
-#endif /* Devices::CudaBENCHMARKS_H_ */

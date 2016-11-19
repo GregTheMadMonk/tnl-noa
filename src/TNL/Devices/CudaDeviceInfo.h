@@ -11,7 +11,8 @@
 #pragma once
 
 #include <stdlib.h>
-#include <TNL/Devices/Cuda.h>
+
+#include <TNL/String.h>
 
 namespace TNL {
 namespace Devices {

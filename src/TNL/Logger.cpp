@@ -11,7 +11,7 @@
 #include <iomanip>
 #include <TNL/Logger.h>
 #include <TNL/tnlConfig.h>
-#include <TNL/SystemInfo.h>
+#include <TNL/Devices/Host.h>
 #include <TNL/Devices/CudaDeviceInfo.h>
 
 namespace TNL {
@@ -45,22 +45,19 @@ void Logger :: writeSeparator()
 
 bool Logger :: writeSystemInformation( const Config::ParameterContainer& parameters )
 {
-   SystemInfo systemInfo;
-
-
-   writeParameter< String >( "Host name:", systemInfo.getHostname() );
-   writeParameter< String >( "Architecture:", systemInfo.getArchitecture() );
+   writeParameter< String >( "Host name:", Devices::Host::getHostname() );
+   writeParameter< String >( "Architecture:", Devices::Host::getArchitecture() );
    // FIXME: generalize for multi-socket systems, here we consider only the first found CPU
    const int cpu_id = 0;
-   const int threads = systemInfo.getNumberOfThreads( cpu_id );
-   const int cores = systemInfo.getNumberOfCores( cpu_id );
+   const int threads = Devices::Host::getNumberOfThreads( cpu_id );
+   const int cores = Devices::Host::getNumberOfCores( cpu_id );
    int threadsPerCore = threads / cores;
    writeParameter< String >( "CPU info", String("") );
-   writeParameter< String >( "Model name:", systemInfo.getCPUModelName( cpu_id ), 1 );
+   writeParameter< String >( "Model name:", Devices::Host::getCPUModelName( cpu_id ), 1 );
    writeParameter< int >( "Cores:", cores, 1 );
    writeParameter< int >( "Threads per core:", threadsPerCore, 1 );
-   writeParameter< String >( "Max clock rate (in MHz):", systemInfo.getCPUMaxFrequency( cpu_id ) / 1000, 1 );
-   tnlCacheSizes cacheSizes = systemInfo.getCPUCacheSizes( cpu_id );
+   writeParameter< String >( "Max clock rate (in MHz):", Devices::Host::getCPUMaxFrequency( cpu_id ) / 1000, 1 );
+   Devices::CacheSizes cacheSizes = Devices::Host::getCPUCacheSizes( cpu_id );
    String cacheInfo = String( cacheSizes.L1data ) + ", "
                        + String( cacheSizes.L1instruction ) + ", "
                        + String( cacheSizes.L2 ) + ", "
@@ -92,16 +89,15 @@ bool Logger :: writeSystemInformation( const Config::ParameterContainer& paramet
         writeParameter< bool >( "ECC enabled", Devices::CudaDeviceInfo::getECCEnabled( i ), 2 );
 //      }
    }
-   writeParameter< String >( "System:", systemInfo.getSystemName() );
-   writeParameter< String >( "Release:", systemInfo.getSystemRelease() );
+   writeParameter< String >( "System:", Devices::Host::getSystemName() );
+   writeParameter< String >( "Release:", Devices::Host::getSystemRelease() );
    writeParameter< char* >( "TNL Compiler:", ( char* ) TNL_CPP_COMPILER_NAME );
    return true;
 }
 
 void Logger :: writeCurrentTime( const char* label )
 {
-   SystemInfo systemInfo;
-   writeParameter< String >( label, systemInfo.getCurrentTime() );
+   writeParameter< String >( label, Devices::Host::getCurrentTime() );
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

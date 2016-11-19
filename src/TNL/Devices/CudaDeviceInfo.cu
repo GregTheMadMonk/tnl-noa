@@ -13,7 +13,6 @@
 #include <unordered_map>
 
 #include <TNL/Devices/CudaDeviceInfo.h>
-#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 namespace Devices {

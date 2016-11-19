@@ -36,7 +36,6 @@ set( headers
      SmartPointersRegister.h
      StaticFor.h
      String.h
-     SystemInfo.h
      Timer.h
      UniquePointer.h )
 
@@ -47,7 +46,6 @@ set( common_SOURCES
      Logger.cpp
      SmartPointersRegister.cpp
      String.cpp
-     SystemInfo.cpp
      Timer.cpp )
      
 set( tnl_SOURCES ${tnl_config_SOURCES}
