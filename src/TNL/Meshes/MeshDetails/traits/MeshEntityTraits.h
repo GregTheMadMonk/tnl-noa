@@ -16,18 +16,16 @@
 
 #pragma once
 
-#include <TNL/Containers/StaticVector.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/IndexedSet.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
-#include <TNL/Meshes/MeshConfigBase.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <TNL/Meshes/MeshDetails/initializer/MeshEntitySeed.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig, typename EntityTopology > class MeshEntity;
-template< typename MeshConfig, typename EntityTopology > class MeshEntitySeed;
 template< typename MeshConfig, typename EntityTopology > class MeshEntityReferenceOrientation;
 
 template< typename MeshConfig,

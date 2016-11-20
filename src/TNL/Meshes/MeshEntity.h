@@ -17,14 +17,12 @@
 #pragma once
 
 #include <TNL/File.h>
-#include <TNL/Meshes/MeshDetails/MeshEntityId.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDimensionTag.h>
 #include <TNL/Meshes/Topologies/MeshVertexTopology.h>
+#include <TNL/Meshes/MeshDetails/MeshEntityId.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSubentityAccess.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSuperentityAccess.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshEntityStorageRebinder.h>
-#include <TNL/Meshes/MeshDetails/initializer/MeshEntitySeed.h>
 
 namespace TNL {
 namespace Meshes {

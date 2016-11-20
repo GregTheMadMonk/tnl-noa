@@ -18,7 +18,6 @@
 
 #include <TNL/Containers/StaticArray.h>
 #include <TNL/Meshes/MeshEntity.h>
-#include <TNL/Meshes/MeshConfigBase.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
 #include <TNL/Experimental/Multimaps/StaticEllpackIndexMultimap.h>
 
