@@ -41,6 +41,7 @@ int Cuda::getNumberOfGrids( const int blocks,
 void Cuda::configSetup( Config::ConfigDescription& config,
                         const String& prefix )
 {
+// FIXME: HAVE_CUDA is never defined in .cpp files
 #ifdef HAVE_CUDA
    config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device to run the computation.", 0 );
 #else
@@ -51,8 +52,9 @@ void Cuda::configSetup( Config::ConfigDescription& config,
 bool Cuda::setup( const Config::ParameterContainer& parameters,
                   const String& prefix )
 {
+// FIXME: HAVE_CUDA is never defined in .cpp files
 #ifdef HAVE_CUDA
-   int cudaDevice = parameters.getParameter< int >( "cuda-device" );
+   int cudaDevice = parameters.getParameter< int >( prefix + "cuda-device" );
    if( cudaSetDevice( cudaDevice ) != cudaSuccess )
    {
       std::cerr << "I cannot activate CUDA device number " << cudaDevice << "." << std::endl;

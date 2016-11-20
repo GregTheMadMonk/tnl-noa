@@ -15,27 +15,6 @@
 namespace TNL {
 namespace Devices {
 
-/*void Cuda::configSetup( tnlConfigDescription& config, const String& prefix )
-{
-#ifdef HAVE_CUDA
-   config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device.", 0 );
-#else
-   config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device (CUDA is not supported on this system).", 0 );
-#endif
-}
- 
-bool Cuda::setup( const tnlParameterContainer& parameters,
-                    const String& prefix )
-{
-   int cudaDevice = parameters.getParameter< int >( prefix + "cuda-device" );
-#ifdef HAVE_CUDA
-    cudaSetDevice( cudaDevice );
-    checkCudaDevice;
-#endif
-   return true;
-}
-*/
-
 bool Cuda::checkDevice( const char* file_name, int line, cudaError error )
 {   
    if( error == cudaSuccess )
