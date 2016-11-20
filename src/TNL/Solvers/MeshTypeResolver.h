@@ -15,36 +15,14 @@
 #include <TNL/Meshes/Readers/TNL.h>
 
 namespace TNL {
-namespace Solvers {   
-
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename ConfigTag,
-          bool ResolveMesh = ConfigTagMeshResolve< ConfigTag >::enabled >
-class MeshTypeResolver
-{
-};
+namespace Solvers {
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
           typename ConfigTag >
-class MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >
-{
-   public:
-
-   static bool run( const Config::ParameterContainer& parameters );
-};
-
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename ConfigTag  >
-class MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
+class MeshTypeResolver
 {
    public:
 

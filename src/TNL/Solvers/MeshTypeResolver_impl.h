@@ -12,7 +12,6 @@
 
 #include <TNL/String.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Solvers/MeshTypeResolver.h>
 #include <TNL/Solvers/SolverStarter.h>
 
@@ -26,7 +25,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename MeshType,
           typename ConfigTag,
           bool MeshTypeSupported = ConfigTagMesh< ConfigTag, MeshType >::enabled >
-class MeshResolverTerminator{};
+class MeshResolverTerminator {};
 
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
@@ -34,22 +33,9 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >::run( const Config::ParameterContainer& parameters )
-{
-   return ProblemSetter< Real,
-                         Device,
-                         Index,
-                         Meshes::DummyMesh< Real, Device, Index >,
-                         ConfigTag,
-                         SolverStarter< ConfigTag > >::template run< Real, Device, Index, ConfigTag >( parameters );
-};
-
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename ConfigTag >
-bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::run( const Config::ParameterContainer& parameters )
+bool
+MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
+run( const Config::ParameterContainer& parameters )
 {
    const String& meshFileName = parameters.getParameter< String >( "mesh" );
    Meshes::Readers::TNL reader;
@@ -64,7 +50,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Index,
           typename ConfigTag >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
+MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
 resolveMeshDimension( const Config::ParameterContainer& parameters,
                        Meshes::Readers::TNL& reader )
 {
@@ -85,7 +71,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename ConfigTag >
    template< int MeshDimension, typename, typename >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
+MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
 resolveMeshRealType( const Config::ParameterContainer& parameters,
                      Meshes::Readers::TNL& reader )
 {
@@ -100,7 +86,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename ConfigTag >
    template< int MeshDimension, typename >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
+MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
 resolveMeshRealType( const Config::ParameterContainer& parameters,
                      Meshes::Readers::TNL& reader )
 {
@@ -123,7 +109,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
              typename MeshRealType,
              typename, typename >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
+MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
 resolveMeshIndexType( const Config::ParameterContainer& parameters,
                       Meshes::Readers::TNL& reader )
 {
@@ -140,7 +126,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
              typename MeshRealType,
              typename >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
+MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
 resolveMeshIndexType( const Config::ParameterContainer& parameters,
                       Meshes::Readers::TNL& reader )
 {
@@ -164,7 +150,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
              typename MeshIndexType,
              typename, typename >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
+MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
 resolveMeshType( const Config::ParameterContainer& parameters,
                  Meshes::Readers::TNL& reader )
 {
@@ -182,7 +168,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
              typename MeshIndexType,
              typename >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
+MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
 resolveMeshType( const Config::ParameterContainer& parameters,
                  Meshes::Readers::TNL& reader )
 {
