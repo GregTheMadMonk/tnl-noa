@@ -1,7 +1,8 @@
-SET( headers MeshStorageLayer.h
+SET( headers MeshEntityStorageRebinder.h
+             MeshStorageLayer.h
+             MeshSubentityAccess.h
              MeshSubentityStorageLayer.h
              MeshSuperentityAccess.h
-             MeshSuperentityAccessor.h
              MeshSuperentityStorageLayer.h )
 
 INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Meshes/MeshDetails/layers )
