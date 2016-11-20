@@ -13,6 +13,7 @@
 #include <TNL/String.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/DummyMesh.h>
+#include <TNL/Solvers/MeshTypeResolver.h>
 #include <TNL/Solvers/SolverStarter.h>
 
 namespace TNL {
@@ -33,7 +34,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false  >::run( const Config::ParameterContainer& parameters )
+bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >::run( const Config::ParameterContainer& parameters )
 {
    return ProblemSetter< Real,
                          Device,
@@ -51,21 +52,10 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::run( const Config::ParameterContainer& parameters )
 {
    const String& meshFileName = parameters.getParameter< String >( "mesh" );
-
-   String meshType;
-   if( ! getObjectType( meshFileName, meshType ) )
-   {
-      std::cerr << "I am not able to detect the mesh type from the file " << meshFileName << "." << std::endl;
-      return EXIT_FAILURE;
-   }
-   std::cout << meshType << " detected in " << meshFileName << " file." << std::endl;
-   Containers::List< String > parsedMeshType;
-   if( ! parseObjectType( meshType, parsedMeshType ) )
-   {
-      std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
+   Meshes::Readers::TNL reader;
+   if( ! reader.readFile( meshFileName ) )
       return false;
-   }
-   return resolveMeshDimension( parameters, parsedMeshType );
+   return resolveMeshDimension( parameters, reader );
 }
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
@@ -76,17 +66,15 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool
 MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
 resolveMeshDimension( const Config::ParameterContainer& parameters,
-                       const Containers::List< String >& parsedMeshType )
+                       Meshes::Readers::TNL& reader )
 {
-   int dimensions = atoi( parsedMeshType[ 1 ].getString() );
-
-   if( dimensions == 1 )
-      return resolveMeshRealType< 1 >( parameters, parsedMeshType );
-   if( dimensions == 2 )
-      return resolveMeshRealType< 2 >( parameters, parsedMeshType );
-   if( dimensions == 3 )
-      return resolveMeshRealType< 3 >( parameters, parsedMeshType );
-   std::cerr << "Dimension higher than 3 are not supported." << std::endl;
+   if( reader.getMeshDimension() == 1 )
+      return resolveMeshRealType< 1 >( parameters, reader );
+   if( reader.getMeshDimension() == 2 )
+      return resolveMeshRealType< 2 >( parameters, reader );
+   if( reader.getMeshDimension() == 3 )
+      return resolveMeshRealType< 3 >( parameters, reader );
+   std::cerr << "Unsupported mesh dimension: " << reader.getMeshDimension() << std::endl;
    return false;
 }
 
@@ -99,7 +87,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool
 MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
 resolveMeshRealType( const Config::ParameterContainer& parameters,
-                     const Containers::List< String >& parsedMeshType )
+                     Meshes::Readers::TNL& reader )
 {
    std::cerr << "Mesh dimension " << MeshDimension << " is not supported." << std::endl;
    return false;
@@ -114,15 +102,15 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool
 MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
 resolveMeshRealType( const Config::ParameterContainer& parameters,
-                     const Containers::List< String >& parsedMeshType )
+                     Meshes::Readers::TNL& reader )
 {
-   if( parsedMeshType[ 2 ] == "float" )
-      return resolveMeshIndexType< MeshDimension, float >( parameters, parsedMeshType );
-   if( parsedMeshType[ 2 ] == "double" )
-      return resolveMeshIndexType< MeshDimension, double >( parameters, parsedMeshType );
-   if( parsedMeshType[ 2 ] == "long-double" )
-      return resolveMeshIndexType< MeshDimension, long double >( parameters, parsedMeshType );
-   std::cerr << "The type '" << parsedMeshType[ 2 ] << "' is not allowed for real type." << std::endl;
+   if( reader.getRealType() == "float" )
+      return resolveMeshIndexType< MeshDimension, float >( parameters, reader );
+   if( reader.getRealType() == "double" )
+      return resolveMeshIndexType< MeshDimension, double >( parameters, reader );
+   if( reader.getRealType() == "long-double" )
+      return resolveMeshIndexType< MeshDimension, long double >( parameters, reader );
+   std::cerr << "The type '" << reader.getRealType() << "' is not allowed for real type." << std::endl;
    return false;
 }
 
@@ -137,9 +125,9 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool
 MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
 resolveMeshIndexType( const Config::ParameterContainer& parameters,
-                      const Containers::List< String >& parsedMeshType )
+                      Meshes::Readers::TNL& reader )
 {
-   std::cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for real type." << std::endl;
+   std::cerr << "The type '" << reader.getRealType() << "' is not allowed for real type." << std::endl;
    return false;
 }
 
@@ -154,15 +142,15 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool
 MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
 resolveMeshIndexType( const Config::ParameterContainer& parameters,
-                      const Containers::List< String >& parsedMeshType )
+                      Meshes::Readers::TNL& reader )
 {
-   if( parsedMeshType[ 4 ] == "short int" )
-      return resolveMeshType< MeshDimension, MeshRealType, short int >( parameters, parsedMeshType );
-   if( parsedMeshType[ 4 ] == "int" )
-      return resolveMeshType< MeshDimension, MeshRealType, int >( parameters, parsedMeshType );
-   if( parsedMeshType[ 4 ] == "long int" )
-      return resolveMeshType< MeshDimension, MeshRealType, long int >( parameters, parsedMeshType );
-   std::cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for indexing type." << std::endl;
+   if( reader.getIndexType() == "short int" )
+      return resolveMeshType< MeshDimension, MeshRealType, short int >( parameters, reader );
+   if( reader.getIndexType() == "int" )
+      return resolveMeshType< MeshDimension, MeshRealType, int >( parameters, reader );
+   if( reader.getIndexType() == "long int" )
+      return resolveMeshType< MeshDimension, MeshRealType, long int >( parameters, reader );
+   std::cerr << "The type '" << reader.getIndexType() << "' is not allowed for indexing type." << std::endl;
    return false;
 }
 
@@ -178,9 +166,9 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool
 MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
 resolveMeshType( const Config::ParameterContainer& parameters,
-                 const Containers::List< String >& parsedMeshType )
+                 Meshes::Readers::TNL& reader )
 {
-   std::cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for indexing type." << std::endl;
+   std::cerr << "The type '" << reader.getIndexType() << "' is not allowed for indexing type." << std::endl;
    return false;
 }
 
@@ -196,14 +184,15 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool
 MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
 resolveMeshType( const Config::ParameterContainer& parameters,
-                 const Containers::List< String >& parsedMeshType )
+                 Meshes::Readers::TNL& reader )
 {
-   if( parsedMeshType[ 0 ] == "Meshes::Grid" )
+   if( reader.getMeshType() == "Meshes::Grid" )
    {
-      typedef Meshes::Grid< MeshDimension, MeshRealType, Device, MeshIndexType > MeshType;
+      using MeshType = Meshes::Grid< MeshDimension, MeshRealType, Device, MeshIndexType >;
+      // TODO: the mesh can be loaded here (this will be probably necessary for unstructured meshes anyway)
       return MeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag >::run( parameters );
    }
-   std::cerr << "Unknown mesh type " << parsedMeshType[ 0 ] << "." << std::endl;
+   std::cerr << "Unknown mesh type " << reader.getMeshType() << "." << std::endl;
    return false;
 }
 

@@ -9,7 +9,6 @@ SET( headers MeshEntityId.h
              MeshEntity_impl.h
              MeshIntegrityChecker.h
              MeshIntegrityCheckerLayer.h
-             MeshReaderNetgen.h
              MeshWriterNetgen.h
              MeshWriterVTKLegacy.h
              Mesh_impl.h )
