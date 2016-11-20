@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Containers/List.h>
+#include <TNL/Math.h>
 
 namespace TNL {
 namespace Containers {
@@ -56,7 +57,7 @@ template< typename T >
 T& List< T >::operator[]( const int& ind )
 {
    Assert( ind < size, );
-   int iter_dist = abs( index - ind );
+   int iter_dist = TNL::abs( index - ind );
    if( ! iterator ||
        iter_dist > ind ||
        iter_dist > size - ind )
