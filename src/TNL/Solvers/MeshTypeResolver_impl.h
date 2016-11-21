@@ -57,21 +57,7 @@ template< typename ConfigTag,
           typename Device,
           template< typename MeshType > class ProblemSetter,
           typename... ProblemSetterArgs >
-   template< int MeshDimension, typename, typename >
-bool
-MeshTypeResolver< ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveMeshRealType( Meshes::Readers::TNL& reader,
-    ProblemSetterArgs&&... problemSetterArgs )
-{
-   std::cerr << "Mesh dimension " << MeshDimension << " is disabled in the build configuration." << std::endl;
-   return false;
-}
-
-template< typename ConfigTag,
-          typename Device,
-          template< typename MeshType > class ProblemSetter,
-          typename... ProblemSetterArgs >
-   template< int MeshDimension, typename >
+   template< int MeshDimension >
 bool
 MeshTypeResolver< ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
 resolveMeshRealType( Meshes::Readers::TNL& reader,
@@ -92,24 +78,7 @@ template< typename ConfigTag,
           template< typename MeshType > class ProblemSetter,
           typename... ProblemSetterArgs >
    template< int MeshDimension,
-             typename MeshRealType,
-             typename, typename >
-bool
-MeshTypeResolver< ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveMeshIndexType( Meshes::Readers::TNL& reader,
-                      ProblemSetterArgs&&... problemSetterArgs )
-{
-   std::cerr << "The real type " << TNL::getType< MeshRealType >() << " is disabled in the build configuration." << std::endl;
-   return false;
-}
-
-template< typename ConfigTag,
-          typename Device,
-          template< typename MeshType > class ProblemSetter,
-          typename... ProblemSetterArgs >
-   template< int MeshDimension,
-             typename MeshRealType,
-             typename >
+             typename MeshRealType >
 bool
 MeshTypeResolver< ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
 resolveMeshIndexType( Meshes::Readers::TNL& reader,
@@ -131,25 +100,7 @@ template< typename ConfigTag,
           typename... ProblemSetterArgs >
    template< int MeshDimension,
              typename MeshRealType,
-             typename MeshIndexType,
-             typename, typename >
-bool
-MeshTypeResolver< ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveMeshType( Meshes::Readers::TNL& reader,
-                 ProblemSetterArgs&&... problemSetterArgs )
-{
-   std::cerr << "The index type " << TNL::getType< MeshIndexType >() << " is disabled in the build configuration." << std::endl;
-   return false;
-}
-
-template< typename ConfigTag,
-          typename Device,
-          template< typename MeshType > class ProblemSetter,
-          typename... ProblemSetterArgs >
-   template< int MeshDimension,
-             typename MeshRealType,
-             typename MeshIndexType,
-             typename >
+             typename MeshIndexType >
 bool
 MeshTypeResolver< ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
 resolveMeshType( Meshes::Readers::TNL& reader,

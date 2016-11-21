@@ -52,48 +52,18 @@ class MeshTypeResolver
    static bool resolveMeshDimension( Meshes::Readers::TNL& reader,
                                      ProblemSetterArgs&&... problemSetterArgs );
 
-   // Overload for disabled dimensions
-   template< int MeshDimension,
-             typename = typename std::enable_if< ! ConfigTagDimensions< ConfigTag,MeshDimension>::enabled >::type,
-             typename = void >
+   template< int MeshDimension >
    static bool resolveMeshRealType( Meshes::Readers::TNL& reader,
                                     ProblemSetterArgs&&... problemSetterArgs );
 
-   // Overload for enabled dimensions
    template< int MeshDimension,
-             typename = typename std::enable_if< ConfigTagDimensions< ConfigTag,MeshDimension>::enabled >::type >
-   static bool resolveMeshRealType( Meshes::Readers::TNL& reader,
-                                    ProblemSetterArgs&&... problemSetterArgs );
-
-   // Overload for disabled real types
-   template< int MeshDimension,
-             typename MeshRealType,
-             typename = typename std::enable_if< ! ConfigTagReal< ConfigTag, MeshRealType>::enabled >::type,
-             typename = void >
+             typename MeshRealType >
    static bool resolveMeshIndexType( Meshes::Readers::TNL& reader,
                                      ProblemSetterArgs&&... problemSetterArgs );
 
-   // Overload for enabled real types
    template< int MeshDimension,
              typename MeshRealType,
-             typename = typename std::enable_if< ConfigTagReal< ConfigTag, MeshRealType>::enabled >::type >
-   static bool resolveMeshIndexType( Meshes::Readers::TNL& reader,
-                                     ProblemSetterArgs&&... problemSetterArgs );
-
-   // Overload for disabled index types
-   template< int MeshDimension,
-             typename MeshRealType,
-             typename MeshIndexType,
-             typename = typename std::enable_if< ! ConfigTagIndex< ConfigTag, MeshIndexType >::enabled >::type,
-             typename = void >
-   static bool resolveMeshType( Meshes::Readers::TNL& reader,
-                                ProblemSetterArgs&&... problemSetterArgs );
-
-   // Overload for enabled index types
-   template< int MeshDimension,
-             typename MeshRealType,
-             typename MeshIndexType,
-             typename = typename std::enable_if< ConfigTagIndex< ConfigTag, MeshIndexType >::enabled >::type >
+             typename MeshIndexType >
    static bool resolveMeshType( Meshes::Readers::TNL& reader,
                                 ProblemSetterArgs&&... problemSetterArgs );
 
