@@ -212,7 +212,8 @@ class SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag
    public:
       static bool run( const Config::ParameterContainer& parameters )
       {
-         return MeshTypeResolver< ConfigTag, Device, ProblemSetterWrapper >::run( parameters );
+         const String& meshFileName = parameters.getParameter< String >( "mesh" );
+         return MeshTypeResolver< ConfigTag, Device, ProblemSetterWrapper, decltype(parameters) >::run( meshFileName, parameters );
       }
 };
 
