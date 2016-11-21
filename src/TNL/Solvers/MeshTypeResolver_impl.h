@@ -63,7 +63,7 @@ MeshTypeResolver< ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
 resolveMeshRealType( Meshes::Readers::TNL& reader,
     ProblemSetterArgs&&... problemSetterArgs )
 {
-   std::cerr << "Mesh dimension " << MeshDimension << " is not supported." << std::endl;
+   std::cerr << "Mesh dimension " << MeshDimension << " is disabled in the build configuration." << std::endl;
    return false;
 }
 
@@ -83,7 +83,7 @@ resolveMeshRealType( Meshes::Readers::TNL& reader,
       return resolveMeshIndexType< MeshDimension, double >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
    if( reader.getRealType() == "long-double" )
       return resolveMeshIndexType< MeshDimension, long double >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   std::cerr << "The type '" << reader.getRealType() << "' is not allowed for real type." << std::endl;
+   std::cerr << "Unsupported real type: " << reader.getRealType() << std::endl;
    return false;
 }
 
@@ -99,7 +99,7 @@ MeshTypeResolver< ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
 resolveMeshIndexType( Meshes::Readers::TNL& reader,
                       ProblemSetterArgs&&... problemSetterArgs )
 {
-   std::cerr << "The type '" << reader.getRealType() << "' is not allowed for real type." << std::endl;
+   std::cerr << "The real type " << TNL::getType< MeshRealType >() << " is disabled in the build configuration." << std::endl;
    return false;
 }
 
@@ -121,7 +121,7 @@ resolveMeshIndexType( Meshes::Readers::TNL& reader,
       return resolveMeshType< MeshDimension, MeshRealType, int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
    if( reader.getIndexType() == "long int" )
       return resolveMeshType< MeshDimension, MeshRealType, long int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   std::cerr << "The type '" << reader.getIndexType() << "' is not allowed for indexing type." << std::endl;
+   std::cerr << "Unsupported index type: " << reader.getRealType() << std::endl;
    return false;
 }
 
@@ -138,7 +138,7 @@ MeshTypeResolver< ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
 resolveMeshType( Meshes::Readers::TNL& reader,
                  ProblemSetterArgs&&... problemSetterArgs )
 {
-   std::cerr << "The type '" << reader.getIndexType() << "' is not allowed for indexing type." << std::endl;
+   std::cerr << "The index type " << TNL::getType< MeshIndexType >() << " is disabled in the build configuration." << std::endl;
    return false;
 }
 
@@ -155,13 +155,8 @@ MeshTypeResolver< ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
 resolveMeshType( Meshes::Readers::TNL& reader,
                  ProblemSetterArgs&&... problemSetterArgs )
 {
-   if( reader.getMeshType() == "Meshes::Grid" )
-   {
-      using MeshType = Meshes::Grid< MeshDimension, MeshRealType, Device, MeshIndexType >;
-      return resolveTerminate< MeshType >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   }
-   std::cerr << "Unknown mesh type " << reader.getMeshType() << "." << std::endl;
-   return false;
+   using MeshType = Meshes::Grid< MeshDimension, MeshRealType, Device, MeshIndexType >;
+   return resolveTerminate< MeshType >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
 }
 
 template< typename ConfigTag,
@@ -175,7 +170,7 @@ MeshTypeResolver< ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
 resolveTerminate( Meshes::Readers::TNL& reader,
                   ProblemSetterArgs&&... problemSetterArgs )
 {
-   std::cerr << "The mesh type " << TNL::getType< MeshType >() << " is not supported." << std::endl;
+   std::cerr << "The mesh type " << TNL::getType< MeshType >() << " is disabled in the build configuration." << std::endl;
    return false;
 };
 
