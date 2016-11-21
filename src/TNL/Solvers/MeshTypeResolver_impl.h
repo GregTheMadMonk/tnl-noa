@@ -13,28 +13,15 @@
 #include <TNL/String.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Solvers/MeshTypeResolver.h>
-#include <TNL/Solvers/SolverStarter.h>
 
 namespace TNL {
 namespace Solvers {   
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
+template< typename ConfigTag,
           typename Device,
-          typename Index,
-          typename MeshType,
-          typename ConfigTag,
-          bool MeshTypeSupported = ConfigTagMesh< ConfigTag, MeshType >::enabled >
-class MeshResolverTerminator {};
-
-
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename ConfigTag >
+          template< typename MeshType > class ProblemSetter >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
+MeshTypeResolver< ConfigTag, Device, ProblemSetter >::
 run( const Config::ParameterContainer& parameters )
 {
    const String& meshFileName = parameters.getParameter< String >( "mesh" );
@@ -44,13 +31,11 @@ run( const Config::ParameterContainer& parameters )
    return resolveMeshDimension( parameters, reader );
 }
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
+template< typename ConfigTag,
           typename Device,
-          typename Index,
-          typename ConfigTag >
+          template< typename MeshType > class ProblemSetter >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
+MeshTypeResolver< ConfigTag, Device, ProblemSetter >::
 resolveMeshDimension( const Config::ParameterContainer& parameters,
                        Meshes::Readers::TNL& reader )
 {
@@ -64,14 +49,12 @@ resolveMeshDimension( const Config::ParameterContainer& parameters,
    return false;
 }
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
+template< typename ConfigTag,
           typename Device,
-          typename Index,
-          typename ConfigTag >
+          template< typename MeshType > class ProblemSetter >
    template< int MeshDimension, typename, typename >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
+MeshTypeResolver< ConfigTag, Device, ProblemSetter >::
 resolveMeshRealType( const Config::ParameterContainer& parameters,
                      Meshes::Readers::TNL& reader )
 {
@@ -79,14 +62,12 @@ resolveMeshRealType( const Config::ParameterContainer& parameters,
    return false;
 }
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
+template< typename ConfigTag,
           typename Device,
-          typename Index,
-          typename ConfigTag >
+          template< typename MeshType > class ProblemSetter >
    template< int MeshDimension, typename >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
+MeshTypeResolver< ConfigTag, Device, ProblemSetter >::
 resolveMeshRealType( const Config::ParameterContainer& parameters,
                      Meshes::Readers::TNL& reader )
 {
@@ -100,16 +81,14 @@ resolveMeshRealType( const Config::ParameterContainer& parameters,
    return false;
 }
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
+template< typename ConfigTag,
           typename Device,
-          typename Index,
-          typename ConfigTag >
+          template< typename MeshType > class ProblemSetter >
    template< int MeshDimension,
              typename MeshRealType,
              typename, typename >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
+MeshTypeResolver< ConfigTag, Device, ProblemSetter >::
 resolveMeshIndexType( const Config::ParameterContainer& parameters,
                       Meshes::Readers::TNL& reader )
 {
@@ -117,16 +96,14 @@ resolveMeshIndexType( const Config::ParameterContainer& parameters,
    return false;
 }
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
+template< typename ConfigTag,
           typename Device,
-          typename Index,
-          typename ConfigTag >
+          template< typename MeshType > class ProblemSetter >
    template< int MeshDimension,
              typename MeshRealType,
              typename >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
+MeshTypeResolver< ConfigTag, Device, ProblemSetter >::
 resolveMeshIndexType( const Config::ParameterContainer& parameters,
                       Meshes::Readers::TNL& reader )
 {
@@ -140,17 +117,15 @@ resolveMeshIndexType( const Config::ParameterContainer& parameters,
    return false;
 }
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
+template< typename ConfigTag,
           typename Device,
-          typename Index,
-          typename ConfigTag >
+          template< typename MeshType > class ProblemSetter >
    template< int MeshDimension,
              typename MeshRealType,
              typename MeshIndexType,
              typename, typename >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
+MeshTypeResolver< ConfigTag, Device, ProblemSetter >::
 resolveMeshType( const Config::ParameterContainer& parameters,
                  Meshes::Readers::TNL& reader )
 {
@@ -158,59 +133,53 @@ resolveMeshType( const Config::ParameterContainer& parameters,
    return false;
 }
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
+template< typename ConfigTag,
           typename Device,
-          typename Index,
-          typename ConfigTag >
+          template< typename MeshType > class ProblemSetter >
    template< int MeshDimension,
              typename MeshRealType,
              typename MeshIndexType,
              typename >
 bool
-MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::
+MeshTypeResolver< ConfigTag, Device, ProblemSetter >::
 resolveMeshType( const Config::ParameterContainer& parameters,
                  Meshes::Readers::TNL& reader )
 {
    if( reader.getMeshType() == "Meshes::Grid" )
    {
       using MeshType = Meshes::Grid< MeshDimension, MeshRealType, Device, MeshIndexType >;
-      // TODO: the mesh can be loaded here (this will be probably necessary for unstructured meshes anyway)
-      return MeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag >::run( parameters );
+      return resolveTerminate< MeshType >( parameters, reader );
    }
    std::cerr << "Unknown mesh type " << reader.getMeshType() << "." << std::endl;
    return false;
 }
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
+template< typename ConfigTag,
           typename Device,
-          typename Index,
-          typename MeshType,
-          typename ConfigTag >
-class MeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag, false >
+          template< typename MeshType > class ProblemSetter >
+   template< typename MeshType,
+             typename, typename >
+bool
+MeshTypeResolver< ConfigTag, Device, ProblemSetter >::
+resolveTerminate( const Config::ParameterContainer& parameters,
+                  Meshes::Readers::TNL& reader )
 {
-   public:
-      static bool run( const Config::ParameterContainer& parameters )
-      {
-         std::cerr << "The mesh type " << TNL::getType< MeshType >() << " is not supported." << std::endl;
-         return false;
-      };
+   std::cerr << "The mesh type " << TNL::getType< MeshType >() << " is not supported." << std::endl;
+   return false;
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
+template< typename ConfigTag,
           typename Device,
-          typename Index,
-          typename MeshType,
-          typename ConfigTag >
-class MeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag, true >
+          template< typename MeshType > class ProblemSetter >
+   template< typename MeshType,
+             typename >
+bool
+MeshTypeResolver< ConfigTag, Device, ProblemSetter >::
+resolveTerminate( const Config::ParameterContainer& parameters,
+                  Meshes::Readers::TNL& reader )
 {
-   public:
-      static bool run( const Config::ParameterContainer& parameters )
-      {
-         return ProblemSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter< ConfigTag > >::run( parameters );
-      }
+   // TODO: the mesh can be loaded here (this will be probably necessary for unstructured meshes anyway)
+   return ProblemSetter< MeshType >::run( parameters );
 };
 
 } // namespace Solvers

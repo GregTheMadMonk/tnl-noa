@@ -20,6 +20,7 @@
 #include <TNL/Solvers/Linear/CG.h>
 #include <TNL/Solvers/Linear/BICGStab.h>
 #include <TNL/Solvers/Linear/GMRES.h>
+#include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Meshes/DummyMesh.h>
 
 namespace TNL {
@@ -204,10 +205,14 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename ConfigTag >
 class SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
 {
+   // wrapper for MeshTypeResolver
+   template< typename MeshType >
+   using ProblemSetterWrapper = ProblemSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter< ConfigTag > >;
+
    public:
       static bool run( const Config::ParameterContainer& parameters )
       {
-         return MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::run( parameters );
+         return MeshTypeResolver< ConfigTag, Device, ProblemSetterWrapper >::run( parameters );
       }
 };
 

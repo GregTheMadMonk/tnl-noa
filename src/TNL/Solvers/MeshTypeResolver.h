@@ -17,11 +17,9 @@
 namespace TNL {
 namespace Solvers {
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          typename Real,
+template< typename ConfigTag,
           typename Device,
-          typename Index,
-          typename ConfigTag >
+          template< typename MeshType > class ProblemSetter >
 class MeshTypeResolver
 {
    public:
@@ -35,21 +33,21 @@ class MeshTypeResolver
 
    // Overload for disabled dimensions
    template< int MeshDimension,
-             typename = typename std::enable_if< ! ConfigTagDimensions<ConfigTag,MeshDimension>::enabled >::type,
+             typename = typename std::enable_if< ! ConfigTagDimensions< ConfigTag,MeshDimension>::enabled >::type,
              typename = void >
    static bool resolveMeshRealType( const Config::ParameterContainer& parameters,
                                     Meshes::Readers::TNL& reader );
 
    // Overload for enabled dimensions
    template< int MeshDimension,
-             typename = typename std::enable_if< ConfigTagDimensions<ConfigTag,MeshDimension>::enabled >::type >
+             typename = typename std::enable_if< ConfigTagDimensions< ConfigTag,MeshDimension>::enabled >::type >
    static bool resolveMeshRealType( const Config::ParameterContainer& parameters,
                                     Meshes::Readers::TNL& reader );
 
    // Overload for disabled real types
    template< int MeshDimension,
              typename MeshRealType,
-             typename = typename std::enable_if< ! ConfigTagReal<ConfigTag, MeshRealType>::enabled >::type,
+             typename = typename std::enable_if< ! ConfigTagReal< ConfigTag, MeshRealType>::enabled >::type,
              typename = void >
    static bool resolveMeshIndexType( const Config::ParameterContainer& parameters,
                                      Meshes::Readers::TNL& reader );
@@ -57,7 +55,7 @@ class MeshTypeResolver
    // Overload for enabled real types
    template< int MeshDimension,
              typename MeshRealType,
-             typename = typename std::enable_if< ConfigTagReal<ConfigTag, MeshRealType>::enabled >::type >
+             typename = typename std::enable_if< ConfigTagReal< ConfigTag, MeshRealType>::enabled >::type >
    static bool resolveMeshIndexType( const Config::ParameterContainer& parameters,
                                      Meshes::Readers::TNL& reader );
 
@@ -65,7 +63,7 @@ class MeshTypeResolver
    template< int MeshDimension,
              typename MeshRealType,
              typename MeshIndexType,
-             typename = typename std::enable_if< ! ConfigTagIndex<ConfigTag, MeshIndexType>::enabled >::type,
+             typename = typename std::enable_if< ! ConfigTagIndex< ConfigTag, MeshIndexType >::enabled >::type,
              typename = void >
    static bool resolveMeshType( const Config::ParameterContainer& parameters,
                                 Meshes::Readers::TNL& reader );
@@ -74,14 +72,22 @@ class MeshTypeResolver
    template< int MeshDimension,
              typename MeshRealType,
              typename MeshIndexType,
-             typename = typename std::enable_if< ConfigTagIndex<ConfigTag, MeshIndexType>::enabled >::type >
+             typename = typename std::enable_if< ConfigTagIndex< ConfigTag, MeshIndexType >::enabled >::type >
    static bool resolveMeshType( const Config::ParameterContainer& parameters,
                                 Meshes::Readers::TNL& reader );
 
+   // Overload for disabled mesh types
+   template< typename MeshType,
+             typename = typename std::enable_if< ! ConfigTagMesh< ConfigTag, MeshType >::enabled >::type,
+             typename = void >
+   static bool resolveTerminate( const Config::ParameterContainer& parameters,
+                                 Meshes::Readers::TNL& reader );
 
-
-   template< int Dimension, bool DimensionSupport, typename MeshTypeResolver >
-    friend class MeshTypeResolverDimensionSupportChecker;
+   // Overload for enabled mesh types
+   template< typename MeshType,
+             typename = typename std::enable_if< ConfigTagMesh< ConfigTag, MeshType >::enabled >::type >
+   static bool resolveTerminate( const Config::ParameterContainer& parameters,
+                                 Meshes::Readers::TNL& reader );
 };
 
 } // namespace Solvers
