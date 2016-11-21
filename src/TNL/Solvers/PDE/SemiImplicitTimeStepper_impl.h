@@ -161,7 +161,8 @@ solve( const RealType& time,
    Linear::Preconditioners::SolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerType >
        ::run( *(this->linearSystemSolver), preconditioner );
 
-   while( t < stopTime )
+   // ignore very small steps at the end, most likely caused by truncation errors
+   while( stopTime - t > this->timeStep * 1e-6 )
    {
       RealType currentTau = min( this->timeStep, stopTime - t );
 
