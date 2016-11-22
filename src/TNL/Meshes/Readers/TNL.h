@@ -13,6 +13,7 @@
 #include <TNL/String.h>
 #include <TNL/Object.h>
 #include <TNL/Containers/List.h>
+#include <TNL/Meshes/Readers/VTKEntityType.h>
 
 namespace TNL {
 namespace Meshes {
@@ -43,9 +44,16 @@ public:
       meshType = parsedMeshType[ 0 ];
       if( meshType == "Meshes::Grid" ) {
          // save parts necessary to determine the mesh type
-         meshDimension = std::atoi( parsedMeshType[ 1 ].getString() );
+         meshDimension = worldDimension = std::atoi( parsedMeshType[ 1 ].getString() );
          realType = parsedMeshType[ 2 ];
-         indexType = parsedMeshType[ 4 ];
+         globalIndexType = localIndexType = idType = parsedMeshType[ 4 ];
+         // populate entity types (not necessary for GridTypeResolver, but while we're at it...)
+         if( meshDimension == 1 )
+            cellVTKType = VTKEntityType::Line;
+         else if( meshDimension == 2 )
+            cellVTKType = VTKEntityType::Quad;
+         else if( meshDimension == 3 )
+            cellVTKType = VTKEntityType::Hexahedron;
       }
       // TODO: loading of unstructured meshes
       else {
@@ -75,6 +83,18 @@ public:
       return meshDimension;
    }
 
+   int
+   getWorldDimension() const
+   {
+      return worldDimension;
+   }
+
+   VTKEntityType
+   getCellVTKType() const
+   {
+      return cellVTKType;
+   }
+ 
    String
    getRealType() const
    {
@@ -82,25 +102,41 @@ public:
    }
 
    String
-   getIndexType() const
+   getGlobalIndexType() const
    {
-      return indexType;
+      return globalIndexType;
+   }
+ 
+   String
+   getLocalIndexType() const
+   {
+      return globalIndexType;
+   }
+ 
+   String
+   getIdType() const
+   {
+      return globalIndexType;
    }
  
 protected:
    String fileName;
    String meshType;
    int meshDimension = 0;
+   int worldDimension = 0;
+   VTKEntityType cellVTKType = VTKEntityType::Vertex;
    String realType;
-   String indexType;
+   String globalIndexType;
+   String localIndexType;
+   String idType;
 
    void reset()
    {
       fileName = "";
       meshType = "";
       meshDimension = 0;
-      realType = "";
-      indexType = "";
+      realType = localIndexType = globalIndexType = idType = "";
+      cellVTKType = VTKEntityType::Vertex;
    }
 };
 

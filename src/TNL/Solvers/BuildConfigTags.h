@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
 #include <TNL/Solvers/ODE/Merson.h>
 #include <TNL/Solvers/ODE/Euler.h>
 #include <TNL/Solvers/Linear/SOR.h>
@@ -53,28 +52,9 @@ template< typename ConfigTag, typename Index > struct ConfigTagIndex{ enum { ena
 
 /****
  * The mesh type will be resolved by the Solver by default.
+ * (The detailed mesh configuration is in TNL/Meshes/BuildConfigTags.h)
  */
 template< typename ConfigTag > struct ConfigTagMeshResolve{ enum { enabled = true }; };
-
-/****
- * 1, 2, and 3 dimensions are enabled by default
- */
-template< typename ConfigTag, int Dimension > struct ConfigTagDimension{ enum { enabled = ( Dimension > 0 && Dimension <= 3 ) }; };
-
-/****
- * Up to the exceptions enlisted below, all mesh types are disabled by default.
- */
-template< typename ConfigTag, typename MeshType > struct ConfigTagMesh{ enum { enabled = false }; };
-
-/****
- * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
- */
-template< typename ConfigTag, int Dimension, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< ConfigTag, Meshes::Grid< Dimension, Real, Device, Index > >
-      { enum { enabled = ConfigTagDimension< ConfigTag, Dimension >::enabled  &&
-                         ConfigTagReal< ConfigTag, Real >::enabled &&
-                         ConfigTagDevice< ConfigTag, Device >::enabled &&
-                         ConfigTagIndex< ConfigTag, Index >::enabled }; };
 
 /****
  * All time discretisations (explicit, semi-impicit and implicit ) are

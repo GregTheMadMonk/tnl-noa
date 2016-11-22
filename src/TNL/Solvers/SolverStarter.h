@@ -18,7 +18,7 @@
 namespace TNL {
 namespace Solvers {   
 
-template< typename MeshConfig >
+template< typename ConfigTag >
 class SolverStarter
 {
    public:

@@ -14,7 +14,7 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Devices/MIC.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Solvers/MeshTypeResolver.h>
+#include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/Linear/SOR.h>
 #include <TNL/Solvers/Linear/CG.h>
@@ -213,7 +213,7 @@ class SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag
       static bool run( const Config::ParameterContainer& parameters )
       {
          const String& meshFileName = parameters.getParameter< String >( "mesh" );
-         return MeshTypeResolver< ConfigTag, Device, ProblemSetterWrapper, decltype(parameters) >::run( meshFileName, parameters );
+         return Meshes::resolveMeshType< ConfigTag, Device, ProblemSetterWrapper, decltype(parameters) >( meshFileName, parameters );
       }
 };
 

@@ -1,6 +1,8 @@
 ADD_SUBDIRECTORY( GridDetails )
 ADD_SUBDIRECTORY( MeshDetails )
+ADD_SUBDIRECTORY( Readers )
 ADD_SUBDIRECTORY( Topologies )
+ADD_SUBDIRECTORY( TypeResolver )
 
 SET( headers Grid.h
              GridEntity.h
