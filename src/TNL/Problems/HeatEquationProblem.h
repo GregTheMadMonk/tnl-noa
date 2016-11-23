@@ -32,9 +32,9 @@ template< typename Mesh,
           typename DifferentialOperator = Operators::LinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
 class HeatEquationProblem : public PDEProblem< Mesh,
-                                                     typename DifferentialOperator::RealType,
-                                                     typename Mesh::DeviceType,
-                                                     typename DifferentialOperator::IndexType  >
+                                               typename DifferentialOperator::RealType,
+                                               typename Mesh::DeviceType,
+                                               typename DifferentialOperator::IndexType  >
 {
    public:
 
