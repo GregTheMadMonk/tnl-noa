@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshReaderNetgen.h  -  description
+                          NetgenReader.h  -  description
                              -------------------
     begin                : Feb 19, 2014
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -21,19 +21,20 @@
 #include <sstream>
 
 #include <TNL/Meshes/MeshBuilder.h>
+#include <TNL/Meshes/Readers/VTKEntityType.h>
 
 namespace TNL {
 namespace Meshes {
+namespace Readers {
 
-class MeshReaderNetgen
+class NetgenReader
 {
-   public:
-
-      MeshReaderNetgen()
-      : dimensions( 0 ){}
- 
+public:
    bool detectMesh( const String& fileName )
    {
+      this->reset();
+      this->fileName = fileName;
+
       std::fstream inputFile( fileName.getString() );
       if( ! inputFile )
       {
@@ -69,12 +70,12 @@ class MeshReaderNetgen
       getline( inputFile, line );
       iss.clear();
       iss.str( line );
-      this->dimensions = -1;
+      meshDimension = worldDimension = -1;
       while( iss )
       {
          double aux;
          iss >> aux;
-         this->dimensions++;
+         meshDimension = ++worldDimension;
       }
  
       /****
@@ -113,21 +114,39 @@ class MeshReaderNetgen
       getline( inputFile, line );
       iss.clear();
       iss.str( line );
-      this->verticesInCell = -2;
+      int verticesInCell = -2;
       while( iss )
       {
          int aux;
          iss >> aux;
-         this->verticesInCell++;
+         verticesInCell++;
       }
-      //cout << "There are " << this->verticesInCell << " vertices in cell ..." << std::endl;
+      //cout << "There are " << verticesInCell << " vertices in cell ..." << std::endl;
+      
+      if( meshDimension == 1 && verticesInCell == 2 )
+         cellVTKType = VTKEntityType::Line;
+      else if( meshDimension == 2 ) {
+         if( verticesInCell == 3 )
+            cellVTKType = VTKEntityType::Triangle;
+         else if( verticesInCell == 4 )
+            cellVTKType = VTKEntityType::Quad;
+      }
+      else if( meshDimension == 3 ) {
+         if( verticesInCell == 4 )
+            cellVTKType = VTKEntityType::Tetra;
+         else if( verticesInCell == 8 )
+            cellVTKType = VTKEntityType::Hexahedron;
+      }
+      if( cellVTKType == VTKEntityType::Vertex ) {
+         std::cerr << "Unknown cell topology: mesh dimension is " << meshDimension << ", number of vertices in cells is " << verticesInCell << "." << std::endl;
+         return false;
+      }
+      
       return true;
    }
 
    template< typename MeshType >
-   static bool readMesh( const String& fileName,
-                         MeshType& mesh,
-                         bool verbose )
+   static bool readMesh( const String& fileName, MeshType& mesh )
    {
       typedef typename MeshType::PointType PointType;
       typedef MeshBuilder< MeshType > MeshBuilder;
@@ -176,76 +195,117 @@ class MeshReaderNetgen
             iss >> p[ d ];
          //cout << "Setting point number " << i << " of " << pointsCount << std::endl;
          meshBuilder.setPoint( i, p );
-         if( verbose )
-           std::cout << pointsCount << " vertices expected ... " << i+1 << "/" << pointsCount << "        \r" << std::flush;
          //const PointType& point = mesh.getVertex( i ).getPoint();
       }
-      if( verbose )
-        std::cout << std::endl;
 
       /****
         * Skip white spaces
         */
-       inputFile >> std::ws;
+      inputFile >> std::ws;
 
       /****
        * Read number of cells
        */
-       typedef typename MeshType::MeshTraitsType::template EntityTraits< dimensions >::GlobalIndexType CellIndexType;
-       if( ! inputFile )
-       {
-          std::cerr << "I cannot read the mesh cells." << std::endl;
-          return false;
-       }
-       getline( inputFile, line );
-       iss.clear();
-       iss.str( line );
-       CellIndexType numberOfCells=atoi( line.data() );
-       //iss >> numberOfCells; // TODO: I do not know why this does not work
-       if( ! meshBuilder.setCellsCount( numberOfCells ) )
-       {
-          std::cerr << "I am not able to allocate enough memory for " << numberOfCells << " cells." << std::endl;
-          return false;
-       }
-       for( CellIndexType i = 0; i < numberOfCells; i++ )
-       {
-          getline( inputFile, line );
-          iss.clear();
-          iss.str( line );
-          int subdomainIndex;
-          iss >> subdomainIndex;
-          //cout << "Setting cell number " << i << " of " << numberOfCells << std::endl;
-          typedef typename MeshBuilder::CellSeedType CellSeedType;
-          for( int cellVertex = 0; cellVertex < CellSeedType::getCornersCount(); cellVertex++ )
-          {
-             VertexIndexType vertexIdx;
-             iss >> vertexIdx;
-             meshBuilder.getCellSeed( i ).setCornerId( cellVertex, vertexIdx - 1 );
-          }
-          if( verbose )
-            std::cout << numberOfCells << " cells expected ... " << i+1 << "/" << numberOfCells << "                 \r" << std::flush;
-       }
-       if( verbose )
-         std::cout << std::endl;
-       meshBuilder.build( mesh );
-       return true;
+      typedef typename MeshType::Config::GlobalIndexType CellIndexType;
+      if( ! inputFile )
+      {
+         std::cerr << "I cannot read the mesh cells." << std::endl;
+         return false;
+      }
+      getline( inputFile, line );
+      iss.clear();
+      iss.str( line );
+      CellIndexType numberOfCells = atoi( line.data() );
+      //iss >> numberOfCells; // TODO: I do not know why this does not work
+      if( ! meshBuilder.setCellsCount( numberOfCells ) )
+      {
+         std::cerr << "I am not able to allocate enough memory for " << numberOfCells << " cells." << std::endl;
+         return false;
+      }
+      for( CellIndexType i = 0; i < numberOfCells; i++ )
+      {
+         getline( inputFile, line );
+         iss.clear();
+         iss.str( line );
+         int subdomainIndex;
+         iss >> subdomainIndex;
+         //cout << "Setting cell number " << i << " of " << numberOfCells << std::endl;
+         typedef typename MeshBuilder::CellSeedType CellSeedType;
+         for( int cellVertex = 0; cellVertex < CellSeedType::getCornersCount(); cellVertex++ )
+         {
+            VertexIndexType vertexIdx;
+            iss >> vertexIdx;
+            meshBuilder.getCellSeed( i ).setCornerId( cellVertex, vertexIdx - 1 );
+         }
+      }
+      meshBuilder.build( mesh );
+      return true;
    }
 
-   int getDimension() const
+   String
+   getMeshType() const
    {
-      return this->dimensions;
+      return "Meshes::Mesh";
+   }
+
+   int getMeshDimension() const
+   {
+      return this->meshDimension;
    }
  
-   int getVerticesInCell() const
+   int
+   getWorldDimension() const
    {
-      return this->verticesInCell;
+      return worldDimension;
+   }
+
+   VTKEntityType
+   getCellVTKType() const
+   {
+      return cellVTKType;
+   }
+
+   String
+   getRealType() const
+   {
+      // not stored in the Netgen file
+      return "float";
+   }
+
+   String
+   getGlobalIndexType() const
+   {
+      // not stored in the Netgen file
+      return "int";
    }
  
-   protected:
+   String
+   getLocalIndexType() const
+   {
+      // not stored in the Netgen file
+      return "short int";
+   }
+ 
+   String
+   getIdType() const
+   {
+      // not stored in the Netgen file
+      return "int";
+   }
+ 
+protected:
+   String fileName;
+   int meshDimension, worldDimension;
+   VTKEntityType cellVTKType = VTKEntityType::Vertex;
 
-      int dimensions, verticesInCell;
-
+   void reset()
+   {
+      fileName = "";
+      meshDimension = worldDimension = 0;
+      cellVTKType = VTKEntityType::Vertex;
+   }
 };
 
+} // namespace Readers
 } // namespace Meshes
 } // namespace TNL

@@ -213,7 +213,7 @@ class SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag
       static bool run( const Config::ParameterContainer& parameters )
       {
          const String& meshFileName = parameters.getParameter< String >( "mesh" );
-         return Meshes::resolveMeshType< ConfigTag, Device, ProblemSetterWrapper, decltype(parameters) >( meshFileName, parameters );
+         return Meshes::resolveMeshType< ConfigTag, Device, ProblemSetterWrapper >( meshFileName, parameters );
       }
 };
 

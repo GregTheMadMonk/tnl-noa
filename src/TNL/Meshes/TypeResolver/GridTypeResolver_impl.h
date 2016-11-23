@@ -2,7 +2,7 @@
                           GridTypeResolver_impl.h  -  description
                              -------------------
     begin                : Nov 22, 2016
-    copyright            : (C) 2016 by Tomas Oberhuber
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 

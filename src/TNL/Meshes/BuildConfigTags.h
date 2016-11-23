@@ -2,7 +2,7 @@
                           BuildConfigTags.h  -  description
                              -------------------
     begin                : Nov 22, 2016
-    copyright            : (C) 2016 by Tomas Oberhuber
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -121,10 +121,11 @@ struct MeshConfigTemplateTag
 //                      Mesh< typename MeshConfigTemplateTag< ConfigTag >::
 //                         template MeshConfig< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex, Id > > >
 //
-template< typename ConfigTag, typename CellTopology, int WorldDimension, typename Real, typename GlobalIndex, typename LocalIndex, typename Id >
+template< typename ConfigTag, typename Device, typename CellTopology, int WorldDimension, typename Real, typename GlobalIndex, typename LocalIndex, typename Id >
 struct MeshTag
 {
    enum { enabled =
+            MeshDeviceTag< ConfigTag, Device >::enabled &&
             MeshCellTopologyTag< ConfigTag, CellTopology >::enabled &&
             MeshWorldDimensionTag< ConfigTag, CellTopology, WorldDimension >::enabled &&
             MeshRealTag< ConfigTag, Real >::enabled &&

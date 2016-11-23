@@ -19,13 +19,14 @@ namespace TNL {
 namespace Meshes {
 namespace Readers {
 
-class TNL
+class TNLReader
 {
 public:
    bool
-   readFile( const String& fileName )
+   detectMesh( const String& fileName )
    {
       this->reset();
+      this->fileName = fileName;
 
       String meshType;
       if( ! getObjectType( fileName, meshType ) )
@@ -65,8 +66,8 @@ public:
    }
 
    template< typename MeshType >
-   bool
-   initializeMesh( MeshType& mesh )
+   static bool
+   readMesh( const String& fileName, MeshType& mesh )
    {
       return mesh.load( fileName );
    }
@@ -110,13 +111,13 @@ public:
    String
    getLocalIndexType() const
    {
-      return globalIndexType;
+      return localIndexType;
    }
  
    String
    getIdType() const
    {
-      return globalIndexType;
+      return idType;
    }
  
 protected:
@@ -134,9 +135,9 @@ protected:
    {
       fileName = "";
       meshType = "";
-      meshDimension = 0;
-      realType = localIndexType = globalIndexType = idType = "";
+      meshDimension = worldDimension = 0;
       cellVTKType = VTKEntityType::Vertex;
+      realType = localIndexType = globalIndexType = idType = "";
    }
 };
 

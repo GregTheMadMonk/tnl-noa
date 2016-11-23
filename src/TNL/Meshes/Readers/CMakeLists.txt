@@ -1,5 +1,5 @@
-SET( headers Netgen.h
-             TNL.h
+SET( headers NetgenReader.h
+             TNLReader.h
              VTKEntityType.h
 )
 

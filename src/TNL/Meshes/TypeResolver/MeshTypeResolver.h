@@ -2,7 +2,7 @@
                           MeshTypeResolver.h  -  description
                              -------------------
     begin                : Nov 22, 2016
-    copyright            : (C) 2016 by Tomas Oberhuber
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -150,6 +150,7 @@ protected:
    template< typename MeshType,
              typename = typename std::enable_if< ! BuildConfigTags::MeshDeviceTag< ConfigTag, Device >::enabled ||
                                                  ! BuildConfigTags::MeshTag< ConfigTag,
+                                                                             Device,
                                                                              typename MeshType::Config::CellTopology,
                                                                              MeshType::Config::worldDimensions,
                                                                              typename MeshType::Config::RealType,
@@ -165,6 +166,7 @@ protected:
    template< typename MeshType,
              typename = typename std::enable_if< BuildConfigTags::MeshDeviceTag< ConfigTag, Device >::enabled &&
                                                  BuildConfigTags::MeshTag< ConfigTag,
+                                                                             Device,
                                                                              typename MeshType::Config::CellTopology,
                                                                              MeshType::Config::worldDimensions,
                                                                              typename MeshType::Config::RealType,
