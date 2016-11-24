@@ -66,7 +66,7 @@ protected:
       static_assert( Dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
       using BaseType = MeshSuperentityStorageLayers< MeshConfig,
                                                      typename MeshTraits< MeshConfig >::template EntityTraits< Dimension >::EntityTopology >;
-      return BaseType::template getSuperentityStorageNetwork< Superdimension >( DimensionTag< Dimension >() );
+      return BaseType::template getSuperentityStorageNetwork< Superdimension >();
    }
 };
 

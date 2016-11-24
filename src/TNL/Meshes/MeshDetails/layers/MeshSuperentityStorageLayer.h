@@ -46,7 +46,7 @@ class MeshSuperentityStorageLayers
 public:
    template< int Superdimension >
    typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >::StorageNetworkType&
-   getSuperentityStorageNetwork( DimensionTag< EntityTopology::dimension > )
+   getSuperentityStorageNetwork()
    {
       static_assert( EntityTopology::dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
       return BaseType::getSuperentityStorageNetwork( DimensionTag< Superdimension >() );

@@ -36,11 +36,11 @@ template< typename MeshConfig,
 class MeshSubentityStorageLayers
    : public MeshSubentityStorageLayer< MeshConfig,
                                        EntityTopology,
-                                       Meshes::DimensionTag< 0 > >
+                                       DimensionTag< 0 > >
 {
    using BaseType = MeshSubentityStorageLayer< MeshConfig,
                                                EntityTopology,
-                                               Meshes::DimensionTag< 0 > >;
+                                               DimensionTag< 0 > >;
    using MeshTraitsType = MeshTraits< MeshConfig >;
 
 public:
@@ -49,7 +49,7 @@ public:
    getSubentityStorageNetwork()
    {
       static_assert( EntityTopology::dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
-      return BaseType::getSubentityStorageNetwork( Meshes::DimensionTag< EntityTopology::dimension >(), Meshes::DimensionTag< Subdimension >() );
+      return BaseType::getSubentityStorageNetwork( DimensionTag< Subdimension >() );
    }
 };
 
@@ -120,7 +120,7 @@ protected:
    }
 
    using BaseType::getSubentityStorageNetwork;
-   StorageNetworkType& getSubentityStorageNetwork( Meshes::DimensionTag< EntityTopology::dimension >, SubdimensionTag )
+   StorageNetworkType& getSubentityStorageNetwork( SubdimensionTag )
    {
       return this->storageNetwork;
    }
@@ -147,10 +147,10 @@ template< typename MeshConfig,
           typename EntityTopology >
 class MeshSubentityStorageLayer< MeshConfig,
                                  EntityTopology,
-                                 Meshes::DimensionTag< EntityTopology::dimension >,
+                                 DimensionTag< EntityTopology::dimension >,
                                  true >
 {
-   using SubdimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
+   using SubdimensionTag = DimensionTag< EntityTopology::dimension >;
 
 protected:
    /****
@@ -179,17 +179,17 @@ protected:
       return true;
    }
  
-   void getSubentityStorageNetwork( Meshes::DimensionTag< EntityTopology::dimension >, SubdimensionTag ) {}
+   void getSubentityStorageNetwork( SubdimensionTag ) {}
 };
 
 template< typename MeshConfig,
           typename EntityTopology >
 class MeshSubentityStorageLayer< MeshConfig,
                                  EntityTopology,
-                                 Meshes::DimensionTag< EntityTopology::dimension >,
+                                 DimensionTag< EntityTopology::dimension >,
                                  false >
 {
-   using SubdimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
+   using SubdimensionTag = DimensionTag< EntityTopology::dimension >;
 
 protected:
    /****
@@ -218,7 +218,7 @@ protected:
       return true;
    }
  
-   void getSubentityStorageNetwork( Meshes::DimensionTag< EntityTopology::dimension >, SubdimensionTag ) {}
+   void getSubentityStorageNetwork( SubdimensionTag ) {}
 };
 
 } // namespace Meshes
