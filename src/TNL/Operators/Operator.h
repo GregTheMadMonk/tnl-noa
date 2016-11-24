@@ -33,7 +33,7 @@ class Operator : public Functions::Domain< Mesh::getMeshDimension(), DomainType 
       typedef Index IndexType;
       typedef void ExactOperatorType;
  
-      constexpr static int getDimension() { return MeshType::getMeshDimension(); }
+      constexpr static int getMeshDimension() { return MeshType::getMeshDimension(); }
       constexpr static int getPreimageEntitiesDimension() { return PreimageEntitiesDimension; }
       constexpr static int getImageEntitiesDimension() { return ImageEntitiesDimension; }
  

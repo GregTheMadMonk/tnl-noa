@@ -34,26 +34,24 @@ class Grid< 2, Real, Device, Index > : public Object
    typedef Grid< 2, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 2, Real, Device, Index > ThisType;
  
-   static const int meshDimension = 2;
+   static constexpr int getMeshDimension() { return 2; };
 
    template< int EntityDimension,
              typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   using MeshEntity = GridEntity< ThisType, EntityDimension, Config >;
+   using EntityType = GridEntity< ThisType, EntityDimension, Config >;
  
-   typedef MeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
-   typedef MeshEntity< meshDimension - 1, GridEntityNoStencilStorage > Face;
-   typedef MeshEntity< 0 > Vertex;
+   typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
+   typedef EntityType< getMeshDimension() - 1, GridEntityNoStencilStorage > Face;
+   typedef EntityType< 0 > Vertex;
    
 
    // TODO: remove this
    //template< int EntityDimension, 
    //          typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   //using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimension, Config >;
-   //typedef TestMeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > TestCell;
+   //using TestEntityType = tnlTestGridEntity< ThisType, EntityDimension, Config >;
+   //typedef TestEntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > TestCell;
    /////
    
-   static constexpr int getMeshDimension() { return meshDimension; };
-
    Grid();
 
    static String getType();
@@ -84,21 +82,21 @@ class Grid< 2, Real, Device, Index > : public Object
    __cuda_callable__
    IndexType getEntitiesCount() const;
    
-   template< typename EntityType >
+   template< typename Entity >
    __cuda_callable__
-   IndexType getEntitiesCount() const;
-   
-   template< typename EntityType >
+   inline IndexType getEntitiesCount() const;
+ 
+   template< typename Entity >
    __cuda_callable__
-   EntityType getEntity( const IndexType& entityIndex ) const;
-   
-   template< typename EntityType >
+   inline Entity getEntity( const IndexType& entityIndex ) const;
+ 
+   template< typename Entity >
    __cuda_callable__
-   Index getEntityIndex( const EntityType& entity ) const;
+   inline Index getEntityIndex( const Entity& entity ) const;
 
-   template< typename EntityType >
+   template< typename Entity >
    __cuda_callable__
-   RealType getEntityMeasure( const EntityType& entity ) const;
+   RealType getEntityMeasure( const Entity& entity ) const;
  
    __cuda_callable__
    inline const RealType& getCellMeasure() const;

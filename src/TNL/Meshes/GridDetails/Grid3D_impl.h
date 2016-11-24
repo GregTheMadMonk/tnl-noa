@@ -45,7 +45,7 @@ template< typename Real,
 String Grid< 3, Real, Device, Index > :: getType()
 {
    return String( "Meshes::Grid< " ) +
-          String( meshDimension ) + ", " +
+          String( getMeshDimension() ) + ", " +
           String( TNL::getType< RealType >() ) + ", " +
           String( Device :: getDeviceType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";
@@ -272,55 +272,55 @@ getEntitiesCount() const
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename EntityType >
+   template< typename Entity >
 __cuda_callable__  inline
 Index
 Grid< 3, Real, Device, Index >::
 getEntitiesCount() const
 {
-   return getEntitiesCount< EntityType::getDimension() >();
+   return getEntitiesCount< Entity::getEntityDimension() >();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename EntityType >
+   template< typename Entity >
  __cuda_callable__ inline
-EntityType
+Entity
 Grid< 3, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( EntityType::entityDimension <= 3 &&
-                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
+   static_assert( Entity::getEntityDimension() <= 3 &&
+                  Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
  
-   return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
+   return GridEntityGetter< ThisType, Entity >::getEntity( *this, entityIndex );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename EntityType >
+   template< typename Entity >
 __cuda_callable__ inline
 Index
 Grid< 3, Real, Device, Index >::
-getEntityIndex( const EntityType& entity ) const
+getEntityIndex( const Entity& entity ) const
 {
-   static_assert( EntityType::entityDimension <= 3 &&
-                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
+   static_assert( Entity::getEntityDimension() <= 3 &&
+                  Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
  
-   return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
+   return GridEntityGetter< ThisType, Entity >::getEntityIndex( *this, entity );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename EntityType >
+   template< typename Entity >
 __cuda_callable__
 Real
 Grid< 3, Real, Device, Index >::
-getEntityMeasure( const EntityType& entity ) const
+getEntityMeasure( const Entity& entity ) const
 {
-   return GridEntityMeasureGetter< ThisType, EntityType::getDimensions() >::getMeasure( *this, entity );
+   return GridEntityMeasureGetter< ThisType, Entity::getEntityDimension() >::getMeasure( *this, entity );
 }
 
 template< typename Real,
@@ -392,7 +392,7 @@ typename GridFunction::RealType
                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   MeshEntity< getMeshDimension() > cell;
+   Cell cell;
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -420,7 +420,7 @@ template< typename Real,
                                                                            const GridFunction& f2 ) const
 {
    typename GridFunction::RealType maxDiff( -1.0 );
-   MeshEntity< getMeshDimension() > cell( *this );
+   Cell cell( *this );
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -447,8 +447,7 @@ template< typename Real,
                                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   MeshEntity< getMeshDimension() > cell( *this );
-
+   Cell cell( *this );
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )

@@ -279,8 +279,8 @@ write( const MeshFunctionType& function,
        std::ostream& str,
        const double& scale )
 {
-   typedef typename MeshType::template MeshEntity< 0 > Vertex;
-   typedef typename MeshType::template MeshEntity< 1 > Face;
+   typedef typename MeshType::template EntityType< 0 > Vertex;
+   typedef typename MeshType::template EntityType< 1 > Face;
    writeHeader(function, str);
  
    const MeshType& mesh = function.getMesh();
@@ -369,7 +369,7 @@ write( const MeshFunctionType& function,
        std::ostream& str,
        const double& scale )
 {
-   typedef typename MeshType::template MeshEntity< 0 > Vertex;
+   typedef typename MeshType::template EntityType< 0 > Vertex;
    writeHeader(function, str);
  
    const MeshType& mesh = function.getMesh();

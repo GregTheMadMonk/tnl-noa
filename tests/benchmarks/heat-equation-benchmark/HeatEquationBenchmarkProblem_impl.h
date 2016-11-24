@@ -459,7 +459,7 @@ getExplicitUpdate( const RealType& time,
       }
       if( this->cudaKernelType == "templated-compact" )
       {
-         typedef typename MeshType::MeshEntity< 2 > CellType;
+         typedef typename MeshType::EntityType< 2 > CellType;
          //typedef typename MeshType::Cell CellType;
          //std::cerr << "Size of entity is ... " << sizeof( TestEntity< MeshType > ) << " vs. " << sizeof( CellType ) << std::endl;
          typedef typename CellType::CoordinatesType CoordinatesType;

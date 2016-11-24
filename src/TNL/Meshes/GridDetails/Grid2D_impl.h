@@ -16,6 +16,7 @@
 #include <TNL/Meshes/GridDetails/GnuplotWriter.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
 #include <TNL/Meshes/GridDetails/NeighbourGridEntityGetter2D_impl.h>
+#include <TNL/Meshes/GridDetails/Grid2D.h>
 #include <TNL/Meshes/GridDetails/GridEntityMeasureGetter.h>
 
 namespace TNL {
@@ -224,55 +225,55 @@ getEntitiesCount() const
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename EntityType >
+   template< typename Entity >
 __cuda_callable__ inline
 Index
 Grid< 2, Real, Device, Index >::
 getEntitiesCount() const
 {
-   return getEntitiesCount< EntityType::getDimension() >();
+   return getEntitiesCount< Entity::getEntityDimension() >();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename EntityType >
+   template< typename Entity >
 __cuda_callable__ inline
-EntityType
+Entity
 Grid< 2, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( EntityType::entityDimension <= 2 &&
-                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
+   static_assert( Entity::getEntityDimension() <= 2 &&
+                  Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
  
-   return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
+   return GridEntityGetter< ThisType, Entity >::getEntity( *this, entityIndex );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename EntityType >
+   template< typename Entity >
 __cuda_callable__ inline
 Index
 Grid< 2, Real, Device, Index >::
-getEntityIndex( const EntityType& entity ) const
+getEntityIndex( const Entity& entity ) const
 {
-   static_assert( EntityType::entityDimension <= 2 &&
-                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
+   static_assert( Entity::getEntityDimension() <= 2 &&
+                  Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
  
-   return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
+   return GridEntityGetter< ThisType, Entity >::getEntityIndex( *this, entity );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename EntityType >
+   template< typename Entity >
 __cuda_callable__
 Real
 Grid< 2, Real, Device, Index >::
-getEntityMeasure( const EntityType& entity ) const
+getEntityMeasure( const Entity& entity ) const
 {
-   return GridEntityMeasureGetter< ThisType, EntityType::getDimensions() >::getMeasure( *this, entity );
+   return GridEntityMeasureGetter< ThisType, Entity::getEntityDimension() >::getMeasure( *this, entity );
 }
 
 template< typename Real,
@@ -465,7 +466,7 @@ bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
            << this->getProportions(). x() << "cm , "
            << this->getProportions(). y() << "cm );"
            << std::endl << std::endl;
-      MeshEntity< 0 > vertex( *this );
+      Vertex vertex( *this );
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
       PointType v;
       for( Index j = 0; j < this->dimensions. y(); j ++ )
@@ -503,7 +504,7 @@ bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
       }
       file << std::endl;
 
-      MeshEntity< 2 > cell( *this );
+      Cell cell( *this );
       CoordinatesType& cellCoordinates = cell.getCoordinates();
       const RealType cellMeasure = this->getSpaceSteps().x() * this->getSpaceSteps().y();
       for( Index i = 0; i < this->dimensions. x(); i ++ )

@@ -138,7 +138,7 @@ GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimension, Con
 getIndex() const
 {
    typedef Meshes::Grid< Dimension, Real, Device, Index > GridType;
-   typedef typename GridType::template MeshEntity< EntityDimension > EntityType;
+   typedef typename GridType::template EntityType< EntityDimension > EntityType;
    TNL_ASSERT( this->entityIndex >= 0 &&
               this-> entityIndex < grid.template getEntitiesCount< EntityType >(),
               std::cerr << "this->entityIndex = " << this->entityIndex

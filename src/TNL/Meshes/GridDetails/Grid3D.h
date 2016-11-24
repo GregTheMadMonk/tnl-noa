@@ -34,18 +34,16 @@ class Grid< 3, Real, Device, Index > : public Object
    typedef Grid< 3, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 3, Real, Device, Index > ThisType;
  
-   static const int meshDimension = 3;
+   static constexpr int getMeshDimension() { return 3; };
 
    template< int EntityDimension,
              typename Config = GridEntityCrossStencilStorage< 1 > >
-   using MeshEntity = GridEntity< ThisType, EntityDimension, Config >;
+   using EntityType = GridEntity< ThisType, EntityDimension, Config >;
 
-   typedef MeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
-   typedef MeshEntity< meshDimension - 1 > Face;
-   typedef MeshEntity< 1 > Edge;
-   typedef MeshEntity< 0 > Vertex;
-
-   static constexpr int getMeshDimension() { return meshDimension; };
+   typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
+   typedef EntityType< getMeshDimension() - 1 > Face;
+   typedef EntityType< 1 > Edge;
+   typedef EntityType< 0 > Vertex;
 
    Grid();
 
@@ -77,21 +75,21 @@ class Grid< 3, Real, Device, Index > : public Object
    __cuda_callable__
    IndexType getEntitiesCount() const;
 
-   template< typename EntityType >
+   template< typename Entity >
    __cuda_callable__
    IndexType getEntitiesCount() const;
 
-   template< typename EntityType >
+   template< typename Entity >
    __cuda_callable__
-   EntityType getEntity( const IndexType& entityIndex ) const;
-   
-   template< typename EntityType >
+   inline Entity getEntity( const IndexType& entityIndex ) const;
+ 
+   template< typename Entity >
    __cuda_callable__
-   Index getEntityIndex( const EntityType& entity ) const;
-   
-   template< typename EntityType >
+   inline Index getEntityIndex( const Entity& entity ) const;
+ 
+   template< typename Entity >
    __cuda_callable__
-   RealType getEntityMeasure( const EntityType& entity ) const;
+   RealType getEntityMeasure( const Entity& entity ) const;
  
    __cuda_callable__
    inline const RealType& getCellMeasure() const;

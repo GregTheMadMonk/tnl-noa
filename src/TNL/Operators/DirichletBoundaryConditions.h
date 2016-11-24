@@ -43,7 +43,7 @@ class DirichletBoundaryConditions
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::PointType PointType;
 
-      static constexpr int getDimension() { return MeshType::meshDimension; }
+      static constexpr int getMeshDimension() { return MeshType::getMeshDimension(); }
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )

@@ -287,7 +287,7 @@ bool convertObject( const MeshPointer& meshPointer,
       Containers::Vector< Element, Devices::Host, typename MeshType::IndexType > vector;
       if( ! vector.load( inputFileName ) )
          return false;
-      Functions::MeshFunction< MeshType, MeshType::meshDimension, Element > mf;
+      Functions::MeshFunction< MeshType, MeshType::getMeshDimension(), Element > mf;
       mf.bind( meshPointer, vector );
       if( ! mf.write( outputFileName, outputFormat ) )
          return false;

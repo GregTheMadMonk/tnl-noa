@@ -37,7 +37,7 @@ operator()( const MeshFunction& u,
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */
-    static_assert( MeshEntity::entityDimension == 1, "Wrong mesh entity dimension." ); 
+    static_assert( MeshEntity::getEntityDimension() == 1, "Wrong mesh entity dimension." ); 
     static_assert( MeshFunction::getEntitiesDimension() == 1, "Wrong preimage function" ); 
     const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
 
@@ -141,7 +141,7 @@ operator()( const MeshFunction& u,
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */
-   /*static_assert( MeshEntity::entityDimension == 2, "Wrong mesh entity dimension." ); 
+   /*static_assert( MeshEntity::getEntityDimension() == 2, "Wrong mesh entity dimension." ); 
    static_assert( MeshFunction::getEntitiesDimension() == 2, "Wrong preimage function" ); 
    const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
 
@@ -259,7 +259,7 @@ operator()( const MeshFunction& u,
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */
-    static_assert( MeshEntity::entityDimension == 3, "Wrong mesh entity dimension." ); 
+    static_assert( MeshEntity::getEntityDimension() == 3, "Wrong mesh entity dimension." ); 
     static_assert( MeshFunction::getEntitiesDimension() == 3, "Wrong preimage function" ); 
     const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
 

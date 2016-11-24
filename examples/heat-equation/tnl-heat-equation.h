@@ -68,7 +68,7 @@ class heatEquationSetter
 
    static bool run( const Config::ParameterContainer& parameters )
    {
-      enum { Dimension = MeshType::meshDimension };
+      enum { Dimension = MeshType::getMeshDimension() };
       typedef Operators::LinearDiffusion< MeshType, Real, Index > ApproximateOperator;
       typedef Functions::Analytic::Constant< Dimension, Real > RightHandSide;
 

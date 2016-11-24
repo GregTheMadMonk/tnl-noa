@@ -20,11 +20,11 @@ namespace TNL {
 namespace Functions {   
 
 template< typename Mesh,
-          int MeshEntityDimension = Mesh::meshDimension,
+          int MeshEntityDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType >
 class MeshFunction :
    public Object,
-   public Domain< Mesh::meshDimension, MeshDomain >
+   public Domain< Mesh::getMeshDimension(), MeshDomain >
 {
    //static_assert( Mesh::DeviceType::DeviceType == Vector::DeviceType::DeviceType,
    //               "Both mesh and vector of a mesh function must reside on the same device.");

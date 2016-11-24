@@ -52,7 +52,7 @@ operator()( const PreimageFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
 {
-   static_assert( MeshEntity::entityDimension == 1, "Wrong mesh entity dimension." );
+   static_assert( MeshEntity::getEntityDimension() == 1, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == 1, "Wrong preimage function" );
    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< - 2 >();
@@ -98,7 +98,7 @@ setMatrixElements( const PreimageFunction& u,
                    Matrix& matrix,
                    Vector& b ) const
 {
-   static_assert( MeshEntity::entityDimension == 1, "Wrong mesh entity dimension." );
+   static_assert( MeshEntity::getEntityDimension() == 1, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == 1, "Wrong preimage function" );
    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
    const IndexType& index = entity.getIndex();
@@ -157,7 +157,7 @@ operator()( const PreimageFunction& u,
             const EntityType& entity,
             const Real& time ) const
 {
-   static_assert( EntityType::entityDimension == 2, "Wrong mesh entity dimension." );
+   static_assert( EntityType::getEntityDimension() == 2, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == 2, "Wrong preimage function" );
    const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >();
@@ -189,7 +189,7 @@ setMatrixElements( const PreimageFunction& u,
                    Matrix& matrix,
                    Vector& b ) const
 {
-   static_assert( MeshEntity::entityDimension == 2, "Wrong mesh entity dimension." );
+   static_assert( MeshEntity::getEntityDimension() == 2, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == 2, "Wrong preimage function" );
    const IndexType& index = entity.getIndex();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
@@ -234,7 +234,7 @@ operator()( const PreimageFunction& u,
             const EntityType& entity,
             const Real& time ) const
 {
-   static_assert( EntityType::entityDimension == 3, "Wrong mesh entity dimension." );
+   static_assert( EntityType::getEntityDimension() == 3, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == 3, "Wrong preimage function" );
    const typename EntityType::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >();
@@ -286,7 +286,7 @@ setMatrixElements( const PreimageFunction& u,
                    Matrix& matrix,
                    Vector& b ) const
 {
-   static_assert( MeshEntity::entityDimension == 3, "Wrong mesh entity dimension." );
+   static_assert( MeshEntity::getEntityDimension() == 3, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == 3, "Wrong preimage function" );
    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
    const IndexType& index = entity.getIndex();
