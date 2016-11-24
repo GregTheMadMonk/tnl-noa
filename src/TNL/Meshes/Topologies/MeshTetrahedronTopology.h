@@ -23,7 +23,7 @@ namespace Meshes {
 
 struct MeshTetrahedronTopology
 {
-   static constexpr int dimensions = 3;
+   static constexpr int dimension = 3;
 
    static String getType()
    {

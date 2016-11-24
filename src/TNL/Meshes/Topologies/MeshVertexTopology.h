@@ -23,7 +23,7 @@ namespace Meshes {
 
 struct MeshVertexTopology
 {
-   static constexpr int dimensions = 0;
+   static constexpr int dimension = 0;
 
    static String getType()
    {

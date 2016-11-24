@@ -44,11 +44,11 @@ class MeshEntity
       using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
       using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
 
-      template< int Subdimensions >
-      using SubentityTraits = typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimensions >;
+      template< int Subdimension >
+      using SubentityTraits = typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimension >;
 
-      template< int SuperDimensions >
-      using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimensions >;
+      template< int Superdimension >
+      using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >;
 
       static String getType();
 
@@ -64,7 +64,7 @@ class MeshEntity
 
       bool operator!=( const MeshEntity& entity ) const;
 
-      constexpr int getEntityDimensions() const;
+      constexpr int getEntityDimension() const;
 
       /****
        * Subentities
@@ -100,7 +100,7 @@ class MeshEntity
 
    friend MeshInitializer< MeshConfig >;
 
-   template< typename Mesh, typename DimensionsTag, typename SuperdimensionsTag >
+   template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
    friend struct MeshEntityStorageRebinderWorker;
 };
 
@@ -120,8 +120,8 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
       using PointType       = typename MeshTraitsType::PointType;
 
-      template< int SuperDimensions >
-      using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimensions >;
+      template< int Superdimension >
+      using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >;
 
       static String getType();
 
@@ -137,7 +137,7 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
 
       bool operator!=( const MeshEntity& entity ) const;
 
-      constexpr int getEntityDimensions() const;
+      constexpr int getEntityDimension() const;
 
       /****
        * Superentities
@@ -161,7 +161,7 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
 
    friend MeshInitializer< MeshConfig >;
 
-   template< typename Mesh, typename DimensionsTag, typename SuperdimensionsTag >
+   template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
    friend struct MeshEntityStorageRebinderWorker;
 };
 

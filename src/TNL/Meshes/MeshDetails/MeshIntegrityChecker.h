@@ -25,9 +25,9 @@ namespace Meshes {
 template< typename MeshType >
 class MeshIntegrityChecker
 : public MeshIntegrityCheckerLayer< MeshType,
-                                       MeshDimensionTag< MeshType::Config::CellType::dimensions > >
+                                    DimensionTag< MeshType::Config::CellType::dimension > >
 {
-      typedef MeshDimensionTag< MeshType::Config::CellType::dimensions > DimensionTag;
+      typedef Meshes::DimensionTag< MeshType::Config::CellType::dimension > DimensionTag;
       typedef MeshIntegrityCheckerLayer< MeshType, DimensionTag > BaseType;
 
    public:

@@ -23,7 +23,7 @@ namespace Meshes {
 
 struct MeshTriangleTopology
 {
-   static constexpr int dimensions = 2;
+   static constexpr int dimension = 2;
 
    static String getType()
    {

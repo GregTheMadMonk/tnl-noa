@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/DimensionTag.h>
 
 namespace TNL {
 namespace Meshes{
@@ -35,15 +35,15 @@ struct tnlSubentityVertex;
 
 
 template< typename MeshConfig,
-          typename DimensionsTag >
+          typename DimensionTag >
 struct MeshEntityTopology
 {
-   static_assert( DimensionsTag::value <= MeshConfig::meshDimensions, "There are no entities with dimension higher than the mesh dimension." );
-   using Topology = typename MeshSubtopology< typename MeshConfig::CellTopology, DimensionsTag::value >::Topology;
+   static_assert( DimensionTag::value <= MeshConfig::meshDimension, "There are no entities with dimension higher than the mesh dimension." );
+   using Topology = typename MeshSubtopology< typename MeshConfig::CellTopology, DimensionTag::value >::Topology;
 };
 
 template< typename MeshConfig >
-struct MeshEntityTopology< MeshConfig, MeshDimensionsTag< MeshConfig::CellTopology::dimensions > >
+struct MeshEntityTopology< MeshConfig, DimensionTag< MeshConfig::CellTopology::dimension > >
 {
    using Topology = typename MeshConfig::CellTopology;
 };

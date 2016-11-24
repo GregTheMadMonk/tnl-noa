@@ -50,10 +50,10 @@ template< typename ConfigTag, typename Index > struct GridIndexTag { enum { enab
 // individual per-type tags.
 template< typename ConfigTag, typename MeshType > struct GridTag { enum { enabled = false }; };
 
-template< typename ConfigTag, int Dimensions, typename Real, typename Device, typename Index >
-struct GridTag< ConfigTag, Grid< Dimensions, Real, Device, Index > >
+template< typename ConfigTag, int Dimension, typename Real, typename Device, typename Index >
+struct GridTag< ConfigTag, Grid< Dimension, Real, Device, Index > >
 {
-   enum { enabled = GridDimensionTag< ConfigTag, Dimensions >::enabled  &&
+   enum { enabled = GridDimensionTag< ConfigTag, Dimension >::enabled  &&
                     GridRealTag< ConfigTag, Real >::enabled &&
                     GridDeviceTag< ConfigTag, Device >::enabled &&
                     GridIndexTag< ConfigTag, Index >::enabled
@@ -81,7 +81,7 @@ template< typename ConfigTag, typename CellTopology > struct MeshCellTopologyTag
 //template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, MeshSimplexTopology > { enum { enabled = true }; };
 
 // All sensible world dimensions are enabled by default.
-template< typename ConfigTag, typename CellTopology, int WorldDimension > struct MeshWorldDimensionTag { enum { enabled = ( WorldDimension >= CellTopology::dimensions && WorldDimension <= 3 ) }; };
+template< typename ConfigTag, typename CellTopology, int WorldDimension > struct MeshWorldDimensionTag { enum { enabled = ( WorldDimension >= CellTopology::dimension && WorldDimension <= 3 ) }; };
 
 // Meshes are enabled for all real types by default.
 template< typename ConfigTag, typename Real > struct MeshRealTag { enum { enabled = true }; };
@@ -101,8 +101,8 @@ template< typename ConfigTag, typename GlobalIndex > struct MeshIdTag< ConfigTag
 template< typename ConfigTag >
 struct MeshConfigTemplateTag
 {
-   template< typename Cell, int WorldDimensions, typename Real, typename GlobalIndex, typename LocalIndex, typename Id >
-   using MeshConfig = MeshConfigBase< Cell, WorldDimensions, Real, GlobalIndex, LocalIndex, Id >;
+   template< typename Cell, int WorldDimension, typename Real, typename GlobalIndex, typename LocalIndex, typename Id >
+   using MeshConfig = MeshConfigBase< Cell, WorldDimension, Real, GlobalIndex, LocalIndex, Id >;
 };
 
 // The Mesh is enabled for allowed Device, CellTopology, WorldDimension, Real,

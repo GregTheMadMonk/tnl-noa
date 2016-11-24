@@ -18,7 +18,7 @@
 
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Containers/Array.h>
-#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/DimensionTag.h>
 
 namespace TNL {
 namespace Meshes {
@@ -27,16 +27,16 @@ struct MeshVertexTopology;
 template< typename MeshConfig, typename EntityTopology > class MeshEntity;
 template< typename MeshConfig, typename EntityTopology > class MeshEntitySeed;
 template< typename MeshConfig, int Dimension > class MeshEntityTraits;
-template< typename MeshConfig, typename MeshEntity, int SubDimension > class MeshSubentityTraits;
-template< typename MeshConfig, typename MeshEntity, int SuperDimension > class MeshSuperentityTraits;
+template< typename MeshConfig, typename MeshEntity, int Subdimension > class MeshSubentityTraits;
+template< typename MeshConfig, typename MeshEntity, int Superdimension > class MeshSuperentityTraits;
 
 template< typename MeshConfig,
           typename Device = Devices::Host >
 class MeshTraits
 {
 public:
-   static constexpr int meshDimensions  = MeshConfig::CellTopology::dimensions;
-   static constexpr int worldDimensions = MeshConfig::worldDimensions;
+   static constexpr int meshDimension  = MeshConfig::CellTopology::dimension;
+   static constexpr int worldDimension = MeshConfig::worldDimension;
 
    using DeviceType        = Device;
    using GlobalIndexType   = typename MeshConfig::GlobalIndexType;
@@ -45,22 +45,22 @@ public:
    using CellTopology      = typename MeshConfig::CellTopology;
    using CellType          = MeshEntity< MeshConfig, CellTopology >;
    using VertexType        = MeshEntity< MeshConfig, MeshVertexTopology >;
-   using PointType         = Containers::StaticVector< worldDimensions, typename MeshConfig::RealType >;
+   using PointType         = Containers::StaticVector< worldDimension, typename MeshConfig::RealType >;
    using CellSeedType      = MeshEntitySeed< MeshConfig, CellTopology >;
 
    using PointArrayType    = Containers::Array< PointType, Devices::Host, GlobalIndexType >;
    using CellSeedArrayType = Containers::Array< CellSeedType, Devices::Host, GlobalIndexType >;
 
-   template< int Dimensions >
-   using EntityTraits = MeshEntityTraits< MeshConfig, Dimensions >;
+   template< int Dimension >
+   using EntityTraits = MeshEntityTraits< MeshConfig, Dimension >;
 
-   template< typename EntityTopology, int SubDimensions >
-   using SubentityTraits = MeshSubentityTraits< MeshConfig, EntityTopology, SubDimensions >;
+   template< typename EntityTopology, int Subdimension >
+   using SubentityTraits = MeshSubentityTraits< MeshConfig, EntityTopology, Subdimension >;
 
-   template< typename EntityTopology, int SuperDimensions >
-   using SuperentityTraits = MeshSuperentityTraits< MeshConfig, EntityTopology, SuperDimensions >;
+   template< typename EntityTopology, int Superdimension >
+   using SuperentityTraits = MeshSuperentityTraits< MeshConfig, EntityTopology, Superdimension >;
 
-   using DimensionsTag = MeshDimensionsTag< meshDimensions >;
+   using DimensionTag = Meshes::DimensionTag< meshDimension >;
 };
 
 } // namespace Meshes

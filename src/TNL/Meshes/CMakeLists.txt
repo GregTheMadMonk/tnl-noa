@@ -7,8 +7,8 @@ ADD_SUBDIRECTORY( TypeResolver )
 SET( headers Grid.h
              GridEntity.h
              GridEntityConfig.h
+             DimensionTag.h
              DummyMesh.h
-             MeshDimensionTag.h             
              Mesh.h
              MeshEntity.h
              Traverser.h

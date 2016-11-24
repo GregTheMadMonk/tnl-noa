@@ -69,7 +69,7 @@ void
 MeshEntity< MeshConfig, EntityTopology >::
 print( std::ostream& str ) const
 {
-   str << "\t Mesh entity dimensions: " << EntityTopology::dimensions << std::endl;
+   str << "\t Mesh entity dimension: " << EntityTopology::dimension << std::endl;
    MeshSubentityAccess< MeshConfig, EntityTopology >::print( str );
    MeshSuperentityAccess< MeshConfig, EntityTopology >::print( str );
 }
@@ -101,7 +101,7 @@ constexpr int
 MeshEntity< MeshConfig, EntityTopology >::
 getEntityDimension() const
 {
-   return EntityTopology::dimensions;
+   return EntityTopology::dimension;
 }
 
 /****
@@ -172,7 +172,7 @@ void
 MeshEntity< MeshConfig, MeshVertexTopology >::
 print( std::ostream& str ) const
 {
-   str << "\t Mesh entity dimensions: " << MeshVertexTopology::dimensions << std::endl;
+   str << "\t Mesh entity dimension: " << MeshVertexTopology::dimension << std::endl;
    str << "\t Coordinates = " << point << std::endl;
    MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::print( str );
 }
@@ -201,7 +201,7 @@ constexpr int
 MeshEntity< MeshConfig, MeshVertexTopology >::
 getEntityDimension() const
 {
-   return EntityTopology::dimensions;
+   return EntityTopology::dimension;
 }
 
 template< typename MeshConfig >

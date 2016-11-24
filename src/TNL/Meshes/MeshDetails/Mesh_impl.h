@@ -46,12 +46,12 @@ getMeshDimension()
 }
 
 template< typename MeshConfig >
-   template< int Dimensions >
+   template< int Dimension >
 constexpr bool
 Mesh< MeshConfig >::
 entitiesAvailable()
 {
-   return MeshTraitsType::template EntityTraits< Dimensions >::storageEnabled;
+   return MeshTraitsType::template EntityTraits< Dimension >::storageEnabled;
 }
 
 template< typename MeshConfig >
@@ -60,28 +60,28 @@ typename Mesh< MeshConfig >::GlobalIndexType
 Mesh< MeshConfig >::
 getNumberOfEntities() const
 {
-   static_assert( EntityTraits< Dimensions >::storageEnabled, "You try to get number of entities which are not configured for storage." );
-   return StorageBaseType::getNumberOfEntities( MeshDimensionsTag< Dimensions >() );
+   static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get number of entities which are not configured for storage." );
+   return StorageBaseType::getNumberOfEntities( DimensionTag< Dimension >() );
 }
 
 template< typename MeshConfig >
-   template< int Dimensions >
-typename Mesh< MeshConfig >::template EntityType< Dimensions >&
+   template< int Dimension >
+typename Mesh< MeshConfig >::template EntityType< Dimension >&
 Mesh< MeshConfig >::
 getEntity( const GlobalIndexType& entityIndex )
 {
-   static_assert( EntityTraits< Dimensions >::storageEnabled, "You try to get entity which is not configured for storage." );
-   return StorageBaseType::getEntity( MeshDimensionsTag< Dimensions >(), entityIndex );
+   static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get entity which is not configured for storage." );
+   return StorageBaseType::getEntity( DimensionTag< Dimension >(), entityIndex );
 }
 
 template< typename MeshConfig >
-   template< int Dimensions >
-const typename Mesh< MeshConfig >::template EntityType< Dimensions >&
+   template< int Dimension >
+const typename Mesh< MeshConfig >::template EntityType< Dimension >&
 Mesh< MeshConfig >::
 getEntity( const GlobalIndexType& entityIndex ) const
 {
-   static_assert( EntityTraits< Dimensions >::storageEnabled, "You try to get entity which is not configured for storage." );
-   return StorageBaseType::getEntity( MeshDimensionsTag< Dimensions >(), entityIndex );
+   static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get entity which is not configured for storage." );
+   return StorageBaseType::getEntity( DimensionTag< Dimension >(), entityIndex );
 }
 
 template< typename MeshConfig >
@@ -89,7 +89,7 @@ typename Mesh< MeshConfig >::GlobalIndexType
 Mesh< MeshConfig >::
 getNumberOfCells() const
 {
-   return this->template getNumberOfEntities< dimensions >();
+   return this->template getNumberOfEntities< dimension >();
 }
 
 template< typename MeshConfig >
@@ -97,7 +97,7 @@ typename Mesh< MeshConfig >::CellType&
 Mesh< MeshConfig >::
 getCell( const GlobalIndexType& cellIndex )
 {
-   return this->template getEntity< dimensions >( cellIndex );
+   return this->template getEntity< dimension >( cellIndex );
 }
 
 template< typename MeshConfig >
@@ -105,7 +105,7 @@ const typename Mesh< MeshConfig >::CellType&
 Mesh< MeshConfig >::
 getCell( const GlobalIndexType& cellIndex ) const
 {
-   return this->template getEntity< dimensions >( cellIndex );
+   return this->template getEntity< dimension >( cellIndex );
 }
 
 template< typename MeshConfig >

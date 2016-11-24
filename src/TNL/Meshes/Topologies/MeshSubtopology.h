@@ -20,7 +20,7 @@ namespace TNL {
 namespace Meshes {
 
 template< typename Topology,
-          int dimensions >
+          int dimension >
 class MeshSubtopology;
 
 template< typename Topology,

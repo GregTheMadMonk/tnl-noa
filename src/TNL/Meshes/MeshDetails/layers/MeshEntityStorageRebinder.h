@@ -15,27 +15,27 @@
  * following pseudo-code (which does not work because normal variables are not
  * usable in template arguments):
  *
- *   for( int dimensions = 0; dimensions < MeshTraitsType::meshDimensions; dimensions++ )
- *      for( int superdimensions = dimensions + 1; superdimensions <= MeshTraitsType::meshDimensions; superdimensions++ )
- *         if( EntityTraits< dimensions >::SuperentityTraits< superdimensions >::storageEnabled )
- *            for( GlobalIndexType i = 0; i < mesh.template getNumberOfEntities< dimensions >(); i++ )
+ *   for( int dimension = 0; dimension < MeshTraitsType::meshDimension; dimension++ )
+ *      for( int superdimension = dimension + 1; superdimension <= MeshTraitsType::meshDimension; superdimension++ )
+ *         if( EntityTraits< dimension >::SuperentityTraits< superdimension >::storageEnabled )
+ *            for( GlobalIndexType i = 0; i < mesh.template getNumberOfEntities< dimension >(); i++ )
  *            {
- *               auto& entity = mesh.template getEntity< dimensions >( i );
- *               entity.template bindSuperentitiesStorageNetwork< superdimensions >( mesh.template getSuperentityStorageNetwork< superdimensions >().getValues( i ) );
+ *               auto& entity = mesh.template getEntity< dimension >( i );
+ *               entity.template bindSuperentitiesStorageNetwork< superdimension >( mesh.template getSuperentityStorageNetwork< superdimension >().getValues( i ) );
  *            }
  */
 
-#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/DimensionTag.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename Mesh,
-          typename DimensionsTag,
-          typename SuperdimensionsTag,
+          typename DimensionTag,
+          typename SuperdimensionTag,
           bool Enabled =
-             Mesh::MeshTraitsType::template SuperentityTraits< typename Mesh::template EntityType< DimensionsTag::value >::EntityTopology,
-                                                               SuperdimensionsTag::value >::storageEnabled
+             Mesh::MeshTraitsType::template SuperentityTraits< typename Mesh::template EntityType< DimensionTag::value >::EntityTopology,
+                                                               SuperdimensionTag::value >::storageEnabled
           >
 struct MeshEntityStorageRebinderSuperentityWorker
 {
@@ -51,9 +51,9 @@ struct MeshEntityStorageRebinderSuperentityWorker
 };
 
 template< typename Mesh,
-          typename DimensionsTag,
-          typename SuperdimensionsTag >
-struct MeshEntityStorageRebinderSuperentityWorker< Mesh, DimensionsTag, SuperdimensionsTag, false >
+          typename DimensionTag,
+          typename SuperdimensionTag >
+struct MeshEntityStorageRebinderSuperentityWorker< Mesh, DimensionTag, SuperdimensionTag, false >
 {
    template< typename Worker >
    static void exec( Mesh& mesh ) {}
@@ -61,11 +61,11 @@ struct MeshEntityStorageRebinderSuperentityWorker< Mesh, DimensionsTag, Superdim
 
 
 template< typename Mesh,
-          typename DimensionsTag,
-          typename SuperdimensionsTag,
+          typename DimensionTag,
+          typename SuperdimensionTag,
           bool Enabled =
-             Mesh::MeshTraitsType::template SubentityTraits< typename Mesh::template EntityType< SuperdimensionsTag::value >::EntityTopology,
-                                                             DimensionsTag::value >::storageEnabled
+             Mesh::MeshTraitsType::template SubentityTraits< typename Mesh::template EntityType< SuperdimensionTag::value >::EntityTopology,
+                                                             DimensionTag::value >::storageEnabled
           >
 struct MeshEntityStorageRebinderSubentityWorker
 {
@@ -81,84 +81,84 @@ struct MeshEntityStorageRebinderSubentityWorker
 };
 
 template< typename Mesh,
-          typename DimensionsTag,
-          typename SuperdimensionsTag >
-struct MeshEntityStorageRebinderSubentityWorker< Mesh, DimensionsTag, SuperdimensionsTag, false >
+          typename DimensionTag,
+          typename SuperdimensionTag >
+struct MeshEntityStorageRebinderSubentityWorker< Mesh, DimensionTag, SuperdimensionTag, false >
 {
    template< typename Worker >
    static void exec( Mesh& mesh ) {}
 };
 
 
-template< typename Mesh, typename DimensionsTag, typename SuperdimensionsTag >
+template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
 struct MeshEntityStorageRebinderWorker
 {
    static void exec( Mesh& mesh )
    {
-      MeshEntityStorageRebinderSuperentityWorker< Mesh, DimensionsTag, SuperdimensionsTag >::
+      MeshEntityStorageRebinderSuperentityWorker< Mesh, DimensionTag, SuperdimensionTag >::
          template exec< MeshEntityStorageRebinderWorker >( mesh );
-      MeshEntityStorageRebinderSubentityWorker< Mesh, DimensionsTag, SuperdimensionsTag >::
+      MeshEntityStorageRebinderSubentityWorker< Mesh, DimensionTag, SuperdimensionTag >::
          template exec< MeshEntityStorageRebinderWorker >( mesh );
    }
 
    static void bindSuperentities( Mesh& mesh )
    {
-      for( typename Mesh::GlobalIndexType i = 0; i < mesh.template getNumberOfEntities< DimensionsTag::value >(); i++ )
+      for( typename Mesh::GlobalIndexType i = 0; i < mesh.template getNumberOfEntities< DimensionTag::value >(); i++ )
       {
-         auto& subentity = mesh.template getEntity< DimensionsTag::value >( i );
-         auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< DimensionsTag::value, SuperdimensionsTag::value >();
-         subentity.template bindSuperentitiesStorageNetwork< SuperdimensionsTag::value >( superentitiesStorage.getValues( i ) );
+         auto& subentity = mesh.template getEntity< DimensionTag::value >( i );
+         auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< DimensionTag::value, SuperdimensionTag::value >();
+         subentity.template bindSuperentitiesStorageNetwork< SuperdimensionTag::value >( superentitiesStorage.getValues( i ) );
       }
    }
 
    static void bindSubentities( Mesh& mesh )
    {
-      for( typename Mesh::GlobalIndexType i = 0; i < mesh.template getNumberOfEntities< SuperdimensionsTag::value >(); i++ )
+      for( typename Mesh::GlobalIndexType i = 0; i < mesh.template getNumberOfEntities< SuperdimensionTag::value >(); i++ )
       {
-         auto& superentity = mesh.template getEntity< SuperdimensionsTag::value >( i );
-         auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< SuperdimensionsTag::value, DimensionsTag::value >();
-         superentity.template bindSubentitiesStorageNetwork< DimensionsTag::value >( subentitiesStorage.getValues( i ) );
+         auto& superentity = mesh.template getEntity< SuperdimensionTag::value >( i );
+         auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< SuperdimensionTag::value, DimensionTag::value >();
+         superentity.template bindSubentitiesStorageNetwork< DimensionTag::value >( subentitiesStorage.getValues( i ) );
       }
    }
 };
 
 
-template< typename Mesh, typename DimensionsTag, typename SuperdimensionsTag >
+template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
 struct MeshEntityStorageRebinderInner
 {
    static void exec( Mesh& mesh )
    {
-      MeshEntityStorageRebinderWorker< Mesh, DimensionsTag, SuperdimensionsTag >::exec( mesh );
-      MeshEntityStorageRebinderInner< Mesh, DimensionsTag, typename SuperdimensionsTag::Decrement >::exec( mesh );
+      MeshEntityStorageRebinderWorker< Mesh, DimensionTag, SuperdimensionTag >::exec( mesh );
+      MeshEntityStorageRebinderInner< Mesh, DimensionTag, typename SuperdimensionTag::Decrement >::exec( mesh );
    }
 };
 
-template< typename Mesh, typename SuperdimensionsTag >
-struct MeshEntityStorageRebinderInner< Mesh, typename SuperdimensionsTag::Decrement, SuperdimensionsTag >
+template< typename Mesh, typename SuperdimensionTag >
+struct MeshEntityStorageRebinderInner< Mesh, typename SuperdimensionTag::Decrement, SuperdimensionTag >
 {
    static void exec( Mesh& mesh )
    {
-      MeshEntityStorageRebinderWorker< Mesh, typename SuperdimensionsTag::Decrement, SuperdimensionsTag >::exec( mesh );
+      MeshEntityStorageRebinderWorker< Mesh, typename SuperdimensionTag::Decrement, SuperdimensionTag >::exec( mesh );
    }
 };
 
 
-template< typename Mesh, typename DimensionsTag = typename MeshDimensionsTag< Mesh::MeshTraitsType::meshDimensions >::Decrement >
+template< typename Mesh, typename DimensionTag = typename Meshes::DimensionTag< Mesh::MeshTraitsType::meshDimension >::Decrement >
 struct MeshEntityStorageRebinder
 {
    static void exec( Mesh& mesh )
    {
-      MeshEntityStorageRebinderInner< Mesh, DimensionsTag, MeshDimensionsTag< Mesh::MeshTraitsType::meshDimensions > >::exec( mesh );
-      MeshEntityStorageRebinder< Mesh, typename DimensionsTag::Decrement >::exec( mesh );
+      MeshEntityStorageRebinderInner< Mesh, DimensionTag, Meshes::DimensionTag< Mesh::MeshTraitsType::meshDimension > >::exec( mesh );
+      MeshEntityStorageRebinder< Mesh, typename DimensionTag::Decrement >::exec( mesh );
    }
 };
 
 template< typename Mesh >
-struct MeshEntityStorageRebinder< Mesh, MeshDimensionsTag< 0 > >
+struct MeshEntityStorageRebinder< Mesh, Meshes::DimensionTag< 0 > >
 {
    static void exec( Mesh& mesh )
    {
-      MeshEntityStorageRebinderInner< Mesh, MeshDimensionsTag< 0 >, MeshDimensionsTag< Mesh::MeshTraitsType::meshDimensions > >::exec( mesh );
+      MeshEntityStorageRebinderInner< Mesh, Meshes::DimensionTag< 0 >, Meshes::DimensionTag< Mesh::MeshTraitsType::meshDimension > >::exec( mesh );
    }
 };
 

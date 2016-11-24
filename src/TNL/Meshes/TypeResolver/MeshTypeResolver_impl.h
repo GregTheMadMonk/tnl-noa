@@ -118,7 +118,7 @@ resolveReal( Reader& reader,
              ProblemSetterArgs&&... problemSetterArgs )
 {
    std::cerr << "The combination of world dimension (" << WorldDimension
-             << ") and mesh dimension (" << CellTopology::dimensions 
+             << ") and mesh dimension (" << CellTopology::dimension
              << ") is either invalid or disabled in the build configuration." << std::endl;
    return false;
 }

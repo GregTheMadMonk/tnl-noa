@@ -45,32 +45,32 @@ class Mesh
       using CellType        = typename MeshTraitsType::CellType;
       using VertexType      = typename MeshTraitsType::VertexType;
       using PointType       = typename MeshTraitsType::PointType;
-      static constexpr int dimensions = MeshTraitsType::meshDimensions;
+      static constexpr int dimension = MeshTraitsType::meshDimension;
 
-      template< int Dimensions >
-      using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimensions >;
+      template< int Dimension >
+      using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
 
-      template< int Dimensions >
-      using EntityType = typename EntityTraits< Dimensions >::EntityType;
+      template< int Dimension >
+      using EntityType = typename EntityTraits< Dimension >::EntityType;
 
       static String getType();
 
       virtual String getTypeVirtual() const;
 
-      static constexpr int getDimensions();
+      static constexpr int getMeshDimension();
 
-      template< int Dimensions >
+      template< int Dimension >
       static constexpr bool entitiesAvailable();
 
       // TODO: rename to getEntitiesCount
       template< int Dimension >
       GlobalIndexType getNumberOfEntities() const;
 
-      template< int Dimensions >
-      EntityType< Dimensions >& getEntity( const GlobalIndexType& entityIndex );
+      template< int Dimension >
+      EntityType< Dimension >& getEntity( const GlobalIndexType& entityIndex );
 
-      template< int Dimensions >
-      const EntityType< Dimensions >& getEntity( const GlobalIndexType& entityIndex ) const;
+      template< int Dimension >
+      const EntityType< Dimension >& getEntity( const GlobalIndexType& entityIndex ) const;
 
       GlobalIndexType getNumberOfCells() const;
 
@@ -103,7 +103,7 @@ class Mesh
 
       friend MeshInitializer< MeshConfig >;
 
-      template< typename Mesh, typename DimensionsTag, typename SuperdimensionsTag >
+      template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
       friend struct MeshEntityStorageRebinderWorker;
 };
 

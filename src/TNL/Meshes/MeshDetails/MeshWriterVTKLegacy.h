@@ -62,10 +62,10 @@ class MeshWriterVTKLegacy
                       MeshType& mesh,
                       bool verbose )
    {
-      if( MeshType::dimensions > 3 )
+      if( MeshType::dimension > 3 )
       {
-         std::cerr << "You try to write mesh with " << MeshType::dimensions
-              << "dimensions but VTK legacy format supports only 1D, 2D and 3D meshes." << std::endl;
+         std::cerr << "You try to write mesh with " << MeshType::dimension
+              << "dimension but VTK legacy format supports only 1D, 2D and 3D meshes." << std::endl;
          return false;
       }
       std::fstream outputFile;
@@ -96,7 +96,7 @@ class MeshWriterVTKLegacy
       for( int i = 0; i < mesh.template getNumberOfEntities< 0 >(); i++ )
       {
          mesh.template getEntity< 0 >( i ).getPoint().write( file );
-         for( int j = MeshType::dimensions; j < 3; j++ )
+         for( int j = MeshType::dimension; j < 3; j++ )
             file << " 0.0";
          file << std::endl;
       }

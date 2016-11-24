@@ -29,17 +29,17 @@ template< typename MeshConfig,
 class MeshSuperentityTraits
 {
 public:
-   static_assert( 0 <= Dimensions && Dimensions <= MeshConfig::meshDimensions, "invalid dimensions" );
+   static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
    // FIXME: this would break MeshSuperentityAccess, but it should be possible to implement it similarly to MeshSubentityAccess
-   //static_assert( EntityTopology::dimensions < Dimensions, "Superentity dimensions must be higher than the entity dimensions." );
+   //static_assert( EntityTopology::dimension < Dimension, "Superentity dimension must be higher than the entity dimension." );
 
-   static constexpr bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimensions );
+   static constexpr bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimension );
 
    using GlobalIndexType     = typename MeshConfig::GlobalIndexType;
    using LocalIndexType      = typename MeshConfig::LocalIndexType;
    using EntityType          = MeshEntity< MeshConfig, EntityTopology >;
-   using SuperentityTopology = typename MeshEntityTraits< MeshConfig, Dimensions >::EntityTopology;
-   using SuperentityType     = typename MeshEntityTraits< MeshConfig, Dimensions >::EntityType;
+   using SuperentityTopology = typename MeshEntityTraits< MeshConfig, Dimension >::EntityTopology;
+   using SuperentityType     = typename MeshEntityTraits< MeshConfig, Dimension >::EntityType;
 
    /****
     * Type of container for storing of the superentities indices.

@@ -22,15 +22,15 @@
 namespace TNL {
 namespace Meshes {
 
-template< int dimensions_ >
+template< int dimension_ >
 class MeshSimplexTopology
 {
    public:
-      static constexpr int dimensions = dimensions_;
+      static constexpr int dimension = dimension_;
 
       static String getType()
       {
-         return String( "MeshSimplexTopology< " ) + String( dimensions ) + " >";
+         return String( "MeshSimplexTopology< " ) + String( dimension ) + " >";
       }
 };
 
@@ -40,13 +40,13 @@ class tnlStaticNumCombinations;
 template<unsigned int n, unsigned int k, unsigned int combinationIndex, unsigned int valueIndex>
 class tnlCombinationValue;
 
-template< int dimensions,
+template< int dimension,
           int subtopologyDim >
-class MeshSubtopology< MeshSimplexTopology< dimensions >, subtopologyDim >
+class MeshSubtopology< MeshSimplexTopology< dimension >, subtopologyDim >
 {
    static_assert( 0 < subtopologyDim && subtopologyDim < dim, "invalid subtopology dimension" );
 
-   static constexpr int topologyVertexCount = MeshSubtopology< MeshSimplexTopology< dimensions >, 0 >::count;
+   static constexpr int topologyVertexCount = MeshSubtopology< MeshSimplexTopology< dimension >, 0 >::count;
    static constexpr int subtopologyVertexCount = MeshSubtopology< MeshSimplexTopology< subtopologyDim >, 0>::count;
 
    public:
@@ -55,8 +55,8 @@ class MeshSubtopology< MeshSimplexTopology< dimensions >, subtopologyDim >
       static constexpr int count = tnlNumCombinations< topologyVertexCount, subtopologyVertexCount >::value;
 };
 
-template< int dimensions >
-class MeshSubtopology< MeshSimplexTopology< dimensions >, 0 >
+template< int dimension >
+class MeshSubtopology< MeshSimplexTopology< dimension >, 0 >
 {
    static_assert(0 < dim, "invalid dimension");
 
@@ -67,18 +67,18 @@ class MeshSubtopology< MeshSimplexTopology< dimensions >, 0 >
 };
 
 
-template< int dimensions,
+template< int dimension,
           typename Subtopology,
           int subtopologyIndex,
           int vertexIndex >
-struct tnlSubentityVertex< MeshSimplexTopology< dimensions >, Subtopology, subtopologyIndex, vertexIndex >
+struct tnlSubentityVertex< MeshSimplexTopology< dimension >, Subtopology, subtopologyIndex, vertexIndex >
 {
    private:
-      static constexpr int subtopologyCount = Subtopology< MeshSimplexTopology< dimensions >, Subtopology::dimensions >::count;
-      static constexpr int topologyVertexCount = Subtopology< MeshSimplex< dimensions >, 0 >::count;
+      static constexpr int subtopologyCount = Subtopology< MeshSimplexTopology< dimension >, Subtopology::dimension >::count;
+      static constexpr int topologyVertexCount = Subtopology< MeshSimplex< dimension >, 0 >::count;
       static constexpr int subtopologyVertexCount = Subtopology< Subtopology, 0 >::count;
 
-      static_assert(1 < dimensions, "subtopology vertex can be specified for topologies of dimension 2 or higher");
+      static_assert(1 < dimension, "subtopology vertex can be specified for topologies of dimension 2 or higher");
       static_assert(0 <= subtopologyIndex && subtopologyIndex < subtopologyCount, "invalid subtopology index");
       static_assert(0 <= vertexIndex && vertexIndex < subtopologyVertexCount, "invalid subtopology vertex index");
 

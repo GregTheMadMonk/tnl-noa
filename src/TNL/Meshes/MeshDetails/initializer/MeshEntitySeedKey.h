@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshSubentityTraits.h>
 
 namespace TNL {

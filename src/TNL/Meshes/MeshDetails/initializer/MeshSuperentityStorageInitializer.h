@@ -19,7 +19,7 @@
 #include <set>
 #include <map>
 
-#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshSuperentityTraits.h>
 
 namespace TNL {
@@ -29,28 +29,28 @@ template< typename MeshConfig >
 class MeshInitializer;
 
 template< typename MeshConfig,
-          typename SubdimensionsTag,
-          typename SuperdimensionsTag >
+          typename SubdimensionTag,
+          typename SuperdimensionTag >
 class MeshSuperentityStorageInitializer
 {
    using MeshTraitsType            = MeshTraits< MeshConfig >;
    using MeshInitializerType       = MeshInitializer< MeshConfig >;
    using GlobalIndexType           = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType            = typename MeshTraitsType::LocalIndexType;
-   using EntityTraitsType          = typename MeshTraitsType::template EntityTraits< SubdimensionsTag::value >;
+   using EntityTraitsType          = typename MeshTraitsType::template EntityTraits< SubdimensionTag::value >;
    using EntityTopology            = typename EntityTraitsType::EntityTopology;
    using EntityType                = typename EntityTraitsType::EntityType;
-   using SuperentityTraitsType     = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >;
+   using SuperentityTraitsType     = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >;
    using SuperentityStorageNetwork = typename SuperentityTraitsType::StorageNetworkType;
 
 public:
    void addSuperentity( GlobalIndexType entityIndex, GlobalIndexType superentityIndex)
    {
-      //std::cout << "Adding superentity with " << SuperdimensionsTag::value << " dimensions of entity with " << SubdimensionsTag::value << " dimensions: entityIndex = " << entityIndex << ", superentityIndex = " << superentityIndex << std::endl;
+      //std::cout << "Adding superentity with " << SuperdimensionTag::value << " dimension of entity with " << SubdimensionTag::value << " dimension: entityIndex = " << entityIndex << ", superentityIndex = " << superentityIndex << std::endl;
       auto& indexSet = this->dynamicStorageNetwork[ entityIndex ];
       Assert( indexSet.count( superentityIndex ) == 0,
-                 std::cerr << "Superentity " << superentityIndex << " with dimensions " << SuperdimensionsTag::value
-                           << " of entity " << entityIndex << " with dimensions " << SubdimensionsTag::value
+                 std::cerr << "Superentity " << superentityIndex << " with dimension " << SuperdimensionTag::value
+                           << " of entity " << entityIndex << " with dimension " << SubdimensionTag::value
                            << " has been already added. This is probably a bug in the mesh initializer." << std::endl; );
       indexSet.insert( superentityIndex );
    }
@@ -63,7 +63,7 @@ public:
                  std::cerr << "Superentities for some entities are missing. "
                            << "This is probably a bug in the mesh initializer." << std::endl; );
 
-      SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< EntityTopology, SuperdimensionsTag::value >();
+      SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< EntityTopology, SuperdimensionTag::value >();
       Assert( (size_t) superentityStorageNetwork.getKeysRange() == dynamicStorageNetwork.size(),
                  std::cerr << "Sizes of the static and dynamic storage networks don't match. "
                            << "This is probably a bug in the mesh initializer." << std::endl; );

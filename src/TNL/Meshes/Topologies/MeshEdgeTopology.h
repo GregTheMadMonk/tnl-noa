@@ -24,7 +24,7 @@ namespace Meshes {
    
 struct MeshEdgeTopology
 {
-   static constexpr int dimensions = 1;
+   static constexpr int dimension = 1;
 
    static String getType()
    {

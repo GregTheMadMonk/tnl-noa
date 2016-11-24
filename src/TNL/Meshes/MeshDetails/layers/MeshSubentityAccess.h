@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/File.h>
-#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshSubentityTraits.h>
 #include <TNL/Meshes/MeshDetails/MeshEntityOrientation.h>
@@ -21,11 +21,11 @@ namespace Meshes {
 
 template< typename MeshConfig,
           typename EntityTopology,
-          typename DimensionsTag,
+          typename DimensionTag,
           bool SubentityStorage =
-               MeshConfig::subentityStorage( EntityTopology(), DimensionsTag::value ),
+               MeshConfig::subentityStorage( EntityTopology(), DimensionTag::value ),
           bool SubentityOrientationStorage =
-               MeshConfig::subentityOrientationStorage( EntityTopology(), DimensionsTag::value ) >
+               MeshConfig::subentityOrientationStorage( EntityTopology(), DimensionTag::value ) >
 class MeshSubentityAccessLayer;
 
 
@@ -34,63 +34,63 @@ template< typename MeshConfig,
 class MeshSubentityAccess
    : public MeshSubentityAccessLayer< MeshConfig,
                                       EntityTopology,
-                                      MeshDimensionsTag< 0 > >
+                                      Meshes::DimensionTag< 0 > >
 {
    using BaseType = MeshSubentityAccessLayer< MeshConfig,
                                               EntityTopology,
-                                              MeshDimensionsTag< 0 > >;
+                                              Meshes::DimensionTag< 0 > >;
 
    using MeshTraitsType = MeshTraits< MeshConfig >;
 
-   template< int Subdimensions >
-   using SubentityTraits = typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimensions >;
+   template< int Subdimension >
+   using SubentityTraits = typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimension >;
 
 public:
-   template< int Subdimensions >
-   void bindSubentitiesStorageNetwork( const typename SubentityTraits< Subdimensions >::SubentityAccessorType& storage )
+   template< int Subdimension >
+   void bindSubentitiesStorageNetwork( const typename SubentityTraits< Subdimension >::SubentityAccessorType& storage )
    {
-      static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to bind subentities which are not configured for storage." );
-      BaseType::bindSubentitiesStorageNetwork( MeshDimensionsTag< Subdimensions >(),
+      static_assert( SubentityTraits< Subdimension >::storageEnabled, "You try to bind subentities which are not configured for storage." );
+      BaseType::bindSubentitiesStorageNetwork( Meshes::DimensionTag< Subdimension >(),
                                                storage );
    }
 
-   template< int Subdimensions >
-   static constexpr typename SubentityTraits< Subdimensions >::LocalIndexType getNumberOfSubentities()
+   template< int Subdimension >
+   static constexpr typename SubentityTraits< Subdimension >::LocalIndexType getNumberOfSubentities()
    {
-      return SubentityTraits< Subdimensions >::count;
+      return SubentityTraits< Subdimension >::count;
    }
 
-   template< int Subdimensions >
-   void setSubentityIndex( const typename SubentityTraits< Subdimensions >::LocalIndexType& localIndex,
-                           const typename SubentityTraits< Subdimensions >::GlobalIndexType& globalIndex )
+   template< int Subdimension >
+   void setSubentityIndex( const typename SubentityTraits< Subdimension >::LocalIndexType& localIndex,
+                           const typename SubentityTraits< Subdimension >::GlobalIndexType& globalIndex )
    {
-      static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to set subentity which is not configured for storage." );
-      BaseType::setSubentityIndex( MeshDimensionsTag< Subdimensions >(),
+      static_assert( SubentityTraits< Subdimension >::storageEnabled, "You try to set subentity which is not configured for storage." );
+      BaseType::setSubentityIndex( Meshes::DimensionTag< Subdimension >(),
                                    localIndex,
                                    globalIndex );
    }
 
-   template< int Subdimensions >
-   typename SubentityTraits< Subdimensions >::GlobalIndexType
-   getSubentityIndex( const typename SubentityTraits< Subdimensions >::LocalIndexType localIndex ) const
+   template< int Subdimension >
+   typename SubentityTraits< Subdimension >::GlobalIndexType
+   getSubentityIndex( const typename SubentityTraits< Subdimension >::LocalIndexType localIndex ) const
    {
-      static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to get subentity which is not configured for storage." );
-      return BaseType::getSubentityIndex( MeshDimensionsTag< Subdimensions >(),
+      static_assert( SubentityTraits< Subdimension >::storageEnabled, "You try to get subentity which is not configured for storage." );
+      return BaseType::getSubentityIndex( Meshes::DimensionTag< Subdimension >(),
                                           localIndex );
    }
 
-   template< int Subdimensions >
-   typename SubentityTraits< Subdimensions >::OrientationArrayType& subentityOrientationsArray()
+   template< int Subdimension >
+   typename SubentityTraits< Subdimension >::OrientationArrayType& subentityOrientationsArray()
    {
-      static_assert( SubentityTraits< Subdimensions >::orientationEnabled, "You try to get subentity orientation which is not configured for storage." );
-      return BaseType::subentityOrientationsArray( MeshDimensionsTag< Subdimensions >() );
+      static_assert( SubentityTraits< Subdimension >::orientationEnabled, "You try to get subentity orientation which is not configured for storage." );
+      return BaseType::subentityOrientationsArray( Meshes::DimensionTag< Subdimension >() );
    }
 
-   template< int Subdimensions >
-   typename SubentityTraits< Subdimensions >::IdPermutationArrayType getSubentityOrientation( typename SubentityTraits< Subdimensions >::LocalIndexType index ) const
+   template< int Subdimension >
+   typename SubentityTraits< Subdimension >::IdPermutationArrayType getSubentityOrientation( typename SubentityTraits< Subdimension >::LocalIndexType index ) const
    {
-      static_assert( SubentityTraits< Subdimensions >::orientationEnabled, "You try to get subentity orientation which is not configured for storage." );
-      return BaseType::getSubentityOrientation( MeshDimensionsTag< Subdimensions >(), index );
+      static_assert( SubentityTraits< Subdimension >::orientationEnabled, "You try to get subentity orientation which is not configured for storage." );
+      return BaseType::getSubentityOrientation( Meshes::DimensionTag< Subdimension >(), index );
    }
 
    bool operator==( const MeshSubentityAccess& other ) const
@@ -107,22 +107,22 @@ public:
 
 template< typename MeshConfig,
           typename EntityTopology,
-          typename DimensionsTag >
+          typename DimensionTag >
 class MeshSubentityAccessLayer< MeshConfig,
                                 EntityTopology,
-                                DimensionsTag,
+                                DimensionTag,
                                 true,
                                 true >
    : public MeshSubentityAccessLayer< MeshConfig,
                                       EntityTopology,
-                                      typename DimensionsTag::Increment >
+                                      typename DimensionTag::Increment >
 {
    using BaseType = MeshSubentityAccessLayer< MeshConfig,
                                               EntityTopology,
-                                              typename DimensionsTag::Increment >;
+                                              typename DimensionTag::Increment >;
 
    using MeshTraitsType         = MeshTraits< MeshConfig >;
-   using SubentityTraitsType    = typename MeshTraitsType::template SubentityTraits< EntityTopology, DimensionsTag::value >;
+   using SubentityTraitsType    = typename MeshTraitsType::template SubentityTraits< EntityTopology, DimensionTag::value >;
 
 protected:
    using GlobalIndexType        = typename SubentityTraitsType::GlobalIndexType;
@@ -151,7 +151,7 @@ protected:
    {
       if( ! BaseType::save( file ) )
       {
-         std::cerr << "Saving of the entity subentities layer with " << DimensionsTag::value << " failed." << std::endl;
+         std::cerr << "Saving of the entity subentities layer with " << DimensionTag::value << " failed." << std::endl;
          return false;
       }
       return true;
@@ -161,7 +161,7 @@ protected:
    {
       if( ! BaseType::load( file ) )
       {
-         std::cerr << "Loading of the entity subentities layer with " << DimensionsTag::value << " failed." << std::endl;
+         std::cerr << "Loading of the entity subentities layer with " << DimensionTag::value << " failed." << std::endl;
          return false;
       }
       return true;
@@ -170,7 +170,7 @@ protected:
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << "\t Subentities with " << DimensionsTag::value << " dimensions are: " << subentityIndices << "." << std::endl;
+      str << "\t Subentities with " << DimensionTag::value << " dimension are: " << subentityIndices << "." << std::endl;
    }
 
    bool operator==( const MeshSubentityAccessLayer& layer ) const
@@ -190,44 +190,44 @@ protected:
    /****
     * Define setter/getter for the current level of the subentities
     */
-   void bindSubentitiesStorageNetwork( DimensionsTag,
+   void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage )
    {
       this->subentityIndices.bind( storage );
    }
 
-   void setSubentityIndex( DimensionsTag,
+   void setSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex,
                            const GlobalIndexType globalIndex )
    {
       this->subentityIndices[ localIndex ] = globalIndex;
    }
 
-   GlobalIndexType getSubentityIndex( DimensionsTag,
+   GlobalIndexType getSubentityIndex( DimensionTag,
                                       const LocalIndexType localIndex ) const
    {
       return this->subentityIndices[ localIndex ];
    }
 
-   const SubentityAccessorType& getSubentityIndices( DimensionsTag ) const
+   const SubentityAccessorType& getSubentityIndices( DimensionTag ) const
    {
       return this->subentityIndices;
    }
 
-   SubentityAccessorType& getSubentityIndices( DimensionsTag )
+   SubentityAccessorType& getSubentityIndices( DimensionTag )
    {
       return this->subentityIndices;
    }
 
    using BaseType::getSubentityOrientation;
-   const IdPermutationArrayType& getSubentityOrientation( DimensionsTag, LocalIndexType index) const
+   const IdPermutationArrayType& getSubentityOrientation( DimensionTag, LocalIndexType index) const
    {
       Assert( 0 <= index && index < SubentityTraitsType::count, );
       return this->subentityOrientations[ index ].getSubvertexPermutation();
    }
 
    using BaseType::subentityOrientationsArray;
-	OrientationArrayType& subentityOrientationsArray( DimensionsTag ) { return this->subentityOrientations; }
+	OrientationArrayType& subentityOrientationsArray( DimensionTag ) { return this->subentityOrientations; }
 
 private:
    SubentityAccessorType subentityIndices;
@@ -237,23 +237,23 @@ private:
 
 template< typename MeshConfig,
           typename EntityTopology,
-          typename DimensionsTag >
+          typename DimensionTag >
 class MeshSubentityAccessLayer< MeshConfig,
                                 EntityTopology,
-                                DimensionsTag,
+                                DimensionTag,
                                 true,
                                 false >
    : public MeshSubentityAccessLayer< MeshConfig,
                                       EntityTopology,
-                                      typename DimensionsTag::Increment >
+                                      typename DimensionTag::Increment >
 {
-   static_assert( DimensionsTag::value < EntityTopology::dimensions, "" );
+   static_assert( DimensionTag::value < EntityTopology::dimension, "" );
    using BaseType = MeshSubentityAccessLayer< MeshConfig,
                                               EntityTopology,
-                                              typename DimensionsTag::Increment >;
+                                              typename DimensionTag::Increment >;
 
    using MeshTraitsType        = MeshTraits< MeshConfig >;
-   using SubentityTraitsType   = typename MeshTraitsType::template SubentityTraits< EntityTopology, DimensionsTag::value >;
+   using SubentityTraitsType   = typename MeshTraitsType::template SubentityTraits< EntityTopology, DimensionTag::value >;
 
 protected:
    using GlobalIndexType       = typename SubentityTraitsType::GlobalIndexType;
@@ -280,7 +280,7 @@ protected:
    {
       if( ! BaseType::save( file ) )
       {
-         std::cerr << "Saving of the entity subentities layer with " << DimensionsTag::value << " failed." << std::endl;
+         std::cerr << "Saving of the entity subentities layer with " << DimensionTag::value << " failed." << std::endl;
          return false;
       }
       return true;
@@ -290,7 +290,7 @@ protected:
    {
       if( ! BaseType::load( file ) )
       {
-         std::cerr << "Loading of the entity subentities layer with " << DimensionsTag::value << " failed." << std::endl;
+         std::cerr << "Loading of the entity subentities layer with " << DimensionTag::value << " failed." << std::endl;
          return false;
       }
       return true;
@@ -299,7 +299,7 @@ protected:
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << "\t Subentities with " << DimensionsTag::value << " dimensions are: " << subentityIndices << "." << std::endl;
+      str << "\t Subentities with " << DimensionTag::value << " dimension are: " << subentityIndices << "." << std::endl;
    }
 
    bool operator==( const MeshSubentityAccessLayer& layer ) const
@@ -319,31 +319,31 @@ protected:
    /****
     * Define setter/getter for the current level of the subentities
     */
-   void bindSubentitiesStorageNetwork( DimensionsTag,
+   void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage )
    {
       this->subentityIndices.bind( storage );
    }
 
-   void setSubentityIndex( DimensionsTag,
+   void setSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex,
                            const GlobalIndexType globalIndex )
    {
       this->subentityIndices[ localIndex ] = globalIndex;
    }
 
-   GlobalIndexType getSubentityIndex( DimensionsTag,
+   GlobalIndexType getSubentityIndex( DimensionTag,
                                       const LocalIndexType localIndex ) const
    {
       return this->subentityIndices[ localIndex ];
    }
 
-   const SubentityAccessorType& getSubentityIndices( DimensionsTag ) const
+   const SubentityAccessorType& getSubentityIndices( DimensionTag ) const
    {
       return this->subentityIndices;
    }
 
-   SubentityAccessorType& getSubentityIndices( DimensionsTag )
+   SubentityAccessorType& getSubentityIndices( DimensionTag )
    {
       return this->subentityIndices;
    }
@@ -357,32 +357,32 @@ template< typename MeshConfig,
           typename EntityTopology >
 class MeshSubentityAccessLayer< MeshConfig,
                                 EntityTopology,
-                                MeshDimensionsTag< EntityTopology::dimensions >,
+                                Meshes::DimensionTag< EntityTopology::dimension >,
                                 true,
                                 true >
 {
-   using DimensionsTag = MeshDimensionsTag< EntityTopology::dimensions >;
+   using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
 
 protected:
    /***
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
    template< typename SubentityAccessorType >
-   void bindSubentitiesStorageNetwork( DimensionsTag,
+   void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
-   void getNumberOfSubentities( DimensionsTag ) const {}
+   void getNumberOfSubentities( DimensionTag ) const {}
    template< typename LocalIndexType >
-   void getSubentityIndex( DimensionsTag,
+   void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
    template< typename LocalIndexType, typename GlobalIndexType >
-   void setSubentityIndex( DimensionsTag,
+   void setSubentityIndex( DimensionTag,
                            const LocalIndexType& localIndex,
                            const GlobalIndexType& globalIndex ) {}
    void getSubentityIndices() {}
 
    template< typename LocalIndexType >
-   void getSubentityOrientation( DimensionsTag, LocalIndexType index) const {}
-	void subentityOrientationsArray( DimensionsTag ) {}
+   void getSubentityOrientation( DimensionTag, LocalIndexType index) const {}
+	void subentityOrientationsArray( DimensionTag ) {}
 
    bool save( File& file ) const
    {
@@ -406,32 +406,32 @@ template< typename MeshConfig,
           typename EntityTopology >
 class MeshSubentityAccessLayer< MeshConfig,
                                 EntityTopology,
-                                MeshDimensionsTag< EntityTopology::dimensions >,
+                                Meshes::DimensionTag< EntityTopology::dimension >,
                                 true,
                                 false >
 {
-   using DimensionsTag = MeshDimensionsTag< EntityTopology::dimensions >;
+   using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
 
 protected:
    /***
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
    template< typename SubentityAccessorType >
-   void bindSubentitiesStorageNetwork( DimensionsTag,
+   void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
-   void getNumberOfSubentities( DimensionsTag ) const {}
+   void getNumberOfSubentities( DimensionTag ) const {}
    template< typename LocalIndexType >
-   void getSubentityIndex( DimensionsTag,
+   void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
    template< typename LocalIndexType, typename GlobalIndexType >
-   void setSubentityIndex( DimensionsTag,
+   void setSubentityIndex( DimensionTag,
                            const LocalIndexType& localIndex,
                            const GlobalIndexType& globalIndex ) {}
    void getSubentityIndices() {}
 
    template< typename LocalIndexType >
-   void getSubentityOrientation( DimensionsTag, LocalIndexType index) const {}
-	void subentityOrientationsArray( DimensionsTag ) {}
+   void getSubentityOrientation( DimensionTag, LocalIndexType index) const {}
+	void subentityOrientationsArray( DimensionTag ) {}
 
    bool save( File& file ) const
    {
@@ -455,32 +455,32 @@ template< typename MeshConfig,
           typename EntityTopology >
 class MeshSubentityAccessLayer< MeshConfig,
                                 EntityTopology,
-                                MeshDimensionsTag< EntityTopology::dimensions >,
+                                Meshes::DimensionTag< EntityTopology::dimension >,
                                 false,
                                 true >
 {
-   using DimensionsTag = MeshDimensionsTag< EntityTopology::dimensions >;
+   using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
 
 protected:
    /***
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
    template< typename SubentityAccessorType >
-   void bindSubentitiesStorageNetwork( DimensionsTag,
+   void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
-   void getNumberOfSubentities( DimensionsTag ) const {}
+   void getNumberOfSubentities( DimensionTag ) const {}
    template< typename LocalIndexType >
-   void getSubentityIndex( DimensionsTag,
+   void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
    template< typename LocalIndexType, typename GlobalIndexType >
-   void setSubentityIndex( DimensionsTag,
+   void setSubentityIndex( DimensionTag,
                            const LocalIndexType& localIndex,
                            const GlobalIndexType& globalIndex ) {}
    void getSubentityIndices() {}
 
    template< typename LocalIndexType >
-   void getSubentityOrientation( DimensionsTag, LocalIndexType index) const {}
-	void subentityOrientationsArray( DimensionsTag ) {}
+   void getSubentityOrientation( DimensionTag, LocalIndexType index) const {}
+	void subentityOrientationsArray( DimensionTag ) {}
 
    bool save( File& file ) const
    {
@@ -502,10 +502,10 @@ protected:
 
 template< typename MeshConfig,
           typename EntityTopology,
-          typename DimensionsTag >
+          typename DimensionTag >
 class MeshSubentityAccessLayer< MeshConfig,
                                 EntityTopology,
-                                DimensionsTag,
+                                DimensionTag,
                                 false,
                                 false >
 {
@@ -514,21 +514,21 @@ protected:
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
    template< typename SubentityAccessorType >
-   void bindSubentitiesStorageNetwork( DimensionsTag,
+   void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
-   void getNumberOfSubentities( DimensionsTag ) const {}
+   void getNumberOfSubentities( DimensionTag ) const {}
    template< typename LocalIndexType >
-   void getSubentityIndex( DimensionsTag,
+   void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
    template< typename LocalIndexType, typename GlobalIndexType >
-   void setSubentityIndex( DimensionsTag,
+   void setSubentityIndex( DimensionTag,
                            const LocalIndexType& localIndex,
                            const GlobalIndexType& globalIndex ) {}
    void getSubentityIndices() {}
 
    template< typename LocalIndexType >
-   void getSubentityOrientation( DimensionsTag, LocalIndexType index) const {}
-	void subentityOrientationsArray( DimensionsTag ) {}
+   void getSubentityOrientation( DimensionTag, LocalIndexType index) const {}
+	void subentityOrientationsArray( DimensionTag ) {}
 
    bool save( File& file ) const
    {

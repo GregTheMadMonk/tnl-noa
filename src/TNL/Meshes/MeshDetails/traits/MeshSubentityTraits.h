@@ -33,21 +33,21 @@ template< typename MeshConfig,
 class MeshSubentityTraits
 {
 public:
-   static_assert( 0 <= Dimensions && Dimensions <= MeshConfig::meshDimensions, "invalid dimensions" );
-   static_assert( EntityTopology::dimensions > Dimensions, "Subentity dimensions must be smaller than the entity dimensions." );
+   static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
+   static_assert( EntityTopology::dimension > Dimension, "Subentity dimension must be smaller than the entity dimension." );
 
-   static constexpr bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimensions );
-   static constexpr bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimensions );
+   static constexpr bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimension );
+   static constexpr bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimension );
 
    using GlobalIndexType   = typename MeshConfig::GlobalIndexType;
    using LocalIndexType    = typename MeshConfig::LocalIndexType;
-   using SubentityTopology = typename MeshEntityTraits< MeshConfig, Dimensions >::EntityTopology;
-   using SubentityType     = typename MeshEntityTraits< MeshConfig, Dimensions >::EntityType;
+   using SubentityTopology = typename MeshEntityTraits< MeshConfig, Dimension >::EntityTopology;
+   using SubentityType     = typename MeshEntityTraits< MeshConfig, Dimension >::EntityType;
    using Seed              = MeshEntitySeed< MeshConfig, SubentityTopology >;
    using Orientation       = MeshEntityOrientation< MeshConfig, SubentityTopology >;
 
 
-   static constexpr int count = MeshSubtopology< EntityTopology, Dimensions >::count;
+   static constexpr int count = MeshSubtopology< EntityTopology, Dimension >::count;
 
    /****
     * Type of container for storing of the subentities indices.

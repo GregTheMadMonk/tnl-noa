@@ -30,16 +30,16 @@ template< typename MeshConfig, typename EntityTopology > class MeshEntityReferen
 
 template< typename MeshConfig,
           typename DimensionTag,
-          typename SuperDimensionTag = MeshDimensionTag< MeshConfig::meshDimension > >
+          typename SuperDimensionTag = Meshes::DimensionTag< MeshConfig::meshDimension > >
 class MeshEntityOrientationNeeded
 {
-   using SuperentityTopology = typename MeshTraits< MeshConfig >::template EntityTraits< SuperDimensionsTag::value >::EntityTopology;
+   using SuperentityTopology = typename MeshTraits< MeshConfig >::template EntityTraits< SuperDimensionTag::value >::EntityTopology;
 
-   static constexpr bool previousSuperDimensionsValue = MeshEntityOrientationNeeded< MeshConfig, DimensionsTag, typename SuperDimensionsTag::Decrement >::value;
-   static constexpr bool thisSuperDimensionsValue = MeshTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, DimensionsTag::value >::orientationEnabled;
+   static constexpr bool previousSuperDimensionValue = MeshEntityOrientationNeeded< MeshConfig, DimensionTag, typename SuperDimensionTag::Decrement >::value;
+   static constexpr bool thisSuperDimensionValue = MeshTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, DimensionTag::value >::orientationEnabled;
 
 public:
-   static constexpr bool value = ( previousSuperDimensionsValue || thisSuperDimensionsValue );
+   static constexpr bool value = ( previousSuperDimensionValue || thisSuperDimensionValue );
 };
 
 template< typename MeshConfig, typename DimensionTag >
@@ -55,14 +55,14 @@ template< typename MeshConfig,
 class MeshEntityTraits
 {
 public:
-   static_assert( 0 <= Dimensions && Dimensions <= MeshConfig::meshDimensions, "invalid dimensions" );
+   static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
 
-   static constexpr bool storageEnabled = MeshConfig::entityStorage( Dimensions );
-   static constexpr bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, MeshDimensionsTag< Dimensions > >::value;
+   static constexpr bool storageEnabled = MeshConfig::entityStorage( Dimension );
+   static constexpr bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, DimensionTag< Dimension > >::value;
 
    using GlobalIndexType               = typename MeshConfig::GlobalIndexType;
    using LocalIndexType                = typename MeshConfig::LocalIndexType;
-   using EntityTopology                = typename MeshEntityTopology< MeshConfig, MeshDimensionsTag< Dimensions > >::Topology;
+   using EntityTopology                = typename MeshEntityTopology< MeshConfig, DimensionTag< Dimension > >::Topology;
 
    using EntityType                    = MeshEntity< MeshConfig, EntityTopology >;
    using SeedType                      = MeshEntitySeed< MeshConfig, EntityTopology >;

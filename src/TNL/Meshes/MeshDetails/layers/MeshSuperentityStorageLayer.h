@@ -17,7 +17,7 @@
 #pragma once
 
 #include <TNL/File.h>
-#include <TNL/Meshes/MeshDimensionTag.h>
+#include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshSuperentityTraits.h>
 
@@ -26,9 +26,9 @@ namespace Meshes {
 
 template< typename MeshConfig,
           typename EntityTopology,
-          typename SuperdimensionsTag,
+          typename SuperdimensionTag,
           bool SuperentityStorage =
-               MeshTraits< MeshConfig >::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::storageEnabled >
+               MeshTraits< MeshConfig >::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >::storageEnabled >
 class MeshSuperentityStorageLayer;
 
 template< typename MeshConfig,
@@ -36,33 +36,33 @@ template< typename MeshConfig,
 class MeshSuperentityStorageLayers
    : public MeshSuperentityStorageLayer< MeshConfig,
                                          EntityTopology,
-                                         MeshDimensionsTag< MeshTraits< MeshConfig >::meshDimensions > >
+                                         DimensionTag< MeshTraits< MeshConfig >::meshDimension > >
 {
    using BaseType = MeshSuperentityStorageLayer< MeshConfig,
                                                  EntityTopology,
-                                                 MeshDimensionsTag< MeshTraits< MeshConfig >::meshDimensions > >;
+                                                 DimensionTag< MeshTraits< MeshConfig >::meshDimension > >;
    using MeshTraitsType = MeshTraits< MeshConfig >;
 
 public:
-   template< int Superdimensions >
-   typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimensions >::StorageNetworkType&
-   getSuperentityStorageNetwork( MeshDimensionsTag< EntityTopology::dimensions > )
+   template< int Superdimension >
+   typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >::StorageNetworkType&
+   getSuperentityStorageNetwork( DimensionTag< EntityTopology::dimension > )
    {
-      static_assert( EntityTopology::dimensions < Superdimensions, "Invalid combination of Dimensions and Superdimensions." );
-      return BaseType::getSuperentityStorageNetwork( MeshDimensionsTag< Superdimensions >() );
+      static_assert( EntityTopology::dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
+      return BaseType::getSuperentityStorageNetwork( DimensionTag< Superdimension >() );
    }
 };
 
 template< typename MeshConfig,
           typename EntityTopology,
-          typename SuperdimensionsTag >
-class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, SuperdimensionsTag, true >
-   : public MeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename SuperdimensionsTag::Decrement >
+          typename SuperdimensionTag >
+class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, SuperdimensionTag, true >
+   : public MeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename SuperdimensionTag::Decrement >
 {
-   using BaseType = MeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename SuperdimensionsTag::Decrement >;
+   using BaseType = MeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename SuperdimensionTag::Decrement >;
 
    using MeshTraitsType        = MeshTraits< MeshConfig >;
-   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >;
+   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >;
 
 protected:
    using GlobalIndexType    = typename SuperentityTraitsType::GlobalIndexType;
@@ -84,7 +84,7 @@ protected:
       if( ! BaseType::save( file ) ||
           ! this->storageNetwork.save( file ) )
       {
-         std::cerr << "Saving of the entity superentities layer with " << SuperdimensionsTag::value << " dimensions failed." << std::endl;
+         std::cerr << "Saving of the entity superentities layer with " << SuperdimensionTag::value << " dimension failed." << std::endl;
          return false;
       }
       return true;
@@ -95,7 +95,7 @@ protected:
       if( ! BaseType::load( file ) ||
           ! this->storageNetwork.load( file ) )
       {
-         std::cerr << "Loading of the entity superentities layer with " << SuperdimensionsTag::value << " dimensions failed." << std::endl;
+         std::cerr << "Loading of the entity superentities layer with " << SuperdimensionTag::value << " dimension failed." << std::endl;
          return false;
       }
       return true;
@@ -104,7 +104,7 @@ protected:
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << "Storage network for superentities with " << SuperdimensionsTag::value << " dimensions of entities with " << EntityTopology::dimensions << " dimensions is: " << std::endl;
+      str << "Storage network for superentities with " << SuperdimensionTag::value << " dimension of entities with " << EntityTopology::dimension << " dimension is: " << std::endl;
       str << this->storageNetwork << std::endl;
    }
 
@@ -115,7 +115,7 @@ protected:
    }
 
    using BaseType::getSuperentityStorageNetwork;
-   StorageNetworkType& getSuperentityStorageNetwork( SuperdimensionsTag )
+   StorageNetworkType& getSuperentityStorageNetwork( SuperdimensionTag )
    {
       return this->storageNetwork;
    }
@@ -126,20 +126,20 @@ private:
 
 template< typename MeshConfig,
           typename EntityTopology,
-          typename SuperdimensionsTag >
-class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, SuperdimensionsTag, false >
-   : public MeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename SuperdimensionsTag::Decrement >
+          typename SuperdimensionTag >
+class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, SuperdimensionTag, false >
+   : public MeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename SuperdimensionTag::Decrement >
 {
 };
 
 template< typename MeshConfig,
           typename EntityTopology >
-class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, MeshDimensionTag< EntityTopology::dimensions >, false >
+class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionTag< EntityTopology::dimension >, false >
 {
-   using SuperdimensionsTag = MeshDimensionsTag< EntityTopology::dimensions >;
+   using SuperdimensionTag = DimensionTag< EntityTopology::dimension >;
    using MeshTraitsType = MeshTraits< MeshConfig >;
-   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >;
-   using ThisType = MeshSuperentityStorageLayer< MeshConfig, EntityTopology, SuperdimensionsTag, false >;
+   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >;
+   using ThisType = MeshSuperentityStorageLayer< MeshConfig, EntityTopology, SuperdimensionTag, false >;
 
 protected:
    using GlobalIndexType    = typename SuperentityTraitsType::GlobalIndexType;
@@ -171,20 +171,20 @@ protected:
       return true;
    }
  
-   void getSuperentityStorageNetwork( SuperdimensionsTag ) {}
+   void getSuperentityStorageNetwork( SuperdimensionTag ) {}
 };
 
 template< typename MeshConfig,
           typename EntityTopology >
 class MeshSuperentityStorageLayer< MeshConfig,
                                    EntityTopology,
-                                   MeshDimensionsTag< EntityTopology::dimensions >,
+                                   DimensionTag< EntityTopology::dimension >,
                                    true >
 {
-   using SuperdimensionsTag = MeshDimensionsTag< EntityTopology::dimensions >;
+   using SuperdimensionTag = DimensionTag< EntityTopology::dimension >;
    using MeshTraitsType = MeshTraits< MeshConfig >;
-   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >;
-   using ThisType = MeshSuperentityStorageLayer< MeshConfig, EntityTopology, SuperdimensionsTag, true >;
+   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >;
+   using ThisType = MeshSuperentityStorageLayer< MeshConfig, EntityTopology, SuperdimensionTag, true >;
 
 protected:
    using GlobalIndexType    = typename SuperentityTraitsType::GlobalIndexType;
@@ -216,7 +216,7 @@ protected:
       return true;
    }
  
-   void getSuperentityStorageNetwork( SuperdimensionsTag ) {}
+   void getSuperentityStorageNetwork( SuperdimensionTag ) {}
 };
 
 } // namespace Meshes

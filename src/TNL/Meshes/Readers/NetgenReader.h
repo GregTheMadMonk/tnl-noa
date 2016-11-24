@@ -151,7 +151,7 @@ public:
       typedef typename MeshType::PointType PointType;
       typedef MeshBuilder< MeshType > MeshBuilder;
  
-      const int dimensions = PointType::size;
+      const int dimension = PointType::size;
 
       std::fstream inputFile( fileName.getString() );
       if( ! inputFile )
@@ -191,7 +191,7 @@ public:
          iss.clear();
          iss.str( line );
          PointType p;
-         for( int d = 0; d < dimensions; d++ )
+         for( int d = 0; d < dimension; d++ )
             iss >> p[ d ];
          //cout << "Setting point number " << i << " of " << pointsCount << std::endl;
          meshBuilder.setPoint( i, p );
