@@ -171,4 +171,3 @@ evaluateEntities( OutMeshFunctionPointer& meshFunction,
 
 } // namespace Functions
 } // namespace TNL
-
