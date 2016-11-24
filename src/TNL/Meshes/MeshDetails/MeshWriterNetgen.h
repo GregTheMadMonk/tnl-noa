@@ -48,7 +48,7 @@ class MeshWriterNetgen
       const int meshDimension = MeshType::meshDimension;
       typedef typename MeshType::template EntitiesTraits< 0 >::GlobalIndexType VerticesIndexType;
       typedef typename MeshType::PointType                                     PointType;
-      const VerticesIndexType numberOfVertices = mesh.getNumberOfVertices();
+      const VerticesIndexType numberOfVertices = mesh.getVerticesCount();
       outputFile << numberOfVertices << std::endl;
       for( VerticesIndexType i = 0; i < numberOfVertices; i++ )
       {
@@ -63,7 +63,7 @@ class MeshWriterNetgen
       typedef typename MeshType::template EntitiesTraits< meshDimension >::Type            CellType;
       typedef typename CellType::LocalIndexType                                             LocalIndexType;
 
-      const CellIndexType numberOfCells = mesh.template getNumberOfEntities< meshDimension >();
+      const CellIndexType numberOfCells = mesh.template getEntitiesCount< meshDimension >();
       outputFile << numberOfCells << std::endl;
       for( CellIndexType cellIdx = 0; cellIdx < numberOfCells; cellIdx++ )
       {

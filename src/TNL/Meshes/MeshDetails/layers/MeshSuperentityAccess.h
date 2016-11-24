@@ -65,10 +65,10 @@ public:
 
    template< int Superdimension >
    typename SuperentityTraits< Superdimension >::LocalIndexType
-   getNumberOfSuperentities() const
+   getSuperentitiesCount() const
    {
       static_assert( SuperentityTraits< Superdimension >::storageEnabled, "You try to get number of superentities which are not configured for storage." );
-      return BaseType::getNumberOfSuperentities( Meshes::DimensionTag< Superdimension >() );
+      return BaseType::getSuperentitiesCount( Meshes::DimensionTag< Superdimension >() );
    }
 
    template< int Superdimension >
@@ -127,7 +127,7 @@ public:
      */
    using BaseType::bindSuperentitiesStorageNetwork;
    using BaseType::setNumberOfSuperentities;
-   using BaseType::getNumberOfSuperentities;
+   using BaseType::getSuperentitiesCount;
    using BaseType::setSuperentityIndex;
    using BaseType::getSuperentityIndex;
    using BaseType::getSuperentityIndices;
@@ -162,7 +162,7 @@ public:
       return this->superentityIndices.setSize( size );
    }
 
-   LocalIndexType getNumberOfSuperentities( DimensionTag ) const
+   LocalIndexType getSuperentitiesCount( DimensionTag ) const
    {
       return this->superentityIndices.getSize();
    }
@@ -239,7 +239,7 @@ protected:
                                          const SuperentityAccessorType& storage ) {}
    void setNumberOfSuperentities( DimensionTag,
                                   const LocalIndexType size ) {}
-   void getNumberOfSuperentities( DimensionTag ) const {}
+   void getSuperentitiesCount( DimensionTag ) const {}
    void getSuperentityIndex( DimensionTag,
                              const LocalIndexType localIndex ) const {}
    void setSuperentityIndex( DimensionTag,
@@ -278,7 +278,7 @@ protected:
                                          const SuperentityAccessorType& storage ) {}
    void setNumberOfSuperentities( DimensionTag,
                                   const LocalIndexType size ) {}
-   void getNumberOfSuperentities( DimensionTag ) const {}
+   void getSuperentitiesCount( DimensionTag ) const {}
    void getSuperentityIndex( DimensionTag,
                              const LocalIndexType localIndex ) const {}
    void setSuperentityIndex( DimensionTag,

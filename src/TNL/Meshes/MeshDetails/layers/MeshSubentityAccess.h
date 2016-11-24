@@ -55,7 +55,7 @@ public:
    }
 
    template< int Subdimension >
-   static constexpr typename SubentityTraits< Subdimension >::LocalIndexType getNumberOfSubentities()
+   static constexpr typename SubentityTraits< Subdimension >::LocalIndexType getSubentitiesCount()
    {
       return SubentityTraits< Subdimension >::count;
    }
@@ -370,7 +370,7 @@ protected:
    template< typename SubentityAccessorType >
    void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
-   void getNumberOfSubentities( DimensionTag ) const {}
+   void getSubentitiesCount( DimensionTag ) const {}
    template< typename LocalIndexType >
    void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
@@ -419,7 +419,7 @@ protected:
    template< typename SubentityAccessorType >
    void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
-   void getNumberOfSubentities( DimensionTag ) const {}
+   void getSubentitiesCount( DimensionTag ) const {}
    template< typename LocalIndexType >
    void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
@@ -468,7 +468,7 @@ protected:
    template< typename SubentityAccessorType >
    void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
-   void getNumberOfSubentities( DimensionTag ) const {}
+   void getSubentitiesCount( DimensionTag ) const {}
    template< typename LocalIndexType >
    void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
@@ -516,7 +516,7 @@ protected:
    template< typename SubentityAccessorType >
    void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
-   void getNumberOfSubentities( DimensionTag ) const {}
+   void getSubentitiesCount( DimensionTag ) const {}
    template< typename LocalIndexType >
    void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}

@@ -58,10 +58,10 @@ template< typename MeshConfig >
    template< int Dimension >
 typename Mesh< MeshConfig >::GlobalIndexType
 Mesh< MeshConfig >::
-getNumberOfEntities() const
+getEntitiesCount() const
 {
    static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get number of entities which are not configured for storage." );
-   return StorageBaseType::getNumberOfEntities( DimensionTag< Dimension >() );
+   return StorageBaseType::getEntitiesCount( DimensionTag< Dimension >() );
 }
 
 template< typename MeshConfig >
@@ -87,9 +87,9 @@ getEntity( const GlobalIndexType& entityIndex ) const
 template< typename MeshConfig >
 typename Mesh< MeshConfig >::GlobalIndexType
 Mesh< MeshConfig >::
-getNumberOfCells() const
+getCellsCount() const
 {
-   return this->template getNumberOfEntities< getMeshDimension() >();
+   return this->template getEntitiesCount< getMeshDimension() >();
 }
 
 template< typename MeshConfig >

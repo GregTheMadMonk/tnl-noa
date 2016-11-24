@@ -61,9 +61,8 @@ class Mesh
       template< int Dimension >
       static constexpr bool entitiesAvailable();
 
-      // TODO: rename to getEntitiesCount
       template< int Dimension >
-      GlobalIndexType getNumberOfEntities() const;
+      GlobalIndexType getEntitiesCount() const;
 
       template< int Dimension >
       EntityType< Dimension >& getEntity( const GlobalIndexType& entityIndex );
@@ -71,7 +70,7 @@ class Mesh
       template< int Dimension >
       const EntityType< Dimension >& getEntity( const GlobalIndexType& entityIndex ) const;
 
-      GlobalIndexType getNumberOfCells() const;
+      GlobalIndexType getCellsCount() const;
 
       CellType& getCell( const GlobalIndexType& entityIndex );
 

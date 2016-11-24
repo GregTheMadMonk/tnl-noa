@@ -69,20 +69,20 @@ class MeshEntity
       /****
        * Subentities
        */
-      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::getNumberOfSubentities;
+      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::getSubentitiesCount;
       using MeshSubentityAccess< MeshConfig, EntityTopology_ >::getSubentityIndex;
       using MeshSubentityAccess< MeshConfig, EntityTopology_ >::getSubentityOrientation;
 
       /****
        * Superentities
        */
-      using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::getNumberOfSuperentities;
+      using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::getSuperentitiesCount;
       using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::getSuperentityIndex;
 
       /****
        * Vertices
        */
-      static constexpr LocalIndexType getNumberOfVertices();
+      static constexpr LocalIndexType getVerticesCount();
 
       GlobalIndexType getVertexIndex( const LocalIndexType localIndex ) const;
 
@@ -142,7 +142,7 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       /****
        * Superentities
        */
-      using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::getNumberOfSuperentities;
+      using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::getSuperentitiesCount;
       using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::getSuperentityIndex;
 
       /****

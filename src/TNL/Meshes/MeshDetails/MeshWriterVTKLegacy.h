@@ -92,8 +92,8 @@ class MeshWriterVTKLegacy
       file << "ASCII" << std::endl;
       file << "DATASET UNSTRUCTURED_GRID" << std::endl;
       file << std::endl;
-      file << "POINTS " << mesh.template getNumberOfEntities< 0 >() << " double" << std::endl;
-      for( int i = 0; i < mesh.template getNumberOfEntities< 0 >(); i++ )
+      file << "POINTS " << mesh.template getEntitiesCount< 0 >() << " double" << std::endl;
+      for( int i = 0; i < mesh.template getEntitiesCount< 0 >(); i++ )
       {
          mesh.template getEntity< 0 >( i ).getPoint().write( file );
          for( int j = MeshType::dimension; j < 3; j++ )
@@ -101,22 +101,22 @@ class MeshWriterVTKLegacy
          file << std::endl;
       }
       file << std::endl;
-      file << "CELLS " << mesh.getNumberOfCells();
+      file << "CELLS " << mesh.getCellsCount();
       long int listSize( 0 );
-      for( int i = 0; i < mesh.getNumberOfCells(); i++ )
-         listSize += mesh.getCell( i ).template getNumberOfSubentities< 0 >() + 1;
+      for( int i = 0; i < mesh.getCellsCount(); i++ )
+         listSize += mesh.getCell( i ).template getSubentitiesCount< 0 >() + 1;
       file << " " << listSize << std::endl;
-      for( int i = 0; i < mesh.getNumberOfCells(); i++ )
+      for( int i = 0; i < mesh.getCellsCount(); i++ )
       {
-         int numberOfVertices = mesh.getCell( i ).template getNumberOfSubentities< 0 >();
+         int numberOfVertices = mesh.getCell( i ).template getSubentitiesCount< 0 >();
          file << numberOfVertices << " ";
          for( int j = 0; j < numberOfVertices - 1; j++ )
             file << mesh.getCell( i ).template getSubentityIndex< 0 >( j ) << " ";
          file << mesh.getCell( i ).template getSubentityIndex< 0 >( numberOfVertices - 1 ) << std::endl;
       }
       file << std::endl;
-      file << "CELL_TYPES " <<  mesh.getNumberOfCells() << std::endl;
-      for( int i = 0; i < mesh.getNumberOfCells(); i++ )
+      file << "CELL_TYPES " <<  mesh.getCellsCount() << std::endl;
+      for( int i = 0; i < mesh.getCellsCount(); i++ )
       {
          file << MeshEntityVTKType< CellType >::VTKType << std::endl;
       }

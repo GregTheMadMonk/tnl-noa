@@ -125,9 +125,9 @@ TEST( MeshTest, TwoTrianglesTest )
    meshBuilder.getCellSeed( 1 ).setCornerId( 2, 3 );
    ASSERT_TRUE( meshBuilder.build( mesh ) );
 
-   EXPECT_EQ( mesh.getNumberOfEntities< 2 >(),  2 );
-   EXPECT_EQ( mesh.getNumberOfEntities< 1 >(),  5 );
-   EXPECT_EQ( mesh.getNumberOfEntities< 0 >(),  4 );
+   EXPECT_EQ( mesh.getEntitiesCount< 2 >(),  2 );
+   EXPECT_EQ( mesh.getEntitiesCount< 1 >(),  5 );
+   EXPECT_EQ( mesh.getEntitiesCount< 0 >(),  4 );
 
    EXPECT_EQ( mesh.template getEntity< 0 >( 0 ).getPoint(),  point0 );
    EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).getPoint(),  point1 );
@@ -161,20 +161,20 @@ TEST( MeshTest, TwoTrianglesTest )
    /*
     * Tests for the superentities layer.
     */
-   ASSERT_EQ( mesh.template getEntity< 0 >( 0 ).template getNumberOfSuperentities< 1 >(),  2 );
+   ASSERT_EQ( mesh.template getEntity< 0 >( 0 ).template getSuperentitiesCount< 1 >(),  2 );
    EXPECT_EQ( mesh.template getEntity< 0 >( 0 ).template getSuperentityIndex< 1 >( 0 ),    1 );
    EXPECT_EQ( mesh.template getEntity< 0 >( 0 ).template getSuperentityIndex< 1 >( 1 ),    2 );
 
-   ASSERT_EQ( mesh.template getEntity< 0 >( 1 ).template getNumberOfSuperentities< 1 >(),  3 );
+   ASSERT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentitiesCount< 1 >(),  3 );
    EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentityIndex< 1 >( 0 ),    0 );
    EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentityIndex< 1 >( 1 ),    2 );
    EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentityIndex< 1 >( 2 ),    4 );
 
-   ASSERT_EQ( mesh.template getEntity< 0 >( 1 ).template getNumberOfSuperentities< 2 >(),  2 );
+   ASSERT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentitiesCount< 2 >(),  2 );
    EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentityIndex< 2 >( 0 ),    0 );
    EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentityIndex< 2 >( 1 ),    1 );
 
-   ASSERT_EQ( mesh.template getEntity< 1 >( 0 ).template getNumberOfSuperentities< 2 >(),  2 );
+   ASSERT_EQ( mesh.template getEntity< 1 >( 0 ).template getSuperentitiesCount< 2 >(),  2 );
    EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSuperentityIndex< 2 >( 0 ),    0 );
    EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSuperentityIndex< 2 >( 1 ),    1 );
 
@@ -434,20 +434,20 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
          const VertexMeshEntityType& vertex = mesh.template getEntity< 0 >( vertexIndex );
 
          if( ( i == 0 && j == 0 ) || ( i == xSize && j == ySize ) ) {
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 2 );
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 1 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 1 >(), 2 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 2 >(), 1 );
          }
          else if( ( i == 0 && j == ySize ) || ( i == xSize && j == 0 ) ) {
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 3 );
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 2 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 1 >(), 3 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 2 >(), 2 );
          }
          else if( i == 0 || i == xSize || j == 0 || j == ySize ) {
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 4 );
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 3 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 1 >(), 4 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 2 >(), 3 );
          }
          else {
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 6 );
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 6 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 1 >(), 6 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 2 >(), 6 );
          }
       }
 
@@ -531,19 +531,19 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
          const VertexMeshEntityType& vertex = mesh.template getEntity< 0 >( vertexIndex );
 
          if( ( i == 0 || i == xSize ) && ( j == 0 || j == ySize ) ) {
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 2 );
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 1 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 1 >(), 2 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 2 >(), 1 );
             EXPECT_EQ( vertex.template getSuperentityIndex< 2 >( 0 ),   ( j - ( j == ySize ) ) * xSize + i - ( i == xSize ) );
          }
          else if( i == 0 || i == xSize || j == 0 || j == ySize ) {
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 3 );
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 2 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 1 >(), 3 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 2 >(), 2 );
             EXPECT_EQ( vertex.template getSuperentityIndex< 2 >( 0 ),   ( j - ( j == ySize || i == 0 || i == xSize ) ) * xSize + i - ( i == xSize ) - ( j == 0 || j == ySize ) );
             EXPECT_EQ( vertex.template getSuperentityIndex< 2 >( 1 ),   ( j - ( j == ySize ) ) * xSize + i - ( i == xSize ) );
          }
          else {
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 4 );
-            EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 4 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 1 >(), 4 );
+            EXPECT_EQ( vertex.template getSuperentitiesCount< 2 >(), 4 );
             EXPECT_EQ( vertex.template getSuperentityIndex< 2 >( 0 ),   ( j - 1 ) * xSize + i - 1 );
             EXPECT_EQ( vertex.template getSuperentityIndex< 2 >( 1 ),   ( j - 1 ) * xSize + i     );
             EXPECT_EQ( vertex.template getSuperentityIndex< 2 >( 2 ),   ( j     ) * xSize + i - 1 );
@@ -653,9 +653,9 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
             const VertexMeshEntityType& vertex = mesh.template getEntity< 0 >( vertexIndex );
 
             if( ( i == 0 || i == xSize ) && ( j == 0 || j == ySize ) && ( k == 0 || k == zSize ) ) {
-               EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 3 );
-               EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 3 );
-               EXPECT_EQ( vertex.template getNumberOfSuperentities< 3 >(), 1 );
+               EXPECT_EQ( vertex.template getSuperentitiesCount< 1 >(), 3 );
+               EXPECT_EQ( vertex.template getSuperentitiesCount< 2 >(), 3 );
+               EXPECT_EQ( vertex.template getSuperentitiesCount< 3 >(), 1 );
                EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 0 ),   ( k - ( k == zSize ) ) * xSize * ySize + ( j - ( j == ySize ) ) * xSize + i - ( i == xSize ) );
             }
             else if( i == 0 || i == xSize || j == 0 || j == ySize || k == 0 || k == zSize ) {
@@ -663,9 +663,9 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
                    ( i != 0 && i != xSize && k != 0 && k != zSize ) ||
                    ( j != 0 && j != ySize && k != 0 && k != zSize ) )
                {
-                  EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 5 );
-                  EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 8 );
-                  EXPECT_EQ( vertex.template getNumberOfSuperentities< 3 >(), 4 );
+                  EXPECT_EQ( vertex.template getSuperentitiesCount< 1 >(), 5 );
+                  EXPECT_EQ( vertex.template getSuperentitiesCount< 2 >(), 8 );
+                  EXPECT_EQ( vertex.template getSuperentitiesCount< 3 >(), 4 );
                   if( k == 0 || k == zSize ) {
                      EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 0 ),   ( k - ( k == zSize ) ) * xSize * ySize + ( j - 1 ) * xSize + i - 1 );
                      EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 1 ),   ( k - ( k == zSize ) ) * xSize * ySize + ( j - 1 ) * xSize + i     );
@@ -686,9 +686,9 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
                   }
                }
                else {
-                  EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 4 );
-                  EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 5 );
-                  EXPECT_EQ( vertex.template getNumberOfSuperentities< 3 >(), 2 );
+                  EXPECT_EQ( vertex.template getSuperentitiesCount< 1 >(), 4 );
+                  EXPECT_EQ( vertex.template getSuperentitiesCount< 2 >(), 5 );
+                  EXPECT_EQ( vertex.template getSuperentitiesCount< 3 >(), 2 );
                   if( k != 0 && k != zSize ) {
                      EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 0 ),   ( k - 1 ) * xSize * ySize + ( j - ( j == ySize ) ) * xSize + i - ( i == xSize ) );
                      EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 1 ),   ( k     ) * xSize * ySize + ( j - ( j == ySize ) ) * xSize + i - ( i == xSize ) );
@@ -704,9 +704,9 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
                }
             }
             else {
-               EXPECT_EQ( vertex.template getNumberOfSuperentities< 1 >(), 6 );
-               EXPECT_EQ( vertex.template getNumberOfSuperentities< 2 >(), 12 );
-               EXPECT_EQ( vertex.template getNumberOfSuperentities< 3 >(), 8 );
+               EXPECT_EQ( vertex.template getSuperentitiesCount< 1 >(), 6 );
+               EXPECT_EQ( vertex.template getSuperentitiesCount< 2 >(), 12 );
+               EXPECT_EQ( vertex.template getSuperentitiesCount< 3 >(), 8 );
                EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 0 ),   ( k - 1 ) * xSize * ySize + ( j - 1 ) * xSize + i - 1 );
                EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 1 ),   ( k - 1 ) * xSize * ySize + ( j - 1 ) * xSize + i     );
                EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 2 ),   ( k - 1 ) * xSize * ySize + ( j     ) * xSize + i - 1 );

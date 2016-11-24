@@ -97,7 +97,7 @@ public:
      * Make visible getters of the lower layer
      */
    using BaseType::setNumberOfEntities;
-   using BaseType::getNumberOfEntities;
+   using BaseType::getEntitiesCount;
    using BaseType::getEntity;
 
    MeshStorageLayer()
@@ -115,7 +115,7 @@ public:
       return true;
    }
 
-   GlobalIndexType getNumberOfEntities( DimensionTag ) const
+   GlobalIndexType getEntitiesCount( DimensionTag ) const
    {
       return this->entities.getSize();
    }
@@ -209,7 +209,7 @@ public:
    {
    }
 
-   GlobalIndexType getNumberOfVertices() const
+   GlobalIndexType getVerticesCount() const
    {
       return this->vertices.getSize();
    }
@@ -250,7 +250,7 @@ public:
       return true;
    }
 
-   GlobalIndexType getNumberOfEntities( DimensionTag ) const
+   GlobalIndexType getEntitiesCount( DimensionTag ) const
    {
       return this->vertices.getSize();
    }

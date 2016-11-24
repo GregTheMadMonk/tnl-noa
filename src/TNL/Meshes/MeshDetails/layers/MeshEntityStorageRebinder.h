@@ -18,7 +18,7 @@
  *   for( int dimension = 0; dimension < MeshTraitsType::meshDimension; dimension++ )
  *      for( int superdimension = dimension + 1; superdimension <= MeshTraitsType::meshDimension; superdimension++ )
  *         if( EntityTraits< dimension >::SuperentityTraits< superdimension >::storageEnabled )
- *            for( GlobalIndexType i = 0; i < mesh.template getNumberOfEntities< dimension >(); i++ )
+ *            for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< dimension >(); i++ )
  *            {
  *               auto& entity = mesh.template getEntity< dimension >( i );
  *               entity.template bindSuperentitiesStorageNetwork< superdimension >( mesh.template getSuperentityStorageNetwork< superdimension >().getValues( i ) );
@@ -103,7 +103,7 @@ struct MeshEntityStorageRebinderWorker
 
    static void bindSuperentities( Mesh& mesh )
    {
-      for( typename Mesh::GlobalIndexType i = 0; i < mesh.template getNumberOfEntities< DimensionTag::value >(); i++ )
+      for( typename Mesh::GlobalIndexType i = 0; i < mesh.template getEntitiesCount< DimensionTag::value >(); i++ )
       {
          auto& subentity = mesh.template getEntity< DimensionTag::value >( i );
          auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< DimensionTag::value, SuperdimensionTag::value >();
@@ -113,7 +113,7 @@ struct MeshEntityStorageRebinderWorker
 
    static void bindSubentities( Mesh& mesh )
    {
-      for( typename Mesh::GlobalIndexType i = 0; i < mesh.template getNumberOfEntities< SuperdimensionTag::value >(); i++ )
+      for( typename Mesh::GlobalIndexType i = 0; i < mesh.template getEntitiesCount< SuperdimensionTag::value >(); i++ )
       {
          auto& superentity = mesh.template getEntity< SuperdimensionTag::value >( i );
          auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< SuperdimensionTag::value, DimensionTag::value >();

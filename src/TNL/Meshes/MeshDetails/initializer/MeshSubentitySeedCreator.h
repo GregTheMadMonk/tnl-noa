@@ -38,8 +38,8 @@ class MeshSubentitySeedsCreator
    using SubentityType         = typename SubentityTraits::SubentityType;
    using SubentityTopology     = typename SubentityTraits::SubentityTopology;
 
-   static const LocalIndexType SUBENTITIES_COUNT = EntityType::template getNumberOfSubentities< SubentityDimensionTag::value >();
-   static const LocalIndexType SUBENTITY_VERTICES_COUNT = SubentityType::template getNumberOfSubentities< 0 >();
+   static const LocalIndexType SUBENTITIES_COUNT = EntityType::template getSubentitiesCount< SubentityDimensionTag::value >();
+   static const LocalIndexType SUBENTITY_VERTICES_COUNT = SubentityType::template getSubentitiesCount< 0 >();
 
 public:
    using SubentitySeedArray = typename SubentityTraits::SeedArrayType;
@@ -91,7 +91,7 @@ class MeshSubentitySeedsCreator< MeshConfig, EntityDimensionTag, DimensionTag< 0
    using SubvertexAccessorType = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >::SubentityAccessorType;
    using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >;
 
-   static const LocalIndexType SUBENTITIES_COUNT = EntityType::template getNumberOfSubentities< 0 >();
+   static const LocalIndexType SUBENTITIES_COUNT = EntityType::template getSubentitiesCount< 0 >();
 
 public:
    using SubentitySeedArray = typename SubentityTraits::SeedArrayType;

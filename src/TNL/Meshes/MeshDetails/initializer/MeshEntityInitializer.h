@@ -144,7 +144,7 @@ public:
       SuperentityInitializerType superentityInitializer;
 
       for( GlobalIndexType superentityIndex = 0;
-           superentityIndex < mesh.template getNumberOfEntities< SuperdimensionTag::value >();
+           superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
            superentityIndex++ )
       {
          auto& superentity = mesh.template getEntity< SuperdimensionTag::value >( superentityIndex );
@@ -204,7 +204,7 @@ public:
       SuperentityInitializerType superentityInitializer;
 
       for( GlobalIndexType superentityIndex = 0;
-           superentityIndex < mesh.template getNumberOfEntities< SuperdimensionTag::value >();
+           superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
            superentityIndex++ )
       {
          auto& superentity = mesh.template getEntity< SuperdimensionTag::value >( superentityIndex );
@@ -265,7 +265,7 @@ public:
    {
       //std::cout << "   Initiating superentities with dimension " << SuperdimensionTag::value << " for subentities with dimension " << SubdimensionTag::value << " ... " << std::endl;
       for( GlobalIndexType superentityIndex = 0;
-           superentityIndex < mesh.template getNumberOfEntities< SuperdimensionTag::value >();
+           superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
            superentityIndex++ )
       {
          auto& superentity = mesh.template getEntity< SuperdimensionTag::value >( superentityIndex );
@@ -323,7 +323,7 @@ public:
    {
       //std::cout << "   Initiating superentities with dimension " << SuperdimensionTag::value << " for subentities with dimension " << SubdimensionTag::value << " ... " << std::endl;
       for( GlobalIndexType superentityIndex = 0;
-           superentityIndex < mesh.template getNumberOfEntities< SuperdimensionTag::value >();
+           superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
            superentityIndex++ )
       {
          auto& superentity = mesh.template getEntity< SuperdimensionTag::value >( superentityIndex );
@@ -380,7 +380,7 @@ public:
       SuperentityInitializerType superentityInitializer;
 
       for( GlobalIndexType superentityIndex = 0;
-           superentityIndex < mesh.template getNumberOfEntities< SuperdimensionTag::value >();
+           superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
            superentityIndex++ )
       {
          auto& superentity = mesh.template getEntity< SuperdimensionTag::value >( superentityIndex );

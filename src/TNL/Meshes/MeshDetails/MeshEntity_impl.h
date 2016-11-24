@@ -111,7 +111,7 @@ template< typename MeshConfig,
           typename EntityTopology >
 constexpr typename MeshEntity< MeshConfig, EntityTopology >::LocalIndexType
 MeshEntity< MeshConfig, EntityTopology >::
-getNumberOfVertices()
+getVerticesCount()
 {
    return SubentityTraits< 0 >::count;
 }

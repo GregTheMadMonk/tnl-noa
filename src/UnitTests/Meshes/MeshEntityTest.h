@@ -540,7 +540,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 0, 2 );
    vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 1, 1 );
 
-   ASSERT_EQ( vertexEntities[ 0 ].template getNumberOfSuperentities< 1 >(),  2 );
+   ASSERT_EQ( vertexEntities[ 0 ].template getSuperentitiesCount< 1 >(),  2 );
    ASSERT_EQ( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 0 ),    2 );
    ASSERT_EQ( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 1 ),    1 );
 
@@ -550,7 +550,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 1, 2 );
    vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 2, 4 );
 
-   ASSERT_EQ( vertexEntities[ 1 ].template getNumberOfSuperentities< 1 >(),  3 );
+   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentitiesCount< 1 >(),  3 );
    ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 0 ),    0 );
    ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 1 ),    2 );
    ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 2 ),    4 );
@@ -565,7 +565,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 0, 0 );
    vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 1, 1 );
 
-   ASSERT_EQ( vertexEntities[ 1 ].template getNumberOfSuperentities< 2 >(),  2 );
+   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentitiesCount< 2 >(),  2 );
    ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 0 ),    0 );
    ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 1 ),    1 );
 
@@ -579,7 +579,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 0, 0 );
    edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 1, 1 );
 
-   ASSERT_EQ( edgeEntities[ 0 ].template getNumberOfSuperentities< 2 >(),  2 );
+   ASSERT_EQ( edgeEntities[ 0 ].template getSuperentitiesCount< 2 >(),  2 );
    ASSERT_EQ( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 0 ),    0 );
    ASSERT_EQ( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 1 ),    1 );
 }
