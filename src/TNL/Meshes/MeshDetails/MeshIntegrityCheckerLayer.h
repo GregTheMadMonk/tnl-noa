@@ -45,7 +45,7 @@ class MeshIntegrityCheckerLayer< MeshType,
       {
          typedef typename MeshType::template EntitiesTraits< dimension >::ContainerType ContainerType;
          typedef typename ContainerType::IndexType                                       GlobalIndexType;
-        std::cout << "Checking entities with " << dimension << " dimension ..." << std::endl;
+        std::cout << "Checking entities with dimension " << dimension << " ..." << std::endl;
          for( GlobalIndexType entityIdx = 0;
               entityIdx < mesh.template getNumberOfEntities< dimension >();
               entityIdx++ )
@@ -71,7 +71,7 @@ class MeshIntegrityCheckerLayer< MeshType,
       {
          typedef typename MeshType::template EntitiesTraits< dimension >::ContainerType ContainerType;
          typedef typename ContainerType::IndexType                                       GlobalIndexType;
-        std::cout << "Checking entities with " << dimension << " dimension ..." << std::endl;
+        std::cout << "Checking entities with dimension " << dimension << " ..." << std::endl;
          for( GlobalIndexType entityIdx = 0;
               entityIdx < mesh.template getNumberOfEntities< dimension >();
               entityIdx++ )

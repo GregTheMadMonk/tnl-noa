@@ -140,7 +140,7 @@ class MeshEntityInitializerLayer< MeshConfig,
 public:
    static void initSuperentities( InitializerType& meshInitializer, MeshType& mesh )
    {
-      //std::cout << "   Initiating superentities with " << SuperdimensionTag::value << " dimension for subentities with " << SubdimensionTag::value << " dimension ... " << std::endl;
+      //std::cout << "   Initiating superentities with dimension " << SuperdimensionTag::value << " for subentities with dimension " << SubdimensionTag::value << " ... " << std::endl;
       SuperentityInitializerType superentityInitializer;
 
       for( GlobalIndexType superentityIndex = 0;
@@ -200,7 +200,7 @@ class MeshEntityInitializerLayer< MeshConfig,
 public:
    static void initSuperentities( InitializerType& meshInitializer, MeshType& mesh )
    {
-      //std::cout << "   Initiating superentities with " << SuperdimensionTag::value << " dimension for subentities with " << SubdimensionTag::value << " dimension ... " << std::endl;
+      //std::cout << "   Initiating superentities with dimension " << SuperdimensionTag::value << " for subentities with dimension " << SubdimensionTag::value << " ... " << std::endl;
       SuperentityInitializerType superentityInitializer;
 
       for( GlobalIndexType superentityIndex = 0;
@@ -263,7 +263,7 @@ class MeshEntityInitializerLayer< MeshConfig,
 public:
    static void initSuperentities( InitializerType& meshInitializer, MeshType& mesh )
    {
-      //std::cout << "   Initiating superentities with " << SuperdimensionTag::value << " dimension for subentities with " << SubdimensionTag::value << " dimension ... " << std::endl;
+      //std::cout << "   Initiating superentities with dimension " << SuperdimensionTag::value << " for subentities with dimension " << SubdimensionTag::value << " ... " << std::endl;
       for( GlobalIndexType superentityIndex = 0;
            superentityIndex < mesh.template getNumberOfEntities< SuperdimensionTag::value >();
            superentityIndex++ )
@@ -321,7 +321,7 @@ class MeshEntityInitializerLayer< MeshConfig,
 public:
    static void initSuperentities( InitializerType& meshInitializer, MeshType& mesh )
    {
-      //std::cout << "   Initiating superentities with " << SuperdimensionTag::value << " dimension for subentities with " << SubdimensionTag::value << " dimension ... " << std::endl;
+      //std::cout << "   Initiating superentities with dimension " << SuperdimensionTag::value << " for subentities with dimension " << SubdimensionTag::value << " ... " << std::endl;
       for( GlobalIndexType superentityIndex = 0;
            superentityIndex < mesh.template getNumberOfEntities< SuperdimensionTag::value >();
            superentityIndex++ )
@@ -376,7 +376,7 @@ class MeshEntityInitializerLayer< MeshConfig,
 public:
    static void initSuperentities( InitializerType& meshInitializer, MeshType& mesh )
    {
-      //std::cout << "   Initiating superentities with " << SuperdimensionTag::value << " dimension for subentities with " << SubdimensionTag::value << " dimension ... " << std::endl;
+      //std::cout << "   Initiating superentities with dimension " << SuperdimensionTag::value << " for subentities with dimension " << SubdimensionTag::value << " ... " << std::endl;
       SuperentityInitializerType superentityInitializer;
 
       for( GlobalIndexType superentityIndex = 0;

@@ -208,7 +208,7 @@ class MeshInitializerLayer< MeshConfig,
 
       void initEntities( InitializerType& initializer, PointArrayType& points, CellSeedArrayType& cellSeeds, MeshType& mesh )
       {
-         //std::cout << " Initiating entities with " << DimensionTag::value << " dimension ... " << std::endl;
+         //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;
          initializer.template setNumberOfEntities< DimensionTag::value >( cellSeeds.getSize() );
          for( GlobalIndexType i = 0; i < cellSeeds.getSize(); i++ )
             EntityInitializerType::initEntity( mesh.template getEntity< DimensionTag::value >( i ), i, cellSeeds[ i ], initializer );
@@ -303,7 +303,7 @@ class MeshInitializerLayer< MeshConfig,
 
       void initEntities( InitializerType& initializer, PointArrayType& points, MeshType& mesh )
       {
-         //std::cout << " Initiating entities with " << DimensionTag::value << " dimension ... " << std::endl;
+         //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;
          const GlobalIndexType numberOfEntities = getNumberOfEntities( initializer, mesh );
          initializer.template setNumberOfEntities< DimensionTag::value >( numberOfEntities );
 
@@ -390,7 +390,7 @@ class MeshInitializerLayer< MeshConfig,
 
       void initEntities( InitializerType& initializer, PointArrayType& points, MeshType& mesh )
       {
-         //std::cout << " Initiating entities with " << DimensionTag::value << " dimension ... " << std::endl;
+         //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;
          const GlobalIndexType numberOfEntities = getNumberOfEntities( initializer, mesh );
          initializer.template setNumberOfEntities< DimensionTag::value >( numberOfEntities );
          this->referenceOrientations.setSize( numberOfEntities );
@@ -477,7 +477,7 @@ class MeshInitializerLayer< MeshConfig,
 
       void initEntities( InitializerType& initializer, PointArrayType& points, MeshType& mesh )
       {
-         //std::cout << " Initiating entities with " << DimensionTag::value << " dimension ... " << std::endl;
+         //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;
          initializer.template setNumberOfEntities< 0 >( points.getSize() );
          for( GlobalIndexType i = 0; i < points.getSize(); i++ )
             EntityInitializerType::initEntity( mesh.template getEntity< 0 >( i ), i, points[ i ], initializer );

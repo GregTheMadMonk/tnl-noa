@@ -170,7 +170,7 @@ protected:
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << "\t Subentities with " << DimensionTag::value << " dimension are: " << subentityIndices << "." << std::endl;
+      str << "\t Subentities with dimension " << DimensionTag::value << " are: " << subentityIndices << "." << std::endl;
    }
 
    bool operator==( const MeshSubentityAccessLayer& layer ) const
@@ -299,7 +299,7 @@ protected:
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << "\t Subentities with " << DimensionTag::value << " dimension are: " << subentityIndices << "." << std::endl;
+      str << "\t Subentities with dimension " << DimensionTag::value << " are: " << subentityIndices << "." << std::endl;
    }
 
    bool operator==( const MeshSubentityAccessLayer& layer ) const

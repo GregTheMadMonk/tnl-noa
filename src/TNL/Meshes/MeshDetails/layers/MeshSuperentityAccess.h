@@ -198,7 +198,7 @@ public:
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << "\t Superentities with " << DimensionTag::value << " dimension are: " << this->superentityIndices << "." << std::endl;
+      str << "\t Superentities with dimension " << DimensionTag::value << " are: " << this->superentityIndices << "." << std::endl;
    }
 
 private:

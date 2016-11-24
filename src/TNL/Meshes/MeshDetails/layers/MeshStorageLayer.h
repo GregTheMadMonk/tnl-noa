@@ -139,7 +139,7 @@ public:
           ! SuperentityStorageBaseType::save( file ) ||
           ! this->entities.save( file ) )
       {
-         std::cerr << "Saving of the mesh entities with " << DimensionTag::value << " dimension failed." << std::endl;
+         std::cerr << "Saving of the mesh entities with dimension " << DimensionTag::value << " failed." << std::endl;
          return false;
       }
       return true;
@@ -152,7 +152,7 @@ public:
           ! SuperentityStorageBaseType::load( file ) ||
           ! this->entities.load( file ) )
       {
-         std::cerr << "Loading of the mesh entities with " << DimensionTag::value << " dimension failed." << std::endl;
+         std::cerr << "Loading of the mesh entities with dimension " << DimensionTag::value << " failed." << std::endl;
          return false;
       }
       return true;
@@ -161,7 +161,7 @@ public:
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << "The entities with " << DimensionTag::value << " dimension are: " << std::endl;
+      str << "The entities with dimension " << DimensionTag::value << " are: " << std::endl;
       for( GlobalIndexType i = 0; i < entities.getSize();i ++ )
          str << i << " " << entities[ i ] << std::endl;
       SubentityStorageBaseType::print( str );
@@ -272,7 +272,7 @@ public:
       if( ! SuperentityStorageBaseType::save( file ) ||
           ! this->vertices.save( file ) )
       {
-         std::cerr << "Saving of the mesh entities with " << DimensionTag::value << " dimension failed." << std::endl;
+         std::cerr << "Saving of the mesh entities with dimension " << DimensionTag::value << " failed." << std::endl;
          return false;
       }
       return true;
@@ -283,7 +283,7 @@ public:
       if( ! SuperentityStorageBaseType::load( file ) ||
           ! this->vertices.load( file ) )
       {
-         std::cerr << "Loading of the mesh entities with " << DimensionTag::value << " dimension failed." << std::endl;
+         std::cerr << "Loading of the mesh entities with dimension " << DimensionTag::value << " failed." << std::endl;
          return false;
       }
       return true;

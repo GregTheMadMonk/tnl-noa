@@ -104,7 +104,7 @@ protected:
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << "Storage network for superentities with " << SuperdimensionTag::value << " dimension of entities with " << EntityTopology::dimension << " dimension is: " << std::endl;
+      str << "Storage network for superentities with dimension " << SuperdimensionTag::value << " of entities with dimension " << EntityTopology::dimension << " is: " << std::endl;
       str << this->storageNetwork << std::endl;
    }
 
