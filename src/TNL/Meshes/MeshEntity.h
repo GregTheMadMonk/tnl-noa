@@ -64,7 +64,7 @@ class MeshEntity
 
       bool operator!=( const MeshEntity& entity ) const;
 
-      constexpr int getEntityDimension() const;
+      static constexpr int getEntityDimension();
 
       /****
        * Subentities
@@ -82,7 +82,7 @@ class MeshEntity
       /****
        * Vertices
        */
-      constexpr LocalIndexType getNumberOfVertices() const;
+      static constexpr LocalIndexType getNumberOfVertices();
 
       GlobalIndexType getVertexIndex( const LocalIndexType localIndex ) const;
 
@@ -137,7 +137,7 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
 
       bool operator!=( const MeshEntity& entity ) const;
 
-      constexpr int getEntityDimension() const;
+      static constexpr int getEntityDimension();
 
       /****
        * Superentities

@@ -45,7 +45,6 @@ class Mesh
       using CellType        = typename MeshTraitsType::CellType;
       using VertexType      = typename MeshTraitsType::VertexType;
       using PointType       = typename MeshTraitsType::PointType;
-      static constexpr int dimension = MeshTraitsType::meshDimension;
 
       template< int Dimension >
       using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;

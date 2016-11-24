@@ -42,7 +42,7 @@ constexpr int
 Mesh< MeshConfig >::
 getMeshDimension()
 {
-   return dimension;
+   return MeshTraitsType::meshDimension;
 }
 
 template< typename MeshConfig >
@@ -89,7 +89,7 @@ typename Mesh< MeshConfig >::GlobalIndexType
 Mesh< MeshConfig >::
 getNumberOfCells() const
 {
-   return this->template getNumberOfEntities< dimension >();
+   return this->template getNumberOfEntities< getMeshDimension() >();
 }
 
 template< typename MeshConfig >
@@ -97,7 +97,7 @@ typename Mesh< MeshConfig >::CellType&
 Mesh< MeshConfig >::
 getCell( const GlobalIndexType& cellIndex )
 {
-   return this->template getEntity< dimension >( cellIndex );
+   return this->template getEntity< getMeshDimension() >( cellIndex );
 }
 
 template< typename MeshConfig >
@@ -105,7 +105,7 @@ const typename Mesh< MeshConfig >::CellType&
 Mesh< MeshConfig >::
 getCell( const GlobalIndexType& cellIndex ) const
 {
-   return this->template getEntity< dimension >( cellIndex );
+   return this->template getEntity< getMeshDimension() >( cellIndex );
 }
 
 template< typename MeshConfig >

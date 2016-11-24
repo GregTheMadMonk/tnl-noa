@@ -282,7 +282,7 @@ class MeshInitializerLayer< MeshConfig,
 
       GlobalIndexType getNumberOfEntities( InitializerType& initializer, MeshType& mesh )
       {
-         using SubentitySeedsCreator = MeshSubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::dimension >, DimensionTag >;
+         using SubentitySeedsCreator = MeshSubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::getMeshDimension() >, DimensionTag >;
          std::set< typename SeedIndexedSet::key_type > seedSet;
 
          for( GlobalIndexType i = 0; i < mesh.getNumberOfCells(); i++ )
@@ -307,7 +307,7 @@ class MeshInitializerLayer< MeshConfig,
          const GlobalIndexType numberOfEntities = getNumberOfEntities( initializer, mesh );
          initializer.template setNumberOfEntities< DimensionTag::value >( numberOfEntities );
 
-         using SubentitySeedsCreator = MeshSubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::dimension >, DimensionTag >;
+         using SubentitySeedsCreator = MeshSubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::getMeshDimension() >, DimensionTag >;
          for( GlobalIndexType i = 0; i < mesh.getNumberOfCells(); i++ )
          {
             auto subentitySeeds = SubentitySeedsCreator::create( initializer.getSubvertices( mesh.getCell( i ), i ) );
@@ -369,7 +369,7 @@ class MeshInitializerLayer< MeshConfig,
 
       GlobalIndexType getNumberOfEntities( InitializerType& initializer, MeshType& mesh )
       {
-         using SubentitySeedsCreator = MeshSubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::dimension >, DimensionTag >;
+         using SubentitySeedsCreator = MeshSubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::getMeshDimension() >, DimensionTag >;
          std::set< typename SeedIndexedSet::key_type > seedSet;
 
          for( GlobalIndexType i = 0; i < mesh.getNumberOfCells(); i++ )
@@ -395,7 +395,7 @@ class MeshInitializerLayer< MeshConfig,
          initializer.template setNumberOfEntities< DimensionTag::value >( numberOfEntities );
          this->referenceOrientations.setSize( numberOfEntities );
 
-         using SubentitySeedsCreator = MeshSubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::dimension >, DimensionTag >;
+         using SubentitySeedsCreator = MeshSubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::getMeshDimension() >, DimensionTag >;
          for( GlobalIndexType i = 0; i < mesh.getNumberOfCells(); i++ )
          {
             auto subentitySeeds = SubentitySeedsCreator::create( initializer.getSubvertices( mesh.getCell( i ), i ) );

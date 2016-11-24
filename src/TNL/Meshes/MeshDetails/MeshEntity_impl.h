@@ -99,7 +99,7 @@ template< typename MeshConfig,
           typename EntityTopology >
 constexpr int
 MeshEntity< MeshConfig, EntityTopology >::
-getEntityDimension() const
+getEntityDimension()
 {
    return EntityTopology::dimension;
 }
@@ -111,7 +111,7 @@ template< typename MeshConfig,
           typename EntityTopology >
 constexpr typename MeshEntity< MeshConfig, EntityTopology >::LocalIndexType
 MeshEntity< MeshConfig, EntityTopology >::
-getNumberOfVertices() const
+getNumberOfVertices()
 {
    return SubentityTraits< 0 >::count;
 }
@@ -199,7 +199,7 @@ operator!=( const MeshEntity& entity ) const
 template< typename MeshConfig >
 constexpr int
 MeshEntity< MeshConfig, MeshVertexTopology >::
-getEntityDimension() const
+getEntityDimension()
 {
    return EntityTopology::dimension;
 }
@@ -230,4 +230,3 @@ std::ostream& operator<<( std::ostream& str, const MeshEntity< MeshConfig, Entit
 
 } // namespace Meshes
 } // namespace TNL
-
