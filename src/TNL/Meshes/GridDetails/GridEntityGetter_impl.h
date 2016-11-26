@@ -174,7 +174,7 @@ class GridEntityGetter< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 1 >
          TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
                     entity.getCoordinates() < grid.getDimensions() + abs( entity.getOrientation() ),
                  std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                      << " dimensions.x() = " << grid.getDimensions()
+                      << " grid.getDimensions() = " << grid.getDimensions()
                       << " abs( entity.getOrientation() ) = " << abs( entity.getOrientation() ) );
  
          const CoordinatesType coordinates = entity.getCoordinates();
@@ -357,7 +357,7 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 2 >
          TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
                     entity.getCoordinates() < grid.getDimensions() + abs( entity.getOrientation() ),
                  std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                      << " dimensions.x() = " << grid.getDimensions()
+                      << " grid.getDimensions() = " << grid.getDimensions()
                       << " abs( entity.getOrientation() ) = " << abs( entity.getOrientation() ) );
  
          const CoordinatesType coordinates = entity.getCoordinates();
@@ -451,7 +451,7 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 1 >
                     entity.getCoordinates() < grid.getDimensions() +
                        CoordinatesType( 1, 1, 1 ) - entity.getBasis(),
             std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                 << " dimensions.x() = " << grid.getDimensions()
+                 << " grid.getDimensions() = " << grid.getDimensions()
                  << " CoordinatesType( 1, 1, 1 ) - entity.getBasis() = " << CoordinatesType( 1, 1, 1 ) - entity.getBasis() );
  
          const CoordinatesType coordinates = entity.getCoordinates();
