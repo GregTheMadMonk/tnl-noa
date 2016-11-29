@@ -47,7 +47,7 @@ assembly( const RealType& time,
       "Error: I am getting Vector instead of MeshFunction or similar object. You might forget to bind DofVector into MeshFunction in you method getExplicitRHS."  );
 
    const IndexType maxRowLength = matrixPointer.template getData< Devices::Host >().getMaxRowLength();
-   Assert( maxRowLength > 0, );
+   TNL_ASSERT( maxRowLength > 0, );
 
    {
       this->userDataPointer->setUserData(

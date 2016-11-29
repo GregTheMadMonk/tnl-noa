@@ -145,7 +145,7 @@ class MeshSubentityStorageLayer< MeshConfig,
    using BaseType::subentityOrientation;
    IdPermutationArrayAccessorType subentityOrientation( DimensionsTag, LocalIndexType index) const
    {
-      Assert( 0 <= index && index < SubentityTraitsType::count, );
+      TNL_ASSERT( 0 <= index && index < SubentityTraitsType::count, );
  
       return this->subentityOrientations[ index ].getSubvertexPermutation();
    }

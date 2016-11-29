@@ -37,7 +37,7 @@ public:
          const RealType& beta,
          RealType* y )
    {
-      Assert( m <= lda, );
+      TNL_ASSERT( m <= lda, );
 
       if( beta != 0.0 ) {
 #ifdef HAVE_OPENMP
@@ -145,8 +145,8 @@ public:
          const RealType& beta,
          RealType* y )
    {
-      Assert( m <= lda, );
-      Assert( n <= 256,
+      TNL_ASSERT( m <= lda, );
+      TNL_ASSERT( n <= 256,
               std::cerr << "The gemv kernel is optimized only for small 'n' and assumes that n <= 256." << std::endl; );
 
 #ifdef HAVE_CUDA

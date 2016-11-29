@@ -46,7 +46,7 @@ update( const MatrixPointer& matrix )
 {
 //  std::cout << getType() << "->setMatrix()" << std::endl;
 
-   Assert( matrix->getRows() > 0 && matrix->getRows() == matrix->getColumns(), );
+   TNL_ASSERT( matrix->getRows() > 0 && matrix->getRows() == matrix->getColumns(), );
 
    if( diagonal.getSize() != matrix->getRows() )
       diagonal.setSize( matrix->getRows() );

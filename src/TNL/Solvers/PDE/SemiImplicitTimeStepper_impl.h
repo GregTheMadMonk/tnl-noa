@@ -154,7 +154,7 @@ solve( const RealType& time,
        DofVectorPointer& dofVector,
        MeshDependentDataPointer& meshDependentData )
 {
-   Assert( this->problem != 0, );
+   TNL_ASSERT( this->problem != 0, );
    RealType t = time;
    this->linearSystemSolver->setMatrix( this->matrix );
    PreconditionerPointer preconditioner;

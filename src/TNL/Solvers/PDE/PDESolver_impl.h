@@ -80,7 +80,7 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Set DOFs (degrees of freedom)
     */
-   Assert( problem->getDofs( this->meshPointer ) != 0, );
+   TNL_ASSERT( problem->getDofs( this->meshPointer ) != 0, );
    std::cout << "Allocating dofs ... ";
    if( ! this->dofsPointer->setSize( problem->getDofs( this->meshPointer ) ) )
    {
@@ -319,9 +319,9 @@ bool
 PDESolver< Problem, TimeStepper >::
 solve()
 {
-   Assert( timeStepper != 0,
+   TNL_ASSERT( timeStepper != 0,
               std::cerr << "No time stepper was set in PDESolver." );
-   Assert( problem != 0,
+   TNL_ASSERT( problem != 0,
               std::cerr << "No problem was set in PDESolver." );
 
    if( snapshotPeriod == 0 )

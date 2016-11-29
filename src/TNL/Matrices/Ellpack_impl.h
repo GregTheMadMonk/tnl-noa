@@ -53,7 +53,7 @@ template< typename Real,
 bool Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
                                                              const IndexType columns )
 {
-   Assert( rows > 0 && columns > 0,
+   TNL_ASSERT( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
    this->rows = rows;
@@ -71,9 +71,9 @@ template< typename Real,
           typename Index >
 bool Ellpack< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
-   Assert( this->getRows() > 0, );
-   Assert( this->getColumns() > 0, );
-   Assert( rowLengths.getSize() > 0, );
+   TNL_ASSERT( this->getRows() > 0, );
+   TNL_ASSERT( this->getColumns() > 0, );
+   TNL_ASSERT( rowLengths.getSize() > 0, );
    this->rowLengths = this->maxRowLength = rowLengths.max();
    return allocateElements();
 }
@@ -83,7 +83,7 @@ template< typename Real,
           typename Index >
 bool Ellpack< Real, Device, Index >::setConstantCompressedRowsLengths( const IndexType& rowLengths )
 {
-   Assert( rowLengths > 0,
+   TNL_ASSERT( rowLengths > 0,
               std::cerr << " rowLengths = " << rowLengths );
    this->rowLengths = rowLengths;
    if( this->rows > 0 )
@@ -132,7 +132,7 @@ template< typename Real,
              typename Index2 >
 bool Ellpack< Real, Device, Index >::operator == ( const Ellpack< Real2, Device2, Index2 >& matrix ) const
 {
-   Assert( this->getRows() == matrix.getRows() &&
+   TNL_ASSERT( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
               std::cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
@@ -195,7 +195,7 @@ bool Ellpack< Real, Device, Index > :: addElementFast( const IndexType row,
                                                                 const RealType& thisElementMultiplicator )
 {
    // TODO: return this back when CUDA kernels support std::cerr
-   /*Assert( row >= 0 && row < this->rows &&
+   /*TNL_ASSERT( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
               std::cerr << " row = " << row
                    << " column = " << column
@@ -509,7 +509,7 @@ void Ellpack< Real, Device, Index > :: addMatrix( const Ellpack< Real2, Device, 
                                                                  const RealType& matrixMultiplicator,
                                                                  const RealType& thisMatrixMultiplicator )
 {
-   Assert( false, std::cerr << "TODO: implement" );
+   TNL_ASSERT( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -521,7 +521,7 @@ template< typename Real,
 void Ellpack< Real, Device, Index >::getTransposition( const Ellpack< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   Assert( false, std::cerr << "TODO: implement" );
+   TNL_ASSERT( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -534,7 +534,7 @@ bool Ellpack< Real, Device, Index > :: performSORIteration( const Vector& b,
                                                                            Vector& x,
                                                                            const RealType& omega ) const
 {
-   Assert( row >=0 && row < this->getRows(),
+   TNL_ASSERT( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row
                    << " this->getRows() = " << this->getRows() << std::endl );
 

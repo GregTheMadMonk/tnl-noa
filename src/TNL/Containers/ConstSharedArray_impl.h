@@ -69,10 +69,10 @@ template< typename Element,
 void tnlConstSharedArray< Element, Device, Index > :: bind( const Element* data,
                                                             const Index size )
 {
-   Assert( size >= 0,
+   TNL_ASSERT( size >= 0,
               std::cerr << "You try to set size of tnlConstSharedArray to negative value."
                         << "New size: " << size << std::endl );
-   Assert( data != 0,
+   TNL_ASSERT( data != 0,
               std::cerr << "You try to use null pointer to data for tnlConstSharedArray." );
 
    this->size = size;
@@ -88,7 +88,7 @@ void tnlConstSharedArray< Element, Device, Index > :: bind( const Array& array,
                                                             IndexType size )
 {
    // TODO: This does not work for static arrays.
-   //tnlStaticAssert( Array::DeviceType::DeviceType == DeviceType::DeviceType,
+   //tnlStaticTNL_ASSERT( Array::DeviceType::DeviceType == DeviceType::DeviceType,
    //                 "Attempt to bind arrays between different devices." );
    this->data = &( array. getData()[ index ] );
    if( ! size )
@@ -130,7 +130,7 @@ template< typename Element,
           typename Index >
 Element tnlConstSharedArray< Element, Device, Index > :: getElement( Index i ) const
 {
-   Assert( 0 <= i && i < this->getSize(),
+   TNL_ASSERT( 0 <= i && i < this->getSize(),
               std::cerr << "Wrong index for getElement method in tnlConstSharedArray with name "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
@@ -143,7 +143,7 @@ template< typename Element,
 __cuda_callable__
 const Element& tnlConstSharedArray< Element, Device, Index > :: operator[] ( Index i ) const
 {
-   Assert( 0 <= i && i < this->getSize(),
+   TNL_ASSERT( 0 <= i && i < this->getSize(),
               std::cerr << "Wrong index for operator[] in tnlConstSharedArray with name "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
@@ -228,7 +228,7 @@ template< typename Element,
           typename Index >
 bool tnlConstSharedArray< Element, Device, Index > :: save( File& file ) const
 {
-   Assert( this->size != 0,
+   TNL_ASSERT( this->size != 0,
               std::cerr << "You try to save empty array." );
    if( ! Object :: save( file ) )
       return false;

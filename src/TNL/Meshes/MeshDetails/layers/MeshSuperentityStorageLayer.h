@@ -250,13 +250,13 @@ class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, MeshDimensionsTag
  
    typename MeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
    {
-      Assert( false, );
+      TNL_ASSERT( false, );
       //return this->superentitiesIndices;
    }
 
    StorageNetworkType& getStorageNetwork( DimensionsTag )
    {
-      Assert( false, );
+      TNL_ASSERT( false, );
      //return this->storageNetwork;
    }
 
@@ -323,13 +323,13 @@ class MeshSuperentityStorageLayer< MeshConfig,
  
    typename MeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
    {
-      Assert( false, );
+      TNL_ASSERT( false, );
       //return this->superentitiesIndices;
    }
 
    StorageNetworkType& getStorageNetwork( DimensionsTag )
    {
-      Assert( false, );
+      TNL_ASSERT( false, );
       //return this->storageNetwork;
    }
 

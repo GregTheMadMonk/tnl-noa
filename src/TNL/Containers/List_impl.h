@@ -56,7 +56,7 @@ int List< T >::getSize() const
 template< typename T >
 T& List< T >::operator[]( const int& ind )
 {
-   Assert( ind < size, );
+   TNL_ASSERT( ind < size, );
    int iter_dist = TNL::abs( index - ind );
    if( ! iterator ||
        iter_dist > ind ||
@@ -89,7 +89,7 @@ T& List< T >::operator[]( const int& ind )
          iterator = iterator -> Next();
          index ++;
       }
-      Assert( iterator, );
+      TNL_ASSERT( iterator, );
    }
    return iterator -> Data();
 };
@@ -112,7 +112,7 @@ bool List< T >::Append( const T& data )
 {
    if( ! first )
    {
-      Assert( ! last, );
+      TNL_ASSERT( ! last, );
       first = last = new ListDataElement< T >( data );
       if( ! first ) return false;
    }
@@ -120,7 +120,7 @@ bool List< T >::Append( const T& data )
    {
       ListDataElement< T >* new_element =  new ListDataElement< T >( data, last, 0 );
       if( ! new_element ) return false;
-      Assert( last, );
+      TNL_ASSERT( last, );
       last = last -> Next() = new_element;
    }
    size ++;
@@ -132,7 +132,7 @@ bool List< T >::Prepend( const T& data )
 {
    if( ! first )
    {
-      Assert( ! last, );
+      TNL_ASSERT( ! last, );
       first = last = new ListDataElement< T >( data );
       if( ! first ) return false;
    }
@@ -150,7 +150,7 @@ bool List< T >::Prepend( const T& data )
 template< typename T >
 bool List< T >::Insert( const T& data, const int& ind )
 {
-   Assert( ind <= size || ! size, );
+   TNL_ASSERT( ind <= size || ! size, );
    if( ind == 0 ) return Prepend( data );
    if( ind == size ) return Append( data );
    operator[]( ind );
@@ -191,7 +191,7 @@ template< typename T >
    template< typename Array >
 void List< T >::toArray( Array& array )
 {
-   Assert( this->getSize() <= array.getSize(),
+   TNL_ASSERT( this->getSize() <= array.getSize(),
               std::cerr << "this->getSize() = " << this->getSize()
                    << " array.getSize() = " << array.getSize() << std::endl; );
    for( int i = 0; i < this->getSize(); i++ )
@@ -234,7 +234,7 @@ void List< T >::reset()
    ListDataElement< T >* tmp_it;
    while( iterator )
    {
-      Assert( iterator, );
+      TNL_ASSERT( iterator, );
       tmp_it = iterator;
       iterator = iterator -> Next();
       delete tmp_it;

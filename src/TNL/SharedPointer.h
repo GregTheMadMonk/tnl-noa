@@ -412,8 +412,8 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       const Object& getData() const
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
-         Assert( this->pd, );
-         Assert( this->cuda_pointer, );
+         TNL_ASSERT( this->pd, );
+         TNL_ASSERT( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
             return this->pd->data;
          if( std::is_same< Device, Devices::Cuda >::value )
@@ -425,8 +425,8 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       Object& modifyData()
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
-         Assert( this->pd, );
-         Assert( this->cuda_pointer, );
+         TNL_ASSERT( this->pd, );
+         TNL_ASSERT( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
          {
             this->pd->maybe_modified = true;
@@ -505,7 +505,7 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
             std::cerr << "Synchronizing shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(Object).name()) << std::endl;
             std::cerr << "   ( " << sizeof( Object ) << " bytes, CUDA adress " << this->cuda_pointer << " )" << std::endl;
 #endif
-            Assert( this->cuda_pointer, );
+            TNL_ASSERT( this->cuda_pointer, );
             cudaMemcpy( (void*) this->cuda_pointer, (void*) &this->pd->data, sizeof( Object ), cudaMemcpyHostToDevice );
             if( ! checkCudaDevice ) {
                return false;
@@ -563,14 +563,14 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
 
       void set_last_sync_state()
       {
-         Assert( this->pd, );
+         TNL_ASSERT( this->pd, );
          std::memcpy( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( Object ) );
          this->pd->maybe_modified = false;
       }
 
       bool modified()
       {
-         Assert( this->pd, );
+         TNL_ASSERT( this->pd, );
          // optimization: skip bitwise comparison if we're sure that the data is the same
          if( ! this->pd->maybe_modified )
             return false;

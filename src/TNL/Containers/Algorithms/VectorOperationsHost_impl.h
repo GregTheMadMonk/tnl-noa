@@ -48,7 +48,7 @@ getVectorMax( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    Real result = v.getElement( 0 );
    const Index n = v.getSize();
@@ -65,7 +65,7 @@ getVectorMin( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    Real result = v.getElement( 0 );
    const Index n = v.getSize();
@@ -82,7 +82,7 @@ getVectorAbsMax( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    Real result = std::fabs( v.getElement( 0 ) );
    const Index n = v.getSize();
@@ -100,7 +100,7 @@ getVectorAbsMin( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    Real result = std::fabs( v.getElement( 0 ) );
    const Index n = v.getSize();
@@ -117,7 +117,7 @@ getVectorL1Norm( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    Real result( 0.0 );
    const Index n = v.getSize();
@@ -137,7 +137,7 @@ getVectorL2Norm( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    const Index n = v.getSize();
 
@@ -200,8 +200,8 @@ getVectorLpNorm( const Vector& v,
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
-   Assert( p > 0.0,
+   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT( p > 0.0,
               std::cerr << " p = " << p );
 
    if( p == 1.0 )
@@ -227,7 +227,7 @@ getVectorSum( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    Real result( 0.0 );
    const Index n = v.getSize();
@@ -248,8 +248,8 @@ getVectorDifferenceMax( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result = v1.getElement( 0 ) - v2.getElement( 0 );
    const Index n = v1.getSize();
@@ -267,8 +267,8 @@ getVectorDifferenceMin( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result = v1.getElement( 0 ) - v2.getElement( 0 );
    const Index n = v1.getSize();
@@ -286,8 +286,8 @@ getVectorDifferenceAbsMax( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result = std::fabs( v1.getElement( 0 ) - v2.getElement( 0 ) );
    const Index n = v1.getSize();
@@ -305,8 +305,8 @@ getVectorDifferenceAbsMin( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result = std::fabs( v1[ 0 ] - v2[ 0 ] );
    const Index n = v1.getSize();
@@ -324,8 +324,8 @@ getVectorDifferenceL1Norm( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result( 0.0 );
    const Index n = v1.getSize();
@@ -346,8 +346,8 @@ getVectorDifferenceL2Norm( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result( 0.0 );
    const Index n = v1.getSize();
@@ -373,10 +373,10 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( p > 0.0,
+   TNL_ASSERT( p > 0.0,
               std::cerr << " p = " << p );
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    if( p == 1.0 )
       return getVectorDifferenceL1Norm( v1, v2 );
@@ -402,8 +402,8 @@ getVectorDifferenceSum( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result( 0.0 );
    const Index n = v1.getSize();
@@ -425,7 +425,7 @@ vectorScalarMultiplication( Vector& v,
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    const Index n = v.getSize();
 #ifdef HAVE_OPENMP
@@ -445,8 +445,8 @@ getScalarProduct( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
    const Index n = v1.getSize();
 
 #ifdef OPTIMIZED_VECTOR_HOST_OPERATIONS
@@ -509,8 +509,8 @@ addVector( Vector1& y,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( x.getSize() > 0, );
-   Assert( x.getSize() == y.getSize(), );
+   TNL_ASSERT( x.getSize() > 0, );
+   TNL_ASSERT( x.getSize() == y.getSize(), );
 
    const Index n = y.getSize();
 
@@ -579,9 +579,9 @@ addVectors( Vector1& v,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v.getSize() > 0, );
-   Assert( v.getSize() == v1.getSize(), );
-   Assert( v.getSize() == v2.getSize(), );
+   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() == v1.getSize(), );
+   TNL_ASSERT( v.getSize() == v2.getSize(), );
  
    const Index n = v.getSize();
    if( thisMultiplicator == 1.0 )

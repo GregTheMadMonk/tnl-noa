@@ -53,8 +53,8 @@ bool UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
 solve( const Vector& b,
        Vector& x )
 {
-    Assert( matrix->getRows() == matrix->getColumns(), );
-    Assert( matrix->getColumns() == x.getSize() && matrix->getColumns() == b.getSize(), );
+    TNL_ASSERT( matrix->getRows() == matrix->getColumns(), );
+    TNL_ASSERT( matrix->getColumns() == x.getSize() && matrix->getColumns() == b.getSize(), );
 
     const IndexType size = matrix -> getRows();
 

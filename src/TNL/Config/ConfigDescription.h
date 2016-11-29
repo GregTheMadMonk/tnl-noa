@@ -88,13 +88,13 @@ class ConfigDescription
    template< typename EntryType >
    void addEntryEnum( const EntryType& entryEnum )
    {
-      Assert( this->currentEntry,);
+      TNL_ASSERT( this->currentEntry,);
       ( ( ConfigEntry< EntryType >* ) currentEntry )->getEnumValues().Append( entryEnum );
    }
 
    void addEntryEnum( const char* entryEnum )
    {
-      Assert( this->currentEntry,);
+      TNL_ASSERT( this->currentEntry,);
       ( ( ConfigEntry< String >* ) currentEntry )->getEnumValues().Append( String( entryEnum ) );
    }
 

@@ -54,7 +54,7 @@ template< typename Real,
 bool SlicedEllpack< Real, Device, Index, SliceSize >::setDimensions( const IndexType rows,
                                                                               const IndexType columns )
 {
-   Assert( rows > 0 && columns > 0,
+   TNL_ASSERT( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
    return Sparse< Real, Device, Index >::setDimensions( rows, columns );
@@ -66,8 +66,8 @@ template< typename Real,
           int SliceSize >
 bool SlicedEllpack< Real, Device, Index, SliceSize >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
-   Assert( this->getRows() > 0, );
-   Assert( this->getColumns() > 0, );
+   TNL_ASSERT( this->getRows() > 0, );
+   TNL_ASSERT( this->getColumns() > 0, );
    const IndexType slices = roundUpDivision( this->rows, SliceSize );
    if( ! this->sliceCompressedRowsLengths.setSize( slices ) ||
        ! this->slicePointers.setSize( slices + 1 ) )
@@ -127,7 +127,7 @@ template< typename Real,
              typename Index2 >
 bool SlicedEllpack< Real, Device, Index, SliceSize >::operator == ( const SlicedEllpack< Real2, Device2, Index2 >& matrix ) const
 {
-   Assert( this->getRows() == matrix.getRows() &&
+   TNL_ASSERT( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
               std::cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
@@ -183,7 +183,7 @@ bool SlicedEllpack< Real, Device, Index, SliceSize >::addElementFast( const Inde
                                                                                const RealType& value,
                                                                                const RealType& thisElementMultiplicator )
 {
-   Assert( row >= 0 && row < this->rows &&
+   TNL_ASSERT( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
               std::cerr << " row = " << row
                    << " column = " << column
@@ -231,7 +231,7 @@ bool SlicedEllpack< Real, Device, Index, SliceSize >::addElement( const IndexTyp
                                                                            const RealType& value,
                                                                            const RealType& thisElementMultiplicator )
 {
-   Assert( row >= 0 && row < this->rows &&
+   TNL_ASSERT( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
               std::cerr << " row = " << row
                    << " column = " << column
@@ -513,7 +513,7 @@ void SlicedEllpack< Real, Device, Index, SliceSize >::addMatrix( const SlicedEll
                                                                           const RealType& matrixMultiplicator,
                                                                           const RealType& thisMatrixMultiplicator )
 {
-   Assert( false, std::cerr << "TODO: implement" );
+   TNL_ASSERT( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -526,7 +526,7 @@ template< typename Real,
 void SlicedEllpack< Real, Device, Index, SliceSize >::getTransposition( const SlicedEllpack< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   Assert( false, std::cerr << "TODO: implement" );
+   TNL_ASSERT( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -540,7 +540,7 @@ bool SlicedEllpack< Real, Device, Index, SliceSize >::performSORIteration( const
                                                                                     Vector& x,
                                                                                     const RealType& omega ) const
 {
-   Assert( row >=0 && row < this->getRows(),
+   TNL_ASSERT( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row
                    << " this->getRows() = " << this->getRows() << std::endl );
 

@@ -27,7 +27,7 @@ namespace TNL {
 #ifndef NDEBUG   
    
 #ifdef HAVE_CUDA
-#define Assert( ___tnl__assert_condition, ___tnl__assert_command )                                    \
+#define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                    \
    if( ! ( ___tnl__assert_condition ) )                                                                  \
    {                                                                                                     \
    printf( "Assertion '%s' failed !!! \n File: %s \n Line: %d \n Diagnostics: Not supported with CUDA.\n", \
@@ -38,7 +38,7 @@ namespace TNL {
    }
 
 #else // HAVE_CUDA
-#define Assert( ___tnl__assert_condition, ___tnl__assert_command )                       \
+#define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                       \
 	if( ! ( ___tnl__assert_condition ) )                                                     \
 	{                                                                                        \
 	std::cerr << "Assertion '" << __STRING( ___tnl__assert_condition ) << "' failed !!!" << std::endl  \
@@ -51,7 +51,7 @@ namespace TNL {
 	}
 #endif /* HAVE_CUDA */
 #else /* #ifndef NDEBUG */
-#define Assert( ___tnl__assert_condition, ___tnl__assert_command )
+#define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )
 #endif /* #ifndef NDEBUG */
 
 } // namespace TNL

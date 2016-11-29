@@ -60,7 +60,7 @@ class tnlCusparseCSRBase
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const
       {
-         Assert( matrix, );
+         TNL_ASSERT( matrix, );
 #ifdef HAVE_CUDA
          cusparseDcsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
@@ -103,7 +103,7 @@ class tnlCusparseCSR< double > : public tnlCusparseCSRBase< double >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const
       {
-         Assert( matrix, );
+         TNL_ASSERT( matrix, );
 #ifdef HAVE_CUDA
          /*cusparseDcsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
@@ -131,7 +131,7 @@ class tnlCusparseCSR< float > : public tnlCusparseCSRBase< float >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const
       {
-         Assert( matrix, );
+         TNL_ASSERT( matrix, );
 #ifdef HAVE_CUDA
          /*cusparseScsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,

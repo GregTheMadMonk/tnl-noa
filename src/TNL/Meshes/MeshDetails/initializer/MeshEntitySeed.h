@@ -37,8 +37,8 @@ class MeshEntitySeed
 
       void setCornerId( LocalIndexType cornerIndex, GlobalIndexType pointIndex )
       {
-         Assert( 0 <= cornerIndex && cornerIndex < getCornersCount(), std::cerr << "cornerIndex = " << cornerIndex );
-         Assert( 0 <= pointIndex, std::cerr << "pointIndex = " << pointIndex );
+         TNL_ASSERT( 0 <= cornerIndex && cornerIndex < getCornersCount(), std::cerr << "cornerIndex = " << cornerIndex );
+         TNL_ASSERT( 0 <= pointIndex, std::cerr << "pointIndex = " << pointIndex );
 
          this->cornerIds[ cornerIndex ] = pointIndex;
       }

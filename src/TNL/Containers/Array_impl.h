@@ -72,9 +72,9 @@ Array( Array< Element, Device, Index >& array,
   allocationPointer( array.allocationPointer ),
   referenceCounter( 0 )
 {
-   Assert( begin < array.getSize(),
+   TNL_ASSERT( begin < array.getSize(),
               std::cerr << " begin = " << begin << " array.getSize() = " << array.getSize() );
-   Assert( begin + size  < array.getSize(),
+   TNL_ASSERT( begin + size  < array.getSize(),
               std::cerr << " begin = " << begin << " size = " << size <<  " array.getSize() = " << array.getSize() );
    if( ! this->size )
       this->size = array.getSize() - begin;
@@ -167,7 +167,7 @@ bool
 Array< Element, Device, Index >::
 setSize( const Index size )
 {
-   Assert( size >= 0,
+   TNL_ASSERT( size >= 0,
               std::cerr << "You try to set size of Array to negative value."
                         << "New size: " << size << std::endl );
    if( this->size == size && allocationPointer && ! referenceCounter ) return true;
@@ -193,7 +193,7 @@ bool
 Array< Element, Device, Index >::
 setLike( const ArrayT& array )
 {
-   Assert( array. getSize() >= 0,
+   TNL_ASSERT( array. getSize() >= 0,
               std::cerr << "You try to set size of Array to negative value."
                         << "Array size: " << array. getSize() << std::endl );
    return setSize( array.getSize() );
@@ -226,9 +226,9 @@ bind( const ArrayT& array,
    static_assert( std::is_same< Element, typename ArrayT::ElementType >::value, "ElementType of both arrays must be the same." );
    static_assert( std::is_same< Device, typename ArrayT::DeviceType >::value, "DeviceType of both arrays must be the same." );
    static_assert( std::is_same< Index, typename ArrayT::IndexType >::value, "IndexType of both arrays must be the same." );
-   Assert( begin <= array.getSize(),
+   TNL_ASSERT( begin <= array.getSize(),
               std::cerr << " begin = " << begin << " array.getSize() = " << array.getSize() );
-   Assert( begin + size  <= array.getSize(),
+   TNL_ASSERT( begin + size  <= array.getSize(),
               std::cerr << " begin = " << begin << " size = " << size <<  " array.getSize() = " << array.getSize() );
  
    this->releaseData();
@@ -309,7 +309,7 @@ void
 Array< Element, Device, Index >::
 setElement( const Index& i, const Element& x )
 {
-   Assert( 0 <= i && i < this->getSize(),
+   TNL_ASSERT( 0 <= i && i < this->getSize(),
               std::cerr << "Wrong index for setElement method in Array "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
@@ -323,7 +323,7 @@ Element
 Array< Element, Device, Index >::
 getElement( const Index& i ) const
 {
-   Assert( 0 <= i && i < this->getSize(),
+   TNL_ASSERT( 0 <= i && i < this->getSize(),
               std::cerr << "Wrong index for getElement method in Array "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
@@ -338,7 +338,7 @@ inline Element&
 Array< Element, Device, Index >::
 operator[] ( const Index& i )
 {
-   Assert( 0 <= i && i < this->getSize(),
+   TNL_ASSERT( 0 <= i && i < this->getSize(),
               std::cerr << "Wrong index for operator[] in Array "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
@@ -353,7 +353,7 @@ inline const Element&
 Array< Element, Device, Index >::
 operator[] ( const Index& i ) const
 {
-   Assert( 0 <= i && i < this->getSize(),
+   TNL_ASSERT( 0 <= i && i < this->getSize(),
               std::cerr << "Wrong index for operator[] in Array "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
@@ -367,7 +367,7 @@ Array< Element, Device, Index >&
 Array< Element, Device, Index >::
 operator = ( const Array< Element, Device, Index >& array )
 {
-   Assert( array. getSize() == this->getSize(),
+   TNL_ASSERT( array. getSize() == this->getSize(),
               std::cerr << "Source size: " << array. getSize() << std::endl
                         << "Target size: " << this->getSize() << std::endl );
    Algorithms::ArrayOperations< Device >::
@@ -388,7 +388,7 @@ Array< Element, Device, Index >&
 Array< Element, Device, Index >::
 operator = ( const ArrayT& array )
 {
-   Assert( array. getSize() == this->getSize(),
+   TNL_ASSERT( array. getSize() == this->getSize(),
               std::cerr << "Source size: " << array. getSize() << std::endl
                         << "Target size: " << this->getSize() << std::endl );
    Algorithms::ArrayOperations< Device, typename ArrayT::DeviceType >::
@@ -435,7 +435,7 @@ template< typename Element,
           typename Index >
 void Array< Element, Device, Index > :: setValue( const Element& e )
 {
-   Assert( this->getData(),);
+   TNL_ASSERT( this->getData(),);
    Algorithms::ArrayOperations< Device >::setMemory( this->getData(), e, this->getSize() );
 }
 

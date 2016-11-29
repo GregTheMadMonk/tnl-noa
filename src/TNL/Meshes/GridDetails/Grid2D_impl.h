@@ -134,8 +134,8 @@ template< typename Real,
           typename Index >
 void Grid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
 {
-   Assert( xSize > 0, std::cerr << "xSize = " << xSize );
-   Assert( ySize > 0, std::cerr << "ySize = " << ySize );
+   TNL_ASSERT( xSize > 0, std::cerr << "xSize = " << xSize );
+   TNL_ASSERT( ySize > 0, std::cerr << "ySize = " << ySize );
 
    this->dimensions.x() = xSize;
    this->dimensions.y() = ySize;
@@ -294,9 +294,9 @@ const Real&
 Grid< 2, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
-   Assert( xPow >= -2 && xPow <= 2,
+   TNL_ASSERT( xPow >= -2 && xPow <= 2,
               std::cerr << " xPow = " << xPow );
-   Assert( yPow >= -2 && yPow <= 2,
+   TNL_ASSERT( yPow >= -2 && yPow <= 2,
               std::cerr << " yPow = " << yPow );
 
    return this->spaceStepsProducts[ xPow + 2 ][ yPow + 2 ];

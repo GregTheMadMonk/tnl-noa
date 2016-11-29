@@ -247,7 +247,7 @@ operator = ( const TestFunction& function )
          this->copyFunction< Blob< FunctionDimensions, Real > >( function.function );
          break;
       default:
-         Assert( false, );
+         TNL_ASSERT( false, );
          break;
    }
 
@@ -460,7 +460,7 @@ copyFunction( const void* function )
    }
    if( std::is_same< Device, Devices::Cuda >::value )
    {
-      Assert( false, );
+      TNL_ASSERT( false, );
       abort();
    }
 }

@@ -45,7 +45,7 @@ bool
 ArrayOperations< Devices::Cuda >::
 freeMemory( Element* data )
 {
-   Assert( data, );
+   TNL_ASSERT( data, );
 #ifdef HAVE_CUDA
       checkCudaDevice;
       cudaFree( data );
@@ -62,7 +62,7 @@ ArrayOperations< Devices::Cuda >::
 setMemoryElement( Element* data,
                   const Element& value )
 {
-   Assert( data, );
+   TNL_ASSERT( data, );
    ArrayOperations< Devices::Cuda >::setMemory( data, value, 1 );
 }
 
@@ -71,7 +71,7 @@ Element
 ArrayOperations< Devices::Cuda >::
 getMemoryElement( const Element* data )
 {
-   Assert( data, );
+   TNL_ASSERT( data, );
    Element result;
    ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< Element, Element, int >( &result, data, 1 );
    return result;
@@ -82,7 +82,7 @@ Element&
 ArrayOperations< Devices::Cuda >::
 getArrayElementReference( Element* data, const Index i )
 {
-   Assert( data, );
+   TNL_ASSERT( data, );
    return data[ i ];
 }
 
@@ -91,7 +91,7 @@ const
 Element& ArrayOperations< Devices::Cuda >::
 getArrayElementReference( const Element* data, const Index i )
 {
-   Assert( data, );
+   TNL_ASSERT( data, );
    return data[ i ];
 }
 
@@ -120,7 +120,7 @@ setMemory( Element* data,
            const Element& value,
            const Index size )
 {
-   Assert( data, );
+   TNL_ASSERT( data, );
 #ifdef HAVE_CUDA
    dim3 blockSize( 0 ), gridSize( 0 );
    blockSize. x = 256;
@@ -162,8 +162,8 @@ copyMemory( DestinationElement* destination,
             const SourceElement* source,
             const Index size )
 {
-   Assert( destination, );
-   Assert( source, );
+   TNL_ASSERT( destination, );
+   TNL_ASSERT( source, );
    #ifdef HAVE_CUDA
       if( std::is_same< DestinationElement, SourceElement >::value )
       {
@@ -197,8 +197,8 @@ compareMemory( const Element1* destination,
                const Element2* source,
                const Index size )
 {
-   Assert( destination, );
-   Assert( source, );
+   TNL_ASSERT( destination, );
+   TNL_ASSERT( source, );
    //TODO: The parallel reduction on the CUDA device with different element types is needed.
    bool result;
    Algorithms::tnlParallelReductionEqualities< Element1, Index > reductionEqualities;
@@ -219,8 +219,8 @@ copyMemory( DestinationElement* destination,
             const SourceElement* source,
             const Index size )
 {
-   Assert( destination, );
-   Assert( source, );
+   TNL_ASSERT( destination, );
+   TNL_ASSERT( source, );
    #ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
@@ -285,9 +285,9 @@ compareMemory( const Element1* destination,
    /***
     * Here, destination is on host and source is on CUDA device.
     */
-   Assert( destination, );
-   Assert( source, );
-   Assert( size >= 0, std::cerr << "size = " << size );
+   TNL_ASSERT( destination, );
+   TNL_ASSERT( source, );
+   TNL_ASSERT( size >= 0, std::cerr << "size = " << size );
    #ifdef HAVE_CUDA
    Element2* host_buffer = new Element2[ Devices::Cuda::getGPUTransferBufferSize() ];
    if( ! host_buffer )
@@ -336,9 +336,9 @@ copyMemory( DestinationElement* destination,
             const SourceElement* source,
             const Index size )
 {
-   Assert( destination, );
-   Assert( source, );
-   Assert( size >= 0, std::cerr << "size = " << size );
+   TNL_ASSERT( destination, );
+   TNL_ASSERT( source, );
+   TNL_ASSERT( size >= 0, std::cerr << "size = " << size );
    #ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
@@ -399,9 +399,9 @@ compareMemory( const Element1* hostData,
                const Element2* deviceData,
                const Index size )
 {
-   Assert( hostData, );
-   Assert( deviceData, );
-   Assert( size >= 0, std::cerr << "size = " << size );
+   TNL_ASSERT( hostData, );
+   TNL_ASSERT( deviceData, );
+   TNL_ASSERT( size >= 0, std::cerr << "size = " << size );
    return ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory( deviceData, hostData, size );
 }
 

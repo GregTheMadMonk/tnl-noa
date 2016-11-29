@@ -104,10 +104,10 @@ __cuda_callable__
 void SharedArray< Element, Device, Index > :: bind( Element* data,
                                                        const Index size )
 {
-   Assert( size >= 0,
+   TNL_ASSERT( size >= 0,
               std::cerr << "You try to set size of SharedArray to negative value."
                         << "New size: " << size << std::endl );
-   Assert( data != 0,
+   TNL_ASSERT( data != 0,
               std::cerr << "You try to use null pointer to data for SharedArray." );
 
    this->size = size;
@@ -123,7 +123,7 @@ void SharedArray< Element, Device, Index > :: bind( Array& array,
                                                        IndexType index,
                                                        IndexType size )
 {
-   //tnlStaticAssert( Array::DeviceType::DeviceType == DeviceType::DeviceType,
+   //tnlStaticTNL_ASSERT( Array::DeviceType::DeviceType == DeviceType::DeviceType,
    //                 "Attempt to bind arrays between different devices." );
    // TODO: fix this - it does nto work with StaticArray
    this->data = &( array. getData()[ index ] );
@@ -187,7 +187,7 @@ template< typename Element,
           typename Index >
 void SharedArray< Element, Device, Index > :: setElement( const Index& i, const Element& x )
 {
-   Assert( 0 <= i && i < this->getSize(),
+   TNL_ASSERT( 0 <= i && i < this->getSize(),
               std::cerr << "Wrong index for setElement method in SharedArray "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
@@ -199,7 +199,7 @@ template< typename Element,
           typename Index >
 Element SharedArray< Element, Device, Index > :: getElement( const Index& i ) const
 {
-   Assert( 0 <= i && i < this->getSize(),
+   TNL_ASSERT( 0 <= i && i < this->getSize(),
               std::cerr << "Wrong index for getElement method in SharedArray "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
@@ -212,7 +212,7 @@ template< typename Element,
 __cuda_callable__
 Element& SharedArray< Element, Device, Index > :: operator[] ( const Index& i )
 {
-   Assert( 0 <= i && i < this->getSize(),
+   TNL_ASSERT( 0 <= i && i < this->getSize(),
               std::cerr << "Wrong index for operator[] in SharedArray "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
@@ -225,7 +225,7 @@ template< typename Element,
 __cuda_callable__
 const Element& SharedArray< Element, Device, Index > :: operator[] ( const Index& i ) const
 {
-   Assert( 0 <= i && i < this->getSize(),
+   TNL_ASSERT( 0 <= i && i < this->getSize(),
               std::cerr << "Wrong index for operator[] in SharedArray "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
@@ -238,7 +238,7 @@ template< typename Element,
 SharedArray< Element, Device, Index >&
     SharedArray< Element, Device, Index > :: operator = ( const SharedArray< Element, Device, Index >& array )
 {
-   Assert( array. getSize() == this->getSize(),
+   TNL_ASSERT( array. getSize() == this->getSize(),
               std::cerr << "Source size: " << array. getSize() << std::endl
                         << "Target size: " << this->getSize() << std::endl );
    Algorithms::ArrayOperations< Device > ::
@@ -257,7 +257,7 @@ template< typename Element,
    template< typename Array >
 SharedArray< Element, Device, Index >& SharedArray< Element, Device, Index > :: operator = ( const Array& array )
 {
-   Assert( array. getSize() == this->getSize(),
+   TNL_ASSERT( array. getSize() == this->getSize(),
               std::cerr << "Source size: " << array. getSize() << std::endl
                         << "Target size: " << this->getSize() << std::endl );
    Algorithms::ArrayOperations< typename Array::DeviceType, Device >::
@@ -301,7 +301,7 @@ template< typename Element,
           typename Index >
 void SharedArray< Element, Device, Index > :: setValue( const Element& e )
 {
-   Assert( this->size != 0, );
+   TNL_ASSERT( this->size != 0, );
    Algorithms::ArrayOperations< Device >::template setMemory< Element, Index >
                               ( this->getData(), e, this->getSize() );
 
@@ -346,7 +346,7 @@ template< typename Element,
           typename Index >
 bool SharedArray< Element, Device, Index > :: save( File& file ) const
 {
-   Assert( this->size != 0,
+   TNL_ASSERT( this->size != 0,
               std::cerr << "You try to save empty array." << std::endl );
    if( ! Object :: save( file ) )
       return false;

@@ -61,11 +61,11 @@ setElement( const Index& elementIndex,
             const Index& column,
             const Real& value )
 {
-   Assert( this->values, );
-   Assert( this->step > 0,);
-   Assert( column >= 0 && column < this->columns,
+   TNL_ASSERT( this->values, );
+   TNL_ASSERT( this->step > 0,);
+   TNL_ASSERT( column >= 0 && column < this->columns,
               std::cerr << "column = " << columns << " this->columns = " << this->columns );
-   Assert( abs( column - row ) <= 1,
+   TNL_ASSERT( abs( column - row ) <= 1,
               std::cerr << "column = " << column << " row =  " << row );
 
    /****

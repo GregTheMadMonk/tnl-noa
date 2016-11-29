@@ -267,9 +267,9 @@ CudaReductionKernelLauncher( Operation& operation,
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case   1:
-         Assert( false, std::cerr << "blockSize should not be 1." << std::endl );
+         TNL_ASSERT( false, std::cerr << "blockSize should not be 1." << std::endl );
       default:
-         Assert( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+         TNL_ASSERT( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
    }
    checkCudaDevice;
 

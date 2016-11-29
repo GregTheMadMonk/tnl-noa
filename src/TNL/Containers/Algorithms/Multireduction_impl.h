@@ -57,8 +57,8 @@ reduce( Operation& operation,
         typename Operation::ResultType* hostResult )
 {
 #ifdef HAVE_CUDA
-   Assert( n > 0, );
-   Assert( size <= ldInput1, );
+   TNL_ASSERT( n > 0, );
+   TNL_ASSERT( size <= ldInput1, );
 
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::RealType RealType;
@@ -169,8 +169,8 @@ reduce( Operation& operation,
         const typename Operation::RealType* input2,
         typename Operation::ResultType* result )
 {
-   Assert( n > 0, );
-   Assert( size <= ldInput1, );
+   TNL_ASSERT( n > 0, );
+   TNL_ASSERT( size <= ldInput1, );
 
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::RealType RealType;

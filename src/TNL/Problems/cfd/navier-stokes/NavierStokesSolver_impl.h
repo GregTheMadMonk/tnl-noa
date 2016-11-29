@@ -345,10 +345,10 @@ void NavierStokesSolver< AdvectionScheme,
                                                             SolverVectorType& u,
                                                             SolverVectorType& fu )
 {
-   Assert( this->advection, );
-   Assert( this->u1Viscosity, );
-   Assert( this->u2Viscosity, );
-   Assert( this->boundaryConditions, );
+   TNL_ASSERT( this->advection, );
+   TNL_ASSERT( this->u1Viscosity, );
+   TNL_ASSERT( this->u2Viscosity, );
+   TNL_ASSERT( this->boundaryConditions, );
 
    SharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e,
                                                       rho_t, rho_u1_t, rho_u2_t, e_t;

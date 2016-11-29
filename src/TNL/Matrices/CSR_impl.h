@@ -82,8 +82,8 @@ bool CSR< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsL
     * necessary length of the vectors this->values
     * and this->columnIndexes.
     */
-   Assert( this->getRows() > 0, );
-   Assert( this->getColumns() > 0, );
+   TNL_ASSERT( this->getRows() > 0, );
+   TNL_ASSERT( this->getColumns() > 0, );
    Containers::SharedVector< IndexType, DeviceType, IndexType > rowPtrs;
    rowPtrs.bind( this->rowPointers.getData(), this->getRows() );
    rowPtrs = rowLengths;
@@ -163,7 +163,7 @@ bool CSR< Real, Device, Index >::addElementFast( const IndexType row,
                                                           const RealType& value,
                                                           const RealType& thisElementMultiplicator )
 {
-   /*Assert( row >= 0 && row < this->rows &&
+   /*TNL_ASSERT( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
               std::cerr << " row = " << row
                    << " column = " << column
@@ -213,7 +213,7 @@ bool CSR< Real, Device, Index >::addElement( const IndexType row,
                                                       const RealType& value,
                                                       const RealType& thisElementMultiplicator )
 {
-   Assert( row >= 0 && row < this->rows &&
+   TNL_ASSERT( row >= 0 && row < this->rows &&
                column >= 0 && column < this->columns,
                std::cerr << " row = " << row
                     << " column = " << column
@@ -455,7 +455,7 @@ void CSR< Real, Device, Index >::addMatrix( const CSR< Real2, Device, Index2 >& 
                                             const RealType& matrixMultiplicator,
                                             const RealType& thisMatrixMultiplicator )
 {
-   Assert( false, std::cerr << "TODO: implement" );
+   TNL_ASSERT( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -467,7 +467,7 @@ template< typename Real,
 void CSR< Real, Device, Index >::getTransposition( const CSR< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   Assert( false, std::cerr << "TODO: implement" );
+   TNL_ASSERT( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -480,7 +480,7 @@ bool CSR< Real, Device, Index >::performSORIteration( const Vector& b,
                                                       Vector& x,
                                                       const RealType& omega ) const
 {
-   Assert( row >=0 && row < this->getRows(),
+   TNL_ASSERT( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row
                    << " this->getRows() = " << this->getRows() << std::endl );
 

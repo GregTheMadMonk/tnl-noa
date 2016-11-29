@@ -48,7 +48,7 @@ getVectorMax( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionMax< Real, Index > operation;
@@ -68,7 +68,7 @@ getVectorMin( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionMin< Real, Index > operation;
@@ -88,7 +88,7 @@ getVectorAbsMax( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionAbsMax< Real, Index > operation;
@@ -108,7 +108,7 @@ getVectorAbsMin( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionAbsMin< Real, Index > operation;
@@ -128,7 +128,7 @@ getVectorL1Norm( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionAbsSum< Real, Index > operation;
@@ -148,7 +148,7 @@ getVectorL2Norm( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionL2Norm< Real, Index > operation;
@@ -170,8 +170,8 @@ getVectorLpNorm( const Vector& v,
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
-   Assert( p > 0.0,
+   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT( p > 0.0,
               std::cerr << " p = " << p );
  
    if( p == 1 )
@@ -197,7 +197,7 @@ getVectorSum( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionSum< Real, Index > operation;
@@ -218,8 +218,8 @@ getVectorDifferenceMax( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffMax< Real, Index > operation;
@@ -240,8 +240,8 @@ getVectorDifferenceMin( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffMin< Real, Index > operation;
@@ -263,8 +263,8 @@ getVectorDifferenceAbsMax( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffAbsMax< Real, Index > operation;
@@ -285,8 +285,8 @@ getVectorDifferenceAbsMin( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffAbsMin< Real, Index > operation;
@@ -307,8 +307,8 @@ getVectorDifferenceL1Norm( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffAbsSum< Real, Index > operation;
@@ -329,8 +329,8 @@ getVectorDifferenceL2Norm( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffL2Norm< Real, Index > operation;
@@ -353,10 +353,10 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( p > 0.0,
+   TNL_ASSERT( p > 0.0,
               std::cerr << " p = " << p );
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffLpNorm< Real, Index > operation;
@@ -378,8 +378,8 @@ getVectorDifferenceSum( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffSum< Real, Index > operation;
@@ -417,7 +417,7 @@ vectorScalarMultiplication( Vector& v,
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   Assert( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() > 0, );
 
    #ifdef HAVE_CUDA
       dim3 blockSize( 0 ), gridSize( 0 );
@@ -444,8 +444,8 @@ getScalarProduct( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v1.getSize() > 0, );
-   Assert( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT( v1.getSize() > 0, );
+   TNL_ASSERT( v1.getSize() == v2.getSize(), );
 
    Real result( 0 );
 /*#if defined HAVE_CUBLAS && defined HAVE_CUDA
@@ -501,10 +501,10 @@ addVector( Vector1& y,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( y.getSize() > 0, );
-   Assert( y.getSize() == x.getSize(), );
-   Assert( y.getData() != 0, );
-   Assert( x.getData() != 0, );
+   TNL_ASSERT( y.getSize() > 0, );
+   TNL_ASSERT( y.getSize() == x.getSize(), );
+   TNL_ASSERT( y.getData() != 0, );
+   TNL_ASSERT( x.getData() != 0, );
 
    #ifdef HAVE_CUDA
       dim3 blockSize( 0 ), gridSize( 0 );
@@ -572,12 +572,12 @@ addVectors( Vector1& v,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   Assert( v.getSize() > 0, );
-   Assert( v.getSize() == v1.getSize(), );
-   Assert( v.getSize() == v2.getSize(), );
-   Assert( v.getData() != 0, );
-   Assert( v1.getData() != 0, );
-   Assert( v2.getData() != 0, );
+   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT( v.getSize() == v1.getSize(), );
+   TNL_ASSERT( v.getSize() == v2.getSize(), );
+   TNL_ASSERT( v.getData() != 0, );
+   TNL_ASSERT( v1.getData() != 0, );
+   TNL_ASSERT( v2.getData() != 0, );
 
    #ifdef HAVE_CUDA
       dim3 blockSize( 0 ), gridSize( 0 );

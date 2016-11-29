@@ -104,21 +104,21 @@ void String :: setString( const char* c, int prefix_cut_off, int sufix_cut_off )
       length = STRING_PAGE * ( _length / STRING_PAGE + 1 );
       string = new char[ length ];
    }
-   Assert( string, );
+   TNL_ASSERT( string, );
    memcpy( string, c + min( c_len, prefix_cut_off ), sizeof( char ) * ( _length ) );
    string[ _length ] = 0;
 }
 
 const char& String :: operator[]( int i ) const
 {
-   Assert( i >= 0 && i < length,
+   TNL_ASSERT( i >= 0 && i < length,
               std::cerr << "Accessing char outside the string." );
    return string[ i ];
 }
 
 char& String :: operator[]( int i )
 {
-   Assert( i >= 0 && i < length,
+   TNL_ASSERT( i >= 0 && i < length,
               std::cerr << "Accessing char outside the string." );
    return string[ i ];
 }
@@ -323,7 +323,7 @@ bool String :: load( std::istream& file )
 
 bool String :: save( File& file ) const
 {
-   Assert( string,
+   TNL_ASSERT( string,
               std::cerr << "string = " << string );
 
    int len = strlen( string );

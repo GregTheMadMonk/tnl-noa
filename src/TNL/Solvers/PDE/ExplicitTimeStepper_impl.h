@@ -122,7 +122,7 @@ solve( const RealType& time,
        DofVectorPointer& dofVector,
        MeshDependentDataPointer& meshDependentData )
 {
-   Assert( this->odeSolver, );
+   TNL_ASSERT( this->odeSolver, );
    mainTimer.start();
    this->odeSolver->setTau( this->timeStep );
    this->odeSolver->setProblem( * this );

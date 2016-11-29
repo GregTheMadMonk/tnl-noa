@@ -100,7 +100,7 @@ bool
 GMRES< Matrix, Preconditioner >::
 solve( const Vector& b, Vector& x )
 {
-   Assert( matrix, std::cerr << "No matrix was set in GMRES. Call setMatrix() before solve()." << std::endl );
+   TNL_ASSERT( matrix, std::cerr << "No matrix was set in GMRES. Call setMatrix() before solve()." << std::endl );
    if( restarting <= 0 )
    {
       std::cerr << "I have wrong value for the restarting of the GMRES solver. It is set to " << restarting
