@@ -193,18 +193,24 @@ __global__ void updateKernel( Real* u,
                               const Index dofs,
                               Real tau )
 {
+   extern __shared__ Real du[];
    const Index blockOffset = blockIdx.x * blockDim.x;
    Index idx = blockOffset + threadIdx.x;
  
    if( idx < dofs )
+   {
       u[ idx ] += tau * aux[ idx ];
+      du[ threadIdx.x ] = fabs( aux[ idx ] );
+   }
+   else
+      du[ threadIdx.x ] = 0.0;
  
    __syncthreads();
 
    const Index rest = dofs - blockOffset;
    Index n =  rest < blockDim.x ? rest : blockDim.x;
 
-   computeBlockResidue< Real, Index >( aux,
+   computeBlockResidue< Real, Index >( du,
                                        cudaBlockResidue,
                                        n );
 }
@@ -366,7 +372,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
        * Update
        */
       //cout << "Update ... " << std::endl;
-      updateKernel<<< cudaUpdateBlocks, cudaUpdateBlockSize >>>( cuda_u, cuda_aux, cuda_max_du, dofsCount, tau );
+      updateKernel<<< cudaUpdateBlocks, cudaUpdateBlockSize, cudaUpdateBlockSize.x * sizeof( Real ) >>>( cuda_u, cuda_aux, cuda_max_du, dofsCount, tau );
       if( cudaGetLastError() != cudaSuccess )
       {
          std::cerr << "Update failed." << std::endl;

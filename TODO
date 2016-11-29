@@ -1,11 +1,16 @@
+- pridet execution policy https://github.com/harrism/hemi/blob/master/hemi/execution_policy.h
+- prejmenova Assert na TNL_ASSERT a rozsirit asserce podobne jako v GTest
+- odstranit paramee lazy ze smart pointeru
+
 TODO:
  - implementovat tnlMixedGridBoundaryConditions, kde by se pro kazdou stranu gridu definoval jiny zvlastni typ
    okrajovych podminek
  - dalo by se tim resit i skladani zpetnych a doprednych diferenci u nelinearni difuze, kdy je potreba napr. dopredne diference
    vycislit i na leve a dolni hranici 2D gridu
+   - tohle resit spis primym rozepsanim schematu
 
 TODO:
- - implementovat tuple pro snazsi a snad efektoivnejsi prenos dat na GPU
+ - implementovat tuple pro snazsi a snad efektivnejsi prenos dat na GPU
  - nebylo by nutne definovat pomocne datove structury pro traverser
  - data by se na hostu preskupila do souvisleho bloku dat a ten se prenesl najednou
 
