@@ -91,7 +91,7 @@ if( WITH_CUDA STREQUAL "yes" )
                 set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/src/Tools/tnl-cuda-arch.cu)
                 message( "Compiling tnl-cuda-arch ..." )
                 file( MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
-                execute_process( COMMAND nvcc ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
+                execute_process( COMMAND nvcc --compiler-bindir ${CUDA_HOST_COMPILER} ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
                                  RESULT_VARIABLE CUDA_ARCH_RESULT
                                  OUTPUT_VARIABLE CUDA_ARCH_OUTPUT
                                  ERROR_VARIABLE CUDA_ARCH_OUTPUT )
