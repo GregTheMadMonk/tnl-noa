@@ -56,7 +56,7 @@ void
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 setKeysRange( const IndexType& keysRange )
 {
-   Assert( keysRange >= 0, );
+   TNL_ASSERT( keysRange >= 0, );
    this->keysRange = keysRange;
 }
 
@@ -77,7 +77,7 @@ bool
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 allocate( const LocalIndexType& maxValuesCount )
 {
-   Assert( maxValuesCount >= 0, );
+   TNL_ASSERT( maxValuesCount >= 0, );
    this->maxValuesCount = maxValuesCount;
    if( ! this->values.setSize( this->keysRange * this->maxValuesCount ) )
       return false;
@@ -94,14 +94,14 @@ bool
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 allocate( const ValuesAllocationVectorType& valuesCounts )
 {
-   Assert( valuesCounts.getSize() == this->keysRange,
-              std::cerr << "valuesCounts.getSize() =  " << valuesCounts.getSize()
-                        << "this->keysRange = " << this->keysRange
-                        << std::endl; );
+   TNL_ASSERT( valuesCounts.getSize() == this->keysRange,
+               std::cerr << "valuesCounts.getSize() =  " << valuesCounts.getSize()
+                         << "this->keysRange = " << this->keysRange
+                         << std::endl; );
    this->maxValuesCount = valuesCounts.max();
  
-   Assert( this->maxValuesCount >= 0,
-              std::cerr << "this->maxValuesCount = " << this->maxValuesCount << std::endl; );
+   TNL_ASSERT( this->maxValuesCount >= 0,
+               std::cerr << "this->maxValuesCount = " << this->maxValuesCount << std::endl; );
    if( ! this->values.setSize( this->keysRange * this->maxValuesCount ) )
       return false;
    if( ! this->valuesCounts.setSize( this->keysRange ) )
@@ -117,16 +117,16 @@ typename EllpackIndexMultimap< Index, Device, LocalIndex >::ValuesAccessorType
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex )
 {
-   Assert( inputIndex < this->getKeysRange(),
-              std::cerr << "inputIndex = " << inputIndex << std::endl
-                        << "this->getKeysRange() = " << this->getKeysRange()
-                        << std::endl; );
-   Assert( this->getKeysRange() * this->maxValuesCount == this->values.getSize() && this->getKeysRange() == this->valuesCounts.getSize(),
-              std::cerr << "The map has not been reallocated after calling setKeysRange()." << std::endl
-                        << "this->getKeysRange() = " << this->getKeysRange() << std::endl
-                        << "this->maxValuesCount = " << this->maxValuesCount << std::endl
-                        << "this->values.getSize() = " << this->values.getSize() << std::endl
-                        << "this->valuesCounts.getSize() = " << this->valuesCounts.getSize() << std::endl; );
+   TNL_ASSERT( inputIndex < this->getKeysRange(),
+               std::cerr << "inputIndex = " << inputIndex << std::endl
+                         << "this->getKeysRange() = " << this->getKeysRange()
+                         << std::endl; );
+   TNL_ASSERT( this->getKeysRange() * this->maxValuesCount == this->values.getSize() && this->getKeysRange() == this->valuesCounts.getSize(),
+               std::cerr << "The map has not been reallocated after calling setKeysRange()." << std::endl
+                         << "this->getKeysRange() = " << this->getKeysRange() << std::endl
+                         << "this->maxValuesCount = " << this->maxValuesCount << std::endl
+                         << "this->values.getSize() = " << this->values.getSize() << std::endl
+                         << "this->valuesCounts.getSize() = " << this->valuesCounts.getSize() << std::endl; );
    return ValuesAccessorType( this->values.getData(), this->valuesCounts.getData(), inputIndex, this->maxValuesCount );
 }
 
@@ -137,11 +137,11 @@ typename EllpackIndexMultimap< Index, Device, LocalIndex >::ConstValuesAccessorT
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex ) const
 {
-   Assert( inputIndex < this->getKeysRange(),
+   TNL_ASSERT( inputIndex < this->getKeysRange(),
               std::cerr << "inputIndex = " << inputIndex << std::endl
                         << "this->getKeysRange() = " << this->getKeysRange()
                         << std::endl; );
-   Assert( this->getKeysRange() * this->maxValuesCount == this->values.getSize() && this->getKeysRange() == this->valuesCounts.getSize(),
+   TNL_ASSERT( this->getKeysRange() * this->maxValuesCount == this->values.getSize() && this->getKeysRange() == this->valuesCounts.getSize(),
               std::cerr << "The map has not been reallocated after calling setKeysRange()." << std::endl
                         << "this->getKeysRange() = " << this->getKeysRange() << std::endl
                         << "this->maxValuesCount = " << this->maxValuesCount << std::endl

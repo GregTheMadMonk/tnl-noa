@@ -60,7 +60,7 @@ void
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
 setKeysRange( const IndexType& keysRange )
 {
-   Assert( keysRange >= 0, );
+   TNL_ASSERT( keysRange >= 0, );
    this->keysRange = keysRange;
 }
 
@@ -94,13 +94,13 @@ typename StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::V
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex )
 {
-   Assert( inputIndex < this->getKeysRange(),
-              std::cerr << "inputIndex = " << inputIndex << std::endl
-                        << "this->getKeysRange() = " << this->getKeysRange() << std::endl; );
-   Assert( this->getKeysRange() * ValuesCount == this->values.getSize(),
-              std::cerr << "The map has not been reallocated after calling setKeysRange()." << std::endl
-                        << "this->getKeysRange() = " << this->getKeysRange() << std::endl
-                        << "this->values.getSize() = " << this->values.getSize() << std::endl; );
+   TNL_ASSERT( inputIndex < this->getKeysRange(),
+               std::cerr << "inputIndex = " << inputIndex << std::endl
+                         << "this->getKeysRange() = " << this->getKeysRange() << std::endl; );
+   TNL_ASSERT( this->getKeysRange() * ValuesCount == this->values.getSize(),
+               std::cerr << "The map has not been reallocated after calling setKeysRange()." << std::endl
+                         << "this->getKeysRange() = " << this->getKeysRange() << std::endl
+                         << "this->values.getSize() = " << this->values.getSize() << std::endl; );
    return ValuesAccessorType( this->values.getData(), inputIndex );
 }
 
@@ -112,13 +112,13 @@ typename StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::C
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex ) const
 {
-   Assert( inputIndex < this->getKeysRange(),
-              std::cerr << "inputIndex = " << inputIndex << std::endl
-                        << "this->getKeysRange() = " << this->getKeysRange() << std::endl; );
-   Assert( this->getKeysRange() * ValuesCount == this->values.getSize(),
-              std::cerr << "The map has not been reallocated after calling setKeysRange()." << std::endl
-                        << "this->getKeysRange() = " << this->getKeysRange() << std::endl
-                        << "this->values.getSize() = " << this->values.getSize() << std::endl; );
+   TNL_ASSERT( inputIndex < this->getKeysRange(),
+               std::cerr << "inputIndex = " << inputIndex << std::endl
+                         << "this->getKeysRange() = " << this->getKeysRange() << std::endl; );
+   TNL_ASSERT( this->getKeysRange() * ValuesCount == this->values.getSize(),
+               std::cerr << "The map has not been reallocated after calling setKeysRange()." << std::endl
+                         << "this->getKeysRange() = " << this->getKeysRange() << std::endl
+                         << "this->values.getSize() = " << this->values.getSize() << std::endl; );
    return ConstValuesAccessorType( this->values.getData(), inputIndex );
 }
 

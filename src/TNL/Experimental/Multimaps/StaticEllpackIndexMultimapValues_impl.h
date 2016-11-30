@@ -118,12 +118,12 @@ StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 setValue( const LocalIndexType& portIndex,
           const IndexType& value )
 {
-   Assert( this->values,
-              std::cerr << "This instance is not bound to any multimap." << std::endl; );
-   Assert( portIndex < this->getSize(),
-              std::cerr << " portIndex = " << portIndex
-                        << " getSize() = " << this->getSize()
-                        << std::endl );
+   TNL_ASSERT( this->values,
+               std::cerr << "This instance is not bound to any multimap." << std::endl; );
+   TNL_ASSERT( portIndex < this->getSize(),
+               std::cerr << " portIndex = " << portIndex
+                         << " getSize() = " << this->getSize()
+                         << std::endl );
    this->values[ portIndex ] = value;
 }
 
@@ -135,12 +135,12 @@ Index
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 getValue( const LocalIndexType& portIndex ) const
 {
-   Assert( this->values,
-              std::cerr << "This instance is not bound to any multimap." << std::endl; );
-   Assert( portIndex < this->getSize(),
-              std::cerr << " portIndex = " << portIndex
-                        << " getSize() = " << this->getSize()
-                        << std::endl );
+   TNL_ASSERT( this->values,
+               std::cerr << "This instance is not bound to any multimap." << std::endl; );
+   TNL_ASSERT( portIndex < this->getSize(),
+               std::cerr << " portIndex = " << portIndex
+                         << " getSize() = " << this->getSize()
+                         << std::endl );
    return this->values[ portIndex ];
 }
 
@@ -152,12 +152,12 @@ Index&
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 operator[]( const LocalIndexType& portIndex )
 {
-   Assert( this->values,
-              std::cerr << "This instance is not bound to any multimap." << std::endl; );
-   Assert( portIndex < this->getSize(),
-              std::cerr << " portIndex = " << portIndex
-                        << " getSize() = " << this->getSize()
-                        << std::endl );
+   TNL_ASSERT( this->values,
+               std::cerr << "This instance is not bound to any multimap." << std::endl; );
+   TNL_ASSERT( portIndex < this->getSize(),
+               std::cerr << " portIndex = " << portIndex
+                         << " getSize() = " << this->getSize()
+                         << std::endl );
    return this->values[ portIndex ];
 }
 
@@ -169,12 +169,12 @@ const Index&
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 operator[]( const LocalIndexType& portIndex ) const
 {
-   Assert( this->values,
-              std::cerr << "This instance is not bound to any multimap." << std::endl; );
-   Assert( portIndex < this->getSize(),
-              std::cerr << " portIndex = " << portIndex
-                        << " getSize() = " << this->getSize()
-                        << std::endl );
+   TNL_ASSERT( this->values,
+               std::cerr << "This instance is not bound to any multimap." << std::endl; );
+   TNL_ASSERT( portIndex < this->getSize(),
+               std::cerr << " portIndex = " << portIndex
+                         << " getSize() = " << this->getSize()
+                         << std::endl );
    return this->values[ portIndex ];
 }
 

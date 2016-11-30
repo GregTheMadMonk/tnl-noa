@@ -84,8 +84,8 @@ class MeshEntitySeed< MeshConfig, MeshVertexTopology >
 
       void setCornerId( const LocalIndexType& cornerIndex, const GlobalIndexType& pointIndex )
       {
-         Assert( cornerIndex == 0, std::cerr << "cornerIndex = " << cornerIndex );
-         Assert( 0 <= pointIndex, std::cerr << "pointIndex = " << pointIndex );
+         TNL_ASSERT( cornerIndex == 0, std::cerr << "cornerIndex = " << cornerIndex );
+         TNL_ASSERT( 0 <= pointIndex, std::cerr << "pointIndex = " << pointIndex );
 
          this->cornerIds[ cornerIndex ] = pointIndex;
       }

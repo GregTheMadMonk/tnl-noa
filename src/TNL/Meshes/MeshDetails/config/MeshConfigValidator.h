@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include <TNL/Assert.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
 #include <TNL/Meshes/DimensionTag.h>
 

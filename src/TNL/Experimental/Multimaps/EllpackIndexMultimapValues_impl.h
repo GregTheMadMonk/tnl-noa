@@ -44,7 +44,7 @@ EllpackIndexMultimapValues< Index, Device, LocalIndex >&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator=( const EllpackIndexMultimapValues& other )
 {
-   Assert( this->getSize() == other.getSize(), );
+   TNL_ASSERT( this->getSize() == other.getSize(), );
    if( this->values != other.values ) {
       for( LocalIndexType i = 0; i < this->getSize(); i++ )
          this->setValue( i, other[ i ] );
@@ -92,7 +92,7 @@ EllpackIndexMultimapValues( IndexType* values,
    this->values = &values[ input * allocatedSize ];
    this->valuesCount = &valuesCounts[ input ];
    this->allocatedSize = allocatedSize;
-   Assert( *(this->valuesCount) <= allocatedSize, );
+   TNL_ASSERT( *(this->valuesCount) <= allocatedSize, );
 }
 
 template< typename Index,
@@ -138,10 +138,10 @@ EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 setValue( const LocalIndexType& portIndex,
           const IndexType& value )
 {
-   Assert( portIndex < this->getSize(),
-              std::cerr << " portIndex = " << portIndex
-                        << " getSize() = " << this->getSize()
-                        << std::endl );
+   TNL_ASSERT( portIndex < this->getSize(),
+               std::cerr << " portIndex = " << portIndex
+                         << " getSize() = " << this->getSize()
+                         << std::endl );
    this->values[ portIndex ] = value;
 }
 
@@ -152,10 +152,10 @@ Index
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 getValue( const LocalIndexType& portIndex ) const
 {
-   Assert( portIndex < this->getSize(),
-              std::cerr << " portIndex = " << portIndex
-                        << " getSize() = " << this->getSize()
-                        << std::endl );
+   TNL_ASSERT( portIndex < this->getSize(),
+               std::cerr << " portIndex = " << portIndex
+                         << " getSize() = " << this->getSize()
+                         << std::endl );
    return this->values[ portIndex ];
 }
 
@@ -166,10 +166,10 @@ Index&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator[]( const LocalIndexType& portIndex )
 {
-   Assert( portIndex < this->getSize(),
-              std::cerr << " portIndex = " << portIndex
-                        << " getSize() = " << this->getSize()
-                        << std::endl );
+   TNL_ASSERT( portIndex < this->getSize(),
+               std::cerr << " portIndex = " << portIndex
+                         << " getSize() = " << this->getSize()
+                         << std::endl );
    return this->values[ portIndex ];
 }
 
@@ -180,10 +180,10 @@ const Index&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator[]( const LocalIndexType& portIndex ) const
 {
-   Assert( portIndex < this->getSize(),
-              std::cerr << " portIndex = " << portIndex
-                        << " getSize() = " << this->getSize()
-                        << std::endl );
+   TNL_ASSERT( portIndex < this->getSize(),
+               std::cerr << " portIndex = " << portIndex
+                         << " getSize() = " << this->getSize()
+                         << std::endl );
    return this->values[ portIndex ];
 }
 

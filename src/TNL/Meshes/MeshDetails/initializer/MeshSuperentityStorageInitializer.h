@@ -48,25 +48,25 @@ public:
    {
       //std::cout << "Adding superentity with " << SuperdimensionTag::value << " dimension of entity with " << SubdimensionTag::value << " dimension: entityIndex = " << entityIndex << ", superentityIndex = " << superentityIndex << std::endl;
       auto& indexSet = this->dynamicStorageNetwork[ entityIndex ];
-      Assert( indexSet.count( superentityIndex ) == 0,
-                 std::cerr << "Superentity " << superentityIndex << " with dimension " << SuperdimensionTag::value
-                           << " of entity " << entityIndex << " with dimension " << SubdimensionTag::value
-                           << " has been already added. This is probably a bug in the mesh initializer." << std::endl; );
+      TNL_ASSERT( indexSet.count( superentityIndex ) == 0,
+                  std::cerr << "Superentity " << superentityIndex << " with dimension " << SuperdimensionTag::value
+                            << " of entity " << entityIndex << " with dimension " << SubdimensionTag::value
+                            << " has been already added. This is probably a bug in the mesh initializer." << std::endl; );
       indexSet.insert( superentityIndex );
    }
 
    void initSuperentities( MeshInitializerType& meshInitializer )
    {
-      Assert( dynamicStorageNetwork.size() > 0,
+      TNL_ASSERT( dynamicStorageNetwork.size() > 0,
                  std::cerr << "No superentity indices were collected. This is a bug in the mesh initializer." << std::endl; );
-      Assert( (size_t) getMaxSuperentityIndex() == dynamicStorageNetwork.size() - 1,
-                 std::cerr << "Superentities for some entities are missing. "
-                           << "This is probably a bug in the mesh initializer." << std::endl; );
+      TNL_ASSERT( (size_t) getMaxSuperentityIndex() == dynamicStorageNetwork.size() - 1,
+                  std::cerr << "Superentities for some entities are missing. "
+                            << "This is probably a bug in the mesh initializer." << std::endl; );
 
       SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< EntityTopology, SuperdimensionTag::value >();
-      Assert( (size_t) superentityStorageNetwork.getKeysRange() == dynamicStorageNetwork.size(),
-                 std::cerr << "Sizes of the static and dynamic storage networks don't match. "
-                           << "This is probably a bug in the mesh initializer." << std::endl; );
+      TNL_ASSERT( (size_t) superentityStorageNetwork.getKeysRange() == dynamicStorageNetwork.size(),
+                  std::cerr << "Sizes of the static and dynamic storage networks don't match. "
+                            << "This is probably a bug in the mesh initializer." << std::endl; );
 
       typename SuperentityStorageNetwork::ValuesAllocationVectorType storageNetworkAllocationVector;
       storageNetworkAllocationVector.setSize( superentityStorageNetwork.getKeysRange() );
