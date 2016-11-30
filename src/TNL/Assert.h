@@ -22,8 +22,6 @@
 
 #endif
 
-namespace TNL {
-
 #ifndef NDEBUG   
    
 #ifdef HAVE_CUDA
@@ -53,5 +51,3 @@ namespace TNL {
 #else /* #ifndef NDEBUG */
 #define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )
 #endif /* #ifndef NDEBUG */
-
-} // namespace TNL
