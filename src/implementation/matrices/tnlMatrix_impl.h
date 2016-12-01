@@ -223,6 +223,14 @@ void tnlMatrix< Real, Device, Index >::print( ostream& str ) const
 {
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+bool tnlMatrix< Real, Device, Index >::help()
+{
+   return true;
+}
+
 #ifdef HAVE_CUDA
 template< typename Matrix,
           typename InVector,

@@ -116,6 +116,8 @@ class tnlMatrix : public virtual tnlObject
 
    virtual void print( ostream& str ) const;
 
+   bool help();
+
    protected:
 
    IndexType rows, columns;

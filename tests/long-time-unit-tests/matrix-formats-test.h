@@ -33,6 +33,7 @@
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlBiEllpackMatrix.h>
 #include <matrices/tnlBiEllpackSymMatrix.h>
+#include <matrices/tnlEllpackGraphMatrix.h>
 
 void setupConfig( tnlConfigDescription& config )
 {
@@ -47,6 +48,7 @@ void setupConfig( tnlConfigDescription& config )
        config.addEntryEnum< tnlString >( "csr" );
        config.addEntryEnum< tnlString >( "bi-ell" );
        config.addEntryEnum< tnlString >( "bi-ell-sym" );
+       config.addEntryEnum< tnlString >( "ellpack-graph" );
    config.addEntry< bool >( "hard-test", "Comparison against the dense matrix.", false );
    config.addEntry< bool >( "multiplication-test", "Matrix-vector multiplication test.", false );
    config.addEntry< bool >( "verbose", "Verbose mode." );  
@@ -72,6 +74,9 @@ bool testMatrix( bool sym, const tnlParameterContainer& parameters )
    }
    if( ! tnlMatrixReader< Matrix >::readMtxFile( file, matrix, verbose, sym ) )
       return false;
+
+   if( !matrix.help() )
+       return false;
    //if( ! tnlMatrixReader< Matrix >::verifyMtxFile( file, matrix, verbose ) )
    //   return false;
    //for( int i = 0; i < matrix.getRows(); i++ )
@@ -199,6 +204,12 @@ int main( int argc, char* argv[] )
    if( matrixFormat == "bi-ell-sym" )
    {
        if( !testMatrix< tnlBiEllpackSymMatrix< double, tnlHost, int > >( true, parameters ) )
+           return EXIT_FAILURE;
+       return EXIT_SUCCESS;
+   }
+   if( matrixFormat == "ellpack-graph" )
+   {
+       if( !testMatrix< tnlEllpackGraphMatrix< double, tnlHost, int > >( true, parameters ) )
            return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }

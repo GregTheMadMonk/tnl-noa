@@ -734,14 +734,14 @@ void tnlEllpackSymMatrix< Real, Device, Index >::spmvCuda( const InVector& inVec
 {
     IndexType i = DeviceDependentCode::getRowBegin( *this, rowId );
     const IndexType rowEnd = DeviceDependentCode::getRowEnd( *this, rowId );
-    const IndexTpe step = DeviceDependentCode::getElementStep( *this );
+    const IndexType step = DeviceDependentCode::getElementStep( *this );
 
-    while( i < rowEnd && this->columnIndexes.getElement( i ) != this->getPaddingIndex() )
+    while( i < rowEnd && this->columnIndexes[ i ] != this->getPaddingIndex() )
     {
-        const IndexType column = this->columnIndexes.getElemnt( i );
-        outVector[ rowId ] += this->values.getElement( i ) * inVector[ column ];
+        const IndexType column = this->columnIndexes[ i ];
+        outVector[ rowId ] += this->values[ i ] * inVector[ column ];
         if( rowId != column )
-            outVector[ column ].add( this->values.getElement( i ) * inVector[ row ] );
+            outVector[ column ].add( this->values[ i ] * inVector[ rowId ] );
         i += step;
     }
 };
@@ -753,15 +753,15 @@ template< typename Real,
           typename InVector,
           typename OutVector >
 __global__
-tnlEllpackSymMatrixVectorProductCuda< Real, tnlCuda, Index >( const tnlEllpackSymMatrix& matrix,
-                                                              const InVector& inVector,
-                                                              OutVector& outVector,
-                                                              const int gridIdx )
+void tnlEllpackSymMatrixVectorProductCuda( const tnlEllpackSymMatrix< Real, tnlCuda, Index >* matrix,
+                                           const InVector* inVector,
+                                           OutVector* outVector,
+                                           const int gridIdx )
 {
     int globalIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     if( globalIdx >= matrix->getRows() )
         return;
-    matrix->spmvCuda( inVector, outVector, globalIdx );
+    matrix->spmvCuda( *inVector, *outVector, globalIdx );
 };
 #endif
 
@@ -827,7 +827,7 @@ class tnlEllpackSymMatrixDeviceDependentCode< tnlCuda >
               if( gridIdx == cudaGrids - 1 )
                   cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
               const int sharedMemory = cudaBlockSize.x * sizeof( Real );
-              tnlEllpackSymMatrixVectorProductCuda< Real, Index, StripSize, InVector, OutVector >
+              tnlEllpackSymMatrixVectorProductCuda< Real, Index, InVector, OutVector >
                                                 <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                   ( kernel_this,
                                                     kernel_inVector,
