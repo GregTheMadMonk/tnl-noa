@@ -87,7 +87,7 @@ protected:
    Containers::Vector< RealType, DeviceType, IndexType > _r, w, _v, _M_tmp;
    Containers::Vector< RealType, Devices::Host, IndexType > _s, _cs, _sn, _H;
 
-   IndexType size, restarting;
+   IndexType size, restarting_min, restarting_max, restarting_step_min, restarting_step_max;
 
    MatrixPointer matrix;
    

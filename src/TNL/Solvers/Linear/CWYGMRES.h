@@ -119,7 +119,7 @@ protected:
    // host-only storage for Givens rotations and the least squares problem
    HostVector cs, sn, H, s;
 
-   IndexType size, ldSize, restarting;
+   IndexType size, ldSize, restarting_min, restarting_max, restarting_step_min, restarting_step_max;
 
    MatrixPointer matrix;
    PreconditionerPointer preconditioner;

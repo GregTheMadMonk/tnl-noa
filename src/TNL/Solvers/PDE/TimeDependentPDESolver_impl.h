@@ -141,8 +141,12 @@ writeProlog( Logger& logger,
       logger.writeParameter< double >( "Adaptivity:", "merson-adaptivity", parameters, 1 );
    if( solverName == "sor" )
       logger.writeParameter< double >( "Omega:", "sor-omega", parameters, 1 );
-   if( solverName == "gmres" )
-      logger.writeParameter< int >( "Restarting:", "gmres-restarting", parameters, 1 );
+   if( solverName == "gmres" || solverName == "cwygmres" ) {
+      logger.writeParameter< int >( "Restarting min:", "gmres-restarting-min", parameters, 1 );
+      logger.writeParameter< int >( "Restarting max:", "gmres-restarting-max", parameters, 1 );
+      logger.writeParameter< int >( "Restarting step min:", "gmres-restarting-step-min", parameters, 1 );
+      logger.writeParameter< int >( "Restarting step max:", "gmres-restarting-step-max", parameters, 1 );
+   }
    logger.writeParameter< double >( "Convergence residue:", "convergence-residue", parameters );
    logger.writeParameter< double >( "Divergence residue:", "divergence-residue", parameters );
    logger.writeParameter< int >( "Maximal number of iterations:", "max-iterations", parameters );
