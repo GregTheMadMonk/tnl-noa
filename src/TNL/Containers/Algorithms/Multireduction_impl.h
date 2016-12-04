@@ -75,7 +75,7 @@ reduce( Operation& operation,
          return false;
       if( deviceInput2 ) {
          RealType hostArray2[ Multireduction_minGpuDataSize ];
-         if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, n * size ) )
+         if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, size ) )
             return false;
          return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, hostArray2, hostResult );
       }
