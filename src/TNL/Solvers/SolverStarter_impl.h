@@ -27,7 +27,7 @@
 #include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
-#include <TNL/Solvers/PDE/PDESolver.h>
+#include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 
 namespace TNL {
 namespace Solvers {   

@@ -170,7 +170,7 @@ bool Merson< Problem > :: solve( DofVectorPointer& u )
    /****
     * Start the main loop
     */
-   while( 1 )
+   while( this->checkNextIteration() )
    {
       /****
        * Compute Runge-Kutta coefficients
@@ -227,10 +227,13 @@ bool Merson< Problem > :: solve( DofVectorPointer& u )
       if( time >= this->getStopTime() ||
           ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() ) )
       {
-         this->refreshSolverMonitor();
+         this->refreshSolverMonitor( true );
          return true;
       }
    }
+   this->refreshSolverMonitor( true );
+   return this->checkConvergence();
+
 };
 
 template< typename Problem >

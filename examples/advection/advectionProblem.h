@@ -14,7 +14,8 @@ template< typename Mesh,
           typename RightHandSide,
            typename DifferentialOperator >
 class advectionProblem:
-   public PDEProblem< Mesh,
+   public tnlPDEProblem< Mesh,
+                         TimeDependentProblem,
                          typename DifferentialOperator::RealType,
                          typename Mesh::DeviceType,
                          typename DifferentialOperator::IndexType >
@@ -31,6 +32,9 @@ class advectionProblem:
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       
+      typedef tnlMeshFunction< Mesh > MeshFunctionType;
+      typedef tnlPDEProblem< Mesh, TimeDependentProblem, RealType, DeviceType, IndexType > BaseType;
+
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;

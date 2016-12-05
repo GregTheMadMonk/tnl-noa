@@ -1,5 +1,5 @@
 /***************************************************************************
-                          PDESolver.h  -  description
+                          TimeDependentPDESolver.h  -  description
                              -------------------
     begin                : Jan 15, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -23,7 +23,7 @@ namespace PDE {
 
 template< typename Problem,
           typename TimeStepper >
-class PDESolver : public Object
+class TimeDependentPDESolver : public Object
 {
    public:
 
@@ -38,7 +38,7 @@ class PDESolver : public Object
       typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
       typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
 
-      PDESolver();
+      TimeDependentPDESolver();
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" );
@@ -102,4 +102,4 @@ class PDESolver : public Object
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/PDE/PDESolver_impl.h>
+#include <TNL/Solvers/PDE/TimeDependentPDESolver_impl.h>

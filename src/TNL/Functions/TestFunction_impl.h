@@ -28,6 +28,13 @@
 namespace TNL {
 namespace Functions {   
 
+/****
+ * The signed distance test functions
+ */
+#include <functions/tnlSinBumpsFunctionSDF.h>
+#include <functions/tnlSinWaveFunctionSDF.h>
+#include <functions/tnlParaboloidSDF.h>
+
 template< int FunctionDimensions,
           typename Real,
           typename Device >
@@ -49,6 +56,7 @@ configSetup( Config::ConfigDescription& config,
 {
    config.addRequiredEntry< String >( prefix + "test-function", "Testing function." );
       config.addEntryEnum( "constant" );
+      config.addEntryEnum( "paraboloid" );
       config.addEntryEnum( "exp-bump" );
       config.addEntryEnum( "sin-wave" );
       config.addEntryEnum( "sin-bumps" );
@@ -57,6 +65,10 @@ configSetup( Config::ConfigDescription& config,
       config.addEntryEnum( "twins" );
       config.addEntryEnum( "pseudoSquare" );
       config.addEntryEnum( "blob" );
+      config.addEntryEnum( "paraboloid-sdf" );      
+      config.addEntryEnum( "sin-wave-sdf" );
+      config.addEntryEnum( "sin-bumps-sdf" );
+
    config.addEntry     < double >( prefix + "constant", "Value of the constant function.", 0.0 );
    config.addEntry     < double >( prefix + "wave-length", "Wave length of the sine based test functions.", 1.0 );
    config.addEntry     < double >( prefix + "wave-length-x", "Wave length of the sine based test functions.", 1.0 );
@@ -72,6 +84,11 @@ configSetup( Config::ConfigDescription& config,
    config.addEntry     < double >( prefix + "waves-number-y", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "waves-number-z", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "sigma", "Sigma for the exp based test functions.", 1.0 );
+	config.addEntry     < double >( prefix + "radius", "Radius for paraboloids.", 1.0 );
+   config.addEntry     < double >( prefix + "coefficient", "Coefficient for paraboloids.", 1.0 );
+   config.addEntry     < double >( prefix + "x-centre", "x-centre for paraboloids.", 0.0 );
+   config.addEntry     < double >( prefix + "y-centre", "y-centre for paraboloids.", 0.0 );
+   config.addEntry     < double >( prefix + "z-centre", "z-centre for paraboloids.", 0.0 );
    config.addEntry     < double >( prefix + "diameter", "Diameter for the cylinder, flowerpot test functions.", 1.0 );
   config.addEntry     < double >( prefix + "height", "Height of zero-level-set function for the blob, pseudosquare test functions.", 1.0 );
    config.addEntry     < String >( prefix + "time-dependence", "Time dependence of the test function.", "none" );
@@ -143,10 +160,16 @@ setup( const Config::ParameterContainer& parameters,
   std::cout << "Test function ... " << testFunction << std::endl;
    if( testFunction == "constant" )
    {
-      typedef Constant< Dimensions, Real > FunctionType;
+      typedef Analytic::Constant< Dimensions, Real > FunctionType;
       functionType = constant;
       return setupFunction< FunctionType >( parameters );
    }
+   if( testFunction == "paraboloid" )
+   {
+      typedef tnlParaboloid< Dimensions, Real > FunctionType;
+      functionType = paraboloid;
+      return setupFunction< FunctionType >( parameters );
+   }   
    if( testFunction == "exp-bump" )
    {
       typedef ExpBump< Dimensions, Real > FunctionType;
@@ -246,11 +269,20 @@ operator = ( const TestFunction& function )
       case blob:
          this->copyFunction< Blob< FunctionDimensions, Real > >( function.function );
          break;
+
+      case paraboloidSDF:
+         this->copyFunction< tnlParaboloid< FunctionDimensions, Real > >( function.function );
+         break;
+      case sinBumpsSDF:
+         this->copyFunction< tnlSinBumpsFunctionSDF< FunctionDimensions, Real > >( function.function );
+         break;
+      case sinWaveSDF:
+         this->copyFunction< tnlSinWaveFunctionSDF< FunctionDimensions, Real > >( function.function );
+         break;
       default:
          TNL_ASSERT( false, );
          break;
    }
-
 }
 
 template< int FunctionDimensions,
@@ -350,6 +382,9 @@ getTimeDerivative( const VertexType& vertex,
       case constant:
          return scale * ( ( Constant< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+      case paraboloid:
+         return scale * ( ( tnlParaboloid< Dimensions, Real >* ) function )->
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case expBump:
          return scale * ( ( ExpBump< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
@@ -380,6 +415,17 @@ getTimeDerivative( const VertexType& vertex,
          return scale * ( ( Blob< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
+
+
+      case paraboloidSDF:
+         return scale * ( ( tnlParaboloidSDF< Dimensions, Real >* ) function )->
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+      case sinBumpsSDF:
+         return scale * ( ( tnlSinBumpsFunctionSDF< Dimensions, Real >* ) function )->
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+      case sinWaveSDF:
+         return scale * ( ( tnlSinWaveFunctionSDF< Dimensions, Real >* ) function )->
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       default:
          return 0.0;
    }
@@ -418,6 +464,9 @@ deleteFunctions()
       case constant:
          deleteFunction< Constant< Dimensions, Real> >();
          break;
+      case paraboloid:
+         deleteFunction< tnlParaboloid< Dimensions, Real> >();
+         break;
       case expBump:
          deleteFunction< ExpBump< Dimensions, Real> >();
          break;
@@ -441,6 +490,16 @@ deleteFunctions()
          break;
       case blob:
          deleteFunction< Blob< Dimensions, Real> >();
+         break;
+
+      case paraboloidSDF:
+         deleteFunction< tnlParaboloidSDF< Dimensions, Real> >();
+         break;
+      case sinBumpsSDF:
+         deleteFunction< tnlSinBumpsFunctionSDF< Dimensions, Real> >();
+         break;
+      case sinWaveSDF:
+         deleteFunction< tnlSinWaveFunctionSDF< Dimensions, Real> >();
          break;
    }
 }
@@ -484,7 +543,6 @@ printFunction( std::ostream& str ) const
       Devices::Cuda::print( f, str );
       return str;
    }
-   return str;
 }
 
 template< int FunctionDimensions,

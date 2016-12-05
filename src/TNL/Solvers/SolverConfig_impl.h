@@ -14,7 +14,7 @@
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
-#include <TNL/Solvers/PDE/PDESolver.h>
+#include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 
 namespace TNL {
 namespace Solvers {

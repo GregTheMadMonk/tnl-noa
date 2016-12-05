@@ -1,0 +1,43 @@
+#!/bin/bash
+
+dimensions=2
+
+size=2
+
+time=50
+
+rm -r work_dir
+mkdir work_dir
+cp mapa_png.png work_dir/mapa_png.png
+cd  work_dir
+
+tnl-image-converter 		--image-format png\
+		    		--input-images mapa_png.png
+
+
+tnl-init 			--test-function sdf-para \
+	     			--x-centre 0.5 \
+	    			--y-centre 1.0 \
+ 	   			--offset 0.05 \
+           			--output-file init.tnl \
+	     			--final-time 0.0 \
+	     			--snapshot-period 0.1
+
+hamilton-jacobi-parallel-map-dbg 	--initial-condition init.tnl \
+				--map mapa_png.tnl \
+              			--cfl-condition 50 \
+	      	  		--mesh mesh.tnl \
+	     	  		--initial-tau 1.0e-3 \
+	      	  		--epsilon 4.0 \
+        	  		--delta 0.0 \
+       	      			--stop-time $time \
+	          		--scheme godunov \
+	          		--subgrid-size 8 \
+		  		--dim $dimensions
+
+	
+#cp ../template.dat1 template.dat1
+#cp ../template.dat2 template.dat2
+#cp ../gplt2eps.py gplt2eps.py
+cd ..
+
