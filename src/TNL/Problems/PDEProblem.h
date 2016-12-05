@@ -12,7 +12,7 @@
 
 #include <TNL/Problems/Problem.h>
 #include <TNL/SharedPointer.h>
-#include <TNL/Matrices/CSR.h>
+#include <TNL/Matrices/SlicedEllpack.h>
 
 namespace TNL {
 namespace Problems {
@@ -34,7 +34,7 @@ class PDEProblem : public Problem< Real, Device, Index >
       typedef SharedPointer< MeshType, DeviceType > MeshPointer;
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-      typedef Matrices::CSR< RealType, DeviceType, IndexType > MatrixType;
+      typedef Matrices::SlicedEllpack< RealType, DeviceType, IndexType > MatrixType;
       typedef Containers::Vector< RealType, DeviceType, IndexType > MeshDependentDataType;
       typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
 
