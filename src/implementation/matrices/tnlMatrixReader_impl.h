@@ -77,7 +77,7 @@ bool tnlMatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
       return false;
    }
 
-   if( ! computeRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
+   if( ! computeRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose, symReader ) )
       return false;
 
    if( ! matrix.setRowLengths( rowLengths ) )
