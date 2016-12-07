@@ -66,7 +66,7 @@ class MyNeumannBoundaryConditions
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         return Functions::FunctionAdapter< MeshType, FunctionType >::template setup< MeshPointer >( this->function, meshPointer, parameters, prefix );
+         return true; //Functions::FunctionAdapter< MeshType, FunctionType >::template setup< MeshPointer >( this->function, meshPointer, parameters, prefix );
       }
 
       void setFunction( const Function& function )

@@ -43,10 +43,10 @@ class EulerPressureGetter
       __cuda_callable__
       Real operator[]( const IndexType& idx ) const
             {
-/*         if (this->rho[ idx ]==0) return 0; 
+         if (this->rho[ idx ]==0) {return 0;} 
          else return ( this->gamma - 1.0 ) * ( this->energy[ idx ] - 0.5 * this->rho[ idx ] * 
-         ( this->rhoVelX[ idx ] / this->rho[ idx ] + this->rhoVelY[ idx ] / this->rho[ idx ]) );
-*/       return ( this->gamma - 1.0 ) * ( this->energy[ idx ] * this->rho[ idx ] );
+         ( std::pow(this->rhoVelX[ idx ] / this->rho[ idx ],2) + std::pow(this->rhoVelY[ idx ] / this->rho[ idx ],2) ) );
+//*/       return ( this->gamma - 1.0 ) * ( this->energy[ idx ] * this->rho[ idx ] );
       }
 
       

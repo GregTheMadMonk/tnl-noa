@@ -47,6 +47,10 @@ operator()( const MeshFunction& u,
           - 0.5 * hxInverse * 
           (( u[ east ] * this -> velocity[ east ] + this -> pressure [ east ] ) 
           -( u[ west ] * this -> velocity[ west ] + this -> pressure [ west ] ));
+	  /*(0.5) * ( u[ west ] + u[ east ] ) 
+          - 0.5 * hxInverse * this->tau *
+          (( u[ east ] * this -> velocity[ east ] + this -> pressure [ east ] ) 
+          -( u[ west ] * this -> velocity[ west ] + this -> pressure [ west ] ));*/
 }
 
 template< typename MeshReal,

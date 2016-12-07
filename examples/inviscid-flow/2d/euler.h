@@ -79,6 +79,7 @@ class eulerSetter
 
       static bool run( const Config::ParameterContainer & parameters )
       {
+std::cout <<"run";
           enum { Dimensions = MeshType::getMeshDimensions() };
           typedef LaxFridrichs2D< MeshType, Real, Index > ApproximateOperator;
           typedef eulerRhs< MeshType, Real > RightHandSide;

@@ -10,6 +10,8 @@
 #include "EulerPressureGetter.h"
 #include "Euler2DVelXGetter.h"
 #include "EulerVelGetter.h"
+#include "MyMixedBoundaryConditions.h"
+#include "MyNeumannBoundaryConditions.h"
 
 namespace TNL {
 
@@ -59,7 +61,7 @@ setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
+   if( //! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
    return true;
@@ -76,7 +78,7 @@ getDofs( const MeshPointer& mesh ) const
    /****
     * Return number of  DOFs (degrees of freedom) i.e. number
     * of unknowns to be resolved by the main solver.
-    */
+    */ 
    return 4*mesh->template getEntitiesCount< typename MeshType::Cell >();
 }
 
@@ -108,26 +110,30 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    RealType velLuX = parameters.getParameter< RealType >( "NW-velocityX" );
    RealType velLuY = parameters.getParameter< RealType >( "NW-velocityY" );
    RealType preLu = parameters.getParameter< RealType >( "NW-pressure" );
-   RealType eLu = ( preLu / ( rhoLu * (gamma - 1) ) );
-   //RealType eLu = ( preLu / (gamma - 1) ) + 0.5 * rhoLu * pow(velLuX,2)+pow(velLuY,2);
+   //RealType eLu = ( preLu / ( rhoLu * (gamma - 1) ) );
+   RealType eLu = ( preLu / (gamma - 1) ) + 0.5 * rhoLu * ( std::pow(velLuX,2)+std::pow(velLuY,2) );
+   std::cout << rhoLu <<' '<< velLuX<<' '<<velLuY<<' '<<preLu<<' '<<eLu<<' ';  
    RealType rhoLd = parameters.getParameter< RealType >( "SW-density" );
    RealType velLdX = parameters.getParameter< RealType >( "SW-velocityX" );
    RealType velLdY = parameters.getParameter< RealType >( "SW-velocityY" );
    RealType preLd = parameters.getParameter< RealType >( "SW-pressure" );
-   RealType eLd = ( preLd / ( rhoLd * (gamma - 1) ) );
-   //RealType eLd = ( preLd / (gamma - 1) ) + 0.5 * rhoLd * pow(velLdX,2)+pow(velLdY,2);
+   //RealType eLd = ( preLd / ( rhoLd * (gamma - 1) ) );
+   RealType eLd = ( preLd / (gamma - 1) ) + 0.5 * rhoLd * ( std::pow(velLdX,2)+std::pow(velLdY,2) );
+   std::cout << rhoLd <<' '<< velLdX<<' '<<velLdY<<' '<<preLd<<' '<<eLd<<' '; 
    RealType rhoRu = parameters.getParameter< RealType >( "NE-density" );
    RealType velRuX = parameters.getParameter< RealType >( "NE-velocityX" );
    RealType velRuY = parameters.getParameter< RealType >( "NE-velocityY" );
    RealType preRu = parameters.getParameter< RealType >( "NE-pressure" );
-   RealType eRu = ( preRu / ( rhoRu * (gamma - 1) ) );
-   //RealType eRu = ( preRu / (gamma - 1) ) + 0.5 * rhoRu * pow(velRuX,2)+pow(velRuY,2);
+   //RealType eRu = ( preRu / ( rhoRu * (gamma - 1) ) );
+   RealType eRu = ( preRu / (gamma - 1) ) + 0.5 * rhoRu * ( std::pow(velRuX,2)+std::pow(velRuY,2) );
+   std::cout << rhoRu <<' '<< velRuX<<' '<<velRuY<<' '<<preRu<<' '<<eRu<<' '; 
    RealType rhoRd = parameters.getParameter< RealType >( "SE-density" );
    RealType velRdX = parameters.getParameter< RealType >( "SE-velocityX" );
    RealType velRdY = parameters.getParameter< RealType >( "SE-velocityY" );
    RealType preRd = parameters.getParameter< RealType >( "SE-pressure" );
-   RealType eRd = ( preRd / ( rhoRd * (gamma - 1) ) );
-   //RealType eRd = ( preRd / (gamma - 1) ) + 0.5 * rhoRd * pow(velRdX,2)+pow(velRdY,2);
+   //RealType eRd = ( preRd / ( rhoRd * (gamma - 1) ) );
+   RealType eRd = ( preRd / (gamma - 1) ) + 0.5 * rhoRd * ( std::pow(velRdX,2)+std::pow(velRdY,2) );
+   std::cout << rhoRd <<' '<< velRdX<<' '<<velRdY<<' '<<preRd<<' '<<eRd<<' '; 
    RealType x0 = parameters.getParameter< RealType >( "riemann-border" );
    int size = mesh->template getEntitiesCount< Cell >();
    uRho->bind(mesh, dofs, 0);
@@ -254,7 +260,7 @@ makeSnapshot( const RealType& time,
    fileName.setFileNameBase( "velocity-" );
    if( ! velocity->save( fileName.getFileName() ) )
       return false;
-   fileName.setFileNameBase( "pressue-" );
+   fileName.setFileNameBase( "pressure-" );
    if( ! pressure->save( fileName.getFileName() ) )
       return false;
 

@@ -60,7 +60,7 @@ setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->boundaryConditionsPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
+   if( //! this->boundaryConditionsPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
    return true;
@@ -103,19 +103,19 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                      DofVectorPointer& dofs,
                      MeshDependentDataPointer& meshDependentData )
 {
-  std::cout << std::endl << "get conditions from CML";
+  std::cout << std::endl << "get conditions from CMD";
    typedef typename MeshType::Cell Cell;
    this->gamma = parameters.getParameter< RealType >( "gamma" );
    RealType rhoL = parameters.getParameter< RealType >( "left-density" );
    RealType velL = parameters.getParameter< RealType >( "left-velocity" );
    RealType preL = parameters.getParameter< RealType >( "left-pressure" );
-   RealType eL = ( preL / ( rhoL * (gamma - 1) ) );
-   //RealType eL = ( preL / (gamma - 1) ) + 0.5 * rhoL * velL * velL;
+   //RealType eL = ( preL / ( rhoL * (gamma - 1) ) );
+   RealType eL = ( preL / (gamma - 1) ) + 0.5 * rhoL * velL * velL;
    RealType rhoR = parameters.getParameter< RealType >( "right-density" );
    RealType velR = parameters.getParameter< RealType >( "right-velocity" );
    RealType preR = parameters.getParameter< RealType >( "right-pressure" );
-   RealType eR = ( preR / ( rhoR * (gamma - 1) ) );
-   //RealType eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * velR * velR;
+   //RealType eR = ( preR / ( rhoR * (gamma - 1) ) );
+   RealType eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * velR * velR;
    RealType x0 = parameters.getParameter< RealType >( "riemann-border" );
    int count = mesh->template getEntitiesCount< Cell >();
    uRho->bind( mesh, *dofs, 0);
@@ -125,7 +125,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    data.setSize(2*count);
    velocity->bind( mesh, data, 0);
    pressure->bind( mesh, data, count );
-   std::cout << std::endl << "set conditions from CML"<< std::endl;   
+   std::cout << std::endl << "set conditions from CMD"<< std::endl;   
    for(IndexType i = 0; i < count; i++)
       if (i < x0 * count )
          {
@@ -230,9 +230,9 @@ getExplicitRHS( const RealType& time,
     typedef typename MeshType::Cell Cell;
     int count = mesh->template getEntitiesCount< Cell >();
 	//bind _fu
-    this->fuRho->bind(mesh, _u, 0);
-    this->fuRhoVelocity->bind(mesh, _u, count);
-    this->fuEnergy->bind(mesh, _u, 2 * count);
+    this->fuRho->bind(mesh, _fu, 0);
+    this->fuRhoVelocity->bind(mesh, _fu, count);
+    this->fuEnergy->bind(mesh, _fu, 2 * count);
 
    //generating Differential operator object
    SharedPointer< Continuity > lF1DContinuity;

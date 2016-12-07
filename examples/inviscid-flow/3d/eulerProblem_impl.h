@@ -60,7 +60,7 @@ setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
+   if( //! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
    return true;
@@ -108,51 +108,59 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    RealType rhoNWU = parameters.getParameter< RealType >( "NWU-density" );
    RealType velNWUX = parameters.getParameter< RealType >( "NWU-velocityX" );
    RealType velNWUY = parameters.getParameter< RealType >( "NWU-velocityY" );
+   RealType velNWUZ = parameters.getParameter< RealType >( "NWU-velocityZ" );
    RealType preNWU = parameters.getParameter< RealType >( "NWU-pressure" );
-   RealType eNWU = ( preNWU / ( rhoNWU * (gamma - 1) ) );
-   //RealType eNWU = ( preNWU / (gamma - 1) ) + 0.5 * rhoNWU * pow(velNWUX,2)+pow(velNWUY,2);
+   //RealType eNWU = ( preNWU / ( rhoNWU * (gamma - 1) ) );
+   RealType eNWU = ( preNWU / (gamma - 1) ) + 0.5 * rhoNWU * (std::pow(velNWUX,2)+std::pow(velNWUY,2)+std::pow(velNWUZ,2));
    RealType rhoSWU = parameters.getParameter< RealType >( "SWU-density" );
    RealType velSWUX = parameters.getParameter< RealType >( "SWU-velocityX" );
    RealType velSWUY = parameters.getParameter< RealType >( "SWU-velocityY" );
+   RealType velSWUZ = parameters.getParameter< RealType >( "SWU-velocityZ" );
    RealType preSWU = parameters.getParameter< RealType >( "SWU-pressure" );
-   RealType eSWU = ( preSWU / ( rhoSWU * (gamma - 1) ) );
-   //RealType eSWU = ( preSWU / (gamma - 1) ) + 0.5 * rhoSWU * pow(velSWUX,2)+pow(velSWUY,2);
+   //RealType eSWU = ( preSWU / ( rhoSWU * (gamma - 1) ) );
+   RealType eSWU = ( preSWU / (gamma - 1) ) + 0.5 * rhoSWU * (std::pow(velSWUX,2)+std::pow(velSWUY,2)+std::pow(velSWUZ,2));
    RealType rhoNWD = parameters.getParameter< RealType >( "NWD-density" );
    RealType velNWDX = parameters.getParameter< RealType >( "NWD-velocityX" );
    RealType velNWDY = parameters.getParameter< RealType >( "NWD-velocityY" );
+   RealType velNWDZ = parameters.getParameter< RealType >( "NWD-velocityZ" );
    RealType preNWD = parameters.getParameter< RealType >( "NWD-pressure" );
-   RealType eNWD = ( preNWD / ( rhoNWD * (gamma - 1) ) );
-   //RealType eNWD = ( preNWD / (gamma - 1) ) + 0.5 * rhoNWD * pow(velNWDX,2)+pow(velNWDY,2);
+   //RealType eNWD = ( preNWD / ( rhoNWD * (gamma - 1) ) );
+   RealType eNWD = ( preNWD / (gamma - 1) ) + 0.5 * rhoNWD * (std::pow(velNWDX,2)+std::pow(velNWDY,2)+std::pow(velNWDZ,2));
    RealType rhoSWD = parameters.getParameter< RealType >( "SWD-density" );
    RealType velSWDX = parameters.getParameter< RealType >( "SWD-velocityX" );
    RealType velSWDY = parameters.getParameter< RealType >( "SWD-velocityY" );
+   RealType velSWDZ = parameters.getParameter< RealType >( "SWD-velocityZ" );
    RealType preSWD = parameters.getParameter< RealType >( "SWD-pressure" );
-   RealType eSWD = ( preSWD / ( rhoSWD * (gamma - 1) ) );
-   //RealType eSWD = ( preSWD / (gamma - 1) ) + 0.5 * rhoSWD * pow(velSWDX,2)+pow(velSWDY,2);
+   //RealType eSWD = ( preSWD / ( rhoSWD * (gamma - 1) ) );
+   RealType eSWD = ( preSWD / (gamma - 1) ) + 0.5 * rhoSWD * (std::pow(velSWDX,2)+std::pow(velSWDY,2)+std::pow(velSWDZ,2));
    RealType rhoNEU = parameters.getParameter< RealType >( "NEU-density" );
    RealType velNEUX = parameters.getParameter< RealType >( "NEU-velocityX" );
    RealType velNEUY = parameters.getParameter< RealType >( "NEU-velocityY" );
+   RealType velNEUZ = parameters.getParameter< RealType >( "NEU-velocityZ" );
    RealType preNEU = parameters.getParameter< RealType >( "NEU-pressure" );
-   RealType eNEU = ( preNEU / ( rhoNEU * (gamma - 1) ) );
-   //RealType eNEU = ( preNEU / (gamma - 1) ) + 0.5 * rhoNEU * pow(velNEUX,2)+pow(velNEUY,2);
+   //RealType eNEU = ( preNEU / ( rhoNEU * (gamma - 1) ) );
+   RealType eNEU = ( preNEU / (gamma - 1) ) + 0.5 * rhoNEU * (std::pow(velNEUX,2)+std::pow(velNEUY,2)+std::pow(velNEUZ,2));
    RealType rhoSEU = parameters.getParameter< RealType >( "SEU-density" );
    RealType velSEUX = parameters.getParameter< RealType >( "SEU-velocityX" );
    RealType velSEUY = parameters.getParameter< RealType >( "SEU-velocityY" );
+   RealType velSEUZ = parameters.getParameter< RealType >( "SEU-velocityZ" );
    RealType preSEU = parameters.getParameter< RealType >( "SEU-pressure" );
-   RealType eSEU = ( preSEU / ( rhoSEU * (gamma - 1) ) );
-   //RealType eSEU = ( preSEU / (gamma - 1) ) + 0.5 * rhoSEU * pow(velSEUX,2)+pow(velSEUY,2);
+   //RealType eSEU = ( preSEU / ( rhoSEU * (gamma - 1) ) );
+   RealType eSEU = ( preSEU / (gamma - 1) ) + 0.5 * rhoSEU * (std::pow(velSEUX,2)+std::pow(velSEUY,2)+std::pow(velSEUZ,2));
    RealType rhoNED = parameters.getParameter< RealType >( "NED-density" );
    RealType velNEDX = parameters.getParameter< RealType >( "NED-velocityX" );
    RealType velNEDY = parameters.getParameter< RealType >( "NED-velocityY" );
+   RealType velNEDZ = parameters.getParameter< RealType >( "NED-velocityZ" );
    RealType preNED = parameters.getParameter< RealType >( "NED-pressure" );
-   RealType eNED = ( preNED / ( rhoNED * (gamma - 1) ) );
-   //RealType eNED = ( preNED / (gamma - 1) ) + 0.5 * rhoNED * pow(velNEDX,2)+pow(velNEDY,2);
+   //RealType eNED = ( preNED / ( rhoNED * (gamma - 1) ) );
+   RealType eNED = ( preNED / (gamma - 1) ) + 0.5 * rhoNED * (std::pow(velNEDX,2)+std::pow(velNEDY,2)+std::pow(velNEDZ,2));
    RealType rhoSED = parameters.getParameter< RealType >( "SED-density" );
    RealType velSEDX = parameters.getParameter< RealType >( "SED-velocityX" );
    RealType velSEDY = parameters.getParameter< RealType >( "SED-velocityY" );
+   RealType velSEDZ = parameters.getParameter< RealType >( "SED-velocityZ" );
    RealType preSED = parameters.getParameter< RealType >( "SED-pressure" );
-   RealType eSED = ( preSED / ( rhoSED * (gamma - 1) ) );
-   //RealType eSED = ( preSED / (gamma - 1) ) + 0.5 * rhoSED * pow(velSEDX,2)+pow(velSEDY,2);
+   //RealType eSED = ( preSED / ( rhoSED * (gamma - 1) ) );
+   RealType eSED = ( preSED / (gamma - 1) ) + 0.5 * rhoSED * (std::pow(velSEDX,2)+std::pow(velSEDY,2)+std::pow(velSEDZ,2));
    RealType x0 = parameters.getParameter< RealType >( "riemann-border" );
    int size = mesh->template getEntitiesCount< Cell >();
    uRho->bind(mesh, dofs, 0);
@@ -166,7 +174,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    velocity->bind(mesh, data, size);
    velocityX->bind(mesh, data, 2*size);
    velocityY->bind(mesh, data, 3*size);
-   velocityY->bind(mesh, data, 4*size);
+   velocityZ->bind(mesh, data, 4*size);
    int count = std::pow(size, (1.0/3.0));
    for(IndexType i = 0; i < count; i++)   
       for(IndexType j = 0; j < count; j++)
@@ -176,10 +184,12 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                   (* uRho)[i*std::pow(count,2)+j*count+k] = rhoSWD;
                   (* uRhoVelocityX)[i*std::pow(count,2)+j*count+k] = rhoSWD * velSWDX;
                   (* uRhoVelocityY)[i*std::pow(count,2)+j*count+k] = rhoSWD * velSWDY;
+		  (* uRhoVelocityZ)[i*std::pow(count,2)+j*count+k] = rhoSWD * velSWDZ;
                   (* uEnergy)[i*std::pow(count,2)+j*count+k] = eSWD;
-                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velSWDX,2)+std::pow(velSWDY,2));
+                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velSWDX,2)+std::pow(velSWDY,2)+std::pow(velSWDZ,2));
                   (* velocityX)[i*std::pow(count,2)+j*count+k] = velSWDX;
                   (* velocityY)[i*std::pow(count,2)+j*count+k] = velSWDY;
+                  (* velocityZ)[i*std::pow(count,2)+j*count+k] = velSWDZ;
                   (* pressure)[i*std::pow(count,2)+j*count+k] = preSWD;
                }
             else
@@ -188,10 +198,12 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                   (* uRho)[i*std::pow(count,2)+j*count+k] = rhoSED;
                   (* uRhoVelocityX)[i*std::pow(count,2)+j*count+k] = rhoSED * velSEDX;
                   (* uRhoVelocityY)[i*std::pow(count,2)+j*count+k] = rhoSED * velSEDY;
+                  (* uRhoVelocityZ)[i*std::pow(count,2)+j*count+k] = rhoSED * velSEDZ;
                   (* uEnergy)[i*std::pow(count,2)+j*count+k] = eSED;
-                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velSEDX,2)+std::pow(velSEDY,2));
+                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velSEDX,2)+std::pow(velSEDY,2)+std::pow(velSEDZ,2));
                   (* velocityX)[i*std::pow(count,2)+j*count+k] = velSEDX;
                   (* velocityY)[i*std::pow(count,2)+j*count+k] = velSEDY;
+                  (* velocityZ)[i*std::pow(count,2)+j*count+k] = velSEDZ;
                   (* pressure)[i*std::pow(count,2)+j*count+k] = preSED;
                }
             else
@@ -200,10 +212,12 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                   (* uRho)[i*std::pow(count,2)+j*count+k] = rhoNWD;
                   (* uRhoVelocityX)[i*std::pow(count,2)+j*count+k] = rhoNWD * velNWDX;
                   (* uRhoVelocityY)[i*std::pow(count,2)+j*count+k] = rhoNWD * velNWDY;
+                  (* uRhoVelocityZ)[i*std::pow(count,2)+j*count+k] = rhoNWD * velNWDZ;
                   (* uEnergy)[i*std::pow(count,2)+j*count+k] = eNWD;
-                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velNWDX,2)+std::pow(velNWDY,2));
+                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velNWDX,2)+std::pow(velNWDY,2)+std::pow(velNWDZ,2));
                   (* velocityX)[i*std::pow(count,2)+j*count+k] = velNWDX;
                   (* velocityY)[i*std::pow(count,2)+j*count+k] = velNWDY;
+                  (* velocityZ)[i*std::pow(count,2)+j*count+k] = velNWDZ;
                   (* pressure)[i*std::pow(count,2)+j*count+k] = preNWD;
                }
             else
@@ -212,10 +226,12 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                   (* uRho)[i*std::pow(count,2)+j*count+k] = rhoNED;
                   (* uRhoVelocityX)[i*std::pow(count,2)+j*count+k] = rhoNED * velNEDX;
                   (* uRhoVelocityY)[i*std::pow(count,2)+j*count+k] = rhoNED * velNEDY;
+                  (* uRhoVelocityZ)[i*std::pow(count,2)+j*count+k] = rhoNED * velNEDZ;
                   (* uEnergy)[i*std::pow(count,2)+j*count+k] = eNED;
-                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velNEDX,2)+std::pow(velNEDY,2));
+                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velNEDX,2)+std::pow(velNEDY,2)+std::pow(velNEDZ,2));
                   (* velocityX)[i*std::pow(count,2)+j*count+k] = velNEDX;
                   (* velocityY)[i*std::pow(count,2)+j*count+k] = velNEDY;
+                  (* velocityZ)[i*std::pow(count,2)+j*count+k] = velNEDZ;
                   (* pressure)[i*std::pow(count,2)+j*count+k] = preNED;
                }
             else
@@ -224,10 +240,12 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                   (* uRho)[i*std::pow(count,2)+j*count+k] = rhoSWU;
                   (* uRhoVelocityX)[i*std::pow(count,2)+j*count+k] = rhoSWU * velSWUX;
                   (* uRhoVelocityY)[i*std::pow(count,2)+j*count+k] = rhoSWU * velSWUY;
+                  (* uRhoVelocityZ)[i*std::pow(count,2)+j*count+k] = rhoSWU * velSWUZ;
                   (* uEnergy)[i*std::pow(count,2)+j*count+k] = eSWU;
-                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velSWUX,2)+std::pow(velSWUY,2));
+                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velSWUX,2)+std::pow(velSWUY,2)+std::pow(velSWUZ,2));
                   (* velocityX)[i*std::pow(count,2)+j*count+k] = velSWUX;
                   (* velocityY)[i*std::pow(count,2)+j*count+k] = velSWUY;
+                  (* velocityZ)[i*std::pow(count,2)+j*count+k] = velSWUZ;
                   (* pressure)[i*std::pow(count,2)+j*count+k] = preSWU;
                }
             else
@@ -236,10 +254,12 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                   (* uRho)[i*std::pow(count,2)+j*count+k] = rhoSEU;
                   (* uRhoVelocityX)[i*std::pow(count,2)+j*count+k] = rhoSEU * velSEUX;
                   (* uRhoVelocityY)[i*std::pow(count,2)+j*count+k] = rhoSEU * velSEUY;
+                  (* uRhoVelocityZ)[i*std::pow(count,2)+j*count+k] = rhoSEU * velSEUZ;
                   (* uEnergy)[i*std::pow(count,2)+j*count+k] = eSEU;
-                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velSEUX,2)+std::pow(velSEUY,2));
+                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velSEUX,2)+std::pow(velSEUY,2)+std::pow(velSEUZ,2));
                   (* velocityX)[i*std::pow(count,2)+j*count+k] = velSEUX;
                   (* velocityY)[i*std::pow(count,2)+j*count+k] = velSEUY;
+                  (* velocityZ)[i*std::pow(count,2)+j*count+k] = velSEUZ;
                   (* pressure)[i*std::pow(count,2)+j*count+k] = preSEU;
                }
             else
@@ -248,10 +268,12 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                   (* uRho)[i*std::pow(count,2)+j*count+k] = rhoNWU;
                   (* uRhoVelocityX)[i*std::pow(count,2)+j*count+k] = rhoNWU * velNWUX;
                   (* uRhoVelocityY)[i*std::pow(count,2)+j*count+k] = rhoNWU * velNWUY;
+                  (* uRhoVelocityZ)[i*std::pow(count,2)+j*count+k] = rhoNWU * velNWUZ;
                   (* uEnergy)[i*std::pow(count,2)+j*count+k] = eNWU;
-                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velNWUX,2)+std::pow(velNWUY,2));
+                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velNWUX,2)+std::pow(velNWUY,2)+std::pow(velNWUZ,2));
                   (* velocityX)[i*std::pow(count,2)+j*count+k] = velNWUX;
                   (* velocityY)[i*std::pow(count,2)+j*count+k] = velNWUY;
+                  (* velocityZ)[i*std::pow(count,2)+j*count+k] = velNWUZ;
                   (* pressure)[i*std::pow(count,2)+j*count+k] = preNWU;
                }
             else
@@ -260,10 +282,12 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                   (* uRho)[i*std::pow(count,2)+j*count+k] = rhoNEU;
                   (* uRhoVelocityX)[i*std::pow(count,2)+j*count+k] = rhoNEU * velNEUX;
                   (* uRhoVelocityY)[i*std::pow(count,2)+j*count+k] = rhoNEU * velNEUY;
+                  (* uRhoVelocityZ)[i*std::pow(count,2)+j*count+k] = rhoNEU * velNEUZ;
                   (* uEnergy)[i*std::pow(count,2)+j*count+k] = eNEU;
-                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velNEUX,2)+std::pow(velNEUY,2));
+                  (* velocity)[i*std::pow(count,2)+j*count+k] = std::sqrt(std::pow(velNEUX,2)+std::pow(velNEUY,2)+std::pow(velNEUZ,2));
                   (* velocityX)[i*std::pow(count,2)+j*count+k] = velNEUX;
                   (* velocityY)[i*std::pow(count,2)+j*count+k] = velNEUY;
+                  (* velocityZ)[i*std::pow(count,2)+j*count+k] = velNEUZ;
                   (* pressure)[i*std::pow(count,2)+j*count+k] = preNEU;
                };
    return true; 

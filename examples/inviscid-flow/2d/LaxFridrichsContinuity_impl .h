@@ -46,7 +46,7 @@ operator()( const MeshFunction& u,
     const IndexType& center = entity.getIndex(); 
     const IndexType& east = neighbourEntities.template getEntityIndex< 1 >(); 
     const IndexType& west = neighbourEntities.template getEntityIndex< -1 >(); 
-   return ( u[ west ] - 2.0 * u[ center ]  + u[ east ] ) * hxSquareInverse;
+   return 0;/*( u[ west ] - 2.0 * u[ center ]  + u[ east ] ) * hxSquareInverse;*/
 }
 
 template< typename MeshReal,
