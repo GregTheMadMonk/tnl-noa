@@ -29,7 +29,9 @@
 #include <config/tnlParameterContainer.h>
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlEllpackMatrix.h>
+#include <matrices/tnlEllpackSymMatrix.h>
 #include <matrices/tnlSlicedEllpackMatrix.h>
+#include <matrices/tnlSlicedEllpackSymMatrix.h>
 #include <matrices/tnlChunkedEllpackMatrix.h>
 #include <matrices/tnlMatrixReader.h>
 #include <matrices/tnlBiEllpackMatrix.h>
@@ -545,7 +547,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
 
       long int allocatedElements;
       double padding;
- /*     typedef tnlEllpackMatrix< Real, tnlHost, int > EllpackMatrixType;
+      typedef tnlEllpackMatrix< Real, tnlHost, int > EllpackMatrixType;
       EllpackMatrixType ellpackMatrix;
       if( ! ellpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
          writeTestFailed( logFile, 7 );
@@ -590,29 +592,33 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
          ellpackMatrix.reset();
       }
 
-      typedef tnlSlicedEllpackMatrix< Real, tnlHost, int > SlicedEllpackMatrixType;
-      SlicedEllpackMatrixType slicedEllpackMatrix;
-      if( ! slicedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
+      typedef tnlEllpackSymMatrix< Real, tnlHost, int > EllpackSmMatrixType;
+      EllpackSymMatrixType ellpackSymMatrix;
+      if( ! tnlMatrixReader< ellpackSymMatrix >::readMtxFile( file, matrix, verbose, sym ) )
          writeTestFailed( logFile, 7 );
       else
       {
-         allocatedElements = slicedEllpackMatrix.getNumberOfMatrixElements();
+         allocatedElements = ellpackSymMatrix.getNumberOfMatrixElements();
          padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
          logFile << "    " << padding << endl;
-         benchmarkMatrix( slicedEllpackMatrix,
+         benchmarkMatrix( ellpackSymMatrix,
                           hostX,
                           hostB,
                           nonzeroElements,
-                          "SlicedEllpack Host",
+                          "EllpackSym Host",
                           stopTime,
                           baseline,
                           verbose,
                           logFile );
 #ifdef HAVE_CUDA
-         typedef tnlSlicedEllpackMatrix< Real, tnlCuda, int > SlicedEllpackMatrixCudaType;
-         SlicedEllpackMatrixCudaType cudaSlicedEllpackMatrix;
+         typedef tnlEllpackSymMatrix< Real, tnlCuda, int > EllpackSymMatrixCudaType;
+         EllpackSymMatrixCudaType cudaEllpackSymMatrix;
          cout << "Copying matrix to GPU... ";
-         if( ! cudaSlicedEllpackMatrix.copyFrom( slicedEllpackMatrix, rowLengthsCuda ) )
+         for( int i = 0; i < rowLengthsHost.getSize(); i++ )
+             rowLengthsHost[ i ] = ellpackSymMatrix.getRowLength( i );
+         rowLengthsCuda = rowLengthsHost;
+
+         if( ! cudaEllpackMatrix.copyFrom( ellpackSymMatrix, rowLengthsCuda ) )
          {
             cerr << "I am not able to transfer the matrix on GPU." << endl;
             writeTestFailed( logFile, 3 );
@@ -620,22 +626,70 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
          else
          {
             cout << " done.   \r";
-            benchmarkMatrix( cudaSlicedEllpackMatrix,
+            benchmarkMatrix( cudaEllpackSymMatrix,
                              cudaX,
                              cudaB,
                              nonzeroElements,
-                             "SlicedEllpack Cuda",
+                             "EllpackSym Cuda",
                              stopTime,
                              baseline,
                              verbose,
                              logFile );
          }
-         cudaSlicedEllpackMatrix.reset();
+         cudaEllpackSymMatrix.reset();
 #endif
-         slicedEllpackMatrix.reset();
+         ellpackSymMatrix.reset();
       }
 
-      typedef tnlChunkedEllpackMatrix< Real, tnlHost, int > ChunkedEllpackMatrixType;
+
+      typedef tnlSlicedEllpackSymMatrix< Real, tnlHost, int > SlicedEllpackSymMatrixType;
+      SlicedEllpackSymMatrixType slicedEllpackSymMatrix;
+      if( ! tnlMatrixReader< slicedEllpackSymMatrix >::readMtxFile( file, matrix, verbose, sym ) )
+         writeTestFailed( logFile, 7 );
+      else
+      {
+         allocatedElements = slicedEllpackSymMatrix.getNumberOfMatrixElements();
+         padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
+         logFile << "    " << padding << endl;
+         benchmarkMatrix( slicedEllpackSymMatrix,
+                          hostX,
+                          hostB,
+                          nonzeroElements,
+                          "SlicedEllpackSym Host",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+#ifdef HAVE_CUDA
+         typedef tnlSlicedEllpackSymMatrix< Real, tnlCuda, int > SlicedEllpackSymMatrixCudaType;
+         SlicedEllpackSymMatrixCudaType cudaSlicedEllpackSymMatrix;
+         cout << "Copying matrix to GPU... ";
+         for( int i = 0; i < rowLengthsHost.getSize(); i++ )
+             rowLengthsHost[ i ] = slicedEllpackSymMatrix.getRowLength( i );
+         if( ! cudaSlicedEllpackSymMatrix.copyFrom( slicedEllpackSymMatrix, rowLengthsCuda ) )
+         {
+            cerr << "I am not able to transfer the matrix on GPU." << endl;
+            writeTestFailed( logFile, 3 );
+         }
+         else
+         {
+            cout << " done.   \r";
+            benchmarkMatrix( cudaSlicedEllpackSymMatrix,
+                             cudaX,
+                             cudaB,
+                             nonzeroElements,
+                             "SlicedEllpackSym Cuda",
+                             stopTime,
+                             baseline,
+                             verbose,
+                             logFile );
+         }
+         cudaSlicedEllpackSymMatrix.reset();
+#endif
+         slicedEllpackSymMatrix.reset();
+      }
+
+/*      typedef tnlChunkedEllpackMatrix< Real, tnlHost, int > ChunkedEllpackMatrixType;
       ChunkedEllpackMatrixType chunkedEllpackMatrix;
       if( ! chunkedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
          writeTestFailed( logFile, 7 );
