@@ -739,9 +739,9 @@ void tnlEllpackSymMatrix< Real, Device, Index >::spmvCuda( const InVector& inVec
     while( i < rowEnd && this->columnIndexes[ i ] != this->getPaddingIndex() )
     {
         const IndexType column = this->columnIndexes[ i ];
-        outVector[ rowId ] += this->values[ i ] * inVector[ column ];
+        outVector.add( rowId, this->values[ i ] * inVector[ column ] );
         if( rowId != column )
-            outVector[ column ].add( this->values[ i ] * inVector[ rowId ] );
+            outVector.add( column, this->values[ i ] * inVector[ rowId ] );
         i += step;
     }
 };

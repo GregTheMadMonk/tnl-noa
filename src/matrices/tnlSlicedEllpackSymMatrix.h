@@ -168,13 +168,14 @@ class tnlSlicedEllpackSymMatrix : public tnlSparseMatrix< Real, Device, Index >
    void vectorProduct( const InVector& inVector,
                        OutVector& outVector ) const;
 
-#ifdef HAVE_CUDA
    template< typename InVector,
              typename OutVector >
-   spmvCuda( const InVector& inVector,
-             OutVector& outVector,
-             int globalIdx ) const;
+#ifdef HAVE_CUDA
+   __device__
 #endif
+   void spmvCuda( const InVector& inVector,
+                  OutVector& outVector,
+                  int globalIdx ) const;
 
    template< typename Real2, typename Index2 >
    void addMatrix( const tnlSlicedEllpackSymMatrix< Real2, Device, Index2 >& matrix,

@@ -508,46 +508,48 @@ void tnlSlicedEllpackSymMatrix< Real, Device, Index, SliceSize >::rowVectorProdu
 template< typename Real,
           typename Device,
           typename Index,
-          typename SliceSize >
+          int SliceSize >
 template< typename InVector,
-          typename OutVector>
+          typename OutVector >
 __device__
 void tnlSlicedEllpackSymMatrix< Real, Device, Index, SliceSize >::spmvCuda( const InVector& inVector,
                                                                             OutVector& outVector,
-                                                                            int globalIdx ) const
+                                                                            int rowIdx ) const
 {
-    if( globalIdx >= this->getRows() )
+    if( rowIdx >= this->getRows() )
         return;
 
     Real result = 0.0;
     Index elementPtr, rowEnd, step;
-    DeviceDependentCode::initRowraverseFast( *this, globalIdx, elementPtr, rowEnd, step );
+    DeviceDependentCode::initRowTraverseFast( *this, rowIdx, elementPtr, rowEnd, step );
     IndexType column;
     while( elementPtr < rowEnd &&
            ( column = this->columnIndexes[ elementPtr ] ) < this->columns &&
            column != this->getPaddingIndex() )
     {
         result += this->values[ elementPtr ] * inVector[ column ];
-        if( row != column )
-            outVector.add( column, this->values[ elementPtr ] * inVector[ row ] );
+        if( rowIdx != column )
+            outVector.add( column, this->values[ elementPtr ] * inVector[ rowIdx ] );
         elementPtr += step;
     }
-    outVector.add( row, result );
+    outVector.add( rowIdx, result );
 }
 #endif
 
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Index,
+          int SliceSize,
           typename InVector,
           typename OutVector >
-__global__ void tnlMatrixVectorProductCudaKernel( const tnlSlicedEllpackSymMatrix< Real, tnlCuda, Index >* matrix,
-                                                  const InVector* inVector,
-                                                  OutVector* outVector,
-                                                  int gridIdx )
+__global__ 
+void tnlSlicedEllpackSymMatrixVectorProductCudaKernel( 
+const tnlSlicedEllpackSymMatrix< Real, tnlCuda, Index, SliceSize >* matrix,
+                                                       const InVector* inVector,
+                                                       OutVector* outVector,
+                                                       int gridIdx )
 {
-   tnlStaticAssert( Matrix::DeviceType::DeviceType == tnlCudaDevice, );
-   const typename Matrix::IndexType rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   int rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    matrix->spmvCuda( *inVector, *outVector, rowIdx );
 }
 #endif
@@ -820,7 +822,7 @@ class tnlSlicedEllpackSymMatrixDeviceDependentCode< tnlHost >
 template< typename Real,
           typename Index,
           int SliceSize >
-__global__ void tnlSlicedEllpackSymMatrix_computeMaximalRowLengthInSlices_CudaKernel( tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >* matrix,
+__global__ void tnlSlicedEllpackSymMatrix_computeMaximalRowLengthInSlices_CudaKernel( tnlSlicedEllpackSymMatrix< Real, tnlCuda, Index, SliceSize >* matrix,
                                                                                    const typename tnlSlicedEllpackSymMatrix< Real, tnlCuda, Index, SliceSize >::RowLengthsVector* rowLengths,
                                                                                    int gridIdx )
 {
@@ -916,6 +918,7 @@ class tnlSlicedEllpackSymMatrixDeviceDependentCode< tnlCuda >
                                  OutVector& outVector )
       {
 #ifdef HAVE_CUDA
+         typedef tnlSlicedEllpackSymMatrix< Real, Device, Index, SliceSize > Matrix;
          typedef typename Matrix::IndexType IndexType;
          Matrix* kernel_this = tnlCuda::passToDevice( matrix );
          InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
@@ -927,7 +930,8 @@ class tnlSlicedEllpackSymMatrixDeviceDependentCode< tnlCuda >
          {
             if( gridIdx == cudaGrids - 1 )
                cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
-            tnlMatrixVectorProductCudaKernel<<< cudaGridSize, cudaBlockSize >>>
+            tnlSlicedEllpackSymMatrixVectorProductCudaKernel< Real, Index, SliceSize, InVector, OutVector >
+                                                            <<< cudaGridSize, cudaBlockSize >>>
                                                               ( kernel_this,
                                                                 kernel_inVector,
                                                                 kernel_outVector,

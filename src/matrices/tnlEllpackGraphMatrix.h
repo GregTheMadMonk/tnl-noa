@@ -164,10 +164,11 @@ template< typename Vector >
 #ifdef HAVE_CUDA
    template< typename InVector,
              typename OutVector >
+   __device__
    void spmvCuda( const InVector& inVector,
                   OutVector& outVector,
                   const int globalIdx,
-                  const int color );
+                  const int color ) const;
 #endif
 
    void computeColorsVector( IndexType* colorsVector );

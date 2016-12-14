@@ -166,8 +166,13 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::computePermutationArray()
          {
             IndexType row1 = this->permutationArray[ i ];
             IndexType row2 = this->permutationArray[ position ];
-            swap( this->permutationArray[ row1 ], this->permutationArray[ row2 ] );
-            swap( colorsVector[ position ], colorsVector[ i ] );
+            IndexType tmp = this->permutationArray[ row1 ];
+            this->permutationArray[ row1 ] = this->permutationArray[ row2 ];
+            this->permutationArray[ row2 ] = tmp;
+
+            tmp = colorsVector[ position ];
+            colorsVector[ position ] = colorsVector[ i ];
+            colorsVector[ i ] = tmp;
             position++;
          }
    }
@@ -257,9 +262,12 @@ template< typename Real,
              typename Index2 >
 bool tnlEllpackGraphMatrix< Real, Device, Index >::setLike( const tnlEllpackGraphMatrix< Real2, Device2, Index2 >& matrix )
 {
-   if( ! tnlSparseMatrix< Real, Device, Index >::setLike( matrix ) )
+   if( ! tnlSparseMatrix< Real, Device, Index >::setLike( matrix ) ||
+       ! this->permutationArray.setLike( matrix.permutationArray ) ||
+       ! this->colorPointers.setLike( matrix.colorPointers ) )
       return false;
    this->rowLengths = matrix.rowLengths;
+   this->numberOfColors = matrix.numberOfColors;
    return true;
 }
 
@@ -789,7 +797,7 @@ __device__
 void tnlEllpackGraphMatrix< Real, Device, Index >::spmvCuda( const InVector& inVector,
                                                              OutVector& outVector,
                                                              const int globalIdx,
-                                                             const int color )
+                                                             const int color ) const
 {
    IndexType offset = this->colorPointers[ color ];
    IndexType row = offset + globalIdx;
@@ -876,7 +884,7 @@ class tnlEllpackGraphMatrixDeviceDependentCode< tnlCuda >
                                  OutVector& outVector )
       {
 #ifdef HAVE_CUDA
-          typedef tnlEllpackSymMatrix< Real, tnlCuda, Index > Matrix;
+          typedef tnlEllpackGraphMatrix< Real, tnlCuda, Index > Matrix;
           typedef typename Matrix::IndexType IndexType;
           Matrix* kernel_this = tnlCuda::passToDevice( matrix );
           InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
