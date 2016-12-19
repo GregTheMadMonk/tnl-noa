@@ -616,8 +616,12 @@ bool CWYGMRES< Matrix, Preconditioner > :: setSize( IndexType _size, IndexType m
 {
    if( size == _size && restarting == m ) return true;
    size = _size;
-   // align each column to 256 bytes
-   ldSize = roundToMultiple( size, 256 / sizeof( RealType ) );
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
+      // align each column to 256 bytes - optimal for CUDA
+      ldSize = roundToMultiple( size, 256 / sizeof( RealType ) );
+   else
+       // on the host, we add 1 to disrupt the cache false-sharing pattern
+      ldSize = roundToMultiple( size, 256 / sizeof( RealType ) ) + 1;
    restarting = m;
    if( ! r.setSize( size ) ||
        ! z.setSize( size ) ||
