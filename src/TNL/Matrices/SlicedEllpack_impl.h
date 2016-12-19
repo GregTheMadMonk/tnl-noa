@@ -454,17 +454,17 @@ template< typename Real,
           typename Index,
           int SliceSize >
 __cuda_callable__
-const typename SlicedEllpack< Real, Device, Index, SliceSize >::MatrixRow
+typename SlicedEllpack< Real, Device, Index, SliceSize >::ConstMatrixRow
 SlicedEllpack< Real, Device, Index, SliceSize >::
 getRow( const IndexType rowIndex ) const
 {
    Index rowBegin, rowEnd, step;
    DeviceDependentCode::initRowTraverseFast( *this, rowIndex, rowBegin, rowEnd, step );
    const IndexType slice = rowIndex / SliceSize;
-   return MatrixRow( &this->columnIndexes[ rowBegin ],
-                     &this->values[ rowBegin ],
-                     this->sliceCompressedRowsLengths[ slice ],
-                     step );
+   return ConstMatrixRow( &this->columnIndexes[ rowBegin ],
+                          &this->values[ rowBegin ],
+                          this->sliceCompressedRowsLengths[ slice ],
+                          step );
 }
 
 template< typename Real,

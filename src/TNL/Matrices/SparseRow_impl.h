@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Matrices/SparseRow.h>
+
 namespace TNL {
 namespace Matrices {   
 
@@ -73,12 +75,37 @@ setElement( const Index& elementIndex,
 }
 
 template< typename Real, typename Index >
+__cuda_callable__
+const Index&
+SparseRow< Real, Index >::
+getElementColumn( const Index& elementIndex ) const
+{
+   TNL_ASSERT( elementIndex >= 0 && elementIndex < this->length,
+              std::cerr << "elementIndex = " << elementIndex << " this->length = " << this->length );
+
+   return this->columns[ elementIndex * step ];
+}
+
+template< typename Real, typename Index >
+__cuda_callable__
+const Real&
+SparseRow< Real, Index >::
+getElementValue( const Index& elementIndex ) const
+{
+   TNL_ASSERT( elementIndex >= 0 && elementIndex < this->length,
+              std::cerr << "elementIndex = " << elementIndex << " this->length = " << this->length );
+
+   return this->values[ elementIndex * step ];
+}
+
+template< typename Real, typename Index >
 void
 SparseRow< Real, Index >::
 print( std::ostream& str ) const
 {
-   Index pos( 0 );
-   for( Index i = 0; i < length; i++ )
+   using NonConstIndex = typename std::remove_const< Index >::type;
+   NonConstIndex pos( 0 );
+   for( NonConstIndex i = 0; i < length; i++ )
    {
       str << " [ " << columns[ pos ] << " ] = " << values[ pos ] << ", ";
       pos += step;
