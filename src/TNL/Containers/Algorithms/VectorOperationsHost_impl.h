@@ -16,7 +16,7 @@ namespace TNL {
 namespace Containers {   
 namespace Algorithms {
 
-static const int OpenMPVectorOperationsThreshold = 65536; // TODO: check this threshold
+static const int OpenMPVectorOperationsThreshold = 512; // TODO: check this threshold
 static const int PrefetchDistance = 128;
 
 template< typename Vector >
