@@ -24,7 +24,8 @@ class SolverMonitor
 
    SolverMonitor()
       : timeout_milliseconds(500),
-        stopped(true)
+        stopped(true),
+        timer(nullptr)
    {};
 
    ~SolverMonitor() {};
