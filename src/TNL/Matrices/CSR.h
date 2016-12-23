@@ -199,6 +199,38 @@ class CSR : public Sparse< Real, Device, Index >
                            int gridIdx ) const;
 #endif
 
+   // The following getters allow us to interface TNL with external C-like
+   // libraries such as UMFPACK or SuperLU, which need the raw data.
+   Index* getRowPointers()
+   {
+       return this->rowPointers.getData();
+   }
+
+   const Index* getRowPointers() const
+   {
+       return this->rowPointers.getData();
+   }
+
+   Index* getColumnIndexes()
+   {
+       return this->columnIndexes.getData();
+   }
+
+   const Index* getColumnIndexes() const
+   {
+       return this->columnIndexes.getData();
+   }
+
+   Real* getValues()
+   {
+       return this->values.getData();
+   }
+
+   const Real* getValues() const
+   {
+       return this->values.getData();
+   }
+
    protected:
 
    Containers::Vector< Index, Device, Index > rowPointers;
@@ -210,11 +242,6 @@ class CSR : public Sparse< Real, Device, Index >
    typedef CSRDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class CSRDeviceDependentCode< DeviceType >;
    friend class tnlCusparseCSR< RealType >;
-#ifdef HAVE_UMFPACK
-    template< typename Matrix, typename Preconditioner >
-    friend class UmfpackWrapper;
-#endif
-
 };
 
 } // namespace Matrices
