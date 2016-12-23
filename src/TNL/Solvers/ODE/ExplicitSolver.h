@@ -76,7 +76,7 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
 
    void setRefreshRate( const IndexType& refreshRate );
 
-   void refreshSolverMonitor();
+   void refreshSolverMonitor( bool force = false );
 
 protected:
  

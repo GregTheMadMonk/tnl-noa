@@ -169,13 +169,13 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
 //	if(boundaryCondition == 0)
 		signui = sign(u[cellIndex],/*(boundaryCondition != 0) * */this->epsilon);
 //	else
-//		signui = Sign(u[cellIndex]);
+//		signui = sign(u[cellIndex]);
 
 	RealType value;
 //	if(map[cellIndex] == 0.0)
 //	{
 ////		value = INT_MAX;
-//		u[cellIndex] = Sign(u[cellIndex])*INT_MAX;
+//		u[cellIndex] = sign(u[cellIndex])*INT_MAX;
 //		return 0.0;
 //	}
 //	else
@@ -256,7 +256,7 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
 	   c =(value - sqrt(a*a+b*b)*ihx );
 
 	   if(c > 0.0 )
-		   return Sign(u[cellIndex])*c;
+		   return sign(u[cellIndex])*c;
 	   else
 
 	   return signui*c;
@@ -295,13 +295,13 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
 	if(boundaryCondition == 0)
 		signui = sign(u[cellIndex],/*(boundaryCondition != 0) * */this->epsilon);
 	else
-		signui = Sign(u[cellIndex]);
+		signui = sign(u[cellIndex]);
 
 //	RealType value;
 //	if(map[cellIndex] == 0.0)
 //	{
 ////		value = INT_MAX;
-//		u[cellIndex] = Sign(u[cellIndex])*INT_MAX;
+//		u[cellIndex] = sign(u[cellIndex])*INT_MAX;
 //		return 0.0;
 //	}
 //	else
@@ -382,7 +382,7 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
 	   c = (value - sqrt(a*a+b*b)*ihx );
 
 //	   if(c > 0.0 )
-//		   return Sign(u[cellIndex])*c;
+//		   return sign(u[cellIndex])*c;
 //	   else
 		   return signui*c;
 }

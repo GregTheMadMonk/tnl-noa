@@ -147,22 +147,22 @@ updateCell( MeshFunctionType& u,
        fabs( b ) == tnlTypeInfo< Real >::getMaxValue() ||
        fabs( a - b ) >= h )
    {
-      tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
+      tmp = ArgAbsMin( a, b ) + sign( value ) * h;
       /*   std::cerr << "a = " << a << " b = " << b << " h = " << h 
-             << " ArgAbsMin( a, b ) = " << ArgAbsMin( a, b ) << " Sign( value ) = " << Sign( value )
-             << " Sign( value ) * h = " << Sign( value ) * h
-             << " ArgAbsMin( a, b ) + Sign( value ) * h = " << ArgAbsMin( a, b ) + Sign( value ) * h           
+             << " ArgAbsMin( a, b ) = " << ArgAbsMin( a, b ) << " sign( value ) = " << sign( value )
+             << " sign( value ) * h = " << sign( value ) * h
+             << " ArgAbsMin( a, b ) + sign( value ) * h = " << ArgAbsMin( a, b ) + sign( value ) * h           
              << " tmp = " << tmp << std::endl;
-      tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
-      tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
-      tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
-      res = ArgAbsMin( a, b ) + Sign( value ) * h;
+      tmp = ArgAbsMin( a, b ) + sign( value ) * h;
+      tmp = ArgAbsMin( a, b ) + sign( value ) * h;
+      tmp = ArgAbsMin( a, b ) + sign( value ) * h;
+      res = ArgAbsMin( a, b ) + sign( value ) * h;
       std::cerr << " tmp = " << tmp << std::endl;
       std::cerr << " res = " << res << std::endl;*/
 
    }
    else
-      tmp = 0.5 * ( a + b + Sign( value ) * sqrt( 2.0 * h * h - ( a - b ) * ( a - b ) ) );
+      tmp = 0.5 * ( a + b + sign( value ) * sqrt( 2.0 * h * h - ( a - b ) * ( a - b ) ) );
 
    u[ cell.getIndex() ] = ArgAbsMin( value, tmp );
    //std::cerr << ArgAbsMin( value, tmp ) << " ";   

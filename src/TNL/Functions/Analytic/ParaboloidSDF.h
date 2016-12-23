@@ -1,19 +1,12 @@
 /***************************************************************************
-                          tnlParaboloidSDF.h  -  description
+                          ParaboloidSDF.h  -  description
                              -------------------
     begin                : Oct 13, 2014
     copyright            : (C) 2014 by Tomas Sobotik
 
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #pragma once 
 
@@ -21,13 +14,17 @@
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Functions/Domain.h>
 
+namespace TNL {
+   namespace Functions {
+      namespace Analytic {
+
 template< int dimensions,
           typename Real = double >
-class tnlParaboloidSDFBase : public Functions::Domain< dimensions, SpaceDomain >
+class ParaboloidSDFBase : public Functions::Domain< dimensions, SpaceDomain >
 {
    public:
 
-   tnlParaboloidSDFBase();
+   ParaboloidSDFBase();
 
    bool setup( const Config::ParameterContainer& parameters,
               const String& prefix = "" );
@@ -58,12 +55,12 @@ class tnlParaboloidSDFBase : public Functions::Domain< dimensions, SpaceDomain >
 };
 
 template< int Dimensions, typename Real >
-class tnlParaboloidSDF
+class ParaboloidSDF
 {
 };
 
 template< typename Real >
-class tnlParaboloidSDF< 1, Real > : public tnlParaboloidSDFBase< 1, Real >
+class ParaboloidSDF< 1, Real > : public ParaboloidSDFBase< 1, Real >
 {
    public:
 
@@ -90,7 +87,7 @@ class tnlParaboloidSDF< 1, Real > : public tnlParaboloidSDFBase< 1, Real >
 };
 
 template< typename Real >
-class tnlParaboloidSDF< 2, Real > : public tnlParaboloidSDFBase< 2, Real >
+class ParaboloidSDF< 2, Real > : public ParaboloidSDFBase< 2, Real >
 {
    public:
 
@@ -117,7 +114,7 @@ class tnlParaboloidSDF< 2, Real > : public tnlParaboloidSDFBase< 2, Real >
 };
 
 template< typename Real >
-class tnlParaboloidSDF< 3, Real > : public tnlParaboloidSDFBase< 3, Real >
+class ParaboloidSDF< 3, Real > : public ParaboloidSDFBase< 3, Real >
 {
    public:
 
@@ -147,12 +144,17 @@ class tnlParaboloidSDF< 3, Real > : public tnlParaboloidSDFBase< 3, Real >
 
 template< int Dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const tnlParaboloidSDF< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const ParaboloidSDF< Dimensions, Real >& f )
 {
    str << "SDF Paraboloid SDF function: amplitude = " << f.getCoefficient()
        << " offset = " << f.getOffset();
    return str;
 }
+         
+      } // namespace Analytic
+   } // namespace Functions
+} // namespace TNL
 
-#include <functions/tnlParaboloidSDF_impl.h>
+
+#include <TNL/Functions/Analytic/ParaboloidSDF_impl.h>
 

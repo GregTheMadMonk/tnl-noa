@@ -91,7 +91,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	if(!exactInput)
 	{
 		for(Index i = 0; i < Mesh.getDimensions().x()*Mesh.getDimensions().y(); i++)
-				dofVector[i]=0.5*h*Sign(dofVector[i]);
+				dofVector[i]=0.5*h*sign(dofVector[i]);
 	}
 
 
@@ -99,7 +99,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	{
 		for(Index j = 1; j < Mesh.getDimensions().y()-1; j++)
 		{
-			 tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+			 tmp = sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 
 
 			if(tmp == 0.0)
@@ -119,7 +119,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	for(int i = 1; i < Mesh.getDimensions().x()-1; i++)
 	{
 		Index j = 0;
-		tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+		tmp = sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 
 
 		if(tmp == 0.0)
@@ -135,7 +135,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	for(int i = 1; i < Mesh.getDimensions().x()-1; i++)
 	{
 		Index j = Mesh.getDimensions().y() - 1;
-		tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+		tmp = sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 
 
 		if(tmp == 0.0)
@@ -151,7 +151,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	for(int j = 1; j < Mesh.getDimensions().y()-1; j++)
 	{
 		Index i = 0;
-		tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+		tmp = sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 
 
 		if(tmp == 0.0)
@@ -167,7 +167,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	for(int j = 1; j < Mesh.getDimensions().y()-1; j++)
 	{
 		Index i = Mesh.getDimensions().x() - 1;
-		tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+		tmp = sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 
 
 		if(tmp == 0.0)
@@ -184,7 +184,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	Index i = Mesh.getDimensions().x() - 1;
 	Index j = Mesh.getDimensions().y() - 1;
 
-	tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+	tmp = sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 	if(dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp > 0.0 &&
 			dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp > 0.0)
 
@@ -193,7 +193,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 
 	j = 0;
-	tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+	tmp = sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 	if(dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp > 0.0 &&
 			dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp > 0.0)
 
@@ -203,7 +203,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 	i = 0;
 	j = Mesh.getDimensions().y() -1;
-	tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+	tmp = sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 	if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp > 0.0 &&
 			dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp > 0.0)
 
@@ -212,7 +212,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 
 	j = 0;
-	tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+	tmp = sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 	if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp > 0.0 &&
 			dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp > 0.0)
 
@@ -359,9 +359,9 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 
 	if(fabs(a-b) >= h)
-		tmp = fabsMin(a,b) + Sign(value)*h;
+		tmp = fabsMin(a,b) + sign(value)*h;
 	else
-		tmp = 0.5 * (a + b + Sign(value)*sqrt(2.0 * h * h - (a - b) * (a - b) ) );
+		tmp = 0.5 * (a + b + sign(value)*sqrt(2.0 * h * h - (a - b) * (a - b) ) );
 
 #ifdef HAVE_OPENMP
 //	omp_set_lock(&gridLock[index]);

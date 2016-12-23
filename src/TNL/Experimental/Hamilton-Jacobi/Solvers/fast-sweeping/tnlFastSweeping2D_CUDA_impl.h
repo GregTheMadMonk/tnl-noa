@@ -232,9 +232,9 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 
 	if(abs(a-b) >= h)
-		tmp = fabsMin(a,b) + Sign(value)*h;
+		tmp = fabsMin(a,b) + sign(value)*h;
 	else
-		tmp = 0.5 * (a + b + Sign(value)*sqrt(2.0 * h * h - (a - b) * (a - b) ) );
+		tmp = 0.5 * (a + b + sign(value)*sqrt(2.0 * h * h - (a - b) * (a - b) ) );
 
 	cudaDofVector[index]  = fabsMin(value, tmp);
 
@@ -260,12 +260,12 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	Real tmp = 0.0;
 	int flag = 0;
 	counter = 0;
-	tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
+	tmp = sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
 
 
 	if(!exactInput)
 	{
-		cudaDofVector[gid]=cudaDofVector[gid]=0.5*h*Sign(cudaDofVector[gid]);
+		cudaDofVector[gid]=cudaDofVector[gid]=0.5*h*sign(cudaDofVector[gid]);
 	}
 	__threadfence();
 //	printf("-----------------------------------------------------------------------------------\n");
@@ -279,7 +279,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 			Index j = gy;
 			Index i = gx;
-//			 tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+//			 tmp = sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 
 			if(tmp == 0.0)
 			{}
@@ -301,7 +301,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 //		printf("gx: %d, gy: %d, gid: %d \n", gx, gy,gid);
 		Index j = 0;
 		Index i = gx;
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+//		tmp = sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 
 
 		if(tmp == 0.0)
@@ -319,7 +319,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	{
 		Index i = gx;
 		Index j = Mesh.getDimensions().y() - 1;
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+//		tmp = sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 
 
 		if(tmp == 0.0)
@@ -337,7 +337,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	{
 		Index j = gy;
 		Index i = 0;
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+//		tmp = sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 
 
 		if(tmp == 0.0)
@@ -354,7 +354,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	{
 		Index j = gy;
 		Index i = Mesh.getDimensions().x() - 1;
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+//		tmp = sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
 
 
 		if(tmp == 0.0)
@@ -372,7 +372,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	   gy == Mesh.getDimensions().y() - 1)
 	{
 
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
+//		tmp = sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
 		if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx-1,gy))]*tmp > 0.0 &&
 				cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy-1))]*tmp > 0.0)
 
@@ -382,7 +382,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	   gy == 0)
 	{
 
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
+//		tmp = sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
 		if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx-1,gy))]*tmp > 0.0 &&
 				cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy+1))]*tmp > 0.0)
 
@@ -393,7 +393,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	   gy == Mesh.getDimensions().y() - 1)
 	{
 
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
+//		tmp = sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
 		if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx+1,gy))]*tmp > 0.0 &&
 				cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy-1))]*tmp > 0.0)
 
@@ -402,7 +402,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	if(gx == 0 &&
 	   gy == 0)
 	{
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
+//		tmp = sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
 		if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx+1,gy))]*tmp > 0.0 &&
 				cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy+1))]*tmp > 0.0)
 

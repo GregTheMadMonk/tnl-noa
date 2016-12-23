@@ -1,39 +1,35 @@
 /***************************************************************************
-                          tnlSinWaveFunction.h  -  description
+                          SDFSchemeTest.h  -  description
                              -------------------
     begin                : Nov 19, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSDFSCHEMETEST_H_
-#define TNLSDFSCHEMETEST_H_
+#pragma once
 
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Containers/StaticVector.h>
 #include <functions/tnlSDFSinWaveFunction.h>
 #include <functions/tnlSDFSinWaveFunctionSDF.h>
-#include <functions/tnlSDFSinBumpsFunction.h>
-#include <functions/tnlSDFSinBumpsFunctionSDF.h>
+#include <functions/tnlSDFSinBumps.h>
+#include <functions/tnlSDFSinBumpsSDF.h>
 #include <functions/tnlExpBumpFunction.h>
 #include <functions/tnlSDFParaboloid.h>
 #include <functions/tnlSDFParaboloidSDF.h>
 
+namespace TNL {
+   namespace Functions {
+      namespace Analytic {
+
 template< typename function, typename Real = double >
-class tnlSDFSchemeTestBase
+class SDFSchemeTestBase
 {
    public:
 
-   tnlSDFSchemeTestBase();
+   SDFSchemeTestBase();
 
    bool setup( const Config::ParameterContainer& parameters,
            const String& prefix = "" );
@@ -43,13 +39,13 @@ class tnlSDFSchemeTestBase
 };
 
 template< typename function, int Dimensions, typename Real >
-class tnlSDFSchemeTest
+class SDFSchemeTest
 {
 
 };
 
 template< typename function, int Dimensions, typename Real >
-class tnlSDFSchemeTest< function, 1, Real > : public tnlSDFSchemeTestBase< function, Real >
+class SDFSchemeTest< function, 1, Real > : public SDFSchemeTestBase< function, Real >
 {
    public:
 
@@ -69,7 +65,7 @@ class tnlSDFSchemeTest< function, 1, Real > : public tnlSDFSchemeTestBase< funct
 };
 
 template< typename function, int Dimensions, typename Real >
-class tnlSDFSchemeTest< function, 2, Real > : public tnlSDFSchemeTestBase< function, Real >
+class SDFSchemeTest< function, 2, Real > : public SDFSchemeTestBase< function, Real >
 {
    public:
 
@@ -88,7 +84,7 @@ class tnlSDFSchemeTest< function, 2, Real > : public tnlSDFSchemeTestBase< funct
 };
 
 template< typename function, int Dimensions, typename Real >
-class tnlSDFSchemeTest< function, 3, Real > : public tnlSDFSchemeTestBase< function,  Real >
+class SDFSchemeTest< function, 3, Real > : public SDFSchemeTestBase< function,  Real >
 {
    public:
 
@@ -105,6 +101,8 @@ class tnlSDFSchemeTest< function, 3, Real > : public tnlSDFSchemeTestBase< funct
 
 };
 
-#include <functions/tnlSDFSchemeTest_impl.h>
+      } // namespace Analytic
+   } // namespace Functions
+} // namespace TNL
 
-#endif /* TNLSDFSCHEMETEST_H_ */
+#include <functions/SDFSchemeTest_impl.h>

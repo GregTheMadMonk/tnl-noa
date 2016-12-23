@@ -205,9 +205,9 @@ void tnlNarrowBand< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: u
 	Real hD = 3.0*h*h - 2.0*(a*a + b*b + c*c - a*b - a*c - b*c);
 
 	if(hD < 0.0)
-		tmp = fabsMin(a,fabsMin(b,c)) + Sign(value)*h;
+		tmp = fabsMin(a,fabsMin(b,c)) + sign(value)*h;
 	else
-		tmp = (1.0/3.0) * ( a + b + c + Sign(value)*sqrt(hD) );
+		tmp = (1.0/3.0) * ( a + b + c + sign(value)*sqrt(hD) );
 
 	atomicFabsMin(&cudaDofVector2[Entity.getIndex()],tmp);
 
@@ -230,7 +230,7 @@ bool tnlNarrowBand< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: i
 	if(abs(cudaDofVector[gid]) < 1.8*h)
 		cudaDofVector2[gid] = cudaDofVector[gid];
 	else
-		cudaDofVector2[gid] = INT_MAX*Sign(cudaDofVector[gid]);
+		cudaDofVector2[gid] = INT_MAX*sign(cudaDofVector[gid]);
 
 	return true;
 }

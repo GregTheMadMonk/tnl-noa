@@ -95,7 +95,7 @@ bool tnlNarrowBand< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: i
 		if (abs(dofVector[i]) < 1.8*h)
 			dofVector2[i]=dofVector[i];
 		else
-			dofVector2[i]=INT_MAX*Sign(dofVector[i]);
+			dofVector2[i]=INT_MAX*sign(dofVector[i]);
 	}
 
 	return true;
@@ -274,9 +274,9 @@ void tnlNarrowBand< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: u
 	Real hD = 3.0*h*h - 2.0*(a*a+b*b+c*c-a*b-a*c-b*c);
 
 	if(hD < 0.0)
-		tmp = fabsMin(a,fabsMin(b,c)) + Sign(value)*h;
+		tmp = fabsMin(a,fabsMin(b,c)) + sign(value)*h;
 	else
-		tmp = (1.0/3.0) * ( a + b + c + Sign(value)*sqrt(hD) );
+		tmp = (1.0/3.0) * ( a + b + c + sign(value)*sqrt(hD) );
 
 
 	dofVector2[Entity.getIndex()]  = fabsMin(value, tmp);

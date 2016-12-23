@@ -106,7 +106,7 @@ bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
 	for(int i=0; i< Mesh.getDimensions().x()*Mesh.getDimensions().x();i++)
 	{
-		dofVector2[i]=INT_MAX*Sign(dofVector[i]);
+		dofVector2[i]=INT_MAX*sign(dofVector[i]);
 
 		if(abs(dofVector[i]) < 1.01*h)
 		{
@@ -315,9 +315,9 @@ void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 
 
 		if(fabs(a-b) >= im*h)
-			tmp = fabsMin(a,b) + Sign(value)*im*h;
+			tmp = fabsMin(a,b) + sign(value)*im*h;
 		else
-			tmp = 0.5 * (a + b + Sign(value)*sqrt(2.0 * im * h * im * h - (a - b) * (a - b) ) );
+			tmp = 0.5 * (a + b + sign(value)*sqrt(2.0 * im * h * im * h - (a - b) * (a - b) ) );
 
 		if(abs(value)-abs(tmp) > 0.0)
 			something_changed = 1;

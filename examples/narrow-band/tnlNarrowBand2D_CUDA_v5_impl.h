@@ -305,9 +305,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: u
 
 
 		if(abs(a-b) >= h)
-			tmp = fabsMin(a,b) + Sign(value)*h;
+			tmp = fabsMin(a,b) + sign(value)*h;
 		else
-			tmp = 0.5 * (a + b + Sign(value)*sqrt(2.0 * h * h - (a - b) * (a - b) ) );
+			tmp = 0.5 * (a + b + sign(value)*sqrt(2.0 * h * h - (a - b) * (a - b) ) );
 
 	//	cudaDofVector2[Entity.getIndex()]  = fabsMin(value, tmp);
 		atomicFabsMin(&(cudaDofVector2[Entity.getIndex()]), tmp);
@@ -353,30 +353,30 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 
 	int gid = Entity.getIndex();
 
-	cudaDofVector2[gid] = INT_MAX*Sign(cudaDofVector2[gid]);
+	cudaDofVector2[gid] = INT_MAX*sign(cudaDofVector2[gid]);
 
 	if (i >0 && j > 0 && i+1 < Mesh.getDimensions().x() && j+1 < Mesh.getDimensions().y())
 	{
 		if(cudaDofVector2[gid]*cudaDofVector2[gid+1] <= 0 )
 		{
-			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
-			cudaDofVector2[gid+1] = Sign(cudaDofVector2[gid+1])*0.5*h;
+			cudaDofVector2[gid] = sign(cudaDofVector2[gid])*0.5*h;
+			cudaDofVector2[gid+1] = sign(cudaDofVector2[gid+1])*0.5*h;
 		}
 		if( cudaDofVector2[gid]*cudaDofVector2[gid+Mesh.getDimensions().x()] <= 0 )
 		{
-			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
-			cudaDofVector2[gid+Mesh.getDimensions().x()] = Sign(cudaDofVector2[gid+Mesh.getDimensions().x()])*0.5*h;
+			cudaDofVector2[gid] = sign(cudaDofVector2[gid])*0.5*h;
+			cudaDofVector2[gid+Mesh.getDimensions().x()] = sign(cudaDofVector2[gid+Mesh.getDimensions().x()])*0.5*h;
 		}
 
 		if(cudaDofVector2[gid]*cudaDofVector2[gid-1] <= 0 )
 		{
-			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
-			cudaDofVector2[gid-1] = Sign(cudaDofVector2[gid-1])*0.5*h;
+			cudaDofVector2[gid] = sign(cudaDofVector2[gid])*0.5*h;
+			cudaDofVector2[gid-1] = sign(cudaDofVector2[gid-1])*0.5*h;
 		}
 		if( cudaDofVector2[gid]*cudaDofVector2[gid-Mesh.getDimensions().x()] <= 0 )
 		{
-			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
-			cudaDofVector2[gid-Mesh.getDimensions().x()] = Sign(cudaDofVector2[gid-Mesh.getDimensions().x()])*0.5*h;
+			cudaDofVector2[gid] = sign(cudaDofVector2[gid])*0.5*h;
+			cudaDofVector2[gid-Mesh.getDimensions().x()] = sign(cudaDofVector2[gid-Mesh.getDimensions().x()])*0.5*h;
 		}
 	}
 
@@ -729,7 +729,7 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 
 
 
-			   if(Sign(value) > 0.0)
+			   if(sign(value) > 0.0)
 			   {
 				   xf = solver->negativePart(xf);
 

@@ -12,8 +12,7 @@ template< typename Mesh,
           typename RightHandSide,
            typename DifferentialOperator >
 class eulerProblem:
-   public tnlPDEProblem< Mesh,
-                         TimeDependentProblem,
+   public PDEProblem< Mesh,
                          typename DifferentialOperator::RealType,
                          typename Mesh::DeviceType,
                          typename DifferentialOperator::IndexType >
@@ -30,9 +29,6 @@ class eulerProblem:
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;      
       
-      typedef tnlMeshFunction< Mesh > MeshFunctionType;
-      typedef tnlPDEProblem< Mesh, TimeDependentProblem, RealType, DeviceType, IndexType > BaseType;
-
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;

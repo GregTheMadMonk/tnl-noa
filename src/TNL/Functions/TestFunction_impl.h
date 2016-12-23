@@ -24,16 +24,17 @@
 #include <TNL/Functions/Analytic/Twins.h>
 #include <TNL/Functions/Analytic/Blob.h>
 #include <TNL/Functions/Analytic/PseudoSquare.h>
+#include <TNL/Functions/Analytic/Paraboloid.h>
+/****
+ * The signed distance test functions
+ */
+#include <TNL/Functions/Analytic/SinBumpsSDF.h>
+#include <TNL/Functions/Analytic/SinWaveSDF.h>
+#include <TNL/Functions/Analytic/ParaboloidSDF.h>
 
 namespace TNL {
 namespace Functions {   
 
-/****
- * The signed distance test functions
- */
-#include <functions/tnlSinBumpsFunctionSDF.h>
-#include <functions/tnlSinWaveFunctionSDF.h>
-#include <functions/tnlParaboloidSDF.h>
 
 template< int FunctionDimensions,
           typename Real,
@@ -166,7 +167,7 @@ setup( const Config::ParameterContainer& parameters,
    }
    if( testFunction == "paraboloid" )
    {
-      typedef tnlParaboloid< Dimensions, Real > FunctionType;
+      typedef Paraboloid< Dimensions, Real > FunctionType;
       functionType = paraboloid;
       return setupFunction< FunctionType >( parameters );
    }   
@@ -271,13 +272,13 @@ operator = ( const TestFunction& function )
          break;
 
       case paraboloidSDF:
-         this->copyFunction< tnlParaboloid< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< Paraboloid< FunctionDimensions, Real > >( function.function );
          break;
       case sinBumpsSDF:
-         this->copyFunction< tnlSinBumpsFunctionSDF< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< SinBumpsSDF< FunctionDimensions, Real > >( function.function );
          break;
       case sinWaveSDF:
-         this->copyFunction< tnlSinWaveFunctionSDF< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< SinWaveSDF< FunctionDimensions, Real > >( function.function );
          break;
       default:
          TNL_ASSERT( false, );
@@ -383,7 +384,7 @@ getTimeDerivative( const VertexType& vertex,
          return scale * ( ( Constant< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case paraboloid:
-         return scale * ( ( tnlParaboloid< Dimensions, Real >* ) function )->
+         return scale * ( ( Paraboloid< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case expBump:
          return scale * ( ( ExpBump< Dimensions, Real >* ) function )->
@@ -418,13 +419,13 @@ getTimeDerivative( const VertexType& vertex,
 
 
       case paraboloidSDF:
-         return scale * ( ( tnlParaboloidSDF< Dimensions, Real >* ) function )->
+         return scale * ( ( ParaboloidSDF< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinBumpsSDF:
-         return scale * ( ( tnlSinBumpsFunctionSDF< Dimensions, Real >* ) function )->
+         return scale * ( ( SinBumpsSDF< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinWaveSDF:
-         return scale * ( ( tnlSinWaveFunctionSDF< Dimensions, Real >* ) function )->
+         return scale * ( ( SinWaveSDF< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       default:
          return 0.0;
@@ -465,7 +466,7 @@ deleteFunctions()
          deleteFunction< Constant< Dimensions, Real> >();
          break;
       case paraboloid:
-         deleteFunction< tnlParaboloid< Dimensions, Real> >();
+         deleteFunction< Paraboloid< Dimensions, Real> >();
          break;
       case expBump:
          deleteFunction< ExpBump< Dimensions, Real> >();
@@ -493,13 +494,13 @@ deleteFunctions()
          break;
 
       case paraboloidSDF:
-         deleteFunction< tnlParaboloidSDF< Dimensions, Real> >();
+         deleteFunction< ParaboloidSDF< Dimensions, Real> >();
          break;
       case sinBumpsSDF:
-         deleteFunction< tnlSinBumpsFunctionSDF< Dimensions, Real> >();
+         deleteFunction< SinBumpsSDF< Dimensions, Real> >();
          break;
       case sinWaveSDF:
-         deleteFunction< tnlSinWaveFunctionSDF< Dimensions, Real> >();
+         deleteFunction< SinWaveSDF< Dimensions, Real> >();
          break;
    }
 }

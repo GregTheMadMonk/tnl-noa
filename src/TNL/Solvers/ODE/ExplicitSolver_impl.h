@@ -150,7 +150,7 @@ setTimer( Timer* timer )
 template< class Problem >
 void
 ExplicitSolver< Problem >::
-refreshSolverMonitor()
+refreshSolverMonitor( bool force )
 {
    if( this->solverMonitor )
    {

@@ -1,19 +1,12 @@
 /***************************************************************************
-                          tnlSinBumpsFunctionSDFSDF.h  -  description
+                          SinBumpsSDF.h  -  description
                              -------------------
     begin                : Oct 13, 2014
     copyright            : (C) 2014 by Tomas Sobotik
 
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #pragma once 
 
@@ -27,7 +20,7 @@ namespace TNL {
 
 
 template< typename Vertex >
-class tnlSinBumpsFunctionSDFBase : public Domain< Vertex::size, SpaceDomain >
+class SinBumpsSDFBase : public Domain< Vertex::size, SpaceDomain >
 {
    public:
 
@@ -59,12 +52,12 @@ class tnlSinBumpsFunctionSDFBase : public Domain< Vertex::size, SpaceDomain >
 };
 
 template< int Dimensions, typename Real >
-class tnlSinBumpsFunctionSDF
+class SinBumpsSDF
 {
 };
 
 template< typename Real >
-class tnlSinBumpsFunctionSDF< 1, Real  > : public tnlSinBumpsFunctionSDFBase< Containers::StaticVector< 1, Real > >
+class SinBumpsSDF< 1, Real  > : public SinBumpsSDFBase< Containers::StaticVector< 1, Real > >
 {
    public:
 
@@ -72,7 +65,7 @@ class tnlSinBumpsFunctionSDF< 1, Real  > : public tnlSinBumpsFunctionSDFBase< Co
       typedef Containers::StaticVector< 1, RealType > VertexType;
 
 
-      tnlSinBumpsFunctionSDF();
+      SinBumpsSDF();
 
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" );
@@ -97,7 +90,7 @@ class tnlSinBumpsFunctionSDF< 1, Real  > : public tnlSinBumpsFunctionSDFBase< Co
 };
 
 template< typename Real >
-class tnlSinBumpsFunctionSDF< 2, Real > : public tnlSinBumpsFunctionSDFBase< Containers::StaticVector< 2, Real > >
+class SinBumpsSDF< 2, Real > : public SinBumpsSDFBase< Containers::StaticVector< 2, Real > >
 {
    public:
 
@@ -105,7 +98,7 @@ class tnlSinBumpsFunctionSDF< 2, Real > : public tnlSinBumpsFunctionSDFBase< Con
       typedef Containers::StaticVector< 2, RealType > VertexType;
 
 
-      tnlSinBumpsFunctionSDF();
+      SinBumpsSDF();
 
       bool setup( const Config::ParameterContainer& parameters,
                  const String& prefix = "" );
@@ -130,14 +123,14 @@ class tnlSinBumpsFunctionSDF< 2, Real > : public tnlSinBumpsFunctionSDFBase< Con
 };
 
 template< typename Real >
-class tnlSinBumpsFunctionSDF< 3, Real > : public tnlSinBumpsFunctionSDFBase< Containers::StaticVector< 3, Real > >
+class SinBumpsSDF< 3, Real > : public SinBumpsSDFBase< Containers::StaticVector< 3, Real > >
 {
    public:
 
       typedef Real RealType;
       typedef Containers::StaticVector< 3, RealType > VertexType;
 
-      tnlSinBumpsFunctionSDF();
+      SinBumpsSDF();
 
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" );
@@ -163,7 +156,7 @@ class tnlSinBumpsFunctionSDF< 3, Real > : public tnlSinBumpsFunctionSDFBase< Con
 
 template< int Dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const tnlSinBumpsFunctionSDF< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const SinBumpsSDF< Dimensions, Real >& f )
 {
    str << "SDF Sin Bumps SDF. function: amplitude = " << f.getAmplitude()
        << " wavelength = " << f.getWaveLength()
@@ -176,4 +169,4 @@ std::ostream& operator << ( std::ostream& str, const tnlSinBumpsFunctionSDF< Dim
    } // namespace Functions
 } // namespace TNL
 
-#include <functions/tnlSinBumpsFunctionSDF_impl.h>
+#include <TNL/Functions/Analytic/SinBumpsSDF_impl.h>

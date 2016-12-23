@@ -1,1 +1,1 @@
-ADD_SUBDIRECTORY( hamilton-jacobi )
+ADD_SUBDIRECTORY( Hamilton-Jacobi )

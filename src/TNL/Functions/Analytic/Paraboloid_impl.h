@@ -1,33 +1,30 @@
 /***************************************************************************
-                          tnlParaboloid_impl.h  -  description
+                          Paraboloid_impl.h  -  description
                              -------------------
     begin                : Oct 13, 2014
     copyright            : (C) 2014 by Tomas Sobotik
 
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #pragma once 
 
-#include <functions/tnlParaboloid.h>
+#include <TNL/Functions/Analytic/Paraboloid.h>
+
+namespace TNL {
+   namespace Functions {
+      namespace Analytic {
 
 template< int dimensions, typename Real >
-tnlParaboloidBase< dimensions, Real >::tnlParaboloidBase()
+ParaboloidBase< dimensions, Real >::ParaboloidBase()
 : xCentre( 0 ), yCentre( 0 ), zCentre( 0 ),
   coefficient( 1 ), radius ( 0 )
 {
 }
 
 template< int dimensions, typename Real >
-bool tnlParaboloidBase< dimensions, Real >::setup( const Config::ParameterContainer& parameters,
+bool ParaboloidBase< dimensions, Real >::setup( const Config::ParameterContainer& parameters,
         								 const String& prefix)
 {
    this->xCentre = parameters.getParameter< double >( "x-centre" );
@@ -40,60 +37,60 @@ bool tnlParaboloidBase< dimensions, Real >::setup( const Config::ParameterContai
 }
 
 template< int dimensions, typename Real >
-void tnlParaboloidBase< dimensions, Real >::setXCentre( const Real& xCentre )
+void ParaboloidBase< dimensions, Real >::setXCentre( const Real& xCentre )
 {
    this->xCentre = xCentre;
 }
 
 template< int dimensions, typename Real >
-Real tnlParaboloidBase< dimensions, Real >::getXCentre() const
+Real ParaboloidBase< dimensions, Real >::getXCentre() const
 {
    return this->xCentre;
 }
 
 template< int dimensions, typename Real >
-void tnlParaboloidBase< dimensions, Real >::setYCentre( const Real& yCentre )
+void ParaboloidBase< dimensions, Real >::setYCentre( const Real& yCentre )
 {
    this->yCentre = yCentre;
 }
 
 template< int dimensions, typename Real >
-Real tnlParaboloidBase< dimensions, Real >::getYCentre() const
+Real ParaboloidBase< dimensions, Real >::getYCentre() const
 {
    return this->yCentre;
 }
 template< int dimensions, typename Real >
-void tnlParaboloidBase< dimensions, Real >::setZCentre( const Real& zCentre )
+void ParaboloidBase< dimensions, Real >::setZCentre( const Real& zCentre )
 {
    this->zCentre = zCentre;
 }
 
 template< int dimensions, typename Real >
-Real tnlParaboloidBase< dimensions, Real >::getZCentre() const
+Real ParaboloidBase< dimensions, Real >::getZCentre() const
 {
    return this->zCentre;
 }
 
 template< int dimensions, typename Real >
-void tnlParaboloidBase< dimensions, Real >::setCoefficient( const Real& amplitude )
+void ParaboloidBase< dimensions, Real >::setCoefficient( const Real& amplitude )
 {
    this->coefficient = coefficient;
 }
 
 template< int dimensions, typename Real >
-Real tnlParaboloidBase< dimensions, Real >::getCoefficient() const
+Real ParaboloidBase< dimensions, Real >::getCoefficient() const
 {
    return this->coefficient;
 }
 
 template< int dimensions, typename Real >
-void tnlParaboloidBase< dimensions, Real >::setOffset( const Real& offset )
+void ParaboloidBase< dimensions, Real >::setOffset( const Real& offset )
 {
    this->radius = offset;
 }
 
 template< int dimensions, typename Real >
-Real tnlParaboloidBase< dimensions, Real >::getOffset() const
+Real ParaboloidBase< dimensions, Real >::getOffset() const
 {
    return this->radius;
 }
@@ -104,7 +101,7 @@ template< typename Real >
              int ZDiffOrder>
 __cuda_callable__
 Real
-tnlParaboloid< 1, Real >::
+Paraboloid< 1, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -125,7 +122,7 @@ template< typename Real >
              int ZDiffOrder>
 __cuda_callable__
 Real
-tnlParaboloid< 2, Real >::
+Paraboloid< 2, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -155,7 +152,7 @@ template< typename Real >
              int ZDiffOrder>
 __cuda_callable__
 Real
-tnlParaboloid< 3, Real >::
+Paraboloid< 3, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -182,3 +179,7 @@ getPartialDerivative( const VertexType& v,
 	   return 2.0 * this->coefficient;
    return 0.0;
 }
+         
+      } // namespace Analytic
+   } // namedspace Functions
+} // namespace TNL

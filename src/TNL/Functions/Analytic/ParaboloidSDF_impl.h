@@ -1,33 +1,30 @@
 /***************************************************************************
-                          tnlParaboloidSDFSDF_impl.h  -  description
+                          ParaboloidSDFSDF_impl.h  -  description
                              -------------------
     begin                : Oct 13, 2014
     copyright            : (C) 2014 by Tomas Sobotik
 
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #pragma once 
 
-#include <functions/tnlParaboloidSDF.h>
+#include <TNL/Functions/Analytic/ParaboloidSDF.h>
+
+namespace TNL {
+   namespace Functions {
+      namespace Analytic {
 
 template< int dimensions, typename Real >
-tnlParaboloidSDFBase< dimensions, Real >::tnlParaboloidSDFBase()
+ParaboloidSDFBase< dimensions, Real >::ParaboloidSDFBase()
 : xCentre( 0 ), yCentre( 0 ), zCentre( 0 ),
   coefficient( 1 ), radius ( 0 )
 {
 }
 
 template< int dimensions, typename Real >
-bool tnlParaboloidSDFBase< dimensions, Real >::setup( const Config::ParameterContainer& parameters,
+bool ParaboloidSDFBase< dimensions, Real >::setup( const Config::ParameterContainer& parameters,
         								 const String& prefix)
 {
    this->xCentre = parameters.getParameter< double >( "x-centre" );
@@ -40,60 +37,60 @@ bool tnlParaboloidSDFBase< dimensions, Real >::setup( const Config::ParameterCon
 }
 
 template< int dimensions, typename Real >
-void tnlParaboloidSDFBase< dimensions, Real >::setXCentre( const Real& xCentre )
+void ParaboloidSDFBase< dimensions, Real >::setXCentre( const Real& xCentre )
 {
    this->xCentre = xCentre;
 }
 
 template< int dimensions, typename Real >
-Real tnlParaboloidSDFBase< dimensions, Real >::getXCentre() const
+Real ParaboloidSDFBase< dimensions, Real >::getXCentre() const
 {
    return this->xCentre;
 }
 
 template< int dimensions, typename Real >
-void tnlParaboloidSDFBase< dimensions, Real >::setYCentre( const Real& yCentre )
+void ParaboloidSDFBase< dimensions, Real >::setYCentre( const Real& yCentre )
 {
    this->yCentre = yCentre;
 }
 
 template< int dimensions, typename Real >
-Real tnlParaboloidSDFBase< dimensions, Real >::getYCentre() const
+Real ParaboloidSDFBase< dimensions, Real >::getYCentre() const
 {
    return this->yCentre;
 }
 template< int dimensions, typename Real >
-void tnlParaboloidSDFBase< dimensions, Real >::setZCentre( const Real& zCentre )
+void ParaboloidSDFBase< dimensions, Real >::setZCentre( const Real& zCentre )
 {
    this->zCentre = zCentre;
 }
 
 template< int dimensions, typename Real >
-Real tnlParaboloidSDFBase< dimensions, Real >::getZCentre() const
+Real ParaboloidSDFBase< dimensions, Real >::getZCentre() const
 {
    return this->zCentre;
 }
 
 template< int dimensions, typename Real >
-void tnlParaboloidSDFBase< dimensions, Real >::setCoefficient( const Real& amplitude )
+void ParaboloidSDFBase< dimensions, Real >::setCoefficient( const Real& amplitude )
 {
    this->coefficient = coefficient;
 }
 
 template< int dimensions, typename Real >
-Real tnlParaboloidSDFBase< dimensions, Real >::getCoefficient() const
+Real ParaboloidSDFBase< dimensions, Real >::getCoefficient() const
 {
    return this->coefficient;
 }
 
 template< int dimensions, typename Real >
-void tnlParaboloidSDFBase< dimensions, Real >::setOffset( const Real& offset )
+void ParaboloidSDFBase< dimensions, Real >::setOffset( const Real& offset )
 {
    this->radius = offset;
 }
 
 template< int dimensions, typename Real >
-Real tnlParaboloidSDFBase< dimensions, Real >::getOffset() const
+Real ParaboloidSDFBase< dimensions, Real >::getOffset() const
 {
    return this->radius;
 }
@@ -104,7 +101,7 @@ template< typename Real >
              int ZDiffOrder>
 __cuda_callable__
 Real
-tnlParaboloidSDF< 1, Real >::
+ParaboloidSDF< 1, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -112,7 +109,7 @@ getPartialDerivative( const VertexType& v,
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 )
-      return sqrt( ( x - this -> xCentre ) * ( x - this -> xCentre ) ) - this->radius;
+      return ::sqrt( ( x - this -> xCentre ) * ( x - this -> xCentre ) ) - this->radius;
    if( XDiffOrder == 1 )
       return 1.0;
    return 0.0;
@@ -125,7 +122,7 @@ template< typename Real >
              int ZDiffOrder>
 __cuda_callable__
 Real
-tnlParaboloidSDF< 2, Real >::
+ParaboloidSDF< 2, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -133,7 +130,7 @@ getPartialDerivative( const VertexType& v,
    const Real& y = v.y();
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
    {
-      return sqrt ( ( x - this -> xCentre ) * ( x - this -> xCentre )
+      return ::sqrt ( ( x - this -> xCentre ) * ( x - this -> xCentre )
     		  	  + ( y - this -> yCentre ) * ( y - this -> yCentre ) ) - this->radius;
    }
    return 0.0;
@@ -145,7 +142,7 @@ template< typename Real >
              int ZDiffOrder>
 __cuda_callable__
 Real
-tnlParaboloidSDF< 3, Real >::
+ParaboloidSDF< 3, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -154,9 +151,13 @@ getPartialDerivative( const VertexType& v,
    const Real& z = v.z();
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
    {
-      return sqrt( ( x - this -> xCentre ) * ( x - this -> xCentre )
+      return ::sqrt( ( x - this -> xCentre ) * ( x - this -> xCentre )
     		  	 + ( y - this -> yCentre ) * ( y - this -> yCentre )
     		  	 + ( z - this -> zCentre ) * ( z - this -> zCentre ) ) - this->radius;
    }
    return 0.0;
 }
+         
+      } //namespace Analytic
+   } // namepsace Functions
+} // namespace TNL

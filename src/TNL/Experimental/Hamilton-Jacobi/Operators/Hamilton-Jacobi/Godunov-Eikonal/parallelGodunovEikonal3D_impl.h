@@ -239,8 +239,8 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 
 //	   d = 1.0 - sqrt(xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb)*ihx; /*upwind*/
 
-	   if(Sign(d) > 0.0 )
-		   return Sign(u[cellIndex])*d;
+	   if(sign(d) > 0.0 )
+		   return sign(u[cellIndex])*d;
 	   else
 		   return signui*d;
 }
@@ -360,8 +360,8 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 
 	//	   d = 1.0 - sqrt(xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb)*ihx; /*upwind*/
 
-		   if(Sign(d) > 0.0 )
-			   return Sign(u[cellIndex])*d;
+		   if(sign(d) > 0.0 )
+			   return sign(u[cellIndex])*d;
 		   else
 			   return signui*d;
 }

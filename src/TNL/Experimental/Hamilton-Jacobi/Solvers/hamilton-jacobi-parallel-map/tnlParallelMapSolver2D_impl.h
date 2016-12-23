@@ -605,7 +605,7 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::stre
 		if(fabs(this->u0[i-k]) < mesh.template getSpaceStepsProducts< 1, 0 >()+mesh.template getSpaceStepsProducts< 0, 1 >() )
 			this->work_u[i] = this->u0[i-k];
 		else
-			this->work_u[i] = Sign(this->u0[i-k])*MAP_SOLVER_MAX_VALUE;
+			this->work_u[i] = sign(this->u0[i-k])*MAP_SOLVER_MAX_VALUE;
 
 		this->map_stretched[i] = this->map[i-k];
 	}
@@ -693,7 +693,7 @@ tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSubgri
 	}
 
 
-	double value = Sign(u[0]) * u.absMax();
+	double value = sign(u[0]) * u.absMax();
 
 	if(tmp)
 	{}
@@ -744,7 +744,7 @@ tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSubgri
    {
 		if(map[i] == 0.0)
 		{
-			u[i] = /*Sign(u[l])**/MAP_SOLVER_MAX_VALUE;
+			u[i] = /*sign(u[l])**/MAP_SOLVER_MAX_VALUE;
 		}
    }
 
@@ -888,13 +888,13 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runS
 		if(computeFU)
 		{
 			if(boundaryCondition == 4)
-				u[l] = u[threadIdx.y * blockDim.x] ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.x);
+				u[l] = u[threadIdx.y * blockDim.x] ;//+ sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.x);
 			else if(boundaryCondition == 2)
-				u[l] = u[threadIdx.y * blockDim.x + blockDim.x - 1] ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(this->n - 1 - threadIdx.x);
+				u[l] = u[threadIdx.y * blockDim.x + blockDim.x - 1] ;//+ sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(this->n - 1 - threadIdx.x);
 			else if(boundaryCondition == 8)
-				u[l] = u[threadIdx.x] ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.y);
+				u[l] = u[threadIdx.x] ;//+ sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.y);
 			else if(boundaryCondition == 1)
-				u[l] = u[(blockDim.y - 1)* blockDim.x + threadIdx.x] ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(this->n - 1 - threadIdx.y);
+				u[l] = u[(blockDim.y - 1)* blockDim.x + threadIdx.x] ;//+ sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(this->n - 1 - threadIdx.y);
 		}
 	}
 
@@ -917,7 +917,7 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runS
 
 	if(map_local[l] == 0.0)
 	{
-		u[l] = /*Sign(u[l])**/MAP_SOLVER_MAX_VALUE;
+		u[l] = /*sign(u[l])**/MAP_SOLVER_MAX_VALUE;
 		computeFU = false;
 	}
 	__syncthreads();

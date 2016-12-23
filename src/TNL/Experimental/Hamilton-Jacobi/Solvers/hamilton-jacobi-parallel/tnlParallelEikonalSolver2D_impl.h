@@ -892,7 +892,7 @@ tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSu
 		//tmp = true;
 
 
-	double value = Sign(u[0]) * u.absMax();
+	double value = sign(u[0]) * u.absMax();
 
 	if(tmp)
 	{}
@@ -1157,7 +1157,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 //	      if(l < 8)									absVal[l] = Max(absVal[l],absVal[l+8]);
 //	      if(l < 4)									absVal[l] = Max(absVal[l],absVal[l+4]);
 //	      if(l < 2)									absVal[l] = Max(absVal[l],absVal[l+2]);
-//	      if(l < 1)									value   = Sign(u[0])*Max(absVal[l],absVal[l+1]);
+//	      if(l < 1)									value   = sign(u[0])*Max(absVal[l],absVal[l+1]);
 //		__syncthreads();
 //
 //		if(computeFU)
@@ -1165,13 +1165,13 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 		if(computeFU)
 		{
 			if(boundaryCondition == 4)
-				u[l] = u[threadIdx.y * blockDim.x] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.x) ;//+  2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.x+this->n);
+				u[l] = u[threadIdx.y * blockDim.x] + sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.x) ;//+  2*sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.x+this->n);
 			else if(boundaryCondition == 2)
-				u[l] = u[threadIdx.y * blockDim.x + blockDim.x - 1] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(this->n - 1 - threadIdx.x);//+ 2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(blockDim.x - threadIdx.x - 1+this->n);
+				u[l] = u[threadIdx.y * blockDim.x + blockDim.x - 1] + sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(this->n - 1 - threadIdx.x);//+ 2*sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(blockDim.x - threadIdx.x - 1+this->n);
 			else if(boundaryCondition == 8)
-				u[l] = u[threadIdx.x] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.y) ;//+ 2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.y+this->n);
+				u[l] = u[threadIdx.x] + sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.y) ;//+ 2*sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.y+this->n);
 			else if(boundaryCondition == 1)
-				u[l] = u[(blockDim.y - 1)* blockDim.x + threadIdx.x] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(this->n - 1 - threadIdx.y) ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(blockDim.y - threadIdx.y  - 1 +this->n);
+				u[l] = u[(blockDim.y - 1)* blockDim.x + threadIdx.x] + sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(this->n - 1 - threadIdx.y) ;//+ sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(blockDim.y - threadIdx.y  - 1 +this->n);
 		}
 	}
 
@@ -1209,7 +1209,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
     	  if( time + sharedTau[l] > finalTime )		sharedTau[l] = finalTime - time;
 
 
-//      if(  (Sign(u[l]+sharedTau[l]*fu) != Sign(u[l])) && fu != 0.0 && fu != -0.0)
+//      if(  (sign(u[l]+sharedTau[l]*fu) != sign(u[l])) && fu != 0.0 && fu != -0.0)
 //    	  {
 //    	  printf("orig: %10f", sharedTau[l]);
 //    	  sharedTau[l]=abs(u[l]/(1.1*fu)) ;

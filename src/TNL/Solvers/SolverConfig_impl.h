@@ -79,7 +79,7 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
     */
    config.addDelimiter( " === Time discretisation parameters ==== " );
    typedef PDE::ExplicitTimeStepper< DummyProblemType, ODE::Euler > ExplicitTimeStepper;
-   PDE::PDESolver< DummyProblemType, ExplicitTimeStepper >::configSetup( config );
+   PDE::TimeDependentPDESolver< DummyProblemType, ExplicitTimeStepper >::configSetup( config );
    ExplicitTimeStepper::configSetup( config );
    if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled ||
        ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled ||

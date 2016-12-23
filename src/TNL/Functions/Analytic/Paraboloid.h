@@ -1,19 +1,12 @@
 /***************************************************************************
-                          tnlSinWaveFunctionSDFSDF.h  -  description
+                          Paraboloid.h  -  description
                              -------------------
     begin                : Oct 13, 2014
     copyright            : (C) 2014 by Tomas Sobotik
 
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #pragma once
 
@@ -21,48 +14,53 @@
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Functions/Domain.h>
 
+namespace TNL {
+   namespace Functions {
+      namespace Analytic {
+
 template< int dimensions,
           typename Real = double >
-class tnlSinWaveFunctionSDFBase : public Functions::Domain< dimensions, SpaceDomain >
+class ParaboloidBase : public Functions::Domain< dimensions, SpaceDomain >
 {
    public:
 
-      tnlSinWaveFunctionSDFBase();
+   ParaboloidBase();
 
-      bool setup( const Config::ParameterContainer& parameters,
-                 const String& prefix = "" );
+   bool setup( const Config::ParameterContainer& parameters,
+              const String& prefix = "" );
 
-      void setWaveLength( const Real& waveLength );
+   void setXCentre( const Real& waveLength );
 
-      Real getWaveLength() const;
+   Real getXCentre() const;
 
-      void setAmplitude( const Real& amplitude );
+   void setYCentre( const Real& waveLength );
 
-      Real getAmplitude() const;
+   Real getYCentre() const;
 
-      void setPhase( const Real& phase );
+   void setZCentre( const Real& waveLength );
 
-      Real getPhase() const;
+   Real getZCentre() const;
 
-      void setWavesNumber( const Real& wavesNumber );
+   void setCoefficient( const Real& coefficient );
 
-      Real getWavesNumber() const;
+   Real getCoefficient() const;
+
+   void setOffset( const Real& offset );
+
+   Real getOffset() const;
 
    protected:
 
-      __cuda_callable__
-      Real sinWaveFunctionSDF( const Real& r ) const;
-      
-      Real waveLength, amplitude, phase, wavesNumber;
+   Real xCentre, yCentre, zCentre, coefficient, radius;
 };
 
 template< int Dimensions, typename Real >
-class tnlSinWaveFunctionSDF
+class Paraboloid
 {
 };
 
 template< typename Real >
-class tnlSinWaveFunctionSDF< 1, Real > : public tnlSinWaveFunctionSDFBase< 1, Real >
+class Paraboloid< 1, Real > : public ParaboloidBase< 1, Real >
 {
    public:
 
@@ -89,7 +87,7 @@ class tnlSinWaveFunctionSDF< 1, Real > : public tnlSinWaveFunctionSDFBase< 1, Re
 };
 
 template< typename Real >
-class tnlSinWaveFunctionSDF< 2, Real > : public tnlSinWaveFunctionSDFBase< 2, Real >
+class Paraboloid< 2, Real > : public ParaboloidBase< 2, Real >
 {
    public:
 
@@ -116,7 +114,7 @@ class tnlSinWaveFunctionSDF< 2, Real > : public tnlSinWaveFunctionSDFBase< 2, Re
 };
 
 template< typename Real >
-class tnlSinWaveFunctionSDF< 3, Real > : public tnlSinWaveFunctionSDFBase< 3, Real >
+class Paraboloid< 3, Real > : public ParaboloidBase< 3, Real >
 {
    public:
 
@@ -146,13 +144,16 @@ class tnlSinWaveFunctionSDF< 3, Real > : public tnlSinWaveFunctionSDFBase< 3, Re
 
 template< int Dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const tnlSinWaveFunctionSDF< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const Paraboloid< Dimensions, Real >& f )
 {
-   str << "SDF Sin Wave SDF. function: amplitude = " << f.getAmplitude()
-       << " wavelength = " << f.getWaveLength()
-       << " phase = " << f.getPhase()
-       << " # of waves = " << f.getWavesNumber();
+   str << "SDF Paraboloid function: amplitude = " << f.getCoefficient()
+       << " offset = " << f.getOffset();
    return str;
 }
+        
+      } // namespace Analytic
+   } // namespace Functions
+} // namespace TNL
 
-#include <functions/tnlSinWaveFunctionSDF_impl.h>
+#include <TNL/Functions/Analytic/Paraboloid_impl.h>
+

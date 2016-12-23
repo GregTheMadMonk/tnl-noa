@@ -1,60 +1,53 @@
 /***************************************************************************
-                          tnlSinBumpsFunctionSDFSDF_impl.h  -  description
+                          SinBumpsSDFSDF_impl.h  -  description
                              -------------------
     begin                : Oct 13, 2014
     copyright            : (C) 2014 by Tomas Sobotik
 
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #pragma once 
 
-#include <functions/tnlSinBumpsFunctionSDF.h>
+#include <TNL/Functions/Analytic/SinBumpsSDF.h>
 
 namespace TNL {
    namespace Functions {
       namespace Analytic {
 
 template< typename Vertex >
-void tnlSinBumpsFunctionSDFBase< Vertex >::setWaveLength( const Vertex& waveLength )
+void SinBumpsSDFBase< Vertex >::setWaveLength( const Vertex& waveLength )
 {
    this->waveLength = waveLength;
 }
 
 template< typename Vertex >
-const Vertex& tnlSinBumpsFunctionSDFBase< Vertex >::getWaveLength() const
+const Vertex& SinBumpsSDFBase< Vertex >::getWaveLength() const
 {
    return this->waveLength;
 }
 
 template< typename Vertex >
-void tnlSinBumpsFunctionSDFBase< Vertex >::setAmplitude( const typename Vertex::RealType& amplitude )
+void SinBumpsSDFBase< Vertex >::setAmplitude( const typename Vertex::RealType& amplitude )
 {
    this->amplitude = amplitude;
 }
 
 template< typename Vertex >
-const typename Vertex::RealType& tnlSinBumpsFunctionSDFBase< Vertex >::getAmplitude() const
+const typename Vertex::RealType& SinBumpsSDFBase< Vertex >::getAmplitude() const
 {
    return this->amplitude;
 }
 
 template< typename Vertex >
-void tnlSinBumpsFunctionSDFBase< Vertex >::setPhase( const Vertex& phase )
+void SinBumpsSDFBase< Vertex >::setPhase( const Vertex& phase )
 {
    this->phase = phase;
 }
 
 template< typename Vertex >
-const Vertex& tnlSinBumpsFunctionSDFBase< Vertex >::getPhase() const
+const Vertex& SinBumpsSDFBase< Vertex >::getPhase() const
 {
    return this->phase;
 }
@@ -64,12 +57,12 @@ const Vertex& tnlSinBumpsFunctionSDFBase< Vertex >::getPhase() const
  */
 
 template< typename Real >
-tnlSinBumpsFunctionSDF< 1, Real >::tnlSinBumpsFunctionSDF()
+SinBumpsSDF< 1, Real >::SinBumpsSDF()
 {
 }
 
 template< typename Real >
-bool tnlSinBumpsFunctionSDF< 1, Real >::setup( const Config::ParameterContainer& parameters,
+bool SinBumpsSDF< 1, Real >::setup( const Config::ParameterContainer& parameters,
         const String& prefix)
 {
    this->amplitude = parameters.getParameter< double >( prefix+"amplitude" );
@@ -88,20 +81,20 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-tnlSinBumpsFunctionSDF< 1, Real >::
+SinBumpsSDF< 1, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();
-   RealType xp = fabs( x ) + Sign( x ) * this->phase.x() * this->waveLength.x() / ( 2.0*M_PI );
+   RealType xp = ::fabs( x ) + sign( x ) * this->phase.x() * this->waveLength.x() / ( 2.0*M_PI );
    if( this->wavesNumber.x() != 0.0 && xp > this->wavesNumber.x() * this->waveLength.x() )
       return 0.0;
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 )
-      return Sign( xp - round( (2.0 * xp ) / this->waveLength.x() ) * this->waveLength.x() / 2.0 )
+      return sign( xp - round( (2.0 * xp ) / this->waveLength.x() ) * this->waveLength.x() / 2.0 )
           * ( xp- round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0)
-          * Sign(sin(this-> phase.x() + 2.0 * M_PI * x / this->waveLength.x()));
+          * sign( ::sin(this-> phase.x() + 2.0 * M_PI * x / this->waveLength.x()));
    if( XDiffOrder == 1 )
       return 1.0;
    return 0.0;
@@ -112,12 +105,12 @@ getPartialDerivative( const VertexType& v,
  */
 
 template< typename Real >
-tnlSinBumpsFunctionSDF< 2, Real >::tnlSinBumpsFunctionSDF()
+SinBumpsSDF< 2, Real >::SinBumpsSDF()
 {
 }
 
 template< typename Real >
-bool tnlSinBumpsFunctionSDF< 2, Real >::setup( const Config::ParameterContainer& parameters,
+bool SinBumpsSDF< 2, Real >::setup( const Config::ParameterContainer& parameters,
         const String& prefix )
 {
    this->amplitude = parameters.getParameter< double >( prefix+"amplitude" );
@@ -141,20 +134,20 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-tnlSinBumpsFunctionSDF< 2, Real >::
+SinBumpsSDF< 2, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
 	   const RealType& x = v.x();
 	   const RealType& y = v.y();
-	   RealType xp = sqrt(x*x) + Sign( x ) * this->phase.x() * this->waveLength.x() / (2.0*M_PI);
-	   RealType yp = sqrt(y*y) + Sign( y ) * this->phase.y() * this->waveLength.y() / (2.0*M_PI);
+	   RealType xp = ::sqrt(x*x) + sign( x ) * this->phase.x() * this->waveLength.x() / (2.0*M_PI);
+	   RealType yp = ::sqrt(y*y) + sign( y ) * this->phase.y() * this->waveLength.y() / (2.0*M_PI);
 	   if( ( xp > this->wavesNumber.x()*this->waveLength.x() && this->wavesNumber.x() != 0.0 )  ||
 			 ( yp > this->wavesNumber.y()*this->waveLength.y() && this->wavesNumber.y() != 0.0 ) )
 		   return 0.0;
-	   const RealType sx = Sign(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0)
+	   const RealType sx = sign(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0)
 	  		  		    *(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0);
-	   const RealType sy = Sign(yp - round((2.0 * yp)/this->waveLength.y())* this->waveLength.y()/2.0)
+	   const RealType sy = sign(yp - round((2.0 * yp)/this->waveLength.y())* this->waveLength.y()/2.0)
 	  		  		    *(yp - round((2.0 * yp)/this->waveLength.y())* this->waveLength.y()/2.0);
 	   RealType sxy;
 	   if(sx < sy)
@@ -163,8 +156,8 @@ getPartialDerivative( const VertexType& v,
 		   sxy = sy;
 	   if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
 	   {
-		      return sxy * Sign( sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() )
-		      	  	  	       * sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) );
+		      return sxy * sign( ::sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() )
+		      	  	  	       * ::sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) );
 	   }
 	   return 0.0;
 }
@@ -174,12 +167,12 @@ getPartialDerivative( const VertexType& v,
  */
 
 template< typename Real >
-tnlSinBumpsFunctionSDF< 3, Real >::tnlSinBumpsFunctionSDF()
+SinBumpsSDF< 3, Real >::SinBumpsSDF()
 {
 }
 
 template< typename Real >
-bool tnlSinBumpsFunctionSDF< 3, Real >::setup( const Config::ParameterContainer& parameters,
+bool SinBumpsSDF< 3, Real >::setup( const Config::ParameterContainer& parameters,
         const String& prefix )
 {
    this->amplitude = parameters.getParameter< double >( prefix+"amplitude" );
@@ -208,25 +201,25 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-tnlSinBumpsFunctionSDF< 3, Real >::
+SinBumpsSDF< 3, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
 	   const RealType& x = v.x();
 	   const RealType& y = v.y();
 	   const RealType& z = v.z();
-	   RealType xp = sqrt(x*x) + Sign(x)*(this->phase.x())*(this->waveLength.x())/(2.0*M_PI);
-	   RealType yp = sqrt(y*y) + Sign(y)*(this->phase.y())*(this->waveLength.y())/(2.0*M_PI);
-	   RealType zp = sqrt(z*z) + Sign(z)*(this->phase.z())*(this->waveLength.z())/(2.0*M_PI);
+	   RealType xp = ::sqrt(x*x) + sign(x)*(this->phase.x())*(this->waveLength.x())/(2.0*M_PI);
+	   RealType yp = ::sqrt(y*y) + sign(y)*(this->phase.y())*(this->waveLength.y())/(2.0*M_PI);
+	   RealType zp = ::sqrt(z*z) + sign(z)*(this->phase.z())*(this->waveLength.z())/(2.0*M_PI);
 	   if ( ( xp > this->wavesNumber.x()*this->waveLength.x() && this->wavesNumber.x() != 0.0 ) ||
 			(yp > this->wavesNumber.y()*this->waveLength.y() && this->wavesNumber.y() != 0.0 ) ||
-			(sqrt(z*z) > this->wavesNumber.z()*this->waveLength.z() && this->wavesNumber.z() != 0.0 ) )
+			(::sqrt(z*z) > this->wavesNumber.z()*this->waveLength.z() && this->wavesNumber.z() != 0.0 ) )
 		   return 0.0;
-	   const RealType sx = Sign(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0)
+	   const RealType sx = sign(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0)
 	  		  		    *(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0);
-	   const RealType sy = Sign(yp - round((2.0 * yp)/this->waveLength.y())* this->waveLength.y()/2.0)
+	   const RealType sy = sign(yp - round((2.0 * yp)/this->waveLength.y())* this->waveLength.y()/2.0)
 	  		  		    *(yp - round((2.0 * yp)/this->waveLength.y())* this->waveLength.y()/2.0);
-	   const RealType sz = Sign(zp - round((2.0 * zp)/this->waveLength.z())* this->waveLength.z()/2.0)
+	   const RealType sz = sign(zp - round((2.0 * zp)/this->waveLength.z())* this->waveLength.z()/2.0)
 	  		  		    *(zp - round((2.0 * zp)/this->waveLength.z())* this->waveLength.z()/2.0);
 	   RealType sxyz;
 	   if(sx <= sy && sx <= sz)
@@ -237,9 +230,9 @@ getPartialDerivative( const VertexType& v,
 		   sxyz = sz;
 	   if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
 	   {
-	      return sxyz * Sign( sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() )
-	      	  	     	  	* sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() )
-	      	  	  	  	  	* sin( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() ) );
+	      return sxyz * sign( ::sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() )
+	      	  	     	  	* ::sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() )
+	      	  	  	  	  	* ::sin( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() ) );
 	   }
 	   return 0.0;
 }
