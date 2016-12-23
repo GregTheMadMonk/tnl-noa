@@ -406,16 +406,16 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-const typename CSR< Real, Device, Index >::MatrixRow
+typename CSR< Real, Device, Index >::ConstMatrixRow
 CSR< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
    const IndexType rowOffset = this->rowPointers[ rowIndex ];
    const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
-   return MatrixRow( &this->columnIndexes[ rowOffset ],
-                     &this->values[ rowOffset ],
-                     rowLength,
-                     1 );
+   return ConstMatrixRow( &this->columnIndexes[ rowOffset ],
+                          &this->values[ rowOffset ],
+                          rowLength,
+                          1 );
 }
 
 template< typename Real,

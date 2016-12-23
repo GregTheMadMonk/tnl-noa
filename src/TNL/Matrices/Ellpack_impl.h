@@ -455,16 +455,16 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-const typename Ellpack< Real, Device, Index >::MatrixRow
+typename Ellpack< Real, Device, Index >::ConstMatrixRow
 Ellpack< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
    //printf( "this->rowLengths = %d this = %p \n", this->rowLengths, this );
    IndexType rowBegin = DeviceDependentCode::getRowBegin( *this, rowIndex );
-   return MatrixRow( &this->columnIndexes[ rowBegin ],
-                     &this->values[ rowBegin ],
-                     this->rowLengths,
-                     DeviceDependentCode::getElementStep( *this ) );
+   return ConstMatrixRow( &this->columnIndexes[ rowBegin ],
+                          &this->values[ rowBegin ],
+                          this->rowLengths,
+                          DeviceDependentCode::getElementStep( *this ) );
 }
 
 template< typename Real,
