@@ -56,9 +56,9 @@ class TFQMR : public Object,
 
    void setPreconditioner( const PreconditionerPointer& preconditioner );
 
-   template< typename VectorPointer,
-             typename ResidueGetter = LinearResidueGetter< Matrix, typename VectorPointer::ObjectType >  >
-   bool solve( const VectorPointer& b, VectorPointer& x );
+   template< typename Vector,
+             typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
+   bool solve( const Vector& b, Vector& x );
 
    ~TFQMR();
 
