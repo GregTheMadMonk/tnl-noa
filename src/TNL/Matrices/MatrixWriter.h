@@ -11,6 +11,7 @@
 #pragma once
 
 #include <ostream>
+#include <iostream>
 
 namespace TNL {
 namespace Matrices {   
@@ -23,26 +24,27 @@ class MatrixWriter
    typedef typename Matrix::IndexType IndexType;
    typedef typename Matrix::RealType RealType;
 
-   static bool writeToGnuplot( std::ostream str,
+   static bool writeToGnuplot( std::ostream& str,
                                const Matrix& matrix,
                                bool verbose = false );
 
-   static bool writeToEps( std::ostream str,
+   static bool writeToEps( std::ostream& str,
                            const Matrix& matrix,
                            bool verbose = false );
 
    protected:
 
-   static bool writeEpsHeader( std::ostream str,
+   static bool writeEpsHeader( std::ostream& str,
                                const Matrix& matrix,
                                const int elementSize );
 
-   static bool writeEpsBody( std::ostream str,
+   static bool writeEpsBody( std::ostream& str,
                              const Matrix& matrix,
-                             const int elementSize );
-
-
+                             const int elementSize,
+                             bool verbose );
 };
 
 } // namespace Matrices
 } // namespace TNL
+
+#include <TNL/Matrices/MatrixWriter_impl.h>
