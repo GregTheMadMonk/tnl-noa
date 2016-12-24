@@ -29,14 +29,14 @@ template< typename MeshConfig, typename EntityTopology > class MeshEntity;
 template< typename MeshConfig, typename EntityTopology > class MeshEntityReferenceOrientation;
 
 template< typename MeshConfig,
-          typename DimensionTag,
-          typename SuperDimensionTag = Meshes::DimensionTag< MeshConfig::meshDimension > >
+          typename EntityDimensionTag,
+          typename SuperDimensionTag = DimensionTag< MeshConfig::meshDimension > >
 class MeshEntityOrientationNeeded
 {
    using SuperentityTopology = typename MeshTraits< MeshConfig >::template EntityTraits< SuperDimensionTag::value >::EntityTopology;
 
-   static constexpr bool previousSuperDimensionValue = MeshEntityOrientationNeeded< MeshConfig, DimensionTag, typename SuperDimensionTag::Decrement >::value;
-   static constexpr bool thisSuperDimensionValue = MeshTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, DimensionTag::value >::orientationEnabled;
+   static constexpr bool previousSuperDimensionValue = MeshEntityOrientationNeeded< MeshConfig, EntityDimensionTag, typename SuperDimensionTag::Decrement >::value;
+   static constexpr bool thisSuperDimensionValue = MeshTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, EntityDimensionTag::value >::orientationEnabled;
 
 public:
    static constexpr bool value = ( previousSuperDimensionValue || thisSuperDimensionValue );
