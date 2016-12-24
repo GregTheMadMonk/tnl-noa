@@ -25,6 +25,7 @@
 #include <TNL/Solvers/Linear/UmfpackWrapper.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
+#include <TNL/Solvers/Linear/Preconditioners/ILU0.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
@@ -286,8 +287,10 @@ class SolverStarterPreconditionerSetter
             return SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Dummy, ConfigTag >::run( problem, parameters );
          if( preconditioner == "diagonal" )
             return SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Diagonal, ConfigTag >::run( problem, parameters );
+         if( preconditioner == "ilu0" )
+            return SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::ILU0, ConfigTag >::run( problem, parameters );
 
-         std::cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal." << std::endl;
+         std::cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal, ilu0." << std::endl;
          return false;
       }
 };

@@ -123,6 +123,7 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    config.addEntry< String >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
    config.addEntryEnum( "none" );
    config.addEntryEnum( "diagonal" );
+   config.addEntryEnum( "ilu0" );
    if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled ||
        ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
    {
