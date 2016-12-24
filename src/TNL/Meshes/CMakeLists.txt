@@ -4,15 +4,17 @@ ADD_SUBDIRECTORY( Readers )
 ADD_SUBDIRECTORY( Topologies )
 ADD_SUBDIRECTORY( TypeResolver )
 
-SET( headers Grid.h
-             GridEntity.h
-             GridEntityConfig.h
+SET( headers BuildConfigTags.h
              DimensionTag.h
              DummyMesh.h
-             Mesh.h
-             MeshEntity.h
-             Traverser.h
+             GridEntityConfig.h
+             GridEntity.h
+             Grid.h
+             MeshBuilder.h
              MeshConfigBase.h
+             MeshEntity.h
+             Mesh.h
+             Traverser.h
     )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Meshes )    
