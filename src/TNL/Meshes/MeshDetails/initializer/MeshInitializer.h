@@ -22,6 +22,7 @@
 #include <TNL/Meshes/MeshDetails/initializer/MeshSuperentityStorageInitializer.h>
 #include <TNL/Meshes/MeshDetails/MeshEntityReferenceOrientation.h>
 #include <TNL/Meshes/MeshDetails/initializer/MeshEntitySeed.h>
+#include <TNL/Meshes/MeshDetails/initializer/BoundaryTagsInitializer.h>
 
 /*
  * How this beast works:
@@ -103,6 +104,10 @@ class MeshInitializer
       {
          this->mesh = &mesh;
          BaseType::initEntities( *this, points, cellSeeds, mesh );
+         // set pointers from entities into the subentity and superentity storage networks
+         MeshEntityStorageRebinder< Mesh< MeshConfig > >::exec( mesh );
+         // init boundary tags
+         BoundaryTagsInitializer< MeshType >::exec( *this, mesh );
          return true;
       }
 
@@ -147,13 +152,6 @@ class MeshInitializer
          return mesh->template getSubentityStorageNetwork< EntityType::EntityTopology::dimension, 0 >().getValues( entityIndex );
       }
 
-      template<typename SubDimensionTag, typename MeshEntity >
-      static typename MeshTraitsType::template SubentityTraits< typename MeshEntity::EntityTopology, SubDimensionTag::value >::OrientationArrayType&
-      subentityOrientationsArray( MeshEntity& entity )
-      {
-         return entity.template subentityOrientationsArray< SubDimensionTag::value >();
-      }
-
       template< typename EntityTopology, int Superdimension >
       typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >::StorageNetworkType&
       meshSuperentityStorageNetwork()
@@ -168,11 +166,37 @@ class MeshInitializer
       }
 
 
+      template< typename SubDimensionTag, typename MeshEntity >
+      static typename MeshTraitsType::template SubentityTraits< typename MeshEntity::EntityTopology, SubDimensionTag::value >::OrientationArrayType&
+      subentityOrientationsArray( MeshEntity& entity )
+      {
+         return entity.template subentityOrientationsArray< SubDimensionTag::value >();
+      }
+
       template< typename DimensionTag >
       const MeshEntityReferenceOrientation< MeshConfig, typename MeshTraitsType::template EntityTraits< DimensionTag::value >::EntityTopology >&
       getReferenceOrientation( GlobalIndexType index ) const
       {
          return BaseType::getReferenceOrientation( DimensionTag(), index );
+      }
+
+
+      template< int Dimension >
+      void resetBoundaryTags()
+      {
+         mesh->resetBoundaryTags( Meshes::DimensionTag< Dimension >() );
+      }
+
+      template< int Dimension, typename GlobalIndexType >
+      void setIsBoundaryEntity( const GlobalIndexType& entityIndex, bool isBoundary )
+      {
+         mesh->setIsBoundaryEntity( Meshes::DimensionTag< Dimension >(), entityIndex, isBoundary );
+      }
+
+      template< int Dimension >
+      bool updateBoundaryIndices()
+      {
+         return mesh->updateBoundaryIndices( Meshes::DimensionTag< Dimension >() );
       }
 };
 

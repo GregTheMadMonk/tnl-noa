@@ -133,7 +133,8 @@ load( File& file )
       std::cerr << "Mesh loading failed." << std::endl;
       return false;
    }
-   // update pointers from entities into the superentity storage network
+   // TODO: this could be done from the storage layer
+   // update pointers from entities into the subentity and superentity storage networks
    MeshEntityStorageRebinder< Mesh< MeshConfig > >::exec( *this );
    return true;
 }
@@ -163,8 +164,6 @@ init( typename MeshTraitsType::PointArrayType& points,
    MeshInitializer< MeshConfig> meshInitializer;
    if( ! meshInitializer.createMesh( points, cellSeeds, *this ) )
       return false;
-   // update pointers from entities into the superentity storage network
-   MeshEntityStorageRebinder< Mesh< MeshConfig > >::exec( *this );
    return true;
 }
 

@@ -71,6 +71,8 @@ public:
    using StorageArrayType              = Containers::Array< EntityType, Devices::Host, GlobalIndexType >;
    using SeedIndexedSetType            = Containers::IndexedSet< typename SeedType::KeyType, GlobalIndexType >;
    using ReferenceOrientationArrayType = Containers::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType >;
+
+   static constexpr bool boundaryTagsEnabled = MeshConfig::boundaryTagsStorage( EntityTopology() );
 };
 
 } // namespace Meshes

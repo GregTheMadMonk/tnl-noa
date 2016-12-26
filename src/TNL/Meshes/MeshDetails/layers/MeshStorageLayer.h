@@ -20,6 +20,7 @@
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSubentityStorageLayer.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSuperentityStorageLayer.h>
+#include <TNL/Meshes/MeshDetails/layers/MeshBoundaryTagsLayer.h>
 
 namespace TNL {
 namespace Meshes {
@@ -68,6 +69,44 @@ protected:
                                                      typename MeshTraits< MeshConfig >::template EntityTraits< Dimension >::EntityTopology >;
       return BaseType::template getSuperentityStorageNetwork< Superdimension >();
    }
+
+
+   // The following methods are implemented in the BoundaryTags layers. They are
+   // needed for the mesh traverser.
+   template< int Dimension >
+   bool isBoundaryEntity( const typename EntityTraits< Dimension >::GlobalIndexType& entityIndex ) const
+   {
+      static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
+      return BaseType::isBoundaryEntity( DimensionTag< Dimension >(), entityIndex );
+   }
+
+   template< int Dimension >
+   typename EntityTraits< Dimension >::GlobalIndexType getBoundaryEntitiesCount() const
+   {
+      static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
+      return BaseType::getBoundaryEntitiesCount( DimensionTag< Dimension >() );
+   }
+
+   template< int Dimension >
+   typename EntityTraits< Dimension >::GlobalIndexType getBoundaryEntityIndex( const typename EntityTraits< Dimension >::GlobalIndexType& i ) const
+   {
+      static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
+      return BaseType::getBoundaryEntityIndex( DimensionTag< Dimension >(), i );
+   }
+
+   template< int Dimension >
+   typename EntityTraits< Dimension >::GlobalIndexType getInteriorEntitiesCount() const
+   {
+      static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
+      return BaseType::getInteriorEntitiesCount( DimensionTag< Dimension >() );
+   }
+
+   template< int Dimension >
+   typename EntityTraits< Dimension >::GlobalIndexType getInteriorEntityIndex( const typename EntityTraits< Dimension >::GlobalIndexType& i ) const
+   {
+      static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
+      return BaseType::getInteriorEntityIndex( DimensionTag< Dimension >(), i );
+   }
 };
 
 
@@ -80,7 +119,8 @@ class MeshStorageLayer< MeshConfig,
      public MeshSubentityStorageLayers< MeshConfig,
                                         typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::EntityTopology >,
      public MeshSuperentityStorageLayers< MeshConfig,
-                                          typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::EntityTopology >
+                                          typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::EntityTopology >,
+     public MeshBoundaryTagsLayer< MeshConfig, DimensionTag >
 {
 public:
    using BaseType = MeshStorageLayer< MeshConfig, typename DimensionTag::Decrement >;
@@ -92,6 +132,7 @@ public:
    using EntityTopology   = typename EntityTraitsType::EntityTopology;
    using SubentityStorageBaseType = MeshSubentityStorageLayers< MeshConfig, EntityTopology >;
    using SuperentityStorageBaseType = MeshSuperentityStorageLayers< MeshConfig, EntityTopology >;
+   using BoundaryTagsBaseType = MeshBoundaryTagsLayer< MeshConfig, DimensionTag >;
 
    /****
      * Make visible getters of the lower layer
@@ -100,9 +141,23 @@ public:
    using BaseType::getEntitiesCount;
    using BaseType::getEntity;
 
-   MeshStorageLayer()
-   {
-   }
+   using BaseType::resetBoundaryTags;
+   using BaseType::isBoundaryEntity;
+   using BaseType::setIsBoundaryEntity;
+   using BaseType::updateBoundaryIndices;
+   using BaseType::getBoundaryEntitiesCount;
+   using BaseType::getBoundaryEntityIndex;
+   using BaseType::getInteriorEntitiesCount;
+   using BaseType::getInteriorEntityIndex;
+
+   using BoundaryTagsBaseType::resetBoundaryTags;
+   using BoundaryTagsBaseType::isBoundaryEntity;
+   using BoundaryTagsBaseType::setIsBoundaryEntity;
+   using BoundaryTagsBaseType::updateBoundaryIndices;
+   using BoundaryTagsBaseType::getBoundaryEntitiesCount;
+   using BoundaryTagsBaseType::getBoundaryEntityIndex;
+   using BoundaryTagsBaseType::getInteriorEntitiesCount;
+   using BoundaryTagsBaseType::getInteriorEntityIndex;
 
    bool setNumberOfEntities( DimensionTag, const GlobalIndexType& entitiesCount )
    {
@@ -111,6 +166,8 @@ public:
       if( ! SubentityStorageBaseType::setNumberOfEntities( entitiesCount ) )
          return false;
       if( ! SuperentityStorageBaseType::setNumberOfEntities( entitiesCount ) )
+         return false;
+      if( ! BoundaryTagsBaseType::setNumberOfEntities( entitiesCount ) )
          return false;
       return true;
    }
@@ -137,6 +194,7 @@ public:
       if( ! BaseType::save( file ) ||
           ! SubentityStorageBaseType::save( file ) ||
           ! SuperentityStorageBaseType::save( file ) ||
+          ! BoundaryTagsBaseType::save( file ) ||
           ! this->entities.save( file ) )
       {
          std::cerr << "Saving of the mesh entities with dimension " << DimensionTag::value << " failed." << std::endl;
@@ -150,6 +208,7 @@ public:
       if( ! BaseType::load( file ) ||
           ! SubentityStorageBaseType::load( file ) ||
           ! SuperentityStorageBaseType::load( file ) ||
+          ! BoundaryTagsBaseType::load( file ) ||
           ! this->entities.load( file ) )
       {
          std::cerr << "Loading of the mesh entities with dimension " << DimensionTag::value << " failed." << std::endl;
@@ -162,10 +221,11 @@ public:
    {
       BaseType::print( str );
       str << "The entities with dimension " << DimensionTag::value << " are: " << std::endl;
-      for( GlobalIndexType i = 0; i < entities.getSize();i ++ )
+      for( GlobalIndexType i = 0; i < entities.getSize(); i++ )
          str << i << " " << entities[ i ] << std::endl;
       SubentityStorageBaseType::print( str );
       SuperentityStorageBaseType::print( str );
+      BoundaryTagsBaseType::print( str );
       str << std::endl;
    }
 
@@ -174,6 +234,7 @@ public:
       return ( BaseType::operator==( meshLayer ) &&
                SubentityStorageBaseType::operator==( meshLayer ) &&
                SuperentityStorageBaseType::operator==( meshLayer ) &&
+               BoundaryTagsBaseType::operator==( meshLayer ) &&
                entities == meshLayer.entities );
    }
 
@@ -191,11 +252,13 @@ class MeshStorageLayer< MeshConfig, DimensionTag, false >
 template< typename MeshConfig >
 class MeshStorageLayer< MeshConfig, Meshes::DimensionTag< 0 >, true >
    : public MeshSuperentityStorageLayers< MeshConfig,
-                                          MeshVertexTopology >
+                                          MeshVertexTopology >,
+     public MeshBoundaryTagsLayer< MeshConfig, Meshes::DimensionTag< 0 > >
 {
 public:
    using DimensionTag               = Meshes::DimensionTag< 0 >;
    using SuperentityStorageBaseType = MeshSuperentityStorageLayers< MeshConfig, MeshVertexTopology >;
+   using BoundaryTagsBaseType       = MeshBoundaryTagsLayer< MeshConfig, Meshes::DimensionTag< 0 > >;
 
    using MeshTraitsType             = MeshTraits< MeshConfig >;
    using EntityTraitsType           = typename MeshTraitsType::template EntityTraits< 0 >;
@@ -205,9 +268,14 @@ public:
    using PointType                  = typename VertexType::PointType;
    using EntityTopology             = MeshVertexTopology;
 
-   MeshStorageLayer()
-   {
-   }
+   using BoundaryTagsBaseType::resetBoundaryTags;
+   using BoundaryTagsBaseType::isBoundaryEntity;
+   using BoundaryTagsBaseType::setIsBoundaryEntity;
+   using BoundaryTagsBaseType::updateBoundaryIndices;
+   using BoundaryTagsBaseType::getBoundaryEntitiesCount;
+   using BoundaryTagsBaseType::getBoundaryEntityIndex;
+   using BoundaryTagsBaseType::getInteriorEntitiesCount;
+   using BoundaryTagsBaseType::getInteriorEntityIndex;
 
    GlobalIndexType getVerticesCount() const
    {
@@ -247,6 +315,8 @@ public:
          return false;
       if( ! SuperentityStorageBaseType::setNumberOfEntities( entitiesCount ) )
          return false;
+      if( ! BoundaryTagsBaseType::setNumberOfEntities( entitiesCount ) )
+         return false;
       return true;
    }
 
@@ -264,12 +334,13 @@ public:
    const VertexType& getEntity( DimensionTag,
                                 const GlobalIndexType entityIndex ) const
    {
-      return this->vertices.getElement( entityIndex );
+      return this->vertices[ entityIndex ];
    }
 
    bool save( File& file ) const
    {
       if( ! SuperentityStorageBaseType::save( file ) ||
+          ! BoundaryTagsBaseType::save( file ) ||
           ! this->vertices.save( file ) )
       {
          std::cerr << "Saving of the mesh entities with dimension " << DimensionTag::value << " failed." << std::endl;
@@ -281,6 +352,7 @@ public:
    bool load( File& file )
    {
       if( ! SuperentityStorageBaseType::load( file ) ||
+          ! BoundaryTagsBaseType::load( file ) ||
           ! this->vertices.load( file ) )
       {
          std::cerr << "Loading of the mesh entities with dimension " << DimensionTag::value << " failed." << std::endl;
@@ -295,12 +367,15 @@ public:
       for( GlobalIndexType i = 0; i < vertices.getSize(); i++ )
          str << i << vertices[ i ] << std::endl;
       SuperentityStorageBaseType::print( str );
+      BoundaryTagsBaseType::print( str );
       str << std::endl;
    }
 
    bool operator==( const MeshStorageLayer& meshLayer ) const
    {
-      return ( SuperentityStorageBaseType::operator==( meshLayer ) && vertices == meshLayer.vertices );
+      return ( SuperentityStorageBaseType::operator==( meshLayer ) &&
+               BoundaryTagsBaseType::operator==( meshLayer ) &&
+               vertices == meshLayer.vertices );
    }
 
 protected:

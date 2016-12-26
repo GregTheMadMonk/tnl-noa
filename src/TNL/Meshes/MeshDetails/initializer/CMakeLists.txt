@@ -1,4 +1,5 @@
-SET( headers MeshEntityInitializer.h
+SET( headers BoundaryTagsInitializer.h
+             MeshEntityInitializer.h
              MeshEntitySeed.h 
              MeshEntitySeedKey.h
              MeshInitializer.h

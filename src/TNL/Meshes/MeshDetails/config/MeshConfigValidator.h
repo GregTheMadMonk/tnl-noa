@@ -71,6 +71,28 @@ class MeshConfigValidatorSupertopologyLayer< MeshConfig, EntityTopology, Dimensi
 {};
 
 
+template< typename MeshConfig,
+          typename EntityTopology,
+          bool BoundaryTagsStorage = MeshConfig::boundaryTagsStorage( EntityTopology() ) >
+class MeshConfigValidatorBoundaryTagsLayer
+{
+   using FaceTopology = typename MeshSubtopology< typename MeshConfig::CellTopology, MeshConfig::meshDimension - 1 >::Topology;
+
+   static_assert( MeshConfig::entityStorage( MeshConfig::meshDimension - 1 ),
+                  "Faces must be stored when any entity has boundary tags." );
+   static_assert( MeshConfig::superentityStorage( FaceTopology(), MeshConfig::meshDimension ),
+                  "Faces must store the cell superentity indices when any entity has boundary tags." );
+   static_assert( EntityTopology::dimension >= MeshConfig::meshDimension - 1 || MeshConfig::subentityStorage( FaceTopology(), EntityTopology::dimension ),
+                  "Faces must store the subentity indices of the entities on which the boundary tags are stored." );
+};
+
+template< typename MeshConfig,
+          typename EntityTopology >
+class MeshConfigValidatorBoundaryTagsLayer< MeshConfig, EntityTopology, false >
+{
+};
+
+
 template< typename MeshConfig, int dimension >
 class MeshConfigValidatorLayer
    : public MeshConfigValidatorLayer< MeshConfig, dimension - 1 >,
@@ -79,7 +101,9 @@ class MeshConfigValidatorLayer
                                                  DimensionTag< dimension - 1 > >,
      public MeshConfigValidatorSupertopologyLayer< MeshConfig,
                                                    typename MeshSubtopology< typename MeshConfig::CellTopology, dimension >::Topology,
-                                                   DimensionTag< MeshConfig::CellTopology::dimension > >
+                                                   DimensionTag< MeshConfig::CellTopology::dimension > >,
+     public MeshConfigValidatorBoundaryTagsLayer< MeshConfig,
+                                                  typename MeshSubtopology< typename MeshConfig::CellTopology, dimension >::Topology >
 {
    using Topology = typename MeshSubtopology< typename MeshConfig::CellTopology, dimension >::Topology;
 

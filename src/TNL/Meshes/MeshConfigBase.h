@@ -18,6 +18,7 @@
 
 #include <TNL/String.h>
 #include <TNL/param-types.h>
+#include <TNL/Meshes/Topologies/MeshSubtopology.h>
 
 namespace TNL {
 namespace Meshes {
@@ -65,14 +66,14 @@ struct MeshConfigBase
    static constexpr bool entityStorage( int dimension )
    {
       /****
-       *  Vertices and cells must always be stored
+       * Vertices and cells must always be stored.
        */
       return true;
       //return ( dimension == 0 || dimension == cellDimension );
    }
  
    /****
-    *  Storage of subentities of mesh entities
+    * Storage of subentities of mesh entities.
     */
    template< typename EntityTopology >
    static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
@@ -96,12 +97,33 @@ struct MeshConfigBase
    }
 
    /****
-    *  Storage of superentities of mesh entities
+    * Storage of superentities of mesh entities.
     */
    template< typename EntityTopology >
    static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
    {
       return entityStorage( EntityTopology::dimension );
+      //return false;
+   }
+
+   /****
+    * Storage of boundary tags of mesh entities. Necessary for the mesh traverser.
+    *
+    * The configuration must satisfy the following necessary conditions in
+    * order to provide boundary tags:
+    *    - faces must be stored
+    *    - faces must store the cell indices in the superentity layer
+    *    - if dim(entity) < dim(face), the entities on which the tags are stored
+    *      must be stored as subentities of faces
+    * TODO: check this in the MeshConfigValidator
+    */
+   template< typename EntityTopology >
+   static constexpr bool boundaryTagsStorage( EntityTopology )
+   {
+      using FaceTopology = typename MeshSubtopology< CellTopology, meshDimension - 1 >::Topology;
+      return entityStorage( meshDimension - 1 ) &&
+             superentityStorage( FaceTopology(), meshDimension ) &&
+             ( EntityTopology::dimension >= meshDimension - 1 || subentityStorage( FaceTopology(), EntityTopology::dimension ) );
       //return false;
    }
 };

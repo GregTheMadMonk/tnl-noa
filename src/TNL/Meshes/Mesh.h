@@ -58,6 +58,12 @@ class Mesh
 
       static constexpr int getMeshDimension();
 
+      using StorageBaseType::isBoundaryEntity;
+      using StorageBaseType::getBoundaryEntitiesCount;
+      using StorageBaseType::getBoundaryEntityIndex;
+      using StorageBaseType::getInteriorEntitiesCount;
+      using StorageBaseType::getInteriorEntityIndex;
+
       template< int Dimension >
       static constexpr bool entitiesAvailable();
 
