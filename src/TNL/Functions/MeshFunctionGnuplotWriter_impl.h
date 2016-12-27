@@ -45,7 +45,7 @@ write( const MeshFunctionType& function,
    {
       entity.refresh();
       typename MeshType::VertexType v = entity.getCenter();
-      str << v << " "
+      str << v.x() << " "
           << function.getData().getElement( entity.getIndex() ) << std::endl;
    }
    return true;
@@ -71,7 +71,7 @@ write( const MeshFunctionType& function,
    {
       entity.refresh();
       typename MeshType::VertexType v = entity.getCenter();
-      str << v << " "
+      str << v.x() << " "
           << function.getData().getElement( entity.getIndex() ) << std::endl;
    }
    return true;
