@@ -28,15 +28,15 @@ public:
       this->reset();
       this->fileName = fileName;
 
-      String meshType;
-      if( ! getObjectType( fileName, meshType ) )
+      String objectType;
+      if( ! getObjectType( fileName, objectType ) )
       {
          std::cerr << "I am not able to detect the mesh type from the file " << fileName << "." << std::endl;
          return EXIT_FAILURE;
       }
 
       Containers::List< String > parsedMeshType;
-      if( ! parseObjectType( meshType, parsedMeshType ) )
+      if( ! parseObjectType( objectType, parsedMeshType ) )
       {
          std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
          return false;
