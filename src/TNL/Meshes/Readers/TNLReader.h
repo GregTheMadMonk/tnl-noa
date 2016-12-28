@@ -29,15 +29,13 @@ public:
       this->fileName = fileName;
 
       String objectType;
-      if( ! getObjectType( fileName, objectType ) )
-      {
-         std::cerr << "I am not able to detect the mesh type from the file " << fileName << "." << std::endl;
+      if( ! getObjectType( fileName, objectType ) ) {
+         std::cerr << "Failed to detect the mesh type from the file " << fileName << "." << std::endl;
          return EXIT_FAILURE;
       }
 
       Containers::List< String > parsedMeshType;
-      if( ! parseObjectType( objectType, parsedMeshType ) )
-      {
+      if( ! parseObjectType( objectType, parsedMeshType ) ) {
          std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
          return false;
       }
@@ -56,7 +54,41 @@ public:
          else if( meshDimension == 3 )
             cellVTKType = VTKEntityType::Hexahedron;
       }
-      // TODO: loading of unstructured meshes
+      else if( meshType == "Meshes::Mesh" ) {
+         Containers::List< String > parsedMeshConfig;
+         if( ! parseObjectType( parsedMeshType[ 1 ], parsedMeshConfig ) ) {
+            std::cerr << "Unable to parse the mesh config type " << parsedMeshType[ 1 ] << "." << std::endl;
+            return false;
+         }
+         if( parsedMeshConfig.getSize() != 7 ) {
+            std::cerr << "The parsed mesh config type has wrong size (expected 7 elements):" << std::endl
+                      << parsedMeshConfig << std::endl;
+            return false;
+         }
+
+         // save parts necessary to determine the mesh type
+         const String topology = parsedMeshConfig[ 1 ];
+         worldDimension = std::atoi( parsedMeshConfig[ 2 ].getString() );
+         realType = parsedMeshConfig[ 3 ];
+         globalIndexType = parsedMeshConfig[ 4 ];
+         localIndexType = parsedMeshConfig[ 5 ];
+         idType = parsedMeshConfig[ 6 ];
+
+         if( topology == "MeshEdgeTopology" )
+            cellVTKType = VTKEntityType::Line;
+         else if( topology == "MeshTriangleTopology" )
+            cellVTKType = VTKEntityType::Triangle;
+         else if( topology == "MeshQuadrilateralTopology" )
+            cellVTKType = VTKEntityType::Quad;
+         else if( topology == "MeshTetrahedronTopology" )
+            cellVTKType = VTKEntityType::Tetra;
+         else if( topology == "MeshHexahedronTopology" )
+            cellVTKType = VTKEntityType::Hexahedron;
+         else {
+            std::cerr << "Detected topology '" << topology << "' is not supported." << std::endl;
+            return false;
+         }
+      }
       else {
          std::cerr << "The mesh type " << meshType << " is not supported (yet)." << std::endl;
          return false;
