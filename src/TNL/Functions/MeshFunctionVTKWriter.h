@@ -23,11 +23,23 @@ class MeshFunctionVTKWriter
    public:
  
       static bool write( const MeshFunction& function,
-                         std::ostream& str,
-                         const double& scale );
-      
-      static void writeHeader(const MeshFunction& function,
-                         std::ostream& str ){}
+                         std::ostream& str );
+      static void writeHeader( const MeshFunction& function,
+                               std::ostream& str );
+};
+
+template< typename Mesh,
+          typename Real >
+class MeshFunctionVTKWriter< MeshFunction< Mesh, 0, Real > >
+{
+   using MeshFunctionType = MeshFunction< Mesh, 0, Real >;
+
+   public:
+ 
+      static bool write( const MeshFunctionType& function,
+                         std::ostream& str );
+      static void writeHeader( const MeshFunctionType& function,
+                               std::ostream& str );
 };
 
 /***

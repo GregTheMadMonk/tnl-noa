@@ -11,20 +11,152 @@
 #pragma once
 
 #include <TNL/Functions/MeshFunctionVTKWriter.h>
+#include <TNL/Meshes/Readers/VTKEntityType.h>
 
 namespace TNL {
 namespace Functions {   
 
 template< typename MeshFunction >
+void
+MeshFunctionVTKWriter< MeshFunction >::
+writeHeader( const MeshFunction& function,
+             std::ostream& str )
+{
+    str << "# vtk DataFile Version 2.0" << std::endl;
+    str << "TNL DATA" << std::endl;
+    str << "ASCII" << std::endl;
+    str << "DATASET UNSTRUCTURED_GRID" << std::endl;
+}
+
+template< typename MeshFunction >
 bool
 MeshFunctionVTKWriter< MeshFunction >::
 write( const MeshFunction& function,
-       std::ostream& str,
-       const double& scale )
+       std::ostream& str )
 {
-   std::cerr << "VTK writer for mesh functions defined on mesh type " << MeshFunction::MeshType::getType() << " is not (yet) implemented." << std::endl;
-   return false;
+   writeHeader( function, str );
+
+   using MeshType = typename MeshFunction::MeshType;
+   using EntityType = typename MeshType::template EntityType< MeshFunction::getEntitiesDimensions() >;
+   using GlobalIndex = typename MeshType::GlobalIndexType;
+   using LocalIndex = typename MeshType::LocalIndexType;
+
+   const MeshType& mesh = function.getMesh();
+   const GlobalIndex verticesCount = mesh.template getEntitiesCount< 0 >();
+   const GlobalIndex entitiesCount = mesh.template getEntitiesCount< MeshFunction::getEntitiesDimensions() >();
+   const LocalIndex verticesPerEntity = EntityType::getVerticesCount();
+
+   str << "POINTS " << verticesCount << " float" << std::endl;
+   for( GlobalIndex i = 0; i < verticesCount; i++ ) {
+      const auto& vertex = mesh.template getEntity< 0 >( i );
+      const auto& point = vertex.getPoint();
+      for( LocalIndex j = 0; j < point.size; j++ ) {
+         str << point[ j ];
+         if( j < point.size - 1 )
+            str << " ";
+      }
+      // VTK needs zeros for unused dimensions
+      for( LocalIndex j = 0; j < 3 - point.size; j++ )
+         str << " 0";
+      str << std::endl;
+   }
+ 
+   const GlobalIndex cellsListSize = entitiesCount * ( verticesPerEntity + 1 );
+   str << std::endl << "CELLS " << entitiesCount << " " << cellsListSize << std::endl;
+   for( GlobalIndex i = 0; i < entitiesCount; i++ ) {
+      const auto& entity = mesh.template getEntity< MeshFunction::getEntitiesDimensions() >( i );
+      str << verticesPerEntity;
+      for( LocalIndex j = 0; j < verticesPerEntity; j++ )
+         str << " " << entity.template getSubentityIndex< 0 >( j );
+      str << std::endl;
+   }
+ 
+   str << std::endl << "CELL_TYPES " << entitiesCount << std::endl;
+   for( GlobalIndex i = 0; i < entitiesCount; i++ ) {
+      const int type = (int) Meshes::Readers::TopologyToVTKMap< typename EntityType::EntityTopology >::type;
+      str << type << std::endl;
+   }
+ 
+   str << std::endl << "CELL_DATA " << entitiesCount << std::endl;
+   str << "SCALARS cellFunctionValues float 1" << std::endl;
+   str << "LOOKUP_TABLE default" << std::endl;
+   for( GlobalIndex i = 0; i < entitiesCount; i++ ) {
+      str << function.getData().getElement( i ) << std::endl;
+   }
+ 
+   return true;
 }
+
+template< typename Mesh,
+          typename Real >
+void
+MeshFunctionVTKWriter< MeshFunction< Mesh, 0, Real > >::
+writeHeader( const MeshFunctionType& function,
+             std::ostream& str )
+{
+    str << "# vtk DataFile Version 2.0" << std::endl;
+    str << "TNL DATA" << std::endl;
+    str << "ASCII" << std::endl;
+    str << "DATASET UNSTRUCTURED_GRID" << std::endl;
+}
+
+template< typename Mesh,
+          typename Real >
+bool
+MeshFunctionVTKWriter< MeshFunction< Mesh, 0, Real > >::
+write( const MeshFunctionType& function,
+       std::ostream& str )
+{
+   writeHeader( function, str );
+
+   using MeshType = typename MeshFunctionType::MeshType;
+   using EntityType = typename MeshType::template EntityType< MeshFunctionType::getEntitiesDimensions() >;
+   using GlobalIndex = typename MeshType::GlobalIndexType;
+   using LocalIndex = typename MeshType::LocalIndexType;
+
+   const MeshType& mesh = function.getMesh();
+   const GlobalIndex verticesCount = mesh.template getEntitiesCount< 0 >();
+   const GlobalIndex entitiesCount = mesh.template getEntitiesCount< MeshFunctionType::getEntitiesDimensions() >();
+   const LocalIndex verticesPerEntity = 1;
+
+   str << "POINTS " << verticesCount << " float" << std::endl;
+   for( GlobalIndex i = 0; i < verticesCount; i++ ) {
+      const auto& vertex = mesh.template getEntity< 0 >( i );
+      const auto& point = vertex.getPoint();
+      for( LocalIndex j = 0; j < point.size; j++ ) {
+         str << point[ j ];
+         if( j < point.size - 1 )
+            str << " ";
+      }
+      // VTK needs zeros for unused dimensions
+      for( LocalIndex j = 0; j < 3 - point.size; j++ )
+         str << " 0";
+      str << std::endl;
+   }
+ 
+   const GlobalIndex cellsListSize = entitiesCount * ( verticesPerEntity + 1 );
+   str << std::endl << "CELLS " << entitiesCount << " " << cellsListSize << std::endl;
+   for( GlobalIndex i = 0; i < entitiesCount; i++ ) {
+      const auto& entity = mesh.template getEntity< MeshFunctionType::getEntitiesDimensions() >( i );
+      str << verticesPerEntity << i << std::endl;
+   }
+ 
+   str << std::endl << "CELL_TYPES " << entitiesCount << std::endl;
+   for( GlobalIndex i = 0; i < entitiesCount; i++ ) {
+      const int type = (int) Meshes::Readers::TopologyToVTKMap< typename EntityType::EntityTopology >::type;
+      str << type << std::endl;
+   }
+ 
+   str << std::endl << "CELL_DATA " << entitiesCount << std::endl;
+   str << "SCALARS cellFunctionValues float 1" << std::endl;
+   str << "LOOKUP_TABLE default" << std::endl;
+   for( GlobalIndex i = 0; i < entitiesCount; i++ ) {
+      str << function.getData().getElement( i ) << std::endl;
+   }
+ 
+   return true;
+}
+
 
 /****
  * 1D grid, cells

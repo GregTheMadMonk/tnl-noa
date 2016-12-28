@@ -97,12 +97,13 @@ std::ostream& operator<<( std::ostream& str, VTKEntityType type )
 }
 
 // static mapping of TNL entity topologies to VTK types
-//template< typename Topology > struct TopologyToVTKMap {};
-//template<> struct TopologyToVTKMap< Meshes::MeshEdgeTopology >           { static constexpr VTKEntityType type = VTKEntityType::Line; };
-//template<> struct TopologyToVTKMap< Meshes::MeshTriangleTopology >       { static constexpr VTKEntityType type = VTKEntityType::Triangle; };
-//template<> struct TopologyToVTKMap< Meshes::MeshQuadrilateralTopology >  { static constexpr VTKEntityType type = VTKEntityType::Quad; };
-//template<> struct TopologyToVTKMap< Meshes::MeshTetrahedronTopology >    { static constexpr VTKEntityType type = VTKEntityType::Tetra; };
-//template<> struct TopologyToVTKMap< Meshes::MeshHexahedronTopology >     { static constexpr VTKEntityType type = VTKEntityType::Hexahedron; };
+template< typename Topology > struct TopologyToVTKMap {};
+template<> struct TopologyToVTKMap< Meshes::MeshVertexTopology >         { static constexpr VTKEntityType type = VTKEntityType::Vertex; };
+template<> struct TopologyToVTKMap< Meshes::MeshEdgeTopology >           { static constexpr VTKEntityType type = VTKEntityType::Line; };
+template<> struct TopologyToVTKMap< Meshes::MeshTriangleTopology >       { static constexpr VTKEntityType type = VTKEntityType::Triangle; };
+template<> struct TopologyToVTKMap< Meshes::MeshQuadrilateralTopology >  { static constexpr VTKEntityType type = VTKEntityType::Quad; };
+template<> struct TopologyToVTKMap< Meshes::MeshTetrahedronTopology >    { static constexpr VTKEntityType type = VTKEntityType::Tetra; };
+template<> struct TopologyToVTKMap< Meshes::MeshHexahedronTopology >     { static constexpr VTKEntityType type = VTKEntityType::Hexahedron; };
 
 } // namespace Readers
 } // namespace Meshes
