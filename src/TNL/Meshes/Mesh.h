@@ -56,6 +56,10 @@ class Mesh
 
       virtual String getTypeVirtual() const;
 
+      static String getSerializationType();
+
+      virtual String getSerializationTypeVirtual() const;
+
       static constexpr int getMeshDimension();
 
       using StorageBaseType::isBoundaryEntity;

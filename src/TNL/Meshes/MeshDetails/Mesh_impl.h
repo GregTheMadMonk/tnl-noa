@@ -38,6 +38,22 @@ getTypeVirtual() const
 }
 
 template< typename MeshConfig >
+String
+Mesh< MeshConfig >::
+getSerializationType()
+{
+   return Mesh::getType();
+}
+
+template< typename MeshConfig >
+String
+Mesh< MeshConfig >::
+getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+}
+
+template< typename MeshConfig >
 constexpr int
 Mesh< MeshConfig >::
 getMeshDimension()
