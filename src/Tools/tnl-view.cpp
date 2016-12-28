@@ -15,6 +15,50 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/TypeResolver/TypeResolver.h>
+
+struct TNLViewBuildConfigTag {};
+
+namespace TNL {
+namespace Meshes {
+namespace BuildConfigTags {
+
+/****
+ * Turn off support for float and long double.
+ */
+template<> struct GridRealTag< TNLViewBuildConfigTag, float > { enum { enabled = false }; };
+template<> struct GridRealTag< TNLViewBuildConfigTag, long double > { enum { enabled = false }; };
+
+/****
+ * Turn off support for short int and long int indexing.
+ */
+template<> struct GridIndexTag< TNLViewBuildConfigTag, short int >{ enum { enabled = false }; };
+template<> struct GridIndexTag< TNLViewBuildConfigTag, long int >{ enum { enabled = false }; };
+
+/****
+ * Unstructured meshes.
+ */
+template<> struct MeshCellTopologyTag< TNLViewBuildConfigTag, MeshEdgeTopology > { enum { enabled = true }; };
+
+// Meshes are enabled only for the world dimension equal to the cell dimension.
+template< typename CellTopology, int WorldDimension >
+struct MeshWorldDimensionTag< TNLViewBuildConfigTag, CellTopology, WorldDimension >
+{ enum { enabled = ( WorldDimension == CellTopology::dimension ) }; };
+
+// Meshes are enabled only for types explicitly listed below.
+template< typename Real > struct MeshRealTag< TNLViewBuildConfigTag, Real > { enum { enabled = false }; };
+template< typename GlobalIndex > struct MeshGlobalIndexTag< TNLViewBuildConfigTag, GlobalIndex > { enum { enabled = false }; };
+template< typename LocalIndex > struct MeshLocalIndexTag< TNLViewBuildConfigTag, LocalIndex > { enum { enabled = false }; };
+template< typename GlobalIndex, typename Id > struct MeshIdTag< TNLViewBuildConfigTag, GlobalIndex, Id > { enum { enabled = false }; };
+template<> struct MeshRealTag< TNLViewBuildConfigTag, double > { enum { enabled = true }; };
+template<> struct MeshGlobalIndexTag< TNLViewBuildConfigTag, int > { enum { enabled = true }; };
+template<> struct MeshLocalIndexTag< TNLViewBuildConfigTag, short int > { enum { enabled = true }; };
+template< typename GlobalIndex > struct MeshIdTag< TNLViewBuildConfigTag, GlobalIndex, void > { enum { enabled = false }; };
+template< typename GlobalIndex > struct MeshIdTag< TNLViewBuildConfigTag, GlobalIndex, GlobalIndex > { enum { enabled = true }; };
+
+} // namespace BuildConfigTags
+} // namespace Meshes
+} // namespace TNL
 
 void setupConfig( Config::ConfigDescription& config )
 {
@@ -55,64 +99,10 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 
-
-   int verbose = parameters. getParameter< int >( "verbose" );
-   String meshFile = parameters. getParameter< String >( "mesh" );
-   if( meshFile == "" )
-   {
-      //if( ! processFiles< DummyMesh< double, Devices::Host, int > >( parameters ) )
-      //   return EXIT_FAILURE;
-      //return EXIT_SUCCESS;
-   }
-   String meshType;
-   if( ! getObjectType( meshFile, meshType ) )
-   {
-      std::cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << std::endl;
-      return EXIT_FAILURE;
-   }
-   std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
-   Containers::List< String > parsedMeshType;
-   if( ! parseObjectType( meshType, parsedMeshType ) )
-   {
-      std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
-      return EXIT_FAILURE;
-   }
-   if( parsedMeshType[ 0 ] == "Meshes::Grid" ||
-       parsedMeshType[ 0 ] == "tnlGrid" )   //  TODO: remove deprecated type name
-   {
-      int dimensions = atoi( parsedMeshType[ 1 ].getString() );
-      if( dimensions == 1 )
-      {
-         typedef Meshes::Grid< 1, double, Devices::Host, int > MeshType;
-         if( ! processFiles< MeshType >( parameters ) )
-            return EXIT_FAILURE;
-      }
-      if( dimensions == 2 )
-      {
-         typedef Meshes::Grid< 2, double, Devices::Host, int > MeshType;
-         if( ! processFiles< MeshType >( parameters ) )
-            return EXIT_FAILURE;
-      }
-      if( dimensions == 3 )
-      {
-         typedef Meshes::Grid< 3, double, Devices::Host, int > MeshType;
-         if( ! processFiles< MeshType >( parameters ) )
-            return EXIT_FAILURE;
-      }
-      return EXIT_SUCCESS;
-   }
-   if( parsedMeshType[ 0 ] == "Meshes::Mesh" )
-   {
-      /*String meshFile = parameters. getParameter< String >( "mesh" );
-      struct MeshConfig : public MeshConfigBase< 2 >
-      {
-         typedef MeshTriangleTopology CellType;
-      };
-      Mesh< MeshConfig > mesh;
-      if( ! mesh.load( meshFile ) )
-         return EXIT_FAILURE;
-      if( ! MeshWriterNetgen::writeMesh( "tnl-mesh.ng", mesh, true ) )
-         return EXIT_FAILURE;*/
-   }
-   return EXIT_FAILURE;
+   String meshFile = parameters.getParameter< String >( "mesh" );
+   return ! TNL::Meshes::resolveMeshType< TNLViewBuildConfigTag,
+                                          Devices::Host,
+                                          FilesProcessor >
+                                             ( meshFile,
+                                                parameters );
 }
