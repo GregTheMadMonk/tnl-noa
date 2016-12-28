@@ -269,6 +269,23 @@ replace( const String& pattern,
    this->string = newString;
 }
 
+String
+String::strip( char strip ) const
+{
+   int prefix_cut_off = 0;
+   int sufix_cut_off = 0;
+
+   while( prefix_cut_off < getLength() && (*this)[ prefix_cut_off ] == strip )
+      prefix_cut_off++;
+
+   while( sufix_cut_off < getLength() && (*this)[ getLength() - 1 - sufix_cut_off ] == strip )
+      sufix_cut_off++;
+
+   if( prefix_cut_off + sufix_cut_off < getLength() )
+      return String( getString(), prefix_cut_off, sufix_cut_off );
+   return "";
+}
+
 
 const char* String :: getString() const
 {

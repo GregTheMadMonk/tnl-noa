@@ -108,6 +108,23 @@ const List< T >& List< T >::operator = ( const List& lst )
 }
 
 template< typename T >
+bool List< T >::operator == ( const List& lst ) const
+{
+   if( this->getSize() != lst.getSize() )
+      return false;
+   for( int i = 0; i < this->getSize(); i++ )
+      if( (*this)[ i ] != lst[ i ] )
+         return false;
+   return true;
+}
+
+template< typename T >
+bool List< T >::operator != ( const List& lst ) const
+{
+   return ! operator==( lst );
+}
+
+template< typename T >
 bool List< T >::Append( const T& data )
 {
    if( ! first )

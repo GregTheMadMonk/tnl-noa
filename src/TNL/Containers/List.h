@@ -71,6 +71,10 @@ template< class T > class List
 
       const List& operator = ( const List& lst );
 
+      bool operator == ( const List& lst ) const;
+
+      bool operator != ( const List& lst ) const;
+
       //! Append new data element
       bool Append( const T& data );
 
