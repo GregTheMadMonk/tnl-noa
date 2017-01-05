@@ -95,15 +95,15 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Set mesh dependent data
     */
-   this->problem->setMeshDependentData( this->meshPointer, this->meshDependentData );
-   this->problem->bindMeshDependentData( this->meshPointer, this->meshDependentData );
+   this->problem->setMeshDependentData( this->meshPointer, this->meshDependentDataPointer );
+   this->problem->bindMeshDependentData( this->meshPointer, this->meshDependentDataPointer );
    
    /***
     * Set-up the initial condition
     */
   std::cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! this->problem->setInitialCondition( parameters, meshPointer, this->dofsPointer, this->meshDependentData ) )
+   if( ! this->problem->setInitialCondition( parameters, meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
       return false;
   std::cout << " [ OK ]" << std::endl;
 
@@ -337,7 +337,7 @@ solve()
    this->computeTimer->reset();
  
    this->ioTimer->start();
-   if( ! this->problem->makeSnapshot( t, step, meshPointer, this->dofsPointer, this->meshDependentData ) )
+   if( ! this->problem->makeSnapshot( t, step, meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
    {
       std::cerr << "Making the snapshot failed." << std::endl;
       return false;
@@ -355,14 +355,14 @@ solve()
    {
       RealType tau = min( this->snapshotPeriod,
                           this->finalTime - t );
-      if( ! this->timeStepper->solve( t, t + tau, this->meshPointer, this->dofsPointer, this->meshDependentData ) )
+      if( ! this->timeStepper->solve( t, t + tau, this->meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
          return false;
       step ++;
       t += tau;
 
       this->ioTimer->start();
       this->computeTimer->stop();
-      if( ! this->problem->makeSnapshot( t, step, this->meshPointer, this->dofsPointer, this->meshDependentData ) )
+      if( ! this->problem->makeSnapshot( t, step, this->meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
       {
          std::cerr << "Making the snapshot failed." << std::endl;
          return false;
