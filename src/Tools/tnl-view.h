@@ -424,11 +424,8 @@ struct FilesProcessor
       MeshPointer meshPointer;
       
       if( meshFile != "" )
-         if( ! meshPointer->load( meshFile ) )
-         {
-            std::cerr << "I am not able to load mesh from the file " << meshFile << "." << std::endl;
+         if( ! loadMesh( meshFile, *meshPointer ) )
             return false;
-         }
       //meshPointer->writeMesh( "mesh.asy", "asymptote" );
 
       bool checkOutputFile = parameters. getParameter< bool >( "check-output-file" );

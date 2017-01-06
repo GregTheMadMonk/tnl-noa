@@ -62,15 +62,8 @@ setup( const Config::ParameterContainer& parameters,
     * Load the mesh from the mesh file
     */
    const String& meshFile = parameters.getParameter< String >( "mesh" );
-   std::cout << "Loading a mesh from the file " << meshFile << "...";
-   if( ! this->meshPointer->load( meshFile ) )
-   {
-      std::cerr << std::endl;
-      std::cerr << "I am not able to load the mesh from the file " << meshFile << "." << std::endl;
-      std::cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << std::endl;
+   if( ! Meshes::loadMesh( meshFile, *meshPointer ) )
       return false;
-   }
-  std::cout << " [ OK ] " << std::endl;
 
    /****
     * Setup the problem

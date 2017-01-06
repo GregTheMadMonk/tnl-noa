@@ -110,5 +110,55 @@ bool resolveMeshType( const String& fileName_,
    }
 }
 
+// TODO: reorganize
+template< typename Mesh >
+bool
+loadMesh( const String& fileName_, Mesh& mesh )
+{
+   std::cout << "Loading mesh from file " << fileName_ << " ..." << std::endl;
+   std::string fileName( fileName_.getString() );
+   bool status = true;
+
+   if( ends_with( fileName, ".tnl" ) )
+      status = mesh.load( fileName_ );
+   else if( ends_with( fileName, ".ng" ) ) {
+      Readers::NetgenReader reader;
+      status = reader.readMesh( fileName_, mesh );
+   }
+   else if( ends_with( fileName, ".vtk" ) ) {
+      Readers::VTKReader<> reader;
+      status = reader.readMesh( fileName_, mesh );
+   }
+   else {
+      std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk' and '.ng'." << std::endl;
+      return false;
+   }
+
+   if( ! status )
+   {
+      std::cerr << "I am not able to load the mesh from the file " << fileName_ << ". "
+                   "Perhaps the mesh stored in the file is not supported by the mesh "
+                   "passed to the loadMesh function? The mesh type is "
+                << Mesh::getType() << std::endl;
+      return false;
+   }
+   return true;
+}
+
+template< int Dimension, typename Real, typename Device, typename Index >
+bool
+loadMesh( const String& fileName, Grid< Dimension, Real, Device, Index >& mesh )
+{
+   std::cout << "Loading mesh from file " << fileName << " ..." << std::endl;
+   if( ! mesh.load( fileName ) )
+   {
+      std::cerr << "I am not able to load the grid from the file " << fileName << ". "
+                   "You may create it with tools like tnl-grid-setup."
+                << std::endl;
+      return false;
+   }
+   return true;
+}
+
 } // namespace Meshes
 } // namespace TNL
