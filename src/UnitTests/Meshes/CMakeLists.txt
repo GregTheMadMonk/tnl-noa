@@ -29,3 +29,29 @@ ADD_TEST( MeshTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MeshTest${mpiEx
 ADD_TEST( MeshEntityTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MeshEntityTest${mpiExt}${debugExt} )
 ADD_TEST( MultimapTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MultimapTest${mpiExt}${debugExt} )
 ADD_TEST( StaticMultimapTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MultimapTest${mpiExt}${debugExt} )
+
+
+
+##
+## Tests with VTK
+##
+
+find_package( VTK )
+if( VTK_FOUND )
+   include(${VTK_USE_FILE})
+
+   AddCompilerFlag( "-DHAVE_VTK " )
+
+   add_executable( MeshReaderTest${mpiExt}${debugExt} MeshReaderTest.cpp )
+
+   #target_link_libraries( MeshReaderTest${mpiExt}${debugExt}
+   #                       ${VTK_LIBRARIES}
+   #                       tnl${debugExt}-${tnlVersion} )
+   target_link_libraries( MeshReaderTest${mpiExt}${debugExt}
+                          vtkCommonCore
+                          vtkIOLegacy
+                          tnl${debugExt}-${tnlVersion} )
+
+else( VTK_FOUND )
+   message( "Please install VTK to enable the MeshReaderTest." )
+endif( VTK_FOUND )
