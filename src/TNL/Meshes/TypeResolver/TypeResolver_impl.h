@@ -16,6 +16,7 @@
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Meshes/Readers/TNLReader.h>
 #include <TNL/Meshes/Readers/NetgenReader.h>
+#include <TNL/Meshes/Readers/VTKReader.h>
 #include <TNL/Meshes/TypeResolver/GridTypeResolver.h>
 #include <TNL/Meshes/TypeResolver/MeshTypeResolver.h>
 
@@ -56,7 +57,7 @@ template< typename ConfigTag,
 bool resolveMeshType( const String& fileName_,
                       ProblemSetterArgs&&... problemSetterArgs )
 {
-   std::cout << "Loading mesh from file " << fileName_ << " ..." << std::endl;
+   std::cout << "Detecting mesh from file " << fileName_ << " ..." << std::endl;
    std::string fileName( fileName_.getString() );
    if( ends_with( fileName, ".tnl" ) ) {
       Readers::TNLReader reader;
@@ -88,11 +89,23 @@ bool resolveMeshType( const String& fileName_,
          return false;
       }
    }
-   // TODO
-//   else if( ends_with( fileName, ".vtk" ) ) {
-//   }
+   else if( ends_with( fileName, ".vtk" ) ) {
+      // FIXME: The VTK files don't store the global index, local index and id types.
+      // The reader has some defaults, but they might be disabled by the BuildConfigTags - in
+      // this case we should use the first enabled type.
+      Readers::VTKReader<> reader;
+      if( ! reader.detectMesh( fileName_ ) )
+         return false;
+      if( reader.getMeshType() == "Meshes::Mesh" )
+         return MeshTypeResolver< decltype(reader), ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
+            run( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+      else {
+         std::cerr << "The mesh type " << reader.getMeshType() << " is not supported in the VTK reader." << std::endl;
+         return false;
+      }
+   }
    else {
-      std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl' and '.ng'." << std::endl;
+      std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk' and '.ng'." << std::endl;
       return false;
    }
 }
