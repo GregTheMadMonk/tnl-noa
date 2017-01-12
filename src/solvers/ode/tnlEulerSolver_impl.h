@@ -233,6 +233,7 @@ void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
       mk1.pointer=_k1;
     #pragma offload target(mic) in(mu,mk1,size) inout(localResidue)
     {
+      #pragma omp parallel for reduction(+:localResidue) firstprivate( mu, mk1 )  
       for( IndexType i = 0; i < size; i ++ )
       {
          const RealType add = tau * mk1.pointer[ i ];

@@ -1,17 +1,12 @@
 #!/bin/bash
 
-module load gcc-5.3.0 cmake-3.4.3 intel_parallel_studio_ex-2016.1
-cd Debug/bin
-#export OFFLOAD_REPORT=2 
-#./tnlSatanExperimentalTest-dbg
-#./tnlSatanExperimentalTest-dbg
-#./tnlSatanMICVectorExperimentalTest-dbg
-
-dofSize=64
+function heat_eq {
+dofSize=256
 dimension=2;
-proportions=1
+proportions=4
+origin="-2"
 
-analyticFunction="exp-bump"
+analyticFunction="sin-bumps"
 timeFunction="cosinus"
 
 amplitude=1.0
@@ -29,18 +24,18 @@ phaseY=0.0
 phaseZ=0.0
 sigma=1.0
 
-./tnl-grid-setup-dbg --dimensions ${dimension} \
+./tnl-grid-setup --dimensions ${dimension} \
                --proportions-x ${proportions} \
                --proportions-y ${proportions} \
                --proportions-z ${proportions} \
-               --origin-x 0 \
-               --origin-y 0 \
-               --origin-z 0 \
+               --origin-x ${origin} \
+               --origin-y ${origin} \
+               --origin-z ${origin} \
                --size-x ${dofSize} \
                --size-y ${dofSize} \
                --size-z ${dofSize} \
 
-./tnl-init-dbg --mesh mesh.tnl \
+./tnl-init --mesh mesh.tnl \
          --test-function ${analyticFunction} \
          --output-file initial.tnl \
          --amplitude ${amplitude} \
@@ -60,16 +55,16 @@ sigma=1.0
 
 mv ./initial.tnl init.tnl
 
-./tnl-heat-equation-dbg --device mic --time-discretisation explicit \
+time ./tnl-heat-equation --device mic --time-discretisation explicit \
                   --boundary-conditions-type dirichlet \
-                  --boundary-conditions-constant 0.5 \
+                  --boundary-conditions-constant 0.0 \
                   --discrete-solver euler \
                   --snapshot-period 0.0005 \
-                  --final-time 0.1 \
-                  --time-step 0.00005
+                  --final-time 0.04 \
+                  --time-step 0.00005 #|grep Offload |grep Time | cut -d ']' -f5|cut -d '(' -f1| ./a.out
 
- ./tnl-view-dbg --mesh mesh.tnl \
-          --input-files *.tnl \ 
+./tnl-view --mesh mesh.tnl \
+         --input-files *.tnl \ 
 
 seznam=`ls u-*.gplt`
 
@@ -77,16 +72,29 @@ for fname in $seznam ; do
    echo "Drawing $fname"
  gnuplot << EOF
      set terminal unknown
+     set pm3d
+     set data style lines
      #set view 33,33 #3D
      #unset xtics 
      #unset ytics
      #unset ztics
      unset border
      set output '$fname.png'
-     set yrange [-1.2:1.2]
-     set zrange [0.4:1.1]    
+     #set yrange [-1.2:1.2]
+     set zrange [-1.1:1.1]    
      set terminal png
      set title "Numerical solution" 
      splot '$fname' with line 
 EOF
 done
+
+}
+
+
+module load gcc-5.3.0 cmake-3.4.3 intel_parallel_studio_ex-2016.1
+cd Release/bin
+ export OFFLOAD_REPORT=0
+#./tnlSatanExperimentalTest-dbg
+#./tnlSatanExperimentalTest-dbg
+# ./tnlSatanMICVectorExperimentalTest-dbg
+ heat_eq

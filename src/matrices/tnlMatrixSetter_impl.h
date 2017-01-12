@@ -142,7 +142,7 @@ getCompressedRowsLengths( const MeshType& mesh,
    
    if( DeviceType::DeviceType == ( int ) tnlMICDevice )
    {
-      const DifferentialOperator* kernelDifferentialOperator = tnlMIC::passToDevice( differentialOperator );
+     /* const DifferentialOperator* kernelDifferentialOperator = tnlMIC::passToDevice( differentialOperator );
       const BoundaryConditions* kernelBoundaryConditions = tnlMIC::passToDevice( boundaryConditions );
       CompressedRowsLengthsVector* kernelCompressedRowsLengths = tnlMIC::passToDevice( rowLengths );
       TraversalUserData userData( *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelCompressedRowsLengths );
@@ -159,7 +159,9 @@ getCompressedRowsLengths( const MeshType& mesh,
 
       tnlMIC::freeFromDevice( kernelDifferentialOperator );
       tnlMIC::freeFromDevice( kernelBoundaryConditions );
-      tnlMIC::freeFromDevice( kernelCompressedRowsLengths );
+      tnlMIC::freeFromDevice( kernelCompressedRowsLengths );*/
+       
+       cout << "Not Implemented yet" << __FILE__ << __LINE__ <<endl;
       
    }
    

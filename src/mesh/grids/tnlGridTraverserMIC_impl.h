@@ -14,6 +14,11 @@
 #ifndef TNLGRIDTRAVERSERMIC_IMPL_H
 #define TNLGRIDTRAVERSERMIC_IMPL_H
 
+#include "tnlGridTraverser.h"
+
+#include <stdint.h>
+#include <core/tnlMIC.h>
+
 /****
  * 1D traverser, MIC
  */
@@ -83,9 +88,110 @@ processEntities(
    const CoordinatesType& entityOrientation,
    const CoordinatesType& entityBasis,      
    UserData& userData )
+{     
+#define USE_MICSTRUCT
+    
+#ifdef USE_MICSTRUCT
+    TNLMICSTRUCT(begin, const CoordinatesType);
+    TNLMICSTRUCT(end, const CoordinatesType);
+    TNLMICSTRUCT(entityOrientation,const CoordinatesType);
+    TNLMICSTRUCT(entityBasis, const CoordinatesType);
+    TNLMICSTRUCT(grid,const GridType);
+    TNLMICSTRUCT(userData,UserData);
+    
+    #pragma offload target(mic) in(sbegin,send,sentityBasis,sentityOrientation,sgrid,suserData)
 {
+        
+    TNLMICSTRUCTUSE(begin, const CoordinatesType);
+    TNLMICSTRUCTUSE(end, const CoordinatesType);
+    TNLMICSTRUCTUSE(entityOrientation,const CoordinatesType);
+    TNLMICSTRUCTUSE(entityBasis, const CoordinatesType);
+    TNLMICSTRUCTUSE(grid,const GridType);
+    TNLMICSTRUCTUSE(userData,UserData);  
+#endif
+
+#ifdef USE_MICHIDE
+   uint8_t * ubegin=(uint8_t*)&begin;
+   uint8_t * uend=(uint8_t*)&end;
+   uint8_t * uentityOrientation=(uint8_t*)&entityOrientation;
+   uint8_t * ugrid=(uint8_t*)&grid;
+   uint8_t * uentityBasis=(uint8_t*)&entityBasis;
+   uint8_t * uuserData=(uint8_t*)&userData;
+   
+#pragma offload target(mic) in(ubegin:length(sizeof(CoordinatesType))) in(uend:length(sizeof(CoordinatesType))) in(uentityBasis:length(sizeof(CoordinatesType))) in(uentityOrientation:length(sizeof(CoordinatesType))) in(ugrid:length(sizeof(typename GridEntity::MeshType))) in(uuserData:length(sizeof(UserData)))
+{
+   typename GridEntity::MeshType * kernelgrid = (typename GridEntity::MeshType*) ugrid; 
+   CoordinatesType* kernelbegin = (CoordinatesType*) ubegin;
+   CoordinatesType* kernelend = (CoordinatesType*) uend ;
+   CoordinatesType* kernelentityOrientation = (CoordinatesType*) uentityOrientation ;
+   CoordinatesType* kernelentityBasis = (CoordinatesType*) uentityBasis;
+   UserData* kerneluserData = (UserData*)uuserData;
+  // typename GridEntity::MeshType * kernelgrid = (typename GridEntity::MeshType*) ugird; 
+
+#endif
+    
+              
+#pragma omp parallel firstprivate( kernelbegin, kernelend )
+{       
+    //    cout << "HOVNO" <<endl;
+   GridEntity entity( *kernelgrid );
+   entity.setOrientation( *kernelentityOrientation );
+   entity.setBasis( *kernelentityBasis );
+
+   if( processOnlyBoundaryEntities )
+   {
+       
+      if( YOrthogonalBoundary )
+      #pragma omp for
+         for( auto k = kernelbegin->x();
+              k <= kernelend->x();
+              k ++ )
+         {          
+            entity.getCoordinates().x()=k; 
+            entity.getCoordinates().y() = kernelbegin->y();
+            entity.refresh();
+            EntitiesProcessor::processEntity( entity.getMesh(), *(kerneluserData), entity );
+            entity.getCoordinates().y() = kernelend->y();
+            entity.refresh();
+            EntitiesProcessor::processEntity( entity.getMesh(), *(kerneluserData), entity );
+         }
+     
+     if( XOrthogonalBoundary )
+     #pragma omp for
+         for( auto k = kernelbegin->y();
+              k <= kernelend->y();
+              k ++ )
+         {
+            entity.getCoordinates().y() = k; 
+            entity.getCoordinates().x() = kernelbegin->x();
+            entity.refresh();
+            EntitiesProcessor::processEntity( entity.getMesh(), *(kerneluserData), entity );
+            entity.getCoordinates().x() = kernelend->x();
+            entity.refresh();
+            EntitiesProcessor::processEntity( entity.getMesh(), *(kerneluserData), entity );
+         }
+   }
+   else
+   {
+#pragma omp for
+      for(  auto k = kernelbegin->y();
+           k <= kernelend->y();
+           k ++ )
+         for( entity.getCoordinates().x() = kernelbegin->x();
+              entity.getCoordinates().x() <= kernelend->x();
+              entity.getCoordinates().x() ++ )
+         {
+            entity.getCoordinates().y()=k;
+            entity.refresh();
+            EntitiesProcessor::processEntity( entity.getMesh(), *(kerneluserData), entity );
+         }
+   }
+}
+   
+}   
+ 
    //like CUDA
-   satanHider< const CoordinatesType >  kernelBegin;
+   /*satanHider< const CoordinatesType >  kernelBegin;   
    kernelBegin.pointer = tnlMIC::passToDevice( begin );
    satanHider< const CoordinatesType >  kernelEnd;
    kernelEnd.pointer = tnlMIC::passToDevice( end );
@@ -96,13 +202,13 @@ processEntities(
    satanHider< const typename GridEntity::MeshType > kernelGrid;
    kernelGrid.pointer  = tnlMIC::passToDevice( grid );
    satanHider< UserData > kernelUserData;
-   kernelUserData.pointer = tnlMIC::passToDevice( userData );
+   kernelUserData.pointer = tnlMIC::passToDevice( userData );*/   
    
-#pragma offload target(mic) in(kernelBegin,kernelEnd,kernelEntityOrientation, kernelEntityBasis,kernelGrid,kernelUserData)
+/*#pragma offload target(mic) in(kernelBegin,kernelEnd,kernelEntityOrientation, kernelEntityBasis,kernelGrid,kernelUserData)
 {
  
-       
-   //Like Host
+#pragma omp parallel firstprivate( kernelBegin, kernelEnd )
+{       
    GridEntity entity( *(kernelGrid.pointer) );
    entity.setOrientation( *kernelEntityOrientation.pointer );
    entity.setBasis( *kernelEntityBasis.pointer );
@@ -111,10 +217,12 @@ processEntities(
    {
        
       if( YOrthogonalBoundary )
-         for( entity.getCoordinates().x() = kernelBegin.pointer->x();
-              entity.getCoordinates().x() <= kernelEnd.pointer->x();
-              entity.getCoordinates().x() ++ )
-         {            
+      #pragma omp for
+         for( auto k = kernelBegin.pointer->x();
+              k <= kernelEnd.pointer->x();
+              k ++ )
+         {          
+            entity.getCoordinates().x()=k; 
             entity.getCoordinates().y() = kernelBegin.pointer->y();
             entity.refresh();
             EntitiesProcessor::processEntity( entity.getMesh(), *(kernelUserData.pointer), entity );
@@ -124,10 +232,12 @@ processEntities(
          }
      
      if( XOrthogonalBoundary )
-         for( entity.getCoordinates().y() = kernelBegin.pointer->y();
-              entity.getCoordinates().y() <= kernelEnd.pointer->y();
-              entity.getCoordinates().y() ++ )
+     #pragma omp for
+         for( auto k = kernelBegin.pointer->y();
+              k <= kernelEnd.pointer->y();
+              k ++ )
          {
+            entity.getCoordinates().y() = k; 
             entity.getCoordinates().x() = kernelBegin.pointer->x();
             entity.refresh();
             EntitiesProcessor::processEntity( entity.getMesh(), *(kernelUserData.pointer), entity );
@@ -138,23 +248,23 @@ processEntities(
    }
    else
    {
-//#pragma omp parallel for firstprivate( entity, begin, end ) if( tnlHost::isOMPEnabled() )      
-      for( entity.getCoordinates().y() = kernelBegin.pointer->y();
-           entity.getCoordinates().y() <= kernelEnd.pointer->y();
-           entity.getCoordinates().y() ++ )
+#pragma omp for
+      for(  auto k = kernelBegin.pointer->y();
+           k <= kernelEnd.pointer->y();
+           k ++ )
          for( entity.getCoordinates().x() = kernelBegin.pointer->x();
               entity.getCoordinates().x() <= kernelEnd.pointer->x();
               entity.getCoordinates().x() ++ )
          {
+            entity.getCoordinates().y()=k;
             entity.refresh();
             EntitiesProcessor::processEntity( entity.getMesh(), *(kernelUserData.pointer), entity );
          }
    }
+}   
    
    
-   
-    }   
-   
+}     
    tnlMIC::freeFromDevice( kernelGrid.pointer );
    tnlMIC::freeFromDevice( kernelBegin.pointer );
    tnlMIC::freeFromDevice( kernelEnd.pointer );
@@ -162,7 +272,7 @@ processEntities(
    tnlMIC::freeFromDevice( kernelEntityBasis.pointer );
    tnlMIC::freeFromDevice( kernelUserData.pointer );
    
-        
+*/        
 
 }
 

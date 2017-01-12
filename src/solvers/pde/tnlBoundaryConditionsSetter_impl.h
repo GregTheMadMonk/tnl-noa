@@ -19,6 +19,11 @@
 #define	TNLBOUNDARYCONDITIONSSETTER_IMPL_H
 
 #include <type_traits>
+#include <core/tnlMIC.h>
+
+#include "tnlBoundaryConditionsSetter.h"
+
+#include <stdint.h>
 
 template< typename MeshFunction,
           typename BoundaryConditions >
@@ -58,20 +63,91 @@ apply( const BoundaryConditions& boundaryConditions,
    
    if( std::is_same< DeviceType, tnlMIC >::value )
    {
-      const RealType* kernelTime = tnlMIC::passToDevice( time );
+      
+      /*const RealType* kernelTime = tnlMIC::passToDevice( time );
       const BoundaryConditions* kernelBoundaryConditions = tnlMIC::passToDevice( boundaryConditions );
       MeshFunction* kernelU = tnlMIC::passToDevice( u );
       TraverserUserData userData( *kernelTime, *kernelBoundaryConditions, *kernelU );
-     
+       */
+       
+#define USE_MICSTRUCT
+#ifdef USE_MICSTRUCT
+       TraverserUserData userData( time, boundaryConditions, u );
+       
+       TNLMICSTRUCT(time,const RealType);
+       TNLMICSTRUCT(boundaryConditions,const BoundaryConditions);
+       TNLMICSTRUCT(u,MeshFunction);
+       
+       TNLMICSTRUCT(userData,TraverserUserData);
+       
+       #pragma offload target(mic) in(stime,sboundaryConditions,su) inout(suserData)
+       {
+            TNLMICSTRUCTALLOC(time,const RealType);
+            TNLMICSTRUCTALLOC(boundaryConditions,const BoundaryConditions);
+            TNLMICSTRUCTALLOC(u,MeshFunction);
+            
+            TNLMICSTRUCTUSE(userData,TraverserUserData);
+            
+            kerneluserData->boundaryConditions=kernelboundaryConditions;
+            kerneluserData->time=kerneltime;
+            kerneluserData->u=kernelu;     
+       }
+       memcpy((void*)&userData,(void*)&suserData,sizeof(TraverserUserData));
+#endif
+       
+#ifdef USE_MICHIDE
+      uint8_t * utime=(uint8_t*)&time;
+      satanHider<RealType> kernelTime;
+      uint8_t * uboundaryConditions=(uint8_t*)&boundaryConditions;
+      satanHider<BoundaryConditions> kernelBoundaryConditions;
+      uint8_t * uu=(uint8_t*)&u;
+      satanHider<MeshFunction> kernelU;
+
+#pragma offload target(mic) in(utime:length(sizeof(RealType))) in(uboundaryConditions:length(sizeof(BoundaryConditions))) in(uu:length(sizeof(MeshFunction)))
+{
+    kernelTime.pointer=(RealType*)malloc(sizeof(RealType));
+    memcpy((void*)kernelTime.pointer,(void*)utime,sizeof(RealType));   
+    kernelBoundaryConditions.pointer=(BoundaryConditions*)malloc(sizeof(BoundaryConditions));
+    memcpy((void*)kernelBoundaryConditions.pointer,(void*)uboundaryConditions,sizeof(BoundaryConditions));
+    kernelU.pointer=(MeshFunction*)malloc(sizeof(MeshFunction));
+    memcpy((void*)kernelU.pointer,(void*)uu,sizeof(MeshFunction));      
+}   
+      TraverserUserData userData( *kernelTime.pointer, *kernelBoundaryConditions.pointer, *kernelU.pointer );
+#endif    
+      
+      
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( u.getMesh(),
                                                       userData );
+      /*
       tnlMIC::freeFromDevice( kernelTime );
       tnlMIC::freeFromDevice( kernelBoundaryConditions );
       tnlMIC::freeFromDevice( kernelU );
-     
+     */
+    
+#ifdef USE_MICSTRUCT
+    #pragma offload target(mic) in(suserData)
+    {
+         TNLMICSTRUCTUSE(userData,TraverserUserData);
+         
+         free((void*)kerneluserData->boundaryConditions);
+         free((void*)kerneluserData->time);
+         free((void*)kerneluserData->u);
+    }
+#endif
+
+#ifdef USE_MICHIDE
+#pragma offload target(mic) in(kernelTime,kernelBoundaryConditions,kernelU)
+      {
+          free((void*)kernelTime.pointer);
+          free((void*)kernelBoundaryConditions.pointer);
+          free((void*)kernelU.pointer);
+      }
+#endif
+       
+                                                      
    }
    
 }

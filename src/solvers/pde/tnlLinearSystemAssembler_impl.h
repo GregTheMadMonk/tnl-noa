@@ -116,7 +116,7 @@ assembly( const RealType& time,
    
    if( std::is_same< DeviceType, tnlMIC >::value )
    {
-      const RealType* kernelTime = tnlMIC::passToDevice( time );
+      /*const RealType* kernelTime = tnlMIC::passToDevice( time );
       const RealType* kernelTau = tnlMIC::passToDevice( tau );
       const DifferentialOperator* kernelDifferentialOperator = tnlMIC::passToDevice( differentialOperator );
       const BoundaryConditions* kernelBoundaryConditions = tnlMIC::passToDevice( boundaryConditions );
@@ -151,7 +151,10 @@ assembly( const RealType& time,
       tnlMIC::freeFromDevice( kernelRightHandSide );
       tnlMIC::freeFromDevice( kernelU );
       tnlMIC::freeFromDevice( kernelB );
-      tnlMIC::freeFromDevice( kernelMatrix );
+      tnlMIC::freeFromDevice( kernelMatrix );*/
+       
+       cout << "Not Implemente YET" << __FILE__ <<__LINE__ <<endl;
+       
    }
    
 }

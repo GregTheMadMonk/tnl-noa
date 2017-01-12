@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <omp.h>
+#include <stdint.h>
 
 #include <core/tnlMIC.h>
 //#include <core/tnlFile.h>
@@ -38,6 +39,28 @@ inline void SatanSay( const char * message)
 #endif
 }
 
+class trida
+{
+public:
+	int data[5];
+	
+public:
+	trida()
+	{
+		cout << "konstrukor" <<endl;
+	};
+	
+	~trida()
+	{
+		cout << "destruktor" <<endl;
+	};
+	
+	__device_callable__ void fce(void )
+	{
+		cout  << "fce" <<endl;
+	}
+	
+};
 
 
 
@@ -54,7 +77,41 @@ int main(void)
 		cout << "MIC in USE" <<endl; //LOL
 	#endif
 
-		tnlVector<double,tnlMIC,int> aa(10);
+		trida a;
+		a.data[0]=0;
+		a.data[1]=1;
+		a.data[2]=2;
+		a.data[3]=3;
+		a.data[4]=4;
+		
+		TNLMICSTRUCT(a,trida);
+		
+		//satanstruct<sizeof(trida)> sa; 
+		//trida sa;
+        //memcpy((void*)& sa,(void*)& a, sizeof(trida));
+		
+		cout << "sizeof a:"<< sizeof(trida) <<endl;
+		cout << "sizeof sa:" << sizeof(satanstruct<sizeof(trida)>) <<endl;
+		
+		//trida * kernela = (trida*) &sa;
+
+		TNLMICSTRUCTUSE(a,trida);
+		
+		kernela->fce();
+		for(int i=0;i<5;i++)
+				printf("%d\n", kernela->data[i]);
+		
+#pragma offload target(mic) in( TNLMICSTRUCTOFF(a,trida) ) 
+{
+			cout << "MIC sizeof a:"<< sizeof(trida) <<endl;
+			cout << "MIC sizeof sa:" <<sizeof(satanstruct<sizeof(trida)>) <<endl;
+			
+			TNLMICSTRUCTUSE(a,trida);
+			kernela->fce();
+			for(int i=0;i<5;i++)
+				printf("%d\n", kernela->data[i]);
+}
+	/*	tnlVector<double,tnlMIC,int> aa(10);
 		tnlVector<double,tnlMIC,int> bb(10);
 		tnlVector<double,tnlMIC,int> cc(10);
 		
@@ -120,6 +177,9 @@ int main(void)
 		cc.computePrefixSum(2,4);
 		ccc.computePrefixSum(2,4);
 		cout << cc <<endl << ccc <<endl;
+		*/
+		
+		
 		
     return 0;
 }

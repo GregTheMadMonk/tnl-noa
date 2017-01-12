@@ -28,7 +28,12 @@
 #include <iostream>
 #include <stdlib.h>
 #include <assert.h>
+
 #include <execinfo.h>
+#include <string.h>
+#include <cxxabi.h>
+#include <stdlib.h>
+
 
 #ifdef HAVE_CUDA
 #define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )                                    \
@@ -56,8 +61,18 @@
 	if(strings!=NULL)                                                                   \
 	{                                                                                   \
             std::cerr<<"=============BACKTRACE===================="<<std::endl;              \
-            for(int i=0;i<nptrs;i++)                                                   \
-               	std::cerr << strings[i]<<std::endl;                                             \
+            for(int i=0;i<nptrs;i++)                                                         \
+	    {                                                                                \
+	        char *fce=strchr(strings[i],'+');                                             \
+	        *fce='\0';	                                                              \
+	        fce=strchr(strings[i],'(');                                                    \
+	        fce++;                                                                          \
+  	        int     status;                                                                  \
+	        char   *realname;                                                                 \
+                realname = abi::__cxa_demangle(fce, 0, 0, &status);                               \
+ 	        std::cout << realname <<std::endl <<std::endl;                                    \
+ 	        free(realname);                                                                   \
+	    }                                                                                      \
             free(strings);                                                                 \
         }                                                                                    \
         ___tnl__assert_command;                                                              \

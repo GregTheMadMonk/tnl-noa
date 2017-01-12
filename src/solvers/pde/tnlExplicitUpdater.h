@@ -54,7 +54,7 @@ class tnlExplicitUpdaterTraverserUserData
         u( &u ),
         fu( &fu )
       {};
-         
+           
 };
 
 
@@ -103,7 +103,7 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const GridEntity& entity )
             {
-                
+                                
                ( *userData.u )( entity ) = userData.boundaryConditions->operator()
                ( *userData.u,
                  entity,
@@ -125,7 +125,7 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
-                               
+                                             
                ( *userData.fu)( entity ) = 
                   userData.differentialOperator->operator()(
                      *userData.u,

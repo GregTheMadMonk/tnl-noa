@@ -16,6 +16,7 @@
 #include <core/tnlDevice.h>
 #include <core/tnlDevice_Callable.h>
 #include <string.h>
+#include <stdint.h>
 
 
 #ifndef TNLMIC_H
@@ -32,6 +33,26 @@ struct satanHider{
     Type *pointer;
 };
 
+template <unsigned int VELIKOST>
+struct satanstruct{
+	uint8_t data[VELIKOST];
+};
+
+#define TNLMICSTRUCT(bb,typ) satanstruct<sizeof(typ)> s ## bb; \
+                             memcpy((void*)& s ## bb,(void*)& bb,sizeof(typ));
+#define TNLMICSTRUCTOFF(bb,typ) s ## bb
+#define TNLMICSTRUCTUSE(bb,typ) typ * kernel ## bb = (typ*) &s ## bb;
+#define TNLMICSTRUCTALLOC(bb,typ) typ * kernel ## bb = (typ*) malloc (sizeof(typ)); \
+                                memcpy((void*)kernel ## bb,(void*) & s ## bb, sizeof(typ));
+
+
+#define TNLMICHIDE(bb,typ) uint8_t * u ## bb=(uint8_t *)&bb; \
+                           satanHider<typ> kernel ## bb;
+#define TNLMICHIDEALLOCOFF(bb,typ) in(u ## bb:length(sizeof(typ))) out(kernel ## bb)
+#define TNLMICHIDEALLOC(bb,typ) kernel ## bb.pointer=(typ*)malloc(sizeof(typ)); \
+                                memcpy((void*)kernel ## bb.pointer,(void*)u ## bb,sizeof(typ));
+#define TNLMICHIDEFREEOFF(bb,typ) in(kernel ## bb)
+#define TNLMICHIDEFREE(bb,typ) free((void*)kernel ## bb.pointer);
 
 class tnlMIC
 {
@@ -102,6 +123,8 @@ class tnlMIC
                     memcpy((void*)ret.pointer,(void*)uk,sizeof(TYP));
                 }
                 return ret.pointer;
+                
+                cout << "Někdo mně volá :-D" <<endl;
         }
         
         template <typename TYP>
