@@ -18,6 +18,7 @@
 
 #include <ostream>
 #include <TNL/Object.h>
+#include <TNL/Logger.h>
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshStorageLayer.h>
@@ -42,15 +43,21 @@ class Mesh
       using DeviceType      = typename MeshTraitsType::DeviceType;
       using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
       using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
-      using CellType        = typename MeshTraitsType::CellType;
-      using VertexType      = typename MeshTraitsType::VertexType;
       using PointType       = typename MeshTraitsType::PointType;
+      using RealType        = typename PointType::RealType;
 
       template< int Dimension >
       using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
 
       template< int Dimension >
       using EntityType = typename EntityTraits< Dimension >::EntityType;
+
+      static constexpr int getMeshDimension();
+
+      // types of common entities
+      using Cell = EntityType< getMeshDimension() >;
+      using Face = EntityType< getMeshDimension() - 1 >;
+      using Vertex = EntityType< 0 >;
 
       static String getType();
 
@@ -59,8 +66,6 @@ class Mesh
       static String getSerializationType();
 
       virtual String getSerializationTypeVirtual() const;
-
-      static constexpr int getMeshDimension();
 
       using StorageBaseType::isBoundaryEntity;
       using StorageBaseType::getBoundaryEntitiesCount;
@@ -80,6 +85,18 @@ class Mesh
       template< int Dimension >
       const EntityType< Dimension >& getEntity( const GlobalIndexType& entityIndex ) const;
 
+
+      // duplicated for compatibility with grids
+      template< typename EntityType >
+      GlobalIndexType getEntitiesCount() const;
+
+      template< typename EntityType >
+      EntityType& getEntity( const GlobalIndexType& entityIndex );
+
+      template< typename EntityType >
+      const EntityType& getEntity( const GlobalIndexType& entityIndex ) const;
+
+
       bool save( File& file ) const;
 
       bool load( File& file );
@@ -94,6 +111,8 @@ class Mesh
       // The points and cellSeeds arrays will be reset when not needed to save memory.
       bool init( typename MeshTraitsType::PointArrayType& points,
                  typename MeshTraitsType::CellSeedArrayType& cellSeeds );
+
+      void writeProlog( Logger& logger );
 
    protected:
       // Methods for the mesh initializer

@@ -22,6 +22,14 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig >
+constexpr int
+Mesh< MeshConfig >::
+getMeshDimension()
+{
+   return MeshTraitsType::meshDimension;
+}
+
+template< typename MeshConfig >
 String
 Mesh< MeshConfig >::
 getType()
@@ -51,14 +59,6 @@ Mesh< MeshConfig >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
-}
-
-template< typename MeshConfig >
-constexpr int
-Mesh< MeshConfig >::
-getMeshDimension()
-{
-   return MeshTraitsType::meshDimension;
 }
 
 template< typename MeshConfig >
@@ -99,6 +99,36 @@ getEntity( const GlobalIndexType& entityIndex ) const
    static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get entity which is not configured for storage." );
    return StorageBaseType::getEntity( DimensionTag< Dimension >(), entityIndex );
 }
+
+
+// duplicated for compatibility with grids
+template< typename MeshConfig >
+   template< typename Entity >
+typename Mesh< MeshConfig >::GlobalIndexType
+Mesh< MeshConfig >::
+getEntitiesCount() const
+{
+   return getEntitiesCount< Entity::getEntityDimension() >();
+}
+
+template< typename MeshConfig >
+   template< typename Entity >
+Entity&
+Mesh< MeshConfig >::
+getEntity( const GlobalIndexType& entityIndex )
+{
+   return getEntity< Entity::getEntityDimension() >( entityIndex );
+}
+
+template< typename MeshConfig >
+   template< typename Entity >
+const Entity&
+Mesh< MeshConfig >::
+getEntity( const GlobalIndexType& entityIndex ) const
+{
+   return getEntity< Entity::getEntityDimension() >( entityIndex );
+}
+
 
 template< typename MeshConfig >
 bool
@@ -157,6 +187,17 @@ init( typename MeshTraitsType::PointArrayType& points,
    if( ! meshInitializer.createMesh( points, cellSeeds, *this ) )
       return false;
    return true;
+}
+
+template< typename MeshConfig >
+void
+Mesh< MeshConfig >::
+writeProlog( Logger& logger )
+{
+   logger.writeParameter( "Dimension:", getMeshDimension() );
+   logger.writeParameter( "Number of cells:", getEntitiesCount< getMeshDimension() >() );
+   logger.writeParameter( "Number of vertices:", getEntitiesCount< 0 >() );
+   // TODO: more parameters?
 }
 
 
