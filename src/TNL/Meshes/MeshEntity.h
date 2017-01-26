@@ -37,6 +37,9 @@ class MeshEntity
      protected MeshSuperentityAccess< MeshConfig, EntityTopology_ >,
      public MeshEntityIndex< typename MeshConfig::IdType >
 {
+   static_assert( is_compatible_topology< typename MeshConfig::CellTopology, EntityTopology_ >::value,
+                  "Specified entity topology is not compatible with the MeshConfig." );
+
    public:
       using MeshTraitsType  = MeshTraits< MeshConfig >;
       using EntityTopology  = EntityTopology_;

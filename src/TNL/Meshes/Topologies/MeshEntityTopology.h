@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include <TNL/Meshes/DimensionTag.h>
 
 namespace TNL {
@@ -48,6 +50,23 @@ template< typename MeshConfig >
 struct MeshEntityTopology< MeshConfig, DimensionTag< MeshConfig::CellTopology::dimension > >
 {
    using Topology = typename MeshConfig::CellTopology;
+};
+
+
+/* Helper struct to determine if one topology is compatible with another one. */
+template< typename Supertopology, typename Subtopology >
+struct is_compatible_topology
+{
+   static_assert( Supertopology::dimension >= Subtopology::dimension,
+                  "wrong order of topologies in template parameters" );
+   static constexpr bool value = std::is_same< typename MeshSubtopology< Supertopology, Subtopology::dimension >::Topology,
+                                               Subtopology >::value;
+};
+
+template< typename Supertopology >
+struct is_compatible_topology< Supertopology, Supertopology >
+{
+   static constexpr bool value = true;
 };
 
 } // namespace Meshes
