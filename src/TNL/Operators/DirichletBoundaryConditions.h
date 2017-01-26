@@ -22,7 +22,7 @@ template< typename Mesh,
           typename Function = Functions::Analytic::Constant< Mesh::getMeshDimension(), typename Mesh::RealType >,
           int MeshEntitiesDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType >
+          typename Index = typename Mesh::GlobalIndexType >
 class DirichletBoundaryConditions
 : public Operator< Mesh,
                    Functions::MeshBoundaryDomain,

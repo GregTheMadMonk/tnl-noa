@@ -27,7 +27,7 @@ namespace Operators {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType >
+          typename Index = typename Mesh::GlobalIndexType >
 class LinearDiffusion
 {
  

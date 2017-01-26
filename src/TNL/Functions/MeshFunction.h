@@ -32,7 +32,7 @@ class MeshFunction :
       
       typedef Mesh MeshType;
       typedef typename MeshType::DeviceType DeviceType;
-      typedef typename MeshType::IndexType IndexType;
+      typedef typename MeshType::GlobalIndexType IndexType;
       typedef SharedPointer< MeshType > MeshPointer;      
       typedef Real RealType;
       typedef Containers::Vector< RealType, DeviceType, IndexType > VectorType;

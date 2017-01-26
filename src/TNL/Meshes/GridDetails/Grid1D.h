@@ -30,12 +30,15 @@ class Grid< 1, Real, Device, Index > : public Object
 
    typedef Real RealType;
    typedef Device DeviceType;
-   typedef Index IndexType;
+   typedef Index GlobalIndexType;
    typedef Containers::StaticVector< 1, Real > PointType;
    typedef Containers::StaticVector< 1, Index > CoordinatesType;
    typedef Grid< 1, Real, Devices::Host, Index > HostType;
    typedef Grid< 1, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 1, Real, Device, Index > ThisType;
+
+   // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
+   typedef Index IndexType;
  
    static constexpr int getMeshDimension() { return 1; };
  

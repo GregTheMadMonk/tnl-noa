@@ -20,7 +20,7 @@ template< typename Mesh,
           int PreimageEntitiesDimension = Mesh::getMeshDimension(),
           int ImageEntitiesDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType >
+          typename Index = typename Mesh::GlobalIndexType >
 class Operator : public Functions::Domain< Mesh::getMeshDimension(), DomainType >
 {
    public:
@@ -28,7 +28,7 @@ class Operator : public Functions::Domain< Mesh::getMeshDimension(), DomainType 
       typedef Mesh MeshType;
       typedef typename MeshType::RealType MeshRealType;
       typedef typename MeshType::DeviceType DeviceType;
-      typedef typename MeshType::IndexType MeshIndexType;
+      typedef typename MeshType::GlobalIndexType MeshIndexType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef void ExactOperatorType;
