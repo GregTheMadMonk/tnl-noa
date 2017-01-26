@@ -74,7 +74,6 @@ public:
          storageNetworkAllocationVector[ it->first ] = it->second.size();
       superentityStorageNetwork.allocate( storageNetworkAllocationVector );
 
-      GlobalIndexType entityIndex = 0;
       for( auto it = dynamicStorageNetwork.cbegin(); it != dynamicStorageNetwork.cend(); it++ ) {
          auto superentitiesIndices = superentityStorageNetwork.getValues( it->first );
          LocalIndexType i = 0;
