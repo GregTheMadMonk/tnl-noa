@@ -19,7 +19,7 @@
 
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Meshes/MeshBuilder.h>
-#include <TNL/Meshes/Topologies/MeshSubtopology.h>
+#include <TNL/Meshes/Topologies/MeshEntityTopology.h>
 #include <TNL/Meshes/Readers/VTKEntityType.h>
 
 #ifdef HAVE_VTK

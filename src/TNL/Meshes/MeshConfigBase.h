@@ -18,7 +18,7 @@
 
 #include <TNL/String.h>
 #include <TNL/param-types.h>
-#include <TNL/Meshes/Topologies/MeshSubtopology.h>
+#include <TNL/Meshes/Topologies/MeshEntityTopology.h>
 
 namespace TNL {
 namespace Meshes {
