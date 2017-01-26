@@ -79,7 +79,7 @@ public:
    using BaseType::bindSuperentitiesStorageNetwork;
    using BaseType::setNumberOfSuperentities;
    using BaseType::setSuperentityIndex;
-   using BaseType::setId;
+   using BaseType::setIndex;
 };
  
 TEST( MeshEntityTest, VertexMeshEntityTest )
@@ -157,9 +157,9 @@ TEST( MeshEntityTest, EdgeMeshEntityTest )
    edgeEntities[ 2 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 2 ) );
    edgeEntities[ 2 ].template setSubentityIndex< 0 >( 0, 2 );
    edgeEntities[ 2 ].template setSubentityIndex< 0 >( 1, 0 );
-   edgeEntities[ 0 ].setId( 0 );
-   edgeEntities[ 1 ].setId( 1 );
-   edgeEntities[ 2 ].setId( 2 );
+   edgeEntities[ 0 ].setIndex( 0 );
+   edgeEntities[ 1 ].setIndex( 1 );
+   edgeEntities[ 2 ].setIndex( 2 );
 
    ASSERT_TRUE( vertexEntities[ edgeEntities[ 0 ].getVertexIndex( 0 ) ].getPoint() == point0 );
    ASSERT_TRUE( vertexEntities[ edgeEntities[ 0 ].getVertexIndex( 1 ) ].getPoint() == point1 );

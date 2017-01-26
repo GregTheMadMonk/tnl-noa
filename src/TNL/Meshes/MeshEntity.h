@@ -19,7 +19,7 @@
 #include <TNL/File.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/Topologies/MeshVertexTopology.h>
-#include <TNL/Meshes/MeshDetails/MeshEntityId.h>
+#include <TNL/Meshes/MeshDetails/MeshEntityIndex.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSubentityAccess.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSuperentityAccess.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshEntityStorageRebinder.h>
@@ -35,8 +35,7 @@ template< typename MeshConfig,
 class MeshEntity
    : protected MeshSubentityAccess< MeshConfig, EntityTopology_ >,
      protected MeshSuperentityAccess< MeshConfig, EntityTopology_ >,
-     public MeshEntityId< typename MeshConfig::IdType,
-                          typename MeshConfig::GlobalIndexType >
+     public MeshEntityIndex< typename MeshConfig::IdType >
 {
    public:
       using MeshTraitsType  = MeshTraits< MeshConfig >;
@@ -110,8 +109,7 @@ class MeshEntity
 template< typename MeshConfig >
 class MeshEntity< MeshConfig, MeshVertexTopology >
    : protected MeshSuperentityAccess< MeshConfig, MeshVertexTopology >,
-     public MeshEntityId< typename MeshConfig::IdType,
-                          typename MeshConfig::GlobalIndexType >
+     public MeshEntityIndex< typename MeshConfig::IdType >
 {
    public:
       using MeshTraitsType  = MeshTraits< MeshConfig >;

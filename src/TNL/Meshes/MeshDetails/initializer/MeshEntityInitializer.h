@@ -75,7 +75,7 @@ public:
 
    static void initEntity( EntityType& entity, const GlobalIndexType& entityIndex, const SeedType& entitySeed, InitializerType& initializer)
    {
-      initializer.setEntityId( entity, entityIndex );
+      initializer.setEntityIndex( entity, entityIndex );
       // this is necessary if we want to use existing entities instead of intermediate seeds to create subentity seeds
       for( LocalIndexType i = 0; i < entitySeed.getCornerIds().getSize(); i++ )
          initializer.template setSubentityIndex< 0 >( entity, entityIndex, i, entitySeed.getCornerIds()[ i ] );
@@ -98,7 +98,7 @@ public:
 
    static void initEntity( VertexType& entity, const GlobalIndexType& entityIndex, const PointType& point, InitializerType& initializer)
    {
-      initializer.setEntityId( entity, entityIndex );
+      initializer.setEntityIndex( entity, entityIndex );
       initializer.setVertexPoint( entity, point );
    }
 };

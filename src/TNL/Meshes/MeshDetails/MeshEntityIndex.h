@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshEntityId.h  -  description
+                          MeshEntityIndex.h  -  description
                              -------------------
     begin                : Feb 28, 2014
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -21,28 +21,28 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename IDType,
-          typename GlobalIndexType >
-class MeshEntityId
+template< typename IDType >
+class MeshEntityIndex
 {
 public:
-   MeshEntityId()
+   // FIXME: IDType may be unsigned
+   MeshEntityIndex()
       : id( -1 )
    {}
 
-   const IDType& getId() const
+   const IDType& getIndex() const
    {
       TNL_ASSERT( this->id >= 0, );
       return this->id;
    }
 
-   bool operator==( const MeshEntityId< IDType, GlobalIndexType >& id ) const
+   bool operator==( const MeshEntityIndex& id ) const
    {
       return ( this->id == id.id );
    }
 
 protected:
-   void setId( GlobalIndexType id )
+   void setIndex( IDType id )
    {
       this->id = id;
    }
@@ -50,17 +50,18 @@ protected:
    IDType id;
 };
 
-template< typename GlobalIndexType >
-class MeshEntityId< void, GlobalIndexType >
+template<>
+class MeshEntityIndex< void >
 {
 public:
-   bool operator==( const MeshEntityId< void, GlobalIndexType >& id ) const
+   bool operator==( const MeshEntityIndex& id ) const
    {
       return true;
    }
 
 protected:
-   void setId( GlobalIndexType )
+   template< typename Index >
+   void setIndex( Index )
    {}
 };
 

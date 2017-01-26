@@ -3,7 +3,7 @@ ADD_SUBDIRECTORY( initializer )
 ADD_SUBDIRECTORY( layers )
 ADD_SUBDIRECTORY( traits )
 
-SET( headers MeshEntityId.h
+SET( headers MeshEntityIndex.h
              MeshEntityIntegrityChecker.h
              MeshEntityOrientation.h
              MeshEntityReferenceOrientation.h

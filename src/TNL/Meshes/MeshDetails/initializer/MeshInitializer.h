@@ -112,9 +112,9 @@ class MeshInitializer
       }
 
       template< typename Entity, typename GlobalIndex >
-      void setEntityId( Entity& entity, const GlobalIndex& index )
+      void setEntityIndex( Entity& entity, const GlobalIndex& index )
       {
-         entity.setId( index );
+         entity.setIndex( index );
       }
 
       template< int Dimension >

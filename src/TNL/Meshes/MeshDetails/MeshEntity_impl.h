@@ -82,8 +82,7 @@ operator==( const MeshEntity& entity ) const
 {
    return ( MeshSubentityAccess< MeshConfig, EntityTopology >::operator==( entity ) &&
             MeshSuperentityAccess< MeshConfig, EntityTopology >::operator==( entity ) &&
-            MeshEntityId< typename MeshConfig::IdType,
-                          typename MeshConfig::GlobalIndexType >::operator==( entity ) );
+            MeshEntityIndex< typename MeshConfig::IdType >::operator==( entity ) );
 }
 
 template< typename MeshConfig,
@@ -183,8 +182,7 @@ MeshEntity< MeshConfig, MeshVertexTopology >::
 operator==( const MeshEntity& entity ) const
 {
    return ( MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::operator==( entity ) &&
-            MeshEntityId< typename MeshConfig::IdType,
-                          typename MeshConfig::GlobalIndexType >::operator==( entity ) &&
+            MeshEntityIndex< typename MeshConfig::IdType >::operator==( entity ) &&
             point == entity.point );
 }
 
