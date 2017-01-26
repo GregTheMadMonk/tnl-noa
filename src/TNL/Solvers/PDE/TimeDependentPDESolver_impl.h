@@ -11,6 +11,7 @@
 #pragma once
 
 #include "TimeDependentPDESolver.h"
+#include <TNL/Meshes/TypeResolver/TypeResolver.h>
 
 namespace TNL {
 namespace Solvers {
@@ -25,8 +26,7 @@ TimeDependentPDESolver()
   initialTime( 0.0 ),
   finalTime( 0.0 ),
   snapshotPeriod( 0.0 ),
-  timeStep( 1.0 ),
-  timeStepOrder( 0.0 )
+  timeStep( 1.0 )
 {
 }
 
@@ -100,11 +100,14 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Initialize the time discretisation
     */
-   this->setFinalTime( parameters.getParameter< double >( "final-time" ) );
-   this->setInitialTime( parameters.getParameter< double >( "initial-time" ) );
-   this->setSnapshotPeriod( parameters.getParameter< double >( "snapshot-period" ) );
-   this->setTimeStep( parameters.getParameter< double >( "time-step") );
-   this->setTimeStepOrder( parameters.getParameter< double >( "time-step-order" ) );
+   bool status = true;
+   status &= this->setFinalTime( parameters.getParameter< double >( "final-time" ) );
+             this->setInitialTime( parameters.getParameter< double >( "initial-time" ) );
+   status &= this->setSnapshotPeriod( parameters.getParameter< double >( "snapshot-period" ) );
+   status &= this->setTimeStep( parameters.getParameter< double >( "time-step") );
+   status &= this->setTimeStepOrder( parameters.getParameter< double >( "time-step-order" ) );
+   if( ! status )
+      return false;
 
    /****
     * Set-up the discrete solver
@@ -136,7 +139,7 @@ writeProlog( Logger& logger,
    meshPointer->writeProlog( logger );
    logger.writeSeparator();
    logger.writeParameter< String >( "Time discretisation:", "time-discretisation", parameters );
-   logger.writeParameter< double >( "Initial time step:", this->timeStep * std::pow( meshPointer->getSmallestSpaceStep(), this->timeStepOrder ) );
+   logger.writeParameter< double >( "Initial time step:", this->getRefinedTimeStep( this->meshPointer.getData(), this->timeStep ) );
    logger.writeParameter< double >( "Initial time:", "initial-time", parameters );
    logger.writeParameter< double >( "Final time:", "final-time", parameters );
    logger.writeParameter< double >( "Snapshot period:", "snapshot-period", parameters );
@@ -273,32 +276,6 @@ template< typename Problem,
           typename TimeStepper >
 bool
 TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
-setTimeStepOrder( const RealType& timeStepOrder )
-{
-   if( timeStepOrder < 0 )
-   {
-      std::cerr << "The time step order for TimeDependentPDESolver must be zero or positive value." << std::endl;
-      return false;
-   }
-   this->timeStepOrder = timeStepOrder;
-   return true;
-}
-
-template< typename Problem,
-          typename DiscreteSolver,   
-          typename TimeStepper >
-const typename Problem::RealType&
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
-getTimeStepOrder() const
-{
-   return this->timeStepOrder;
-}
-
-template< typename Problem,
-          typename DiscreteSolver,   
-          typename TimeStepper >
-bool
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
 solve()
 {
    TNL_ASSERT_TRUE( problem, "No problem was set in PDESolver." );
@@ -329,7 +306,7 @@ solve()
     */
    this->timeStepper.setProblem( * ( this->problem ) );
    this->timeStepper.init( this->meshPointer );
-   this->timeStepper.setTimeStep( this->timeStep * std::pow( this->meshPointer.getData().getSmallestSpaceStep(), this->timeStepOrder ) );
+   this->timeStepper.setTimeStep( this->getRefinedTimeStep( this->meshPointer.getData(), this->timeStep ) );
    while( step < allSteps )
    {
       RealType tau = min( this->snapshotPeriod,

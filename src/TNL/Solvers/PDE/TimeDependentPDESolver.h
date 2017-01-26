@@ -15,6 +15,7 @@
 #include <TNL/Logger.h>
 #include <TNL/SharedPointer.h>
 #include <TNL/Solvers/PDE/PDESolver.h>
+#include <TNL/Solvers/PDE/MeshDependentTimeSteps.h>
 
 namespace TNL {
 namespace Solvers {
@@ -23,8 +24,11 @@ namespace PDE {
 template< typename Problem,
           typename DiscreteSolver,
           typename TimeStepper >
-class TimeDependentPDESolver : public PDESolver< typename Problem::RealType, 
-                                                 typename Problem::IndexType >
+class TimeDependentPDESolver
+   : public PDESolver< typename Problem::RealType, 
+                       typename Problem::IndexType >,
+     public MeshDependentTimeSteps< typename Problem::MeshType,
+                                    typename TimeStepper::RealType >
 {
    public:
 
@@ -68,10 +72,6 @@ class TimeDependentPDESolver : public PDESolver< typename Problem::RealType,
 
       const RealType& getTimeStep() const;
 
-      bool setTimeStepOrder( const RealType& timeStepOrder );
-
-      const RealType& getTimeStepOrder() const;
-
       bool setSnapshotPeriod( const RealType& period );
 
       const RealType& getSnapshotPeriod() const;
@@ -94,7 +94,7 @@ class TimeDependentPDESolver : public PDESolver< typename Problem::RealType,
       
       ProblemType* problem;
 
-      RealType initialTime, finalTime, snapshotPeriod, timeStep, timeStepOrder;
+      RealType initialTime, finalTime, snapshotPeriod, timeStep;
 };
 
 } // namespace PDE
