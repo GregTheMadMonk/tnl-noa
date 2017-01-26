@@ -80,12 +80,6 @@ class Mesh
       template< int Dimension >
       const EntityType< Dimension >& getEntity( const GlobalIndexType& entityIndex ) const;
 
-      GlobalIndexType getCellsCount() const;
-
-      CellType& getCell( const GlobalIndexType& entityIndex );
-
-      const CellType& getCell( const GlobalIndexType& entityIndex ) const;
-
       bool save( File& file ) const;
 
       bool load( File& file );

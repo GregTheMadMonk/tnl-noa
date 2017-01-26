@@ -415,12 +415,12 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
          const IndexType vertex2 = ( j + 1 ) * ( xSize + 1 ) + i;
          const IndexType vertex3 = ( j + 1 ) * ( xSize + 1 ) + i + 1;
 
-         const TriangleMeshEntityType& leftCell = mesh.getCell( cellIdx++ );
+         const TriangleMeshEntityType& leftCell = mesh.template getEntity< 2 >( cellIdx++ );
          EXPECT_EQ( leftCell.template getSubentityIndex< 0 >( 0 ), vertex0 );
          EXPECT_EQ( leftCell.template getSubentityIndex< 0 >( 1 ), vertex1 );
          EXPECT_EQ( leftCell.template getSubentityIndex< 0 >( 2 ), vertex2 );
 
-         const TriangleMeshEntityType& rightCell = mesh.getCell( cellIdx++ );
+         const TriangleMeshEntityType& rightCell = mesh.template getEntity< 2 >( cellIdx++ );
          EXPECT_EQ( rightCell.template getSubentityIndex< 0 >( 0 ), vertex1 );
          EXPECT_EQ( rightCell.template getSubentityIndex< 0 >( 1 ), vertex2 );
          EXPECT_EQ( rightCell.template getSubentityIndex< 0 >( 2 ), vertex3 );
@@ -516,7 +516,7 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
          const IndexType vertex2 = ( j + 1 ) * ( xSize + 1 ) + i + 1;
          const IndexType vertex3 = ( j + 1 ) * ( xSize + 1 ) + i;
 
-         const QuadrilateralMeshEntityType& cell = mesh.getCell( cellIdx++ );
+         const QuadrilateralMeshEntityType& cell = mesh.template getEntity< 2 >( cellIdx++ );
          EXPECT_EQ( cell.template getSubentityIndex< 0 >( 0 ), vertex0 );
          EXPECT_EQ( cell.template getSubentityIndex< 0 >( 1 ), vertex1 );
          EXPECT_EQ( cell.template getSubentityIndex< 0 >( 2 ), vertex2 );
@@ -633,7 +633,7 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
             const IndexType vertex6 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i + 1;
             const IndexType vertex7 = ( k + 1 ) * ( xSize + 1 ) * ( ySize + 1 ) + ( j + 1 ) * ( xSize + 1 ) + i;
 
-            const HexahedronMeshEntityType& cell = mesh.getCell( cellIdx++ );
+            const HexahedronMeshEntityType& cell = mesh.template getEntity< 3 >( cellIdx++ );
             EXPECT_EQ( cell.template getSubentityIndex< 0 >( 0 ), vertex0 );
             EXPECT_EQ( cell.template getSubentityIndex< 0 >( 1 ), vertex1 );
             EXPECT_EQ( cell.template getSubentityIndex< 0 >( 2 ), vertex2 );

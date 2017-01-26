@@ -101,30 +101,6 @@ getEntity( const GlobalIndexType& entityIndex ) const
 }
 
 template< typename MeshConfig >
-typename Mesh< MeshConfig >::GlobalIndexType
-Mesh< MeshConfig >::
-getCellsCount() const
-{
-   return this->template getEntitiesCount< getMeshDimension() >();
-}
-
-template< typename MeshConfig >
-typename Mesh< MeshConfig >::CellType&
-Mesh< MeshConfig >::
-getCell( const GlobalIndexType& cellIndex )
-{
-   return this->template getEntity< getMeshDimension() >( cellIndex );
-}
-
-template< typename MeshConfig >
-const typename Mesh< MeshConfig >::CellType&
-Mesh< MeshConfig >::
-getCell( const GlobalIndexType& cellIndex ) const
-{
-   return this->template getEntity< getMeshDimension() >( cellIndex );
-}
-
-template< typename MeshConfig >
 bool
 Mesh< MeshConfig >::
 save( File& file ) const

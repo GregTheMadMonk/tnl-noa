@@ -122,7 +122,7 @@ public:
       std::cout << "NOTE: there is no real test, but the file was loaded fine..." << std::endl;
 
       std::cout << "vertices: " << mesh.template getEntitiesCount< 0 >() << std::endl;
-      std::cout << "cells: " << mesh.getCellsCount() << std::endl;
+      std::cout << "cells: " << mesh.template getEntitiesCount< MeshType::getMeshDimension() >() << std::endl;
 
       std::cout << "post-init\t";
       Debugging::printMemoryUsage();
