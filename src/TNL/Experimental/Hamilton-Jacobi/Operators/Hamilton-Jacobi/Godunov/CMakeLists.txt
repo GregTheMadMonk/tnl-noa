@@ -1,5 +1,4 @@
-set( headers godunov.h
-	     godunov1D_impl.h
+set( headers godunov1D_impl.h
              godunov2D_impl.h
              godunov3D_impl.h)
 
