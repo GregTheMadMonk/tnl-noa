@@ -306,9 +306,9 @@ class StaticVector< 3, Real > : public Containers::StaticArray< 3, Real >
    ThisType abs() const;
 };
 
-template< int Size, typename Real >
+template< int Size, typename Real, typename Scalar >
 __cuda_callable__
-StaticVector< Size, Real > operator * ( const Real& c, const StaticVector< Size, Real >& u );
+StaticVector< Size, Real > operator * ( const Scalar& c, const StaticVector< Size, Real >& u );
 
 template< int Size, typename Real >
 __cuda_callable__
@@ -377,10 +377,10 @@ Real tnlTriangleArea( const StaticVector< 3, Real >& a,
    StaticVector< 3, Real > u1, u2;
    u1. x() = b. x() - a. x();
    u1. y() = b. y() - a. y();
-   u1. z() = 0.0;
+   u1. z() = b. z() - a. z();
    u2. x() = c. x() - a. x();
    u2. y() = c. y() - a. y();
-   u2. z() = 0;
+   u2. z() = c. z() - a. z();
 
    const StaticVector< 3, Real > v = VectorProduct( u1, u2 );
    return 0.5 * ::sqrt( tnlScalarProduct( v, v ) );

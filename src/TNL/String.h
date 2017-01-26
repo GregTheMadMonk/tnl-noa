@@ -128,6 +128,8 @@ class String
    void replace( const String& pattern,
                  const String& replaceWith );
 
+   String strip( char strip = ' ' ) const;
+
    // TODO: remove
    //! Write to a binary file
    bool save( std::ostream& file ) const;
