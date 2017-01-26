@@ -267,30 +267,6 @@ getEntityIndex( const Entity& entity ) const
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Entity >
-__cuda_callable__
-Real
-Grid< 2, Real, Device, Index >::
-getEntityMeasure( const Entity& entity ) const
-{
-   return GridEntityMeasureGetter< ThisType, Entity::getEntityDimension() >::getMeasure( *this, entity );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__
-const Real&
-Grid< 2, Real, Device, Index >::
-getCellMeasure() const
-{
-   return this->template getSpaceStepsProducts< 1, 1 >();
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
 __cuda_callable__ inline
 const typename Grid< 2, Real, Device, Index >::PointType&
 Grid< 2, Real, Device, Index >::
@@ -314,6 +290,17 @@ getSpaceStepsProducts() const
               std::cerr << " yPow = " << yPow );
 
    return this->spaceStepsProducts[ xPow + 2 ][ yPow + 2 ];
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+const Real&
+Grid< 2, Real, Device, Index >::
+getCellMeasure() const
+{
+   return this->template getSpaceStepsProducts< 1, 1 >();
 }
 
 template< typename Real,

@@ -95,13 +95,6 @@ class Grid< 2, Real, Device, Index > : public Object
    __cuda_callable__
    inline Index getEntityIndex( const Entity& entity ) const;
 
-   template< typename Entity >
-   __cuda_callable__
-   RealType getEntityMeasure( const Entity& entity ) const;
- 
-   __cuda_callable__
-   inline const RealType& getCellMeasure() const;
- 
    __cuda_callable__
    inline const PointType& getSpaceSteps() const;
 
@@ -110,7 +103,10 @@ class Grid< 2, Real, Device, Index > : public Object
    const RealType& getSpaceStepsProducts() const;
    
    __cuda_callable__
-   RealType getSmallestSpaceStep() const;
+   inline const RealType& getCellMeasure() const;
+ 
+   __cuda_callable__
+   inline RealType getSmallestSpaceStep() const;
 
  
    template< typename GridFunction >
