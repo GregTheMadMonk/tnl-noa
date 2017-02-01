@@ -26,6 +26,9 @@ namespace Meshes {
 
 template< typename MeshConfig, typename EntityTopology >
 class MeshEntityOrientation;
+template< typename MeshConfig, typename EntityTopology >
+class MeshEntitySeed;
+template< typename MeshConfig, int Dimension > class MeshEntityTraits;
 
 template< typename MeshConfig,
           typename EntityTopology,

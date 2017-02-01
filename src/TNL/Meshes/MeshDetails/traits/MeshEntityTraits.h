@@ -57,9 +57,6 @@ class MeshEntityTraits
 public:
    static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
 
-   static constexpr bool storageEnabled = MeshConfig::entityStorage( Dimension );
-   static constexpr bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, DimensionTag< Dimension > >::value;
-
    using GlobalIndexType               = typename MeshConfig::GlobalIndexType;
    using LocalIndexType                = typename MeshConfig::LocalIndexType;
    using EntityTopology                = typename MeshEntityTopology< MeshConfig, DimensionTag< Dimension > >::Topology;
@@ -72,6 +69,8 @@ public:
    using SeedIndexedSetType            = Containers::IndexedSet< typename SeedType::KeyType, GlobalIndexType >;
    using ReferenceOrientationArrayType = Containers::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType >;
 
+   static constexpr bool storageEnabled = MeshConfig::entityStorage( Dimension );
+   static constexpr bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, DimensionTag< Dimension > >::value;
    static constexpr bool boundaryTagsEnabled = MeshConfig::boundaryTagsStorage( EntityTopology() );
 };
 
