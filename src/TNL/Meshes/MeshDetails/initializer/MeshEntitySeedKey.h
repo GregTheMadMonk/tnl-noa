@@ -16,9 +16,6 @@
 
 #pragma once
 
-#include <TNL/Meshes/DimensionTag.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshSubentityTraits.h>
-
 namespace TNL {
 namespace Meshes {
 
@@ -35,9 +32,7 @@ template< typename MeshConfig,
 class MeshEntitySeedKey
 {
    using EntitySeedType = MeshEntitySeed< MeshConfig, EntityTopology >;
-   using IdArrayType = typename MeshSubentityTraits< MeshConfig,
-                                                     EntityTopology,
-                                                     0 >::IdArrayType;
+   using IdArrayType = typename EntitySeedType::IdArrayType;
 
 public:
    MeshEntitySeedKey( const EntitySeedType& entitySeed )

@@ -41,6 +41,7 @@ public:
 
    static constexpr bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimension );
    static constexpr bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimension );
+   static constexpr int count = MeshSubtopology< EntityTopology, Dimension >::count;
 
    using GlobalIndexType   = typename MeshConfig::GlobalIndexType;
    using LocalIndexType    = typename MeshConfig::LocalIndexType;
@@ -49,17 +50,13 @@ public:
    using Seed              = MeshEntitySeed< MeshConfig, SubentityTopology >;
    using Orientation       = MeshEntityOrientation< MeshConfig, SubentityTopology >;
 
-
-   static constexpr int count = MeshSubtopology< EntityTopology, Dimension >::count;
-
    /****
     * Type of container for storing of the subentities indices.
     */
    using StorageNetworkType     = StaticEllpackIndexMultimap< count, GlobalIndexType, Devices::Host, LocalIndexType >;
    using SubentityAccessorType  = typename StorageNetworkType::ValuesAccessorType;
 
-   // static arrays used by MeshEntitySeed etc.
-   using IdArrayType            = Containers::StaticArray< count, GlobalIndexType >;
+   // static array used in MeshSubentitySeedCreator
    using SeedArrayType          = Containers::StaticArray< count, Seed >;
 
    // orientation and its accessor

@@ -32,7 +32,7 @@ class MeshEntitySeed
    public:
       using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
       using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
-      using IdArrayType     = typename SubvertexTraits::IdArrayType;
+      using IdArrayType     = Containers::StaticArray< SubvertexTraits::count, GlobalIndexType >;
       using KeyType         = MeshEntitySeedKey< MeshConfig, EntityTopology >;
 
       static String getType() { return String( "MeshEntitySeed<>" ); }
