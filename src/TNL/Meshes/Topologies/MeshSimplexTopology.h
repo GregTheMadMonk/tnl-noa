@@ -71,7 +71,7 @@ template< int dimension,
           typename Subtopology,
           int subtopologyIndex,
           int vertexIndex >
-struct tnlSubentityVertex< MeshSimplexTopology< dimension >, Subtopology, subtopologyIndex, vertexIndex >
+struct SubentityVertexMap< MeshSimplexTopology< dimension >, Subtopology, subtopologyIndex, vertexIndex >
 {
    private:
       static constexpr int subtopologyCount = Subtopology< MeshSimplexTopology< dimension >, Subtopology::dimension >::count;

@@ -33,7 +33,7 @@ template< typename MeshEntityTopology,
           typename SubentityTopology,
           int SubentityIndex,
           int SubentityVertexIndex >
-struct tnlSubentityVertex
+struct SubentityVertexMap
 {
 };
 

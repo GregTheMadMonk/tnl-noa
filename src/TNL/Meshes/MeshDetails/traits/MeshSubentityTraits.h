@@ -67,7 +67,7 @@ public:
              LocalIndexType subentityVertexIndex >
    struct Vertex
    {
-      enum { index = tnlSubentityVertex< EntityTopology,
+      enum { index = SubentityVertexMap< EntityTopology,
                                          SubentityTopology,
                                          subentityIndex,
                                          subentityVertexIndex>::index };

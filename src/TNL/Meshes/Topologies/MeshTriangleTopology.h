@@ -49,14 +49,14 @@ struct MeshSubtopology< MeshTriangleTopology, 1 >
 };
 
 
-template<> struct tnlSubentityVertex< MeshTriangleTopology, MeshEdgeTopology, 0, 0> { enum { index = 1 }; };
-template<> struct tnlSubentityVertex< MeshTriangleTopology, MeshEdgeTopology, 0, 1> { enum { index = 2 }; };
+template<> struct SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 0, 0> { enum { index = 1 }; };
+template<> struct SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 0, 1> { enum { index = 2 }; };
 
-template<> struct tnlSubentityVertex< MeshTriangleTopology, MeshEdgeTopology, 1, 0> { enum { index = 2 }; };
-template<> struct tnlSubentityVertex< MeshTriangleTopology, MeshEdgeTopology, 1, 1> { enum { index = 0 }; };
+template<> struct SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 1, 0> { enum { index = 2 }; };
+template<> struct SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 1, 1> { enum { index = 0 }; };
 
-template<> struct tnlSubentityVertex< MeshTriangleTopology, MeshEdgeTopology, 2, 0> { enum { index = 0 }; };
-template<> struct tnlSubentityVertex< MeshTriangleTopology, MeshEdgeTopology, 2, 1> { enum { index = 1 }; };
+template<> struct SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 0> { enum { index = 0 }; };
+template<> struct SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 1> { enum { index = 1 }; };
 
 } // namespace Meshes
 } // namespace TNL
