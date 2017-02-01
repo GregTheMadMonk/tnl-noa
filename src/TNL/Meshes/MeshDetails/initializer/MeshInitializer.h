@@ -160,7 +160,7 @@ class MeshInitializer
       }
 
       static void
-      setVertexPoint( typename MeshType::VertexType& vertex, const typename MeshType::PointType& point )
+      setVertexPoint( typename MeshType::Vertex& vertex, const typename MeshType::PointType& point )
       {
          vertex.setPoint( point );
       }
