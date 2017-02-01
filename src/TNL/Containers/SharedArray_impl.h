@@ -310,6 +310,7 @@ void SharedArray< Element, Device, Index > :: setValue( const Element& e )
 template< typename Element,
           typename Device,
           typename Index >
+__cuda_callable__ 
 const Element* SharedArray< Element, Device, Index > :: getData() const
 {
    return this->data;
@@ -318,6 +319,7 @@ const Element* SharedArray< Element, Device, Index > :: getData() const
 template< typename Element,
           typename Device,
           typename Index >
+__cuda_callable__ 
 Element* SharedArray< Element, Device, Index > :: getData()
 {
    return this->data;

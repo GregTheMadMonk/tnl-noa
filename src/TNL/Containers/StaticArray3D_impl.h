@@ -68,6 +68,7 @@ String StaticArray< 3, Element >::getType()
 }
 
 template< typename Element >
+__cuda_callable__
 inline int StaticArray< 3, Element >::getSize() const
 {
    return size;
