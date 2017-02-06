@@ -1,8 +1,8 @@
 /***************************************************************************
-                          ExpBump.h  -  description
+                          Sign.h  -  description
                              -------------------
-    begin                : Dec 5, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Feb 6, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -33,12 +33,16 @@ class Sign : public Functions::Domain< Function::getDomainDimenions(),
                            const VertexType& vertex,
                            const RealType& time = 0 ) const
       {
-         const RealType aux = function( vertex );
+         const RealType aux = function( vertex, time );
          if( aux > 0.0 )
             return 1.0;
          else
             if( aux < 0.0 )
                return -1.0;
-         return 0.0;
+         return 0.0;         
       }
 };
+
+} // namespace Analytic
+} // namespace Operators
+} // namespace TNL

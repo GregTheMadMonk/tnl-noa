@@ -47,10 +47,14 @@ class Shift : public Functions::Domain< Function::getDomainDimenions(),
                            const VertexType& vertex,
                            const RealType& time = 0 ) const
       {
-         return function( vertex + shift );
+         return function( vertex + shift, time );
       }
       
    protected:
       
       VerexType shift;
 };
+
+} // namespace Analytic
+} // namespace Operators
+} // namespace TNL

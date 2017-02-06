@@ -63,6 +63,10 @@ class Rotation: public Functions::Domain< Function::getDomainDimenions(),
                            const VertexType& vertex,
                            const RealType& time = 0 ) const
       {
-         return function( vertex );
+         return function( vertex, time );
       }
 };
+
+} // namespace Analytic
+} // namespace Operators
+} // namespace TNL

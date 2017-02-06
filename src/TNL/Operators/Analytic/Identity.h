@@ -1,8 +1,8 @@
 /***************************************************************************
-                          Heaviside.h  -  description
+                          Identity.h  -  description
                              -------------------
-    begin                : Feb 6, 2017
-    copyright            : (C) 2017 by Tomas Oberhuber
+    begin                : Dec 5, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -19,8 +19,8 @@ namespace Analytic {
    
    
 template< typename Function >
-class Heaviside : public Functions::Domain< Function::getDomainDimensions(), 
-                                            Function::getDomainType() >
+class Identity : public Functions::Domain< Function::getDomainDimensions(), 
+                                           Function::getDomainType() >
 {
    public:
       
@@ -33,10 +33,7 @@ class Heaviside : public Functions::Domain< Function::getDomainDimensions(),
                            const VertexType& vertex,
                            const RealType& time = 0 ) const
       {
-         const RealType aux = function( vertex, time );
-         if( aux > 0.0 )
-            return 1.0;
-         return 0.0;
+         return function( vertex, time );
       }
 };
 

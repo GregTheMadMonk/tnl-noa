@@ -47,11 +47,15 @@ class SmoothHeaviside : public Functions::Domain< Function::getDomainDimenions()
                            const VertexType& vertex,
                            const RealType& time = 0 ) const
       {
-         const RealType aux = function( vertex );
-         return 1.0 / ( 1.0 + exp( -2.0 * sharpness * aux ) )
+         const RealType aux = function( vertex, time );
+         return 1.0 / ( 1.0 + exp( -2.0 * sharpness * aux ) );
       }
       
-      protected:
-         
-         RealType sharpness;
+   protected:
+
+      RealType sharpness;
 };
+
+} // namespace Analytic
+} // namespace Operators
+} // namespace TNL

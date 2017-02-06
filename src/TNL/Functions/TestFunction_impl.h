@@ -32,6 +32,9 @@
 #include <TNL/Functions/Analytic/SinWaveSDF.h>
 #include <TNL/Functions/Analytic/ParaboloidSDF.h>
 
+#include <TNL/Operators/Analytic/Identity.h>
+#include <TNL/Operators/Analytic/Heaviside.h>
+
 namespace TNL {
 namespace Functions {   
 
@@ -42,6 +45,7 @@ template< int FunctionDimensions,
 TestFunction< FunctionDimensions, Real, Device >::
 TestFunction()
 : function( 0 ),
+  operator_( 0 ),
   timeDependence( none ),
   timeScale( 1.0 )
 {
@@ -69,6 +73,7 @@ configSetup( Config::ConfigDescription& config,
       config.addEntryEnum( "paraboloid-sdf" );      
       config.addEntryEnum( "sin-wave-sdf" );
       config.addEntryEnum( "sin-bumps-sdf" );
+      config.addEntryEnum( "heaviside-of-paraboloid" );
 
    config.addEntry     < double >( prefix + "constant", "Value of the constant function.", 0.0 );
    config.addEntry     < double >( prefix + "wave-length", "Wave length of the sine based test functions.", 1.0 );
@@ -134,12 +139,43 @@ setupFunction( const Config::ParameterContainer& parameters,
 template< int FunctionDimensions,
           typename Real,
           typename Device >
+   template< typename OperatorType >
+bool
+TestFunction< FunctionDimensions, Real, Device >::
+setupOperator( const Config::ParameterContainer& parameters,
+               const String& prefix )
+{
+   OperatorType* auxOperator = new OperatorType;
+   if( ! auxOperator->setup( parameters, prefix ) )
+   {
+      delete auxOperator;
+      return false;
+   }
+
+   if( std::is_same< Device, Devices::Host >::value )
+   {
+      this->operator_ = auxOperator;
+   }
+   if( std::is_same< Device, Devices::Cuda >::value )
+   {
+      this->operator_ = Devices::Cuda::passToDevice( *auxOperator );
+      delete auxOperator;
+      if( ! checkCudaDevice )
+         return false;
+   }
+   return true;
+}
+
+template< int FunctionDimensions,
+          typename Real,
+          typename Device >
 bool
 TestFunction< FunctionDimensions, Real, Device >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
    using namespace TNL::Functions::Analytic;
+   using namespace TNL::Operators::Analytic;
    std::cout << "Test function setup ... " << std::endl;
    const String& timeDependence =
             parameters.getParameter< String >(
@@ -158,66 +194,132 @@ setup( const Config::ParameterContainer& parameters,
    this->timeScale = parameters.getParameter< double >( prefix + "time-scale" );
 
    const String& testFunction = parameters.getParameter< String >( prefix + "test-function" );
-  std::cout << "Test function ... " << testFunction << std::endl;
+   std::cout << "Test function ... " << testFunction << std::endl;
    if( testFunction == "constant" )
    {
-      typedef Analytic::Constant< Dimensions, Real > FunctionType;
+      typedef Constant< Dimensions, Real > FunctionType;
+      typedef Identity< FunctionType > OperatorType;
       functionType = constant;
-      return setupFunction< FunctionType >( parameters );
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
    }
    if( testFunction == "paraboloid" )
    {
       typedef Paraboloid< Dimensions, Real > FunctionType;
+      typedef Identity< FunctionType > OperatorType;
       functionType = paraboloid;
-      return setupFunction< FunctionType >( parameters );
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
    }   
    if( testFunction == "exp-bump" )
    {
       typedef ExpBump< Dimensions, Real > FunctionType;
+      typedef Identity< FunctionType > OperatorType;
       functionType = expBump;
-      return setupFunction< FunctionType >( parameters );
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
    }
    if( testFunction == "sin-bumps" )
    {
       typedef SinBumps< Dimensions, Real > FunctionType;
+      typedef Identity< FunctionType > OperatorType;
       functionType = sinBumps;
-      return setupFunction< FunctionType >( parameters );
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
    }
    if( testFunction == "sin-wave" )
    {
       typedef SinWave< Dimensions, Real > FunctionType;
+      typedef Identity< FunctionType > OperatorType;
       functionType = sinWave;
-      return setupFunction< FunctionType >( parameters );
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
    }
    if( testFunction == "cylinder" )
    {
       typedef Cylinder< Dimensions, Real > FunctionType;
+      typedef Identity< FunctionType > OperatorType;
       functionType = cylinder;
-      return setupFunction< FunctionType >( parameters );
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
    }
    if( testFunction == "flowerpot" )
    {
       typedef Flowerpot< Dimensions, Real > FunctionType;
+      typedef Identity< FunctionType > OperatorType;
       functionType = flowerpot;
-      return setupFunction< FunctionType >( parameters );
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
    }
    if( testFunction == "twins" )
    {
       typedef Twins< Dimensions, Real > FunctionType;
+      typedef Identity< FunctionType > OperatorType;
       functionType = twins;
-      return setupFunction< FunctionType >( parameters );
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
    }
    if( testFunction == "pseudoSquare" )
    {
       typedef PseudoSquare< Dimensions, Real > FunctionType;
+      typedef Identity< FunctionType > OperatorType;
       functionType = pseudoSquare;
-      return setupFunction< FunctionType >( parameters );
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
    }
    if( testFunction == "blob" )
    {
       typedef Blob< Dimensions, Real > FunctionType;
+      typedef Identity< FunctionType > OperatorType;
       functionType = blob;
-      return setupFunction< FunctionType >( parameters );
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
+   }
+   if( testFunction == "paraboloid-sdf" )
+   {
+      typedef ParaboloidSDF< Dimensions, Real > FunctionType;
+      typedef Identity< FunctionType > OperatorType;
+      functionType = paraboloidSDF;
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
+   }   
+   if( testFunction == "sin-bumps-sdf" )
+   {
+      typedef SinBumpsSDF< Dimensions, Real > FunctionType;
+      typedef Identity< FunctionType > OperatorType;
+      functionType = sinBumpsSDF;
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
+   }   
+   if( testFunction == "sin-wave-sdf" )
+   {
+      typedef SinWaveSDF< Dimensions, Real > FunctionType;
+      typedef Identity< FunctionType > OperatorType;
+      functionType = sinWaveSDF;
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
+   }
+   if( testFunction == "heaviside-of-paraboloid" )
+   {
+      typedef Paraboloid< Dimensions, Real > FunctionType;
+      typedef Heaviside< FunctionType > OperatorType;
+      functionType = paraboloid;
+      operatorType = heaviside;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
    }
    std::cerr << "Unknown function " << testFunction << std::endl;
    return false;
@@ -455,53 +557,129 @@ deleteFunction()
 template< int FunctionDimensions,
           typename Real,
           typename Device >
+   template< typename OperatorType >
+void
+TestFunction< FunctionDimensions, Real, Device >::
+deleteOperator()
+{
+   if( std::is_same< Device, Devices::Host >::value )
+   {
+      if( operator_ )
+         delete ( OperatorType * ) operator_;
+   }
+   if( std::is_same< Device, Devices::Cuda >::value )
+   {
+      if( operator_ )
+         Devices::Cuda::freeFromDevice( ( OperatorType * ) operator_ );
+   }
+}
+
+template< int FunctionDimensions,
+          typename Real,
+          typename Device >
 void
 TestFunction< FunctionDimensions, Real, Device >::
 deleteFunctions()
 {
    using namespace TNL::Functions::Analytic;
+   using namespace TNL::Operators::Analytic;
    switch( functionType )
    {
       case constant:
-         deleteFunction< Constant< Dimensions, Real> >();
+      {
+         typedef Constant< Dimensions, Real> FunctionType;
+         deleteFunction< FunctionType >();
+         deleteOperator< Identity< FunctionType> >();
          break;
+      }
       case paraboloid:
-         deleteFunction< Paraboloid< Dimensions, Real> >();
+      {
+         typedef Paraboloid< Dimensions, Real> FunctionType;
+         deleteFunction< FunctionType >();
+         if( operatorType == identity )
+            deleteOperator< Identity< FunctionType> >();
+         if( operatorType == heaviside )
+            deleteOperator< Heaviside< FunctionType> >();
          break;
+      }
       case expBump:
-         deleteFunction< ExpBump< Dimensions, Real> >();
+      {
+         typedef ExpBump< Dimensions, Real> FunctionType;
+         deleteFunction< FunctionType >();
+         deleteOperator< Identity< FunctionType> >();
          break;
+      }
       case sinBumps:
-         deleteFunction< SinBumps< Dimensions, Real> >();
+      {
+         typedef SinBumps< Dimensions, Real> FunctionType;
+         deleteFunction< FunctionType >();
+         deleteOperator< Identity< FunctionType> >();
          break;
+      }
       case sinWave:
-         deleteFunction< SinWave< Dimensions, Real> >();
+      {
+         typedef SinWave< Dimensions, Real> FunctionType;
+         deleteFunction< FunctionType >();
+         deleteOperator< Identity< FunctionType> >();
          break;
+      }
       case cylinder:
-         deleteFunction< Cylinder< Dimensions, Real> >();
+      {
+         typedef Cylinder< Dimensions, Real> FunctionType;
+         deleteFunction< FunctionType >();
+         deleteOperator< Identity< FunctionType> >();
          break;
+      }
       case flowerpot:
-         deleteFunction< Flowerpot< Dimensions, Real> >();
+      {
+         typedef Flowerpot< Dimensions, Real> FunctionType;
+         deleteFunction< FunctionType >();
+         deleteOperator< Identity< FunctionType> >();
          break;
+      }
       case twins:
-         deleteFunction< Twins< Dimensions, Real> >();
+      {
+         typedef Twins< Dimensions, Real> FunctionType;
+         deleteFunction< FunctionType >();
+         deleteOperator< Identity< FunctionType> >();
          break;
+      }
       case pseudoSquare:
-         deleteFunction< PseudoSquare< Dimensions, Real> >();
+      {
+         typedef PseudoSquare< Dimensions, Real> FunctionType;
+         deleteFunction< FunctionType >();
+         deleteOperator< Identity< FunctionType> >();
          break;
+      }
       case blob:
-         deleteFunction< Blob< Dimensions, Real> >();
+      {
+         typedef Blob< Dimensions, Real> FunctionType;
+         deleteFunction< FunctionType >();
+         deleteOperator< Identity< FunctionType> >();
          break;
-
+      }
+      
       case paraboloidSDF:
-         deleteFunction< ParaboloidSDF< Dimensions, Real> >();
+      {
+         typedef ParaboloidSDF< Dimensions, Real> FunctionType;
+         deleteFunction< FunctionType >();
+         deleteOperator< Identity< FunctionType> >();
          break;
+      }
       case sinBumpsSDF:
-         deleteFunction< SinBumpsSDF< Dimensions, Real> >();
+      {
+         typedef SinBumpsSDF< Dimensions, Real> FunctionType;
+         deleteFunction< FunctionType >();
+         deleteOperator< Identity< FunctionType> >();
          break;
+      }
       case sinWaveSDF:
-         deleteFunction< SinWaveSDF< Dimensions, Real> >();
+      {
+         typedef SinWaveSDF< Dimensions, Real> FunctionType;
+         deleteFunction< FunctionType >();
+         deleteOperator< Identity< FunctionType> >();
          break;
+      }
    }
 }
 

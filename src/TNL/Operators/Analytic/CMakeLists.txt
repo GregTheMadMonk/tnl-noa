@@ -1,5 +1,6 @@
 SET( headers Sign.h
              Heaviside.h
+             Identity.h
              SmoothHeaviside.h
              Shift.h
              Rotation.h )
