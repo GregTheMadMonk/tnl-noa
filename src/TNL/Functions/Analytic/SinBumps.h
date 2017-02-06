@@ -8,7 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once
+/****
+ * Tomas Sobotik
+ */
+
+#pragma once 
 
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Containers/StaticVector.h>
@@ -39,11 +43,15 @@ class SinBumpsBase : public Domain< Vertex::size, SpaceDomain >
 
       const VertexType& getPhase() const;
 
+      void setWavesNumber( const VertexType& wavesNumber );
+
+      const VertexType& getWavesNumber() const;
+
    protected:
 
       RealType amplitude;
 
-      VertexType waveLength, phase;
+      VertexType waveLength, phase, wavesNumber;
 };
 
 template< int Dimensions, typename Real >
@@ -58,7 +66,6 @@ class SinBumps< 1, Real  > : public SinBumpsBase< Containers::StaticVector< 1, R
  
       typedef Real RealType;
       typedef Containers::StaticVector< 1, RealType > VertexType;
-
 
       SinBumps();
 
@@ -91,7 +98,6 @@ class SinBumps< 2, Real > : public SinBumpsBase< Containers::StaticVector< 2, Re
 
       typedef Real RealType;
       typedef Containers::StaticVector< 2, RealType > VertexType;
- 
 
       SinBumps();
 

@@ -49,10 +49,22 @@ class NeumannBoundaryConditionsBase
          return Functions::FunctionAdapter< typename MeshPointer::ObjectType, FunctionType >::setup( this->function, meshPointer, parameters, prefix );
       }
 
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" )
+      {
+         Function::configSetup( config, prefix );
+      };
+
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
+      {
+          return this->function.setup( parameters, prefix );
+      };
+
       void setFunction( const FunctionType& function )
       {
          this->function = function;
-      }
+      };
       
       FunctionType& getFunction()
       {
@@ -112,7 +124,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 1, MeshReal, Device, MeshIndex >,
       const auto& neighbourEntities = entity.getNeighbourEntities();
       const IndexType& index = entity.getIndex();
       if( entity.getCoordinates().x() == 0 )
-         return u[ neighbourEntities.template getEntityIndex< 1 >() ] - entity.getMesh().getSpaceSteps().x() * 
+         return u[ neighbourEntities.template getEntityIndex< 1 >() ] + entity.getMesh().getSpaceSteps().x() * 
             Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
       else
          return u[ neighbourEntities.template getEntityIndex< -1 >() ] + entity.getMesh().getSpaceSteps().x() * 
@@ -149,7 +161,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 1, MeshReal, Device, MeshIndex >,
          {
             matrixRow.setElement( 0, index, 1.0 );
             matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1 >(), -1.0 );
-            b[ index ] = - entity.getMesh().getSpaceSteps().x() * 
+            b[ index ] = entity.getMesh().getSpaceSteps().x() * 
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          else
@@ -207,7 +219,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
          const IndexType& index = entity.getIndex();
          if( entity.getCoordinates().x() == 0 )
          {
-            return u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] - entity.getMesh().getSpaceSteps().x() *
+            return u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] + entity.getMesh().getSpaceSteps().x() *
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().x() == entity.getMesh().getDimensions().x() - 1 )
@@ -217,7 +229,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
          }
          if( entity.getCoordinates().y() == 0 )
          {
-            return u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - entity.getMesh().getSpaceSteps().y() *
+            return u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] + entity.getMesh().getSpaceSteps().y() *
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          // The following line is commented to avoid compiler warning
@@ -256,7 +268,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
          {
             matrixRow.setElement( 0, index,                                                1.0 );
             matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1, 0 >(), -1.0 );
-            b[ index ] = - entity.getMesh().getSpaceSteps().x() *
+            b[ index ] = entity.getMesh().getSpaceSteps().x() *
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().x() == entity.getMesh().getDimensions().x() - 1 )
@@ -270,7 +282,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
          {
             matrixRow.setElement( 0, index,                                                1.0 );
             matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 1 >(), -1.0 );
-            b[ index ] = - entity.getMesh().getSpaceSteps().y() *
+            b[ index ] = entity.getMesh().getSpaceSteps().y() *
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 )
@@ -326,7 +338,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
          const IndexType& index = entity.getIndex();
          if( entity.getCoordinates().x() == 0 )
          {
-            return u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] - entity.getMesh().getSpaceSteps().x() *
+            return u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] + entity.getMesh().getSpaceSteps().x() *
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().x() == entity.getMesh().getDimensions().x() - 1 )
@@ -336,7 +348,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
          }
          if( entity.getCoordinates().y() == 0 )
          {
-            return u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] - entity.getMesh().getSpaceSteps().y() *
+            return u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] + entity.getMesh().getSpaceSteps().y() *
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 )
@@ -346,7 +358,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
          }
          if( entity.getCoordinates().z() == 0 )
          {
-            return u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] - entity.getMesh().getSpaceSteps().z() *
+            return u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] + entity.getMesh().getSpaceSteps().z() *
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          // The following line is commented to avoid compiler warning
@@ -386,7 +398,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
          {
             matrixRow.setElement( 0, index,                                                   1.0 );
             matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1, 0, 0 >(), -1.0 );
-            b[ index ] = - entity.getMesh().getSpaceSteps().x() *
+            b[ index ] = entity.getMesh().getSpaceSteps().x() *
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().x() == entity.getMesh().getDimensions().x() - 1 )
@@ -400,7 +412,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
          {
             matrixRow.setElement( 0, index,                                                   1.0 );
             matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 1, 0 >(), -1.0 );
-            b[ index ] = - entity.getMesh().getSpaceSteps().y() * 
+            b[ index ] = entity.getMesh().getSpaceSteps().y() * 
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 )
@@ -414,7 +426,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
          {
             matrixRow.setElement( 0, index,                                                   1.0 );
             matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 0, 1 >(), -1.0 );
-            b[ index ] = - entity.getMesh().getSpaceSteps().z() *
+            b[ index ] = entity.getMesh().getSpaceSteps().z() *
                Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().z() == entity.getMesh().getDimensions().z() - 1 )
@@ -439,5 +451,4 @@ std::ostream& operator << ( std::ostream& str, const NeumannBoundaryConditions< 
 
 } // namespace Operators
 } // namespace TNL
-
 

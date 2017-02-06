@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExpBump.h  -  description
+                          Blob.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber

@@ -221,16 +221,16 @@ getCellMeasure() const
    return this->template getSpaceStepsProducts< 1 >();
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__ inline
-const typename Grid< 1, Real, Device, Index >::VertexType&
+__cuda_callable__
+typename Grid< 1, Real, Device, Index >::VertexType
 Grid< 1, Real, Device, Index >::
 getSpaceSteps() const
 {
    return this->spaceSteps;
-}
+}*/
 
 template< typename Real,
           typename Device,

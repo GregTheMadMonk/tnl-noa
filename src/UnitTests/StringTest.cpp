@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlStringTest.cpp  -  description
+                          StringTest.cpp  -  description
                              -------------------
     begin                : Jul 22, 2013
     copyright            : (C) 2013 by Tomas Oberhuber

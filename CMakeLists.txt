@@ -171,6 +171,7 @@ if( WITH_CUDA STREQUAL "yes" )
     endif( CUDA_FOUND )
 endif( WITH_CUDA STREQUAL "yes" )
 
+
 ####
 # Check for OpenMP
 #

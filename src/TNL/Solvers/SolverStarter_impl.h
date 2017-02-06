@@ -27,7 +27,7 @@
 #include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
-#include <TNL/Solvers/PDE/PDESolver.h>
+#include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 
 namespace TNL {
 namespace Solvers {   
@@ -358,7 +358,7 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Set-up the PDE solver
     */
-   PDE::PDESolver< Problem, TimeStepper > solver;
+   PDE::TimeDependentPDESolver< Problem, TimeStepper > solver;
    solver.setProblem( problem );
    solver.setTimeStepper( timeStepper );
    if( ! solver.setup( parameters ) )

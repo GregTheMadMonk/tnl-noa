@@ -27,14 +27,18 @@ class TestFunction : public Domain< FunctionDimensions, SpaceDomain >
    protected:
 
    enum TestFunctions{ constant,
+                       paraboloid,
                        expBump,
                        sinBumps,
                        sinWave,
-		       cylinder,
-		       flowerpot,
-		       twins,
-           pseudoSquare,
-           blob };
+           		        cylinder,
+		                 flowerpot,
+		                 twins,
+                       pseudoSquare,
+                       blob,
+   	   	           paraboloidSDF,
+   	   	           sinWaveSDF,
+   	   	           sinBumpsSDF };
 
    enum TimeDependence { none,
                          linear,

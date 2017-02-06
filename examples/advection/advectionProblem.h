@@ -14,10 +14,10 @@ template< typename Mesh,
           typename RightHandSide,
            typename DifferentialOperator >
 class advectionProblem:
-   public PDEProblem< Mesh,
-                         typename DifferentialOperator::RealType,
-                         typename Mesh::DeviceType,
-                         typename DifferentialOperator::IndexType >
+public PDEProblem< Mesh,
+                   typename DifferentialOperator::RealType,
+                   typename Mesh::DeviceType,
+                   typename DifferentialOperator::IndexType >
 {
    public:
 
@@ -30,7 +30,7 @@ class advectionProblem:
       typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-      
+
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;

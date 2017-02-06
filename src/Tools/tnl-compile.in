@@ -13,3 +13,4 @@ do
 done
 
 echo -I@CMAKE_INSTALL_PREFIX@/include/tnl-@tnlVersion@ ${CUDA_FLAGS} ${CXX_STD_FLAGS} ${DEBUG_FLAGS}
+
