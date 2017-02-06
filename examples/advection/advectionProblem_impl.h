@@ -105,7 +105,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    const RealType& size = parameters.getParameter< double >( "realSize" ) / ::pow(count, 1.0/dimensions);
    const String& beginChoice = parameters.getParameter< String >( "begin" );
    std::cout << beginChoice << " " << dimensions << "   " << size << "   " << count << "   "<< 1/dimensions << std::endl;
-   getchar();
+   //getchar();
    if (beginChoice == "sin_square")
       {
 	   double constantFunction;
@@ -166,8 +166,8 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 		};
      };
    //setting velocity field
-   std::cout << *dofs << std::endl;
-   getchar();
+   //std::cout << *dofs << std::endl;
+   //getchar();
    /*const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if( ! dofs.load( initialConditionFile ) )
    {
@@ -316,25 +316,6 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& b,
                       MeshDependentDataPointer& meshDependentData )
 {
-   /*LinearSystemAssembler< Mesh,
-                             MeshFunctionType,
-                             DifferentialOperator,
-                             BoundaryCondition,
-                             RightHandSide,
-                             BackwardTimeDiscretisation,
-                             Matrix,
-                             DofVectorType > systemAssembler;
-
-   MeshFunction< Mesh > u( mesh, _u );
-   systemAssembler.template assembly< typename Mesh::Cell >( time,
-                                                             tau,
-                                                             mesh,
-                                                             this->differentialOperator,
-                                                             this->boundaryCondition,
-                                                             this->rightHandSide,
-                                                             u,
-                                                             matrix,
-                                                             b );*/
 }
 
 } // namespace TNL

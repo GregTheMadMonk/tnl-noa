@@ -1,3 +1,4 @@
+ADD_SUBDIRECTORY( Analytic )
 ADD_SUBDIRECTORY( diffusion )
 ADD_SUBDIRECTORY( euler )
 ADD_SUBDIRECTORY( interpolants )
