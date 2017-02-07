@@ -20,8 +20,8 @@ namespace Analytic {
    
    
 template< typename Function >
-class Shift : public Functions::Domain< Function::getDomainDimenions(), 
-                                        Function::getDomainTyep() >
+class Shift : public Functions::Domain< Function::getDomainDimensions(), 
+                                        Function::getDomainType() >
 {
    public:
       

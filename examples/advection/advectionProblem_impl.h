@@ -55,6 +55,14 @@ setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
 {
+   this->velocityType = parameters.getParameter< String >( "move" );
+   const double artificalViscosity = parameters.getParameter< double >( "artifical-viscosity" );
+   differentialOperatorPointer->setViscosity(artificalViscosity);
+   const double advectionSpeedX = parameters.getParameter< double >( "advection-speedX" );
+   differentialOperatorPointer->setAdvectionSpeedX(advectionSpeedX);
+   const double advectionSpeedY = parameters.getParameter< double >( "advection-speedY" );
+   differentialOperatorPointer->setAdvectionSpeedY(advectionSpeedY);
+
    if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
@@ -82,9 +90,11 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-bindDofs( const MeshPointer& mesh,
+bindDofs( const MeshPointer& meshPointer,
           DofVectorPointer& dofVector )
 {
+   const IndexType dofs = meshPointer->template getEntitiesCount< typename MeshType::Cell >();
+   this->uPointer->bind( meshPointer, dofVector );
 }
 
 template< typename Mesh,
@@ -94,87 +104,17 @@ template< typename Mesh,
 bool
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
-                     const MeshPointer& mesh,
+                     const MeshPointer& meshPointer,
                      DofVectorPointer& dofs,
                      MeshDependentDataPointer& meshDependentData )
 {
-   std::cout << "vaules adding";
-   typedef typename MeshType::Cell Cell;
-   int dimensions = parameters.getParameter< int >( "dimension" );
-   int count = mesh->template getEntitiesCount< Cell >();
-   const RealType& size = parameters.getParameter< double >( "realSize" ) / ::pow(count, 1.0/dimensions);
-   const String& beginChoice = parameters.getParameter< String >( "begin" );
-   std::cout << beginChoice << " " << dimensions << "   " << size << "   " << count << "   "<< 1/dimensions << std::endl;
-   //getchar();
-   /*if (beginChoice == "step")
-   {
-	   if (dimensions == 1)
-	   {
-         for( IndexType i = 0; i < count; i++)
-         {
-            if( i > 0.45*count  && i<0.55*count )
-               dofs->setElement( i, 1.0 );
-            else
-               dofs->setElement( i, 0.0 );
-         }
-		}
-      else if (dimensions == 2)
-	       {
-                   count = std::sqrt(count);
-		   double expValue;
-		   for (IndexType i = 0; i < count-1; i++)
-                      for (IndexType j = 0; j < count-1; j++)
-		      {
-			expValue = std::exp(-std::pow(size*i-2,2)-std::pow(size*j-2,2));
-			if( (i>0.4*count) && (i<0.5*count) && (j>0.4*count) && (j<0.5*count) )
-                           constantFunction=1;
-                        else constantFunction=0;
-			if( expValue>constantFunction)
-                            ( *dofs )[i * count + j] = expValue;
-                        else ( *dofs )[i * count + j] = constantFunction;
-		      };
-		};
-       }
-   else if (beginChoice == "sin")
-      {
-	   if (dimensions == 1)
-	      {
-		   ( *dofs )[0] = 0;
-		   for (IndexType i = 1; i < count-2; i++)
-		   {
-			( *dofs )[i] = std::exp(-std::pow(size*i-2,2));
-		   };
-		   ( *dofs )[count-1] = 0;
-		}
-	    else if (dimensions == 2)
-	       {
-                   count = ::sqrt(count);
-		   for (IndexType i = 1; i < count-1; i++)
-		      for (IndexType j = 1; j < count-1; j++)
-		      {
-			   ( *dofs )[i * count + j] = std::exp(-std::pow(size*i-2,2)-std::pow(size*j-2,2));
-		      };
-		};
-     };*/
-   //setting velocity field
-   //std::cout << *dofs << std::endl;
-   //getchar();
-   /*const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-   if( ! dofs.load( initialConditionFile ) )
+   this->bindDofs( meshPointer, dofs );
+   const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
+   if( ! this->uPointer->boundLoad( initialConditionFile ) )
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
    }
-   return true;*/
-   dofs->save( "dofs.tnl" );
-   this->velocityType = parameters.getParameter< String >( "move" );
-   const double artificalViscosity = parameters.getParameter< double >( "artifical-viscosity" );
-   differentialOperatorPointer->setViscosity(artificalViscosity);
-   const double advectionSpeedX = parameters.getParameter< double >( "advection-speedX" );
-   differentialOperatorPointer->setAdvectionSpeedX(advectionSpeedX);
-   const double advectionSpeedY = parameters.getParameter< double >( "advection-speedY" );
-   differentialOperatorPointer->setAdvectionSpeedY(advectionSpeedY);
-   std::cout << "vaules added";
    return true;
 }
 
@@ -250,29 +190,6 @@ getExplicitRHS( const RealType& time,
     */
    typedef typename MeshType::Cell Cell;
    int count = ::sqrt(mesh->template getEntitiesCount< Cell >());
-//   const RealType& size = parameters.getParameter< double >( "realSize" ) / ::pow(count, 0.5);
-/*   if (this->velocityType == "rotation")
-   {
-      double radius;
-      for (int i =1; i < count; i++)
-         for (int j =1; j < count; j++)
-            {
-               radius = ::sqrt(pow(i-1-(count/2.0),2) + ::pow(j-1-(count/2.0),2));
-            if (radius != 0.0)
-               _fu[(i-1)*count+j-1] =(0.25*tau)*differentialOperator.artificalViscosity*			//smoothening part
-               (_u[(i-1)*count-2+j]+_u[(i-1)*count+j]+
-               _u[i*count+j-1]+_u[(i-2)*count+j-1]- 
-               4.0*_u[(i-1)*count+j-1])
-               -((1.0/(2.0*count))*differentialOperator.advectionSpeedX						//X addition
-               *radius*(-1)*((j-1-(count/2.0))/radius)
-	       *(_u[(i-1)*count+j]-_u[(i-1)*count+j-2])) 
-	       -((1.0/(2.0*count))*differentialOperator.advectionSpeedY						//Y addition
-               *radius*((i-1-(count/2.0))/radius)
-	       *(_u[i*count+j-1]-_u[(i-2)*count+j-1]))
-            ;}
-  }
-   else if (this->velocityType == "advection")
-*/  { 
    this->bindDofs( mesh, _u );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    SharedPointer< MeshFunctionType > u( mesh, _u ); 
@@ -285,12 +202,11 @@ getExplicitRHS( const RealType& time,
                                                            this->rightHandSidePointer,
                                                            u,
                                                            fu );
-/*   BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
+   /*BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
    boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
       this->boundaryCondition, 
       time + tau, 
        u ); */
- }
 }
 template< typename Mesh,
           typename BoundaryCondition,

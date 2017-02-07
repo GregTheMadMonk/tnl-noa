@@ -183,10 +183,10 @@ makeSnapshot( const RealType& time,
               DofVectorPointer& dofs,
               MeshDependentDataPointer& meshDependentData )
 {
-  std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
+   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
 
    this->bindDofs( meshPointer, dofs );
-   //cout << "dofs = " << dofs << endl;
+
    FileName fileName;
    fileName.setFileNameBase( "u-" );
    fileName.setExtension( "tnl" );
