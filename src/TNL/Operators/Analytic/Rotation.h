@@ -12,6 +12,8 @@
 
 #include <TNL/Functions/Domain.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Config/ParameterContainer.h>
+
 
 namespace TNL {
 namespace Operators {
@@ -57,6 +59,10 @@ class Rotation: public Functions::Domain< Function::getDomainDimenions(),
       typedef typename Function::RealType RealType;
       typedef Containers::StaticVector< Function::getDomainDimenions(), 
                                         RealType > VertexType;
+      
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" ){};
+      
       
       __cuda_callable__
       RealType operator()( const Function& function,

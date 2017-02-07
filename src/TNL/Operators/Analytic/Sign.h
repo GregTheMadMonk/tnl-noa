@@ -12,6 +12,7 @@
 
 #include <TNL/Functions/Domain.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
 namespace Operators {
@@ -28,6 +29,9 @@ class Sign : public Functions::Domain< Function::getDomainDimenions(),
       typedef Containers::StaticVector< Function::getDomainDimenions(), 
                                         RealType > VertexType;
       
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" ){};      
+      
       __cuda_callable__
       RealType operator()( const Function& function,
                            const VertexType& vertex,
@@ -41,6 +45,20 @@ class Sign : public Functions::Domain< Function::getDomainDimenions(),
                return -1.0;
          return 0.0;         
       }
+      
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+      __cuda_callable__
+      RealType getPartialDerivative( const Function& function,
+                                     const VertexType& vertex,
+                                     const RealType& time = 0 ) const
+      {
+         if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
+            return this->operator()( function, vertex, time );
+         return 0.0;
+      }
+      
 };
 
 } // namespace Analytic

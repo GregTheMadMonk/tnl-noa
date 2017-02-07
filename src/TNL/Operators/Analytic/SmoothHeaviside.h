@@ -12,6 +12,7 @@
 
 #include <TNL/Functions/Domain.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
 namespace Operators {
@@ -29,7 +30,11 @@ class SmoothHeaviside : public Functions::Domain< Function::getDomainDimenions()
                                         RealType > VertexType;
       
       SmoothHeaviside()
-      : sharpness( 1.0 )
+      : sharpness( 1.0 ){}
+      
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" ){};
+      
       
       void setSharpness( const RealType& sharpness )
       {
@@ -49,6 +54,19 @@ class SmoothHeaviside : public Functions::Domain< Function::getDomainDimenions()
       {
          const RealType aux = function( vertex, time );
          return 1.0 / ( 1.0 + exp( -2.0 * sharpness * aux ) );
+      }
+      
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+      __cuda_callable__
+      RealType getPartialDerivative( const Function& function,
+                                     const VertexType& vertex,
+                                     const RealType& time = 0 ) const
+      {
+         if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
+            return this->operator()( function, vertex, time );
+         // TODO: implement the rest
       }
       
    protected:

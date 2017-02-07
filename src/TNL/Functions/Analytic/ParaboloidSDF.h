@@ -29,17 +29,17 @@ class ParaboloidSDFBase : public Functions::Domain< dimensions, SpaceDomain >
    bool setup( const Config::ParameterContainer& parameters,
               const String& prefix = "" );
 
-   void setXCentre( const Real& waveLength );
+   void setXCenter( const Real& waveLength );
 
-   Real getXCentre() const;
+   Real getXCenter() const;
 
-   void setYCentre( const Real& waveLength );
+   void setYCenter( const Real& waveLength );
 
-   Real getYCentre() const;
+   Real getYCenter() const;
 
-   void setZCentre( const Real& waveLength );
+   void setZCenter( const Real& waveLength );
 
-   Real getZCentre() const;
+   Real getZCenter() const;
 
    void setCoefficient( const Real& coefficient );
 
@@ -51,7 +51,7 @@ class ParaboloidSDFBase : public Functions::Domain< dimensions, SpaceDomain >
 
    protected:
 
-   Real xCentre, yCentre, zCentre, coefficient, radius;
+   Real xCenter, yCenter, zCenter, coefficient, radius;
 };
 
 template< int Dimensions, typename Real >

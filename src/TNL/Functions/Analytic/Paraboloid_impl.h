@@ -18,7 +18,7 @@ namespace TNL {
 
 template< int dimensions, typename Real >
 ParaboloidBase< dimensions, Real >::ParaboloidBase()
-: xCentre( 0 ), yCentre( 0 ), zCentre( 0 ),
+: xCenter( 0 ), yCenter( 0 ), zCenter( 0 ),
   coefficient( 1 ), radius ( 0 )
 {
 }
@@ -27,9 +27,9 @@ template< int dimensions, typename Real >
 bool ParaboloidBase< dimensions, Real >::setup( const Config::ParameterContainer& parameters,
         								 const String& prefix)
 {
-   this->xCentre = parameters.getParameter< double >( "x-centre" );
-   this->yCentre = parameters.getParameter< double >( "y-centre" );
-   this->zCentre = parameters.getParameter< double >( "z-centre" );
+   this->xCenter = parameters.getParameter< double >( "x-center" );
+   this->yCenter = parameters.getParameter< double >( "y-center" );
+   this->zCenter = parameters.getParameter< double >( "z-center" );
    this->coefficient = parameters.getParameter< double >( "coefficient" );
    this->radius = parameters.getParameter< double >( "radius" );
 
@@ -37,38 +37,38 @@ bool ParaboloidBase< dimensions, Real >::setup( const Config::ParameterContainer
 }
 
 template< int dimensions, typename Real >
-void ParaboloidBase< dimensions, Real >::setXCentre( const Real& xCentre )
+void ParaboloidBase< dimensions, Real >::setXCenter( const Real& xCenter )
 {
-   this->xCentre = xCentre;
+   this->xCenter = xCenter;
 }
 
 template< int dimensions, typename Real >
-Real ParaboloidBase< dimensions, Real >::getXCentre() const
+Real ParaboloidBase< dimensions, Real >::getXCenter() const
 {
-   return this->xCentre;
+   return this->xCenter;
 }
 
 template< int dimensions, typename Real >
-void ParaboloidBase< dimensions, Real >::setYCentre( const Real& yCentre )
+void ParaboloidBase< dimensions, Real >::setYCenter( const Real& yCenter )
 {
-   this->yCentre = yCentre;
+   this->yCenter = yCenter;
 }
 
 template< int dimensions, typename Real >
-Real ParaboloidBase< dimensions, Real >::getYCentre() const
+Real ParaboloidBase< dimensions, Real >::getYCenter() const
 {
-   return this->yCentre;
+   return this->yCenter;
 }
 template< int dimensions, typename Real >
-void ParaboloidBase< dimensions, Real >::setZCentre( const Real& zCentre )
+void ParaboloidBase< dimensions, Real >::setZCenter( const Real& zCenter )
 {
-   this->zCentre = zCentre;
+   this->zCenter = zCenter;
 }
 
 template< int dimensions, typename Real >
-Real ParaboloidBase< dimensions, Real >::getZCentre() const
+Real ParaboloidBase< dimensions, Real >::getZCenter() const
 {
-   return this->zCentre;
+   return this->zCenter;
 }
 
 template< int dimensions, typename Real >
@@ -109,9 +109,9 @@ getPartialDerivative( const VertexType& v,
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 )
-      return this->coefficient * ( ( x - this -> xCentre ) * ( x - this -> xCentre ) - this->radius*this->radius );
+      return this->coefficient * ( ( x - this -> xCenter ) * ( x - this -> xCenter ) - this->radius*this->radius );
    if( XDiffOrder == 1 )
-      return 2.0 * this->coefficient * ( x - this -> xCentre );
+      return 2.0 * this->coefficient * ( x - this -> xCenter );
    return 0.0;
 }
 
@@ -132,13 +132,13 @@ getPartialDerivative( const VertexType& v,
       return 0.0;
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
    {
-      return this->coefficient * ( ( x - this -> xCentre ) * ( x - this -> xCentre )
-    		  	  	  	         + ( y - this -> yCentre ) * ( y - this -> yCentre ) - this->radius*this->radius );
+      return this->coefficient * ( ( x - this -> xCenter ) * ( x - this -> xCenter )
+    		  	  	  	         + ( y - this -> yCenter ) * ( y - this -> yCenter ) - this->radius*this->radius );
    }
    if( XDiffOrder == 1 && YDiffOrder == 0)
-	   return 2.0 * this->coefficient * ( x - this -> xCentre );
+	   return 2.0 * this->coefficient * ( x - this -> xCenter );
    if( YDiffOrder == 1 && XDiffOrder == 0)
-	   return 2.0 * this->coefficient * ( y - this -> yCentre );
+	   return 2.0 * this->coefficient * ( y - this -> yCenter );
    if( XDiffOrder == 2 && YDiffOrder == 0)
 	   return 2.0 * this->coefficient;
    if( YDiffOrder == 2 && XDiffOrder == 0)
@@ -161,16 +161,16 @@ getPartialDerivative( const VertexType& v,
    const Real& z = v.z();
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
    {
-      return this->coefficient * ( ( x - this -> xCentre ) * ( x - this -> xCentre )
-    		  	  	  	         + ( y - this -> yCentre ) * ( y - this -> yCentre )
-    		  	  	  	         + ( z - this -> zCentre ) * ( z - this -> zCentre ) - this->radius*this->radius );
+      return this->coefficient * ( ( x - this -> xCenter ) * ( x - this -> xCenter )
+    		  	  	  	         + ( y - this -> yCenter ) * ( y - this -> yCenter )
+    		  	  	  	         + ( z - this -> zCenter ) * ( z - this -> zCenter ) - this->radius*this->radius );
    }
    if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 0)
-	   return 2.0 * this->coefficient * ( x - this -> xCentre );
+	   return 2.0 * this->coefficient * ( x - this -> xCenter );
    if( YDiffOrder == 1 && XDiffOrder == 0 && ZDiffOrder == 0)
-	   return 2.0 * this->coefficient * ( y - this -> yCentre );
+	   return 2.0 * this->coefficient * ( y - this -> yCenter );
    if( ZDiffOrder == 1 && XDiffOrder == 0 && YDiffOrder == 0)
-	   return 2.0 * this->coefficient * ( z - this -> zCentre );
+	   return 2.0 * this->coefficient * ( z - this -> zCenter );
    if( XDiffOrder == 2 && YDiffOrder == 0 && ZDiffOrder == 0)
 	   return 2.0 * this->coefficient;
    if( YDiffOrder == 2 && XDiffOrder == 0 && ZDiffOrder == 0)

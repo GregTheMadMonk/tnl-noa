@@ -29,17 +29,17 @@ class ParaboloidBase : public Functions::Domain< dimensions, SpaceDomain >
    bool setup( const Config::ParameterContainer& parameters,
               const String& prefix = "" );
 
-   void setXCentre( const Real& waveLength );
+   void setXCenter( const Real& waveLength );
 
-   Real getXCentre() const;
+   Real getXCenter() const;
 
-   void setYCentre( const Real& waveLength );
+   void setYCenter( const Real& waveLength );
 
-   Real getYCentre() const;
+   Real getYCenter() const;
 
-   void setZCentre( const Real& waveLength );
+   void setZCenter( const Real& waveLength );
 
-   Real getZCentre() const;
+   Real getZCenter() const;
 
    void setCoefficient( const Real& coefficient );
 
@@ -51,7 +51,7 @@ class ParaboloidBase : public Functions::Domain< dimensions, SpaceDomain >
 
    protected:
 
-   Real xCentre, yCentre, zCentre, coefficient, radius;
+   Real xCenter, yCenter, zCenter, coefficient, radius;
 };
 
 template< int Dimensions, typename Real >
@@ -82,7 +82,10 @@ class Paraboloid< 1, Real > : public ParaboloidBase< 1, Real >
 
       __cuda_callable__
       RealType operator()( const VertexType& v,
-                           const Real& time = 0.0 ) const;
+                           const Real& time = 0.0 ) const
+      {
+         return this->getPartialDerivative< 0, 0, 0 >( v, time );
+      }
 
 };
 
@@ -109,7 +112,10 @@ class Paraboloid< 2, Real > : public ParaboloidBase< 2, Real >
 
       __cuda_callable__
       RealType operator()( const VertexType& v,
-                           const Real& time = 0.0 ) const;
+                           const Real& time = 0.0 ) const
+      {
+         return this->getPartialDerivative< 0, 0, 0 >( v, time );
+      }
 
 };
 
@@ -138,7 +144,10 @@ class Paraboloid< 3, Real > : public ParaboloidBase< 3, Real >
 
       __cuda_callable__
       RealType operator()( const VertexType& v,
-                           const Real& time = 0.0 ) const;
+                           const Real& time = 0.0 ) const
+      {
+         return this->getPartialDerivative< 0, 0, 0 >( v, time );
+      }
 
 };
 

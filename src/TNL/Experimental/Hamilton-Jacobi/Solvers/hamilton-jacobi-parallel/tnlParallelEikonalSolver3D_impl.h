@@ -860,9 +860,9 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
 	idz = subGridID / (this->gridRows*this->gridCols);
 	idy = (subGridID % (this->gridRows*this->gridCols)) / this->gridCols;
 	idx = subGridID %  (this->gridCols);
-	int centreGID = (this->n*idy + (this->n>>1) )*(this->n*this->gridCols) + this->n*idx + (this->n>>1)
+	int centerGID = (this->n*idy + (this->n>>1) )*(this->n*this->gridCols) + this->n*idx + (this->n>>1)
 			      + ((this->n>>1)+this->n*idz)*this->n*this->n*this->gridRows*this->gridCols;
-	if(this->unusedCell[centreGID] == 0 || boundaryCondition == 0)
+	if(this->unusedCell[centerGID] == 0 || boundaryCondition == 0)
 		tmp = true;
 	//if(this->currentStep + 3 < getSubgridValue(subGridID))
 		//tmp = true;
@@ -1115,9 +1115,9 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	if(l == 0)
 	{
 		tmp = 0;
-		int centreGID = (blockDim.y*blockIdx.y + (blockDim.y>>1) )*(blockDim.x*gridDim.x) + blockDim.x*blockIdx.x + (blockDim.x>>1)
+		int centerGID = (blockDim.y*blockIdx.y + (blockDim.y>>1) )*(blockDim.x*gridDim.x) + blockDim.x*blockIdx.x + (blockDim.x>>1)
 				      + ((blockDim.z>>1)+blockDim.z*blockIdx.z)*blockDim.x*blockDim.y*gridDim.x*gridDim.y;
-		if(this->unusedCell_cuda[centreGID] == 0 || boundaryCondition == 0)
+		if(this->unusedCell_cuda[centerGID] == 0 || boundaryCondition == 0)
 			tmp = 1;
 	}
 	__syncthreads();

@@ -18,7 +18,7 @@ namespace TNL {
 
 template< int dimensions, typename Real >
 ParaboloidSDFBase< dimensions, Real >::ParaboloidSDFBase()
-: xCentre( 0 ), yCentre( 0 ), zCentre( 0 ),
+: xCenter( 0 ), yCenter( 0 ), zCenter( 0 ),
   coefficient( 1 ), radius ( 0 )
 {
 }
@@ -27,9 +27,9 @@ template< int dimensions, typename Real >
 bool ParaboloidSDFBase< dimensions, Real >::setup( const Config::ParameterContainer& parameters,
         								 const String& prefix)
 {
-   this->xCentre = parameters.getParameter< double >( "x-centre" );
-   this->yCentre = parameters.getParameter< double >( "y-centre" );
-   this->zCentre = parameters.getParameter< double >( "z-centre" );
+   this->xCenter = parameters.getParameter< double >( "x-center" );
+   this->yCenter = parameters.getParameter< double >( "y-center" );
+   this->zCenter = parameters.getParameter< double >( "z-center" );
    this->coefficient = parameters.getParameter< double >( "coefficient" );
    this->radius = parameters.getParameter< double >( "radius" );
 
@@ -37,38 +37,38 @@ bool ParaboloidSDFBase< dimensions, Real >::setup( const Config::ParameterContai
 }
 
 template< int dimensions, typename Real >
-void ParaboloidSDFBase< dimensions, Real >::setXCentre( const Real& xCentre )
+void ParaboloidSDFBase< dimensions, Real >::setXCenter( const Real& xCenter )
 {
-   this->xCentre = xCentre;
+   this->xCenter = xCenter;
 }
 
 template< int dimensions, typename Real >
-Real ParaboloidSDFBase< dimensions, Real >::getXCentre() const
+Real ParaboloidSDFBase< dimensions, Real >::getXCenter() const
 {
-   return this->xCentre;
+   return this->xCenter;
 }
 
 template< int dimensions, typename Real >
-void ParaboloidSDFBase< dimensions, Real >::setYCentre( const Real& yCentre )
+void ParaboloidSDFBase< dimensions, Real >::setYCenter( const Real& yCenter )
 {
-   this->yCentre = yCentre;
+   this->yCenter = yCenter;
 }
 
 template< int dimensions, typename Real >
-Real ParaboloidSDFBase< dimensions, Real >::getYCentre() const
+Real ParaboloidSDFBase< dimensions, Real >::getYCenter() const
 {
-   return this->yCentre;
+   return this->yCenter;
 }
 template< int dimensions, typename Real >
-void ParaboloidSDFBase< dimensions, Real >::setZCentre( const Real& zCentre )
+void ParaboloidSDFBase< dimensions, Real >::setZCenter( const Real& zCenter )
 {
-   this->zCentre = zCentre;
+   this->zCenter = zCenter;
 }
 
 template< int dimensions, typename Real >
-Real ParaboloidSDFBase< dimensions, Real >::getZCentre() const
+Real ParaboloidSDFBase< dimensions, Real >::getZCenter() const
 {
-   return this->zCentre;
+   return this->zCenter;
 }
 
 template< int dimensions, typename Real >
@@ -109,7 +109,7 @@ getPartialDerivative( const VertexType& v,
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 )
-      return ::sqrt( ( x - this -> xCentre ) * ( x - this -> xCentre ) ) - this->radius;
+      return ::sqrt( ( x - this -> xCenter ) * ( x - this -> xCenter ) ) - this->radius;
    if( XDiffOrder == 1 )
       return 1.0;
    return 0.0;
@@ -130,8 +130,8 @@ getPartialDerivative( const VertexType& v,
    const Real& y = v.y();
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
    {
-      return ::sqrt ( ( x - this -> xCentre ) * ( x - this -> xCentre )
-    		  	  + ( y - this -> yCentre ) * ( y - this -> yCentre ) ) - this->radius;
+      return ::sqrt ( ( x - this -> xCenter ) * ( x - this -> xCenter )
+    		  	  + ( y - this -> yCenter ) * ( y - this -> yCenter ) ) - this->radius;
    }
    return 0.0;
 }
@@ -151,9 +151,9 @@ getPartialDerivative( const VertexType& v,
    const Real& z = v.z();
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
    {
-      return ::sqrt( ( x - this -> xCentre ) * ( x - this -> xCentre )
-    		  	 + ( y - this -> yCentre ) * ( y - this -> yCentre )
-    		  	 + ( z - this -> zCentre ) * ( z - this -> zCentre ) ) - this->radius;
+      return ::sqrt( ( x - this -> xCenter ) * ( x - this -> xCenter )
+    		  	 + ( y - this -> yCenter ) * ( y - this -> yCenter )
+    		  	 + ( z - this -> zCenter ) * ( z - this -> zCenter ) ) - this->radius;
    }
    return 0.0;
 }

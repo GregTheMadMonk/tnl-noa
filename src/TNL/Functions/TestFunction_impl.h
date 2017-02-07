@@ -92,9 +92,9 @@ configSetup( Config::ConfigDescription& config,
    config.addEntry     < double >( prefix + "sigma", "Sigma for the exp based test functions.", 1.0 );
 	config.addEntry     < double >( prefix + "radius", "Radius for paraboloids.", 1.0 );
    config.addEntry     < double >( prefix + "coefficient", "Coefficient for paraboloids.", 1.0 );
-   config.addEntry     < double >( prefix + "x-centre", "x-centre for paraboloids.", 0.0 );
-   config.addEntry     < double >( prefix + "y-centre", "y-centre for paraboloids.", 0.0 );
-   config.addEntry     < double >( prefix + "z-centre", "z-centre for paraboloids.", 0.0 );
+   config.addEntry     < double >( prefix + "x-center", "x-center for paraboloids.", 0.0 );
+   config.addEntry     < double >( prefix + "y-center", "y-center for paraboloids.", 0.0 );
+   config.addEntry     < double >( prefix + "z-center", "z-center for paraboloids.", 0.0 );
    config.addEntry     < double >( prefix + "diameter", "Diameter for the cylinder, flowerpot test functions.", 1.0 );
   config.addEntry     < double >( prefix + "height", "Height of zero-level-set function for the blob, pseudosquare test functions.", 1.0 );
    config.addEntry     < String >( prefix + "time-dependence", "Time dependence of the test function.", "none" );
@@ -398,9 +398,10 @@ __cuda_callable__
 Real
 TestFunction< FunctionDimensions, Real, Device >::
 getPartialDerivative( const VertexType& vertex,
-          const Real& time ) const
+                      const Real& time ) const
 {
    using namespace TNL::Functions::Analytic;
+   using namespace TNL::Operators::Analytic;
    Real scale( 1.0 );
    switch( this->timeDependence )
    {
@@ -421,32 +422,120 @@ getPartialDerivative( const VertexType& vertex,
    switch( functionType )
    {
       case constant:
-         return scale * ( ( Constant< Dimensions, Real >* ) function )->
-                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+      {
+         typedef Constant< Dimensions, Real > FunctionType;
+         typedef Identity< FunctionType > OperatorType;
+
+         return scale * ( ( OperatorType* ) this->operator_ )->
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+      }
+      case paraboloid:
+      {
+         typedef Paraboloid< Dimensions, Real > FunctionType;
+         if( operatorType == identity )
+         {
+            typedef Identity< FunctionType > OperatorType;
+
+            return scale * ( ( OperatorType* ) this->operator_ )->
+                      template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+         }
+         if( operatorType == heaviside )
+         {
+            typedef Heaviside< FunctionType > OperatorType;
+
+            return scale * ( ( OperatorType* ) this->operator_ )->
+                      template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+         }
+      }
       case expBump:
-         return scale * ( ( ExpBump< Dimensions, Real >* ) function )->
-                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+      {
+         typedef ExpBump< Dimensions, Real > FunctionType;
+         typedef Identity< FunctionType > OperatorType;
+         
+         return scale * ( ( OperatorType* ) this->operator_ )->
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+      }
       case sinBumps:
-         return scale * ( ( SinBumps< Dimensions, Real >* ) function )->
-                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+      {
+         typedef SinBumps< Dimensions, Real > FunctionType;
+         typedef Identity< FunctionType > OperatorType;
+         
+         return scale * ( ( OperatorType* ) this->operator_ )->
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+      }
       case sinWave:
-         return scale * ( ( SinWave< Dimensions, Real >* ) function )->
-                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+      {
+         typedef SinWave< Dimensions, Real > FunctionType;
+         typedef Identity< FunctionType > OperatorType;
+         
+         return scale * ( ( OperatorType* ) this->operator_ )->
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+      }
       case cylinder:
-         return scale * ( ( Cylinder< Dimensions, Real >* ) function )->
-                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+      {
+         typedef Cylinder< Dimensions, Real > FunctionType;
+         typedef Identity< FunctionType > OperatorType;
+         
+         return scale * ( ( OperatorType* ) this->operator_ )->
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+      }
       case flowerpot:
-         return scale * ( ( Flowerpot< Dimensions, Real >* ) function )->
-                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+      {
+         typedef Flowerpot< Dimensions, Real > FunctionType;
+         typedef Identity< FunctionType > OperatorType;
+         
+         return scale * ( ( OperatorType* ) this->operator_ )->
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+      }
       case twins:
-         return scale * ( ( Twins< Dimensions, Real >* ) function )->
-                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+      {
+         typedef Twins< Dimensions, Real > FunctionType;
+         typedef Identity< FunctionType > OperatorType;
+         
+         return scale * ( ( OperatorType* ) this->operator_ )->
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+      }
       case pseudoSquare:
-         return scale * ( ( PseudoSquare< Dimensions, Real >* ) function )->
-                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+      {
+         typedef PseudoSquare< Dimensions, Real > FunctionType;
+         typedef Identity< FunctionType > OperatorType;
+         
+         return scale * ( ( OperatorType* ) this->operator_ )->
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+      }
       case blob:
-         return scale * ( ( Blob< Dimensions, Real >* ) function )->
-                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+      {
+         typedef Blob< Dimensions, Real > FunctionType;
+         typedef Identity< FunctionType > OperatorType;
+         
+         return scale * ( ( OperatorType* ) this->operator_ )->
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+      }
+      case sinBumpsSDF:
+      {
+         typedef SinBumpsSDF< Dimensions, Real > FunctionType;
+         typedef Identity< FunctionType > OperatorType;
+                  
+         return scale * ( ( OperatorType* ) this->operator_ )->
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+      }
+      case sinWaveSDF:
+      {
+         typedef SinWaveSDF< Dimensions, Real > FunctionType;
+         typedef Identity< FunctionType > OperatorType;
+         
+         return scale * ( ( OperatorType* ) this->operator_ )->
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+      }
+      case paraboloidSDF:
+      {
+         typedef ParaboloidSDF< Dimensions, Real > FunctionType;
+         typedef Identity< FunctionType > OperatorType;
+         
+         return scale * ( ( OperatorType* ) this->operator_ )->
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+      }
+      
       default:
          return 0.0;
    }

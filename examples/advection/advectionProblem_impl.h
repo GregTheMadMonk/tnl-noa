@@ -106,28 +106,19 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    const String& beginChoice = parameters.getParameter< String >( "begin" );
    std::cout << beginChoice << " " << dimensions << "   " << size << "   " << count << "   "<< 1/dimensions << std::endl;
    //getchar();
-   if (beginChoice == "sin_square")
-      {
-	   double constantFunction;
+   /*if (beginChoice == "step")
+   {
 	   if (dimensions == 1)
-	       {
-                  std::cout << "adding DOFS" << std::endl;
-		   ( *dofs )[0] = 0;
-		   double expValue;
-		   for (IndexType i = 1; i < count-2; i++)
-		   {
-			expValue = std::exp(-std::pow(size*i-2,2));
-			if( (i>0.4*count) && (i<0.5*count))
-                            constantFunction=1;
-                        else
-                            constantFunction=0;
-			if(expValue>constantFunction)
-                           ( *dofs )[i] = expValue;
-                        else ( *dofs )[i] = constantFunction;
-		   };
-		   ( *dofs )[count-1] = 0;
+	   {
+         for( IndexType i = 0; i < count; i++)
+         {
+            if( i > 0.45*count  && i<0.55*count )
+               dofs->setElement( i, 1.0 );
+            else
+               dofs->setElement( i, 0.0 );
+         }
 		}
-	    else if (dimensions == 2)
+      else if (dimensions == 2)
 	       {
                    count = std::sqrt(count);
 		   double expValue;
@@ -164,7 +155,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 			   ( *dofs )[i * count + j] = std::exp(-std::pow(size*i-2,2)-std::pow(size*j-2,2));
 		      };
 		};
-     };
+     };*/
    //setting velocity field
    //std::cout << *dofs << std::endl;
    //getchar();

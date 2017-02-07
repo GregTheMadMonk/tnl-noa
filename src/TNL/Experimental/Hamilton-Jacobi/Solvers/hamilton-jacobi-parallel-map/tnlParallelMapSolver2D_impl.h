@@ -687,8 +687,8 @@ tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSubgri
 	{
 		if(u[0]*u[i] <= 0.0)
 			tmp=true;
-		int centreGID = (this->n*(subGridID / this->gridRows)+ (this->n >> 1))*(this->n*this->gridCols) + this->n*(subGridID % this->gridRows) + (this->n >> 1);
-		if(this->unusedCell[centreGID] == 0 || boundaryCondition == 0)
+		int centerGID = (this->n*(subGridID / this->gridRows)+ (this->n >> 1))*(this->n*this->gridCols) + this->n*(subGridID % this->gridRows) + (this->n >> 1);
+		if(this->unusedCell[centerGID] == 0 || boundaryCondition == 0)
 			tmp = true;
 	}
 
@@ -876,8 +876,8 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runS
 	if(l == 0)
 	{
 		tmp = 0;
-		int centreGID = (blockDim.y*blockIdx.y + (blockDim.y>>1))*(blockDim.x*gridDim.x) + blockDim.x*blockIdx.x + (blockDim.x>>1);
-		if(this->unusedCell_cuda[centreGID] == 0 || boundaryCondition == 0)
+		int centerGID = (blockDim.y*blockIdx.y + (blockDim.y>>1))*(blockDim.x*gridDim.x) + blockDim.x*blockIdx.x + (blockDim.x>>1);
+		if(this->unusedCell_cuda[centerGID] == 0 || boundaryCondition == 0)
 			tmp = 1;
 	}
 	__syncthreads();
