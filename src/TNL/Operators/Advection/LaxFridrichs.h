@@ -99,7 +99,7 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
          const IndexType& west = neighbourEntities.template getEntityIndex< -1 >(); 
          typedef Functions::FunctionAdapter< MeshType, VelocityFunctionType > FunctionAdapter;
          return ( 0.5 / this->tau ) * this->artificialViscosity * ( u[ west ]- 2.0 * u[ center ] + u[ east ] ) -
-                FunctionAdapter::getValue( this->velocityField.getData()[ 0 ], entity, time ) * ( u[ east ] - u[ west ] ) * hxInverse * 0.5;
+                FunctionAdapter::getValue( this->velocityField.template getData< DeviceType >()[ 0 ], entity, time ) * ( u[ east ] - u[ west ] ) * hxInverse * 0.5;
       }
       
    protected:
@@ -196,8 +196,8 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
          
          typedef Functions::FunctionAdapter< MeshType, VelocityFunctionType > FunctionAdapter;
          return ( 0.25 / this->tau ) * this->artificialViscosity * ( u[ west ] + u[ east ] + u[ north ] + u[ south ] - 4.0 * u[ center ] ) -
-                0.5 * ( FunctionAdapter::getValue( this->velocityField.getData()[ 0 ], entity, time ) * ( u[ east ] - u[ west ] ) * hxInverse +
-                        FunctionAdapter::getValue( this->velocityField.getData()[ 1 ], entity, time ) * ( u[ north ] - u[ south ] ) * hyInverse );         
+                0.5 * ( FunctionAdapter::getValue( this->velocityField.template getData< DeviceType >()[ 0 ], entity, time ) * ( u[ east ] - u[ west ] ) * hxInverse +
+                        FunctionAdapter::getValue( this->velocityField.template getData< DeviceType >()[ 1 ], entity, time ) * ( u[ north ] - u[ south ] ) * hyInverse );         
       }
       
    protected:
@@ -296,9 +296,9 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
          
          typedef Functions::FunctionAdapter< MeshType, VelocityFunctionType > FunctionAdapter;
          return ( 0.25 / this->tau ) * this->artificialViscosity * ( u[ west ] + u[ east ] + u[ north ] + u[ south ] + u[ up ] + u[ down ] - 6.0 * u[ center ] ) -
-                0.5 * ( FunctionAdapter::getValue( this->velocityField.getData()[ 0 ], entity, time ) * ( u[ east ] - u[ west ] ) * hxInverse +
-                        FunctionAdapter::getValue( this->velocityField.getData()[ 1 ], entity, time ) * ( u[ north ] - u[ south ] ) * hyInverse +
-                        FunctionAdapter::getValue( this->velocityField.getData()[ 2 ], entity, time ) * ( u[ up ] - u[ down ] ) * hzInverse );         
+                0.5 * ( FunctionAdapter::getValue( this->velocityField.template getData< DeviceType >()[ 0 ], entity, time ) * ( u[ east ] - u[ west ] ) * hxInverse +
+                        FunctionAdapter::getValue( this->velocityField.template getData< DeviceType >()[ 1 ], entity, time ) * ( u[ north ] - u[ south ] ) * hyInverse +
+                        FunctionAdapter::getValue( this->velocityField.template getData< DeviceType >()[ 2 ], entity, time ) * ( u[ up ] - u[ down ] ) * hzInverse );         
       }
       
    protected:
