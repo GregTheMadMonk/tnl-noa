@@ -36,12 +36,12 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef VelocityFunction VelocityFunctionType;
       typedef Functions::VectorField< Dimensions, VelocityFunctionType > VelocityFieldType;
-      typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
+      typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
       
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
       {
-         config.addEntry< double >( "viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs shceme", 1.0 );
+         config.addEntry< double >( "viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs scheme", 1.0 );
       }
       
       LaxFridrichs()
@@ -54,7 +54,8 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         return this->velocityField->setup( meshPointer, parameters, prefix + "velocity-field-" );
+         this->artificialViscosity = parameters.getParameter< double >( "viscosity" );
+         return true;
       }
 
       static String getType();
@@ -127,12 +128,12 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef VelocityFunction VelocityFunctionType;
       typedef Functions::VectorField< Dimensions, VelocityFunctionType > VelocityFieldType;
-      typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
+      typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
       
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
       {
-         config.addEntry< double >( "viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs shceme", 1.0 );
+         config.addEntry< double >( "viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs scheme", 1.0 );
       }      
       
       LaxFridrichs()
@@ -145,7 +146,8 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         return this->velocityField->setup( meshPointer, parameters, prefix + "velocity-field-" );
+         this->artificialViscosity = parameters.getParameter< double >( "viscosity" );
+         return true;
       }
 
       static String getType();
@@ -224,12 +226,12 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef VelocityFunction VelocityFunctionType;
       typedef Functions::VectorField< Dimensions, VelocityFunctionType > VelocityFieldType;
-      typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
+      typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
       
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
       {
-         config.addEntry< double >( "viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs shceme", 1.0 );
+         config.addEntry< double >( "viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs scheme", 1.0 );
       }      
       
       LaxFridrichs()
@@ -242,7 +244,8 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         return this->velocityField->setup( meshPointer, parameters, prefix + "velocity-field-" );
+         this->artificialViscosity = parameters.getParameter< double >( "viscosity" );
+         return true;
       }
 
       static String getType();

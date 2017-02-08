@@ -37,7 +37,7 @@ template< typename ConfigTag >class advectionConfig
          Functions::VectorField< 3, Functions::Analytic::Constant< 3 > >::configSetup( config, "velocity-field-" );
          
          typedef Meshes::Grid< 3 > MeshType;
-         LaxFridrichs< MeshType >::ConfigSetup( config, "lax-fridrichs" );
+         LaxFridrichs< MeshType >::configSetup( config, "lax-fridrichs" );
          
          config.addEntry< String >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
             config.addEntryEnum< String >( "dirichlet" );
@@ -62,8 +62,10 @@ class advectionSetter
 
       static bool run( const Config::ParameterContainer & parameters )
       {
-          enum { Dimensions = MeshType::getMeshDimensions() };
-          typedef LaxFridrichs< MeshType, Real, Index > ApproximateOperator;
+          static const int Dimensions = MeshType::getMeshDimensions();
+          typedef Functions::Analytic::Constant< Dimensions, RealType > ConstantFunctionType;
+          typedef Functions::VectorField< Dimensions, ConstantFunctionType > VelocityFieldType;
+          typedef LaxFridrichs< MeshType, Real, Index, VelocityFieldType > ApproximateOperator;
           typedef advectionRhs< MeshType, Real > RightHandSide;
           typedef Containers::StaticVector < MeshType::getMeshDimensions(), Real > Vertex;
 
