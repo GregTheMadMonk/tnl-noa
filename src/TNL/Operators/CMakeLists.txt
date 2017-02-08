@@ -1,3 +1,4 @@
+ADD_SUBDIRECTORY( Advection )
 ADD_SUBDIRECTORY( Analytic )
 ADD_SUBDIRECTORY( diffusion )
 ADD_SUBDIRECTORY( euler )

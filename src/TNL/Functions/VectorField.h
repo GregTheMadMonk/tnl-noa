@@ -27,6 +27,8 @@ class VectorField
    public:
       
       typedef Function FunctionType;
+      typedef typename FunctionType::RealType RealType;
+      typedef typename FunctionType::VertexType VertexType;
       
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
@@ -41,7 +43,7 @@ class VectorField
                   const String& prefix = "" )
       {
          for( int i = 0; i < Dimensions; i++ )
-            if( ! vectorField[ 0 ].setup( meshPointer, parameters, prefix + String( i ) + "-" ) )
+            if( ! vectorField[ i ].setup( parameters, prefix + String( i ) + "-" ) )
             {
                std::cerr << "Unable to setup " << i << "-th coordinate of the vector field." << std::endl;
                return false;
@@ -101,7 +103,7 @@ class VectorField< Dimensions, MeshFunction< Mesh, MeshEntityDimensions, Real > 
                   const String& prefix = "" )
       {
          for( int i = 0; i < Dimensions; i++ )
-            if( ! vectorField[ 0 ].setup( meshPointer, parameters, prefix + String( i ) + "-" ) )
+            if( ! vectorField[ i ].setup( meshPointer, parameters, prefix + String( i ) + "-" ) )
             {
                std::cerr << "Unable to setup " << i << "-th coordinate of the vector field." << std::endl;
                return false;
@@ -126,6 +128,20 @@ class VectorField< Dimensions, MeshFunction< Mesh, MeshEntityDimensions, Real > 
       Containers::StaticArray< Dimensions, FunctionType > vectorField;
    
 };
+
+template< int Dimensions,
+          typename Function >
+std::ostream& operator << ( std::ostream& str, const VectorField< Dimensions, Function >& f )
+{
+   for( int i = 0; i < Dimensions; i++ )
+   {
+      str << "[ " << f[ i ] << " ]";
+      if( i < Dimensions - 1 )
+         str << ", ";
+   }
+   return str;
+}
+
    
 } //namespace Functions
 } //namepsace TNL

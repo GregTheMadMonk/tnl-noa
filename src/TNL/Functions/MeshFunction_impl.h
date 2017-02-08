@@ -163,6 +163,7 @@ setup( const MeshPointer& meshPointer,
    else
    {
       std::cerr << "Missing parameter " << prefix << "file." << std::endl;
+      throw(0);
       return false;
    }
    return true;

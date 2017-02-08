@@ -7,15 +7,16 @@
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
+#include "advectionProblem.h"
+
 namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator,
-          typename VelocityField >
+          typename DifferentialOperator >
 String
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, VelocityField >::
+advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
    return String( "advectionProblem< " ) + Mesh :: getTypeStatic() + " >";
@@ -24,10 +25,9 @@ getTypeStatic()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator,
-          typename VelocityField >
+          typename DifferentialOperator >
 String
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, VelocityField >::
+advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
    return String( "advection" );
@@ -36,10 +36,9 @@ getPrologHeader() const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator,
-          typename VelocityField >
+          typename DifferentialOperator >
 void
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, VelocityField >::
+advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
@@ -51,26 +50,16 @@ writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) cons
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator,
-          typename VelocityField >
+          typename DifferentialOperator >
 bool
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, VelocityField >::
+advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   //this->velocityType = parameters.getParameter< String >( "move" );
-   /*const double artificalViscosity = parameters.getParameter< double >( "artifical-viscosity" );
-   differentialOperatorPointer->setViscosity(artificalViscosity);
-   const double advectionSpeedX = parameters.getParameter< double >( "advection-speedX" );
-   differentialOperatorPointer->setAdvectionSpeedX(advectionSpeedX);
-   const double advectionSpeedY = parameters.getParameter< double >( "advection-speedY" );
-   differentialOperatorPointer->setAdvectionSpeedY(advectionSpeedY);*/
-   
    if( ! this->velocityField->setup( meshPointer, parameters, prefix + "velocity-field-" ) ||
-       ! this->differentialOperatorPointer->setup( meshPointer, parameters, prefix + "advection-" ) ||
-       ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
-       ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
+       ! this->differentialOperatorPointer->setup( meshPointer, parameters, prefix ) ||
+       ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) )
       return false;
    return true;
 }
@@ -78,10 +67,9 @@ setup( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator,
-          typename VelocityField >
-typename advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, VelocityField >::IndexType
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, VelocityField >::
+          typename DifferentialOperator >
+typename advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
+advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getDofs( const MeshPointer& mesh ) const
 {
    /****
@@ -94,10 +82,9 @@ getDofs( const MeshPointer& mesh ) const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator,
-          typename VelocityField >
+          typename DifferentialOperator >
 void
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, VelocityField >::
+advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 bindDofs( const MeshPointer& meshPointer,
           DofVectorPointer& dofVector )
 {
@@ -108,10 +95,9 @@ bindDofs( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator,
-          typename VelocityField >
+          typename DifferentialOperator >
 bool
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, VelocityField >::
+advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshPointer& meshPointer,
                      DofVectorPointer& dofs,
@@ -130,11 +116,10 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator,
-          typename VelocityField >
+          typename DifferentialOperator >
    template< typename Matrix >
 bool
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, VelocityField >::
+advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshPointer& mesh,
                    Matrix& matrix )
 {
@@ -157,10 +142,9 @@ setupLinearSystem( const MeshPointer& mesh,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator,
-          typename VelocityField >
+          typename DifferentialOperator >
 bool
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, VelocityField >::
+advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshPointer& mesh,
@@ -181,10 +165,9 @@ makeSnapshot( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator,
-          typename VelocityField >
+          typename DifferentialOperator >
 void
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, VelocityField >::
+advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshPointer& mesh,
@@ -207,6 +190,7 @@ getExplicitRHS( const RealType& time,
    SharedPointer< MeshFunctionType > u( mesh, _u ); 
    SharedPointer< MeshFunctionType > fu( mesh, _fu );
    differentialOperatorPointer->setTau(tau); 
+   differentialOperatorPointer->setVelocityField( this->velocityField );
    explicitUpdater.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            this->differentialOperatorPointer,
@@ -223,11 +207,10 @@ getExplicitRHS( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator,
-          typename VelocityField >
+          typename DifferentialOperator >
    template< typename Matrix >
 void
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, VelocityField >::
+advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshPointer& mesh,

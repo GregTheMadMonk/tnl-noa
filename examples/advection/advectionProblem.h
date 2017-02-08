@@ -12,8 +12,7 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator,
-          typename VelocityField = Functions::MeshFunction< Mesh > >
+          typename DifferentialOperator >
 class advectionProblem:
 public PDEProblem< Mesh,
                    typename DifferentialOperator::RealType,
@@ -31,7 +30,7 @@ public PDEProblem< Mesh,
       typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-      typedef VelocityField VelocityFieldType;
+      typedef typename DifferentialOperator::VelocityFieldType VelocityFieldType;
       typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
 
       using typename BaseType::MeshType;

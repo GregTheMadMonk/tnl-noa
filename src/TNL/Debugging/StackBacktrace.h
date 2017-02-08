@@ -18,6 +18,7 @@
 namespace TNL {
 namespace Debugging {
 
+#ifndef NDEBUG
 /*
  * Print a demangled stack backtrace of the caller function to FILE* out.
  *
@@ -99,6 +100,13 @@ printStackBacktrace( FILE *out = stderr, unsigned int max_frames = 63 )
    free(funcname);
    free(symbollist);
 }
+#endif
 
 } // namespace Debugging
 } // namespace TNL
+
+#ifdef NDEBUG
+#define PrintStackBacktrace
+#else
+#define PrintStackBacktrace TNL::Debugging::printStackBacktrace();
+#endif

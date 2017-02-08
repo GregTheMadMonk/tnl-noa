@@ -7,6 +7,9 @@
 #include <TNL/SharedPointer.h>
 
 namespace TNL {
+   namespace Operators {
+      namespace Advection {
+   
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -41,7 +44,7 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
       {
-         config.addEntry< double >( "viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs scheme", 1.0 );
+         config.addEntry< double >( prefix + "numerical-viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs scheme", 1.0 );
       }
       
       LaxFridrichs()
@@ -54,7 +57,7 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         this->artificialViscosity = parameters.getParameter< double >( "viscosity" );
+         this->artificialViscosity = parameters.getParameter< double >( prefix + "numerical-viscosity" );
          return true;
       }
 
@@ -96,7 +99,7 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
          const IndexType& west = neighbourEntities.template getEntityIndex< -1 >(); 
          typedef Functions::FunctionAdapter< MeshType, VelocityFunctionType > FunctionAdapter;
          return ( 0.5 / this->tau ) * this->artificialViscosity * ( u[ west ]- 2.0 * u[ center ] + u[ east ] ) -
-                FunctionAdapter::getValue( this->velocityField.getData()[ 0 ], entity, time ) * ( u[ east ] - u[west] ) * hxInverse * 0.5;
+                FunctionAdapter::getValue( this->velocityField.getData()[ 0 ], entity, time ) * ( u[ east ] - u[ west ] ) * hxInverse * 0.5;
       }
       
    protected:
@@ -133,7 +136,7 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
       {
-         config.addEntry< double >( "viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs scheme", 1.0 );
+         config.addEntry< double >( prefix + "numerical-viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs scheme", 1.0 );
       }      
       
       LaxFridrichs()
@@ -146,7 +149,7 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         this->artificialViscosity = parameters.getParameter< double >( "viscosity" );
+         this->artificialViscosity = parameters.getParameter< double >( prefix + "numerical-viscosity" );
          return true;
       }
 
@@ -231,7 +234,7 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
       {
-         config.addEntry< double >( "viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs scheme", 1.0 );
+         config.addEntry< double >( prefix + "numerical-viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs scheme", 1.0 );
       }      
       
       LaxFridrichs()
@@ -244,7 +247,7 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         this->artificialViscosity = parameters.getParameter< double >( "viscosity" );
+         this->artificialViscosity = parameters.getParameter< double >( prefix + "numerical-viscosity" );
          return true;
       }
 
@@ -307,7 +310,8 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
       VelocityFieldPointer velocityField;
 };
 
-
+      }// namespace Advection
+   } // namepsace Operators
 } // namespace TNL
 
 #endif	/* LaxFridrichs_H */
