@@ -55,15 +55,16 @@ setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   this->velocityType = parameters.getParameter< String >( "move" );
-   const double artificalViscosity = parameters.getParameter< double >( "artifical-viscosity" );
+   //this->velocityType = parameters.getParameter< String >( "move" );
+   /*const double artificalViscosity = parameters.getParameter< double >( "artifical-viscosity" );
    differentialOperatorPointer->setViscosity(artificalViscosity);
    const double advectionSpeedX = parameters.getParameter< double >( "advection-speedX" );
    differentialOperatorPointer->setAdvectionSpeedX(advectionSpeedX);
    const double advectionSpeedY = parameters.getParameter< double >( "advection-speedY" );
-   differentialOperatorPointer->setAdvectionSpeedY(advectionSpeedY);
+   differentialOperatorPointer->setAdvectionSpeedY(advectionSpeedY);*/
 
-   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
+   if( ! this->differentialOperatorPointer->setup( meshPointer, parameters, prefix + "advection-" ) ||
+       ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
    return true;
@@ -128,7 +129,7 @@ advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
 setupLinearSystem( const MeshPointer& mesh,
                    Matrix& matrix )
 {
-   const IndexType dofs = this->getDofs( mesh );
+   /*const IndexType dofs = this->getDofs( mesh );
    typedef typename Matrix::ObjectType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
    SharedPointer< CompressedRowsLengthsVectorType > rowLengths;
    if( ! rowLengths->setSize( dofs ) )
@@ -140,7 +141,7 @@ setupLinearSystem( const MeshPointer& mesh,
                                                                           rowLengths );
    matrix->setDimensions( dofs, dofs );
    if( ! matrix->setCompressedRowsLengths( *rowLengths ) )
-      return false;
+      return false;*/
    return true;
 }
 

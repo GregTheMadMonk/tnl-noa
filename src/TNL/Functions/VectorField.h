@@ -27,9 +27,27 @@ class VectorField
    public:
       
       typedef Function FunctionType;
-   
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" );
+      
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" )
+      {
+         for( int i = 0; i < Dimensions; i++ )
+            FunctionType::configSetup( config, prefix + String( i ) + "-" );
+      }
+
+      template< typename MeshPointer >
+      bool setup( const MeshPointer& meshPointer,
+                  const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
+      {
+         for( int i = 0; i < Dimensions; i++ )
+            if( ! vectorField[ 0 ].setup( meshPointer, parameters, prefix + String( i ) + "-" ) )
+            {
+               std::cerr << "Unable to setup " << i << "-th coordinate of the vector field." << std::endl;
+               return false;
+            }
+         return true;
+      }
 
       __cuda_callable__ 
       const FunctionType& operator[]( int i ) const
@@ -57,11 +75,18 @@ class VectorField< Dimensions, MeshFunction< Mesh, MeshEntityDimensions, Real > 
 {
    public:
       
-      typedef Mesh MeshType;      
+      typedef Mesh MeshType;
+      typedef SharedPointer< MeshType > MeshPointer;
       typedef MeshFunction< MeshType, MeshEntityDimensions, Real > FunctionType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
-      typedef SharedPointer< MeshType > MeshPointer;      
+
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" )
+      {
+         for( int i = 0; i < Dimensions; i++ )
+            FunctionType::configSetup( config, prefix + String( i ) + "-" );
+      }
       
       VectorField() {};
       
@@ -71,8 +96,18 @@ class VectorField< Dimensions, MeshFunction< Mesh, MeshEntityDimensions, Real > 
             this->vectorField[ i ].setMesh( meshPointer );
       };
       
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" );
+      bool setup( const MeshPointer& meshPointer,
+                  const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
+      {
+         for( int i = 0; i < Dimensions; i++ )
+            if( ! vectorField[ 0 ].setup( meshPointer, parameters, prefix + String( i ) + "-" ) )
+            {
+               std::cerr << "Unable to setup " << i << "-th coordinate of the vector field." << std::endl;
+               return false;
+            }
+         return true;
+      }
 
       __cuda_callable__ 
       const FunctionType& operator[]( int i ) const

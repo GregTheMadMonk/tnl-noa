@@ -4,6 +4,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/VectorField.h>
+#include <TNL/SharedPointer.h>
 
 namespace TNL {
 
@@ -26,6 +27,7 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
    public:
       
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef SharedPointer< MeshType > MeshPointer;
       static const int Dimensions = MeshType::getMeshDimensions();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
@@ -34,13 +36,25 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef VelocityFunction VelocityFunctionType;
       typedef Functions::VectorField< Dimensions, VelocityFunctionType > VelocityFieldType;
+      typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
       
-      LaxFridrichs() : artificialViscosity( 1.0 ) {}
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" )
+      {
+         config.addEntry< double >( "viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs shceme", 1.0 );
+      }
       
-      bool setup( const Config::ParameterContainer& parameters,
+      LaxFridrichs()
+         : artificialViscosity( 1.0 ) {}
+      
+      LaxFridrichs( const VelocityFieldPointer& velocityField )
+         : artificialViscosity( 1.0 ), velocityField( velocityField ) {}
+      
+      bool setup( const MeshPointer& meshPointer,
+                  const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         return true;
+         return this->velocityField->setup( meshPointer, parameters, prefix + "velocity-field-" );
       }
 
       static String getType();
@@ -55,12 +69,12 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
           this->tau = tau;
       };
 
-      VelocityFieldType& getVelocityField()
+      void setVelocityField( const VelocityFieldPointer& velocityField )
       {
-         return this->velocityField;
+         this->velocityField = velocityField;
       }
       
-      const VelocityFieldType& getVelocityField() const
+      const VelocityFieldPointer& getVelocityField() const
       {
          return this->velocityField;
       }
@@ -81,7 +95,7 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
          const IndexType& west = neighbourEntities.template getEntityIndex< -1 >(); 
          typedef Functions::FunctionAdapter< MeshType, VelocityFunctionType > FunctionAdapter;
          return ( 0.5 / this->tau ) * this->artificialViscosity * ( u[ west ]- 2.0 * u[ center ] + u[ east ] ) -
-                FunctionAdapter::getValue( this->velocityField[ 0 ], entity, time ) * ( u[ east ] - u[west] ) * hxInverse * 0.5;
+                FunctionAdapter::getValue( this->velocityField.getData()[ 0 ], entity, time ) * ( u[ east ] - u[west] ) * hxInverse * 0.5;
       }
       
    protected:
@@ -90,7 +104,7 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
       
       RealType artificialViscosity;
       
-      VelocityFieldType velocityField;
+      VelocityFieldPointer velocityField;
 };
 
 template< typename MeshReal,
@@ -104,6 +118,7 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
    public:
       
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef SharedPointer< MeshType > MeshPointer;
       static const int Dimensions = MeshType::getMeshDimensions();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
@@ -112,14 +127,25 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef VelocityFunction VelocityFunctionType;
       typedef Functions::VectorField< Dimensions, VelocityFunctionType > VelocityFieldType;
+      typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
+      
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" )
+      {
+         config.addEntry< double >( "viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs shceme", 1.0 );
+      }      
       
       LaxFridrichs()
-         : artificialViscosity( 1.0 ) {}      
+         : artificialViscosity( 1.0 ) {}
+
+      LaxFridrichs( const VelocityFieldPointer& velocityField )
+         : artificialViscosity( 1.0 ), velocityField( velocityField ) {}      
       
-      bool setup( const Config::ParameterContainer& parameters,
+      bool setup( const MeshPointer& meshPointer,
+                  const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         return true;
+         return this->velocityField->setup( meshPointer, parameters, prefix + "velocity-field-" );
       }
 
       static String getType();
@@ -134,12 +160,12 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
           this->tau = tau;
       };
 
-      VelocityFieldType& getVelocityField()
+      void setVelocityField( const VelocityFieldPointer& velocityField )
       {
-         return this->velocityField;
+         this->velocityField = velocityField;
       }
       
-      const VelocityFieldType& getVelocityField() const
+      const VelocityFieldPointer& getVelocityField() const
       {
          return this->velocityField;
       }
@@ -165,8 +191,8 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
          
          typedef Functions::FunctionAdapter< MeshType, VelocityFunctionType > FunctionAdapter;
          return ( 0.25 / this->tau ) * this->artificialViscosity * ( u[ west ] + u[ east ] + u[ north ] + u[ south ] - 4.0 * u[ center ] ) -
-                0.5 * ( FunctionAdapter::getValue( this->velocityField[ 0 ], entity, time ) * ( u[ east ] - u[ west ] ) * hxInverse +
-                        FunctionAdapter::getValue( this->velocityField[ 1 ], entity, time ) * ( u[ north ] - u[ south ] ) * hyInverse );         
+                0.5 * ( FunctionAdapter::getValue( this->velocityField.getData()[ 0 ], entity, time ) * ( u[ east ] - u[ west ] ) * hxInverse +
+                        FunctionAdapter::getValue( this->velocityField.getData()[ 1 ], entity, time ) * ( u[ north ] - u[ south ] ) * hyInverse );         
       }
       
    protected:
@@ -175,7 +201,7 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
       
       RealType artificialViscosity;
       
-      VelocityFieldType velocityField;
+      VelocityFieldPointer velocityField;
 };
 
 template< typename MeshReal,
@@ -189,6 +215,7 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
    public:
       
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef SharedPointer< MeshType > MeshPointer;
       static const int Dimensions = MeshType::getMeshDimensions();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
@@ -197,14 +224,25 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef VelocityFunction VelocityFunctionType;
       typedef Functions::VectorField< Dimensions, VelocityFunctionType > VelocityFieldType;
+      typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
+      
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" )
+      {
+         config.addEntry< double >( "viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs shceme", 1.0 );
+      }      
       
       LaxFridrichs()
-         : artificialViscosity( 1.0 ) {}      
-      
-      bool setup( const Config::ParameterContainer& parameters,
+         : artificialViscosity( 1.0 ) {}
+
+      LaxFridrichs( const VelocityFieldPointer& velocityField )
+         : artificialViscosity( 1.0 ), velocityField( velocityField ) {}
+            
+      bool setup( const MeshPointer& meshPointer,
+                  const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         return true;
+         return this->velocityField->setup( meshPointer, parameters, prefix + "velocity-field-" );
       }
 
       static String getType();
@@ -219,12 +257,12 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
           this->tau = tau;
       };
 
-      VelocityFieldType& getVelocityField()
+      void setVelocityField( const VelocityFieldPointer& velocityField )
       {
-         return this->velocityField;
+         this->velocityField = velocityField;
       }
       
-      const VelocityFieldType& getVelocityField() const
+      const VelocityFieldPointer& getVelocityField() const
       {
          return this->velocityField;
       }
@@ -252,9 +290,9 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
          
          typedef Functions::FunctionAdapter< MeshType, VelocityFunctionType > FunctionAdapter;
          return ( 0.25 / this->tau ) * this->artificialViscosity * ( u[ west ] + u[ east ] + u[ north ] + u[ south ] + u[ up ] + u[ down ] - 6.0 * u[ center ] ) -
-                0.5 * ( FunctionAdapter::getValue( this->velocityField[ 0 ], entity, time ) * ( u[ east ] - u[ west ] ) * hxInverse +
-                        FunctionAdapter::getValue( this->velocityField[ 1 ], entity, time ) * ( u[ north ] - u[ south ] ) * hyInverse +
-                        FunctionAdapter::getValue( this->velocityField[ 2 ], entity, time ) * ( u[ up ] - u[ down ] ) * hzInverse );         
+                0.5 * ( FunctionAdapter::getValue( this->velocityField.getData()[ 0 ], entity, time ) * ( u[ east ] - u[ west ] ) * hxInverse +
+                        FunctionAdapter::getValue( this->velocityField.getData()[ 1 ], entity, time ) * ( u[ north ] - u[ south ] ) * hyInverse +
+                        FunctionAdapter::getValue( this->velocityField.getData()[ 2 ], entity, time ) * ( u[ up ] - u[ down ] ) * hzInverse );         
       }
       
    protected:
@@ -263,13 +301,10 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
       
       RealType artificialViscosity;
       
-      VelocityFieldType velocityField;
+      VelocityFieldPointer velocityField;
 };
 
 
 } // namespace TNL
-
-
-//#include "LaxFridrichs_impl.h"
 
 #endif	/* LaxFridrichs_H */

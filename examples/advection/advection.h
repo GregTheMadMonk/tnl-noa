@@ -4,6 +4,8 @@
 #include <TNL/Operators/DirichletBoundaryConditions.h>
 #include <TNL/Operators/NeumannBoundaryConditions.h>
 #include <TNL/Functions/Analytic/Constant.h>
+#include <TNL/Functions/VectorField.h>
+#include <TNL/Meshes/Grid.h>
 #include "advectionProblem.h"
 #include "LaxFridrichs.h"
 #include "advectionRhs.h"
@@ -26,31 +28,21 @@ typedef advectionBuildConfigTag BuildConfig;
 template< typename ConfigTag >class advectionConfig
 {
    public:
-      static void configSetup( Config::ConfigDescription & config )
+      static void configSetup( Config::ConfigDescription& config )
       {
-         config.addDelimiter( "advection settings:" );
+         config.addDelimiter( "Advection settings:" );
+         config.addEntry< String >( "velocity-field", "Type of velocity field.", "constant" );
+            config.addEntryEnum< String >( "constant" );
+            //config.addEntryEnum< String >( "file" );
+         Functions::VectorField< 3, Functions::Analytic::Constant< 3 > >::configSetup( config, "velocity-field-" );
+         
+         typedef Meshes::Grid< 3 > MeshType;
+         LaxFridrichs< MeshType >::ConfigSetup( config, "lax-fridrichs" );
+         
          config.addEntry< String >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
             config.addEntryEnum< String >( "dirichlet" );
             config.addEntryEnum< String >( "neumann" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
-	 config.addEntry< double >( "artifical-viscosity", "This sets value of artifical viscosity (default 1)", 1.0);
-	 config.addEntry< String >( "begin", "choose begin type", "sin");
-	    config.addEntryEnum< String >( "sin");
-	    config.addEntryEnum< String >( "sin_square");
-	 config.addEntry< double >( "advection-speedX", "This sets value of advection speed in X direction (default 1)" , 1.0);
-	 config.addEntry< double >( "advection-speedY", "This sets value of advection speed in Y direction (default 1)" , 1.0);
-	 config.addEntry< String >( "move", "choose movement type", "advection");
-	    config.addEntryEnum< String >( "advection");
-	    config.addEntryEnum< String >( "rotation");
-	 config.addEntry< int >( "dimension", "choose movement typeproblem dimension", 1);
-	    config.addEntryEnum< int >( 1 );
-	    config.addEntryEnum< int >( 2 );
-	 config.addEntry< double >( "realSize", "Real size of scheme", 1.0);
-
-         /****
-          * Add definition of your solver command line arguments.
-          */
-
       }
 };
 
