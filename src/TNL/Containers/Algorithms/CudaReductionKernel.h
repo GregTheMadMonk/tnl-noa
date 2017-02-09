@@ -123,7 +123,7 @@ CudaReductionKernel( Operation operation,
 
    /***
     * This runs in one warp so it is synchronized implicitly.
-    */
+    */   
    if( tid < 32 )
    {
       volatile ResultType* vsdata = sdata;
@@ -132,6 +132,8 @@ CudaReductionKernel( Operation operation,
          operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 32 ] );
          //printf( "4: tid %d data %f \n", tid, sdata[ tid ] );
       }
+      // TODO: If blocksize == 32, the following does not work
+      // We do not check if tid < 16. Fix it!!!
       if( blockSize >= 32 )
       {
          operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 16 ] );
