@@ -48,6 +48,16 @@ StaticVector< 3, Real >::StaticVector( const StaticVector< 3, Real >& v )
 }
 
 template< typename Real >
+bool
+StaticVector< 3, Real >::setup( const Config::ParameterContainer& parameters,
+                                const String& prefix = "" )
+{
+   return ( parameters.getParameter< double >( prefix + "0", this->data[ 0 ] ) &&
+            parameters.getParameter< double >( prefix + "1", this->data[ 1 ] ) &&
+            parameters.getParameter< double >( prefix + "2", this->data[ 2 ] ) );
+}
+
+template< typename Real >
 String StaticVector< 3, Real >::getType()
 {
    return String( "Containers::StaticVector< " ) +

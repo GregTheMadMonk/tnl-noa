@@ -1,13 +1,25 @@
-#ifndef advectionPROBLEM_IMPL_H_
-#define advectionPROBLEM_IMPL_H_
+/***************************************************************************
+                          transportEquationProblemEoc_impl.h  -  description
+                             -------------------
+    begin                : Feb 10, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include <TNL/FileName.h>
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
+#include <TNL/Functions/Analytic/Paraboloid.h>
+#include <TNL/Operators/Analytic/Heaviside.h>
+#include <TNL/Operators/Analytic/Shift.h>
 
-#include "advectionProblem.h"
+#include "transportEquationProblem.h"
 
 namespace TNL {
 
@@ -16,10 +28,10 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 String
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return String( "advectionProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "transportEquationProblemEoc< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
@@ -27,32 +39,19 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 String
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
-   return String( "advection" );
+   return String( "Transport Equation EOC" );
 }
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
-void
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
-{
-   /****
-    * Add data you want to have in the computation report (log) as follows:
-    * logger.writeParameter< double >( "Parameter description", parameter );
-    */
-}
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
@@ -61,43 +60,72 @@ setup( const MeshPointer& meshPointer,
        ! this->differentialOperatorPointer->setup( meshPointer, parameters, prefix ) ||
        ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) )
       return false;
+   
+   /****
+    * Render the exact solution
+    */
+   const String& initialCondition = parameters.getParameter< String >( "initial-condition" );
+   const double& finalTime = parameters.getParameter< double >( "final-time" );
+   const double& snapshotPeriod = parameters.getParameter< double >( "snapshot-period" );
+   const int Dimensions = MeshPointer::ObjectType::getMeshDimensions();
+   typedef typename MeshPointer::ObjectType MeshType;
+   typedef Functions::MeshFunction< MeshType > MeshFunction;
+   SharedPointer< MeshFunction > u( meshPointer );
+   if( initialCondition == "heaviside-sphere" )
+   {
+      typedef Functions::Analytic::Paraboloid< Dimensions, RealType > ParaboloidType;
+      typedef Operators::Analytic::Heaviside< ParaboloidType > HeavisideParaboloidType;
+      typedef Functions::OperatorFunction< HeavisideParaboloidType, ParaboloidType > InitialConditionType;
+      typedef Operators::Analytic::Shift< InitialConditionType > ShiftOperatorType;
+      typedef Functions::OperatorFunction< ShiftOperatorType, InitialConditionType > ExactSolutionType;
+      SharedPointer< ExactSolutionType, Devices::Host > exactSolution;
+      if( ! exactSolution->setup( parameters, prefix ) )
+         return false;
+      /*Functions::MeshFunctionEvaluator< MeshFunction, ExactSolutionType > evaluator;
+      RealType time( 0.0 );
+      int step( 0 );
+      evaluator.evaluate( u, exactSolution, time );
+      FileName fileName;
+      fileName.setFileNameBase( "exact-u-" );
+      fileName.setExtension( "tnl" );
+      fileName.setIndex( step );
+      if( ! u.save( fileName.getFileName() ) )
+         return false;
+      while( time < finalTime )
+      {
+         time += snapshotPeriod;
+         if( time > finalTime )
+            time = finalTime;
+         evaluator.evaluate( u, exactSolution, time );
+         fileName.setIndex( ++step );
+         if( ! u.save( fileName.getFileName() ) )
+            return false;         
+      }*/
+   }
+   
    return true;
 }
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
-typename advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getDofs( const MeshPointer& mesh ) const
-{
-   /****
-    * Return number of  DOFs (degrees of freedom) i.e. number
-    * of unknowns to be resolved by the main solver.
-    */
-   return mesh->template getEntitiesCount< typename MeshType::Cell >();
-}
 
-template< typename Mesh,
+/*template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 bindDofs( const MeshPointer& meshPointer,
           DofVectorPointer& dofVector )
 {
    const IndexType dofs = meshPointer->template getEntitiesCount< typename MeshType::Cell >();
    this->uPointer->bind( meshPointer, dofVector );
-}
+}*/
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshPointer& meshPointer,
                      DofVectorPointer& dofs,
@@ -113,13 +141,14 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    return true;
 }
 
+#ifdef UNDEF
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
    template< typename Matrix >
 bool
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshPointer& mesh,
                    Matrix& matrix )
 {
@@ -144,7 +173,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshPointer& mesh,
@@ -167,7 +196,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshPointer& mesh,
@@ -210,7 +239,7 @@ template< typename Mesh,
           typename DifferentialOperator >
    template< typename Matrix >
 void
-advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshPointer& mesh,
@@ -221,6 +250,6 @@ assemblyLinearSystem( const RealType& time,
 {
 }
 
-} // namespace TNL
+#endif
 
-#endif /* advectionPROBLEM_IMPL_H_ */
+} // namespace TNL

@@ -1,3 +1,13 @@
+/***************************************************************************
+                          tnl-transport-equation.h  -  description
+                             -------------------
+    begin                : Feb 10, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
 #include <TNL/tnlConfig.h>
 #include <TNL/Solvers/Solver.h>
 #include <TNL/Solvers/BuildConfigTags.h>
@@ -7,12 +17,12 @@
 #include <TNL/Functions/Analytic/Constant.h>
 #include <TNL/Functions/VectorField.h>
 #include <TNL/Meshes/Grid.h>
-#include "advectionProblem.h"
-#include "advectionBuildConfigTag.h"
+#include "transportEquationProblem.h"
+#include "transportEquationBuildConfigTag.h"
 
 using namespace TNL;
 
-typedef advectionBuildConfigTag BuildConfig;
+typedef transportEquationBuildConfigTag BuildConfig;
 
 /****
  * Uncomment the following (and comment the previous line) for the complete build.
@@ -29,7 +39,7 @@ template< typename ConfigTag >class advectionConfig
    public:
       static void configSetup( Config::ConfigDescription& config )
       {
-         config.addDelimiter( "Advection settings:" );
+         config.addDelimiter( "Transport equation settings:" );
          config.addEntry< String >( "velocity-field", "Type of velocity field.", "constant" );
             config.addEntryEnum< String >( "constant" );
          Functions::VectorField< 3, Functions::Analytic::Constant< 3 > >::configSetup( config, "velocity-field-" );
@@ -75,13 +85,13 @@ class advectionSetter
          if( boundaryConditionsType == "dirichlet" )
          {
             typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunctionType, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
-            typedef advectionProblem< MeshType, BoundaryConditions, ConstantFunctionType, DifferentialOperatorType > Problem;
+            typedef transportEquationProblem< MeshType, BoundaryConditions, ConstantFunctionType, DifferentialOperatorType > Problem;
             return callSolverStarter< Problem >( parameters );
          }
          if( boundaryConditionsType == "neumann" )
          {
             typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunctionType, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
-            typedef advectionProblem< MeshType, BoundaryConditions, ConstantFunctionType, DifferentialOperatorType > Problem;
+            typedef transportEquationProblem< MeshType, BoundaryConditions, ConstantFunctionType, DifferentialOperatorType > Problem;
             return callSolverStarter< Problem >( parameters );
          }
          std::cerr << "Unknown boundary conditions type: " << boundaryConditionsType << "." << std::endl;

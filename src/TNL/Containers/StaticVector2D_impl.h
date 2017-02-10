@@ -50,6 +50,15 @@ StaticVector< 2, Real >::StaticVector( const StaticVector< 2, Real >& v )
 }
 
 template< typename Real >
+bool
+StaticVector< 2, Real >::setup( const Config::ParameterContainer& parameters,
+                                const String& prefix = "" )
+{
+   return ( parameters.getParameter< double >( prefix + "0", this->data[ 0 ] ) &&
+            parameters.getParameter< double >( prefix + "1", this->data[ 1 ] ) );
+}
+
+template< typename Real >
 String StaticVector< 2, Real >::getType()
 {
    return String( "Containers::StaticVector< " ) +
@@ -195,3 +204,4 @@ extern template class StaticVector< 2, long double >;
 
 } // namespace Containers
 } // namespace TNL
+

@@ -13,6 +13,7 @@
 #include <TNL/Functions/Domain.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ParameterContainer.h>
+#include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
 namespace Operators {
@@ -26,14 +27,17 @@ class Shift : public Functions::Domain< Function::getDomainDimensions(),
    public:
       
       typedef typename Function::RealType RealType;
-      typedef Containers::StaticVector< Function::getDomainDimenions(), 
+      typedef Containers::StaticVector< Function::getDomainDimensions(), 
                                         RealType > VertexType;
       
       
       Shift() : shift( 0.0 ) {};
       
       bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" ){};
+                  const String& prefix = "" )
+      {
+         return shift.setup( parameters, prefix + "shift-" );
+      };
       
       
       void setShift( const VertexType& vertex )
@@ -71,7 +75,7 @@ class Shift : public Functions::Domain< Function::getDomainDimensions(),
       
    protected:
       
-      VerexType shift;
+      VertexType shift;
 };
 
 } // namespace Analytic

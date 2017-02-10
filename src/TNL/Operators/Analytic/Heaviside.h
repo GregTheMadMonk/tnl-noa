@@ -25,6 +25,7 @@ class Heaviside : public Functions::Domain< Function::getDomainDimensions(),
 {
    public:
       
+      typedef Function FunctionType;
       typedef typename Function::RealType RealType;
       typedef Containers::StaticVector< Function::getDomainDimensions(), 
                                         RealType > VertexType;

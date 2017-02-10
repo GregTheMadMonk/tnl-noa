@@ -1,9 +1,19 @@
-#ifndef advectionPROBLEM_H_
-#define advectionPROBLEM_H_
+/***************************************************************************
+                          transportEquationProblemEoc.h  -  description
+                             -------------------
+    begin                : Feb 10, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/SharedPointer.h>
+#include "transportEquationProblem.h"
 
 using namespace TNL::Problems;
 
@@ -13,11 +23,8 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-class advectionProblem:
-public PDEProblem< Mesh,
-                   typename DifferentialOperator::RealType,
-                   typename Mesh::DeviceType,
-                   typename DifferentialOperator::IndexType >
+class transportEquationProblemEoc:
+public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator  >
 {
    public:
 
@@ -44,9 +51,6 @@ public PDEProblem< Mesh,
 
       String getPrologHeader() const;
 
-      void writeProlog( Logger& logger,
-                        const Config::ParameterContainer& parameters ) const;
-
       bool setup( const MeshPointer& meshPointer,
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" );
@@ -56,7 +60,7 @@ public PDEProblem< Mesh,
                                 DofVectorPointer& dofs,
                                 MeshDependentDataPointer& meshDependentData );
 
-      template< typename Matrix >
+      /*template< typename Matrix >
       bool setupLinearSystem( const MeshPointer& mesh,
                               Matrix& matrix );
 
@@ -76,34 +80,13 @@ public PDEProblem< Mesh,
                            const MeshPointer& mesh,
                            DofVectorPointer& _u,
                            DofVectorPointer& _fu,
-                           MeshDependentDataPointer& meshDependentData );
+                           MeshDependentDataPointer& meshDependentData );*/
 
-      template< typename Matrix >
-      void assemblyLinearSystem( const RealType& time,
-                                 const RealType& tau,
-                                 const MeshPointer& mesh,
-                                 DofVectorPointer& dofs,
-                                 Matrix& matrix,
-                                 DofVectorPointer& rightHandSide,
-                                 MeshDependentDataPointer& meshDependentData );
 
    protected:
-
-      MeshFunctionPointer uPointer;
-
-      DifferentialOperatorPointer differentialOperatorPointer;
-
-      BoundaryConditionPointer boundaryConditionPointer;
-
-      RightHandSidePointer rightHandSidePointer;
-      
-      VelocityFieldPointer velocityField;
-      
-      String velocityType;
 };
 
 } // namespace TNL
 
-#include "advectionProblem_impl.h"
+#include "transportEquationProblemEoc_impl.h"
 
-#endif /* advectionPROBLEM_H_ */
