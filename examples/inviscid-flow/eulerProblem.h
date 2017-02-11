@@ -10,7 +10,7 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-           typename DifferentialOperator >
+          typename DifferentialOperator >
 class eulerProblem:
    public PDEProblem< Mesh,
                          typename DifferentialOperator::RealType,

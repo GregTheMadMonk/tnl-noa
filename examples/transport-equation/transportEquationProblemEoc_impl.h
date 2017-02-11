@@ -113,24 +113,14 @@ setup( const MeshPointer& meshPointer,
                return false;
          }
       }
+      if( velocityFieldType == "rotation" )
+      {
+         // TODO: implement this using RotationXY operator
+      }
    }
    
    return true;
 }
-
-
-/*template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
-void
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-bindDofs( const MeshPointer& meshPointer,
-          DofVectorPointer& dofVector )
-{
-   const IndexType dofs = meshPointer->template getEntitiesCount< typename MeshType::Cell >();
-   this->uPointer->bind( meshPointer, dofVector );
-}*/
 
 template< typename Mesh,
           typename BoundaryCondition,
