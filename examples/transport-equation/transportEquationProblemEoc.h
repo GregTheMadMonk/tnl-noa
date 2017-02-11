@@ -24,7 +24,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 class transportEquationProblemEoc:
-public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator  >
+public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
 {
    public:
 
@@ -32,13 +32,14 @@ public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Differe
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator > BaseType;
       typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       typedef typename DifferentialOperator::VelocityFieldType VelocityFieldType;
       typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
+      
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
@@ -46,6 +47,8 @@ public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Differe
       using typename BaseType::DofVectorPointer;
       using typename BaseType::MeshDependentDataType;
       using typename BaseType::MeshDependentDataPointer; 
+      
+      //using BaseType::getExplicitRHS;
       
       static String getTypeStatic();
 

@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Config/ParameterContainer.h>
+
 namespace TNL {
 namespace Containers {   
 
@@ -46,7 +48,7 @@ StaticVector< Size, Real >::setup( const Config::ParameterContainer& parameters,
                                    const String& prefix )
 {
    for( int i = 0; i < Size; i++ )
-      if( ! parameters.getParameter< double >( prefix + String( i ), this->data[ i ] ) )
+      if( ! parameters.template getParameter< double >( prefix + String( i ), this->data[ i ] ) )
          return false;
    return true;
 }

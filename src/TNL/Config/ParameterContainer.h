@@ -63,7 +63,7 @@ class ParameterContainer
 
    template< class T > bool getParameter( const String& name,
                                           T& value,
-                                          bool verbose = false ) const
+                                          bool verbose = true ) const
    {
       int i;
       const int size = parameters. getSize();

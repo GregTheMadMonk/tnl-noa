@@ -76,31 +76,43 @@ setup( const MeshPointer& meshPointer,
       typedef Functions::Analytic::Paraboloid< Dimensions, RealType > ParaboloidType;
       typedef Operators::Analytic::Heaviside< ParaboloidType > HeavisideParaboloidType;
       typedef Functions::OperatorFunction< HeavisideParaboloidType, ParaboloidType > InitialConditionType;
-      typedef Operators::Analytic::Shift< InitialConditionType > ShiftOperatorType;
-      typedef Functions::OperatorFunction< ShiftOperatorType, InitialConditionType > ExactSolutionType;
-      SharedPointer< ExactSolutionType, Devices::Host > exactSolution;
-      if( ! exactSolution->setup( parameters, prefix ) )
-         return false;
-      /*Functions::MeshFunctionEvaluator< MeshFunction, ExactSolutionType > evaluator;
-      RealType time( 0.0 );
-      int step( 0 );
-      evaluator.evaluate( u, exactSolution, time );
-      FileName fileName;
-      fileName.setFileNameBase( "exact-u-" );
-      fileName.setExtension( "tnl" );
-      fileName.setIndex( step );
-      if( ! u.save( fileName.getFileName() ) )
-         return false;
-      while( time < finalTime )
-      {
-         time += snapshotPeriod;
-         if( time > finalTime )
-            time = finalTime;
+      String velocityFieldType = parameters.getParameter< String >( "velocity-field" );
+      if( velocityFieldType == "constant" )
+      {      
+         typedef Operators::Analytic::Shift< InitialConditionType > ShiftOperatorType;
+         typedef Functions::OperatorFunction< ShiftOperatorType, InitialConditionType > ExactSolutionType;
+         SharedPointer< ExactSolutionType, Devices::Host > exactSolution;
+         if( ! exactSolution->getFunction().setup( parameters, prefix ) )
+            return false;
+         Containers::StaticVector< Dimensions, RealType > velocity;
+         for( int i = 0; i < Dimensions; i++ )
+            velocity[ i ] = parameters.getParameter< double >( "velocity-field-" + String( i ) + "-constant" );
+
+         Functions::MeshFunctionEvaluator< MeshFunction, ExactSolutionType > evaluator;
+         RealType time( 0.0 );
+         int step( 0 );
+         exactSolution->getOperator().setShift( 0.0 * velocity );
          evaluator.evaluate( u, exactSolution, time );
-         fileName.setIndex( ++step );
-         if( ! u.save( fileName.getFileName() ) )
-            return false;         
-      }*/
+         FileName fileName;
+         fileName.setFileNameBase( "exact-u-" );
+         fileName.setExtension( "tnl" );
+         fileName.setIndex( step );
+         if( ! u->save( fileName.getFileName() ) )
+            return false;
+         while( time < finalTime )
+         {
+            time += snapshotPeriod;
+            if( time > finalTime )
+               time = finalTime;
+            exactSolution->getOperator().setShift( time * velocity );            
+            std::cerr << time * velocity << std::endl;
+            std::cerr << exactSolution->getOperator().getShift() << std::endl;
+            evaluator.evaluate( u, exactSolution, time );
+            fileName.setIndex( ++step );
+            if( ! u->save( fileName.getFileName() ) )
+               return false;
+         }
+      }
    }
    
    return true;
@@ -132,124 +144,17 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                      MeshDependentDataPointer& meshDependentData )
 {
    this->bindDofs( meshPointer, dofs );
-   const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-   if( ! this->uPointer->boundLoad( initialConditionFile ) )
+   //const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
+   FileName fileName;
+   fileName.setFileNameBase( "exact-u-" );
+   fileName.setExtension( "tnl" );
+   fileName.setIndex( 0 );   
+   if( ! this->uPointer->boundLoad( fileName.getFileName() ) )
    {
-      std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
+      std::cerr << "I am not able to load the initial condition from the file " << fileName.getFileName() << "." << std::endl;
       return false;
    }
    return true;
 }
-
-#ifdef UNDEF
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
-   template< typename Matrix >
-bool
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setupLinearSystem( const MeshPointer& mesh,
-                   Matrix& matrix )
-{
-   /*const IndexType dofs = this->getDofs( mesh );
-   typedef typename Matrix::ObjectType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   SharedPointer< CompressedRowsLengthsVectorType > rowLengths;
-   if( ! rowLengths->setSize( dofs ) )
-      return false;
-   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >( mesh,
-                                                                          differentialOperatorPointer,
-                                                                          boundaryConditionPointer,
-                                                                          rowLengths );
-   matrix->setDimensions( dofs, dofs );
-   if( ! matrix->setCompressedRowsLengths( *rowLengths ) )
-      return false;*/
-   return true;
-}
-
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
-bool
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-makeSnapshot( const RealType& time,
-              const IndexType& step,
-              const MeshPointer& mesh,
-              DofVectorPointer& dofs,
-              MeshDependentDataPointer& meshDependentData )
-{
-   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
-   this->bindDofs( mesh, dofs );
-   FileName fileName;
-   fileName.setFileNameBase( "u-" );
-   fileName.setExtension( "tnl" );
-   fileName.setIndex( step );
-   if( ! dofs->save( fileName.getFileName() ) )
-      return false;
-   return true;
-}
-
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
-void
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getExplicitRHS( const RealType& time,
-                const RealType& tau,
-                const MeshPointer& mesh,
-                DofVectorPointer& _u,
-                DofVectorPointer& _fu,
-                MeshDependentDataPointer& meshDependentData )
-{
-   /****
-    * If you use an explicit solver like Euler or Merson, you
-    * need to implement this method. Compute the right-hand side of
-    *
-    *   d/dt u(x) = fu( x, u )
-    *
-    * You may use supporting mesh dependent data if you need.
-    */
-   typedef typename MeshType::Cell Cell;
-   int count = ::sqrt(mesh->template getEntitiesCount< Cell >());
-   this->bindDofs( mesh, _u );
-   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   SharedPointer< MeshFunctionType > u( mesh, _u ); 
-   SharedPointer< MeshFunctionType > fu( mesh, _fu );
-   differentialOperatorPointer->setTau(tau); 
-   differentialOperatorPointer->setVelocityField( this->velocityField );
-   explicitUpdater.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           this->differentialOperatorPointer,
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
-                                                           u,
-                                                           fu );
-   /*BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
-   boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
-      this->boundaryCondition, 
-      time + tau, 
-       u ); */
-}
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
-   template< typename Matrix >
-void
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-assemblyLinearSystem( const RealType& time,
-                      const RealType& tau,
-                      const MeshPointer& mesh,
-                      DofVectorPointer& _u,
-                      Matrix& matrix,
-                      DofVectorPointer& b,
-                      MeshDependentDataPointer& meshDependentData )
-{
-}
-
-#endif
 
 } // namespace TNL

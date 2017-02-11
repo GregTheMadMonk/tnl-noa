@@ -40,7 +40,7 @@ class Shift : public Functions::Domain< Function::getDomainDimensions(),
       };
       
       
-      void setShift( const VertexType& vertex )
+      void setShift( const VertexType& shift )
       {
          this->shift = shift;
       }
@@ -55,8 +55,8 @@ class Shift : public Functions::Domain< Function::getDomainDimensions(),
       RealType operator()( const Function& function,
                            const VertexType& vertex,
                            const RealType& time = 0 ) const
-      {
-         return function( vertex + shift, time );
+      {         
+         return function( vertex - this->shift, time );
       }
       
       template< int XDiffOrder = 0,
@@ -68,7 +68,7 @@ class Shift : public Functions::Domain< Function::getDomainDimensions(),
                                      const RealType& time = 0 ) const
       {
          if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
-            return this->operator()( function, vertex, time );
+            return this->operator()( function, vertex - this->shift, time );
          // TODO: implement the rest
       }
       

@@ -23,6 +23,8 @@ class StaticVector : public Containers::StaticArray< Size, Real >
    typedef StaticVector< Size, Real > ThisType;
    enum { size = Size };
 
+   using Containers::StaticArray< Size, Real >::operator=;
+   
    __cuda_callable__
    StaticVector();
 
