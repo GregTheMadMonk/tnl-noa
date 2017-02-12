@@ -28,8 +28,10 @@ class VectorNormBase : public Domain< Dimensions_, SpaceDomain >
  
       VectorNormBase()
          : center( 0.0 ),
-           multiplicator( 1.0 ),
+           anisotropy( 1.0 ),
            power( 2.0 ),
+           radius( 0.0 ),
+           multiplicator( 1.0 ),
            maxNorm( false ){};
            
       static void configSetup( Config::ConfigDescription& config,
@@ -38,10 +40,12 @@ class VectorNormBase : public Domain< Dimensions_, SpaceDomain >
          config.addEntry< double >( "center-0", "x-coordinate of the coordinates origin for the vector norm.", 0.0 );
          config.addEntry< double >( "center-1", "y-coordinate of the coordinates origin for the vector norm.", 0.0 );
          config.addEntry< double >( "center-2", "z-coordinate of the coordinates origin for the vector norm.", 0.0 );
-         config.addEntry< double >( "multiplicator-0", "x-coordinate of the linear anisotropy of the vector norm.", 1.0 );
-         config.addEntry< double >( "multiplicator-1", "y-coordinate of the linear anisotropy of the vector norm.", 1.0 );
-         config.addEntry< double >( "multiplicator-2", "z-coordinate of the linear anisotropy of the vector norm.", 1.0 );
-         config.addEntry< double >( "power", "The p coefficinet of the L-p vector norm", 2.0 );
+         config.addEntry< double >( "anisotropy-0", "x-coordinate of the linear anisotropy of the vector norm.", 1.0 );
+         config.addEntry< double >( "anisotropy-1", "y-coordinate of the linear anisotropy of the vector norm.", 1.0 );
+         config.addEntry< double >( "anisotropy-2", "z-coordinate of the linear anisotropy of the vector norm.", 1.0 );
+         config.addEntry< double >( "power", "The p coefficient of the L-p vector norm", 2.0 );
+         config.addEntry< double >( "radius", "Radius of the zero-th level-set.", 0.0 );
+         config.addEntry< double >( "multiplicator", "Outer multiplicator of the norm - -1.0 turns the function graph upside/down.", 1.0 );
          config.addEntry< bool >( "max-norm", "Turn to 'true' to get maximum norm.", false );
       }
  
@@ -49,9 +53,11 @@ class VectorNormBase : public Domain< Dimensions_, SpaceDomain >
                  const String& prefix = "" )
       {
          this->power = parameters.template getParameter< double >( prefix + "power" );
-         this->maxNorm = parameters.template getParameter< bool >( prefix + "infinity-power" );
+         this->maxNorm = parameters.template getParameter< bool >( prefix + "max-norm" );
+         this->radius = parameters.template getParameter< double >( prefix + "radius" );
+         this->multiplicator = parameters.template getParameter< double >( prefix + "multiplicator" );
          return( this->center.setup( parameters, prefix + "center-") &&
-                 this->multiplicator.setup( parameters, prefix + "multiplicator-" ) );
+                 this->anisotropy.setup( parameters, prefix + "anisotropy-" ) );
       };
 
       void setCenter( const VertexType& center )
@@ -64,14 +70,14 @@ class VectorNormBase : public Domain< Dimensions_, SpaceDomain >
          return this->center;
       }
       
-      void setMultiplicator( const VertexType& multiplicator )
+      void setAnisotropy( const VertexType& anisotropy )
       {
-         this->multiplicator = multiplicator;
+         this->anisotropy = anisotropy;
       };
 
-      const RealType& getMultiplicator() const
+      const RealType& getAnisotropy() const
       {
-         return this->multiplicator;
+         return this->anisotropy;
       }
       
       void setPower( const RealType& power )
@@ -82,6 +88,26 @@ class VectorNormBase : public Domain< Dimensions_, SpaceDomain >
       const RealType& getPower() const
       {
          return this->power;
+      }
+      
+      void setRadius( const RealType& radius )
+      {
+         this->radius = radius;
+      }
+      
+      const RealType& getRadius() const
+      {
+         return this->radius;
+      }
+      
+      void setMultiplicator( const RealType& multiplicator )
+      {
+         this->multiplicator = multiplicator;
+      }
+      
+      const RealType& getMultiplicator() const
+      {
+         return this->multiplicator;
       }
       
       void setMaxNorm( bool maxNorm )
@@ -96,9 +122,9 @@ class VectorNormBase : public Domain< Dimensions_, SpaceDomain >
       
    protected:
 
-      VertexType center, multiplicator;
+      VertexType center, anisotropy;
       
-      RealType power;
+      RealType power, radius, multiplicator;
       
       bool maxNorm;
 };
@@ -132,11 +158,11 @@ class VectorNorm< 1, Real > : public VectorNormBase< 1, Real >
             return 0.0;
          if( XDiffOrder == 0 )
          {
-            return TNL::abs( x ) * this->multiplicator.x();
+            return this->multiplicator * ( TNL::abs( x ) * this->anisotropy.x() - this->radius );
          }
          if( XDiffOrder == 1 )
          {
-            return TNL::sign( x ) * this->multiplicator.x();
+            return this->multiplicator * TNL::sign( x ) * this->anisotropy.x();
          }
          return 0.0;
       }
@@ -174,16 +200,16 @@ class VectorNorm< 2, Real > : public VectorNormBase< 2, Real >
          if( XDiffOrder == 0 && YDiffOrder == 0 )
          {
             if( this->maxNorm )
-               return TNL::max( TNL::abs( x ) * this->multiplicator.x(), 
-                                TNL::abs( y ) * this->multiplicator.y() );
+               return ( TNL::max( TNL::abs( x ) * this->anisotropy.x(), 
+                                  TNL::abs( y ) * this->anisotropy.y() ) - this->radius ) * this->multiplicator;
             if( this->power == 1.0 )
-               return TNL::abs( x ) * this->multiplicator.x() + 
-                      TNL::abs( y ) * this->multiplicator.y();
+               return ( ( TNL::abs( x ) * this->anisotropy.x() + 
+                          TNL::abs( y ) * this->anisotropy.y() ) - this->radius ) * this->multiplicator;
             if( this->power == 2.0 )
-               return sqrt( x * x  * this->multiplicator.x() + 
-                            y * y  * this->multiplicator.y() );
-            return pow( pow( x, this->power ) * this->multiplicator.x() + 
-                        pow( y, this->power ) * this->multiplicator.y(), 1.0 / this-> power );
+               return ( sqrt( x * x  * this->anisotropy.x() + 
+                              y * y  * this->anisotropy.y() ) - this->radius ) * this->multiplicator;
+            return ( pow( pow( x, this->power ) * this->anisotropy.x() + 
+                          pow( y, this->power ) * this->anisotropy.y(), 1.0 / this-> power ) - this->radius ) * this->multiplicator;
          }
          TNL_ASSERT( false, "Not implemented yet." );
          return 0.0;
@@ -221,20 +247,20 @@ class VectorNorm< 3, Real > : public VectorNormBase< 3, Real >
          if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
          {
             if( this->maxNorm )
-               return TNL::max( TNL::abs( x ) * this->multiplicator.x(), 
-                                TNL::abs( y ) * this->multiplicator.y(),
-                                TNL::abs( z ) * this->multiplicator.z() );
+               return ( TNL::max( TNL::abs( x ) * this->anisotropy.x(), 
+                                  TNL::abs( y ) * this->anisotropy.y(),
+                                  TNL::abs( z ) * this->anisotropy.z() ) - this->radius ) * this->multiplicator;
             if( this->power == 1.0 )
-               return TNL::abs( x ) * this->multiplicator.x() + 
-                      TNL::abs( y ) * this->multiplicator.y() +
-                      TNL::abs( z ) * this->multiplicator.z();
+               return ( ( TNL::abs( x ) * this->anisotropy.x() + 
+                          TNL::abs( y ) * this->anisotropy.y() +
+                          TNL::abs( z ) * this->anisotropy.z() ) - this->radius ) * this->multiplicator;
             if( this->power == 2.0 )
-               return sqrt( x * x  * this->multiplicator.x() + 
-                            y * y  * this->multiplicator.y() +
-                            z * z  * this->multiplicator.z() );
-            return pow( pow( x, this->power ) * this->multiplicator.x() + 
-                        pow( y, this->power ) * this->multiplicator.y() +
-                        pow( z, this->power ) * this->multiplicator.z(), 1.0 / this-> power );
+               return ( sqrt( x * x  * this->anisotropy.x() + 
+                              y * y  * this->anisotropy.y() +
+                              z * z  * this->anisotropy.z() ) - this->radius ) * this->multiplicator ;
+            return ( pow( pow( x, this->power ) * this->anisotropy.x() + 
+                          pow( y, this->power ) * this->anisotropy.y() +
+                          pow( z, this->power ) * this->anisotropy.z(), 1.0 / this-> power ) - this->radius ) * this->multiplicator;
          }
          TNL_ASSERT( false, "Not implemented yet." );
          return 0.0;
