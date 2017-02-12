@@ -36,6 +36,7 @@ class TestFunction : public Domain< FunctionDimensions, SpaceDomain >
                           twins,
                           pseudoSquare,
                           blob,
+                          vectorNorm,
                           paraboloidSDF,
                           sinWaveSDF,
                           sinBumpsSDF };

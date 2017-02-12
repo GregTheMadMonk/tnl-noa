@@ -74,12 +74,12 @@ setup( const MeshPointer& meshPointer,
    if( initialCondition == "heaviside-sphere" )
    {
       typedef Functions::Analytic::Paraboloid< Dimensions, RealType > ParaboloidType;
-      typedef Operators::Analytic::Heaviside< ParaboloidType > HeavisideParaboloidType;
-      typedef Functions::OperatorFunction< HeavisideParaboloidType, ParaboloidType > InitialConditionType;
+      typedef Operators::Analytic::Heaviside< Dimensions, RealType > HeavisideType;
+      typedef Functions::OperatorFunction< HeavisideType, ParaboloidType > InitialConditionType;
       String velocityFieldType = parameters.getParameter< String >( "velocity-field" );
       if( velocityFieldType == "constant" )
       {      
-         typedef Operators::Analytic::Shift< InitialConditionType > ShiftOperatorType;
+         typedef Operators::Analytic::Shift< Dimensions, RealType > ShiftOperatorType;
          typedef Functions::OperatorFunction< ShiftOperatorType, InitialConditionType > ExactSolutionType;
          SharedPointer< ExactSolutionType, Devices::Host > exactSolution;
          if( ! exactSolution->getFunction().setup( parameters, prefix ) )

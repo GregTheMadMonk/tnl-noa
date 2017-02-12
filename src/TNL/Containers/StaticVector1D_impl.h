@@ -38,7 +38,8 @@ bool
 StaticVector< 1, Real >::setup( const Config::ParameterContainer& parameters,
                                 const String& prefix )
 {
-   return parameters.getParameter< double >( prefix + "0", this->data[ 0 ] );
+   this->data[ 0 ] = parameters.getParameter< double >( prefix + "0" );
+   return true;
 }
 
 template< typename Real >

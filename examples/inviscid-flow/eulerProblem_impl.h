@@ -5,6 +5,7 @@
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
+#include <TNL/Functions/Analytic/VectorNorm.h>
 
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsEnergy.h"

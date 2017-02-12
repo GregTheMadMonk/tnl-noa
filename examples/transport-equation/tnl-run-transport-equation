@@ -8,12 +8,12 @@ tnl-grid-setup --dimensions 2 \
                --size-x 100 \
                --size-y 100 
  
-tnl-init --test-function heaviside-of-paraboloid \
+tnl-init --test-function heaviside-of-vector-norm \
          --output-file init.tnl \
          --coefficient -1.0 \
-         --x-center 0.5 \
-         --y-center 0.5 \
-         --z-center 0.5 \
+         --center-0 0.5 \
+         --center-1 0.5 \
+         --center-2 0.5 \
          --radius 0.1
 
 tnl-transport-equation --device host \

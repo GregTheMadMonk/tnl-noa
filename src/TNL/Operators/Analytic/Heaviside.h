@@ -13,21 +13,21 @@
 #include <TNL/Functions/Domain.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ParameterContainer.h>
+#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 namespace Operators {
 namespace Analytic {   
    
    
-template< typename Function >
-class Heaviside : public Functions::Domain< Function::getDomainDimensions(), 
-                                            Function::getDomainType() >
+template< int Dimensions,
+          typename Real = double >
+class Heaviside : public Functions::Domain< Dimensions, Functions::SpaceDomain >
 {
    public:
       
-      typedef Function FunctionType;
-      typedef typename Function::RealType RealType;
-      typedef Containers::StaticVector< Function::getDomainDimensions(), 
+      typedef Real RealType;
+      typedef Containers::StaticVector< Dimensions, 
                                         RealType > VertexType;
       
       bool setup( const Config::ParameterContainer& parameters,
@@ -37,6 +37,7 @@ class Heaviside : public Functions::Domain< Function::getDomainDimensions(),
       };
       
       
+      template< typename Function >
       __cuda_callable__
       RealType operator()( const Function& function,
                            const VertexType& vertex,
@@ -48,7 +49,8 @@ class Heaviside : public Functions::Domain< Function::getDomainDimensions(),
          return 0.0;
       }
       
-      template< int XDiffOrder = 0,
+      template< typename Function,
+                int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
       __cuda_callable__

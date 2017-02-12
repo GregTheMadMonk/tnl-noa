@@ -16,6 +16,7 @@
 #include <TNL/Operators/NeumannBoundaryConditions.h>
 #include <TNL/Operators/Advection/LaxFridrichs.h>
 #include <TNL/Functions/Analytic/Constant.h>
+#include <TNL/Functions/Analytic/VectorNorm.h>
 #include <TNL/Functions/VectorField.h>
 #include <TNL/Meshes/Grid.h>
 #include "transportEquationProblemEoc.h"
@@ -42,8 +43,9 @@ template< typename ConfigTag >class advectionConfig
       {
          config.addDelimiter( "Transport equation settings:" );
          config.addDelimiter( "Initial condition" );
-         config.addEntry< String >( "initial-condition", "Set type of initial condition.", "heaviside-sphere" );
+         config.addEntry< String >( "initial-condition", "Set type of initial condition.", "heaviside-vector-norm" );
             config.addEntryEnum< String >( "heaviside-sphere" );
+         Functions::Analytic::VectorNorm< 3, double >::configSetup( config, "vector-norm-" );
          config.addEntry     < double >( "x-center", "x-center for paraboloids.", 0.0 );
          config.addEntry     < double >( "y-center", "y-center for paraboloids.", 0.0 );
          config.addEntry     < double >( "z-center", "z-center for paraboloids.", 0.0 );

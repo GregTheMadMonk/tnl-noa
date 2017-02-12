@@ -42,7 +42,7 @@ template< typename ConfigTag >class eulerConfig
          config.addEntry< double >( "right-velocityX", "This sets a value of right_x velocity." );
          config.addEntry< double >( "right-velocityY", "This sets a value of right_y velocity." );
          config.addEntry< double >( "right-pressure", "This sets a value of right pressure." );
-         config.addEntry< double >( "gamma", "This sets a value of gamma constant." );
+         config.addEntry< double >( "gamma", "This sets a value of gamma constant.", 1.0 );
 
          /****
           * Add definition of your solver command line arguments.

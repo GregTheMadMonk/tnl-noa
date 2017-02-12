@@ -52,9 +52,10 @@ bool
 StaticVector< 3, Real >::setup( const Config::ParameterContainer& parameters,
                                 const String& prefix )
 {
-   return ( parameters.getParameter< double >( prefix + "0", this->data[ 0 ] ) &&
-            parameters.getParameter< double >( prefix + "1", this->data[ 1 ] ) &&
-            parameters.getParameter< double >( prefix + "2", this->data[ 2 ] ) );
+   this->data[ 0 ] = parameters.getParameter< double >( prefix + "0" );
+   this->data[ 1 ] = parameters.getParameter< double >( prefix + "1" );
+   this->data[ 2 ] = parameters.getParameter< double >( prefix + "2" );
+   return true;
 }
 
 template< typename Real >

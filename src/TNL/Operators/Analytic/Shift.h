@@ -20,15 +20,13 @@ namespace Operators {
 namespace Analytic {   
    
    
-template< typename Function >
-class Shift : public Functions::Domain< Function::getDomainDimensions(), 
-                                        Function::getDomainType() >
+template< int Dimensions, typename Real >
+class Shift : public Functions::Domain< Dimensions, Functions::SpaceDomain >
 {
    public:
       
-      typedef typename Function::RealType RealType;
-      typedef Containers::StaticVector< Function::getDomainDimensions(), 
-                                        RealType > VertexType;
+      typedef Real RealType;
+      typedef Containers::StaticVector< Dimensions, RealType > VertexType;
       
       
       Shift() : shift( 0.0 ) {};
@@ -51,6 +49,7 @@ class Shift : public Functions::Domain< Function::getDomainDimensions(),
          return this->shift;
       }
       
+      template< typename Function >
       __cuda_callable__
       RealType operator()( const Function& function,
                            const VertexType& vertex,
@@ -59,7 +58,8 @@ class Shift : public Functions::Domain< Function::getDomainDimensions(),
          return function( vertex - this->shift, time );
       }
       
-      template< int XDiffOrder = 0,
+      template< typename Function, 
+                int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
       __cuda_callable__
