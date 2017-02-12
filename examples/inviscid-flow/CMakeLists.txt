@@ -1,6 +1,6 @@
 set( tnl_heat_equation_SOURCES     
      euler.cpp
-     euler-cuda.cu )
+     euler.cu )
                
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE(tnl-euler-2d${debugExt} euler-cuda.cu)

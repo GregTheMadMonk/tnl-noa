@@ -433,7 +433,7 @@ postIterate( const RealType& time,
    euler2DPressure.setRho(uRho);
 //   OperatorFunction< euler2DPressure, MeshFunction, void, time > OFPressure;
 //   pressure = OFPressure;
-
+   return true;
 }
 
 } // namespace TNL

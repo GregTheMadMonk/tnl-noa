@@ -2,6 +2,7 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Functions/MeshFunction.h>
+#include "CompressibleConservativeVariables.h"
 
 using namespace TNL::Problems;
 
@@ -18,16 +19,11 @@ class eulerProblem:
                          typename DifferentialOperator::IndexType >
 {
    public:
-
+      
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
-      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
-      typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
-      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;      
+      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
@@ -35,6 +31,20 @@ class eulerProblem:
       using typename BaseType::DofVectorPointer;
       using typename BaseType::MeshDependentDataType;
       using typename BaseType::MeshDependentDataPointer;
+
+      static const int Dimensions = MeshType::getMeshDimensions();      
+
+      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
+      typedef CompressibleConservativeVariables< MeshType > ConservativeVariablesType;
+      typedef Functions::VectorField< Dimensions, MeshFunctionType > VelocityFieldType;
+      typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
+      typedef SharedPointer< ConservativeVariablesType > ConservativeVariablesPointer;
+      typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
+      typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
+      typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
+      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      
+      
 
       typedef typename DifferentialOperator::Continuity Continuity;
       typedef typename DifferentialOperator::MomentumX MomentumX;
@@ -104,6 +114,8 @@ class eulerProblem:
       BoundaryConditionPointer boundaryConditionPointer;
       RightHandSidePointer rightHandSidePointer;
       
+      ConservativeVariablesPointer conservativeVariables;
+      
       //definition
 	   Containers::Vector< RealType, DeviceType, IndexType > _uRho;
 	   Containers::Vector< RealType, DeviceType, IndexType > _uRhoVelocityX;
@@ -125,8 +137,6 @@ class eulerProblem:
       Containers::Vector< RealType, DeviceType, IndexType > velocityX;
       Containers::Vector< RealType, DeviceType, IndexType > velocityY;
       double gamma;
-
-      
 };
 
 } // namespace TNL
