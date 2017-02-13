@@ -38,8 +38,7 @@ class Shift : public Functions::Domain< Dimensions, Functions::SpaceDomain >
          config.addEntry< double >( prefix + "shift-1", "y-coordinate of the shift vector.", 0.0 );
          config.addEntry< double >( prefix + "shift-2", "z-coordinate of the shift vector.", 0.0 );
       }      
-      
-      
+            
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {

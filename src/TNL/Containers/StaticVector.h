@@ -90,6 +90,9 @@ class StaticVector : public Containers::StaticArray< Size, Real >
  
    __cuda_callable__
    ThisType abs() const;
+   
+   __cuda_callable__
+   Real lpNorm( const Real& p ) const;
 };
 
 template< typename Real >
@@ -162,6 +165,9 @@ class StaticVector< 1, Real > : public Containers::StaticArray< 1, Real >
  
    __cuda_callable__
    ThisType abs() const;
+   
+   __cuda_callable__
+   Real lpNorm( const Real& p ) const;   
 };
 
 template< typename Real >
@@ -240,6 +246,9 @@ class StaticVector< 2, Real > : public Containers::StaticArray< 2, Real >
  
    __cuda_callable__
    ThisType abs() const;
+   
+   __cuda_callable__
+   Real lpNorm( const Real& p ) const;   
 };
 
 template< typename Real >
@@ -318,6 +327,9 @@ class StaticVector< 3, Real > : public Containers::StaticArray< 3, Real >
  
    __cuda_callable__
    ThisType abs() const;
+   
+   __cuda_callable__
+   Real lpNorm( const Real& p ) const;   
 };
 
 template< int Size, typename Real, typename Scalar >

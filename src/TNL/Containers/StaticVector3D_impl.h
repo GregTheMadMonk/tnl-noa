@@ -198,6 +198,25 @@ StaticVector< 3, Real >::abs() const
                                       ::abs( this->data[ 2 ] ) );
 }
 
+template< typename Real >
+__cuda_callable__
+Real
+StaticVector< 3, Real >::lpNorm( const Real& p ) const
+{
+   if( p == 1.0 )
+      return TNL::abs( this->data[ 0 ] ) + 
+             TNL::abs( this->data[ 1 ] ) + 
+             TNL::abs( this->data[ 2 ] );
+   if( p == 2.0 )
+      return std::sqrt( this->data[ 0 ] * this->data[ 0 ] + 
+                        this->data[ 1 ] * this->data[ 1 ] +
+                        this->data[ 2 ] * this->data[ 2 ] );
+   return std::pow( std::pow( TNL::abs( this->data[ 0 ] ), p ) +
+                    std::pow( TNL::abs( this->data[ 1 ] ), p ) +
+                    std::pow( TNL::abs( this->data[ 2 ] ), p ), 1.0 / p ); 
+}
+
+
 
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 

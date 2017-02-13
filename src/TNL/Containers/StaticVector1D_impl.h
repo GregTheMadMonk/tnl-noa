@@ -157,6 +157,14 @@ StaticVector< 1, Real >::abs() const
    return StaticVector< 1, Real >( TNL::abs( this->data[ 0 ] ) );
 }
 
+template< typename Real >
+__cuda_callable__
+Real
+StaticVector< 1, Real >::lpNorm( const Real& p ) const
+{
+   return TNL::abs( this->data[ 0 ] );
+}
+
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifndef HAVE_CUDA

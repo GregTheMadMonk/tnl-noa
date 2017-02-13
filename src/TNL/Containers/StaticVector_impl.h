@@ -193,6 +193,30 @@ StaticVector< Size, Real >::abs() const
    return v;
 }
 
+template< int Size, typename Real >
+__cuda_callable__
+Real
+StaticVector< Size, Real >::lpNorm( const Real& p ) const
+{
+   if( p == 1.0 )
+   {
+      Real aux = TNL::abs( this->data[ 0 ] );
+      for( int i = 1; i < Size; i++ )
+         aux += TNL::abs( this->data[ i ] );
+      return aux;
+   }
+   if( p == 2.0 )
+   {
+      Real aux = this->data[ 0 ] * this->data[ 0 ];
+      for( int i = 1; i < Size; i++ )
+         aux += this->data[ i ] * this->data[ i ];
+      return std::sqrt( aux );
+   }
+   Real aux = std::pow( TNL::abs( this->data[ 0 ] ), p );
+   for( int i = 1; i < Size; i++ )
+      aux += std::pow( TNL::abs( this->data[ i ] ), p );
+   return std::pow( aux, 1.0 / p );
+}
 
 template< int Size, typename Real, typename Scalar >
 __cuda_callable__
