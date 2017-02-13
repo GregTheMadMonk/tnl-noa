@@ -314,11 +314,20 @@ setup( const Config::ParameterContainer& parameters,
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
                setupOperator< OperatorType >( parameters, prefix ) );
    }
+   if( testFunction == "vector-norm" )
+   {
+      typedef VectorNorm< Dimensions, Real > FunctionType;
+      typedef Identity< Dimensions, Real > OperatorType;
+      functionType = vectorNorm;
+      operatorType = identity;
+      return ( setupFunction< FunctionType >( parameters, prefix ) && 
+               setupOperator< OperatorType >( parameters, prefix ) );
+   }
    if( testFunction == "heaviside-of-vector-norm" )
    {
       typedef VectorNorm< Dimensions, Real > FunctionType;
       typedef Heaviside< Dimensions, Real > OperatorType;
-      functionType = paraboloid;
+      functionType = vectorNorm;
       operatorType = heaviside;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
                setupOperator< OperatorType >( parameters, prefix ) );
@@ -513,6 +522,24 @@ getPartialDerivative( const VertexType& vertex,
          return scale * ( ( OperatorType* ) this->operator_ )->
                    template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
       }
+      case vectorNorm:
+      {
+         typedef VectorNorm< Dimensions, Real > FunctionType;
+         if( operatorType == identity )
+         {
+            typedef Identity< Dimensions, Real > OperatorType;
+
+            return scale * ( ( OperatorType* ) this->operator_ )->
+                      template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+         }
+         if( operatorType == heaviside )
+         {
+            typedef Heaviside< Dimensions, Real > OperatorType;
+
+            return scale * ( ( OperatorType* ) this->operator_ )->
+                      template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+         }
+      }      
       case sinBumpsSDF:
       {
          typedef SinBumpsSDF< Dimensions, Real > FunctionType;

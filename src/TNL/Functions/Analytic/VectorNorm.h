@@ -37,16 +37,16 @@ class VectorNormBase : public Domain< Dimensions_, SpaceDomain >
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
       {
-         config.addEntry< double >( "center-0", "x-coordinate of the coordinates origin for the vector norm.", 0.0 );
-         config.addEntry< double >( "center-1", "y-coordinate of the coordinates origin for the vector norm.", 0.0 );
-         config.addEntry< double >( "center-2", "z-coordinate of the coordinates origin for the vector norm.", 0.0 );
-         config.addEntry< double >( "anisotropy-0", "x-coordinate of the linear anisotropy of the vector norm.", 1.0 );
-         config.addEntry< double >( "anisotropy-1", "y-coordinate of the linear anisotropy of the vector norm.", 1.0 );
-         config.addEntry< double >( "anisotropy-2", "z-coordinate of the linear anisotropy of the vector norm.", 1.0 );
-         config.addEntry< double >( "power", "The p coefficient of the L-p vector norm", 2.0 );
-         config.addEntry< double >( "radius", "Radius of the zero-th level-set.", 0.0 );
-         config.addEntry< double >( "multiplicator", "Outer multiplicator of the norm - -1.0 turns the function graph upside/down.", 1.0 );
-         config.addEntry< bool >( "max-norm", "Turn to 'true' to get maximum norm.", false );
+         config.addEntry< double >( prefix + "center-0", "x-coordinate of the coordinates origin for the vector norm.", 0.0 );
+         config.addEntry< double >( prefix + "center-1", "y-coordinate of the coordinates origin for the vector norm.", 0.0 );
+         config.addEntry< double >( prefix + "center-2", "z-coordinate of the coordinates origin for the vector norm.", 0.0 );
+         config.addEntry< double >( prefix + "anisotropy-0", "x-coordinate of the linear anisotropy of the vector norm.", 1.0 );
+         config.addEntry< double >( prefix + "anisotropy-1", "y-coordinate of the linear anisotropy of the vector norm.", 1.0 );
+         config.addEntry< double >( prefix + "anisotropy-2", "z-coordinate of the linear anisotropy of the vector norm.", 1.0 );
+         config.addEntry< double >( prefix + "power", "The p coefficient of the L-p vector norm", 2.0 );
+         config.addEntry< double >( prefix + "radius", "Radius of the zero-th level-set.", 0.0 );
+         config.addEntry< double >( prefix + "multiplicator", "Outer multiplicator of the norm - -1.0 turns the function graph upside/down.", 1.0 );
+         config.addEntry< bool >( prefix + "max-norm", "Turn to 'true' to get maximum norm.", false );
       }
  
       bool setup( const Config::ParameterContainer& parameters,
@@ -206,12 +206,12 @@ class VectorNorm< 2, Real > : public VectorNormBase< 2, Real >
                return ( ( TNL::abs( x ) * this->anisotropy.x() + 
                           TNL::abs( y ) * this->anisotropy.y() ) - this->radius ) * this->multiplicator;
             if( this->power == 2.0 )
-               return ( sqrt( x * x  * this->anisotropy.x() + 
-                              y * y  * this->anisotropy.y() ) - this->radius ) * this->multiplicator;
-            return ( pow( pow( x, this->power ) * this->anisotropy.x() + 
-                          pow( y, this->power ) * this->anisotropy.y(), 1.0 / this-> power ) - this->radius ) * this->multiplicator;
+               return ( std::sqrt( x * x  * this->anisotropy.x() + 
+                                   y * y  * this->anisotropy.y() ) - this->radius ) * this->multiplicator;
+            return ( std::pow( std::pow( TNL::abs( x ), this->power ) * this->anisotropy.x() + 
+                               std::pow( TNL::abs( y ), this->power ) * this->anisotropy.y(), 1.0 / this-> power ) - this->radius ) * this->multiplicator;
          }
-         TNL_ASSERT( false, "Not implemented yet." );
+         TNL_ASSERT( false, std::cerr << "Not implemented yet." << std::endl );
          return 0.0;
       }
  
@@ -247,22 +247,22 @@ class VectorNorm< 3, Real > : public VectorNormBase< 3, Real >
          if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
          {
             if( this->maxNorm )
-               return ( TNL::max( TNL::abs( x ) * this->anisotropy.x(), 
-                                  TNL::abs( y ) * this->anisotropy.y(),
+               return ( TNL::max( TNL::max( TNL::abs( x ) * this->anisotropy.x(), 
+                                            TNL::abs( y ) * this->anisotropy.y() ),
                                   TNL::abs( z ) * this->anisotropy.z() ) - this->radius ) * this->multiplicator;
             if( this->power == 1.0 )
                return ( ( TNL::abs( x ) * this->anisotropy.x() + 
                           TNL::abs( y ) * this->anisotropy.y() +
                           TNL::abs( z ) * this->anisotropy.z() ) - this->radius ) * this->multiplicator;
             if( this->power == 2.0 )
-               return ( sqrt( x * x  * this->anisotropy.x() + 
-                              y * y  * this->anisotropy.y() +
-                              z * z  * this->anisotropy.z() ) - this->radius ) * this->multiplicator ;
-            return ( pow( pow( x, this->power ) * this->anisotropy.x() + 
-                          pow( y, this->power ) * this->anisotropy.y() +
-                          pow( z, this->power ) * this->anisotropy.z(), 1.0 / this-> power ) - this->radius ) * this->multiplicator;
+               return ( std::sqrt( x * x  * this->anisotropy.x() + 
+                                   y * y  * this->anisotropy.y() +
+                                   z * z  * this->anisotropy.z() ) - this->radius ) * this->multiplicator ;
+            return ( std::pow( std::pow( TNL::abs( x ), this->power ) * this->anisotropy.x() + 
+                               std::pow( TNL::abs( y ), this->power ) * this->anisotropy.y() +
+                               std::pow( TNL::abs( z ), this->power ) * this->anisotropy.z(), 1.0 / this-> power ) - this->radius ) * this->multiplicator;
          }
-         TNL_ASSERT( false, "Not implemented yet." );
+         TNL_ASSERT( false, std::cerr << "Not implemented yet." << std::endl );
          return 0.0;
       }
       

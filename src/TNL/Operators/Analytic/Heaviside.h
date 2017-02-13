@@ -30,9 +30,18 @@ class Heaviside : public Functions::Domain< Dimensions, Functions::SpaceDomain >
       typedef Containers::StaticVector< Dimensions, 
                                         RealType > VertexType;
       
+      Heaviside() : multiplicator( 1.0 ) {}
+      
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" )
+      {
+         config.addEntry< double >( prefix + "multiplicator", "Outer multiplicator of the Heaviside operator - -1.0 turns the function graph upside/down.", 1.0 );
+      }      
+      
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
+         this->multiplicator = parameters.getParameter< double >( prefix + "multiplicator" );
          return true;
       };
       
@@ -62,6 +71,10 @@ class Heaviside : public Functions::Domain< Dimensions, Functions::SpaceDomain >
             return this->operator()( function, vertex, time );
          return 0.0;
       }
+      
+   protected:
+      
+      RealType multiplicator;
       
 };
 
