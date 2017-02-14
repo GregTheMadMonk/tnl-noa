@@ -30,11 +30,31 @@ namespace Meshes {
 
 template< typename MeshConfig > class MeshInitializer;
 
+
+template< typename MeshConfig, typename Device, typename MeshType >
+class MeshInitializableBase
+{
+   public:
+      using MeshTraitsType = MeshTraits< MeshConfig, Device >;
+
+      // The points and cellSeeds arrays will be reset when not needed to save memory.
+      bool init( typename MeshTraitsType::PointArrayType& points,
+                 typename MeshTraitsType::CellSeedArrayType& cellSeeds );
+};
+
+// The mesh cannot be initialized on CUDA GPU, so this specialization is empty.
+template< typename MeshConfig, typename MeshType >
+class MeshInitializableBase< MeshConfig, Devices::Cuda, MeshType >
+{
+};
+
+
 template< typename MeshConfig,
           typename Device = Devices::Host >
 class Mesh
    : public Object,
-     protected MeshStorageLayers< MeshConfig, Device >
+     protected MeshStorageLayers< MeshConfig, Device >,
+     public MeshInitializableBase< MeshConfig, Device, Mesh< MeshConfig, Device > >
 {
       using StorageBaseType = MeshStorageLayers< MeshConfig, Device >;
 
@@ -108,10 +128,6 @@ class Mesh
       void print( std::ostream& str ) const;
 
       bool operator==( const Mesh& mesh ) const;
-
-      // The points and cellSeeds arrays will be reset when not needed to save memory.
-      bool init( typename MeshTraitsType::PointArrayType& points,
-                 typename MeshTraitsType::CellSeedArrayType& cellSeeds );
 
       void writeProlog( Logger& logger );
 

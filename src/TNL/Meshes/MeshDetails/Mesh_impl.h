@@ -22,6 +22,19 @@
 namespace TNL {
 namespace Meshes {
 
+template< typename MeshConfig, typename Device, typename MeshType >
+bool
+MeshInitializableBase< MeshConfig, Device, MeshType >::
+init( typename MeshTraitsType::PointArrayType& points,
+      typename MeshTraitsType::CellSeedArrayType& cellSeeds )
+{
+   MeshInitializer< typename MeshType::Config > meshInitializer;
+   if( ! meshInitializer.createMesh( points, cellSeeds, *static_cast<MeshType*>(this) ) )
+      return false;
+   return true;
+}
+
+
 template< typename MeshConfig, typename Device >
 constexpr int
 Mesh< MeshConfig, Device >::
@@ -176,18 +189,6 @@ Mesh< MeshConfig, Device >::
 operator==( const Mesh& mesh ) const
 {
    return StorageBaseType::operator==( mesh );
-}
-
-template< typename MeshConfig, typename Device >
-bool
-Mesh< MeshConfig, Device >::
-init( typename MeshTraitsType::PointArrayType& points,
-      typename MeshTraitsType::CellSeedArrayType& cellSeeds )
-{
-   MeshInitializer< MeshConfig> meshInitializer;
-   if( ! meshInitializer.createMesh( points, cellSeeds, *this ) )
-      return false;
-   return true;
 }
 
 template< typename MeshConfig, typename Device >
