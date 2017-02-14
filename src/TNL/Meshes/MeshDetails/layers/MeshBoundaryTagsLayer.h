@@ -20,7 +20,7 @@ namespace Meshes {
 // It is inherited by MeshStorageLayer.
 template< typename MeshConfig,
           typename DimensionTag,
-          bool TagStorage = MeshConfig::boundaryTagsStorage( typename MeshEntityTraits< MeshConfig, DimensionTag::value >::EntityTopology() ) >
+          bool TagStorage = MeshConfig::boundaryTagsStorage( typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::EntityTopology() ) >
 class MeshBoundaryTagsLayer
 {
    using MeshTraitsType    = MeshTraits< MeshConfig >;
