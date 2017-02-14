@@ -24,6 +24,7 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           int Dimension >
 class MeshSuperentityTraits
@@ -37,14 +38,13 @@ public:
 
    using GlobalIndexType     = typename MeshConfig::GlobalIndexType;
    using LocalIndexType      = typename MeshConfig::LocalIndexType;
-   using EntityType          = MeshEntity< MeshConfig, EntityTopology >;
-   using SuperentityTopology = typename MeshEntityTraits< MeshConfig, Dimension >::EntityTopology;
-   using SuperentityType     = typename MeshEntityTraits< MeshConfig, Dimension >::EntityType;
+   using SuperentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
+   using SuperentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
 
    /****
     * Type of container for storing of the superentities indices.
     */
-   using StorageNetworkType      = EllpackIndexMultimap< GlobalIndexType, Devices::Host, LocalIndexType >;
+   using StorageNetworkType      = EllpackIndexMultimap< GlobalIndexType, Device, LocalIndexType >;
    using SuperentityAccessorType = typename StorageNetworkType::ValuesAccessorType;
 };
 

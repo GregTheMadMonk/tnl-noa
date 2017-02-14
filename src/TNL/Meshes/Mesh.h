@@ -23,14 +23,15 @@
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshStorageLayer.h>
 #include <TNL/Meshes/MeshDetails/config/MeshConfigValidator.h>
-#include <TNL/Meshes/MeshDetails/initializer/MeshInitializer.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshEntityStorageRebinder.h>
 
 namespace TNL {
 namespace Meshes {
 
-template< typename MeshConfig > //,
-          //typename Device = Devices::Host >
+template< typename MeshConfig > class MeshInitializer;
+
+template< typename MeshConfig,
+          typename Device = Devices::Host >
 class Mesh
    : public Object,
      protected MeshStorageLayers< MeshConfig >
@@ -39,7 +40,7 @@ class Mesh
 
    public:
       using Config          = MeshConfig;
-      using MeshTraitsType  = MeshTraits< MeshConfig >;
+      using MeshTraitsType  = MeshTraits< MeshConfig, Device >;
       using DeviceType      = typename MeshTraitsType::DeviceType;
       using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
       using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
@@ -128,8 +129,8 @@ class Mesh
       friend struct MeshEntityStorageRebinderWorker;
 };
 
-template< typename MeshConfig >
-std::ostream& operator<<( std::ostream& str, const Mesh< MeshConfig >& mesh );
+template< typename MeshConfig, typename Device >
+std::ostream& operator<<( std::ostream& str, const Mesh< MeshConfig, Device >& mesh );
 
 } // namespace Meshes
 } // namespace TNL

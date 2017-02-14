@@ -17,83 +17,84 @@
 #pragma once
 
 #include <TNL/Meshes/Mesh.h>
+#include <TNL/Meshes/MeshDetails/initializer/MeshInitializer.h>
 
 namespace TNL {
 namespace Meshes {
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 constexpr int
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 getMeshDimension()
 {
    return MeshTraitsType::meshDimension;
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 String
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 getType()
 {
    return String( "Meshes::Mesh< ") + MeshConfig::getType() + " >";
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 String
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 getTypeVirtual() const
 {
    return this->getType();
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 String
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 getSerializationType()
 {
    return Mesh::getType();
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 String
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
    template< int Dimension >
 constexpr bool
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 entitiesAvailable()
 {
    return MeshTraitsType::template EntityTraits< Dimension >::storageEnabled;
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
    template< int Dimension >
-typename Mesh< MeshConfig >::GlobalIndexType
-Mesh< MeshConfig >::
+typename Mesh< MeshConfig, Device >::GlobalIndexType
+Mesh< MeshConfig, Device >::
 getEntitiesCount() const
 {
    static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get number of entities which are not configured for storage." );
    return StorageBaseType::getEntitiesCount( DimensionTag< Dimension >() );
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
    template< int Dimension >
-typename Mesh< MeshConfig >::template EntityType< Dimension >&
-Mesh< MeshConfig >::
+typename Mesh< MeshConfig, Device >::template EntityType< Dimension >&
+Mesh< MeshConfig, Device >::
 getEntity( const GlobalIndexType& entityIndex )
 {
    static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get entity which is not configured for storage." );
    return StorageBaseType::getEntity( DimensionTag< Dimension >(), entityIndex );
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
    template< int Dimension >
-const typename Mesh< MeshConfig >::template EntityType< Dimension >&
-Mesh< MeshConfig >::
+const typename Mesh< MeshConfig, Device >::template EntityType< Dimension >&
+Mesh< MeshConfig, Device >::
 getEntity( const GlobalIndexType& entityIndex ) const
 {
    static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get entity which is not configured for storage." );
@@ -102,37 +103,37 @@ getEntity( const GlobalIndexType& entityIndex ) const
 
 
 // duplicated for compatibility with grids
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
    template< typename Entity >
-typename Mesh< MeshConfig >::GlobalIndexType
-Mesh< MeshConfig >::
+typename Mesh< MeshConfig, Device >::GlobalIndexType
+Mesh< MeshConfig, Device >::
 getEntitiesCount() const
 {
    return getEntitiesCount< Entity::getEntityDimension() >();
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
    template< typename Entity >
 Entity&
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 getEntity( const GlobalIndexType& entityIndex )
 {
    return getEntity< Entity::getEntityDimension() >( entityIndex );
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
    template< typename Entity >
 const Entity&
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 getEntity( const GlobalIndexType& entityIndex ) const
 {
    return getEntity< Entity::getEntityDimension() >( entityIndex );
 }
 
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 bool
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 save( File& file ) const
 {
    if( ! Object::save( file ) ||
@@ -144,9 +145,9 @@ save( File& file ) const
    return true;
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 bool
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 load( File& file )
 {
    if( ! Object::load( file ) ||
@@ -161,25 +162,25 @@ load( File& file )
    return true;
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 void
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 print( std::ostream& str ) const
 {
    StorageBaseType::print( str );
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 bool
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 operator==( const Mesh& mesh ) const
 {
    return StorageBaseType::operator==( mesh );
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 bool
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 init( typename MeshTraitsType::PointArrayType& points,
       typename MeshTraitsType::CellSeedArrayType& cellSeeds )
 {
@@ -189,9 +190,9 @@ init( typename MeshTraitsType::PointArrayType& points,
    return true;
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 void
-Mesh< MeshConfig >::
+Mesh< MeshConfig, Device >::
 writeProlog( Logger& logger )
 {
    logger.writeParameter( "Dimension:", getMeshDimension() );
@@ -203,8 +204,8 @@ writeProlog( Logger& logger )
 }
 
 
-template< typename MeshConfig >
-std::ostream& operator<<( std::ostream& str, const Mesh< MeshConfig >& mesh )
+template< typename MeshConfig, typename Device >
+std::ostream& operator<<( std::ostream& str, const Mesh< MeshConfig, Device >& mesh )
 {
    mesh.print( str );
    return str;

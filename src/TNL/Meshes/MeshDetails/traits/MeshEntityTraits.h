@@ -25,7 +25,7 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename MeshConfig, typename EntityTopology > class MeshEntity;
+template< typename MeshConfig, typename Device, typename EntityTopology > class MeshEntity;
 template< typename MeshConfig, typename EntityTopology > class MeshEntityReferenceOrientation;
 
 template< typename MeshConfig,
@@ -51,6 +51,7 @@ public:
 
 
 template< typename MeshConfig,
+          typename Device,
           int Dimension >
 class MeshEntityTraits
 {
@@ -61,13 +62,13 @@ public:
    using LocalIndexType                = typename MeshConfig::LocalIndexType;
    using EntityTopology                = typename MeshEntityTopology< MeshConfig, DimensionTag< Dimension > >::Topology;
 
-   using EntityType                    = MeshEntity< MeshConfig, EntityTopology >;
+   using EntityType                    = MeshEntity< MeshConfig, Device, EntityTopology >;
    using SeedType                      = MeshEntitySeed< MeshConfig, EntityTopology >;
    using ReferenceOrientationType      = MeshEntityReferenceOrientation< MeshConfig, EntityTopology >;
 
-   using StorageArrayType              = Containers::Array< EntityType, Devices::Host, GlobalIndexType >;
+   using StorageArrayType              = Containers::Array< EntityType, Device, GlobalIndexType >;
    using SeedIndexedSetType            = Containers::IndexedSet< typename SeedType::KeyType, GlobalIndexType >;
-   using ReferenceOrientationArrayType = Containers::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType >;
+   using ReferenceOrientationArrayType = Containers::Array< ReferenceOrientationType, Device, GlobalIndexType >;
 
    static constexpr bool storageEnabled = MeshConfig::entityStorage( Dimension );
    static constexpr bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, DimensionTag< Dimension > >::value;

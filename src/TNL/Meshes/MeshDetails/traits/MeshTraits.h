@@ -24,11 +24,11 @@ namespace TNL {
 namespace Meshes {
 
 struct MeshVertexTopology;
-template< typename MeshConfig, typename EntityTopology > class MeshEntity;
+template< typename MeshConfig, typename Device, typename EntityTopology > class MeshEntity;
 template< typename MeshConfig, typename EntityTopology > class MeshEntitySeed;
-template< typename MeshConfig, int Dimension > class MeshEntityTraits;
-template< typename MeshConfig, typename MeshEntity, int Subdimension > class MeshSubentityTraits;
-template< typename MeshConfig, typename MeshEntity, int Superdimension > class MeshSuperentityTraits;
+template< typename MeshConfig, typename Device, int Dimension > class MeshEntityTraits;
+template< typename MeshConfig, typename Device, typename MeshEntity, int Subdimension > class MeshSubentityTraits;
+template< typename MeshConfig, typename Device, typename MeshEntity, int Superdimension > class MeshSuperentityTraits;
 
 template< typename MeshConfig,
           typename Device = Devices::Host >
@@ -43,24 +43,24 @@ public:
    using LocalIndexType    = typename MeshConfig::LocalIndexType;
 
    using CellTopology      = typename MeshConfig::CellTopology;
-   using CellType          = MeshEntity< MeshConfig, CellTopology >;
-   using VertexType        = MeshEntity< MeshConfig, MeshVertexTopology >;
+   using CellType          = MeshEntity< MeshConfig, Device, CellTopology >;
+   using VertexType        = MeshEntity< MeshConfig, Device, MeshVertexTopology >;
    using PointType         = Containers::StaticVector< worldDimension, typename MeshConfig::RealType >;
    using CellSeedType      = MeshEntitySeed< MeshConfig, CellTopology >;
 
-   using PointArrayType    = Containers::Array< PointType, Devices::Host, GlobalIndexType >;
-   using CellSeedArrayType = Containers::Array< CellSeedType, Devices::Host, GlobalIndexType >;
-   using BoundaryTagsArrayType = Containers::Array< bool, Devices::Host, GlobalIndexType >;
-   using GlobalIndexOrderingArrayType = Containers::Array< GlobalIndexType, Devices::Host, GlobalIndexType >;
+   using PointArrayType    = Containers::Array< PointType, DeviceType, GlobalIndexType >;
+   using CellSeedArrayType = Containers::Array< CellSeedType, DeviceType, GlobalIndexType >;
+   using BoundaryTagsArrayType = Containers::Array< bool, DeviceType, GlobalIndexType >;
+   using GlobalIndexOrderingArrayType = Containers::Array< GlobalIndexType, DeviceType, GlobalIndexType >;
 
    template< int Dimension >
-   using EntityTraits = MeshEntityTraits< MeshConfig, Dimension >;
+   using EntityTraits = MeshEntityTraits< MeshConfig, DeviceType, Dimension >;
 
    template< typename EntityTopology, int Subdimension >
-   using SubentityTraits = MeshSubentityTraits< MeshConfig, EntityTopology, Subdimension >;
+   using SubentityTraits = MeshSubentityTraits< MeshConfig, DeviceType, EntityTopology, Subdimension >;
 
    template< typename EntityTopology, int Superdimension >
-   using SuperentityTraits = MeshSuperentityTraits< MeshConfig, EntityTopology, Superdimension >;
+   using SuperentityTraits = MeshSuperentityTraits< MeshConfig, DeviceType, EntityTopology, Superdimension >;
 
    using DimensionTag = Meshes::DimensionTag< meshDimension >;
 };

@@ -22,9 +22,10 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 String
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 getType()
 {
    return String( "MeshEntity< " ) +
@@ -33,18 +34,20 @@ getType()
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 String
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 getTypeVirtual() const
 {
    return this->getType();
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 bool
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 save( File& file ) const
 {
    if( ! MeshSubentityAccess< MeshConfig, EntityTopology >::save( file ) )
@@ -53,9 +56,10 @@ save( File& file ) const
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 bool
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 load( File& file )
 {
    if( ! MeshSubentityAccess< MeshConfig, EntityTopology >::load( file ) )
@@ -64,9 +68,10 @@ load( File& file )
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 void
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 print( std::ostream& str ) const
 {
    str << "\t Mesh entity dimension: " << EntityTopology::dimension << std::endl;
@@ -75,9 +80,10 @@ print( std::ostream& str ) const
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 bool
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 operator==( const MeshEntity& entity ) const
 {
    return ( MeshSubentityAccess< MeshConfig, EntityTopology >::operator==( entity ) &&
@@ -86,18 +92,20 @@ operator==( const MeshEntity& entity ) const
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 bool
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 operator!=( const MeshEntity& entity ) const
 {
    return ! ( *this == entity );
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 constexpr int
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 getEntityDimension()
 {
    return EntityTopology::dimension;
@@ -107,18 +115,20 @@ getEntityDimension()
  * Subentities
  */
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
-constexpr typename MeshEntity< MeshConfig, EntityTopology >::LocalIndexType
-MeshEntity< MeshConfig, EntityTopology >::
+constexpr typename MeshEntity< MeshConfig, Device, EntityTopology >::LocalIndexType
+MeshEntity< MeshConfig, Device, EntityTopology >::
 getVerticesCount()
 {
    return SubentityTraits< 0 >::count;
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
-typename MeshEntity< MeshConfig, EntityTopology >::GlobalIndexType
-MeshEntity< MeshConfig, EntityTopology >::
+typename MeshEntity< MeshConfig, Device, EntityTopology >::GlobalIndexType
+MeshEntity< MeshConfig, Device, EntityTopology >::
 getVertexIndex( const LocalIndexType localIndex ) const
 {
    return this->template getSubentityIndex< 0 >( localIndex  );
@@ -128,47 +138,47 @@ getVertexIndex( const LocalIndexType localIndex ) const
 /****
  * Vertex entity specialization
  */
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 String
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 getType()
 {
    return String( "MeshEntity< ... >" );
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 String
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 getTypeVirtual() const
 {
    return this->getType();
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 bool
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 save( File& file ) const
 {
-   if( //! MeshSuperentityStorageLayers< MeshConfig, MeshVertexTopology >::save( file ) ||
+   if( //! MeshSuperentityStorageLayers< MeshConfig, Device, MeshVertexTopology >::save( file ) ||
        ! point.save( file ) )
       return false;
    return true;
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 bool
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 load( File& file )
 {
-   if( //! MeshSuperentityStorageLayers< MeshConfig, MeshVertexTopology >::load( file ) ||
+   if( //! MeshSuperentityStorageLayers< MeshConfig, Device, MeshVertexTopology >::load( file ) ||
        ! point.load( file ) )
       return false;
    return true;
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 void
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 print( std::ostream& str ) const
 {
    str << "\t Mesh entity dimension: " << MeshVertexTopology::dimension << std::endl;
@@ -176,9 +186,9 @@ print( std::ostream& str ) const
    MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::print( str );
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 bool
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 operator==( const MeshEntity& entity ) const
 {
    return ( MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::operator==( entity ) &&
@@ -186,41 +196,42 @@ operator==( const MeshEntity& entity ) const
             point == entity.point );
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 bool
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 operator!=( const MeshEntity& entity ) const
 {
    return ! ( *this == entity );
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 constexpr int
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 getEntityDimension()
 {
    return EntityTopology::dimension;
 }
 
-template< typename MeshConfig >
-typename MeshEntity< MeshConfig, MeshVertexTopology >::PointType
-MeshEntity< MeshConfig, MeshVertexTopology >::
+template< typename MeshConfig, typename Device >
+typename MeshEntity< MeshConfig, Device, MeshVertexTopology >::PointType
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 getPoint() const
 {
    return this->point;
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 void
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 setPoint( const PointType& point )
 {
    this->point = point;
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
-std::ostream& operator<<( std::ostream& str, const MeshEntity< MeshConfig, EntityTopology >& entity )
+std::ostream& operator<<( std::ostream& str, const MeshEntity< MeshConfig, Device, EntityTopology >& entity )
 {
    entity.print( str );
    return str;

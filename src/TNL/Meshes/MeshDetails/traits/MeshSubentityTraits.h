@@ -18,6 +18,7 @@
 
 #include <TNL/Containers/StaticArray.h>
 #include <TNL/Meshes/MeshEntity.h>
+#include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
 #include <TNL/Experimental/Multimaps/StaticEllpackIndexMultimap.h>
 
@@ -28,9 +29,9 @@ template< typename MeshConfig, typename EntityTopology >
 class MeshEntityOrientation;
 template< typename MeshConfig, typename EntityTopology >
 class MeshEntitySeed;
-template< typename MeshConfig, int Dimension > class MeshEntityTraits;
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           int Dimension >
 class MeshSubentityTraits
@@ -45,15 +46,15 @@ public:
 
    using GlobalIndexType   = typename MeshConfig::GlobalIndexType;
    using LocalIndexType    = typename MeshConfig::LocalIndexType;
-   using SubentityTopology = typename MeshEntityTraits< MeshConfig, Dimension >::EntityTopology;
-   using SubentityType     = typename MeshEntityTraits< MeshConfig, Dimension >::EntityType;
+   using SubentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
+   using SubentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
    using Seed              = MeshEntitySeed< MeshConfig, SubentityTopology >;
    using Orientation       = MeshEntityOrientation< MeshConfig, SubentityTopology >;
 
    /****
     * Type of container for storing of the subentities indices.
     */
-   using StorageNetworkType     = StaticEllpackIndexMultimap< count, GlobalIndexType, Devices::Host, LocalIndexType >;
+   using StorageNetworkType     = StaticEllpackIndexMultimap< count, GlobalIndexType, Device, LocalIndexType >;
    using SubentityAccessorType  = typename StorageNetworkType::ValuesAccessorType;
 
    // static array used in MeshSubentitySeedCreator

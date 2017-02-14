@@ -50,17 +50,17 @@ public:
 };
 
 template< typename MeshConfig, typename EntityTopology, int Dimensions >
-using SubentityStorage = typename MeshSubentityTraits< MeshConfig, EntityTopology, Dimensions >::StorageNetworkType;
+using SubentityStorage = typename MeshSubentityTraits< MeshConfig, Devices::Host, EntityTopology, Dimensions >::StorageNetworkType;
 
 template< typename MeshConfig, typename EntityTopology, int Dimensions >
-using SuperentityStorage = typename MeshSuperentityTraits< MeshConfig, EntityTopology, Dimensions >::StorageNetworkType;
+using SuperentityStorage = typename MeshSuperentityTraits< MeshConfig, Devices::Host, EntityTopology, Dimensions >::StorageNetworkType;
 
 // stupid wrapper around MeshEntity to expose protected members needed for tests
 template< typename MeshConfig, typename EntityTopology >
 class TestMeshEntity
-   : public MeshEntity< MeshConfig, EntityTopology >
+   : public MeshEntity< MeshConfig, Devices::Host, EntityTopology >
 {
-   using BaseType = MeshEntity< MeshConfig, EntityTopology >;
+   using BaseType = MeshEntity< MeshConfig, Devices::Host, EntityTopology >;
 
 public:
    template< int Subdimensions, typename Storage >

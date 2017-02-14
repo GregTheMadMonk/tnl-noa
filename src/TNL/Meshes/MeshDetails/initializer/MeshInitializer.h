@@ -62,9 +62,6 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename MeshConfig >
-class Mesh;
-
 template< typename MeshConfig,
           typename DimensionTag,
           bool EntityStorage =
@@ -246,7 +243,6 @@ class MeshInitializerLayer< MeshConfig,
       // TODO: this is unused - should be moved to MeshIntegrityChecker
       bool checkCells()
       {
-         typedef typename MeshEntity< MeshConfig, EntityTopology >::template SubentitiesTraits< 0 >::LocalIndexType LocalIndexType;
          const GlobalIndexType numberOfVertices( this->getMesh().getVerticesCount() );
          for( GlobalIndexType cell = 0;
               cell < this->getMesh().template getEntitiesCount< typename MeshType::Cell >();

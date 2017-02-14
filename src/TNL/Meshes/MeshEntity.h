@@ -31,6 +31,7 @@ template< typename MeshConfig >
 class MeshInitializer;
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology_ >
 class MeshEntity
    : protected MeshSubentityAccess< MeshConfig, EntityTopology_ >,
@@ -41,7 +42,8 @@ class MeshEntity
                   "Specified entity topology is not compatible with the MeshConfig." );
 
    public:
-      using MeshTraitsType  = MeshTraits< MeshConfig >;
+      using MeshTraitsType  = MeshTraits< MeshConfig, Device >;
+      using DeviceType      = Device;
       using EntityTopology  = EntityTopology_;
       using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
       using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
@@ -109,13 +111,14 @@ class MeshEntity
 /****
  * Vertex entity specialization
  */
-template< typename MeshConfig >
-class MeshEntity< MeshConfig, MeshVertexTopology >
+template< typename MeshConfig, typename Device >
+class MeshEntity< MeshConfig, Device, MeshVertexTopology >
    : protected MeshSuperentityAccess< MeshConfig, MeshVertexTopology >,
      public MeshEntityIndex< typename MeshConfig::IdType >
 {
    public:
-      using MeshTraitsType  = MeshTraits< MeshConfig >;
+      using MeshTraitsType  = MeshTraits< MeshConfig, Device >;
+      using DeviceType      = Device;
       using EntityTopology  = MeshVertexTopology;
       using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
       using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
@@ -167,8 +170,9 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
-std::ostream& operator<<( std::ostream& str, const MeshEntity< MeshConfig, EntityTopology >& entity );
+std::ostream& operator<<( std::ostream& str, const MeshEntity< MeshConfig, Device, EntityTopology >& entity );
 
 } // namespace Meshes
 } // namespace TNL

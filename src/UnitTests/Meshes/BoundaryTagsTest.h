@@ -30,7 +30,7 @@ public:
 
 TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
 {
-   using QuadrilateralMeshEntityType = MeshEntity< TestQuadrilateralMeshConfig, MeshQuadrilateralTopology >;
+   using QuadrilateralMeshEntityType = MeshEntity< TestQuadrilateralMeshConfig, Devices::Host, MeshQuadrilateralTopology >;
    using EdgeMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 1 >::SubentityType;
    using VertexMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 0 >::SubentityType;
 

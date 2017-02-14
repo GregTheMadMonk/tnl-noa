@@ -48,10 +48,10 @@ enum tnlVTKMeshEntities { tnlVTKVertex = 1,
 template< typename MeshEntity >
 struct MeshEntityVTKType{};
 
-template< typename MeshConfig > struct MeshEntityVTKType< MeshEntity< MeshConfig, MeshTriangleTopology > >     { enum { VTKType = tnlVTKTriangle }; };
-template< typename MeshConfig > struct MeshEntityVTKType< MeshEntity< MeshConfig, MeshQuadrilateralTopology > >{ enum { VTKType = tnlVTKQuad }; };
-template< typename MeshConfig > struct MeshEntityVTKType< MeshEntity< MeshConfig, MeshTetrahedronTopology > >  { enum { VTKType = tnlVTKTetra }; };
-template< typename MeshConfig > struct MeshEntityVTKType< MeshEntity< MeshConfig, MeshHexahedronTopology > >   { enum { VTKType = tnlVTKHexahedron }; };
+template< typename MeshConfig, typename Device > struct MeshEntityVTKType< MeshEntity< MeshConfig, Device, MeshTriangleTopology > >     { enum { VTKType = tnlVTKTriangle }; };
+template< typename MeshConfig, typename Device > struct MeshEntityVTKType< MeshEntity< MeshConfig, Device, MeshQuadrilateralTopology > >{ enum { VTKType = tnlVTKQuad }; };
+template< typename MeshConfig, typename Device > struct MeshEntityVTKType< MeshEntity< MeshConfig, Device, MeshTetrahedronTopology > >  { enum { VTKType = tnlVTKTetra }; };
+template< typename MeshConfig, typename Device > struct MeshEntityVTKType< MeshEntity< MeshConfig, Device, MeshHexahedronTopology > >   { enum { VTKType = tnlVTKHexahedron }; };
 
 class MeshWriterVTKLegacy
 {
