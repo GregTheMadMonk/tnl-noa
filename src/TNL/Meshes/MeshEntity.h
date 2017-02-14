@@ -34,8 +34,8 @@ template< typename MeshConfig,
           typename Device,
           typename EntityTopology_ >
 class MeshEntity
-   : protected MeshSubentityAccess< MeshConfig, EntityTopology_ >,
-     protected MeshSuperentityAccess< MeshConfig, EntityTopology_ >,
+   : protected MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >,
+     protected MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >,
      public MeshEntityIndex< typename MeshConfig::IdType >
 {
    static_assert( is_compatible_topology< typename MeshConfig::CellTopology, EntityTopology_ >::value,
@@ -73,15 +73,15 @@ class MeshEntity
       /****
        * Subentities
        */
-      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::getSubentitiesCount;
-      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::getSubentityIndex;
-      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::getSubentityOrientation;
+      using MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >::getSubentitiesCount;
+      using MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >::getSubentityIndex;
+      using MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >::getSubentityOrientation;
 
       /****
        * Superentities
        */
-      using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::getSuperentitiesCount;
-      using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::getSuperentityIndex;
+      using MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >::getSuperentitiesCount;
+      using MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >::getSuperentityIndex;
 
       /****
        * Vertices
@@ -94,13 +94,13 @@ class MeshEntity
       /****
        * Methods for the mesh initialization
        */
-      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::bindSubentitiesStorageNetwork;
-      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::setSubentityIndex;
-      using MeshSubentityAccess< MeshConfig, EntityTopology_ >::subentityOrientationsArray;
+      using MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >::bindSubentitiesStorageNetwork;
+      using MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >::setSubentityIndex;
+      using MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >::subentityOrientationsArray;
 
-      using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::bindSuperentitiesStorageNetwork;
-      using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::setNumberOfSuperentities;
-      using MeshSuperentityAccess< MeshConfig, EntityTopology_ >::setSuperentityIndex;
+      using MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >::bindSuperentitiesStorageNetwork;
+      using MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >::setNumberOfSuperentities;
+      using MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >::setSuperentityIndex;
 
    friend MeshInitializer< MeshConfig >;
 
@@ -113,7 +113,7 @@ class MeshEntity
  */
 template< typename MeshConfig, typename Device >
 class MeshEntity< MeshConfig, Device, MeshVertexTopology >
-   : protected MeshSuperentityAccess< MeshConfig, MeshVertexTopology >,
+   : protected MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >,
      public MeshEntityIndex< typename MeshConfig::IdType >
 {
    public:
@@ -146,8 +146,8 @@ class MeshEntity< MeshConfig, Device, MeshVertexTopology >
       /****
        * Superentities
        */
-      using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::getSuperentitiesCount;
-      using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::getSuperentityIndex;
+      using MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::getSuperentitiesCount;
+      using MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::getSuperentityIndex;
 
       /****
        * Points
@@ -157,9 +157,9 @@ class MeshEntity< MeshConfig, Device, MeshVertexTopology >
       void setPoint( const PointType& point );
 
    protected:
-      using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::bindSuperentitiesStorageNetwork;
-      using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::setNumberOfSuperentities;
-      using MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::setSuperentityIndex;
+      using MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::bindSuperentitiesStorageNetwork;
+      using MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::setNumberOfSuperentities;
+      using MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::setSuperentityIndex;
 
       PointType point;
 

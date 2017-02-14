@@ -20,6 +20,7 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           typename DimensionTag,
           bool SubentityStorage =
@@ -30,17 +31,20 @@ class MeshSubentityAccessLayer;
 
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 class MeshSubentityAccess
    : public MeshSubentityAccessLayer< MeshConfig,
+                                      Device,
                                       EntityTopology,
                                       Meshes::DimensionTag< 0 > >
 {
    using BaseType = MeshSubentityAccessLayer< MeshConfig,
+                                              Device,
                                               EntityTopology,
                                               Meshes::DimensionTag< 0 > >;
 
-   using MeshTraitsType = MeshTraits< MeshConfig >;
+   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
    template< int Subdimension >
    using SubentityTraits = typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimension >;
@@ -106,22 +110,26 @@ public:
 
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           typename DimensionTag >
 class MeshSubentityAccessLayer< MeshConfig,
+                                Device,
                                 EntityTopology,
                                 DimensionTag,
                                 true,
                                 true >
    : public MeshSubentityAccessLayer< MeshConfig,
+                                      Device,
                                       EntityTopology,
                                       typename DimensionTag::Increment >
 {
    using BaseType = MeshSubentityAccessLayer< MeshConfig,
+                                              Device,
                                               EntityTopology,
                                               typename DimensionTag::Increment >;
 
-   using MeshTraitsType         = MeshTraits< MeshConfig >;
+   using MeshTraitsType         = MeshTraits< MeshConfig, Device >;
    using SubentityTraitsType    = typename MeshTraitsType::template SubentityTraits< EntityTopology, DimensionTag::value >;
 
 protected:
@@ -236,23 +244,27 @@ private:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           typename DimensionTag >
 class MeshSubentityAccessLayer< MeshConfig,
+                                Device,
                                 EntityTopology,
                                 DimensionTag,
                                 true,
                                 false >
    : public MeshSubentityAccessLayer< MeshConfig,
+                                      Device,
                                       EntityTopology,
                                       typename DimensionTag::Increment >
 {
    static_assert( DimensionTag::value < EntityTopology::dimension, "" );
    using BaseType = MeshSubentityAccessLayer< MeshConfig,
+                                              Device,
                                               EntityTopology,
                                               typename DimensionTag::Increment >;
 
-   using MeshTraitsType        = MeshTraits< MeshConfig >;
+   using MeshTraitsType        = MeshTraits< MeshConfig, Device >;
    using SubentityTraitsType   = typename MeshTraitsType::template SubentityTraits< EntityTopology, DimensionTag::value >;
 
 protected:
@@ -354,8 +366,10 @@ private:
 
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 class MeshSubentityAccessLayer< MeshConfig,
+                                Device,
                                 EntityTopology,
                                 Meshes::DimensionTag< EntityTopology::dimension >,
                                 true,
@@ -403,8 +417,10 @@ protected:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 class MeshSubentityAccessLayer< MeshConfig,
+                                Device,
                                 EntityTopology,
                                 Meshes::DimensionTag< EntityTopology::dimension >,
                                 true,
@@ -452,8 +468,10 @@ protected:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 class MeshSubentityAccessLayer< MeshConfig,
+                                Device,
                                 EntityTopology,
                                 Meshes::DimensionTag< EntityTopology::dimension >,
                                 false,
@@ -501,9 +519,11 @@ protected:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           typename DimensionTag >
 class MeshSubentityAccessLayer< MeshConfig,
+                                Device,
                                 EntityTopology,
                                 DimensionTag,
                                 false,

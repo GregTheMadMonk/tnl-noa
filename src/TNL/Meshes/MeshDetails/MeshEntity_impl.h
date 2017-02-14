@@ -50,7 +50,7 @@ bool
 MeshEntity< MeshConfig, Device, EntityTopology >::
 save( File& file ) const
 {
-   if( ! MeshSubentityAccess< MeshConfig, EntityTopology >::save( file ) )
+   if( ! MeshSubentityAccess< MeshConfig, Device, EntityTopology >::save( file ) )
       return false;
    return true;
 }
@@ -62,7 +62,7 @@ bool
 MeshEntity< MeshConfig, Device, EntityTopology >::
 load( File& file )
 {
-   if( ! MeshSubentityAccess< MeshConfig, EntityTopology >::load( file ) )
+   if( ! MeshSubentityAccess< MeshConfig, Device, EntityTopology >::load( file ) )
       return false;
    return true;
 }
@@ -75,8 +75,8 @@ MeshEntity< MeshConfig, Device, EntityTopology >::
 print( std::ostream& str ) const
 {
    str << "\t Mesh entity dimension: " << EntityTopology::dimension << std::endl;
-   MeshSubentityAccess< MeshConfig, EntityTopology >::print( str );
-   MeshSuperentityAccess< MeshConfig, EntityTopology >::print( str );
+   MeshSubentityAccess< MeshConfig, Device, EntityTopology >::print( str );
+   MeshSuperentityAccess< MeshConfig, Device, EntityTopology >::print( str );
 }
 
 template< typename MeshConfig,
@@ -86,8 +86,8 @@ bool
 MeshEntity< MeshConfig, Device, EntityTopology >::
 operator==( const MeshEntity& entity ) const
 {
-   return ( MeshSubentityAccess< MeshConfig, EntityTopology >::operator==( entity ) &&
-            MeshSuperentityAccess< MeshConfig, EntityTopology >::operator==( entity ) &&
+   return ( MeshSubentityAccess< MeshConfig, Device, EntityTopology >::operator==( entity ) &&
+            MeshSuperentityAccess< MeshConfig, Device, EntityTopology >::operator==( entity ) &&
             MeshEntityIndex< typename MeshConfig::IdType >::operator==( entity ) );
 }
 
@@ -183,7 +183,7 @@ print( std::ostream& str ) const
 {
    str << "\t Mesh entity dimension: " << MeshVertexTopology::dimension << std::endl;
    str << "\t Coordinates = " << point << std::endl;
-   MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::print( str );
+   MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::print( str );
 }
 
 template< typename MeshConfig, typename Device >
@@ -191,7 +191,7 @@ bool
 MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 operator==( const MeshEntity& entity ) const
 {
-   return ( MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::operator==( entity ) &&
+   return ( MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::operator==( entity ) &&
             MeshEntityIndex< typename MeshConfig::IdType >::operator==( entity ) &&
             point == entity.point );
 }

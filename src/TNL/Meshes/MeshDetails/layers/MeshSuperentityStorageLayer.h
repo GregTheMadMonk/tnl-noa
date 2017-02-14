@@ -25,23 +25,27 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           typename SuperdimensionTag,
           bool SuperentityStorage =
-               MeshTraits< MeshConfig >::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >::storageEnabled >
+               MeshTraits< MeshConfig, Device >::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >::storageEnabled >
 class MeshSuperentityStorageLayer;
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 class MeshSuperentityStorageLayers
    : public MeshSuperentityStorageLayer< MeshConfig,
+                                         Device,
                                          EntityTopology,
-                                         DimensionTag< MeshTraits< MeshConfig >::meshDimension > >
+                                         DimensionTag< MeshTraits< MeshConfig, Device >::meshDimension > >
 {
    using BaseType = MeshSuperentityStorageLayer< MeshConfig,
+                                                 Device,
                                                  EntityTopology,
-                                                 DimensionTag< MeshTraits< MeshConfig >::meshDimension > >;
-   using MeshTraitsType = MeshTraits< MeshConfig >;
+                                                 DimensionTag< MeshTraits< MeshConfig, Device >::meshDimension > >;
+   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
 public:
    template< int Superdimension >
@@ -54,14 +58,14 @@ public:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           typename SuperdimensionTag >
-class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, SuperdimensionTag, true >
-   : public MeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename SuperdimensionTag::Decrement >
+class MeshSuperentityStorageLayer< MeshConfig, Device, EntityTopology, SuperdimensionTag, true >
+   : public MeshSuperentityStorageLayer< MeshConfig, Device, EntityTopology, typename SuperdimensionTag::Decrement >
 {
-   using BaseType = MeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename SuperdimensionTag::Decrement >;
-
-   using MeshTraitsType        = MeshTraits< MeshConfig >;
+   using BaseType = MeshSuperentityStorageLayer< MeshConfig, Device, EntityTopology, typename SuperdimensionTag::Decrement >;
+   using MeshTraitsType        = MeshTraits< MeshConfig, Device >;
    using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >;
 
 protected:
@@ -125,21 +129,22 @@ private:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           typename SuperdimensionTag >
-class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, SuperdimensionTag, false >
-   : public MeshSuperentityStorageLayer< MeshConfig, EntityTopology, typename SuperdimensionTag::Decrement >
+class MeshSuperentityStorageLayer< MeshConfig, Device, EntityTopology, SuperdimensionTag, false >
+   : public MeshSuperentityStorageLayer< MeshConfig, Device, EntityTopology, typename SuperdimensionTag::Decrement >
 {
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
-class MeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionTag< EntityTopology::dimension >, false >
+class MeshSuperentityStorageLayer< MeshConfig, Device, EntityTopology, DimensionTag< EntityTopology::dimension >, false >
 {
    using SuperdimensionTag = DimensionTag< EntityTopology::dimension >;
-   using MeshTraitsType = MeshTraits< MeshConfig >;
+   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
    using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >;
-   using ThisType = MeshSuperentityStorageLayer< MeshConfig, EntityTopology, SuperdimensionTag, false >;
 
 protected:
    using GlobalIndexType    = typename SuperentityTraitsType::GlobalIndexType;
@@ -156,7 +161,7 @@ protected:
 
    void print( std::ostream& str ) const {}
 
-   bool operator==( const ThisType& layer ) const
+   bool operator==( const MeshSuperentityStorageLayer& layer ) const
    {
       return true;
    }
@@ -175,16 +180,17 @@ protected:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 class MeshSuperentityStorageLayer< MeshConfig,
+                                   Device,
                                    EntityTopology,
                                    DimensionTag< EntityTopology::dimension >,
                                    true >
 {
    using SuperdimensionTag = DimensionTag< EntityTopology::dimension >;
-   using MeshTraitsType = MeshTraits< MeshConfig >;
+   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
    using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >;
-   using ThisType = MeshSuperentityStorageLayer< MeshConfig, EntityTopology, SuperdimensionTag, true >;
 
 protected:
    using GlobalIndexType    = typename SuperentityTraitsType::GlobalIndexType;
@@ -201,7 +207,7 @@ protected:
 
    void print( std::ostream& str ) const {}
 
-   bool operator==( const ThisType& layer ) const
+   bool operator==( const MeshSuperentityStorageLayer& layer ) const
    {
       return true;
    }

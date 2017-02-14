@@ -19,11 +19,12 @@ namespace Meshes {
 // This is the implementation of the BoundaryTags layer for one specific dimension.
 // It is inherited by MeshStorageLayer.
 template< typename MeshConfig,
+          typename Device,
           typename DimensionTag,
-          bool TagStorage = MeshConfig::boundaryTagsStorage( typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::EntityTopology() ) >
+          bool TagStorage = MeshConfig::boundaryTagsStorage( typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology() ) >
 class MeshBoundaryTagsLayer
 {
-   using MeshTraitsType    = MeshTraits< MeshConfig >;
+   using MeshTraitsType    = MeshTraits< MeshConfig, Device >;
    using EntityTraitsType  = typename MeshTraitsType::template EntityTraits< DimensionTag::value >;
 
 public:
@@ -155,10 +156,11 @@ private:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename DimensionTag >
-class MeshBoundaryTagsLayer< MeshConfig, DimensionTag, false >
+class MeshBoundaryTagsLayer< MeshConfig, Device, DimensionTag, false >
 {
-   using MeshTraitsType    = MeshTraits< MeshConfig >;
+   using MeshTraitsType    = MeshTraits< MeshConfig, Device >;
    using EntityTraitsType  = typename MeshTraitsType::template EntityTraits< DimensionTag::value >;
 
 public:

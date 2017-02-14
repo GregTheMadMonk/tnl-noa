@@ -25,6 +25,7 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           typename SubdimensionTag,
           bool SubentityStorage =
@@ -32,16 +33,13 @@ template< typename MeshConfig,
 class MeshSubentityStorageLayer;
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 class MeshSubentityStorageLayers
-   : public MeshSubentityStorageLayer< MeshConfig,
-                                       EntityTopology,
-                                       DimensionTag< 0 > >
+   : public MeshSubentityStorageLayer< MeshConfig, Device, EntityTopology, DimensionTag< 0 > >
 {
-   using BaseType = MeshSubentityStorageLayer< MeshConfig,
-                                               EntityTopology,
-                                               DimensionTag< 0 > >;
-   using MeshTraitsType = MeshTraits< MeshConfig >;
+   using BaseType = MeshSubentityStorageLayer< MeshConfig, Device, EntityTopology, DimensionTag< 0 > >;
+   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
 public:
    template< int Subdimension >
@@ -54,21 +52,18 @@ public:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           typename SubdimensionTag >
 class MeshSubentityStorageLayer< MeshConfig,
+                                 Device,
                                  EntityTopology,
                                  SubdimensionTag,
                                  true >
-   : public MeshSubentityStorageLayer< MeshConfig,
-                                       EntityTopology,
-                                       typename SubdimensionTag::Increment >
+   : public MeshSubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >
 {
-   using BaseType = MeshSubentityStorageLayer< MeshConfig,
-                                               EntityTopology,
-                                               typename SubdimensionTag::Increment >;
-
-   using MeshTraitsType      = MeshTraits< MeshConfig >;
+   using BaseType = MeshSubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >;
+   using MeshTraitsType      = MeshTraits< MeshConfig, Device >;
    using SubentityTraitsType = typename MeshTraitsType::template SubentityTraits< EntityTopology, SubdimensionTag::value >;
 
 protected:
@@ -130,22 +125,24 @@ private:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           typename SubdimensionTag >
 class MeshSubentityStorageLayer< MeshConfig,
+                                 Device,
                                  EntityTopology,
                                  SubdimensionTag,
                                  false >
-   : public MeshSubentityStorageLayer< MeshConfig,
-                                       EntityTopology,
-                                       typename SubdimensionTag::Increment >
+   : public MeshSubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >
 {
 };
 
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 class MeshSubentityStorageLayer< MeshConfig,
+                                 Device,
                                  EntityTopology,
                                  DimensionTag< EntityTopology::dimension >,
                                  true >
@@ -183,8 +180,10 @@ protected:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 class MeshSubentityStorageLayer< MeshConfig,
+                                 Device,
                                  EntityTopology,
                                  DimensionTag< EntityTopology::dimension >,
                                  false >

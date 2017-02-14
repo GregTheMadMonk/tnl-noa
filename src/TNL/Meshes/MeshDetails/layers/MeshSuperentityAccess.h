@@ -23,25 +23,29 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           typename DimensionTag,
           bool SuperentityStorage =
-             MeshTraits< MeshConfig >::template SuperentityTraits< EntityTopology, DimensionTag::value >::storageEnabled >
+             MeshTraits< MeshConfig, Device >::template SuperentityTraits< EntityTopology, DimensionTag::value >::storageEnabled >
 class MeshSuperentityAccessLayer;
 
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 class MeshSuperentityAccess
    : public MeshSuperentityAccessLayer< MeshConfig,
+                                        Device,
                                         EntityTopology,
-                                        Meshes::DimensionTag< MeshTraits< MeshConfig >::meshDimension > >
+                                        Meshes::DimensionTag< MeshTraits< MeshConfig, Device >::meshDimension > >
 {
    using BaseType = MeshSuperentityAccessLayer< MeshConfig,
+                                                Device,
                                                 EntityTopology,
-                                                Meshes::DimensionTag< MeshTraits< MeshConfig >::meshDimension > >;
+                                                Meshes::DimensionTag< MeshTraits< MeshConfig, Device >::meshDimension > >;
 
-   using MeshTraitsType = MeshTraits< MeshConfig >;
+   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
    template< int Superdimension >
    using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >;
@@ -103,17 +107,18 @@ public:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           typename DimensionTag >
 class MeshSuperentityAccessLayer< MeshConfig,
+                                  Device,
                                   EntityTopology,
                                   DimensionTag,
                                   true >
-   : public MeshSuperentityAccessLayer< MeshConfig, EntityTopology, typename DimensionTag::Decrement >
+   : public MeshSuperentityAccessLayer< MeshConfig, Device, EntityTopology, typename DimensionTag::Decrement >
 {
-	using BaseType = MeshSuperentityAccessLayer< MeshConfig, EntityTopology, typename DimensionTag::Decrement >;
-
-   using MeshTraitsType = MeshTraits< MeshConfig >;
+	using BaseType = MeshSuperentityAccessLayer< MeshConfig, Device, EntityTopology, typename DimensionTag::Decrement >;
+   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
    using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionTag::value >;
 
 public:
@@ -206,25 +211,29 @@ private:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           typename DimensionTag >
 class MeshSuperentityAccessLayer< MeshConfig,
+                                  Device,
                                   EntityTopology,
                                   DimensionTag,
                                   false >
-   : public MeshSuperentityAccessLayer< MeshConfig, EntityTopology, typename DimensionTag::Decrement >
+   : public MeshSuperentityAccessLayer< MeshConfig, Device, EntityTopology, typename DimensionTag::Decrement >
 {
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 class MeshSuperentityAccessLayer< MeshConfig,
+                                  Device,
                                   EntityTopology,
                                   Meshes::DimensionTag< EntityTopology::dimension >,
                                   false >
 {
    using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
-   using MeshTraitsType = MeshTraits< MeshConfig >;
+   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
    using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionTag::value >;
 
 protected:
@@ -247,7 +256,7 @@ protected:
                              const GlobalIndexType& globalIndex ) {}
    void getSuperentityIndices() {}
 
-   bool operator==( const MeshSuperentityAccess< MeshConfig, EntityTopology >& other ) const
+   bool operator==( const MeshSuperentityAccessLayer& other ) const
    {
       return true;
    }
@@ -256,14 +265,16 @@ protected:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 class MeshSuperentityAccessLayer< MeshConfig,
+                                  Device,
                                   EntityTopology,
                                   Meshes::DimensionTag< EntityTopology::dimension >,
                                   true >
 {
    using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
-   using MeshTraitsType = MeshTraits< MeshConfig >;
+   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
    using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionTag::value >;
 
 protected:

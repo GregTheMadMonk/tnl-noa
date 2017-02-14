@@ -26,17 +26,18 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
+          typename Device,
           typename DimensionTag,
-          bool EntityStorage = MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::storageEnabled >
+          bool EntityStorage = MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::storageEnabled >
 class MeshStorageLayer;
 
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 class MeshStorageLayers
-   : public MeshStorageLayer< MeshConfig, typename MeshTraits< MeshConfig >::DimensionTag >
+   : public MeshStorageLayer< MeshConfig, Device, typename MeshTraits< MeshConfig, Device >::DimensionTag >
 {
-   using MeshTraitsType   = MeshTraits< MeshConfig >;
-   using BaseType         = MeshStorageLayer< MeshConfig, typename MeshTraitsType::DimensionTag >;
+   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
+   using BaseType       = MeshStorageLayer< MeshConfig, Device, typename MeshTraitsType::DimensionTag >;
    template< int Dimension >
    using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
 
@@ -55,7 +56,8 @@ protected:
       static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get subentity storage of entities which are not configured for storage." );
       static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
       using BaseType = MeshSubentityStorageLayers< MeshConfig,
-                                                   typename MeshTraits< MeshConfig >::template EntityTraits< Dimension >::EntityTopology >;
+                                                   Device,
+                                                   typename EntityTraits< Dimension >::EntityTopology >;
       return BaseType::template getSubentityStorageNetwork< Subdimension >();
    }
 
@@ -66,7 +68,8 @@ protected:
       static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get superentity storage of entities which are not configured for storage." );
       static_assert( Dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
       using BaseType = MeshSuperentityStorageLayers< MeshConfig,
-                                                     typename MeshTraits< MeshConfig >::template EntityTraits< Dimension >::EntityTopology >;
+                                                     Device,
+                                                     typename EntityTraits< Dimension >::EntityTopology >;
       return BaseType::template getSuperentityStorageNetwork< Superdimension >();
    }
 
@@ -111,28 +114,32 @@ protected:
 
 
 template< typename MeshConfig,
+          typename Device,
           typename DimensionTag >
 class MeshStorageLayer< MeshConfig,
+                        Device,
                         DimensionTag,
                         true >
-   : public MeshStorageLayer< MeshConfig, typename DimensionTag::Decrement >,
+   : public MeshStorageLayer< MeshConfig, Device, typename DimensionTag::Decrement >,
      public MeshSubentityStorageLayers< MeshConfig,
-                                        typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::EntityTopology >,
+                                        Device,
+                                        typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
      public MeshSuperentityStorageLayers< MeshConfig,
-                                          typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::EntityTopology >,
-     public MeshBoundaryTagsLayer< MeshConfig, DimensionTag >
+                                          Device,
+                                          typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
+     public MeshBoundaryTagsLayer< MeshConfig, Device, DimensionTag >
 {
 public:
-   using BaseType = MeshStorageLayer< MeshConfig, typename DimensionTag::Decrement >;
-   using MeshTraitsType   = MeshTraits< MeshConfig >;
+   using BaseType = MeshStorageLayer< MeshConfig, Device, typename DimensionTag::Decrement >;
+   using MeshTraitsType   = MeshTraits< MeshConfig, Device >;
    using EntityTraitsType = typename MeshTraitsType::template EntityTraits< DimensionTag::value >;
    using StorageArrayType = typename EntityTraitsType::StorageArrayType;
    using GlobalIndexType  = typename EntityTraitsType::GlobalIndexType;
    using EntityType       = typename EntityTraitsType::EntityType;
    using EntityTopology   = typename EntityTraitsType::EntityTopology;
-   using SubentityStorageBaseType = MeshSubentityStorageLayers< MeshConfig, EntityTopology >;
-   using SuperentityStorageBaseType = MeshSuperentityStorageLayers< MeshConfig, EntityTopology >;
-   using BoundaryTagsBaseType = MeshBoundaryTagsLayer< MeshConfig, DimensionTag >;
+   using SubentityStorageBaseType = MeshSubentityStorageLayers< MeshConfig, Device, EntityTopology >;
+   using SuperentityStorageBaseType = MeshSuperentityStorageLayers< MeshConfig, Device, EntityTopology >;
+   using BoundaryTagsBaseType = MeshBoundaryTagsLayer< MeshConfig, Device, DimensionTag >;
 
    /****
      * Make visible getters of the lower layer
@@ -243,24 +250,25 @@ protected:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename DimensionTag >
-class MeshStorageLayer< MeshConfig, DimensionTag, false >
-   : public MeshStorageLayer< MeshConfig, typename DimensionTag::Decrement  >
+class MeshStorageLayer< MeshConfig, Device, DimensionTag, false >
+   : public MeshStorageLayer< MeshConfig, Device, typename DimensionTag::Decrement  >
 {
 };
 
-template< typename MeshConfig >
-class MeshStorageLayer< MeshConfig, Meshes::DimensionTag< 0 >, true >
-   : public MeshSuperentityStorageLayers< MeshConfig,
-                                          MeshVertexTopology >,
-     public MeshBoundaryTagsLayer< MeshConfig, Meshes::DimensionTag< 0 > >
+template< typename MeshConfig,
+          typename Device >
+class MeshStorageLayer< MeshConfig, Device, Meshes::DimensionTag< 0 >, true >
+   : public MeshSuperentityStorageLayers< MeshConfig, Device, MeshVertexTopology >,
+     public MeshBoundaryTagsLayer< MeshConfig, Device, Meshes::DimensionTag< 0 > >
 {
 public:
    using DimensionTag               = Meshes::DimensionTag< 0 >;
-   using SuperentityStorageBaseType = MeshSuperentityStorageLayers< MeshConfig, MeshVertexTopology >;
-   using BoundaryTagsBaseType       = MeshBoundaryTagsLayer< MeshConfig, Meshes::DimensionTag< 0 > >;
+   using SuperentityStorageBaseType = MeshSuperentityStorageLayers< MeshConfig, Device, MeshVertexTopology >;
+   using BoundaryTagsBaseType       = MeshBoundaryTagsLayer< MeshConfig, Device, Meshes::DimensionTag< 0 > >;
 
-   using MeshTraitsType             = MeshTraits< MeshConfig >;
+   using MeshTraitsType             = MeshTraits< MeshConfig, Device >;
    using EntityTraitsType           = typename MeshTraitsType::template EntityTraits< 0 >;
    using StorageArrayType           = typename EntityTraitsType::StorageArrayType;
    using GlobalIndexType            = typename EntityTraitsType::GlobalIndexType;
@@ -385,8 +393,9 @@ protected:
 /****
  * Forces termination of recursive inheritance (prevents compiler from generating huge error logs)
  */
-template< typename MeshConfig >
-class MeshStorageLayer< MeshConfig, DimensionTag< 0 >, false >
+template< typename MeshConfig,
+          typename Device >
+class MeshStorageLayer< MeshConfig, Device, DimensionTag< 0 >, false >
 {
 };
 

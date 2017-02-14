@@ -34,9 +34,9 @@ template< typename MeshConfig,
           typename Device = Devices::Host >
 class Mesh
    : public Object,
-     protected MeshStorageLayers< MeshConfig >
+     protected MeshStorageLayers< MeshConfig, Device >
 {
-      using StorageBaseType = MeshStorageLayers< MeshConfig >;
+      using StorageBaseType = MeshStorageLayers< MeshConfig, Device >;
 
    public:
       using Config          = MeshConfig;
