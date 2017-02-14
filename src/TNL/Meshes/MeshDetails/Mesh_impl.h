@@ -196,6 +196,8 @@ writeProlog( Logger& logger )
 {
    logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Number of cells:", getEntitiesCount< getMeshDimension() >() );
+   if( getMeshDimension() > 1 )
+      logger.writeParameter( "Number of faces:", getEntitiesCount< getMeshDimension() - 1 >() );
    logger.writeParameter( "Number of vertices:", getEntitiesCount< 0 >() );
    // TODO: more parameters?
 }
