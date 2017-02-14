@@ -26,9 +26,6 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig >
-class Mesh;
-
-template< typename MeshConfig >
 class MeshInitializer;
 
 template< typename MeshConfig,
@@ -128,7 +125,7 @@ class MeshEntityInitializerLayer< MeshConfig,
                                                 SubdimensionTag,
                                                 typename SuperdimensionTag::Decrement >;
    using InitializerType            = MeshInitializer< MeshConfig >;
-   using MeshType                   = Mesh< MeshConfig >;
+   using MeshType                   = typename InitializerType::MeshType;
 
    using SuperentityTraitsType      = typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >;
    using SuperentityTopology        = typename SuperentityTraitsType::EntityTopology;
@@ -188,7 +185,7 @@ class MeshEntityInitializerLayer< MeshConfig,
                                                 SubdimensionTag,
                                                 typename SuperdimensionTag::Decrement >;
    using InitializerType            = MeshInitializer< MeshConfig >;
-   using MeshType                   = Mesh< MeshConfig >;
+   using MeshType                   = typename InitializerType::MeshType;
 
    using SuperentityTraitsType      = typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >;
    using SuperentityTopology        = typename SuperentityTraitsType::EntityTopology;
@@ -252,7 +249,7 @@ class MeshEntityInitializerLayer< MeshConfig,
                                                 SubdimensionTag,
                                                 typename SuperdimensionTag::Decrement >;
    using InitializerType           = MeshInitializer< MeshConfig >;
-   using MeshType                  = Mesh< MeshConfig >;
+   using MeshType                  = typename InitializerType::MeshType;
 
    using SuperentityTraitsType     = typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >;
    using SuperentityTopology       = typename SuperentityTraitsType::EntityTopology;
@@ -310,7 +307,7 @@ class MeshEntityInitializerLayer< MeshConfig,
                                                 SubdimensionTag,
                                                 typename SuperdimensionTag::Decrement >;
    using InitializerType           = MeshInitializer< MeshConfig >;
-   using MeshType                  = Mesh< MeshConfig >;
+   using MeshType                  = typename InitializerType::MeshType;
 
    using SuperentityTraitsType     = typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >;
    using SuperentityTopology       = typename SuperentityTraitsType::EntityTopology;
@@ -364,7 +361,7 @@ class MeshEntityInitializerLayer< MeshConfig,
                                                 SubdimensionTag,
                                                 typename SuperdimensionTag::Decrement >;
    using InitializerType            = MeshInitializer< MeshConfig >;
-   using MeshType                   = Mesh< MeshConfig >;
+   using MeshType                   = typename InitializerType::MeshType;
 
    using SuperentityTraitsType      = typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >;
    using SuperentityTopology        = typename SuperentityTraitsType::EntityTopology;
@@ -428,7 +425,7 @@ class MeshEntityInitializerLayer< MeshConfig,
                                   false >
 {
    using InitializerType = MeshInitializer< MeshConfig >;
-   using MeshType = Mesh< MeshConfig >;
+   using MeshType        = typename InitializerType::MeshType;
 
 public:
    static void initSuperentities( InitializerType& meshInitializer, MeshType& mesh ) {}
