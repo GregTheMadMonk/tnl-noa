@@ -42,24 +42,34 @@ class CompressibleConservativeVariables
         
       void setMesh( const MeshPointer& meshPointer )
       {
-         this->density.setMesh( meshPointer );
-         this->momentum.setMesh( meshPointer );
+         this->density->setMesh( meshPointer );
+         this->momentum->setMesh( meshPointer );
          //this->pressure.setMesh( meshPointer );
-         this->energy.setMesh( meshPointer );
+         this->energy->setMesh( meshPointer );
+         this->dofs = this->density->getDofs() + 
+            this->momentum->getDofs() +
+            this->energy->getDofs();
       }
       
       template< typename Vector >
       void bind( const MeshPointer& meshPointer,
-                 const Vector& data )
+                 const Vector& data,
+                 IndexType offset = 0 )
       {
-         this->density.bind( meshPointer, 0 );
-         IndexType offset( this->density.getDofs() );
+         IndexType currentOffset( offset );
+         this->density->bind( meshPointer, data, currentOffset );
+         currentOffset += this->density->getDofs();
          for( IndexType i = 0; i < Dimensions; i++ )
          {
-            this->momentum[ i ].bind( meshPointer, offset );
-            offset += this->momentum[ i ].getDofs();
+            ( *this->momentum )[ i ]->bind( meshPointer, data, currentOffset );
+            currentOffset += ( *this->momentum )[ i ]->getDofs();
          }
-         this->energy.bind( meshPointer, offset );
+         this->energy->bind( meshPointer, data, currentOffset );
+      }
+      
+      void IndexType getDofs() const
+      {
+         return this->dofs;
       }
       
       MeshFunctionPointer& getDensity()
@@ -121,8 +131,15 @@ class CompressibleConservativeVariables
       {
          this->energy = energy;
       }
+      
+      void getVelocityField( VelocityFieldType& velocityField )
+      {
+         
+      }
 
    protected:
+      
+      IndexType dofs;
       
       MeshFunctionPointer density;
       MomentumFieldPointer momentum;

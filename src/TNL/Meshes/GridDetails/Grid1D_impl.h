@@ -171,6 +171,29 @@ getEntitiesCount() const
 template< typename Real,
           typename Device,
           typename Index >
+   template< int EntityDimensions >
+__cuda_callable__  inline
+Index
+Grid< 1, Real, Device, Index >::
+getEntitiesCount() const
+{
+   static_assert( EntityDimensions <= 1 &&
+                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
+ 
+   switch( EntityDimensions )
+   {
+      case 1:
+         return this->numberOfCells;
+      case 0:
+         return this->numberOfVertices;
+   }
+   return -1;
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename EntityType >
  __cuda_callable__ inline
 EntityType

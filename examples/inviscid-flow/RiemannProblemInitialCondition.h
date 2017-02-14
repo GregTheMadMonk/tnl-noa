@@ -30,6 +30,7 @@ class RiemannProblemInitialCondition
       static const int Dimensions = MeshType::getMeshDimensions();
       typedef Containers::StaticVector< Dimensions, RealType > VertexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      typedef SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef Functions::VectorField< Dimensions, MeshType > VectorFieldType;
       
       RiemannProblemInitialCondition()
@@ -148,24 +149,25 @@ class RiemannProblemInitialCondition
          typedef Functions::Analytic::VectorNorm< Dimensions, RealType > VectorNormType;
          typedef Operators::Analytic::Sign< Dimensions, RealType > SignType;
          typedef Functions::OperatorFunction< SignType, VectorNormType > InitialConditionType;
+         typedef SharedPointer< InitialConditionType, DeviceType > InitialConditionPointer;
          
-         InitialConditionType initialCondition;
-         initialCondition.getFunction().setCenter( center );
-         initialCondition.getFunction().setMaxNorm( true );
-         initialCondition.getFunction().setRadius( discontinuityPlacement[ 0 ] );
-         discontinuityPlacement /= discontinuityPlacement[ 0 ];
+         InitialConditionPointer initialCondition;
+         initialCondition->getFunction().setCenter( center );
+         initialCondition->getFunction().setMaxNorm( true );
+         initialCondition->getFunction().setRadius( discontinuityPlacement[ 0 ] );
+         discontinuityPlacement *= 1.0 / discontinuityPlacement[ 0 ];
          for( int i = 1; i < Dimensions; i++ )
             discontinuityPlacement[ i ] = 1.0 / discontinuityPlacement[ i ];
-         initialCondition.getFunction().setAnisotropy( discontinuityPlacement );
-         initialCondition.getFunction().setMultiplicator( -1.0 );
+         initialCondition->getFunction().setAnisotropy( discontinuityPlacement );
+         initialCondition->getFunction().setMultiplicator( -1.0 );
          
          Functions::MeshFunctionEvaluator< MeshFunctionType, InitialConditionType > evaluator;
 
          /****
           * Density
           */
-         initialCondition.getOperator().setPositiveValue( leftDensity );
-         initialCondition.getOperator().setNegativeValue( rightDensity );
+         initialCondition->getOperator().setPositiveValue( leftDensity );
+         initialCondition->getOperator().setNegativeValue( rightDensity );
          evaluator.evaluate( conservativeVariables.getDensity(), initialCondition );
          
          /****
@@ -173,9 +175,9 @@ class RiemannProblemInitialCondition
           */
          for( int i = 0; i < Dimensions; i++ )
          {
-            initialCondition.getOperator().setPositiveValue( leftDensity * leftVelocity[ i ] );
-            initialCondition.getOperator().setNegativeValue( rightDensity * rightVelocity[ i ] );
-            evaluator.evaluate( conservativeVariables.getMomentum()[ i ], initialCondition );
+            initialCondition->getOperator().setPositiveValue( leftDensity * leftVelocity[ i ] );
+            initialCondition->getOperator().setNegativeValue( rightDensity * rightVelocity[ i ] );
+            evaluator.evaluate( ( *conservativeVariables.getMomentum() )[ i ], initialCondition );
          }
          
          /****
@@ -185,8 +187,8 @@ class RiemannProblemInitialCondition
          const RealType rightKineticEnergy = rightVelocity.lpNorm( 2.0 );
          const RealType leftEnergy = leftPressure / ( gamma + 1.0 ) + 0.2 * leftDensity * leftKineticEnergy * leftKineticEnergy;
          const RealType rightEnergy = rightPressure / ( gamma + 1.0 ) + 0.2 * rightDensity * rightKineticEnergy * rightKineticEnergy;
-         initialCondition.getOperator().setPositiveValue( leftEnergy );
-         initialCondition.getOperator().setNegativeValue( rightEnergy );
+         initialCondition->getOperator().setPositiveValue( leftEnergy );
+         initialCondition->getOperator().setNegativeValue( rightEnergy );
          evaluator.evaluate( conservativeVariables.getEnergy(), initialCondition );
       }
       

@@ -1,3 +1,13 @@
+/***************************************************************************
+                          eulerProblem_impl.h  -  description
+                             -------------------
+    begin                : Feb 13, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
 #pragma once
 
 #include <TNL/FileName.h>
@@ -9,6 +19,8 @@
 
 #include "RiemannProblemInitialCondition.h"
 #include "CompressibleConservativeVariables.h"
+#include "PhysicalVariablesGetter.h"
+#include "eulerProblem.h"
 
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsEnergy.h"
@@ -70,6 +82,9 @@ setup( const MeshPointer& meshPointer,
    if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
+   velocity->setMesh( meshPointer );
+   pressure->setMesh( meshPointer );
+   energy->setMesh( meshPointer );
    return true;
 }
 
@@ -85,7 +100,7 @@ getDofs( const MeshPointer& mesh ) const
     * Return number of  DOFs (degrees of freedom) i.e. number
     * of unknowns to be resolved by the main solver.
     */
-   return ( 2 + Dimensions ) * mesh->template getEntitiesCount< typename MeshType::Cell >();
+   return this->conservativeVariables->getDofs();
 }
 
 template< typename Mesh,
@@ -97,6 +112,7 @@ eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 bindDofs( const MeshPointer& mesh,
           DofVectorPointer& dofVector )
 {
+   this->conservativeVariables.bind( mesh, dofVector );
 }
 
 template< typename Mesh,
@@ -111,66 +127,16 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                      MeshDependentDataPointer& meshDependentData )
 {
    CompressibleConservativeVariables< MeshType > conservativeVariables;
-   conservativeVariables.bind( dofs );
+   conservativeVariables.bind( mesh, dofs );
    const String& initialConditionType = parameters.getParameter< String >( "initial-condition" );
    if( initialConditionType == "riemann-problem" )
    {
       RiemannProblemInitialCondition< MeshType > initialCondition;
       if( ! initialCondition.setup( parameters ) )
          return false;
-      initialCondition.setInitialCondtion( conservativeVariables );
+      initialCondition.setInitialCondition( conservativeVariables );
    }
    return true;
-   /*typedef typename MeshType::Cell Cell;
-   double gamma = parameters.getParameter< double >( "gamma" );
-   double rhoL = parameters.getParameter< double >( "left-density" );
-   double velLX = parameters.getParameter< double >( "left-velocityX" );
-   double velLY = parameters.getParameter< double >( "left-velocityY" );
-   double preL = parameters.getParameter< double >( "left-pressure" );
-   double eL = ( preL / (gamma - 1) ) + 0.5 * rhoL * ::pow(velLX,2) + ::pow(velLY,2);
-   double rhoR = parameters.getParameter< double >( "right-density" );
-   double velRX = parameters.getParameter< double >( "right-velocityX" );
-   double velRY = parameters.getParameter< double >( "right-velocityY" );
-   double preR = parameters.getParameter< double >( "right-pressure" );
-   double eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * ::pow(velRX,2) + ::pow(velRY,2);
-   double x0 = parameters.getParameter< double >( "riemann-border" );
-   int size = mesh->template getEntitiesCount< Cell >();
-   int size2 = size * size;
-   this->rho.bind( *dofs, 0, size2 );
-   this->rhoVelX.bind( *dofs, size2,size2);
-   this->rhoVelY.bind( *dofs, 2*size2,size2);
-   this->energy.bind( *dofs,3*size2,size2);
-   this->data.setSize( 4*size2);
-   this->pressure.bind(this->data,0,size2);
-   this->velocity.bind(this->data,size2,size2);
-   this->velocityX.bind(this->data,2*size2,size2);
-   this->velocityY.bind(this->data,3*size2,size2);
-   for(long int j = 0; j < size; j++)   
-      for(long int i = 0; i < size; i++)
-         if ((i < x0 * size)&&(j < x0 * size) )
-            {
-               this->rho[j*size+i] = rhoL;
-               this->rhoVelX[j*size+i] = rhoL * velLX;
-               this->rhoVelY[j*size+i] = rhoL * velLY;
-               this->energy[j*size+i] = eL;
-               this->velocity[j*size+i] = ::sqrt( ::pow(velLX,2) + ::pow(velLY,2) );
-               this->velocityX[j*size+i] = velLX;
-               this->velocityY[j*size+i] = velLY;
-               this->pressure[j*size+i] = preL;
-            }
-         else
-            {
-               this->rho[j*size+i] = rhoR;
-               this->rhoVelX[j*size+i] = rhoR * velRX;
-               this->rhoVelY[j*size+i] = rhoR * velRY;
-               this->energy[j*size+i] = eR;
-               this->velocity[j*size+i] = ::sqrt( ::pow(velRX,2) + :: pow(velRY,2) );
-               this->velocityX[j*size+i] = velRX;
-               this->velocityY[j*size+i] = velRY;
-               this->pressure[j*size+i] = preR;
-            };
-   this->gamma = gamma;*/
-   //return true; 
 }
 
 template< typename Mesh,
@@ -212,35 +178,32 @@ makeSnapshot( const RealType& time,
               MeshDependentDataPointer& meshDependentData )
 {
   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
-   this->bindDofs( mesh, dofs );
+  
+  this->bindDofs( mesh, dofs );
+  PhysicalVariablesGetter< MeshType > physicalVariablesGetter;
+  physicalVariablesGetter.getVelocity( this->conservativeVariables, this->velocity );
+  physicalVariablesGetter.getPressure( this->conservativeVariables, this->pressure );
+  physicalVariablesGetter.getEnergy( this->conservativeVariables, this->energy );
+  
    FileName fileName;
    fileName.setExtension( "tnl" );
    fileName.setIndex( step );
-   fileName.setFileNameBase( "rho-" );
-   if( ! this->rho.save( fileName.getFileName() ) )
+   fileName.setFileNameBase( "density-" );
+   if( ! this->conservativeVariables->getDensity()->save( fileName.getFileName() ) )
       return false;
-   fileName.setFileNameBase( "rhoVelX-" );
-   if( ! this->rhoVelX.save( fileName.getFileName() ) )
-      return false;
-   fileName.setFileNameBase( "rhoVelY-" );
-   if( ! this->rhoVelY.save( fileName.getFileName() ) )
-      return false;
-   fileName.setFileNameBase( "energy-" );
-   if( ! this->energy.save( fileName.getFileName() ) )
-      return false;
-   fileName.setFileNameBase( "velocityX-" );
-   if( ! this->velocityX.save( fileName.getFileName() ) )
-      return false;
-   fileName.setFileNameBase( "velocityY-" );
-   if( ! this->velocityY.save( fileName.getFileName() ) )
-      return false;
+   
    fileName.setFileNameBase( "velocity-" );
-   if( ! this->velocity.save( fileName.getFileName() ) )
-      return false;
-   fileName.setFileNameBase( "pressue-" );
-   if( ! this->pressure.save( fileName.getFileName() ) )
+   if( ! this->velocity->save( fileName.getFileName() ) )
       return false;
 
+   fileName.setFileNameBase( "pressure-" );
+   if( ! this->pressure->save( fileName.getFileName() ) )
+      return false;
+
+   fileName.setFileNameBase( "energy-" );
+   if( ! this->energy->save( fileName.getFileName() ) )
+      return false;
+   
    return true;
 }
 

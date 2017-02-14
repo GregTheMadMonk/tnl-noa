@@ -16,11 +16,11 @@ using namespace TNL;
 typedef eulerBuildConfigTag BuildConfig;
 
 /****
- * Uncoment the following (and comment the previous line) for the complete build.
+ * Uncomment the following (and comment the previous line) for the complete build.
  * This will include support for all floating point precisions, all indexing types
  * and more solvers. You may then choose between them from the command line.
  * The compile time may, however, take tens of minutes or even several hours,
- * esppecially if CUDA is enabled. Use this, if you want, only for the final build,
+ * especially if CUDA is enabled. Use this, if you want, only for the final build,
  * not in the development phase.
  */
 //typedef tnlDefaultConfigTag BuildConfig;

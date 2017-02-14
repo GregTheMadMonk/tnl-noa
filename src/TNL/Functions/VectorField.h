@@ -18,7 +18,7 @@
 namespace TNL {
 namespace Functions {
 
-template< int Dimensions,
+template< int Size,
           typename Function >
 class VectorField 
    : public Functions::Domain< Function::getDomainDimensions(), 
@@ -33,7 +33,7 @@ class VectorField
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
       {
-         for( int i = 0; i < Dimensions; i++ )
+         for( int i = 0; i < Size; i++ )
             FunctionType::configSetup( config, prefix + String( i ) + "-" );
       }
 
@@ -42,7 +42,7 @@ class VectorField
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         for( int i = 0; i < Dimensions; i++ )
+         for( int i = 0; i < Size; i++ )
             if( ! vectorField[ i ].setup( parameters, prefix + String( i ) + "-" ) )
             {
                std::cerr << "Unable to setup " << i << "-th coordinate of the vector field." << std::endl;
@@ -65,28 +65,29 @@ class VectorField
 
    protected:
       
-      Containers::StaticArray< Dimensions, FunctionType > vectorField;
+      Containers::StaticArray< Size, FunctionType > vectorField;
 };
    
    
-template< int Dimensions,
+template< int Size,
           typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-class VectorField< Dimensions, MeshFunction< Mesh, MeshEntityDimensions, Real > >
+class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
 {
    public:
       
       typedef Mesh MeshType;
       typedef SharedPointer< MeshType > MeshPointer;
       typedef MeshFunction< MeshType, MeshEntityDimensions, Real > FunctionType;
+      typedef SharedPointer< FunctionType > FunctionPointer;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
       {
-         for( int i = 0; i < Dimensions; i++ )
+         for( int i = 0; i < Size; i++ )
             FunctionType::configSetup( config, prefix + String( i ) + "-" );
       }
       
@@ -94,15 +95,21 @@ class VectorField< Dimensions, MeshFunction< Mesh, MeshEntityDimensions, Real > 
       
       VectorField( const MeshPointer& meshPointer )
       {
-         for( int i = 0; i < Dimensions; i++ )
-            this->vectorField[ i ].setMesh( meshPointer );
+         for( int i = 0; i < Size; i++ )
+            this->vectorField[ i ]->setMesh( meshPointer );
       };
+      
+      void setMesh( const MeshPointer& meshPointer )
+      {
+         for( int i = 0; i < Size; i++ )
+            this->vectorField[ i ]->setMesh( meshPointer );
+      }
       
       bool setup( const MeshPointer& meshPointer,
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         for( int i = 0; i < Dimensions; i++ )
+         for( int i = 0; i < Size; i++ )
             if( ! vectorField[ i ].setup( meshPointer, parameters, prefix + String( i ) + "-" ) )
             {
                std::cerr << "Unable to setup " << i << "-th coordinate of the vector field." << std::endl;
@@ -110,22 +117,27 @@ class VectorField< Dimensions, MeshFunction< Mesh, MeshEntityDimensions, Real > 
             }
          return true;
       }
+      
+      IndexType getDofs() const
+      {
+         return Size * this->vectorField[ 0 ]->getDofs();
+      }
 
       __cuda_callable__ 
-      const FunctionType& operator[]( int i ) const
+      const FunctionPointer& operator[]( int i ) const
       {
          return this->vectorField[ i ];
       }
       
       __cuda_callable__ 
-      FunctionType& operator[]( int i )
+      FunctionPointer& operator[]( int i )
       {
          return this->vectorField[ i ];
       }
 
    protected:
       
-      Containers::StaticArray< Dimensions, FunctionType > vectorField;
+      Containers::StaticArray< Size, FunctionPointer > vectorField;
    
 };
 
