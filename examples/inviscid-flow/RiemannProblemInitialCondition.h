@@ -13,6 +13,7 @@
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Operators/Analytic/Sign.h>
 #include <TNL/Functions/MeshFunctionEvaluator.h>
+#include <TNL/Operators/Analytic/Sign.h>
 #include "CompressibleConservativeVariables.h"
 
 namespace TNL {
@@ -158,7 +159,7 @@ class RiemannProblemInitialCondition
          initialCondition.getFunction().setAnisotropy( discontinuityPlacement );
          initialCondition.getFunction().setMultiplicator( -1.0 );
          
-         Functions::MeshFunctionEvaluator< Functions::MeshFunction, InitialConditionType > evaluator;
+         Functions::MeshFunctionEvaluator< MeshFunctionType, InitialConditionType > evaluator;
 
          /****
           * Density

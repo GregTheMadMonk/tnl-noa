@@ -84,7 +84,6 @@ class MeshFunction :
                  const SharedPointer< Vector >& dataPtr,
                  const IndexType& offset = 0 );
       
-      
       void setMesh( const MeshPointer& meshPointer );
       
       template< typename Device = Devices::Host >
@@ -92,6 +91,8 @@ class MeshFunction :
       const MeshType& getMesh() const;
       
       const MeshPointer& getMeshPointer() const;
+      
+      __cuda_callable__ IndexType getDofs() const;
       
       __cuda_callable__ const VectorType& getData() const;      
       

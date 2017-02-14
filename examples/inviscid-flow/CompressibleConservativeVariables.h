@@ -48,6 +48,20 @@ class CompressibleConservativeVariables
          this->energy.setMesh( meshPointer );
       }
       
+      template< typename Vector >
+      void bind( const MeshPointer& meshPointer,
+                 const Vector& data )
+      {
+         this->density.bind( meshPointer, 0 );
+         IndexType offset( this->density.getDofs() );
+         for( IndexType i = 0; i < Dimensions; i++ )
+         {
+            this->momentum[ i ].bind( meshPointer, offset );
+            offset += this->momentum[ i ].getDofs();
+         }
+         this->energy.bind( meshPointer, offset );
+      }
+      
       MeshFunctionPointer& getDensity()
       {
          return this->density;

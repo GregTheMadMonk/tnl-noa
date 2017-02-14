@@ -79,6 +79,11 @@ class Grid< 2, Real, Device, Index > : public Object
    __cuda_callable__
    const VertexType& getProportions() const;
 
+
+   template< int EntityDimensions >
+   __cuda_callable__
+   IndexType getEntitiesCount() const;
+   
    template< typename EntityType >
    __cuda_callable__
    IndexType getEntitiesCount() const;

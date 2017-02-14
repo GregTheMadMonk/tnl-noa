@@ -19,15 +19,14 @@ namespace Operators {
 namespace Analytic {   
    
    
-template< typename Function >
-class Sign : public Functions::Domain< Function::getDomainDimenions(), 
-                                       Function::getDomainTyep() >
+template< int Dimensions,
+          typename Real >
+class Sign : public Functions::Domain< Dimensions, Functions::SpaceDomain >
 {
    public:
       
-      typedef typename Function::RealType RealType;
-      typedef Containers::StaticVector< Function::getDomainDimenions(), 
-                                        RealType > VertexType;
+      typedef Real RealType;
+      typedef Containers::StaticVector< Dimensions, RealType > VertexType;
       
       Sign()
          : positiveValue( 1.0 ),
@@ -48,6 +47,7 @@ class Sign : public Functions::Domain< Function::getDomainDimenions(),
          this->positiveValue = parameters.getParameter< double >( prefix + "positive-value" );
          this->negativeValue = parameters.getParameter< double >( prefix + "negative-value" );
          this->zeroValue = parameters.getParameter< double >( prefix + "zero-value" );
+         return true;
       };      
       
       void setPositiveValue( const RealType& value )
@@ -80,6 +80,7 @@ class Sign : public Functions::Domain< Function::getDomainDimenions(),
          return this->zeroValue;
       }
       
+      template< typename Function >
       __cuda_callable__
       RealType operator()( const Function& function,
                            const VertexType& vertex,
@@ -94,7 +95,8 @@ class Sign : public Functions::Domain< Function::getDomainDimenions(),
          return this->zeroValue;         
       }
       
-      template< int XDiffOrder = 0,
+      template< typename Function,
+                int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
       __cuda_callable__

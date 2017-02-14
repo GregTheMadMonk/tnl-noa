@@ -255,6 +255,17 @@ template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
 __cuda_callable__
+typename MeshFunction< Mesh, MeshEntityDimensions, Real >::IndexType
+MeshFunction< Mesh, MeshEntityDimensions, Real >::
+getDofs() const
+{
+   return meshPointer->template getEntitiesCount< MeshEntityDimensions >();
+}
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
+__cuda_callable__
 const typename MeshFunction< Mesh, MeshEntityDimensions, Real >::VectorType& 
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
 getData() const

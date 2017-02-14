@@ -7,6 +7,9 @@
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 #include <TNL/Functions/Analytic/VectorNorm.h>
 
+#include "RiemannProblemInitialCondition.h"
+#include "CompressibleConservativeVariables.h"
+
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsEnergy.h"
 #include "LaxFridrichsMomentumX.h"
@@ -82,7 +85,7 @@ getDofs( const MeshPointer& mesh ) const
     * Return number of  DOFs (degrees of freedom) i.e. number
     * of unknowns to be resolved by the main solver.
     */
-   return 4*mesh->template getEntitiesCount< typename MeshType::Cell >();
+   return ( 2 + Dimensions ) * mesh->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
@@ -107,7 +110,18 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                      DofVectorPointer& dofs,
                      MeshDependentDataPointer& meshDependentData )
 {
-   typedef typename MeshType::Cell Cell;
+   CompressibleConservativeVariables< MeshType > conservativeVariables;
+   conservativeVariables.bind( dofs );
+   const String& initialConditionType = parameters.getParameter< String >( "initial-condition" );
+   if( initialConditionType == "riemann-problem" )
+   {
+      RiemannProblemInitialCondition< MeshType > initialCondition;
+      if( ! initialCondition.setup( parameters ) )
+         return false;
+      initialCondition.setInitialCondtion( conservativeVariables );
+   }
+   return true;
+   /*typedef typename MeshType::Cell Cell;
    double gamma = parameters.getParameter< double >( "gamma" );
    double rhoL = parameters.getParameter< double >( "left-density" );
    double velLX = parameters.getParameter< double >( "left-velocityX" );
@@ -155,8 +169,8 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                this->velocityY[j*size+i] = velRY;
                this->pressure[j*size+i] = preR;
             };
-   this->gamma = gamma;
-   return true; 
+   this->gamma = gamma;*/
+   //return true; 
 }
 
 template< typename Mesh,

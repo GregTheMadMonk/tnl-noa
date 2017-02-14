@@ -9,6 +9,8 @@
 #include "eulerRhs.h"
 #include "eulerBuildConfigTag.h"
 
+#include "RiemannProblemInitialCondition.h"
+
 using namespace TNL;
 
 typedef eulerBuildConfigTag BuildConfig;
@@ -33,7 +35,8 @@ template< typename ConfigTag >class eulerConfig
             config.addEntryEnum< String >( "dirichlet" );
             config.addEntryEnum< String >( "neumann" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
-         config.addEntry< double >( "left-density", "This sets a value of left density." );
+         RiemannProblemInitialCondition< Meshes::Grid< 3 > >::configSetup( config );
+         /*config.addEntry< double >( "left-density", "This sets a value of left density." );
          config.addEntry< double >( "left-velocityX", "This sets a value of left_x velocity." );
          config.addEntry< double >( "left-velocityY", "This sets a value of left_y velocity." );
          config.addEntry< double >( "left-pressure", "This sets a value of left pressure." );
@@ -42,7 +45,7 @@ template< typename ConfigTag >class eulerConfig
          config.addEntry< double >( "right-velocityX", "This sets a value of right_x velocity." );
          config.addEntry< double >( "right-velocityY", "This sets a value of right_y velocity." );
          config.addEntry< double >( "right-pressure", "This sets a value of right pressure." );
-         config.addEntry< double >( "gamma", "This sets a value of gamma constant.", 1.0 );
+         config.addEntry< double >( "gamma", "This sets a value of gamma constant.", 1.0 );*/
 
          /****
           * Add definition of your solver command line arguments.
