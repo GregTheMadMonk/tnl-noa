@@ -27,7 +27,7 @@
 
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/Mesh.h>
-#include <TNL/UniquePointer.h>
+#include <TNL/DevicePointer.h>
 
 namespace TNL {
 namespace Meshes {
@@ -210,8 +210,8 @@ struct MeshEntityStorageRebinderDivisor< Meshes::Mesh< MeshConfig, Devices::Cuda
       const auto entitiesCount = mesh.template getEntitiesCount< DimensionTag::value >();
       auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< DimensionTag::value, SuperdimensionTag::value >();
       using Multimap = typename std::remove_reference< decltype(superentitiesStorage) >::type;
-      UniquePointer< Mesh > meshPointer( mesh );
-      UniquePointer< Multimap > superentitiesStoragePointer( superentitiesStorage );
+      DevicePointer< Mesh > meshPointer( mesh );
+      DevicePointer< Multimap > superentitiesStoragePointer( superentitiesStorage );
       Devices::Cuda::synchronizeDevice();
 
       dim3 blockSize( 256 );
@@ -232,8 +232,8 @@ struct MeshEntityStorageRebinderDivisor< Meshes::Mesh< MeshConfig, Devices::Cuda
       const auto entitiesCount = mesh.template getEntitiesCount< SuperdimensionTag::value >();
       auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< SuperdimensionTag::value, DimensionTag::value >();
       using Multimap = typename std::remove_reference< decltype(subentitiesStorage) >::type;
-      UniquePointer< Mesh > meshPointer( mesh );
-      UniquePointer< Multimap > subentitiesStoragePointer( subentitiesStorage );
+      DevicePointer< Mesh > meshPointer( mesh );
+      DevicePointer< Multimap > subentitiesStoragePointer( subentitiesStorage );
       Devices::Cuda::synchronizeDevice();
 
       dim3 blockSize( 256 );
