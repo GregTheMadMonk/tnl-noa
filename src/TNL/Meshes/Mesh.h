@@ -23,12 +23,13 @@
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshStorageLayer.h>
 #include <TNL/Meshes/MeshDetails/config/MeshConfigValidator.h>
-#include <TNL/Meshes/MeshDetails/layers/MeshEntityStorageRebinder.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig > class MeshInitializer;
+template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
+struct MeshEntityStorageRebinderDivisor;
 
 
 template< typename MeshConfig, typename Device, typename MeshType >
@@ -73,6 +74,15 @@ class Mesh
       template< int Dimension >
       using EntityType = typename EntityTraits< Dimension >::EntityType;
 
+      // constructors
+      Mesh() = default;
+
+      explicit Mesh( const Mesh& mesh );
+
+      template< typename Device_ >
+      Mesh( const Mesh< MeshConfig, Device_ >& mesh );
+
+
       static constexpr int getMeshDimension();
 
       // types of common entities
@@ -101,9 +111,11 @@ class Mesh
       GlobalIndexType getEntitiesCount() const;
 
       template< int Dimension >
+      __cuda_callable__
       EntityType< Dimension >& getEntity( const GlobalIndexType& entityIndex );
 
       template< int Dimension >
+      __cuda_callable__
       const EntityType< Dimension >& getEntity( const GlobalIndexType& entityIndex ) const;
 
 
@@ -112,9 +124,11 @@ class Mesh
       GlobalIndexType getEntitiesCount() const;
 
       template< typename EntityType >
+      __cuda_callable__
       EntityType& getEntity( const GlobalIndexType& entityIndex );
 
       template< typename EntityType >
+      __cuda_callable__
       const EntityType& getEntity( const GlobalIndexType& entityIndex ) const;
 
 
@@ -142,7 +156,7 @@ class Mesh
       friend MeshInitializer< MeshConfig >;
 
       template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
-      friend struct MeshEntityStorageRebinderWorker;
+      friend struct MeshEntityStorageRebinderDivisor;
 };
 
 template< typename MeshConfig, typename Device >

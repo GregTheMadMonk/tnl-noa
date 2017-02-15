@@ -41,6 +41,12 @@ class MeshStorageLayers
    template< int Dimension >
    using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
 
+public:
+   MeshStorageLayers() = default;
+   explicit MeshStorageLayers( const MeshStorageLayers& other ) : BaseType( other ) {}
+   template< typename Device_ >
+   MeshStorageLayers( const MeshStorageLayers< MeshConfig, Device_ >& other ) : BaseType( other ) {}
+
 protected:
    template< int Dimension >
    bool setNumberOfEntities( const typename EntityTraits< Dimension >::GlobalIndexType& entitiesCount )
@@ -77,6 +83,7 @@ protected:
    // The following methods are implemented in the BoundaryTags layers. They are
    // needed for the mesh traverser.
    template< int Dimension >
+   __cuda_callable__
    bool isBoundaryEntity( const typename EntityTraits< Dimension >::GlobalIndexType& entityIndex ) const
    {
       static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
@@ -91,6 +98,7 @@ protected:
    }
 
    template< int Dimension >
+   __cuda_callable__
    typename EntityTraits< Dimension >::GlobalIndexType getBoundaryEntityIndex( const typename EntityTraits< Dimension >::GlobalIndexType& i ) const
    {
       static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
@@ -105,6 +113,7 @@ protected:
    }
 
    template< int Dimension >
+   __cuda_callable__
    typename EntityTraits< Dimension >::GlobalIndexType getInteriorEntityIndex( const typename EntityTraits< Dimension >::GlobalIndexType& i ) const
    {
       static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
@@ -166,6 +175,45 @@ public:
    using BoundaryTagsBaseType::getInteriorEntitiesCount;
    using BoundaryTagsBaseType::getInteriorEntityIndex;
 
+   MeshStorageLayer() = default;
+
+   explicit MeshStorageLayer( const MeshStorageLayer& other )
+   {
+      operator=( other );
+   }
+
+   template< typename Device_ >
+   MeshStorageLayer( const MeshStorageLayer< MeshConfig, Device_, DimensionTag >& other )
+   {
+      operator=( other );
+   }
+
+   MeshStorageLayer& operator=( const MeshStorageLayer& other )
+   {
+      BaseType::operator=( other );
+      SubentityStorageBaseType::operator=( other );
+      SuperentityStorageBaseType::operator=( other );
+      BoundaryTagsBaseType::operator=( other );
+      // TODO: throw exception if allocation fails
+      entities.setLike( other.entities);
+      entities = other.entities;
+      return *this;
+   }
+
+   template< typename Device_ >
+   MeshStorageLayer& operator=( const MeshStorageLayer< MeshConfig, Device_, DimensionTag >& other )
+   {
+      BaseType::operator=( other );
+      SubentityStorageBaseType::operator=( other );
+      SuperentityStorageBaseType::operator=( other );
+      BoundaryTagsBaseType::operator=( other );
+      // TODO: throw exception if allocation fails
+      entities.setLike( other.entities);
+      entities = other.entities;
+      return *this;
+   }
+
+
    bool setNumberOfEntities( DimensionTag, const GlobalIndexType& entitiesCount )
    {
       if( ! this->entities.setSize( entitiesCount ) )
@@ -184,12 +232,14 @@ public:
       return this->entities.getSize();
    }
 
+   __cuda_callable__
    EntityType& getEntity( DimensionTag,
                           const GlobalIndexType entityIndex )
    {
       return this->entities[ entityIndex ];
    }
 
+   __cuda_callable__
    const EntityType& getEntity( DimensionTag,
                                 const GlobalIndexType entityIndex ) const
    {
@@ -247,6 +297,10 @@ public:
 
 protected:
    StorageArrayType entities;
+
+   // friend class is needed for templated assignment operators
+   template< typename MeshConfig_, typename Device_, typename DimensionTag_, bool Storage_ >
+   friend class MeshStorageLayer;
 };
 
 template< typename MeshConfig,
@@ -255,6 +309,13 @@ template< typename MeshConfig,
 class MeshStorageLayer< MeshConfig, Device, DimensionTag, false >
    : public MeshStorageLayer< MeshConfig, Device, typename DimensionTag::Decrement  >
 {
+public:
+   using BaseType = MeshStorageLayer< MeshConfig, Device, typename DimensionTag::Decrement >;
+
+   MeshStorageLayer() = default;
+   explicit MeshStorageLayer( const MeshStorageLayer& other )
+      : BaseType( other )
+   {}
 };
 
 template< typename MeshConfig,
@@ -284,6 +345,41 @@ public:
    using BoundaryTagsBaseType::getBoundaryEntityIndex;
    using BoundaryTagsBaseType::getInteriorEntitiesCount;
    using BoundaryTagsBaseType::getInteriorEntityIndex;
+
+   MeshStorageLayer() = default;
+
+   explicit MeshStorageLayer( const MeshStorageLayer& other )
+   {
+      operator=( other );
+   }
+
+   template< typename Device_ >
+   MeshStorageLayer( const MeshStorageLayer< MeshConfig, Device_, DimensionTag >& other )
+   {
+      operator=( other );
+   }
+
+   MeshStorageLayer& operator=( const MeshStorageLayer& other )
+   {
+      SuperentityStorageBaseType::operator=( other );
+      BoundaryTagsBaseType::operator=( other );
+      // TODO: throw exception if allocation fails
+      vertices.setLike( other.vertices);
+      vertices = other.vertices;
+      return *this;
+   }
+
+   template< typename Device_ >
+   MeshStorageLayer& operator=( const MeshStorageLayer< MeshConfig, Device_, DimensionTag >& other )
+   {
+      SuperentityStorageBaseType::operator=( other );
+      BoundaryTagsBaseType::operator=( other );
+      // TODO: throw exception if allocation fails
+      vertices.setLike( other.vertices);
+      vertices = other.vertices;
+      return *this;
+   }
+
 
    GlobalIndexType getVerticesCount() const
    {
@@ -333,12 +429,14 @@ public:
       return this->vertices.getSize();
    }
 
+   __cuda_callable__
    VertexType& getEntity( DimensionTag,
                           const GlobalIndexType entityIndex )
    {
       return this->vertices[ entityIndex ];
    }
 
+   __cuda_callable__
    const VertexType& getEntity( DimensionTag,
                                 const GlobalIndexType entityIndex ) const
    {
@@ -388,6 +486,10 @@ public:
 
 protected:
    StorageArrayType vertices;
+
+   // friend class is needed for templated assignment operators
+   template< typename MeshConfig_, typename Device_, typename DimensionTag_, bool Storage_ >
+   friend class MeshStorageLayer;
 };
 
 /****
@@ -397,6 +499,8 @@ template< typename MeshConfig,
           typename Device >
 class MeshStorageLayer< MeshConfig, Device, DimensionTag< 0 >, false >
 {
+   MeshStorageLayer() = default;
+   explicit MeshStorageLayer( const MeshStorageLayer& other ) {}
 };
 
 } // namespace Meshes

@@ -26,6 +26,8 @@
  */
 
 #include <TNL/Meshes/DimensionTag.h>
+#include <TNL/Meshes/Mesh.h>
+#include <TNL/UniquePointer.h>
 
 namespace TNL {
 namespace Meshes {
@@ -90,15 +92,36 @@ struct MeshEntityStorageRebinderSubentityWorker< Mesh, DimensionTag, Superdimens
 };
 
 
-template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
+// This is split from everything else to make the friend specification (to use bindSubentitiesStorageNetwork)
+// as easy as possible.
+template< typename DimensionTag, typename SuperdimensionTag >
 struct MeshEntityStorageRebinderWorker
+{
+   template< typename Index, typename Entity, typename Multimap >
+   __cuda_callable__
+   static void bindSuperentity( Index i, Entity& subentity, Multimap& superentitiesStorage )
+   {
+      subentity.template bindSuperentitiesStorageNetwork< SuperdimensionTag::value >( superentitiesStorage.getValues( i ) );
+   }
+
+   template< typename Index, typename Entity, typename Multimap >
+   __cuda_callable__
+   static void bindSubentity( Index i, Entity& superentity, Multimap& subentitiesStorage )
+   {
+      superentity.template bindSubentitiesStorageNetwork< DimensionTag::value >( subentitiesStorage.getValues( i ) );
+   }
+};
+
+
+template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
+struct MeshEntityStorageRebinderDivisor
 {
    static void exec( Mesh& mesh )
    {
       MeshEntityStorageRebinderSuperentityWorker< Mesh, DimensionTag, SuperdimensionTag >::
-         template exec< MeshEntityStorageRebinderWorker >( mesh );
+         template exec< MeshEntityStorageRebinderDivisor >( mesh );
       MeshEntityStorageRebinderSubentityWorker< Mesh, DimensionTag, SuperdimensionTag >::
-         template exec< MeshEntityStorageRebinderWorker >( mesh );
+         template exec< MeshEntityStorageRebinderDivisor >( mesh );
    }
 
    static void bindSuperentities( Mesh& mesh )
@@ -107,7 +130,7 @@ struct MeshEntityStorageRebinderWorker
       {
          auto& subentity = mesh.template getEntity< DimensionTag::value >( i );
          auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< DimensionTag::value, SuperdimensionTag::value >();
-         subentity.template bindSuperentitiesStorageNetwork< SuperdimensionTag::value >( superentitiesStorage.getValues( i ) );
+         MeshEntityStorageRebinderWorker< DimensionTag, SuperdimensionTag >::bindSuperentity( i, subentity, superentitiesStorage );
       }
    }
 
@@ -117,9 +140,115 @@ struct MeshEntityStorageRebinderWorker
       {
          auto& superentity = mesh.template getEntity< SuperdimensionTag::value >( i );
          auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< SuperdimensionTag::value, DimensionTag::value >();
-         superentity.template bindSubentitiesStorageNetwork< DimensionTag::value >( subentitiesStorage.getValues( i ) );
+         MeshEntityStorageRebinderWorker< DimensionTag, SuperdimensionTag >::bindSubentity( i, superentity, subentitiesStorage );
       }
    }
+};
+
+#ifdef HAVE_CUDA
+template< typename Mesh,
+          typename Multimap,
+          typename DimensionTag,
+          typename SuperdimensionTag >
+__global__ void
+MeshSuperentityRebinderKernel( Mesh* mesh,
+                               Multimap* superentitiesStorage,
+                               typename Mesh::GlobalIndexType entitiesCount )
+{
+   for( typename Mesh::GlobalIndexType i = blockIdx.x * blockDim.x + threadIdx.x;
+        i < entitiesCount;
+        i += blockDim.x * gridDim.x )
+   {
+      auto& subentity = mesh->template getEntity< DimensionTag::value >( i );
+      MeshEntityStorageRebinderWorker< DimensionTag, SuperdimensionTag >::bindSuperentity( i, subentity, *superentitiesStorage );
+   }
+}
+
+template< typename Mesh,
+          typename Multimap,
+          typename DimensionTag,
+          typename SuperdimensionTag >
+__global__ void
+MeshSubentityRebinderKernel( Mesh* mesh,
+                             Multimap* subentitiesStorage,
+                             typename Mesh::GlobalIndexType entitiesCount )
+{
+   for( typename Mesh::GlobalIndexType i = blockIdx.x * blockDim.x + threadIdx.x;
+        i < entitiesCount;
+        i += blockDim.x * gridDim.x )
+   {
+      auto& superentity = mesh->template getEntity< SuperdimensionTag::value >( i );
+      MeshEntityStorageRebinderWorker< DimensionTag, SuperdimensionTag >::bindSubentity( i, superentity, *subentitiesStorage );
+   }
+}
+#endif
+
+template< typename MeshConfig, typename DimensionTag, typename SuperdimensionTag >
+struct MeshEntityStorageRebinderDivisor< Meshes::Mesh< MeshConfig, Devices::Cuda >, DimensionTag, SuperdimensionTag >
+{
+   using Mesh = Meshes::Mesh< MeshConfig, Devices::Cuda >;
+
+   static void exec( Mesh& mesh )
+   {
+#ifdef HAVE_CUDA
+      MeshEntityStorageRebinderSuperentityWorker< Mesh, DimensionTag, SuperdimensionTag >::
+         template exec< MeshEntityStorageRebinderDivisor >( mesh );
+      MeshEntityStorageRebinderSubentityWorker< Mesh, DimensionTag, SuperdimensionTag >::
+         template exec< MeshEntityStorageRebinderDivisor >( mesh );
+#endif
+   }
+
+#ifdef HAVE_CUDA
+   #if (__CUDA_ARCH__ >= 300 )
+      static constexpr int minBlocksPerMultiprocessor = 8;
+   #else
+      static constexpr int minBlocksPerMultiprocessor = 4;
+   #endif
+
+   static void bindSuperentities( Mesh& mesh )
+   {
+      const auto entitiesCount = mesh.template getEntitiesCount< DimensionTag::value >();
+      auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< DimensionTag::value, SuperdimensionTag::value >();
+      using Multimap = typename std::remove_reference< decltype(superentitiesStorage) >::type;
+      UniquePointer< Mesh > meshPointer( mesh );
+      UniquePointer< Multimap > superentitiesStoragePointer( superentitiesStorage );
+      Devices::Cuda::synchronizeDevice();
+
+      dim3 blockSize( 256 );
+      dim3 gridSize;
+      const int desGridSize = 4 * minBlocksPerMultiprocessor
+                                * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
+      gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
+
+      MeshSuperentityRebinderKernel< Mesh, Multimap, DimensionTag, SuperdimensionTag >
+         <<< gridSize, blockSize >>>
+         ( &meshPointer.template modifyData< Devices::Cuda >(),
+           &superentitiesStoragePointer.template modifyData< Devices::Cuda >(),
+           entitiesCount );
+   }
+
+   static void bindSubentities( Mesh& mesh )
+   {
+      const auto entitiesCount = mesh.template getEntitiesCount< SuperdimensionTag::value >();
+      auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< SuperdimensionTag::value, DimensionTag::value >();
+      using Multimap = typename std::remove_reference< decltype(subentitiesStorage) >::type;
+      UniquePointer< Mesh > meshPointer( mesh );
+      UniquePointer< Multimap > subentitiesStoragePointer( subentitiesStorage );
+      Devices::Cuda::synchronizeDevice();
+
+      dim3 blockSize( 256 );
+      dim3 gridSize;
+      const int desGridSize = 4 * minBlocksPerMultiprocessor
+                                * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
+      gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
+
+      MeshSubentityRebinderKernel< Mesh, Multimap, DimensionTag, SuperdimensionTag >
+         <<< gridSize, blockSize >>>
+         ( &meshPointer.template modifyData< Devices::Cuda >(),
+           &subentitiesStoragePointer.template modifyData< Devices::Cuda >(),
+           entitiesCount );
+   }
+#endif
 };
 
 
@@ -128,7 +257,7 @@ struct MeshEntityStorageRebinderInner
 {
    static void exec( Mesh& mesh )
    {
-      MeshEntityStorageRebinderWorker< Mesh, DimensionTag, SuperdimensionTag >::exec( mesh );
+      MeshEntityStorageRebinderDivisor< Mesh, DimensionTag, SuperdimensionTag >::exec( mesh );
       MeshEntityStorageRebinderInner< Mesh, DimensionTag, typename SuperdimensionTag::Decrement >::exec( mesh );
    }
 };
@@ -138,7 +267,7 @@ struct MeshEntityStorageRebinderInner< Mesh, typename SuperdimensionTag::Decreme
 {
    static void exec( Mesh& mesh )
    {
-      MeshEntityStorageRebinderWorker< Mesh, typename SuperdimensionTag::Decrement, SuperdimensionTag >::exec( mesh );
+      MeshEntityStorageRebinderDivisor< Mesh, typename SuperdimensionTag::Decrement, SuperdimensionTag >::exec( mesh );
    }
 };
 

@@ -17,6 +17,7 @@
 #pragma once
 
 #include <TNL/Assert.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 namespace Meshes {
@@ -36,6 +37,7 @@ public:
       return this->id;
    }
 
+   __cuda_callable__
    bool operator==( const MeshEntityIndex& id ) const
    {
       return ( this->id == id.id );
@@ -54,6 +56,7 @@ template<>
 class MeshEntityIndex< void >
 {
 public:
+   __cuda_callable__
    bool operator==( const MeshEntityIndex& id ) const
    {
       return true;

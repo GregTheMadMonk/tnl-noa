@@ -32,6 +32,45 @@ public:
    using BoundaryTagsArray = typename MeshTraitsType::BoundaryTagsArrayType;
    using OrderingArray     = typename MeshTraitsType::GlobalIndexOrderingArrayType;
 
+   MeshBoundaryTagsLayer() = default;
+
+   explicit MeshBoundaryTagsLayer( const MeshBoundaryTagsLayer& other )
+   {
+      operator=( other );
+   }
+
+   template< typename Device_ >
+   MeshBoundaryTagsLayer( const MeshBoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other )
+   {
+      operator=( other );
+   }
+
+   MeshBoundaryTagsLayer& operator=( const MeshBoundaryTagsLayer& other )
+   {
+      // TODO: throw exception if allocation fails
+      boundaryTags.setLike( other.boundaryTags );
+      boundaryIndices.setLike( other.boundaryIndices );
+      interiorIndices.setLike( other.interiorIndices );
+      boundaryTags = other.boundaryTags;
+      boundaryIndices = other.boundaryIndices;
+      interiorIndices = other.interiorIndices;
+      return *this;
+   }
+
+   template< typename Device_ >
+   MeshBoundaryTagsLayer& operator=( const MeshBoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other )
+   {
+      // TODO: throw exception if allocation fails
+      boundaryTags.setLike( other.boundaryTags );
+      boundaryIndices.setLike( other.boundaryIndices );
+      interiorIndices.setLike( other.interiorIndices );
+      boundaryTags = other.boundaryTags;
+      boundaryIndices = other.boundaryIndices;
+      interiorIndices = other.interiorIndices;
+      return *this;
+   }
+
+
    bool setNumberOfEntities( const GlobalIndexType& entitiesCount )
    {
       return boundaryTags.setSize( entitiesCount );
@@ -153,6 +192,10 @@ private:
    BoundaryTagsArray boundaryTags;
    OrderingArray boundaryIndices;
    OrderingArray interiorIndices;
+
+   // friend class is needed for templated assignment operators
+   template< typename MeshConfig_, typename Device_, typename DimensionTag_, bool TagStorage_ >
+   friend class MeshBoundaryTagsLayer;
 };
 
 template< typename MeshConfig,

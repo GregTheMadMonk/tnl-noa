@@ -51,6 +51,7 @@ class MeshSubentityAccess
 
 public:
    template< int Subdimension >
+   __cuda_callable__
    void bindSubentitiesStorageNetwork( const typename SubentityTraits< Subdimension >::SubentityAccessorType& storage )
    {
       static_assert( SubentityTraits< Subdimension >::storageEnabled, "You try to bind subentities which are not configured for storage." );
@@ -65,6 +66,7 @@ public:
    }
 
    template< int Subdimension >
+   __cuda_callable__
    void setSubentityIndex( const typename SubentityTraits< Subdimension >::LocalIndexType& localIndex,
                            const typename SubentityTraits< Subdimension >::GlobalIndexType& globalIndex )
    {
@@ -75,6 +77,7 @@ public:
    }
 
    template< int Subdimension >
+   __cuda_callable__
    typename SubentityTraits< Subdimension >::GlobalIndexType
    getSubentityIndex( const typename SubentityTraits< Subdimension >::LocalIndexType localIndex ) const
    {
@@ -84,6 +87,7 @@ public:
    }
 
    template< int Subdimension >
+   __cuda_callable__
    typename SubentityTraits< Subdimension >::OrientationArrayType& subentityOrientationsArray()
    {
       static_assert( SubentityTraits< Subdimension >::orientationEnabled, "You try to get subentity orientation which is not configured for storage." );
@@ -91,12 +95,14 @@ public:
    }
 
    template< int Subdimension >
+   __cuda_callable__
    typename SubentityTraits< Subdimension >::IdPermutationArrayType getSubentityOrientation( typename SubentityTraits< Subdimension >::LocalIndexType index ) const
    {
       static_assert( SubentityTraits< Subdimension >::orientationEnabled, "You try to get subentity orientation which is not configured for storage." );
       return BaseType::getSubentityOrientation( Meshes::DimensionTag< Subdimension >(), index );
    }
 
+   __cuda_callable__
    bool operator==( const MeshSubentityAccess& other ) const
    {
       return BaseType::operator==( other );
@@ -148,6 +154,7 @@ protected:
       this->subentityIndices.bind( layer.subentityIndices );
    }
 
+   __cuda_callable__
    MeshSubentityAccessLayer& operator=( const MeshSubentityAccessLayer& layer )
    {
       BaseType::operator=( layer );
@@ -181,6 +188,7 @@ protected:
       str << "\t Subentities with dimension " << DimensionTag::value << " are: " << subentityIndices << "." << std::endl;
    }
 
+   __cuda_callable__
    bool operator==( const MeshSubentityAccessLayer& layer ) const
    {
       return ( BaseType::operator==( layer ) &&
@@ -198,12 +206,14 @@ protected:
    /****
     * Define setter/getter for the current level of the subentities
     */
+   __cuda_callable__
    void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage )
    {
       this->subentityIndices.bind( storage );
    }
 
+   __cuda_callable__
    void setSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex,
                            const GlobalIndexType globalIndex )
@@ -211,23 +221,27 @@ protected:
       this->subentityIndices[ localIndex ] = globalIndex;
    }
 
+   __cuda_callable__
    GlobalIndexType getSubentityIndex( DimensionTag,
                                       const LocalIndexType localIndex ) const
    {
       return this->subentityIndices[ localIndex ];
    }
 
+   __cuda_callable__
    const SubentityAccessorType& getSubentityIndices( DimensionTag ) const
    {
       return this->subentityIndices;
    }
 
+   __cuda_callable__
    SubentityAccessorType& getSubentityIndices( DimensionTag )
    {
       return this->subentityIndices;
    }
 
    using BaseType::getSubentityOrientation;
+   __cuda_callable__
    const IdPermutationArrayType& getSubentityOrientation( DimensionTag, LocalIndexType index) const
    {
       TNL_ASSERT( 0 <= index && index < SubentityTraitsType::count, );
@@ -235,6 +249,7 @@ protected:
    }
 
    using BaseType::subentityOrientationsArray;
+   __cuda_callable__
 	OrientationArrayType& subentityOrientationsArray( DimensionTag ) { return this->subentityOrientations; }
 
 private:
@@ -281,6 +296,7 @@ protected:
       this->subentityIndices.bind( layer.subentityIndices );
    }
 
+   __cuda_callable__
    MeshSubentityAccessLayer& operator=( const MeshSubentityAccessLayer& layer )
    {
       BaseType::operator=( layer );
@@ -314,6 +330,7 @@ protected:
       str << "\t Subentities with dimension " << DimensionTag::value << " are: " << subentityIndices << "." << std::endl;
    }
 
+   __cuda_callable__
    bool operator==( const MeshSubentityAccessLayer& layer ) const
    {
       return ( BaseType::operator==( layer ) &&
@@ -331,12 +348,14 @@ protected:
    /****
     * Define setter/getter for the current level of the subentities
     */
+   __cuda_callable__
    void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage )
    {
       this->subentityIndices.bind( storage );
    }
 
+   __cuda_callable__
    void setSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex,
                            const GlobalIndexType globalIndex )
@@ -344,17 +363,20 @@ protected:
       this->subentityIndices[ localIndex ] = globalIndex;
    }
 
+   __cuda_callable__
    GlobalIndexType getSubentityIndex( DimensionTag,
                                       const LocalIndexType localIndex ) const
    {
       return this->subentityIndices[ localIndex ];
    }
 
+   __cuda_callable__
    const SubentityAccessorType& getSubentityIndices( DimensionTag ) const
    {
       return this->subentityIndices;
    }
 
+   __cuda_callable__
    SubentityAccessorType& getSubentityIndices( DimensionTag )
    {
       return this->subentityIndices;
@@ -382,20 +404,27 @@ protected:
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
    template< typename SubentityAccessorType >
+   __cuda_callable__
    void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
+   __cuda_callable__
    void getSubentitiesCount( DimensionTag ) const {}
    template< typename LocalIndexType >
+   __cuda_callable__
    void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
    template< typename LocalIndexType, typename GlobalIndexType >
+   __cuda_callable__
    void setSubentityIndex( DimensionTag,
                            const LocalIndexType& localIndex,
                            const GlobalIndexType& globalIndex ) {}
+   __cuda_callable__
    void getSubentityIndices() {}
 
    template< typename LocalIndexType >
+   __cuda_callable__
    void getSubentityOrientation( DimensionTag, LocalIndexType index) const {}
+   __cuda_callable__
 	void subentityOrientationsArray( DimensionTag ) {}
 
    bool save( File& file ) const
@@ -408,6 +437,7 @@ protected:
       return true;
    }
 
+   __cuda_callable__
    bool operator==( const MeshSubentityAccessLayer& other ) const
    {
       return true;
@@ -433,20 +463,27 @@ protected:
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
    template< typename SubentityAccessorType >
+   __cuda_callable__
    void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
+   __cuda_callable__
    void getSubentitiesCount( DimensionTag ) const {}
    template< typename LocalIndexType >
+   __cuda_callable__
    void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
    template< typename LocalIndexType, typename GlobalIndexType >
+   __cuda_callable__
    void setSubentityIndex( DimensionTag,
                            const LocalIndexType& localIndex,
                            const GlobalIndexType& globalIndex ) {}
+   __cuda_callable__
    void getSubentityIndices() {}
 
    template< typename LocalIndexType >
+   __cuda_callable__
    void getSubentityOrientation( DimensionTag, LocalIndexType index) const {}
+   __cuda_callable__
 	void subentityOrientationsArray( DimensionTag ) {}
 
    bool save( File& file ) const
@@ -459,6 +496,7 @@ protected:
       return true;
    }
 
+   __cuda_callable__
    bool operator==( const MeshSubentityAccessLayer& other ) const
    {
       return true;
@@ -484,20 +522,26 @@ protected:
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
    template< typename SubentityAccessorType >
+   __cuda_callable__
    void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
    void getSubentitiesCount( DimensionTag ) const {}
    template< typename LocalIndexType >
+   __cuda_callable__
    void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
    template< typename LocalIndexType, typename GlobalIndexType >
+   __cuda_callable__
    void setSubentityIndex( DimensionTag,
                            const LocalIndexType& localIndex,
                            const GlobalIndexType& globalIndex ) {}
+   __cuda_callable__
    void getSubentityIndices() {}
 
    template< typename LocalIndexType >
+   __cuda_callable__
    void getSubentityOrientation( DimensionTag, LocalIndexType index) const {}
+   __cuda_callable__
 	void subentityOrientationsArray( DimensionTag ) {}
 
    bool save( File& file ) const
@@ -510,6 +554,7 @@ protected:
       return true;
    }
 
+   __cuda_callable__
    bool operator==( const MeshSubentityAccessLayer& other ) const
    {
       return true;
@@ -534,20 +579,27 @@ protected:
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
    template< typename SubentityAccessorType >
+   __cuda_callable__
    void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
+   __cuda_callable__
    void getSubentitiesCount( DimensionTag ) const {}
    template< typename LocalIndexType >
+   __cuda_callable__
    void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
    template< typename LocalIndexType, typename GlobalIndexType >
+   __cuda_callable__
    void setSubentityIndex( DimensionTag,
                            const LocalIndexType& localIndex,
                            const GlobalIndexType& globalIndex ) {}
+   __cuda_callable__
    void getSubentityIndices() {}
 
    template< typename LocalIndexType >
+   __cuda_callable__
    void getSubentityOrientation( DimensionTag, LocalIndexType index) const {}
+   __cuda_callable__
 	void subentityOrientationsArray( DimensionTag ) {}
 
    bool save( File& file ) const
@@ -560,6 +612,7 @@ protected:
       return true;
    }
 
+   __cuda_callable__
    bool operator==( const MeshSubentityAccessLayer& other ) const
    {
       return true;

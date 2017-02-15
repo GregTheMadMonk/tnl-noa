@@ -22,13 +22,14 @@
 #include <TNL/Meshes/MeshDetails/MeshEntityIndex.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSubentityAccess.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSuperentityAccess.h>
-#include <TNL/Meshes/MeshDetails/layers/MeshEntityStorageRebinder.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig >
 class MeshInitializer;
+template< typename DimensionTag, typename SuperdimensionTag >
+struct MeshEntityStorageRebinderWorker;
 
 template< typename MeshConfig,
           typename Device,
@@ -54,6 +55,22 @@ class MeshEntity
       template< int Superdimension >
       using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >;
 
+      // constructors
+      MeshEntity() = default;
+
+      explicit MeshEntity( const MeshEntity& entity );
+
+      template< typename Device_ >
+      MeshEntity( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity );
+
+      __cuda_callable__
+      MeshEntity& operator=( const MeshEntity& entity );
+
+      template< typename Device_ >
+      __cuda_callable__
+      MeshEntity& operator=( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity );
+
+
       static String getType();
 
       String getTypeVirtual() const;
@@ -64,8 +81,10 @@ class MeshEntity
 
       void print( std::ostream& str ) const;
 
+      __cuda_callable__
       bool operator==( const MeshEntity& entity ) const;
 
+      __cuda_callable__
       bool operator!=( const MeshEntity& entity ) const;
 
       static constexpr int getEntityDimension();
@@ -104,7 +123,7 @@ class MeshEntity
 
    friend MeshInitializer< MeshConfig >;
 
-   template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
+   template< typename DimensionTag, typename SuperdimensionTag >
    friend struct MeshEntityStorageRebinderWorker;
 };
 
@@ -127,6 +146,22 @@ class MeshEntity< MeshConfig, Device, MeshVertexTopology >
       template< int Superdimension >
       using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >;
 
+      // constructors
+      MeshEntity() = default;
+
+      MeshEntity( const MeshEntity& entity );
+
+      template< typename Device_ >
+      MeshEntity( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity );
+
+      __cuda_callable__
+      MeshEntity& operator=( const MeshEntity& entity );
+
+      template< typename Device_ >
+      __cuda_callable__
+      MeshEntity& operator=( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity );
+
+
       static String getType();
 
       String getTypeVirtual() const;
@@ -137,8 +172,10 @@ class MeshEntity< MeshConfig, Device, MeshVertexTopology >
 
       void print( std::ostream& str ) const;
 
+      __cuda_callable__
       bool operator==( const MeshEntity& entity ) const;
 
+      __cuda_callable__
       bool operator!=( const MeshEntity& entity ) const;
 
       static constexpr int getEntityDimension();
@@ -152,8 +189,10 @@ class MeshEntity< MeshConfig, Device, MeshVertexTopology >
       /****
        * Points
        */
+      __cuda_callable__
       PointType getPoint() const;
 
+      __cuda_callable__
       void setPoint( const PointType& point );
 
    protected:
@@ -165,7 +204,7 @@ class MeshEntity< MeshConfig, Device, MeshVertexTopology >
 
    friend MeshInitializer< MeshConfig >;
 
-   template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
+   template< typename DimensionTag, typename SuperdimensionTag >
    friend struct MeshEntityStorageRebinderWorker;
 };
 

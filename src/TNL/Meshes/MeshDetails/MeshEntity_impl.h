@@ -24,6 +24,60 @@ namespace Meshes {
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
+MeshEntity< MeshConfig, Device, EntityTopology >::
+MeshEntity( const MeshEntity& entity )
+   : MeshSubentityAccess< MeshConfig, Device, EntityTopology >( entity ),
+     MeshSuperentityAccess< MeshConfig, Device, EntityTopology >( entity ),
+     MeshEntityIndex< typename MeshConfig::IdType >( entity )
+{
+}
+
+template< typename MeshConfig,
+          typename Device,
+          typename EntityTopology >
+   template< typename Device_ >
+MeshEntity< MeshConfig, Device, EntityTopology >::
+MeshEntity( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity )
+   // no cross-device copy of subentities and superentities here - Mesh constructor has to rebind pointers
+   // TODO: check this
+   : MeshEntityIndex< typename MeshConfig::IdType >( entity )
+{
+}
+
+template< typename MeshConfig,
+          typename Device,
+          typename EntityTopology >
+__cuda_callable__
+MeshEntity< MeshConfig, Device, EntityTopology >& 
+MeshEntity< MeshConfig, Device, EntityTopology >::
+operator=( const MeshEntity& entity )
+{
+   MeshSubentityAccess< MeshConfig, Device, EntityTopology >::operator=( entity );
+   MeshSuperentityAccess< MeshConfig, Device, EntityTopology >::operator=( entity );
+   MeshEntityIndex< typename MeshConfig::IdType >::operator=( entity );
+   return *this;
+}
+
+template< typename MeshConfig,
+          typename Device,
+          typename EntityTopology >
+      template< typename Device_ >
+__cuda_callable__
+MeshEntity< MeshConfig, Device, EntityTopology >& 
+MeshEntity< MeshConfig, Device, EntityTopology >::
+operator=( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity )
+{
+   // no cross-device copy here - Mesh::operator= has to rebind pointers
+   // TODO: check this
+//   MeshSubentityAccess< MeshConfig, Device, EntityTopology >::operator=( entity );
+//   MeshSuperentityAccess< MeshConfig, Device, EntityTopology >::operator=( entity );
+   MeshEntityIndex< typename MeshConfig::IdType >::operator=( entity );
+   return *this;
+}
+
+template< typename MeshConfig,
+          typename Device,
+          typename EntityTopology >
 String
 MeshEntity< MeshConfig, Device, EntityTopology >::
 getType()
@@ -82,6 +136,7 @@ print( std::ostream& str ) const
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
+__cuda_callable__
 bool
 MeshEntity< MeshConfig, Device, EntityTopology >::
 operator==( const MeshEntity& entity ) const
@@ -94,6 +149,7 @@ operator==( const MeshEntity& entity ) const
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
+__cuda_callable__
 bool
 MeshEntity< MeshConfig, Device, EntityTopology >::
 operator!=( const MeshEntity& entity ) const
@@ -138,6 +194,53 @@ getVertexIndex( const LocalIndexType localIndex ) const
 /****
  * Vertex entity specialization
  */
+template< typename MeshConfig, typename Device >
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+MeshEntity( const MeshEntity& entity )
+   : MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >( entity ),
+     MeshEntityIndex< typename MeshConfig::IdType >( entity )
+{
+   setPoint( entity.getPoint() );
+}
+
+template< typename MeshConfig, typename Device >
+   template< typename Device_ >
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+MeshEntity( const MeshEntity< MeshConfig, Device_, MeshVertexTopology >& entity )
+   // no cross-device copy of superentities here - Mesh constructor has to rebind pointers
+   // TODO: check this
+   : MeshEntityIndex< typename MeshConfig::IdType >( entity )
+{
+   setPoint( entity.getPoint() );
+}
+
+template< typename MeshConfig, typename Device >
+__cuda_callable__
+MeshEntity< MeshConfig, Device, MeshVertexTopology >& 
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+operator=( const MeshEntity& entity )
+{
+   MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::operator=( entity );
+   MeshEntityIndex< typename MeshConfig::IdType >::operator=( entity );
+   setPoint( entity.getPoint() );
+   return *this;
+}
+
+template< typename MeshConfig, typename Device >
+      template< typename Device_ >
+__cuda_callable__
+MeshEntity< MeshConfig, Device, MeshVertexTopology >& 
+MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+operator=( const MeshEntity< MeshConfig, Device_, MeshVertexTopology >& entity )
+{
+   // no cross-device copy of subentities and superentities here - Mesh::operator= has to rebind pointers
+   // TODO: check this
+//   MeshSuperentityAccess< MeshConfig, Device, EntityTopology >::operator=( entity );
+   MeshEntityIndex< typename MeshConfig::IdType >::operator=( entity );
+   setPoint( entity.getPoint() );
+   return *this;
+}
+
 template< typename MeshConfig, typename Device >
 String
 MeshEntity< MeshConfig, Device, MeshVertexTopology >::
@@ -187,6 +290,7 @@ print( std::ostream& str ) const
 }
 
 template< typename MeshConfig, typename Device >
+__cuda_callable__
 bool
 MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 operator==( const MeshEntity& entity ) const
@@ -197,6 +301,7 @@ operator==( const MeshEntity& entity ) const
 }
 
 template< typename MeshConfig, typename Device >
+__cuda_callable__
 bool
 MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 operator!=( const MeshEntity& entity ) const
@@ -213,6 +318,7 @@ getEntityDimension()
 }
 
 template< typename MeshConfig, typename Device >
+__cuda_callable__
 typename MeshEntity< MeshConfig, Device, MeshVertexTopology >::PointType
 MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 getPoint() const
@@ -221,6 +327,7 @@ getPoint() const
 }
 
 template< typename MeshConfig, typename Device >
+__cuda_callable__
 void
 MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 setPoint( const PointType& point )

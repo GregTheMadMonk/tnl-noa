@@ -48,6 +48,15 @@ class MeshSuperentityStorageLayers
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
 public:
+   MeshSuperentityStorageLayers() = default;
+   explicit MeshSuperentityStorageLayers( const MeshSuperentityStorageLayers& other )
+      : BaseType( other )
+   {}
+   template< typename Device_ >
+   MeshSuperentityStorageLayers( const MeshSuperentityStorageLayers< MeshConfig, Device_, EntityTopology >& other )
+      : BaseType( other )
+   {}
+
    template< int Superdimension >
    typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >::StorageNetworkType&
    getSuperentityStorageNetwork()
@@ -73,7 +82,38 @@ protected:
    using LocalIndexType     = typename SuperentityTraitsType::LocalIndexType;
    using StorageNetworkType = typename SuperentityTraitsType::StorageNetworkType;
  
-   MeshSuperentityStorageLayer& operator=( const MeshSuperentityStorageLayer& layer ) = delete;
+   MeshSuperentityStorageLayer() = default;
+
+   explicit MeshSuperentityStorageLayer( const MeshSuperentityStorageLayer& other )
+   {
+      operator=( other );
+   }
+
+   template< typename Device_ >
+   MeshSuperentityStorageLayer( const MeshSuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other )
+   {
+      operator=( other );
+   }
+
+   MeshSuperentityStorageLayer& operator=( const MeshSuperentityStorageLayer& other )
+   {
+      BaseType::operator=( other );
+      // TODO: throw exception if allocation fails
+      storageNetwork.setLike( other.storageNetwork );
+      storageNetwork = other.storageNetwork;
+      return *this;
+   }
+
+   template< typename Device_ >
+   MeshSuperentityStorageLayer& operator=( const MeshSuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other )
+   {
+      BaseType::operator=( other );
+      // TODO: throw exception if allocation fails
+      storageNetwork.setLike( other.storageNetwork );
+      storageNetwork = other.storageNetwork;
+      return *this;
+   }
+
 
    bool setNumberOfEntities( const GlobalIndexType& entitiesCount )
    {
@@ -126,6 +166,10 @@ protected:
 
 private:
    StorageNetworkType storageNetwork;
+
+   // friend class is needed for templated assignment operators
+   template< typename MeshConfig_, typename Device_, typename EntityTopology_, typename SuperdimensionTag_, bool Storage_ >
+   friend class MeshSuperentityStorageLayer;
 };
 
 template< typename MeshConfig,
@@ -135,6 +179,20 @@ template< typename MeshConfig,
 class MeshSuperentityStorageLayer< MeshConfig, Device, EntityTopology, SuperdimensionTag, false >
    : public MeshSuperentityStorageLayer< MeshConfig, Device, EntityTopology, typename SuperdimensionTag::Decrement >
 {
+public:
+   using BaseType = MeshSuperentityStorageLayer< MeshConfig, Device, EntityTopology, typename SuperdimensionTag::Decrement >;
+
+   MeshSuperentityStorageLayer() = default;
+   explicit MeshSuperentityStorageLayer( const MeshSuperentityStorageLayer& other )
+      : BaseType( other )
+   {}
+   template< typename Device_ >
+   MeshSuperentityStorageLayer( const MeshSuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other )
+      : BaseType( other )
+   {}
+   template< typename Device_ >
+   MeshSuperentityStorageLayer& operator=( const MeshSuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other )
+   { return *this; }
 };
 
 template< typename MeshConfig,
@@ -151,6 +209,13 @@ protected:
    using LocalIndexType     = typename SuperentityTraitsType::LocalIndexType;
    using StorageNetworkType = typename SuperentityTraitsType::StorageNetworkType;
  
+   MeshSuperentityStorageLayer() = default;
+   explicit MeshSuperentityStorageLayer( const MeshSuperentityStorageLayer& other ) {}
+   template< typename Device_ >
+   MeshSuperentityStorageLayer( const MeshSuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other ) {}
+   template< typename Device_ >
+   MeshSuperentityStorageLayer& operator=( const MeshSuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other ) { return *this; }
+
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */
@@ -197,6 +262,13 @@ protected:
    using LocalIndexType     = typename SuperentityTraitsType::LocalIndexType;
    using StorageNetworkType = typename SuperentityTraitsType::StorageNetworkType;
  
+   MeshSuperentityStorageLayer() = default;
+   explicit MeshSuperentityStorageLayer( const MeshSuperentityStorageLayer& other ) {}
+   template< typename Device_ >
+   MeshSuperentityStorageLayer( const MeshSuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other ) {}
+   template< typename Device_ >
+   MeshSuperentityStorageLayer& operator=( const MeshSuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other ) { return *this; }
+
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */

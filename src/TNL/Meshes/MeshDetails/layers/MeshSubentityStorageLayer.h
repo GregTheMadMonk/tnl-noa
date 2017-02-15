@@ -42,6 +42,15 @@ class MeshSubentityStorageLayers
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
 public:
+   MeshSubentityStorageLayers() = default;
+   explicit MeshSubentityStorageLayers( const MeshSubentityStorageLayers& other )
+      : BaseType( other )
+   {}
+   template< typename Device_ >
+   MeshSubentityStorageLayers( const MeshSubentityStorageLayers< MeshConfig, Device_, EntityTopology >& other )
+      : BaseType( other )
+   {}
+
    template< int Subdimension >
    typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimension >::StorageNetworkType&
    getSubentityStorageNetwork()
@@ -70,6 +79,39 @@ protected:
    using GlobalIndexType    = typename SubentityTraitsType::GlobalIndexType;
    using LocalIndexType     = typename SubentityTraitsType::LocalIndexType;
    using StorageNetworkType = typename SubentityTraitsType::StorageNetworkType;
+
+   MeshSubentityStorageLayer() = default;
+
+   explicit MeshSubentityStorageLayer( const MeshSubentityStorageLayer& other )
+   {
+      operator=( other );
+   }
+
+   template< typename Device_ >
+   MeshSubentityStorageLayer( const MeshSubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
+   {
+      operator=( other );
+   }
+
+   MeshSubentityStorageLayer& operator=( const MeshSubentityStorageLayer& other )
+   {
+      BaseType::operator=( other );
+      // TODO: throw exception if allocation fails
+      storageNetwork.setLike( other.storageNetwork );
+      storageNetwork = other.storageNetwork;
+      return *this;
+   }
+
+   template< typename Device_ >
+   MeshSubentityStorageLayer& operator=( const MeshSubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
+   {
+      BaseType::operator=( other );
+      // TODO: throw exception if allocation fails
+      storageNetwork.setLike( other.storageNetwork );
+      storageNetwork = other.storageNetwork;
+      return *this;
+   }
+
 
    bool setNumberOfEntities( const GlobalIndexType& entitiesCount )
    {
@@ -122,6 +164,10 @@ protected:
 
 private:
    StorageNetworkType storageNetwork;
+
+   // friend class is needed for templated assignment operators
+   template< typename MeshConfig_, typename Device_, typename EntityTopology_, typename SubdimensionTag_, bool Storage_ >
+   friend class MeshSubentityStorageLayer;
 };
 
 template< typename MeshConfig,
@@ -135,6 +181,20 @@ class MeshSubentityStorageLayer< MeshConfig,
                                  false >
    : public MeshSubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >
 {
+public:
+   using BaseType = MeshSubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >;
+
+   MeshSubentityStorageLayer() = default;
+   explicit MeshSubentityStorageLayer( const MeshSubentityStorageLayer& other )
+      : BaseType( other )
+   {}
+   template< typename Device_ >
+   MeshSubentityStorageLayer( const MeshSubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
+      : BaseType( other )
+   {}
+   template< typename Device_ >
+   MeshSubentityStorageLayer& operator=( const MeshSubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
+   { return *this; }
 };
 
 
@@ -150,6 +210,13 @@ class MeshSubentityStorageLayer< MeshConfig,
    using SubdimensionTag = DimensionTag< EntityTopology::dimension >;
 
 protected:
+   MeshSubentityStorageLayer() = default;
+   explicit MeshSubentityStorageLayer( const MeshSubentityStorageLayer& other ) {}
+   template< typename Device_ >
+   MeshSubentityStorageLayer( const MeshSubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other ) {}
+   template< typename Device_ >
+   MeshSubentityStorageLayer& operator=( const MeshSubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other ) { return *this; }
+
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */
@@ -191,6 +258,13 @@ class MeshSubentityStorageLayer< MeshConfig,
    using SubdimensionTag = DimensionTag< EntityTopology::dimension >;
 
 protected:
+   MeshSubentityStorageLayer() = default;
+   explicit MeshSubentityStorageLayer( const MeshSubentityStorageLayer& other ) {}
+   template< typename Device_ >
+   MeshSubentityStorageLayer( const MeshSubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other ) {}
+   template< typename Device_ >
+   MeshSubentityStorageLayer& operator=( const MeshSubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other ) { return *this; }
+
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */

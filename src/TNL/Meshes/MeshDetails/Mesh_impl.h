@@ -17,6 +17,7 @@
 #pragma once
 
 #include <TNL/Meshes/Mesh.h>
+#include <TNL/Meshes/MeshDetails/layers/MeshEntityStorageRebinder.h>
 #include <TNL/Meshes/MeshDetails/initializer/MeshInitializer.h>
 
 namespace TNL {
@@ -34,6 +35,28 @@ init( typename MeshTraitsType::PointArrayType& points,
    return true;
 }
 
+
+template< typename MeshConfig, typename Device >
+Mesh< MeshConfig, Device >::
+Mesh( const Mesh& mesh )
+   : StorageBaseType( mesh )
+{
+   // update pointers from entities into the subentity and superentity storage networks
+   MeshEntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
+}
+
+template< typename MeshConfig, typename Device >
+   template< typename Device_ >
+Mesh< MeshConfig, Device >::
+Mesh( const Mesh< MeshConfig, Device_ >& mesh )
+   // clang complains that subclass cannot be cast to its private/protected base type,
+   // but for some reason it works fine for the non-template copy-constructor
+//   : StorageBaseType( *static_cast< const MeshStorageLayers< MeshConfig, Device_ >* >( &mesh ) )
+   : StorageBaseType( *( (const MeshStorageLayers< MeshConfig, Device_ >*) &mesh ) )
+{
+   // update pointers from entities into the subentity and superentity storage networks
+   MeshEntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
+}
 
 template< typename MeshConfig, typename Device >
 constexpr int
@@ -96,6 +119,7 @@ getEntitiesCount() const
 
 template< typename MeshConfig, typename Device >
    template< int Dimension >
+__cuda_callable__
 typename Mesh< MeshConfig, Device >::template EntityType< Dimension >&
 Mesh< MeshConfig, Device >::
 getEntity( const GlobalIndexType& entityIndex )
@@ -106,6 +130,7 @@ getEntity( const GlobalIndexType& entityIndex )
 
 template< typename MeshConfig, typename Device >
    template< int Dimension >
+__cuda_callable__
 const typename Mesh< MeshConfig, Device >::template EntityType< Dimension >&
 Mesh< MeshConfig, Device >::
 getEntity( const GlobalIndexType& entityIndex ) const
@@ -127,6 +152,7 @@ getEntitiesCount() const
 
 template< typename MeshConfig, typename Device >
    template< typename Entity >
+__cuda_callable__
 Entity&
 Mesh< MeshConfig, Device >::
 getEntity( const GlobalIndexType& entityIndex )
@@ -136,6 +162,7 @@ getEntity( const GlobalIndexType& entityIndex )
 
 template< typename MeshConfig, typename Device >
    template< typename Entity >
+__cuda_callable__
 const Entity&
 Mesh< MeshConfig, Device >::
 getEntity( const GlobalIndexType& entityIndex ) const
@@ -171,7 +198,7 @@ load( File& file )
    }
    // TODO: this could be done from the storage layer
    // update pointers from entities into the subentity and superentity storage networks
-   MeshEntityStorageRebinder< Mesh< MeshConfig > >::exec( *this );
+   MeshEntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
    return true;
 }
 

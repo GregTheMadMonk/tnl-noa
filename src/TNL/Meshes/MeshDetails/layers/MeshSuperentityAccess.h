@@ -52,6 +52,7 @@ class MeshSuperentityAccess
 
 public:
    template< int Superdimension >
+   __cuda_callable__
    void bindSuperentitiesStorageNetwork( const typename SuperentityTraits< Superdimension >::SuperentityAccessorType& storage )
    {
       static_assert( SuperentityTraits< Superdimension >::storageEnabled, "You try to bind superentities which are not configured for storage." );
@@ -60,6 +61,7 @@ public:
    }
 
    template< int Superdimension >
+   __cuda_callable__
    bool setNumberOfSuperentities( const typename SuperentityTraits< Superdimension >::LocalIndexType size )
    {
       static_assert( SuperentityTraits< Superdimension >::storageEnabled, "You try to set number of superentities which are not configured for storage." );
@@ -68,6 +70,7 @@ public:
    }
 
    template< int Superdimension >
+   __cuda_callable__
    typename SuperentityTraits< Superdimension >::LocalIndexType
    getSuperentitiesCount() const
    {
@@ -76,6 +79,7 @@ public:
    }
 
    template< int Superdimension >
+   __cuda_callable__
    void
    setSuperentityIndex( const typename SuperentityTraits< Superdimension >::LocalIndexType& localIndex,
                         const typename SuperentityTraits< Superdimension >::GlobalIndexType& globalIndex )
@@ -87,6 +91,7 @@ public:
    }
 
    template< int Superdimension >
+   __cuda_callable__
    typename SuperentityTraits< Superdimension >::GlobalIndexType
    getSuperentityIndex( const typename SuperentityTraits< Superdimension >::LocalIndexType localIndex ) const
    {
@@ -95,6 +100,7 @@ public:
                                             localIndex );
    }
 
+   __cuda_callable__
    bool operator==( const MeshSuperentityAccess& other ) const
    {
       return BaseType::operator==( other );
@@ -145,6 +151,7 @@ public:
       this->superentityIndices.bind( layer.superentityIndices );
    }
 
+   __cuda_callable__
    MeshSuperentityAccessLayer& operator=( const MeshSuperentityAccessLayer& layer )
    {
       BaseType::operator=( layer );
@@ -155,23 +162,27 @@ public:
    /****
     * Define setter/getter for the current level of the superentities
     */
+   __cuda_callable__
    void bindSuperentitiesStorageNetwork( DimensionTag,
                                          const SuperentityAccessorType& storage )
    {
       this->superentityIndices.bind( storage );
    }
 
+   __cuda_callable__
    bool setNumberOfSuperentities( DimensionTag,
                                   const LocalIndexType size )
    {
       return this->superentityIndices.setSize( size );
    }
 
+   __cuda_callable__
    LocalIndexType getSuperentitiesCount( DimensionTag ) const
    {
       return this->superentityIndices.getSize();
    }
 
+   __cuda_callable__
    void setSuperentityIndex( DimensionTag,
                              const LocalIndexType& localIndex,
                              const GlobalIndexType& globalIndex )
@@ -179,22 +190,26 @@ public:
       this->superentityIndices[ localIndex ] = globalIndex;
    }
 
+   __cuda_callable__
    GlobalIndexType getSuperentityIndex( DimensionTag,
                                         const LocalIndexType localIndex ) const
    {
       return this->superentityIndices[ localIndex ];
    }
 
+   __cuda_callable__
    const SuperentityAccessorType& getSuperentityIndices( DimensionTag ) const
    {
       return this->superentityIndices;
    }
 
+   __cuda_callable__
    SuperentityAccessorType& getSuperentityIndices( DimensionTag )
    {
       return this->superentityIndices;
    }
 
+   __cuda_callable__
    bool operator==( const MeshSuperentityAccessLayer& other ) const
    {
       return ( BaseType::operator==( other ) && superentityIndices == other.superentityIndices );
@@ -244,18 +259,25 @@ protected:
    /***
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
+   __cuda_callable__
    void bindSuperentitiesStorageNetwork( DimensionTag,
                                          const SuperentityAccessorType& storage ) {}
+   __cuda_callable__
    void setNumberOfSuperentities( DimensionTag,
                                   const LocalIndexType size ) {}
+   __cuda_callable__
    void getSuperentitiesCount( DimensionTag ) const {}
+   __cuda_callable__
    void getSuperentityIndex( DimensionTag,
                              const LocalIndexType localIndex ) const {}
+   __cuda_callable__
    void setSuperentityIndex( DimensionTag,
                              const LocalIndexType& localIndex,
                              const GlobalIndexType& globalIndex ) {}
+   __cuda_callable__
    void getSuperentityIndices() {}
 
+   __cuda_callable__
    bool operator==( const MeshSuperentityAccessLayer& other ) const
    {
       return true;
@@ -285,18 +307,25 @@ protected:
    /***
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
+   __cuda_callable__
    void bindSuperentitiesStorageNetwork( DimensionTag,
                                          const SuperentityAccessorType& storage ) {}
+   __cuda_callable__
    void setNumberOfSuperentities( DimensionTag,
                                   const LocalIndexType size ) {}
+   __cuda_callable__
    void getSuperentitiesCount( DimensionTag ) const {}
+   __cuda_callable__
    void getSuperentityIndex( DimensionTag,
                              const LocalIndexType localIndex ) const {}
+   __cuda_callable__
    void setSuperentityIndex( DimensionTag,
                              const LocalIndexType& localIndex,
                              const GlobalIndexType& globalIndex ) {}
+   __cuda_callable__
    void getSuperentityIndices() {}
 
+   __cuda_callable__
    bool operator==( const MeshSuperentityAccessLayer& other ) const
    {
       return true;
