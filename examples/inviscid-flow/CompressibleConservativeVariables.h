@@ -38,7 +38,7 @@ class CompressibleConservativeVariables
       : density( meshPointer ),
         momentum( meshPointer ),
         //pressure( meshPointer ),
-        energy( meshPointer ) {};
+        energy( meshPointer ){};
         
       void setMesh( const MeshPointer& meshPointer )
       {
@@ -46,9 +46,6 @@ class CompressibleConservativeVariables
          this->momentum->setMesh( meshPointer );
          //this->pressure.setMesh( meshPointer );
          this->energy->setMesh( meshPointer );
-         this->dofs = this->density->getDofs() + 
-            this->momentum->getDofs() +
-            this->energy->getDofs();
       }
       
       template< typename Vector >
@@ -58,18 +55,20 @@ class CompressibleConservativeVariables
       {
          IndexType currentOffset( offset );
          this->density->bind( meshPointer, data, currentOffset );
-         currentOffset += this->density->getDofs();
+         currentOffset += this->density->getDofs( meshPointer );
          for( IndexType i = 0; i < Dimensions; i++ )
          {
             ( *this->momentum )[ i ]->bind( meshPointer, data, currentOffset );
-            currentOffset += ( *this->momentum )[ i ]->getDofs();
+            currentOffset += ( *this->momentum )[ i ]->getDofs( meshPointer );
          }
          this->energy->bind( meshPointer, data, currentOffset );
       }
       
-      void IndexType getDofs() const
+      IndexType getDofs( const MeshPointer& meshPointer ) const
       {
-         return this->dofs;
+         return this->density->getDofs( meshPointer ) + 
+            this->momentum->getDofs( meshPointer ) +
+            this->energy->getDofs( meshPointer );
       }
       
       MeshFunctionPointer& getDensity()
@@ -138,8 +137,6 @@ class CompressibleConservativeVariables
       }
 
    protected:
-      
-      IndexType dofs;
       
       MeshFunctionPointer density;
       MomentumFieldPointer momentum;

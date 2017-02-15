@@ -74,6 +74,9 @@ template< int Size,
           int MeshEntityDimensions,
           typename Real >
 class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
+: public Functions::Domain< MeshFunction< Mesh, MeshEntityDimensions, Real >::getDomainDimensions(), 
+                            MeshFunction< Mesh, MeshEntityDimensions, Real >::getDomainType() >,
+   public Object
 {
    public:
       
@@ -99,6 +102,33 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
             this->vectorField[ i ]->setMesh( meshPointer );
       };
       
+      static String getType()
+      {
+         return String( "Functions::VectorField< " ) +
+                  String( Size) + ", " +
+                 FunctionType::getType() +
+                  " >";
+      }
+ 
+      String getTypeVirtual() const
+      {
+         return this->getType();
+      }
+ 
+      static String getSerializationType()
+      {
+         return String( "Functions::VectorField< " ) +
+                  String( Size) + ", " +
+                 FunctionType::getSerializationType() +
+                  " >";         
+      }
+
+      virtual String getSerializationTypeVirtual() const
+      {
+         return this->getSerializationType();
+      }
+      
+      
       void setMesh( const MeshPointer& meshPointer )
       {
          for( int i = 0; i < Size; i++ )
@@ -118,9 +148,9 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
          return true;
       }
       
-      IndexType getDofs() const
+      IndexType getDofs( const MeshPointer& meshPointer ) const
       {
-         return Size * this->vectorField[ 0 ]->getDofs();
+         return Size * this->vectorField[ 0 ]->getDofs( meshPointer );
       }
 
       __cuda_callable__ 
@@ -134,6 +164,42 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
       {
          return this->vectorField[ i ];
       }
+      
+      bool save( File& file ) const
+      {
+         if( ! Object::save( file ) )
+            return false;
+         for( int i = 0; i < Size; i++ )
+            if( ! vectorField[ i ]->save( file ) )
+               return false;
+         return true;
+      }
+
+      bool load( File& file )
+      {
+         if( ! Object::load( file ) )
+            return false;
+         for( int i = 0; i < Size; i++ )
+            if( ! vectorField[ i ]->load( file ) )
+               return false;
+         return true;
+      }
+ 
+      bool boundLoad( File& file )
+      {
+         if( ! Object::load( file ) )
+            return false;
+         for( int i = 0; i < Size; i++ )
+            if( ! vectorField[ i ]->boundLoad( file ) )
+               return false;
+         return true;         
+      }
+      
+      using Object::save;
+ 
+      using Object::load;
+ 
+      using Object::boundLoad;      
 
    protected:
       

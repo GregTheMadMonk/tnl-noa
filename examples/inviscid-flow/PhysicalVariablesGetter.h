@@ -27,18 +27,21 @@ class PhysicalVariablesGetter
       typedef typename MeshType::RealType RealType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
+      static const int Dimensions = MeshType::getMeshDimensions();
+      
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef CompressibleConservativeVariables< MeshType > ConservativeVariablesType;
       typedef SharedPointer< ConservativeVariablesType > ConservativeVariablesPointer;
-      typedef Functions::VectorField< MeshType > VelocityFieldType;
+      typedef Functions::VectorField< Dimensions, MeshFunctionType > VelocityFieldType;
       typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
       
-      static const int Dimensions = MeshType::getMeshDimensions();
+      
       
       class VelocityGetter : public Functions::Domain< Dimensions, Functions::MeshDomain >
       {
          public:
+            typedef typename MeshType::RealType RealType;
             
             VelocityGetter( MeshFunctionPointer density, 
                             MeshFunctionPointer momentum )
@@ -46,26 +49,26 @@ class PhysicalVariablesGetter
             
             template< typename EntityType >
             __cuda_callable__
-            const RealType& operator()( const EntityType& meshEntity,
+            RealType operator()( const EntityType& meshEntity,
                                         const RealType& time = 0.0 ) const
             {
-               return momentum.template getData< DeviceType >( meshEntity ) / 
-                      density.template getData< DeviceType >( meshEntity );
+               return momentum.template getData< DeviceType >()( meshEntity ) / 
+                      density.template getData< DeviceType >()( meshEntity );
             }
             
          protected:
             const MeshFunctionPointer density, momentum;
       };
       
-      void getVelocity( const ConservativeVariablesType& conservativeVariables,
+      void getVelocity( const ConservativeVariablesPointer& conservativeVariables,
                         VelocityFieldPointer& velocity )
       {
          Functions::MeshFunctionEvaluator< MeshFunctionType, VelocityGetter > evaluator;
          for( int i = 0; i < Dimensions; i++ )
          {
-            SharedPointer< VelocityGetter, DeviceType > velocityGetter( conservativeVariables.getDensity(),
-                                                                        conservativeVariables.getMomentum()[ i ] );
-            evaluator.evaluate( velocity[ i ], velocityGetter );
+            SharedPointer< VelocityGetter, DeviceType > velocityGetter( conservativeVariables->getDensity(),
+                                                                        ( *conservativeVariables->getMomentum() )[ i ] );
+            evaluator.evaluate( ( *velocity )[ i ], velocityGetter );
          }
       }
       

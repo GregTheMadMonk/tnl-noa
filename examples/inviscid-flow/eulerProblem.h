@@ -130,9 +130,10 @@ class eulerProblem:
       VelocityFieldPointer velocity;
       MeshFunctionPointer pressure, energy;
       
+      RealType gamma;
       
       //definition
-	   Containers::Vector< RealType, DeviceType, IndexType > _uRho;
+	   /*Containers::Vector< RealType, DeviceType, IndexType > _uRho;
 	   Containers::Vector< RealType, DeviceType, IndexType > _uRhoVelocityX;
 	   Containers::Vector< RealType, DeviceType, IndexType > _uRhoVelocityY;
 	   Containers::Vector< RealType, DeviceType, IndexType > _uEnergy;
@@ -150,8 +151,8 @@ class eulerProblem:
       Containers::Vector< RealType, DeviceType, IndexType > pressure;
       Containers::Vector< RealType, DeviceType, IndexType > velocity;
       Containers::Vector< RealType, DeviceType, IndexType > velocityX;
-      Containers::Vector< RealType, DeviceType, IndexType > velocityY;
-      double gamma;
+      Containers::Vector< RealType, DeviceType, IndexType > velocityY;*/
+      
 };
 
 } // namespace TNL

@@ -100,7 +100,7 @@ getDofs( const MeshPointer& mesh ) const
     * Return number of  DOFs (degrees of freedom) i.e. number
     * of unknowns to be resolved by the main solver.
     */
-   return this->conservativeVariables->getDofs();
+   return this->conservativeVariables->getDofs( mesh );
 }
 
 template< typename Mesh,
@@ -112,7 +112,7 @@ eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 bindDofs( const MeshPointer& mesh,
           DofVectorPointer& dofVector )
 {
-   this->conservativeVariables.bind( mesh, dofVector );
+   this->conservativeVariables->bind( mesh, dofVector );
 }
 
 template< typename Mesh,
@@ -182,8 +182,8 @@ makeSnapshot( const RealType& time,
   this->bindDofs( mesh, dofs );
   PhysicalVariablesGetter< MeshType > physicalVariablesGetter;
   physicalVariablesGetter.getVelocity( this->conservativeVariables, this->velocity );
-  physicalVariablesGetter.getPressure( this->conservativeVariables, this->pressure );
-  physicalVariablesGetter.getEnergy( this->conservativeVariables, this->energy );
+  //physicalVariablesGetter.getPressure( this->conservativeVariables, this->pressure );
+  //physicalVariablesGetter.getEnergy( this->conservativeVariables, this->energy );
   
    FileName fileName;
    fileName.setExtension( "tnl" );
@@ -220,7 +220,7 @@ getExplicitRHS( const RealType& time,
                 DofVectorPointer& _fu,
                 MeshDependentDataPointer& meshDependentData )
 {
-    typedef typename MeshType::Cell Cell;
+    /*typedef typename MeshType::Cell Cell;
     int count = mesh->template getEntitiesCount< Cell >()/4;
 	//bind _u
     this->_uRho.bind( *_u,0,count);
@@ -307,6 +307,7 @@ getExplicitRHS( const RealType& time,
                                                            this->rightHandSidePointer,
                                                            uEnergy,
                                                            fuEnergy );
+     */
 
 /*
    BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
@@ -364,6 +365,7 @@ postIterate( const RealType& time,
              DofVectorPointer& dofs,
              MeshDependentDataPointer& meshDependentData )
 {
+   /*
     typedef typename MeshType::Cell Cell;
     int count = mesh->template getEntitiesCount< Cell >()/4;
 	//bind _u
@@ -411,6 +413,7 @@ postIterate( const RealType& time,
    euler2DPressure.setRho(uRho);
 //   OperatorFunction< euler2DPressure, MeshFunction, void, time > OFPressure;
 //   pressure = OFPressure;
+    */
    return true;
 }
 
