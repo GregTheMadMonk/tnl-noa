@@ -67,6 +67,51 @@ void compareStringRepresentation( const Object1& obj1, const Object2& obj2 )
    EXPECT_EQ( str1.str(), str2.str() );
 }
 
+template< typename Object >
+void testCopyAssignment( const Object& obj )
+{
+   static_assert( std::is_copy_constructible< Object >::value, "" );
+   static_assert( std::is_copy_assignable< Object >::value, "" );
+
+   Object new_obj_1( obj );
+   EXPECT_EQ( new_obj_1, obj );
+   Object new_obj_2;
+   new_obj_2 = obj;
+   EXPECT_EQ( new_obj_2, obj );
+}
+
+template< typename Mesh >
+void testCopyToCuda( const Mesh& mesh )
+{
+#ifdef HAVE_CUDA
+   using DeviceMesh = Meshes::Mesh< typename Mesh::Config, Devices::Cuda >;
+   DeviceMesh dmesh1( mesh );
+   EXPECT_EQ( dmesh1, mesh );
+   DeviceMesh dmesh2;
+   dmesh2 = mesh;
+   EXPECT_EQ( dmesh2, mesh );
+
+   // copy back to host
+   Mesh mesh2( dmesh1 );
+   EXPECT_EQ( mesh2, mesh );
+   Mesh mesh3;
+   mesh3 = dmesh1;
+   EXPECT_EQ( mesh2, mesh );
+#endif
+}
+
+template< typename Mesh >
+void testFinishedMesh( const Mesh& mesh )
+{
+   Mesh mesh2;
+   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
+   ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
+   ASSERT_EQ( mesh, mesh2 );
+   compareStringRepresentation( mesh, mesh2 );
+   testCopyAssignment( mesh );
+   testCopyToCuda( mesh );
+}
+
 TEST( MeshTest, TwoTrianglesTest )
 {
    using TriangleMeshEntityType = MeshEntity< TestTriangleMeshConfig, Devices::Host, MeshTriangleTopology >;
@@ -108,7 +153,7 @@ TEST( MeshTest, TwoTrianglesTest )
              point3( 1.0, 1.0 );
 
    typedef Mesh< TestTriangleMeshConfig > TriangleTestMesh;
-   TriangleTestMesh mesh, mesh2;
+   TriangleTestMesh mesh;
    MeshBuilder< TriangleTestMesh > meshBuilder;
    meshBuilder.setPointsCount( 4 );
    meshBuilder.setPoint( 0, point0 );
@@ -179,10 +224,7 @@ TEST( MeshTest, TwoTrianglesTest )
    EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSuperentityIndex< 2 >( 1 ),    1 );
 
 
-   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
-   ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
-   ASSERT_EQ( mesh, mesh2 );
-   compareStringRepresentation( mesh, mesh2 );
+   testFinishedMesh( mesh );
 };
 
 TEST( MeshTest, TetrahedronsTest )
@@ -196,7 +238,7 @@ TEST( MeshTest, TetrahedronsTest )
    ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 3, RealType >::getType() ) );
 
    typedef Mesh< TestTetrahedronMeshConfig > TestTetrahedronMesh;
-   TestTetrahedronMesh mesh, mesh2;
+   TestTetrahedronMesh mesh;
    MeshBuilder< TestTetrahedronMesh > meshBuilder;
    meshBuilder.setPointsCount( 13 );
    meshBuilder.setPoint(  0, PointType(  0.000000, 0.000000, 0.000000 ) );
@@ -348,10 +390,7 @@ TEST( MeshTest, TetrahedronsTest )
 
    ASSERT_TRUE( meshBuilder.build( mesh ) );
 
-   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
-   ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
-   ASSERT_EQ( mesh, mesh2 );
-   compareStringRepresentation( mesh, mesh2 );
+   testFinishedMesh( mesh );
 }
 
 TEST( MeshTest, RegularMeshOfTrianglesTest )
@@ -371,7 +410,7 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
    const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
 
    typedef Mesh< TestTriangleMeshConfig > TestTriangleMesh;
-   Mesh< TestTriangleMeshConfig > mesh, mesh2;
+   Mesh< TestTriangleMeshConfig > mesh;
    MeshBuilder< TestTriangleMesh > meshBuilder;
    meshBuilder.setPointsCount( numberOfVertices );
    meshBuilder.setCellsCount( numberOfCells );
@@ -451,10 +490,7 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
          }
       }
 
-   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
-   ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
-   ASSERT_EQ( mesh, mesh2 );
-   compareStringRepresentation( mesh, mesh2 );
+   testFinishedMesh( mesh );
 }
 
 TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
@@ -474,7 +510,7 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
 
    typedef Mesh< TestQuadrilateralMeshConfig > TestQuadrilateralMesh;
-   TestQuadrilateralMesh mesh, mesh2;
+   TestQuadrilateralMesh mesh;
    MeshBuilder< TestQuadrilateralMesh > meshBuilder;
    meshBuilder.setPointsCount( numberOfVertices );
    meshBuilder.setCellsCount( numberOfCells );
@@ -551,10 +587,7 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
          }
       }
 
-   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
-   ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
-   ASSERT_EQ( mesh, mesh2 );
-   compareStringRepresentation( mesh, mesh2 );
+   testFinishedMesh( mesh );
 }
 
 TEST( MeshTest, RegularMeshOfHexahedronsTest )
@@ -576,7 +609,7 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
    const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 ) * ( zSize + 1 );
 
    typedef Mesh< TestHexahedronMeshConfig > TestHexahedronMesh;
-   TestHexahedronMesh mesh, mesh2;
+   TestHexahedronMesh mesh;
    MeshBuilder< TestHexahedronMesh > meshBuilder;
    meshBuilder.setPointsCount( numberOfVertices );
    meshBuilder.setCellsCount( numberOfCells );
@@ -718,10 +751,7 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
             }
          }
 
-   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
-   ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
-   ASSERT_EQ( mesh, mesh2 );
-   compareStringRepresentation( mesh, mesh2 );
+   testFinishedMesh( mesh );
 }
 
 #endif

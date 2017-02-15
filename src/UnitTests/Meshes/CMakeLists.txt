@@ -3,10 +3,22 @@ SET_TARGET_PROPERTIES( BoundaryTagsTest${mpiExt}${debugExt} PROPERTIES COMPILE_F
 TARGET_LINK_LIBRARIES( BoundaryTagsTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
                                                            tnl${mpiExt}${debugExt}-${tnlVersion} )
 
-ADD_EXECUTABLE( MeshTest${mpiExt}${debugExt} ${headers} MeshTest.cpp )
-SET_TARGET_PROPERTIES( MeshTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS}" )
-TARGET_LINK_LIBRARIES( MeshTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
-                                                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+IF( BUILD_CUDA )
+   # FIXME: nvcc fails with "Invalid memory reference" error, so we assume that ${CXX} is clang
+   #CUDA_ADD_EXECUTABLE( MeshTest${mpiExt}${debugExt} ${headers} MeshTest.cu OPTIONS "${CXX_TESTS_FLAGS}" )
+   #TARGET_LINK_LIBRARIES( MeshTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
+   #                                                        tnl${mpiExt}${debugExt}-${tnlVersion} )
+   ADD_EXECUTABLE( MeshTest${mpiExt}${debugExt} ${headers} MeshTest.cpp )
+   SET_TARGET_PROPERTIES( MeshTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS} -DHAVE_CUDA -x cuda --cuda-path=${CUDA_TOOLKIT_ROOT_DIR} --cuda-gpu-arch=sm_21" )
+   TARGET_LINK_LIBRARIES( MeshTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
+                                                              tnl${mpiExt}${debugExt}-${tnlVersion}
+                                                              cudart dl rt "-L ${CUDA_TOOLKIT_ROOT_DIR}/lib64/" )
+ELSE( BUILD_CUDA )
+   ADD_EXECUTABLE( MeshTest${mpiExt}${debugExt} ${headers} MeshTest.cpp )
+   SET_TARGET_PROPERTIES( MeshTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS}" )
+   TARGET_LINK_LIBRARIES( MeshTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
+                                                              tnl${mpiExt}${debugExt}-${tnlVersion} )
+ENDIF( BUILD_CUDA )
 
 ADD_EXECUTABLE( MeshEntityTest${mpiExt}${debugExt} ${headers} MeshEntityTest.cpp )
 SET_TARGET_PROPERTIES( MeshEntityTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS}" )
