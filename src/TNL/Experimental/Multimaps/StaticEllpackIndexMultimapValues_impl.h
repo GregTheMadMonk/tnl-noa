@@ -20,6 +20,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 StaticEllpackIndexMultimapValues()
 : values( nullptr )
@@ -30,6 +31,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 StaticEllpackIndexMultimapValues( StaticEllpackIndexMultimapValues&& other )
 : values( other.values )
@@ -41,6 +43,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >&
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 operator=( const StaticEllpackIndexMultimapValues& other )
@@ -56,6 +59,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >&
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 operator=( StaticEllpackIndexMultimapValues&& other )
@@ -69,6 +73,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 void
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 bind( const StaticEllpackIndexMultimapValues& other )
@@ -113,6 +118,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 void
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 setValue( const LocalIndexType& portIndex,
@@ -131,6 +137,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 Index
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 getValue( const LocalIndexType& portIndex ) const
@@ -148,6 +155,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 Index&
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 operator[]( const LocalIndexType& portIndex )
@@ -165,6 +173,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 const Index&
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 operator[]( const LocalIndexType& portIndex ) const
@@ -182,6 +191,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 bool
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 operator==( const StaticEllpackIndexMultimapValues& other ) const
@@ -200,6 +210,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 bool
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 operator!=( const StaticEllpackIndexMultimapValues& other ) const

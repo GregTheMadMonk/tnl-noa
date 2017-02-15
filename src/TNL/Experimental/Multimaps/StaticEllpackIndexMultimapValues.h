@@ -13,6 +13,8 @@
 #include <type_traits>
 #include <ostream>
 
+#include <TNL/Devices/Cuda.h>
+
 namespace TNL {
 
 template< int ValuesCount,
@@ -33,31 +35,42 @@ class StaticEllpackIndexMultimapValues
       using LocalIndexType = LocalIndex;
       using NetworkType    = StaticEllpackIndexMultimap< ValuesCount, IndexType, DeviceType, LocalIndexType >;
 
+      __cuda_callable__
       StaticEllpackIndexMultimapValues();
 
+      __cuda_callable__
       StaticEllpackIndexMultimapValues( StaticEllpackIndexMultimapValues&& other );
 
+      __cuda_callable__
       StaticEllpackIndexMultimapValues& operator=( const StaticEllpackIndexMultimapValues& );
 
+      __cuda_callable__
       StaticEllpackIndexMultimapValues& operator=( StaticEllpackIndexMultimapValues&& other );
 
+      __cuda_callable__
       void bind( const StaticEllpackIndexMultimapValues& other );
 
       constexpr LocalIndexType getSize() const;
 
       constexpr LocalIndexType getAllocatedSize() const;
 
+      __cuda_callable__
       void setValue( const LocalIndexType& portIndex,
                      const IndexType& value );
 
+      __cuda_callable__
       IndexType getValue( const LocalIndexType& portIndex ) const;
 
+      __cuda_callable__
       IndexType& operator[]( const LocalIndexType& portIndex );
 
+      __cuda_callable__
       const IndexType& operator[]( const LocalIndexType& portIndex ) const;
 
+      __cuda_callable__
       bool operator==( const StaticEllpackIndexMultimapValues& other ) const;
 
+      __cuda_callable__
       bool operator!=( const StaticEllpackIndexMultimapValues& other ) const;
 
       void print( std::ostream& str ) const;

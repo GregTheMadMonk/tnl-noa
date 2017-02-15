@@ -19,6 +19,7 @@ namespace TNL {
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 EllpackIndexMultimapValues()
 : values( nullptr ), valuesCount( nullptr ), allocatedSize( 0 )
@@ -28,6 +29,7 @@ EllpackIndexMultimapValues()
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 EllpackIndexMultimapValues( EllpackIndexMultimapValues&& other )
 : values( other.values ), valuesCount( other.valuesCount ), allocatedSize( other.allocatedSize )
@@ -40,6 +42,7 @@ EllpackIndexMultimapValues( EllpackIndexMultimapValues&& other )
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 EllpackIndexMultimapValues< Index, Device, LocalIndex >&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator=( const EllpackIndexMultimapValues& other )
@@ -55,6 +58,7 @@ operator=( const EllpackIndexMultimapValues& other )
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 EllpackIndexMultimapValues< Index, Device, LocalIndex >&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator=( EllpackIndexMultimapValues&& other )
@@ -71,6 +75,7 @@ operator=( EllpackIndexMultimapValues&& other )
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 void
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 bind( const EllpackIndexMultimapValues& other )
@@ -98,6 +103,7 @@ EllpackIndexMultimapValues( IndexType* values,
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 bool
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 setSize( const LocalIndexType& size )
@@ -111,6 +117,7 @@ setSize( const LocalIndexType& size )
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 LocalIndex
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 getSize() const
@@ -123,6 +130,7 @@ getSize() const
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 LocalIndex
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 getAllocatedSize() const
@@ -133,6 +141,7 @@ getAllocatedSize() const
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 void
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 setValue( const LocalIndexType& portIndex,
@@ -148,6 +157,7 @@ setValue( const LocalIndexType& portIndex,
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 Index
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 getValue( const LocalIndexType& portIndex ) const
@@ -162,6 +172,7 @@ getValue( const LocalIndexType& portIndex ) const
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 Index&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator[]( const LocalIndexType& portIndex )
@@ -176,6 +187,7 @@ operator[]( const LocalIndexType& portIndex )
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 const Index&
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator[]( const LocalIndexType& portIndex ) const
@@ -190,6 +202,7 @@ operator[]( const LocalIndexType& portIndex ) const
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 bool
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator==( const EllpackIndexMultimapValues& other ) const
@@ -205,6 +218,7 @@ operator==( const EllpackIndexMultimapValues& other ) const
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 bool
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 operator!=( const EllpackIndexMultimapValues& other ) const
