@@ -24,7 +24,8 @@
 
 #ifndef NDEBUG   
    
-#ifdef HAVE_CUDA
+// __CUDA_ARCH__ is defined by the compiler only for code executed on GPU
+#ifdef __CUDA_ARCH__
 #define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                    \
    if( ! ( ___tnl__assert_condition ) )                                                                  \
    {                                                                                                     \
@@ -35,7 +36,7 @@
                                                               \
    }
 
-#else // HAVE_CUDA
+#else // __CUDA_ARCH__
 #define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                       \
 	if( ! ( ___tnl__assert_condition ) )                                                     \
 	{                                                                                        \
@@ -47,7 +48,8 @@
         ___tnl__assert_command;                                                             \
         throw EXIT_FAILURE;                                                                 \
 	}
-#endif /* HAVE_CUDA */
+#endif // __CUDA_ARCH__
+
 #else /* #ifndef NDEBUG */
 #define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )
 #endif /* #ifndef NDEBUG */
