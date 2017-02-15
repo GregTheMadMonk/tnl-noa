@@ -76,6 +76,7 @@ class StaticEllpackIndexMultimapValues
       void print( std::ostream& str ) const;
 
    protected:
+      __cuda_callable__
       StaticEllpackIndexMultimapValues( IndexType* values,
                                         const IndexType& input );
 

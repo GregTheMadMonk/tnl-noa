@@ -17,10 +17,26 @@ namespace TNL {
 template< typename Index,
           typename Device,
           typename LocalIndex >
+   template< typename Device_ >
 EllpackIndexMultimap< Index, Device, LocalIndex >::
-EllpackIndexMultimap()
-: keysRange( 0 ), maxValuesCount( 0 )
+EllpackIndexMultimap( const EllpackIndexMultimap< Index, Device_, LocalIndex >& other )
 {
+   operator=( other );
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+   template< typename Device_ >
+EllpackIndexMultimap< Index, Device, LocalIndex >&
+EllpackIndexMultimap< Index, Device, LocalIndex >::
+operator=( const EllpackIndexMultimap< Index, Device_, LocalIndex >& other )
+{
+   values = other.values;
+   valuesCounts = other.valuesCounts;
+   keysRange = other.keysRange;
+   maxValuesCount = other.maxValuesCount;
+   return *this;
 }
 
 template< typename Index,
@@ -63,6 +79,7 @@ setKeysRange( const IndexType& keysRange )
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 const Index
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 getKeysRange() const
@@ -113,6 +130,24 @@ allocate( const ValuesAllocationVectorType& valuesCounts )
 template< typename Index,
           typename Device,
           typename LocalIndex >
+   template< typename Device_ >
+bool
+EllpackIndexMultimap< Index, Device, LocalIndex >::
+setLike( const EllpackIndexMultimap< Index, Device_, LocalIndex >& other )
+{
+   if( ! values.setLike( other.values ) )
+      return false;
+   if( ! valuesCounts.setLike( other.valuesCounts ) )
+      return false;
+   keysRange = other.keysRange;
+   maxValuesCount = other.keysRange;
+   return true;
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex >
+__cuda_callable__
 typename EllpackIndexMultimap< Index, Device, LocalIndex >::ValuesAccessorType
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex )
@@ -133,6 +168,7 @@ getValues( const IndexType& inputIndex )
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 typename EllpackIndexMultimap< Index, Device, LocalIndex >::ConstValuesAccessorType
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex ) const

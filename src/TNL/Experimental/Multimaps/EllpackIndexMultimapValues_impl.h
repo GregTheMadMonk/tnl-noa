@@ -88,6 +88,7 @@ bind( const EllpackIndexMultimapValues& other )
 template< typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 EllpackIndexMultimapValues< Index, Device, LocalIndex >::
 EllpackIndexMultimapValues( IndexType* values,
                             ValuesCountType* valuesCounts,

@@ -18,10 +18,25 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+   template< typename Device_ >
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
-StaticEllpackIndexMultimap()
-: keysRange( 0 )
+StaticEllpackIndexMultimap( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex >& other )
 {
+   operator=( other );
+}
+
+template< int ValuesCount,
+          typename Index,
+          typename Device,
+          typename LocalIndex >
+   template< typename Device_ >
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >&
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
+operator=( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex >& other )
+{
+   values = other.values;
+   keysRange = other.keysRange;
+   return *this;
 }
 
 template< int ValuesCount,
@@ -68,6 +83,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 const Index
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
 getKeysRange() const
@@ -90,6 +106,22 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+   template< typename Device_ >
+bool
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
+setLike( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex >& other )
+{
+   if( ! values.setLike( other.values ) )
+      return false;
+   keysRange = other.keysRange;
+   return true;
+}
+
+template< int ValuesCount,
+          typename Index,
+          typename Device,
+          typename LocalIndex >
+__cuda_callable__
 typename StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::ValuesAccessorType
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex )
@@ -108,6 +140,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 typename StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::ConstValuesAccessorType
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
 getValues( const IndexType& inputIndex ) const

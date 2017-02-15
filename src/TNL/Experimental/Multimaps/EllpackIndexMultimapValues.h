@@ -83,6 +83,7 @@ class EllpackIndexMultimapValues
                                                          typename std::add_const< LocalIndexType >::type,
                                                          LocalIndexType >::type;
 
+      __cuda_callable__
       EllpackIndexMultimapValues( IndexType* values,
                                   ValuesCountType* valuesCounts,
                                   const IndexType& input,

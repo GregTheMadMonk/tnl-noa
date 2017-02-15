@@ -29,7 +29,13 @@ class EllpackIndexMultimap
       using ConstValuesAccessorType    = EllpackIndexMultimapValues< const IndexType, DeviceType, LocalIndexType >;
       using ValuesAllocationVectorType = Containers::Vector< LocalIndexType, DeviceType, IndexType >;
 
-      EllpackIndexMultimap();
+      EllpackIndexMultimap() = default;
+
+      template< typename Device_ >
+      EllpackIndexMultimap( const EllpackIndexMultimap< Index, Device_, LocalIndex >& other );
+
+      template< typename Device_ >
+      EllpackIndexMultimap& operator=( const EllpackIndexMultimap< Index, Device_, LocalIndex >& other );
 
       static String getType();
 
@@ -37,14 +43,20 @@ class EllpackIndexMultimap
 
       void setKeysRange( const IndexType& keysRange );
 
+      __cuda_callable__
       const IndexType getKeysRange() const;
 
       bool allocate( const LocalIndexType& maxValuesCount );
 
       bool allocate( const ValuesAllocationVectorType& valuesCounts );
 
+      template< typename Device_ >
+      bool setLike( const EllpackIndexMultimap< Index, Device_, LocalIndex >& other );
+
+      __cuda_callable__
       ValuesAccessorType getValues( const IndexType& inputIndex );
 
+      __cuda_callable__
       ConstValuesAccessorType getValues( const IndexType& inputIndex ) const;
 
       bool operator==( const EllpackIndexMultimap< Index, Device, LocalIndex >& other ) const;
@@ -63,8 +75,12 @@ class EllpackIndexMultimap
       Containers::Vector< IndexType, DeviceType, IndexType > values;
       Containers::Vector< LocalIndexType, DeviceType, IndexType > valuesCounts;
 
-      IndexType keysRange;
-      LocalIndexType maxValuesCount;
+      IndexType keysRange = 0;
+      LocalIndexType maxValuesCount = 0;
+
+      // friend class is needed for templated assignment operators
+      template< typename Index_, typename Device_, typename LocalIndex_ >
+      friend class EllpackIndexMultimap;
 };
 
 template< typename Index,

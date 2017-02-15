@@ -29,7 +29,13 @@ class StaticEllpackIndexMultimap
       using ValuesAccessorType         = StaticEllpackIndexMultimapValues< ValuesCount, IndexType, DeviceType, LocalIndexType >;
       using ConstValuesAccessorType    = StaticEllpackIndexMultimapValues< ValuesCount, const IndexType, DeviceType, LocalIndexType >;
 
-      StaticEllpackIndexMultimap();
+      StaticEllpackIndexMultimap() = default;
+
+      template< typename Device_ >
+      StaticEllpackIndexMultimap( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex >& other );
+
+      template< typename Device_ >
+      StaticEllpackIndexMultimap& operator=( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex >& other );
 
       static String getType();
 
@@ -37,12 +43,18 @@ class StaticEllpackIndexMultimap
 
       void setKeysRange( const IndexType& keysRange );
 
+      __cuda_callable__
       const IndexType getKeysRange() const;
 
       bool allocate();
 
+      template< typename Device_ >
+      bool setLike( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex >& other );
+
+      __cuda_callable__
       ValuesAccessorType getValues( const IndexType& inputIndex );
 
+      __cuda_callable__
       ConstValuesAccessorType getValues( const IndexType& inputIndex ) const;
 
       bool operator==( const StaticEllpackIndexMultimap& other ) const;
@@ -60,7 +72,11 @@ class StaticEllpackIndexMultimap
    protected:
       Containers::Vector< IndexType, DeviceType, IndexType > values;
 
-      IndexType keysRange;
+      IndexType keysRange = 0;
+
+      // friend class is needed for templated assignment operators
+      template< int ValuesCount_, typename Index_, typename Device_, typename LocalIndex_ >
+      friend class StaticEllpackIndexMultimap;
 };
 
 template< int ValuesCount,

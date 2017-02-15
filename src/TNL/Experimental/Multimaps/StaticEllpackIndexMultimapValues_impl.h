@@ -85,6 +85,7 @@ template< int ValuesCount,
           typename Index,
           typename Device,
           typename LocalIndex >
+__cuda_callable__
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
 StaticEllpackIndexMultimapValues( IndexType* values,
                                   const IndexType& input )
