@@ -81,23 +81,36 @@ void testCopyAssignment( const Object& obj )
 }
 
 template< typename Mesh >
-void testCopyToCuda( const Mesh& mesh )
+void testMeshOnCuda( const Mesh& mesh )
 {
 #ifdef HAVE_CUDA
    using DeviceMesh = Meshes::Mesh< typename Mesh::Config, Devices::Cuda >;
+
+   // test host->CUDA copy
    DeviceMesh dmesh1( mesh );
    EXPECT_EQ( dmesh1, mesh );
    DeviceMesh dmesh2;
    dmesh2 = mesh;
    EXPECT_EQ( dmesh2, mesh );
 
+   // test CUDA->CUDA copy
    testCopyAssignment( dmesh1 );
 
-   // copy back to host
+   // copy CUDA->host copy
    Mesh mesh2( dmesh1 );
    EXPECT_EQ( mesh2, mesh );
    Mesh mesh3;
    mesh3 = dmesh1;
+   EXPECT_EQ( mesh2, mesh );
+
+   // test load from file to CUDA
+   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
+   ASSERT_TRUE( dmesh1.load( "mesh.tnl" ) );
+   EXPECT_EQ( dmesh1, mesh );
+
+   // test save into file from CUDA
+   ASSERT_TRUE( dmesh1.save( "mesh.tnl" ) );
+   ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
    EXPECT_EQ( mesh2, mesh );
 #endif
 }
@@ -111,7 +124,7 @@ void testFinishedMesh( const Mesh& mesh )
    ASSERT_EQ( mesh, mesh2 );
    compareStringRepresentation( mesh, mesh2 );
    testCopyAssignment( mesh );
-   testCopyToCuda( mesh );
+   testMeshOnCuda( mesh );
 }
 
 TEST( MeshTest, TwoTrianglesTest )

@@ -93,27 +93,69 @@ public:
 
    bool updateBoundaryIndices( DimensionTag )
    {
-      // we can't just sum an array/vector of bools, because the result would also be bool
-      // TODO: perhaps Containers::Vector::sum should provide a template parameter to force the result type
-      // (by default it would be the RealType of the vector)
-      GlobalIndexType boundaryEntities = 0;
-      for( GlobalIndexType i = 0; i < boundaryTags.getSize(); i++ )
-         if( boundaryTags[ i ] )
-            boundaryEntities++;
+      if( std::is_same< Device, Devices::Host >::value ) {
+         // we can't just sum an array/vector of bools, because the result would also be bool
+         // TODO: perhaps Containers::Vector::sum should provide a template parameter to force the result type
+         // (by default it would be the RealType of the vector)
+         GlobalIndexType boundaryEntities = 0;
+         for( GlobalIndexType i = 0; i < boundaryTags.getSize(); i++ )
+            if( boundaryTags[ i ] )
+               boundaryEntities++;
 
-      if( ! boundaryIndices.setSize( boundaryEntities ) ||
-          ! interiorIndices.setSize( boundaryTags.getSize() - boundaryEntities ) )
-         return false;
+         if( ! boundaryIndices.setSize( boundaryEntities ) ||
+             ! interiorIndices.setSize( boundaryTags.getSize() - boundaryEntities ) )
+            return false;
 
-      // TODO: parallelize, even on CUDA
-      GlobalIndexType b = 0;
-      GlobalIndexType i = 0;
-      while( b + i < boundaryTags.getSize() ) {
-         const GlobalIndexType e = b + i;
-         if( boundaryTags[ e ] )
-            boundaryIndices[ b++ ] = e;
-         else
-            interiorIndices[ i++ ] = e;
+         GlobalIndexType b = 0;
+         GlobalIndexType i = 0;
+         while( b + i < boundaryTags.getSize() ) {
+            const GlobalIndexType e = b + i;
+            if( boundaryTags[ e ] )
+               boundaryIndices[ b++ ] = e;
+            else
+               interiorIndices[ i++ ] = e;
+         }
+      }
+      // TODO: parallelize directly on the device
+      else {
+         using BoundaryTagsHostArray = typename BoundaryTagsArray::HostType;
+         using OrderingHostArray     = typename OrderingArray::HostType;
+
+         BoundaryTagsHostArray hostBoundaryTags;
+         OrderingHostArray hostBoundaryIndices;
+         OrderingHostArray hostInteriorIndices;
+
+         if( ! hostBoundaryTags.setLike( boundaryTags ) )
+            return false;
+         hostBoundaryTags = boundaryTags;
+
+         // we can't just sum an array/vector of bools, because the result would also be bool
+         // TODO: perhaps Containers::Vector::sum should provide a template parameter to force the result type
+         // (by default it would be the RealType of the vector)
+         GlobalIndexType boundaryEntities = 0;
+         for( GlobalIndexType i = 0; i < boundaryTags.getSize(); i++ )
+            if( hostBoundaryTags[ i ] )
+               boundaryEntities++;
+
+         if( ! hostBoundaryIndices.setSize( boundaryEntities ) ||
+             ! hostInteriorIndices.setSize( boundaryTags.getSize() - boundaryEntities ) )
+            return false;
+
+         GlobalIndexType b = 0;
+         GlobalIndexType i = 0;
+         while( b + i < boundaryTags.getSize() ) {
+            const GlobalIndexType e = b + i;
+            if( hostBoundaryTags[ e ] )
+               hostBoundaryIndices[ b++ ] = e;
+            else
+               hostInteriorIndices[ i++ ] = e;
+         }
+
+         if( ! boundaryIndices.setLike( hostBoundaryIndices ) ||
+             ! interiorIndices.setLike( hostInteriorIndices ) )
+            return false;
+         boundaryIndices = hostBoundaryIndices;
+         interiorIndices = hostInteriorIndices;
       }
 
       return true;
