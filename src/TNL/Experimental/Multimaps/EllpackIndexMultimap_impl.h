@@ -101,6 +101,10 @@ allocate( const LocalIndexType& maxValuesCount )
    if( ! this->valuesCounts.setSize( this->keysRange ) )
       return false;
    this->valuesCounts.setValue( maxValuesCount );
+
+   // extra cost at initialization, which allows to have much simpler operator==
+   values.setValue( 0 );
+
    return true;
 }
 
@@ -124,6 +128,10 @@ allocate( const ValuesAllocationVectorType& valuesCounts )
    if( ! this->valuesCounts.setSize( this->keysRange ) )
       return false;
    this->valuesCounts = valuesCounts;
+
+   // extra cost at initialization, which allows to have much simpler operator==
+   values.setValue( 0 );
+
    return true;
 }
 
@@ -141,6 +149,10 @@ setLike( const EllpackIndexMultimap< Index, Device_, LocalIndex >& other )
       return false;
    keysRange = other.keysRange;
    maxValuesCount = other.keysRange;
+
+   // extra cost at initialization, which allows to have much simpler operator==
+   values.setValue( 0 );
+
    return true;
 }
 
@@ -193,15 +205,21 @@ bool
 EllpackIndexMultimap< Index, Device, LocalIndex >::
 operator==( const EllpackIndexMultimap< Index, Device, LocalIndex >& other ) const
 {
-   if( ! ( this->keysRange == other.keysRange &&
-           this->maxValuesCount == other.maxValuesCount &&
-           this->valuesCounts == other.valuesCounts ) )
-      return false;
-   // compare values for each key separately - the sizes may vary
-   for( IndexType i = 0; i < this->keysRange; i++ )
-      if( this->getValues( i ) != other.getValues( i ) )
-         return false;
-   return true;
+//   if( ! ( this->keysRange == other.keysRange &&
+//           this->maxValuesCount == other.maxValuesCount &&
+//           this->valuesCounts == other.valuesCounts ) )
+//      return false;
+//   // compare values for each key separately - the sizes may vary
+//   for( IndexType i = 0; i < this->keysRange; i++ )
+//      if( this->getValues( i ) != other.getValues( i ) )
+//         return false;
+//   return true;
+
+   // we assume that invalid entries in the ellpack format are always 0
+   return this->keysRange == other.keysRange &&
+          this->maxValuesCount == other.maxValuesCount &&
+          this->valuesCounts == other.valuesCounts &&
+          this->values == other.values;
 }
 
 template< typename Index,
