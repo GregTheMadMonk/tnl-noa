@@ -59,6 +59,29 @@ Mesh( const Mesh< MeshConfig, Device_ >& mesh )
 }
 
 template< typename MeshConfig, typename Device >
+Mesh< MeshConfig, Device >&
+Mesh< MeshConfig, Device >::
+operator=( const Mesh& mesh )
+{
+   StorageBaseType::operator=( *( (const MeshStorageLayers< MeshConfig, Device >*) &mesh ) );
+   // update pointers from entities into the subentity and superentity storage networks
+   MeshEntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
+   return *this;
+}
+
+template< typename MeshConfig, typename Device >
+   template< typename Device_ >
+Mesh< MeshConfig, Device >&
+Mesh< MeshConfig, Device >::
+operator=( const Mesh< MeshConfig, Device_ >& mesh )
+{
+   StorageBaseType::operator=( *( (const MeshStorageLayers< MeshConfig, Device_ >*) &mesh ) );
+   // update pointers from entities into the subentity and superentity storage networks
+   MeshEntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
+   return *this;
+}
+
+template< typename MeshConfig, typename Device >
 constexpr int
 Mesh< MeshConfig, Device >::
 getMeshDimension()

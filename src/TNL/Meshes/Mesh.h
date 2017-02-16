@@ -82,6 +82,11 @@ class Mesh
       template< typename Device_ >
       Mesh( const Mesh< MeshConfig, Device_ >& mesh );
 
+      Mesh& operator=( const Mesh& mesh );
+
+      template< typename Device_ >
+      Mesh& operator=( const Mesh< MeshConfig, Device_ >& mesh );
+
 
       static constexpr int getMeshDimension();
 

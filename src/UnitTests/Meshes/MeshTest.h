@@ -91,6 +91,8 @@ void testCopyToCuda( const Mesh& mesh )
    dmesh2 = mesh;
    EXPECT_EQ( dmesh2, mesh );
 
+   testCopyAssignment( dmesh1 );
+
    // copy back to host
    Mesh mesh2( dmesh1 );
    EXPECT_EQ( mesh2, mesh );
