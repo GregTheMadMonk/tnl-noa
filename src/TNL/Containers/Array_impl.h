@@ -413,6 +413,8 @@ operator == ( const ArrayT& array ) const
 {
    if( array. getSize() != this->getSize() )
       return false;
+   if( this->getSize() == 0 )
+      return true;
    return Algorithms::ArrayOperations< Device, typename ArrayT::DeviceType >::
       template compareMemory< typename ArrayT::ElementType,
                               Element,
