@@ -3,22 +3,24 @@ SET_TARGET_PROPERTIES( BoundaryTagsTest${mpiExt}${debugExt} PROPERTIES COMPILE_F
 TARGET_LINK_LIBRARIES( BoundaryTagsTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
                                                            tnl${mpiExt}${debugExt}-${tnlVersion} )
 
-IF( BUILD_CUDA )
+if( BUILD_CUDA )
    # FIXME: nvcc fails with "Invalid memory reference" error, so we assume that ${CXX} is clang
    #CUDA_ADD_EXECUTABLE( MeshTest${mpiExt}${debugExt} ${headers} MeshTest.cu OPTIONS "${CXX_TESTS_FLAGS}" )
    #TARGET_LINK_LIBRARIES( MeshTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
    #                                                        tnl${mpiExt}${debugExt}-${tnlVersion} )
    ADD_EXECUTABLE( MeshTest${mpiExt}${debugExt} ${headers} MeshTest.cpp )
-   SET_TARGET_PROPERTIES( MeshTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS} -DHAVE_CUDA -x cuda --cuda-path=${CUDA_TOOLKIT_ROOT_DIR} --cuda-gpu-arch=sm_21" )
-   TARGET_LINK_LIBRARIES( MeshTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
-                                                              tnl${mpiExt}${debugExt}-${tnlVersion}
-                                                              cudart dl rt "-L ${CUDA_TOOLKIT_ROOT_DIR}/lib64/" )
-ELSE( BUILD_CUDA )
+   SET_TARGET_PROPERTIES( MeshTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS
+                          "${CXX_TESTS_FLAGS} -DHAVE_CUDA -x cuda --cuda-path=${CUDA_TOOLKIT_ROOT_DIR} --cuda-gpu-arch=sm_21" )
+   TARGET_LINK_LIBRARIES( MeshTest${mpiExt}${debugExt}
+                          ${GTEST_BOTH_LIBRARIES}
+                          tnl${mpiExt}${debugExt}-${tnlVersion}
+                          cudart dl rt "-L ${CUDA_TOOLKIT_ROOT_DIR}/lib64/" )
+else( BUILD_CUDA )
    ADD_EXECUTABLE( MeshTest${mpiExt}${debugExt} ${headers} MeshTest.cpp )
    SET_TARGET_PROPERTIES( MeshTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS}" )
    TARGET_LINK_LIBRARIES( MeshTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
                                                               tnl${mpiExt}${debugExt}-${tnlVersion} )
-ENDIF( BUILD_CUDA )
+endif( BUILD_CUDA )
 
 ADD_EXECUTABLE( MeshEntityTest${mpiExt}${debugExt} ${headers} MeshEntityTest.cpp )
 SET_TARGET_PROPERTIES( MeshEntityTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS}" )
@@ -54,15 +56,34 @@ if( VTK_FOUND )
 
    AddCompilerFlag( "-DHAVE_VTK " )
 
-   add_executable( MeshReaderTest${mpiExt}${debugExt} MeshReaderTest.cpp )
+   if( BUILD_CUDA )
+      # FIXME: nvcc fails with "Invalid memory reference" error, so we assume that ${CXX} is clang
+      #CUDA_ADD_EXECUTABLE( MeshReaderTest${mpiExt}${debugExt} ${headers} MeshTest.cu OPTIONS "${CXX_TESTS_FLAGS}" )
+      #TARGET_LINK_LIBRARIES( MeshReaderTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
+      #                                                        vtkCommonCore
+      #                                                        vtkIOLegacy
+      #                                                        tnl${mpiExt}${debugExt}-${tnlVersion} )
+      ADD_EXECUTABLE( MeshReaderTest${mpiExt}${debugExt} ${headers} MeshReaderTest.cpp )
+      SET_TARGET_PROPERTIES( MeshReaderTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS
+                             "${CXX_TESTS_FLAGS} -DHAVE_CUDA -x cuda --cuda-path=${CUDA_TOOLKIT_ROOT_DIR} --cuda-gpu-arch=sm_21" )
+      TARGET_LINK_LIBRARIES( MeshReaderTest${mpiExt}${debugExt}
+                             ${GTEST_BOTH_LIBRARIES}
+                             vtkCommonCore
+                             vtkIOLegacy
+                             tnl${mpiExt}${debugExt}-${tnlVersion}
+                             cudart dl rt "-L ${CUDA_TOOLKIT_ROOT_DIR}/lib64/" )
+   else( BUILD_CUDA )
+      add_executable( MeshReaderTest${mpiExt}${debugExt} MeshReaderTest.cpp )
 
-   #target_link_libraries( MeshReaderTest${mpiExt}${debugExt}
-   #                       ${VTK_LIBRARIES}
-   #                       tnl${debugExt}-${tnlVersion} )
-   target_link_libraries( MeshReaderTest${mpiExt}${debugExt}
-                          vtkCommonCore
-                          vtkIOLegacy
-                          tnl${debugExt}-${tnlVersion} )
+      #target_link_libraries( MeshReaderTest${mpiExt}${debugExt}
+      #                       ${VTK_LIBRARIES}
+      #                       tnl${debugExt}-${tnlVersion} )
+      target_link_libraries( MeshReaderTest${mpiExt}${debugExt}
+                             ${GTEST_BOTH_LIBRARIES}
+                             vtkCommonCore
+                             vtkIOLegacy
+                             tnl${debugExt}-${tnlVersion} )
+   endif( BUILD_CUDA )
 
 else( VTK_FOUND )
    message( "Please install VTK to enable the MeshReaderTest." )

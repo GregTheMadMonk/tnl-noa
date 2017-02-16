@@ -1,6 +1,8 @@
 #pragma once
 
 #ifdef HAVE_GTEST
+#include <gtest/gtest.h>
+
 #include <sstream>
 
 #include <TNL/Meshes/Mesh.h>
@@ -112,6 +114,8 @@ void testMeshOnCuda( const Mesh& mesh )
    ASSERT_TRUE( dmesh1.save( "mesh.tnl" ) );
    ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
    EXPECT_EQ( mesh2, mesh );
+
+   EXPECT_EQ( std::remove( "mesh.tnl" ), 0 );
 #endif
 }
 
@@ -121,6 +125,7 @@ void testFinishedMesh( const Mesh& mesh )
    Mesh mesh2;
    ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
    ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
+   EXPECT_EQ( std::remove( "mesh.tnl" ), 0 );
    ASSERT_EQ( mesh, mesh2 );
    compareStringRepresentation( mesh, mesh2 );
    testCopyAssignment( mesh );

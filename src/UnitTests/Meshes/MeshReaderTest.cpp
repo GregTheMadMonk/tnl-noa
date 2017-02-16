@@ -5,6 +5,8 @@
 
 #include <TNL/Debugging/MemoryUsage.h>
 
+#include "MeshTest.h"
+
 using namespace TNL;
 using namespace TNL::Meshes;
 
@@ -118,9 +120,6 @@ public:
       if( ! loadMesh( fileName, mesh ) )
          return false;
 
-      // TODO: add tests
-      std::cout << "NOTE: there is no real test, but the file was loaded fine..." << std::endl;
-
       std::cout << "vertices: " << mesh.template getEntitiesCount< 0 >() << std::endl;
       std::cout << "faces: " << mesh.template getEntitiesCount< MeshType::getMeshDimension() - 1 >() << std::endl;
       std::cout << "cells: " << mesh.template getEntitiesCount< MeshType::getMeshDimension() >() << std::endl;
@@ -128,6 +127,10 @@ public:
       std::cout << "post-init\t";
       Debugging::printMemoryUsage();
 
+#ifdef HAVE_GTEST 
+      std::cout << "Running basic I/O tests..." << std::endl;
+      testFinishedMesh( mesh );
+#endif
 //      mesh.save( "mesh-test.tnl" );
 
       return true;
