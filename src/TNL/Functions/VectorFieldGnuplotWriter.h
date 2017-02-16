@@ -58,7 +58,7 @@ class VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Mesh
    public:
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 0, RealType > VectorFieldType;
+      typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 0, RealType > > VectorFieldType;
 
       static bool write( const VectorFieldType& function,
                          std::ostream& str );
@@ -111,12 +111,12 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           int VectorFieldSize >
-class VectorFieldGnuplotWriter< VectorField< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > > >
+class VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > > >
 {
    public:
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef Functions::VectorField< MeshType, 0, RealType > > VectorFieldType;
+      typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 0, RealType > > VectorFieldType;
 
       static bool write( const VectorFieldType& function,
                          std::ostream& str );
@@ -131,12 +131,12 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           int VectorFieldSize >
-class VectorFieldGnuplotWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > > >
+class VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > > >
 {
    public:
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef Functions::VectorField< MeshType, 3, RealType > > VectorFieldType;
+      typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 3, RealType > > VectorFieldType;
 
       static bool write( const VectorFieldType& function,
                          std::ostream& str );
@@ -150,12 +150,12 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           int VectorFieldSize >
-class VectorFieldGnuplotWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > > >
+class VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > > >
 {
    public:
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef Functions::VectorField< MeshType, 2, RealType > > VectorFieldType;
+      typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 2, RealType > > VectorFieldType;
 
       static bool write( const VectorFieldType& function,
                          std::ostream& str );
@@ -169,12 +169,12 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           int VectorFieldSize >
-class VectorFieldGnuplotWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > > >
+class VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > > >
 {
    public:
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef Functions::VectorField< MeshType, 0, RealType > > VectorFieldType;
+      typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 0, RealType > > VectorFieldType;
 
       static bool write( const VectorFieldType& function,
                          std::ostream& str );

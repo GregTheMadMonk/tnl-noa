@@ -87,6 +87,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
       typedef SharedPointer< FunctionType > FunctionPointer;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
+      typedef VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > > ThisType;
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )

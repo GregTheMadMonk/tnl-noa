@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <iostream>
 #include <TNL/Functions/VectorFieldGnuplotWriter.h>
 
 namespace TNL {
@@ -31,9 +32,10 @@ write( const VectorField& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
+VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > > >::
 write( const VectorFieldType& function,
        std::ostream& str )
 {
@@ -57,9 +59,10 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
+VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > > >::
 write( const VectorFieldType& function,
        std::ostream& str )
 {
@@ -84,9 +87,10 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
+VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > > >::
 write( const VectorFieldType& function,
        std::ostream& str )
 {
@@ -116,9 +120,10 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
+VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > > >::
 write( const VectorFieldType& function,
        std::ostream& str )
 {
@@ -172,9 +177,10 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
+VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > > >::
 write( const VectorFieldType& function,
        std::ostream& str )
 {
@@ -205,9 +211,10 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >::
+VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > > >::
 write( const VectorFieldType& function,
        std::ostream& str )
 {
@@ -240,9 +247,10 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >::
+VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > > >::
 write( const VectorFieldType& function,
        std::ostream& str )
 {
@@ -320,9 +328,10 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >::
+VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > > >::
 write( const VectorFieldType& function,
        std::ostream& str )
 {
