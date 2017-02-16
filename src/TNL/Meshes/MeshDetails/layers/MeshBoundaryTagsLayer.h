@@ -251,6 +251,14 @@ class MeshBoundaryTagsLayer< MeshConfig, Device, DimensionTag, false >
 public:
    using GlobalIndexType   = typename EntityTraitsType::GlobalIndexType;
 
+   MeshBoundaryTagsLayer() = default;
+   explicit MeshBoundaryTagsLayer( const MeshBoundaryTagsLayer& other ) {}
+   template< typename Device_ >
+   MeshBoundaryTagsLayer( const MeshBoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other ) {}
+   MeshBoundaryTagsLayer& operator=( const MeshBoundaryTagsLayer& other ) { return *this; }
+   template< typename Device_ >
+   MeshBoundaryTagsLayer& operator=( const MeshBoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other ) { return *this; }
+
    bool setNumberOfEntities( const GlobalIndexType& entitiesCount )
    {
       return true;
