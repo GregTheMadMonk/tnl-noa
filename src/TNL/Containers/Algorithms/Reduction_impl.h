@@ -56,13 +56,14 @@ reductionOnCudaDevice( Operation& operation,
     * objects stored on the device might contain pointers into the device memory,
     * in which case reduction on host might fail.
     */
-   constexpr bool can_copy_to_host = std::is_fundamental< RealType >::value || std::is_pointer< RealType >::value;
+   constexpr bool can_reduce_all_on_host = std::is_fundamental< RealType >::value || std::is_pointer< RealType >::value;
+   constexpr bool can_reduce_later_on_host = std::is_fundamental< ResultType >::value || std::is_pointer< ResultType >::value;
 
    /***
     * First check if the input array(s) is/are large enough for the reduction on GPU.
     * Otherwise copy it/them to host and reduce on CPU.
     */
-   if( can_copy_to_host && size <= minGPUReductionDataSize )
+   if( can_reduce_all_on_host && size <= minGPUReductionDataSize )
    {
       RealType hostArray1[ minGPUReductionDataSize ];
       RealType hostArray2[ minGPUReductionDataSize ];
@@ -99,7 +100,7 @@ reductionOnCudaDevice( Operation& operation,
       timer.start();
    #endif
 
-   if( can_copy_to_host ) {
+   if( can_reduce_later_on_host ) {
       /***
        * Transfer the reduced data from device to host.
        */
@@ -133,7 +134,6 @@ reductionOnCudaDevice( Operation& operation,
        */
       LaterReductionOperation laterReductionOperation;
       while( reducedSize > 1 ) {
-         // TODO: copy the intermediate result somewhere else, in-place reduction probably does not work
          reducedSize = CudaReductionKernelLauncher( laterReductionOperation,
                                                     reducedSize,
                                                     deviceAux1,
