@@ -471,7 +471,7 @@ public:
    {
       str << "The mesh vertices are: " << std::endl;
       for( GlobalIndexType i = 0; i < vertices.getSize(); i++ )
-         str << i << vertices[ i ] << std::endl;
+         str << i << " " << vertices[ i ] << std::endl;
       SuperentityStorageBaseType::print( str );
       BoundaryTagsBaseType::print( str );
       str << std::endl;
