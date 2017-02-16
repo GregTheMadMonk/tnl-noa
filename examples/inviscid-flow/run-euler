@@ -10,10 +10,23 @@ tnl-grid-setup --dimensions 2 \
 
 tnl-init --test-function sin-wave \
          --output-file init.tnl
-./euler --time-discretisation explicit \
-              --boundary-conditions-constant 0 \
-              --discrete-solver merson \
-              --snapshot-period 0.01 \
-              --final-time 1.0
+tnl-euler-2d --discontinuity-placement-0 0.3 \
+             --discontinuity-placement-1 0.3 \
+             --discontinuity-placement-2 0.3 \
+             --left-density 1.0 \
+             --right-density 1.0 \
+             --left-velocity-0 -2.0 \
+             --left-velocity-1 -2.0 \
+             --left-velocity-2 -2.0 \
+             --right-velocity-0 2.0 \
+             --right-velocity-1 2.0 \
+             --right-velocity-2 2.0 \
+             --left-pressure 0.4 \
+             --right-pressure 0.4 \
+             --time-discretisation explicit \
+             --boundary-conditions-constant 0 \
+             --discrete-solver merson \
+             --snapshot-period 0.01 \
+             --final-time 1.0
 
 tnl-view --mesh mesh.tnl --input-files *tnl     

@@ -135,8 +135,10 @@ setInitialCondition( const Config::ParameterContainer& parameters,
       if( ! initialCondition.setup( parameters ) )
          return false;
       initialCondition.setInitialCondition( conservativeVariables );
+      return true;
    }
-   return true;
+   std::cerr << "Uknown initial condition " << initialConditionType << std::endl;
+   return false;
 }
 
 template< typename Mesh,

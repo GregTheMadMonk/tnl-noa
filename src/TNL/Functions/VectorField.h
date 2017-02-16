@@ -14,6 +14,7 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/VectorFieldGnuplotWriter.h>
 
 namespace TNL {
 namespace Functions {
@@ -148,9 +149,9 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
          return true;
       }
       
-      IndexType getDofs( const MeshPointer& meshPointer ) const
+      static IndexType getDofs( const MeshPointer& meshPointer )
       {
-         return Size * this->vectorField[ 0 ]->getDofs( meshPointer );
+         return Size * FunctionType::getDofs( meshPointer );
       }
 
       __cuda_callable__ 
@@ -193,6 +194,27 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
             if( ! vectorField[ i ]->boundLoad( file ) )
                return false;
          return true;         
+      }
+      
+      bool write( const String& fileName,
+                  const String& format = "vtk" ) const
+      {
+         std::fstream file;
+         file.open( fileName.getString(), std::ios::out );
+         if( ! file )
+         {
+            std::cerr << "Unable to open a file " << fileName << "." << std::endl;
+            return false;
+         }
+         if( format == "vtk" )
+            return false; //MeshFunctionVTKWriter< ThisType >::write( *this, file );
+         else if( format == "gnuplot" )
+            return MeshFunctionGnuplotWriter< ThisType >::write( *this, file );
+         else {
+            std::cerr << "Unknown output format: " << format << std::endl;
+            return false;
+         }
+         return true;
       }
       
       using Object::save;

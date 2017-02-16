@@ -35,9 +35,9 @@ class RiemannProblemInitialCondition
       
       RiemannProblemInitialCondition()
          : discontinuityPlacement( 0.5 ),
-           leftDensity( 1.0 ), rightDensity( 0.0 ),
-           leftVelocity( 1.0 ), rightVelocity( 0.0 ),
-           leftPressure( 1.0e5 ), rightPressure( 0.0 ),
+           leftDensity( 1.0 ), rightDensity( 1.0 ),
+           leftVelocity( -2.0 ), rightVelocity( 2.0 ),
+           leftPressure( 0.4 ), rightPressure( 0.4 ),
            gamma( 1.67 ){}
 
       static void configSetup( Config::ConfigDescription& config,
@@ -169,6 +169,7 @@ class RiemannProblemInitialCondition
          initialCondition->getOperator().setPositiveValue( leftDensity );
          initialCondition->getOperator().setNegativeValue( rightDensity );
          evaluator.evaluate( conservativeVariables.getDensity(), initialCondition );
+         conservativeVariables.getDensity()->write( "density.gplt", "gnuplot" );
          
          /****
           * Momentum

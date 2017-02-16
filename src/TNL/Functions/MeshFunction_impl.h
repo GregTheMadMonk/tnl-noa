@@ -257,7 +257,7 @@ template< typename Mesh,
 __cuda_callable__
 typename MeshFunction< Mesh, MeshEntityDimensions, Real >::IndexType
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
-getDofs( const MeshPointer& meshPointer ) const
+getDofs( const MeshPointer& meshPointer )
 {
    return meshPointer->template getEntitiesCount< MeshEntityDimensions >();
 }
@@ -500,7 +500,7 @@ write( const String& fileName,
    file.open( fileName.getString(), std::ios::out );
    if( ! file )
    {
-      std::cerr << "Unbable to open a file " << fileName << "." << std::endl;
+      std::cerr << "Unable to open a file " << fileName << "." << std::endl;
       return false;
    }
    if( format == "vtk" )
