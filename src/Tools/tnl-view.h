@@ -60,6 +60,7 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
 
    int verbose = parameters. getParameter< int >( "verbose");
    String outputFormat = parameters. getParameter< String >( "output-format" );
+   double scale = parameters. getParameter< double >( "scale" );
    String outputFileName;
    if( ! getOutputFileName( inputFileName,
                             outputFormat,
@@ -68,7 +69,7 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
    if( verbose )
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
-   return function.write( outputFileName, outputFormat );
+   return function.write( outputFileName, outputFormat, scale );
 }
 
 template< typename VectorField >
@@ -87,6 +88,7 @@ bool writeVectorField( const typename VectorField::FunctionType::MeshPointer& me
 
    int verbose = parameters. getParameter< int >( "verbose");
    String outputFormat = parameters. getParameter< String >( "output-format" );
+   double scale = parameters. getParameter< double >( "scale" );
    String outputFileName;
    if( ! getOutputFileName( inputFileName,
                             outputFormat,
@@ -95,7 +97,7 @@ bool writeVectorField( const typename VectorField::FunctionType::MeshPointer& me
    if( verbose )
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
-   return field.write( outputFileName, outputFormat );
+   return field.write( outputFileName, outputFormat, scale );
 }
 
 

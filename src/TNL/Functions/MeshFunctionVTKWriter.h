@@ -23,7 +23,9 @@ class MeshFunctionVTKWriter
    public:
  
       static bool write( const MeshFunction& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
+      
       static void writeHeader(const MeshFunction& function,
                          std::ostream& str ){}
 };
@@ -43,7 +45,9 @@ class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, Me
       typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
+      
       static void writeHeader(const MeshFunctionType& function,
                          std::ostream& str );
 };
@@ -63,7 +67,9 @@ class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, Me
       typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
+      
       static void writeHeader(const MeshFunctionType& function,
                          std::ostream& str );
 };
@@ -83,7 +89,9 @@ class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, Me
       typedef Functions::MeshFunction< MeshType, 2, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
+      
       static void writeHeader(const MeshFunctionType& function,
                          std::ostream& str );
 };
@@ -103,7 +111,9 @@ class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, Me
       typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
+      
       static void writeHeader(const MeshFunctionType& function,
                          std::ostream& str );
 };
@@ -123,7 +133,9 @@ class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, Me
       typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
+      
       static void writeHeader(const MeshFunctionType& function,
                          std::ostream& str );
 };
@@ -143,7 +155,9 @@ class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, Me
       typedef Functions::MeshFunction< MeshType, 3, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
+      
       static void writeHeader(const MeshFunctionType& function,
                          std::ostream& str );
 };
@@ -163,7 +177,9 @@ class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, Me
       typedef Functions::MeshFunction< MeshType, 2, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
+      
       static void writeHeader(const MeshFunctionType& function,
                          std::ostream& str );
 };
@@ -183,7 +199,9 @@ class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, Me
       typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
+      
       static void writeHeader(const MeshFunctionType& function,
                          std::ostream& str );
 };
@@ -203,7 +221,9 @@ class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, Me
       typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
+      
       static void writeHeader(const MeshFunctionType& function,
                          std::ostream& str );
 };

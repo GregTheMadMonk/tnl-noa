@@ -145,7 +145,8 @@ class MeshFunction :
       bool boundLoad( File& file );
  
       bool write( const String& fileName,
-                  const String& format = "vtk" ) const;
+                  const String& format = "vtk",
+                  const double& scale = 1.0 ) const;
  
       using Object::save;
  

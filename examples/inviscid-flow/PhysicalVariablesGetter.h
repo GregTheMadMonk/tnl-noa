@@ -36,8 +36,6 @@ class PhysicalVariablesGetter
       typedef Functions::VectorField< Dimensions, MeshFunctionType > VelocityFieldType;
       typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
       
-      
-      
       class VelocityGetter : public Functions::Domain< Dimensions, Functions::MeshDomain >
       {
          public:
@@ -60,6 +58,35 @@ class PhysicalVariablesGetter
             const MeshFunctionPointer density, momentum;
       };
       
+      class PressureGetter : public Functions::Domain< Dimensions, Functions::MeshDomain >
+      {
+         public:
+            typedef typename MeshType::RealType RealType;
+            
+            PressureGetter( MeshFunctionPointer density,
+                            MeshFunctionPointer energy, 
+                            VelocityFieldPointer momentum,
+                            const RealType& gamma )
+            : density( density ), energy( energy ), momentum( momentum ), gamma( gamma ) {}
+            
+            template< typename EntityType >
+            __cuda_callable__
+            RealType operator()( const EntityType& meshEntity,
+                                 const RealType& time = 0.0 ) const
+            {
+               const RealType e = energy.template getData< DeviceType >()( meshEntity );
+               const RealType rho = density.template getData< DeviceType >()( meshEntity );
+               const RealType momentumNorm = momentum.template getData< DeviceType >().getVector( meshEntity ).lpNorm( 2.0 );
+               return ( gamma - 1.0 ) * ( e - 0.5 * momentumNorm * momentumNorm / rho );
+            }
+            
+         protected:
+            const MeshFunctionPointer density, energy;
+            const VelocityFieldPointer momentum;
+            const RealType gamma;
+      };      
+
+      
       void getVelocity( const ConservativeVariablesPointer& conservativeVariables,
                         VelocityFieldPointer& velocity )
       {
@@ -72,6 +99,17 @@ class PhysicalVariablesGetter
          }
       }
       
+      void getPressure( const ConservativeVariablesPointer& conservativeVariables,
+                        const RealType& gamma,
+                        MeshFunctionPointer& pressure )
+      {
+         Functions::MeshFunctionEvaluator< MeshFunctionType, PressureGetter > evaluator;
+         SharedPointer< PressureGetter, DeviceType > pressureGetter( conservativeVariables->getDensity(),
+                                                                     conservativeVariables->getEnergy(),
+                                                                     conservativeVariables->getMomentum(),
+                                                                     gamma );
+         evaluator.evaluate( pressure, pressureGetter );
+      }
       
 };
    

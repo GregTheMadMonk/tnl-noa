@@ -6,12 +6,24 @@
 
 namespace TNL {
 
+   
+template< typename Mesh,
+          typename Real = typename Mesh::RealType,
+          typename Index = typename Mesh::IndexType >
+class LaxFridrichsContinuityBase
+{
+   public:
+};
+
+   
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class LaxFridrichsContinuity
 {
 };
+
+
 
 template< typename MeshReal,
           typename Device,
@@ -92,7 +104,7 @@ class LaxFridrichsContinuity< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Rea
 
       static String getType();
       Real tau;
-      MeshFunctionType velocityX;
+      MeshFunctionType velocityX; // TODO: change to pointer
       MeshFunctionType velocityY;
 
       void setTau(const Real& tau)

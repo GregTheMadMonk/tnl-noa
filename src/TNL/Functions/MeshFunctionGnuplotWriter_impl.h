@@ -19,7 +19,8 @@ template< typename MeshFunction >
 bool
 MeshFunctionGnuplotWriter< MeshFunction >::
 write( const MeshFunction& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    std::cerr << "Gnuplot writer for mesh functions defined on mesh type " << MeshFunction::MeshType::getType() << " is not (yet) implemented." << std::endl;
    return false;
@@ -35,7 +36,8 @@ template< typename MeshReal,
 bool
 MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    const MeshType& mesh = function.getMesh();
    typename MeshType::Cell entity( mesh );
@@ -46,7 +48,7 @@ write( const MeshFunctionType& function,
       entity.refresh();
       typename MeshType::VertexType v = entity.getCenter();
       str << v.x() << " "
-          << function.getData().getElement( entity.getIndex() ) << std::endl;
+          << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
    return true;
 }
@@ -61,7 +63,8 @@ template< typename MeshReal,
 bool
 MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    const MeshType& mesh = function.getMesh();
    typename MeshType::Vertex entity( mesh );
@@ -72,7 +75,7 @@ write( const MeshFunctionType& function,
       entity.refresh();
       typename MeshType::VertexType v = entity.getCenter();
       str << v.x() << " "
-          << function.getData().getElement( entity.getIndex() ) << std::endl;
+          << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
    return true;
 }
@@ -88,7 +91,8 @@ template< typename MeshReal,
 bool
 MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    const MeshType& mesh = function.getMesh();
    typename MeshType::Cell entity( mesh );
@@ -103,7 +107,7 @@ write( const MeshFunctionType& function,
          entity.refresh();
          typename MeshType::VertexType v = entity.getCenter();
          str << v.x() << " " << v.y() << " "
-             << function.getData().getElement( entity.getIndex() ) << std::endl;
+             << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
       }
       str << std::endl;
    }
@@ -120,7 +124,8 @@ template< typename MeshReal,
 bool
 MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    const MeshType& mesh = function.getMesh();
    typedef typename MeshType::Face EntityType;
@@ -139,7 +144,7 @@ write( const MeshFunctionType& function,
          entity.refresh();
          typename MeshType::VertexType v = entity.getCenter();
          str << v.x() << " " << v.y() << " "
-             << function.getData().getElement( entity.getIndex() ) << std::endl;
+             << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
       }
       str << std::endl;
    }
@@ -158,7 +163,7 @@ write( const MeshFunctionType& function,
          entity.refresh();
          typename MeshType::VertexType v = entity.getCenter();
          str << v.x() << " " << v.y() << " "
-             << function.getData().getElement( entity.getIndex() ) << std::endl;
+             << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
       }
       str << std::endl;
    }
@@ -176,7 +181,8 @@ template< typename MeshReal,
 bool
 MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    const MeshType& mesh = function.getMesh();
    typename MeshType::Vertex entity( mesh );
@@ -191,7 +197,7 @@ write( const MeshFunctionType& function,
          entity.refresh();
          typename MeshType::VertexType v = entity.getCenter();
          str << v.x() << " " << v.y() << " "
-             << function.getData().getElement( entity.getIndex() ) << std::endl;
+             << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
       }
       str << std::endl;
    }
@@ -209,7 +215,8 @@ template< typename MeshReal,
 bool
 MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    const MeshType& mesh = function.getMesh();
    typename MeshType::Cell entity( mesh );
@@ -227,7 +234,7 @@ write( const MeshFunctionType& function,
             entity.refresh();
             typename MeshType::VertexType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z() << " "
-                << function.getData().getElement( entity.getIndex() ) << std::endl;
+                << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
          }
          str << std::endl;
       }
@@ -244,7 +251,8 @@ template< typename MeshReal,
 bool
 MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    const MeshType& mesh = function.getMesh();
    typedef typename MeshType::Face EntityType;
@@ -266,7 +274,7 @@ write( const MeshFunctionType& function,
             entity.refresh();
             typename MeshType::VertexType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z() << " "
-                << function.getData().getElement( entity.getIndex() ) << std::endl;
+                << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
          }
          str << std::endl;
       }
@@ -286,7 +294,7 @@ write( const MeshFunctionType& function,
             entity.refresh();
             typename MeshType::VertexType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z() << " "
-                << function.getData().getElement( entity.getIndex() ) << std::endl;
+                << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
          }
          str << std::endl;
       }
@@ -306,7 +314,7 @@ write( const MeshFunctionType& function,
             entity.refresh();
             typename MeshType::VertexType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z() << " "
-                << function.getData().getElement( entity.getIndex() ) << std::endl;
+                << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
          }
          str << std::endl;
       }
@@ -324,7 +332,8 @@ template< typename MeshReal,
 bool
 MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    const MeshType& mesh = function.getMesh();
    typename MeshType::Vertex entity( mesh );
@@ -342,7 +351,7 @@ write( const MeshFunctionType& function,
             entity.refresh();
             typename MeshType::VertexType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z() << " "
-                << function.getData().getElement( entity.getIndex() ) << std::endl;
+                << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
          }
          str << std::endl;
       }

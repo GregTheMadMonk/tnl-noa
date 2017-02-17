@@ -125,7 +125,8 @@ class eulerProblem:
       BoundaryConditionPointer boundaryConditionPointer;
       RightHandSidePointer rightHandSidePointer;
       
-      ConservativeVariablesPointer conservativeVariables;
+      ConservativeVariablesPointer conservativeVariables,
+                                   conservativeVariablesRHS;
       
       VelocityFieldPointer velocity;
       MeshFunctionPointer pressure, energy;

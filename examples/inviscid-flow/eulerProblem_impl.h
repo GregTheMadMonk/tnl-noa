@@ -137,7 +137,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
       initialCondition.setInitialCondition( conservativeVariables );
       return true;
    }
-   std::cerr << "Uknown initial condition " << initialConditionType << std::endl;
+   std::cerr << "Unknown initial condition " << initialConditionType << std::endl;
    return false;
 }
 
@@ -222,94 +222,90 @@ getExplicitRHS( const RealType& time,
                 DofVectorPointer& _fu,
                 MeshDependentDataPointer& meshDependentData )
 {
-    /*typedef typename MeshType::Cell Cell;
-    int count = mesh->template getEntitiesCount< Cell >()/4;
-	//bind _u
-    this->_uRho.bind( *_u,0,count);
-    this->_uRhoVelocityX.bind( *_u,count,count);
-    this->_uRhoVelocityY.bind( *_u,2 * count,count);
-    this->_uEnergy.bind( *_u,3 * count,count);
-		
-	//bind _fu
-    this->_fuRho.bind( *_u,0,count);
-    this->_fuRhoVelocityX.bind( *_u,count,count);
-    this->_fuRhoVelocityY.bind( *_u,2 * count,count);
-    this->_fuEnergy.bind( *_u,3 * count,count);
-   //bind MeshFunctionType
-   MeshFunctionPointer velocity( mesh, this->velocity );
-   MeshFunctionPointer velocityX( mesh, this->velocityX );
-   MeshFunctionPointer velocityY( mesh, this->velocityY );
-   MeshFunctionPointer pressure( mesh, this->pressure );
-   MeshFunctionPointer uRho( mesh, _uRho ); 
-   MeshFunctionPointer fuRho( mesh, _fuRho );
-   MeshFunctionPointer uRhoVelocityX( mesh, _uRhoVelocityX ); 
-   MeshFunctionPointer fuRhoVelocityX( mesh, _fuRhoVelocityX );
-   MeshFunctionPointer uRhoVelocityY( mesh, _uRhoVelocityY ); 
-   MeshFunctionPointer fuRhoVelocityY( mesh, _fuRhoVelocityY );
-   MeshFunctionPointer uEnergy( mesh, _uEnergy ); 
-   MeshFunctionPointer fuEnergy( mesh, _fuEnergy );
-   //generate Operators
-   SharedPointer< Continuity > lF2DContinuity;
-   SharedPointer< MomentumX > lF2DMomentumX;
-   SharedPointer< MomentumY > lF2DMomentumY;
-   SharedPointer< Energy > lF2DEnergy;
+    typedef typename MeshType::Cell Cell;
+    
+    /****
+     * Bind DOFs
+     */
+    this->conservativeVariables->bind( mesh, _u );
+    this->conservativeVariablesRHS->bind( mesh, _fu );
+    this->velocity->setMesh( mesh );
+    this->pressure->setMesh( mesh );
+    this->energy->setMesh( mesh );
+    
+    /****
+     * Resolve the physical variables
+     */
+    PhysicalVariablesGetter< typename MeshPointer::ObjectType > physicalVariables;
+    physicalVariables.getVelocity( this->conservativeVariables, this->velocity );
+    physicalVariables.getPressure( this->conservativeVariables, this->gamma, this->pressure );
+    
+   /****
+    * Set-up operators
+    */
+    
+    //generate Operators
+   SharedPointer< Continuity > continuity;
+   SharedPointer< MomentumX > momentumX;
+   SharedPointer< MomentumY > momentumY;
+   //SharedPointer< MomentumZ > momentumZ;
+   SharedPointer< Energy > energy;
 
-   this->bindDofs( mesh, _u );
+   //this->bindDofs( mesh, _u );
    //rho
-   lF2DContinuity->setTau(tau);
-   lF2DContinuity->setVelocityX( *velocityX );
-   lF2DContinuity->setVelocityY( *velocityY );
+   continuity->setTau(tau);
+   continuity->setVelocityX( *( *velocity )[ 0 ] );
+   continuity->setVelocityY( *( *velocity )[ 1 ] );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity; 
    explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           lF2DContinuity,
+                                                           continuity,
                                                            this->boundaryConditionPointer,
                                                            this->rightHandSidePointer,
-                                                           uRho,
-                                                           fuRho );
+                                                           this->conservativeVariables->getDensity(),
+                                                           this->conservativeVariablesRHS->getDensity() );
 
    //rhoVelocityX
-   lF2DMomentumX->setTau(tau);
-   lF2DMomentumX->setVelocityX( *velocityX );
-   lF2DMomentumX->setVelocityY( *velocityY );
-   lF2DMomentumX->setPressure( *pressure );
+   momentumX->setTau(tau);
+   momentumX->setVelocityX( *( *velocity )[ 0 ] );
+   momentumX->setVelocityY( *( *velocity )[ 1 ] );
+   momentumX->setPressure( *pressure );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumX, BoundaryCondition, RightHandSide > explicitUpdaterMomentumX; 
    explicitUpdaterMomentumX.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           lF2DMomentumX,
+                                                           momentumX,
                                                            this->boundaryConditionPointer,
                                                            this->rightHandSidePointer,
-                                                           uRhoVelocityX,
-                                                           fuRhoVelocityX );
+                                                           ( *this->conservativeVariables->getMomentum() )[ 0 ], // uRhoVelocityX,
+                                                           ( *this->conservativeVariablesRHS->getMomentum() )[ 0 ] ); //, fuRhoVelocityX );
 
    //rhoVelocityY
-   lF2DMomentumY->setTau(tau);
-   lF2DMomentumY->setVelocityX( *velocityX );
-   lF2DMomentumY->setVelocityY( *velocityY );
-   lF2DMomentumY->setPressure( *pressure );
+   momentumY->setTau(tau);
+   momentumY->setVelocityX( *( *velocity )[ 0 ] );
+   momentumY->setVelocityY( *( *velocity )[ 1 ] );
+   momentumY->setPressure( *pressure );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumY, BoundaryCondition, RightHandSide > explicitUpdaterMomentumY;
    explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           lF2DMomentumY,
+                                                           momentumY,
                                                            this->boundaryConditionPointer,
                                                            this->rightHandSidePointer,
-                                                           uRhoVelocityY,
-                                                           fuRhoVelocityY );
+                                                           ( *this->conservativeVariables->getMomentum() )[ 1 ], // uRhoVelocityX,
+                                                           ( *this->conservativeVariablesRHS->getMomentum() )[ 1 ] ); //, fuRhoVelocityX );
   
    //energy
-   lF2DEnergy->setTau(tau);
-   lF2DEnergy->setVelocityX( *velocityX ); 
-   lF2DEnergy->setVelocityY( *velocityY ); 
-   lF2DEnergy->setPressure( *pressure );
+   energy->setTau(tau);
+   energy->setVelocityX( *( *velocity )[ 0 ] ); 
+   energy->setVelocityY( *( *velocity )[ 1 ] ); 
+   energy->setPressure( *pressure );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
    explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           lF2DEnergy,
+                                                           energy,
                                                            this->boundaryConditionPointer,
                                                            this->rightHandSidePointer,
-                                                           uEnergy,
-                                                           fuEnergy );
-     */
+                                                           this->conservativeVariables->getEnergy(), // uRhoVelocityX,
+                                                           this->conservativeVariablesRHS->getEnergy() ); //, fuRhoVelocityX );
 
 /*
    BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 

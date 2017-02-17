@@ -82,12 +82,14 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
    public:
       
       typedef Mesh MeshType;
+      typedef Real RealType;
       typedef SharedPointer< MeshType > MeshPointer;
-      typedef MeshFunction< MeshType, MeshEntityDimensions, Real > FunctionType;
+      typedef MeshFunction< MeshType, MeshEntityDimensions, RealType > FunctionType;
       typedef SharedPointer< FunctionType > FunctionPointer;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
-      typedef VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > > ThisType;
+      typedef VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, RealType > > ThisType;
+      typedef Containers::StaticVector< Size, RealType > VectorType;
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
@@ -137,6 +139,14 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
             this->vectorField[ i ]->setMesh( meshPointer );
       }
       
+      template< typename Device = Devices::Host >
+      __cuda_callable__
+      const MeshType& getMesh() const
+      {
+         return this->vectorField[ 0 ].template getData< Device >().template getMesh< Device >();
+      }
+
+      
       bool setup( const MeshPointer& meshPointer,
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
@@ -165,6 +175,23 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
       FunctionPointer& operator[]( int i )
       {
          return this->vectorField[ i ];
+      }
+      
+      __cuda_callable__
+      VectorType getVector( const IndexType index ) const
+      {
+         VectorType v;
+         for( int i = 0; i < Size; i++ )
+            v[ i ] = ( *this->vectorField[ i ] )[ index ];
+      }
+
+      template< typename EntityType >
+      __cuda_callable__
+      VectorType getVector( const EntityType& meshEntity ) const
+      {
+         VectorType v;
+         for( int i = 0; i < Size; i++ )
+            v[ i ] = ( *this->vectorField[ i ] )( meshEntity );
       }
       
       bool save( File& file ) const
@@ -198,7 +225,8 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
       }
       
       bool write( const String& fileName,
-                  const String& format = "vtk" ) const
+                  const String& format = "vtk",
+                  const double& scale = 1.0 ) const
       {
          std::fstream file;
          file.open( fileName.getString(), std::ios::out );
@@ -210,7 +238,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
          if( format == "vtk" )
             return false; //MeshFunctionVTKWriter< ThisType >::write( *this, file );
          else if( format == "gnuplot" )
-            return MeshFunctionGnuplotWriter< ThisType >::write( *this, file );
+            return VectorFieldGnuplotWriter< ThisType >::write( *this, file, scale );
          else {
             std::cerr << "Unknown output format: " << format << std::endl;
             return false;

@@ -494,7 +494,8 @@ template< typename Mesh,
 bool
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
 write( const String& fileName,
-       const String& format ) const
+       const String& format,
+       const double& scale ) const
 {
    std::fstream file;
    file.open( fileName.getString(), std::ios::out );
@@ -504,9 +505,9 @@ write( const String& fileName,
       return false;
    }
    if( format == "vtk" )
-      return MeshFunctionVTKWriter< ThisType >::write( *this, file );
+      return MeshFunctionVTKWriter< ThisType >::write( *this, file, scale );
    else if( format == "gnuplot" )
-      return MeshFunctionGnuplotWriter< ThisType >::write( *this, file );
+      return MeshFunctionGnuplotWriter< ThisType >::write( *this, file, scale );
    else {
       std::cerr << "Unknown output format: " << format << std::endl;
       return false;
