@@ -57,8 +57,9 @@ protected:
 };
 
 template< typename MeshConfig,
+          typename Device,
           typename Real >
-class MeshDependentTimeSteps< TNL::Meshes::Mesh< MeshConfig >, Real >
+class MeshDependentTimeSteps< TNL::Meshes::Mesh< MeshConfig, Device >, Real >
 {
 public:
    using MeshType = TNL::Meshes::Mesh< MeshConfig >;

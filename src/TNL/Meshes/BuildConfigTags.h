@@ -65,10 +65,12 @@ struct GridTag< ConfigTag, Grid< Dimension, Real, Device, Index > >
  * Configuration for unstructured meshes
  */
 
-// Meshes are enabled only on host.
-// TODO: enable Devices::Cuda by default when implemented
+// Meshes are enabled on all available devices by default.
 template< typename ConfigTag, typename Device > struct MeshDeviceTag { enum { enabled = false }; };
 template< typename ConfigTag > struct MeshDeviceTag< ConfigTag, Devices::Host > { enum { enabled = true }; };
+#ifdef HAVE_CUDA
+template< typename ConfigTag > struct MeshDeviceTag< ConfigTag, Devices::Cuda > { enum { enabled = true }; };
+#endif
 
 // All available cell topologies are disabled by default.
 template< typename ConfigTag, typename CellTopology > struct MeshCellTopologyTag { enum { enabled = false }; };
