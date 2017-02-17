@@ -132,6 +132,7 @@ entitiesAvailable()
 
 template< typename MeshConfig, typename Device >
    template< int Dimension >
+__cuda_callable__
 typename Mesh< MeshConfig, Device >::GlobalIndexType
 Mesh< MeshConfig, Device >::
 getEntitiesCount() const
@@ -166,6 +167,7 @@ getEntity( const GlobalIndexType& entityIndex ) const
 // duplicated for compatibility with grids
 template< typename MeshConfig, typename Device >
    template< typename Entity >
+__cuda_callable__
 typename Mesh< MeshConfig, Device >::GlobalIndexType
 Mesh< MeshConfig, Device >::
 getEntitiesCount() const

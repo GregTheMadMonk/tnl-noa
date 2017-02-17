@@ -86,6 +86,7 @@ public:
       boundaryTags[ entityIndex ] = isBoundary;
    }
 
+   __cuda_callable__
    bool isBoundaryEntity( DimensionTag, const GlobalIndexType& entityIndex ) const
    {
       return boundaryTags[ entityIndex ];
@@ -161,21 +162,25 @@ public:
       return true;
    }
 
+   __cuda_callable__
    GlobalIndexType getBoundaryEntitiesCount( DimensionTag ) const
    {
       return boundaryIndices.getSize();
    }
 
+   __cuda_callable__
    GlobalIndexType getBoundaryEntityIndex( DimensionTag, const GlobalIndexType& i ) const
    {
       return boundaryIndices[ i ];
    }
 
+   __cuda_callable__
    GlobalIndexType getInteriorEntitiesCount( DimensionTag ) const
    {
       return interiorIndices.getSize();
    }
 
+   __cuda_callable__
    GlobalIndexType getInteriorEntityIndex( DimensionTag, const GlobalIndexType& i ) const
    {
       return interiorIndices[ i ];

@@ -113,6 +113,7 @@ class Mesh
       static constexpr bool entitiesAvailable();
 
       template< int Dimension >
+      __cuda_callable__
       GlobalIndexType getEntitiesCount() const;
 
       template< int Dimension >
@@ -126,6 +127,7 @@ class Mesh
 
       // duplicated for compatibility with grids
       template< typename EntityType >
+      __cuda_callable__
       GlobalIndexType getEntitiesCount() const;
 
       template< typename EntityType >

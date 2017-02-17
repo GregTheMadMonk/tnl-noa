@@ -91,6 +91,7 @@ protected:
    }
 
    template< int Dimension >
+   __cuda_callable__
    typename EntityTraits< Dimension >::GlobalIndexType getBoundaryEntitiesCount() const
    {
       static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
@@ -106,6 +107,7 @@ protected:
    }
 
    template< int Dimension >
+   __cuda_callable__
    typename EntityTraits< Dimension >::GlobalIndexType getInteriorEntitiesCount() const
    {
       static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
@@ -227,6 +229,7 @@ public:
       return true;
    }
 
+   __cuda_callable__
    GlobalIndexType getEntitiesCount( DimensionTag ) const
    {
       return this->entities.getSize();
@@ -424,6 +427,7 @@ public:
       return true;
    }
 
+   __cuda_callable__
    GlobalIndexType getEntitiesCount( DimensionTag ) const
    {
       return this->vertices.getSize();
