@@ -111,9 +111,9 @@ bool resolveMeshType( const String& fileName_,
 }
 
 // TODO: reorganize
-template< typename Mesh >
+template< typename MeshConfig, typename Device >
 bool
-loadMesh( const String& fileName_, Mesh& mesh )
+loadMesh( const String& fileName_, Mesh< MeshConfig, Device >& mesh )
 {
    std::cout << "Loading mesh from file " << fileName_ << " ..." << std::endl;
    std::string fileName( fileName_.getString() );
@@ -139,9 +139,20 @@ loadMesh( const String& fileName_, Mesh& mesh )
       std::cerr << "I am not able to load the mesh from the file " << fileName_ << ". "
                    "Perhaps the mesh stored in the file is not supported by the mesh "
                    "passed to the loadMesh function? The mesh type is "
-                << Mesh::getType() << std::endl;
+                << mesh.getType() << std::endl;
       return false;
    }
+   return true;
+}
+
+template< typename MeshConfig >
+bool
+loadMesh( const String& fileName, Mesh< MeshConfig, Devices::Cuda >& mesh )
+{
+   Mesh< MeshConfig, Devices::Host > hostMesh;
+   if( ! loadMesh( fileName, hostMesh ) )
+      return false;
+   mesh = hostMesh;
    return true;
 }
 

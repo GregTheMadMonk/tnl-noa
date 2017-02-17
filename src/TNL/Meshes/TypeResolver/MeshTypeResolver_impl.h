@@ -319,8 +319,7 @@ resolveMeshType( Reader& reader,
                  ProblemSetterArgs&&... problemSetterArgs )
 {
    using MeshConfig = typename BuildConfigTags::MeshConfigTemplateTag< ConfigTag >::template MeshConfig< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex, Id >;
-   using MeshType = Meshes::Mesh< MeshConfig >;
-   return resolveTerminate< MeshType >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+   return resolveTerminate< MeshConfig >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
 }
 
 template< typename Reader,
@@ -328,14 +327,14 @@ template< typename Reader,
           typename Device,
           template< typename MeshType > class ProblemSetter,
           typename... ProblemSetterArgs >
-   template< typename MeshType,
+   template< typename MeshConfig,
              typename, typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
 resolveTerminate( Reader& reader,
                   ProblemSetterArgs&&... problemSetterArgs )
 {
-   std::cerr << "The mesh type " << TNL::getType< MeshType >() << " is disabled in the build configuration for device " << Device::getDeviceType() << "." << std::endl;
+   std::cerr << "The mesh config type " << TNL::getType< MeshConfig >() << " is disabled in the build configuration for device " << Device::getDeviceType() << "." << std::endl;
    return false;
 };
 
@@ -344,13 +343,14 @@ template< typename Reader,
           typename Device,
           template< typename MeshType > class ProblemSetter,
           typename... ProblemSetterArgs >
-   template< typename MeshType,
+   template< typename MeshConfig,
              typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
 resolveTerminate( Reader& reader,
                   ProblemSetterArgs&&... problemSetterArgs )
 {
+   using MeshType = Meshes::Mesh< MeshConfig, Device >;
    return ProblemSetter< MeshType >::run( std::forward<ProblemSetterArgs>(problemSetterArgs)... );
 };
 

@@ -147,32 +147,32 @@ protected:
                                 ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for disabled mesh types
-   template< typename MeshType,
+   template< typename MeshConfig,
              typename = typename std::enable_if< ! BuildConfigTags::MeshDeviceTag< ConfigTag, Device >::enabled ||
                                                  ! BuildConfigTags::MeshTag< ConfigTag,
                                                                              Device,
-                                                                             typename MeshType::Config::CellTopology,
-                                                                             MeshType::Config::worldDimension,
-                                                                             typename MeshType::Config::RealType,
-                                                                             typename MeshType::Config::GlobalIndexType,
-                                                                             typename MeshType::Config::LocalIndexType,
-                                                                             typename MeshType::Config::IdType
+                                                                             typename MeshConfig::CellTopology,
+                                                                             MeshConfig::worldDimension,
+                                                                             typename MeshConfig::RealType,
+                                                                             typename MeshConfig::GlobalIndexType,
+                                                                             typename MeshConfig::LocalIndexType,
+                                                                             typename MeshConfig::IdType
                                                                            >::enabled >::type,
              typename = void >
    static bool resolveTerminate( Reader& reader,
                                  ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for enabled mesh types
-   template< typename MeshType,
+   template< typename MeshConfig,
              typename = typename std::enable_if< BuildConfigTags::MeshDeviceTag< ConfigTag, Device >::enabled &&
                                                  BuildConfigTags::MeshTag< ConfigTag,
                                                                              Device,
-                                                                             typename MeshType::Config::CellTopology,
-                                                                             MeshType::Config::worldDimension,
-                                                                             typename MeshType::Config::RealType,
-                                                                             typename MeshType::Config::GlobalIndexType,
-                                                                             typename MeshType::Config::LocalIndexType,
-                                                                             typename MeshType::Config::IdType
+                                                                             typename MeshConfig::CellTopology,
+                                                                             MeshConfig::worldDimension,
+                                                                             typename MeshConfig::RealType,
+                                                                             typename MeshConfig::GlobalIndexType,
+                                                                             typename MeshConfig::LocalIndexType,
+                                                                             typename MeshConfig::IdType
                                                                            >::enabled >::type >
    static bool resolveTerminate( Reader& reader,
                                  ProblemSetterArgs&&... problemSetterArgs );
