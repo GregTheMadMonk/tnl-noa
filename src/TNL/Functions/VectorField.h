@@ -183,6 +183,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
          VectorType v;
          for( int i = 0; i < Size; i++ )
             v[ i ] = ( *this->vectorField[ i ] )[ index ];
+         return v;
       }
 
       template< typename EntityType >
@@ -192,6 +193,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
          VectorType v;
          for( int i = 0; i < Size; i++ )
             v[ i ] = ( *this->vectorField[ i ] )( meshEntity );
+         return v;
       }
       
       bool save( File& file ) const

@@ -1,4 +1,7 @@
-set( tnl_heat_equation_SOURCES     
+set( tnl_inviscid_flow_HEADERS
+     CompressibleConservativeVariables.h )
+
+set( tnl_inviscid_flow_SOURCES     
      euler.cpp
      euler.cu )
                
@@ -16,6 +19,6 @@ INSTALL( TARGETS tnl-euler-2d${debugExt}
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
         
 INSTALL( FILES run-euler
-               ${tnl_heat_equation_SOURCES}
+               ${tnl_inviscid_flow_SOURCES}
          DESTINATION share/tnl-${tnlVersion}/examples/inviscid-flow-2d )
 

@@ -26,10 +26,7 @@
 #include "LaxFridrichsEnergy.h"
 #include "LaxFridrichsMomentumX.h"
 #include "LaxFridrichsMomentumY.h"
-#include "EulerPressureGetter.h"
-#include "EulerVelXGetter.h"
-#include "EulerVelYGetter.h"
-#include "EulerVelGetter.h"
+#include "LaxFridrichsMomentumZ.h"
 
 namespace TNL {
 
@@ -248,14 +245,13 @@ getExplicitRHS( const RealType& time,
    SharedPointer< Continuity > continuity;
    SharedPointer< MomentumX > momentumX;
    SharedPointer< MomentumY > momentumY;
-   //SharedPointer< MomentumZ > momentumZ;
+   SharedPointer< MomentumZ > momentumZ;
    SharedPointer< Energy > energy;
 
    //this->bindDofs( mesh, _u );
    //rho
    continuity->setTau(tau);
-   continuity->setVelocityX( *( *velocity )[ 0 ] );
-   continuity->setVelocityY( *( *velocity )[ 1 ] );
+   continuity->setVelocity( this->velocity );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity; 
    explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
                                                            mesh,
@@ -267,9 +263,8 @@ getExplicitRHS( const RealType& time,
 
    //rhoVelocityX
    momentumX->setTau(tau);
-   momentumX->setVelocityX( *( *velocity )[ 0 ] );
-   momentumX->setVelocityY( *( *velocity )[ 1 ] );
-   momentumX->setPressure( *pressure );
+   momentumX->setVelocity( this->velocity );
+   momentumX->setPressure( this->pressure );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumX, BoundaryCondition, RightHandSide > explicitUpdaterMomentumX; 
    explicitUpdaterMomentumX.template update< typename Mesh::Cell >( time,
                                                            mesh,
@@ -280,24 +275,41 @@ getExplicitRHS( const RealType& time,
                                                            ( *this->conservativeVariablesRHS->getMomentum() )[ 0 ] ); //, fuRhoVelocityX );
 
    //rhoVelocityY
-   momentumY->setTau(tau);
-   momentumY->setVelocityX( *( *velocity )[ 0 ] );
-   momentumY->setVelocityY( *( *velocity )[ 1 ] );
-   momentumY->setPressure( *pressure );
-   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumY, BoundaryCondition, RightHandSide > explicitUpdaterMomentumY;
-   explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           momentumY,
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
-                                                           ( *this->conservativeVariables->getMomentum() )[ 1 ], // uRhoVelocityX,
-                                                           ( *this->conservativeVariablesRHS->getMomentum() )[ 1 ] ); //, fuRhoVelocityX );
+   if( Dimensions > 1 )
+   {
+      momentumY->setTau(tau);
+      momentumY->setVelocity( this->velocity );
+      momentumY->setPressure( this->pressure );
+      Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumY, BoundaryCondition, RightHandSide > explicitUpdaterMomentumY;
+      explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time,
+                                                              mesh,
+                                                              momentumY,
+                                                              this->boundaryConditionPointer,
+                                                              this->rightHandSidePointer,
+                                                              ( *this->conservativeVariables->getMomentum() )[ 1 ], // uRhoVelocityX,
+                                                              ( *this->conservativeVariablesRHS->getMomentum() )[ 1 ] ); //, fuRhoVelocityX );
+   }
+   
+   if( Dimensions > 2 )
+   {
+      momentumY->setTau(tau);
+      momentumY->setVelocity( this->velocity );
+      momentumY->setPressure( this->pressure );
+      Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumZ, BoundaryCondition, RightHandSide > explicitUpdaterMomentumZ;
+      explicitUpdaterMomentumZ.template update< typename Mesh::Cell >( time,
+                                                              mesh,
+                                                              momentumZ,
+                                                              this->boundaryConditionPointer,
+                                                              this->rightHandSidePointer,
+                                                              ( *this->conservativeVariables->getMomentum() )[ 2 ], // uRhoVelocityX,
+                                                              ( *this->conservativeVariablesRHS->getMomentum() )[ 2 ] ); //, fuRhoVelocityX );
+   }
+   
   
    //energy
    energy->setTau(tau);
-   energy->setVelocityX( *( *velocity )[ 0 ] ); 
-   energy->setVelocityY( *( *velocity )[ 1 ] ); 
-   energy->setPressure( *pressure );
+   energy->setVelocity( this->velocity ); 
+   energy->setPressure( this->pressure );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
    explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
                                                            mesh,
@@ -306,6 +318,11 @@ getExplicitRHS( const RealType& time,
                                                            this->rightHandSidePointer,
                                                            this->conservativeVariables->getEnergy(), // uRhoVelocityX,
                                                            this->conservativeVariablesRHS->getEnergy() ); //, fuRhoVelocityX );
+   
+   /*this->conservativeVariablesRHS->getDensity()->write( "density", "gnuplot" );
+   this->conservativeVariablesRHS->getEnergy()->write( "energy", "gnuplot" );
+   this->conservativeVariablesRHS->getMomentum()->write( "momentum", "gnuplot", 0.05 );
+   getchar();*/
 
 /*
    BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 

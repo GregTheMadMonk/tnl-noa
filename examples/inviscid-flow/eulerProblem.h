@@ -60,11 +60,8 @@ class eulerProblem:
       typedef typename DifferentialOperator::Continuity Continuity;
       typedef typename DifferentialOperator::MomentumX MomentumX;
       typedef typename DifferentialOperator::MomentumY MomentumY;
+      typedef typename DifferentialOperator::MomentumZ MomentumZ;
       typedef typename DifferentialOperator::Energy Energy;
-      typedef typename DifferentialOperator::Velocity Velocity;
-      typedef typename DifferentialOperator::VelocityX VelocityX;
-      typedef typename DifferentialOperator::VelocityY VelocityY;
-      typedef typename DifferentialOperator::Pressure Pressure;
 
       static String getTypeStatic();
 

@@ -21,7 +21,7 @@ template<> struct ConfigTagReal< eulerBuildConfigTag, long double > { enum { ena
 template<> struct ConfigTagIndex< eulerBuildConfigTag, short int >{ enum { enabled = false }; };
 template<> struct ConfigTagIndex< eulerBuildConfigTag, long int >{ enum { enabled = false }; };
 
-template< int Dimensions > struct ConfigTagDimensions< eulerBuildConfigTag, Dimensions >{ enum { enabled = ( Dimensions == 2 ) }; };
+template< int Dimensions > struct ConfigTagDimensions< eulerBuildConfigTag, Dimensions >{ enum { enabled = true }; };
 
 /****
  * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
@@ -43,7 +43,7 @@ template<> struct ConfigTagTimeDiscretisation< eulerBuildConfigTag, ImplicitTime
 /****
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
-template<> struct ConfigTagExplicitSolver< eulerBuildConfigTag, ExplicitEulerSolverTag >{ enum { enabled = false }; };
+template<> struct ConfigTagExplicitSolver< eulerBuildConfigTag, ExplicitEulerSolverTag >{ enum { enabled = true }; };
 
 } // namespace Solvers
 } // namespace TNL

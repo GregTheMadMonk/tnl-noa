@@ -1,7 +1,7 @@
 /***************************************************************************
-                          LaxFridrichsContinuity.h  -  description
+                          LaxFridrichsMomentumZ.h  -  description
                              -------------------
-    begin                : Feb 17, 2017
+    begin                : Feb 18, 2017
     copyright            : (C) 2017 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -13,85 +13,48 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Functions/VectorField.h>
-#include <TNL/SharedPointer.h>
+#include "LaxFridrichsMomentumBase.h"
 
 namespace TNL {
 
-   
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class LaxFridrichsContinuityBase
-{
-   public:
-      
-      typedef Real RealType;
-      typedef Index IndexType;
-      typedef Mesh MeshType;
-      typedef typename MeshType::DeviceType DeviceType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      static const int Dimensions = MeshType::getMeshDimensions();
-      typedef Functions::VectorField< Dimensions, MeshFunctionType > VelocityFieldType;
-      typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
-      
-      static String getType()
-      {
-         return String( "LaxFridrichsContinuity< " ) +
-             MeshType::getType() + ", " +
-             TNL::getType< Real >() + ", " +
-             TNL::getType< Index >() + " >"; 
-      }
-
-      void setTau(const Real& tau)
-      {
-          this->tau = tau;
-      };
-      
-      void setVelocity( const VelocityFieldPointer& velocity )
-      {
-          this->velocity = velocity;
-      };
-
-
-      protected:
-         
-         RealType tau;
-         
-         VelocityFieldPointer velocity;
-};
-
-   
-template< typename Mesh,
-          typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType >
-class LaxFridrichsContinuity
+class LaxFridrichsMomentumZ
 {
 };
-
-
 
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichsContinuity< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >
-   : public LaxFridrichsContinuityBase< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumZ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >
+   : public LaxFridrichsMomentumBase< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
+
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
-      typedef LaxFridrichsContinuityBase< MeshType, Real, Index > BaseType;
+      typedef LaxFridrichsMomentumBase< MeshType, Real, Index > BaseType;
       
       using typename BaseType::RealType;
       using typename BaseType::IndexType;
       using typename BaseType::DeviceType;
       using typename BaseType::CoordinatesType;
       using typename BaseType::MeshFunctionType;
+      using typename BaseType::MeshFunctionPointer;
       using typename BaseType::VelocityFieldType;
       using typename BaseType::VelocityFieldPointer;
-      using typename BaseType::Dimensions;
+      using BaseType::Dimensions;
+      
+      static String getType()
+      {
+         return String( "LaxFridrichsMomentumZ< " ) +
+             MeshType::getType() + ", " +
+             TNL::getType< Real >() + ", " +
+             TNL::getType< Index >() + " >"; 
+      }
+      
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -103,14 +66,7 @@ class LaxFridrichsContinuity< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Re
          static_assert( MeshFunction::getEntitiesDimensions() == 1, "Wrong preimage function" ); 
          const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
 
-         const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1 >(); 
-         const IndexType& center = entity.getIndex(); 
-         const IndexType& east = neighbourEntities.template getEntityIndex< 1 >(); 
-         const IndexType& west = neighbourEntities.template getEntityIndex< -1 >();
-         const RealType& velocity_x_west = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ west ];
-         const RealType& velocity_x_east = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ east ];
-         return (0.5 * this->tau) * ( u[ west ] - 2.0 * u[ center ]  + u[ east ] ) 
-               - 0.5 * hxInverse * ( u[ west ] * velocity_x_west - u[ east ] * velocity_x_east );
+         return 0.0;
       }
 
       /*template< typename MeshEntity >
@@ -136,21 +92,30 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichsContinuity< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >
-   : public LaxFridrichsContinuityBase< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumZ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >
+   : public LaxFridrichsMomentumBase< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
-      typedef LaxFridrichsContinuityBase< MeshType, Real, Index > BaseType;
+      typedef LaxFridrichsMomentumBase< MeshType, Real, Index > BaseType;
       
       using typename BaseType::RealType;
       using typename BaseType::IndexType;
       using typename BaseType::DeviceType;
       using typename BaseType::CoordinatesType;
       using typename BaseType::MeshFunctionType;
+      using typename BaseType::MeshFunctionPointer;
       using typename BaseType::VelocityFieldType;
       using typename BaseType::VelocityFieldPointer;
-      using BaseType::Dimensions;      
+      using BaseType::Dimensions;
+      
+      static String getType()
+      {
+         return String( "LaxFridrichsMomentumZ< " ) +
+             MeshType::getType() + ", " +
+             TNL::getType< Real >() + ", " +
+             TNL::getType< Index >() + " >"; 
+      }      
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -162,22 +127,7 @@ class LaxFridrichsContinuity< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Re
          static_assert( MeshFunction::getEntitiesDimensions() == 2, "Wrong preimage function" ); 
          const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
 
-         //rho
-         const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1, 0 >(); 
-         const RealType& hyInverse = entity.getMesh().template getSpaceStepsProducts< 0, -1 >(); 
-         const IndexType& center = entity.getIndex(); 
-         const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0 >(); 
-         const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0 >(); 
-         const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >(); 
-         const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >();
-         const RealType& velocity_x_west = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ west ];
-         const RealType& velocity_x_east = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ east ];
-         const RealType& velocity_y_north = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ north ];
-         const RealType& velocity_y_south = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];
-         
-         return 0.5 * ( this->tau * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] - 4.0 * u[ center ] ) 
-                       - ( u[ west ] * velocity_x_west - u[ east ] * velocity_x_east ) * hxInverse
-                       - ( u[ north ] * velocity_y_north - u[ south ] * velocity_y_south ) * hyInverse );
+         return 0.0;
       }
 
       /*template< typename MeshEntity >
@@ -203,21 +153,30 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichsContinuity< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >
-   : public LaxFridrichsContinuityBase< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumZ< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+   : public LaxFridrichsMomentumBase< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
-      typedef LaxFridrichsContinuityBase< MeshType, Real, Index > BaseType;
+      typedef LaxFridrichsMomentumBase< MeshType, Real, Index > BaseType;
       
       using typename BaseType::RealType;
       using typename BaseType::IndexType;
       using typename BaseType::DeviceType;
-      using typename BaseType::Dimensions;
       using typename BaseType::CoordinatesType;
       using typename BaseType::MeshFunctionType;
+      using typename BaseType::MeshFunctionPointer;
       using typename BaseType::VelocityFieldType;
       using typename BaseType::VelocityFieldPointer;
+      using BaseType::Dimensions;      
+      
+      static String getType()
+      {
+         return String( "LaxFridrichsMomentumZ< " ) +
+             MeshType::getType() + ", " +
+             TNL::getType< Real >() + ", " +
+             TNL::getType< Index >() + " >"; 
+      }      
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -228,11 +187,10 @@ class LaxFridrichsContinuity< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Re
          static_assert( MeshEntity::entityDimensions == 3, "Wrong mesh entity dimensions." ); 
          static_assert( MeshFunction::getEntitiesDimensions() == 3, "Wrong preimage function" ); 
          const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
-
-         //rho
-         const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1,  0,  0 >(); 
-         const RealType& hyInverse = entity.getMesh().template getSpaceStepsProducts<  0, -1,  0 >(); 
-         const RealType& hzInverse = entity.getMesh().template getSpaceStepsProducts<  0,  0, -1 >(); 
+ 
+         const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1, 0,  0 >(); 
+         const RealType& hyInverse = entity.getMesh().template getSpaceStepsProducts< 0, -1,  0 >(); 
+         const RealType& hzInverse = entity.getMesh().template getSpaceStepsProducts< 0,  0, -1 >(); 
          const IndexType& center = entity.getIndex(); 
          const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0,  0 >(); 
          const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0,  0 >(); 
@@ -241,18 +199,21 @@ class LaxFridrichsContinuity< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Re
          const IndexType& up    = neighbourEntities.template getEntityIndex<  0,  0,  1 >(); 
          const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >();
          
-         const RealType& velocity_x_west  = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ west ];
+         const RealType& pressure_up    = this->pressure.template getData< DeviceType >()[ up ];
+         const RealType& pressure_down  = this->pressure.template getData< DeviceType >()[ down ];
          const RealType& velocity_x_east  = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ east ];
+         const RealType& velocity_x_west  = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ west ];
          const RealType& velocity_y_north = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ north ];
          const RealType& velocity_y_south = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];
          const RealType& velocity_z_up    = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ up ];
          const RealType& velocity_z_down  = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ down ];
-         
-         return 0.5 * ( this->tau * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] + u[ up ] + u[ down ]- 6.0 * u[ center ] ) 
-                        - ( u[ west ] * velocity_x_west - u[ east ] * velocity_x_east ) * hxInverse
-                        - ( u[ north ] * velocity_y_north - u[ south ] * velocity_y_south ) * hyInverse
-                        - ( u[ up ] * velocity_z_up - u[ down ] * velocity_z_down ) * hzInverse );
-         
+         return 0.5 * ( this->tau * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] + u[ up ] + u[ down ] - 6.0 * u[ center ] ) 
+                       - ( ( u[ west ] * velocity_x_west )
+                         - ( u[ east ] * velocity_x_east ) )* hxInverse
+                       - ( ( u[ north ] * velocity_y_north )
+                         - ( u[ south ] * velocity_y_south ) )* hyInverse
+                       - ( ( u[ up ] * velocity_z_up + pressure_up )
+                         - ( u[ down ] * velocity_z_down + pressure_down ) )* hzInverse );
       }
 
       /*template< typename MeshEntity >
@@ -274,4 +235,5 @@ class LaxFridrichsContinuity< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Re
 };
 
 
-} //namespace TNL
+} // namespace TNL
+
