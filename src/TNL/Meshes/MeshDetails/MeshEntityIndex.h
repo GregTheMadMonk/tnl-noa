@@ -31,6 +31,7 @@ public:
       : id( -1 )
    {}
 
+   __cuda_callable__
    const IDType& getIndex() const
    {
       TNL_ASSERT( this->id >= 0, );
