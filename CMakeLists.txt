@@ -261,10 +261,9 @@ endif()
 
 if( WITH_TESTS STREQUAL "yes" )
    enable_testing()
-   find_package( GTest )
-   if( GTEST_FOUND )
-      set( CXX_TESTS_FLAGS "-DHAVE_GTEST" )
-   endif( GTEST_FOUND )
+
+   # build gtest libs
+   include( BuildGtest )
 
    # enable code coverage reports
    set( ENABLE_CODECOVERAGE ON )
