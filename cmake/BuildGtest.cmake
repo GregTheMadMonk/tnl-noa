@@ -10,7 +10,7 @@
 
 # compatibility with the GTest package
 set( GTEST_BOTH_LIBRARIES gtest gtest_main )
-set( CXX_TESTS_FLAGS "${CXX_TESTS_FLAGS} -DHAVE_GTEST" )
+set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} -DHAVE_GTEST )
 
 
 # Download and unpack googletest at configure time
