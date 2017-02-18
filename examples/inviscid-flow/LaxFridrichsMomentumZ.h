@@ -58,13 +58,13 @@ class LaxFridrichsMomentumZ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Rea
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
-      Real operator()( const MeshFunction& u,
+      Real operator()( const MeshFunction& rho_w,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
          static_assert( MeshEntity::entityDimensions == 1, "Wrong mesh entity dimensions." ); 
          static_assert( MeshFunction::getEntitiesDimensions() == 1, "Wrong preimage function" ); 
-         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
+         //const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
 
          return 0.0;
       }
@@ -119,7 +119,7 @@ class LaxFridrichsMomentumZ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Rea
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
-      Real operator()( const MeshFunction& u,
+      Real operator()( const MeshFunction& rho_w,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
@@ -180,7 +180,7 @@ class LaxFridrichsMomentumZ< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
-      Real operator()( const MeshFunction& u,
+      Real operator()( const MeshFunction& rho_w,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
@@ -207,13 +207,13 @@ class LaxFridrichsMomentumZ< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real
          const RealType& velocity_y_south = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];
          const RealType& velocity_z_up    = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ up ];
          const RealType& velocity_z_down  = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ down ];
-         return 0.5 * ( this->tau * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] + u[ up ] + u[ down ] - 6.0 * u[ center ] ) 
-                       - ( ( u[ west ] * velocity_x_west )
-                         - ( u[ east ] * velocity_x_east ) )* hxInverse
-                       - ( ( u[ north ] * velocity_y_north )
-                         - ( u[ south ] * velocity_y_south ) )* hyInverse
-                       - ( ( u[ up ] * velocity_z_up + pressure_up )
-                         - ( u[ down ] * velocity_z_down + pressure_down ) )* hzInverse );
+         return 0.5 * ( this->tau * ( rho_w[ west ] + rho_w[ east ] + rho_w[ south ] + rho_w[ north ] + rho_w[ up ] + rho_w[ down ] - 6.0 * rho_w[ center ] ) 
+                       - ( ( rho_w[ west ] * velocity_x_west )
+                         - ( rho_w[ east ] * velocity_x_east ) )* hxInverse
+                       - ( ( rho_w[ north ] * velocity_y_north )
+                         - ( rho_w[ south ] * velocity_y_south ) )* hyInverse
+                       - ( ( rho_w[ up ] * velocity_z_up + pressure_up )
+                         - ( rho_w[ down ] * velocity_z_down + pressure_down ) )* hzInverse );
       }
 
       /*template< typename MeshEntity >

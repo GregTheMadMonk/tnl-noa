@@ -79,9 +79,9 @@ setup( const MeshPointer& meshPointer,
    if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
+   this->gamma = parameters.getParameter< double >( "gamma" );
    velocity->setMesh( meshPointer );
    pressure->setMesh( meshPointer );
-   energy->setMesh( meshPointer );
    return true;
 }
 
@@ -181,8 +181,7 @@ makeSnapshot( const RealType& time,
   this->bindDofs( mesh, dofs );
   PhysicalVariablesGetter< MeshType > physicalVariablesGetter;
   physicalVariablesGetter.getVelocity( this->conservativeVariables, this->velocity );
-  //physicalVariablesGetter.getPressure( this->conservativeVariables, this->pressure );
-  //physicalVariablesGetter.getEnergy( this->conservativeVariables, this->energy );
+  physicalVariablesGetter.getPressure( this->conservativeVariables, this->gamma, this->pressure );
   
    FileName fileName;
    fileName.setExtension( "tnl" );
@@ -200,7 +199,7 @@ makeSnapshot( const RealType& time,
       return false;
 
    fileName.setFileNameBase( "energy-" );
-   if( ! this->energy->save( fileName.getFileName() ) )
+   if( ! this->conservativeVariables->getEnergy()->save( fileName.getFileName() ) )
       return false;
    
    return true;
@@ -228,7 +227,6 @@ getExplicitRHS( const RealType& time,
     this->conservativeVariablesRHS->bind( mesh, _fu );
     this->velocity->setMesh( mesh );
     this->pressure->setMesh( mesh );
-    this->energy->setMesh( mesh );
     
     /****
      * Resolve the physical variables
@@ -242,33 +240,28 @@ getExplicitRHS( const RealType& time,
     */
     
     //generate Operators
-   SharedPointer< Continuity > continuity;
-   SharedPointer< MomentumX > momentumX;
-   SharedPointer< MomentumY > momentumY;
-   SharedPointer< MomentumZ > momentumZ;
-   SharedPointer< Energy > energy;
 
    //this->bindDofs( mesh, _u );
    //rho
-   continuity->setTau(tau);
-   continuity->setVelocity( this->velocity );
-   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity; 
+   continuityOperatorPointer->setTau(tau);
+   continuityOperatorPointer->setVelocity( this->velocity );
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, ContinuityOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterContinuity; 
    explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           continuity,
+                                                           this->continuityOperatorPointer,
                                                            this->boundaryConditionPointer,
                                                            this->rightHandSidePointer,
                                                            this->conservativeVariables->getDensity(),
                                                            this->conservativeVariablesRHS->getDensity() );
 
    //rhoVelocityX
-   momentumX->setTau(tau);
-   momentumX->setVelocity( this->velocity );
-   momentumX->setPressure( this->pressure );
-   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumX, BoundaryCondition, RightHandSide > explicitUpdaterMomentumX; 
+   momentumXOperatorPointer->setTau(tau);
+   momentumXOperatorPointer->setVelocity( this->velocity );
+   momentumXOperatorPointer->setPressure( this->pressure );
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumXOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterMomentumX; 
    explicitUpdaterMomentumX.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           momentumX,
+                                                           this->momentumXOperatorPointer,
                                                            this->boundaryConditionPointer,
                                                            this->rightHandSidePointer,
                                                            ( *this->conservativeVariables->getMomentum() )[ 0 ], // uRhoVelocityX,
@@ -277,13 +270,13 @@ getExplicitRHS( const RealType& time,
    //rhoVelocityY
    if( Dimensions > 1 )
    {
-      momentumY->setTau(tau);
-      momentumY->setVelocity( this->velocity );
-      momentumY->setPressure( this->pressure );
-      Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumY, BoundaryCondition, RightHandSide > explicitUpdaterMomentumY;
+      momentumYOperatorPointer->setTau(tau);
+      momentumYOperatorPointer->setVelocity( this->velocity );
+      momentumYOperatorPointer->setPressure( this->pressure );
+      Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumYOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterMomentumY;
       explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time,
                                                               mesh,
-                                                              momentumY,
+                                                              this->momentumYOperatorPointer,
                                                               this->boundaryConditionPointer,
                                                               this->rightHandSidePointer,
                                                               ( *this->conservativeVariables->getMomentum() )[ 1 ], // uRhoVelocityX,
@@ -292,13 +285,13 @@ getExplicitRHS( const RealType& time,
    
    if( Dimensions > 2 )
    {
-      momentumY->setTau(tau);
-      momentumY->setVelocity( this->velocity );
-      momentumY->setPressure( this->pressure );
-      Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumZ, BoundaryCondition, RightHandSide > explicitUpdaterMomentumZ;
+      momentumYOperatorPointer->setTau(tau);
+      momentumYOperatorPointer->setVelocity( this->velocity );
+      momentumYOperatorPointer->setPressure( this->pressure );
+      Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumZOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterMomentumZ;
       explicitUpdaterMomentumZ.template update< typename Mesh::Cell >( time,
                                                               mesh,
-                                                              momentumZ,
+                                                              this->momentumZOperatorPointer,
                                                               this->boundaryConditionPointer,
                                                               this->rightHandSidePointer,
                                                               ( *this->conservativeVariables->getMomentum() )[ 2 ], // uRhoVelocityX,
@@ -307,13 +300,13 @@ getExplicitRHS( const RealType& time,
    
   
    //energy
-   energy->setTau(tau);
-   energy->setVelocity( this->velocity ); 
-   energy->setPressure( this->pressure );
-   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
+   energyOperatorPointer->setTau(tau);
+   energyOperatorPointer->setVelocity( this->velocity ); 
+   energyOperatorPointer->setPressure( this->pressure );
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, EnergyOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
    explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           energy,
+                                                           this->energyOperatorPointer,
                                                            this->boundaryConditionPointer,
                                                            this->rightHandSidePointer,
                                                            this->conservativeVariables->getEnergy(), // uRhoVelocityX,

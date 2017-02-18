@@ -58,13 +58,13 @@ class LaxFridrichsMomentumY< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Rea
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
-      Real operator()( const MeshFunction& u,
+      Real operator()( const MeshFunction& rho_v,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
          static_assert( MeshEntity::entityDimensions == 1, "Wrong mesh entity dimensions." ); 
          static_assert( MeshFunction::getEntitiesDimensions() == 1, "Wrong preimage function" ); 
-         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
+         //const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
 
          return 0.0;
       }
@@ -119,7 +119,7 @@ class LaxFridrichsMomentumY< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Rea
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
-      Real operator()( const MeshFunction& u,
+      Real operator()( const MeshFunction& rho_v,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
@@ -143,11 +143,11 @@ class LaxFridrichsMomentumY< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Rea
          const RealType& velocity_y_north = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ north ];
          const RealType& velocity_y_south = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];         
          
-         return 0.5 * ( this->tau * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] - 4.0 * u[ center ] ) 
-                       - ( ( u[ west ] * velocity_x_west )
-                         - ( u[ east ] * velocity_x_east ) )* hxInverse
-                       - ( ( u[ north ] * velocity_y_north + pressure_north )
-                         - ( u[ south ] * velocity_y_south + pressure_south ) )* hyInverse );
+         return 1.0 / 4.0 * this->tau * ( rho_v[ west ] + rho_v[ east ] + rho_v[ south ] + rho_v[ north ] - 4.0 * rho_v[ center ] ) 
+                - 0.5 * ( ( ( rho_v[ west ] * velocity_x_west )
+                           - ( rho_v[ east ] * velocity_x_east ) )* hxInverse
+                        + ( ( rho_v[ north ] * velocity_y_north + pressure_north )
+                          - ( rho_v[ south ] * velocity_y_south + pressure_south ) )* hyInverse );
       }
 
       /*template< typename MeshEntity >
@@ -200,7 +200,7 @@ class LaxFridrichsMomentumY< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
-      Real operator()( const MeshFunction& u,
+      Real operator()( const MeshFunction& rho_v,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
@@ -227,13 +227,13 @@ class LaxFridrichsMomentumY< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real
          const RealType& velocity_y_south = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];
          const RealType& velocity_z_up    = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ up ];
          const RealType& velocity_z_down  = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ down ];
-         return 0.5 * ( this->tau * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] + u[ up ] + u[ down ] - 6.0 * u[ center ] ) 
-                       - ( ( u[ west ] * velocity_x_west )
-                         - ( u[ east ] * velocity_x_east ) )* hxInverse
-                       - ( ( u[ north ] * velocity_y_north + pressure_north )
-                         - ( u[ south ] * velocity_y_south + pressure_south ) )* hyInverse
-                       - ( ( u[ up ] * velocity_z_up )
-                         - ( u[ down ] * velocity_z_down ) )* hzInverse );
+         return 1.0 / 6.0 * this->tau * ( rho_v[ west ] + rho_v[ east ] + rho_v[ south ] + rho_v[ north ] + rho_v[ up ] + rho_v[ down ] - 6.0 * rho_v[ center ] ) 
+                - 0.5 * ( ( ( rho_v[ west ] * velocity_x_west )
+                          - ( rho_v[ east ] * velocity_x_east ) ) * hxInverse
+                        + ( ( rho_v[ north ] * velocity_y_north + pressure_north )
+                          - ( rho_v[ south ] * velocity_y_south + pressure_south ) ) * hyInverse
+                        + ( ( rho_v[ up ] * velocity_z_up )
+                          - ( rho_v[ down ] * velocity_z_down ) ) * hzInverse );
       }
 
       /*template< typename MeshEntity >

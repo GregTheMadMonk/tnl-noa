@@ -109,8 +109,8 @@ class LaxFridrichsContinuity< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Re
          const IndexType& west = neighbourEntities.template getEntityIndex< -1 >();
          const RealType& velocity_x_west = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ west ];
          const RealType& velocity_x_east = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ east ];
-         return (0.5 * this->tau) * ( u[ west ] - 2.0 * u[ center ]  + u[ east ] ) 
-               - 0.5 * hxInverse * ( u[ west ] * velocity_x_west - u[ east ] * velocity_x_east );
+         return 1.0 / 2.0 * this->tau * ( u[ west ] - 2.0 * u[ center ]  + u[ east ] ) 
+               - 0.5 * ( u[ west ] * velocity_x_west - u[ east ] * velocity_x_east ) * hxInverse;
       }
 
       /*template< typename MeshEntity >
@@ -175,9 +175,9 @@ class LaxFridrichsContinuity< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Re
          const RealType& velocity_y_north = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ north ];
          const RealType& velocity_y_south = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];
          
-         return 0.5 * ( this->tau * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] - 4.0 * u[ center ] ) 
-                       - ( u[ west ] * velocity_x_west - u[ east ] * velocity_x_east ) * hxInverse
-                       - ( u[ north ] * velocity_y_north - u[ south ] * velocity_y_south ) * hyInverse );
+         return 1.0 / 4.0 * this->tau * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] - 4.0 * u[ center ] ) 
+                       - 0.5 * ( ( u[ west ] * velocity_x_west - u[ east ] * velocity_x_east ) * hxInverse
+                               + ( u[ north ] * velocity_y_north - u[ south ] * velocity_y_south ) * hyInverse );
       }
 
       /*template< typename MeshEntity >
@@ -248,10 +248,10 @@ class LaxFridrichsContinuity< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Re
          const RealType& velocity_z_up    = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ up ];
          const RealType& velocity_z_down  = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ down ];
          
-         return 0.5 * ( this->tau * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] + u[ up ] + u[ down ]- 6.0 * u[ center ] ) 
-                        - ( u[ west ] * velocity_x_west - u[ east ] * velocity_x_east ) * hxInverse
-                        - ( u[ north ] * velocity_y_north - u[ south ] * velocity_y_south ) * hyInverse
-                        - ( u[ up ] * velocity_z_up - u[ down ] * velocity_z_down ) * hzInverse );
+         return 1.0 / 6.0 * this->tau * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] + u[ up ] + u[ down ]- 6.0 * u[ center ] ) 
+                - 0.5 * ( ( u[ west ] * velocity_x_west - u[ east ] * velocity_x_east ) * hxInverse
+                        + ( u[ north ] * velocity_y_north - u[ south ] * velocity_y_south ) * hyInverse
+                        + ( u[ up ] * velocity_z_up - u[ down ] * velocity_z_down ) * hzInverse );
          
       }
 

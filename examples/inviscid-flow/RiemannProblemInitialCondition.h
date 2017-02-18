@@ -186,11 +186,12 @@ class RiemannProblemInitialCondition
           */
          const RealType leftKineticEnergy = leftVelocity.lpNorm( 2.0 );
          const RealType rightKineticEnergy = rightVelocity.lpNorm( 2.0 );
-         const RealType leftEnergy = leftPressure / ( gamma + 1.0 ) + 0.2 * leftDensity * leftKineticEnergy * leftKineticEnergy;
-         const RealType rightEnergy = rightPressure / ( gamma + 1.0 ) + 0.2 * rightDensity * rightKineticEnergy * rightKineticEnergy;
+         const RealType leftEnergy = leftPressure / ( gamma - 1.0 ) + 0.5 * leftDensity * leftKineticEnergy * leftKineticEnergy;
+         const RealType rightEnergy = rightPressure / ( gamma - 1.0 ) + 0.5 * rightDensity * rightKineticEnergy * rightKineticEnergy;
          initialCondition->getOperator().setPositiveValue( leftEnergy );
          initialCondition->getOperator().setNegativeValue( rightEnergy );
          evaluator.evaluate( conservativeVariables.getEnergy(), initialCondition );
+         conservativeVariables.getEnergy()->write( "energy-init", "gnuplot" );
       }
       
       

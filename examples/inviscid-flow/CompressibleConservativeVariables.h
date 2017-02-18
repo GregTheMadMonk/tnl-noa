@@ -140,9 +140,8 @@ class CompressibleConservativeVariables
       
       MeshFunctionPointer density;
       MomentumFieldPointer momentum;
-      //MeshFunctionPointer pressure;
       MeshFunctionPointer energy;
       
 };
 
-} // namespace TNL
+} // namespace TN

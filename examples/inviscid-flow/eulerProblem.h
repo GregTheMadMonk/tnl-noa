@@ -55,13 +55,16 @@ class eulerProblem:
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       
-      
-
-      typedef typename DifferentialOperator::Continuity Continuity;
-      typedef typename DifferentialOperator::MomentumX MomentumX;
-      typedef typename DifferentialOperator::MomentumY MomentumY;
-      typedef typename DifferentialOperator::MomentumZ MomentumZ;
-      typedef typename DifferentialOperator::Energy Energy;
+      typedef typename DifferentialOperator::Continuity ContinuityOperatorType;
+      typedef typename DifferentialOperator::MomentumX MomentumXOperatorType;
+      typedef typename DifferentialOperator::MomentumY MomentumYOperatorType;
+      typedef typename DifferentialOperator::MomentumZ MomentumZOperatorType;
+      typedef typename DifferentialOperator::Energy EnergyOperatorType;
+      typedef SharedPointer< ContinuityOperatorType > ContinuityOperatorPointer;
+      typedef SharedPointer< MomentumXOperatorType > MomentumXOperatorPointer;
+      typedef SharedPointer< MomentumYOperatorType > MomentumYOperatorPointer;      
+      typedef SharedPointer< MomentumZOperatorType > MomentumZOperatorPointer;      
+      typedef SharedPointer< EnergyOperatorType > EnergyOperatorPointer;
 
       static String getTypeStatic();
 
@@ -118,7 +121,12 @@ class eulerProblem:
 
    protected:
 
-      DifferentialOperatorPointer differentialOperatorPointer;
+      ContinuityOperatorPointer continuityOperatorPointer;
+      MomentumXOperatorPointer momentumXOperatorPointer;
+      MomentumYOperatorPointer momentumYOperatorPointer;
+      MomentumZOperatorPointer momentumZOperatorPointer;
+      EnergyOperatorPointer energyOperatorPointer;
+
       BoundaryConditionPointer boundaryConditionPointer;
       RightHandSidePointer rightHandSidePointer;
       
@@ -126,31 +134,9 @@ class eulerProblem:
                                    conservativeVariablesRHS;
       
       VelocityFieldPointer velocity;
-      MeshFunctionPointer pressure, energy;
+      MeshFunctionPointer pressure;
       
-      RealType gamma;
-      
-      //definition
-	   /*Containers::Vector< RealType, DeviceType, IndexType > _uRho;
-	   Containers::Vector< RealType, DeviceType, IndexType > _uRhoVelocityX;
-	   Containers::Vector< RealType, DeviceType, IndexType > _uRhoVelocityY;
-	   Containers::Vector< RealType, DeviceType, IndexType > _uEnergy;
-
-	   Containers::Vector< RealType, DeviceType, IndexType > _fuRho;
-	   Containers::Vector< RealType, DeviceType, IndexType > _fuRhoVelocityX;
-	   Containers::Vector< RealType, DeviceType, IndexType > _fuRhoVelocityY;
-	   Containers::Vector< RealType, DeviceType, IndexType > _fuEnergy;
-
-      Containers::Vector< RealType, DeviceType, IndexType > rho;
-      Containers::Vector< RealType, DeviceType, IndexType > rhoVelX;
-      Containers::Vector< RealType, DeviceType, IndexType > rhoVelY;
-      Containers::Vector< RealType, DeviceType, IndexType > energy;
-      Containers::Vector< RealType, DeviceType, IndexType > data;
-      Containers::Vector< RealType, DeviceType, IndexType > pressure;
-      Containers::Vector< RealType, DeviceType, IndexType > velocity;
-      Containers::Vector< RealType, DeviceType, IndexType > velocityX;
-      Containers::Vector< RealType, DeviceType, IndexType > velocityY;*/
-      
+      RealType gamma;          
 };
 
 } // namespace TNL
