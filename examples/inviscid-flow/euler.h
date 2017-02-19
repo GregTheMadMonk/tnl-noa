@@ -30,22 +30,14 @@ template< typename ConfigTag >class eulerConfig
    public:
       static void configSetup( Config::ConfigDescription & config )
       {
-         config.addDelimiter( "euler2D settings:" );
+         config.addDelimiter( "Inviscid flow settings:" );
          config.addEntry< String >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
             config.addEntryEnum< String >( "dirichlet" );
             config.addEntryEnum< String >( "neumann" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
-         RiemannProblemInitialCondition< Meshes::Grid< 3 > >::configSetup( config );
-         /*config.addEntry< double >( "left-density", "This sets a value of left density." );
-         config.addEntry< double >( "left-velocityX", "This sets a value of left_x velocity." );
-         config.addEntry< double >( "left-velocityY", "This sets a value of left_y velocity." );
-         config.addEntry< double >( "left-pressure", "This sets a value of left pressure." );
-         config.addEntry< double >( "riemann-border", "This sets a position of discontinuity." );
-         config.addEntry< double >( "right-density", "This sets a value of right density." );
-         config.addEntry< double >( "right-velocityX", "This sets a value of right_x velocity." );
-         config.addEntry< double >( "right-velocityY", "This sets a value of right_y velocity." );
-         config.addEntry< double >( "right-pressure", "This sets a value of right pressure." );
-         config.addEntry< double >( "gamma", "This sets a value of gamma constant.", 1.0 );*/
+         typedef Meshes::Grid< 3 > Mesh;
+         LaxFridrichs< Mesh >::configSetup( config, "inviscid-operators-" );
+         RiemannProblemInitialCondition< Mesh >::configSetup( config );
 
          /****
           * Add definition of your solver command line arguments.

@@ -33,9 +33,9 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename InviscidOperators >
 String
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 getTypeStatic()
 {
    return String( "eulerProblem< " ) + Mesh :: getTypeStatic() + " >";
@@ -44,20 +44,20 @@ getTypeStatic()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename InviscidOperators >
 String
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 getPrologHeader() const
 {
-   return String( "euler2D" );
+   return String( "Inviscid flow solver" );
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename InviscidOperators >
 void
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
@@ -69,14 +69,15 @@ writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) cons
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename InviscidOperators >
 bool
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
+   if( ! this->inviscidOperatorsPointer->setup( meshPointer, parameters, prefix + "inviscid-operators-" ) ||
+       ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
    this->gamma = parameters.getParameter< double >( "gamma" );
@@ -88,9 +89,9 @@ setup( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
-typename eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+          typename InviscidOperators >
+typename eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::IndexType
+eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 getDofs( const MeshPointer& mesh ) const
 {
    /****
@@ -103,9 +104,9 @@ getDofs( const MeshPointer& mesh ) const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename InviscidOperators >
 void
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 bindDofs( const MeshPointer& mesh,
           DofVectorPointer& dofVector )
 {
@@ -115,9 +116,9 @@ bindDofs( const MeshPointer& mesh,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename InviscidOperators >
 bool
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshPointer& mesh,
                      DofVectorPointer& dofs,
@@ -141,10 +142,10 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename InviscidOperators >
    template< typename Matrix >
 bool
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 setupLinearSystem( const MeshPointer& mesh,
                    Matrix& matrix )
 {
@@ -153,7 +154,7 @@ setupLinearSystem( const MeshPointer& mesh,
    CompressedRowsLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
-   MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
+   MatrixSetter< MeshType, InviscidOperators, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >( mesh,
                                                                           differentialOperator,
                                                                           boundaryCondition,
@@ -167,9 +168,9 @@ setupLinearSystem( const MeshPointer& mesh,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename InviscidOperators >
 bool
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshPointer& mesh,
@@ -208,9 +209,9 @@ makeSnapshot( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename InviscidOperators >
 void
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshPointer& mesh,
@@ -238,45 +239,46 @@ getExplicitRHS( const RealType& time,
    /****
     * Set-up operators
     */
+   typedef typename InviscidOperators::ContinuityOperatorType ContinuityOperatorType;
+   typedef typename InviscidOperators::MomentumXOperatorType MomentumXOperatorType;
+   typedef typename InviscidOperators::MomentumYOperatorType MomentumYOperatorType;
+   typedef typename InviscidOperators::MomentumZOperatorType MomentumZOperatorType;
+   typedef typename InviscidOperators::EnergyOperatorType EnergyOperatorType;
     
-    //generate Operators
+    this->inviscidOperatorsPointer->setTau( tau );
+    this->inviscidOperatorsPointer->setVelocity( this->velocity );
+    this->inviscidOperatorsPointer->setPressure( this->pressure );
 
-   //this->bindDofs( mesh, _u );
-   //rho
-   continuityOperatorPointer->setTau(tau);
-   continuityOperatorPointer->setVelocity( this->velocity );
+   /****
+    * Continuity equation
+    */ 
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, ContinuityOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterContinuity; 
    explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           this->continuityOperatorPointer,
+                                                           this->inviscidOperatorsPointer->getContinuityOperator(),
                                                            this->boundaryConditionPointer,
                                                            this->rightHandSidePointer,
                                                            this->conservativeVariables->getDensity(),
                                                            this->conservativeVariablesRHS->getDensity() );
 
-   //rhoVelocityX
-   momentumXOperatorPointer->setTau(tau);
-   momentumXOperatorPointer->setVelocity( this->velocity );
-   momentumXOperatorPointer->setPressure( this->pressure );
+   /****
+    * Momentum equations
+    */
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumXOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterMomentumX; 
    explicitUpdaterMomentumX.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           this->momentumXOperatorPointer,
+                                                           this->inviscidOperatorsPointer->getMomentumXOperator(),
                                                            this->boundaryConditionPointer,
                                                            this->rightHandSidePointer,
                                                            ( *this->conservativeVariables->getMomentum() )[ 0 ], // uRhoVelocityX,
                                                            ( *this->conservativeVariablesRHS->getMomentum() )[ 0 ] ); //, fuRhoVelocityX );
 
-   //rhoVelocityY
    if( Dimensions > 1 )
    {
-      momentumYOperatorPointer->setTau(tau);
-      momentumYOperatorPointer->setVelocity( this->velocity );
-      momentumYOperatorPointer->setPressure( this->pressure );
       Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumYOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterMomentumY;
       explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time,
                                                               mesh,
-                                                              this->momentumYOperatorPointer,
+                                                              this->inviscidOperatorsPointer->getMomentumYOperator(),
                                                               this->boundaryConditionPointer,
                                                               this->rightHandSidePointer,
                                                               ( *this->conservativeVariables->getMomentum() )[ 1 ], // uRhoVelocityX,
@@ -285,13 +287,10 @@ getExplicitRHS( const RealType& time,
    
    if( Dimensions > 2 )
    {
-      momentumYOperatorPointer->setTau(tau);
-      momentumYOperatorPointer->setVelocity( this->velocity );
-      momentumYOperatorPointer->setPressure( this->pressure );
       Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumZOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterMomentumZ;
       explicitUpdaterMomentumZ.template update< typename Mesh::Cell >( time,
                                                               mesh,
-                                                              this->momentumZOperatorPointer,
+                                                              this->inviscidOperatorsPointer->getMomentumZOperator(),
                                                               this->boundaryConditionPointer,
                                                               this->rightHandSidePointer,
                                                               ( *this->conservativeVariables->getMomentum() )[ 2 ], // uRhoVelocityX,
@@ -299,14 +298,13 @@ getExplicitRHS( const RealType& time,
    }
    
   
-   //energy
-   energyOperatorPointer->setTau(tau);
-   energyOperatorPointer->setVelocity( this->velocity ); 
-   energyOperatorPointer->setPressure( this->pressure );
+   /****
+    * Energy equation
+    */
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, EnergyOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
    explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           this->energyOperatorPointer,
+                                                           this->inviscidOperatorsPointer->getEnergyOperator(),
                                                            this->boundaryConditionPointer,
                                                            this->rightHandSidePointer,
                                                            this->conservativeVariables->getEnergy(), // uRhoVelocityX,
@@ -328,10 +326,10 @@ getExplicitRHS( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename InviscidOperators >
    template< typename Matrix >
 void
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshPointer& mesh,
@@ -342,7 +340,7 @@ assemblyLinearSystem( const RealType& time,
 {
 /*   LinearSystemAssembler< Mesh,
                              MeshFunctionType,
-                             DifferentialOperator,
+                             InviscidOperators,
                              BoundaryCondition,
                              RightHandSide,
                              BackwardTimeDiscretisation,
@@ -364,9 +362,9 @@ assemblyLinearSystem( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename InviscidOperators >
 bool
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 postIterate( const RealType& time,
              const RealType& tau,
              const MeshPointer& mesh,

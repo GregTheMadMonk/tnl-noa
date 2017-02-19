@@ -125,7 +125,7 @@ class LaxFridrichsMomentumZ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Rea
       {
          static_assert( MeshEntity::entityDimensions == 2, "Wrong mesh entity dimensions." ); 
          static_assert( MeshFunction::getEntitiesDimensions() == 2, "Wrong preimage function" ); 
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
+         //const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
 
          return 0.0;
       }
@@ -207,12 +207,13 @@ class LaxFridrichsMomentumZ< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real
          const RealType& velocity_y_south = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];
          const RealType& velocity_z_up    = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ up ];
          const RealType& velocity_z_down  = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ down ];
-         return 0.5 * ( this->tau * ( rho_w[ west ] + rho_w[ east ] + rho_w[ south ] + rho_w[ north ] + rho_w[ up ] + rho_w[ down ] - 6.0 * rho_w[ center ] ) 
-                       - ( ( rho_w[ west ] * velocity_x_west )
+         return 1.0 / 6.0 * this->tau * this->artificialViscosity *
+                    ( rho_w[ west ] + rho_w[ east ] + rho_w[ south ] + rho_w[ north ] + rho_w[ up ] + rho_w[ down ] - 6.0 * rho_w[ center ] ) 
+                -0.5 * ( ( ( rho_w[ west ] * velocity_x_west )
                          - ( rho_w[ east ] * velocity_x_east ) )* hxInverse
-                       - ( ( rho_w[ north ] * velocity_y_north )
+                       + ( ( rho_w[ north ] * velocity_y_north )
                          - ( rho_w[ south ] * velocity_y_south ) )* hyInverse
-                       - ( ( rho_w[ up ] * velocity_z_up + pressure_up )
+                       + ( ( rho_w[ up ] * velocity_z_up + pressure_up )
                          - ( rho_w[ down ] * velocity_z_down + pressure_down ) )* hzInverse );
       }
 

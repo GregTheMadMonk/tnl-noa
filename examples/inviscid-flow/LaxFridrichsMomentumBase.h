@@ -31,6 +31,8 @@ class LaxFridrichsMomentumBase
       typedef SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
       
+      LaxFridrichsMomentumBase()
+       : artificialViscosity( 1.0 ){};
 
       void setTau(const Real& tau)
       {
@@ -47,6 +49,11 @@ class LaxFridrichsMomentumBase
           this->pressure = pressure;
       };
 
+      void setArtificialViscosity( const RealType& artificialViscosity )
+      {
+         this->artificialViscosity = artificialViscosity;
+      }
+
       protected:
          
          RealType tau;
@@ -54,6 +61,8 @@ class LaxFridrichsMomentumBase
          VelocityFieldPointer velocity;
          
          MeshFunctionPointer pressure;
+         
+         RealType artificialViscosity;
 };
 
 } //namespace TNL

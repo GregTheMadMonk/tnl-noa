@@ -67,7 +67,7 @@ setup( const MeshPointer& meshPointer,
    const String& initialCondition = parameters.getParameter< String >( "initial-condition" );
    const double& finalTime = parameters.getParameter< double >( "final-time" );
    const double& snapshotPeriod = parameters.getParameter< double >( "snapshot-period" );
-   const int Dimensions = MeshPointer::ObjectType::getMeshDimensions();
+   static const int Dimensions = Mesh::getMeshDimensions();
    typedef typename MeshPointer::ObjectType MeshType;
    typedef Functions::MeshFunction< MeshType > MeshFunction;
    SharedPointer< MeshFunction > u( meshPointer );

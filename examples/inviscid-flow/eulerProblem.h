@@ -22,18 +22,18 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename InviscidOperators >
 class eulerProblem:
    public PDEProblem< Mesh,
-                         typename DifferentialOperator::RealType,
-                         typename Mesh::DeviceType,
-                         typename DifferentialOperator::IndexType >
+                      typename InviscidOperators::RealType,
+                      typename Mesh::DeviceType,
+                      typename InviscidOperators::IndexType >
 {
    public:
       
-      typedef typename DifferentialOperator::RealType RealType;
+      typedef typename InviscidOperators::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
-      typedef typename DifferentialOperator::IndexType IndexType;
+      typedef typename InviscidOperators::IndexType IndexType;
       typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       
       using typename BaseType::MeshType;
@@ -43,7 +43,7 @@ class eulerProblem:
       using typename BaseType::MeshDependentDataType;
       using typename BaseType::MeshDependentDataPointer;
 
-      static const int Dimensions = MeshType::getMeshDimensions();      
+      static const int Dimensions = Mesh::getMeshDimensions();      
 
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef CompressibleConservativeVariables< MeshType > ConservativeVariablesType;
@@ -51,20 +51,9 @@ class eulerProblem:
       typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef SharedPointer< ConservativeVariablesType > ConservativeVariablesPointer;
       typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
-      typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
+      typedef SharedPointer< InviscidOperators > InviscidOperatorsPointer;
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-      
-      typedef typename DifferentialOperator::Continuity ContinuityOperatorType;
-      typedef typename DifferentialOperator::MomentumX MomentumXOperatorType;
-      typedef typename DifferentialOperator::MomentumY MomentumYOperatorType;
-      typedef typename DifferentialOperator::MomentumZ MomentumZOperatorType;
-      typedef typename DifferentialOperator::Energy EnergyOperatorType;
-      typedef SharedPointer< ContinuityOperatorType > ContinuityOperatorPointer;
-      typedef SharedPointer< MomentumXOperatorType > MomentumXOperatorPointer;
-      typedef SharedPointer< MomentumYOperatorType > MomentumYOperatorPointer;      
-      typedef SharedPointer< MomentumZOperatorType > MomentumZOperatorPointer;      
-      typedef SharedPointer< EnergyOperatorType > EnergyOperatorPointer;
 
       static String getTypeStatic();
 
@@ -121,12 +110,8 @@ class eulerProblem:
 
    protected:
 
-      ContinuityOperatorPointer continuityOperatorPointer;
-      MomentumXOperatorPointer momentumXOperatorPointer;
-      MomentumYOperatorPointer momentumYOperatorPointer;
-      MomentumZOperatorPointer momentumZOperatorPointer;
-      EnergyOperatorPointer energyOperatorPointer;
-
+      InviscidOperatorsPointer inviscidOperatorsPointer;
+         
       BoundaryConditionPointer boundaryConditionPointer;
       RightHandSidePointer rightHandSidePointer;
       

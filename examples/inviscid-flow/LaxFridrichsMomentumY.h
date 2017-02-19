@@ -143,7 +143,7 @@ class LaxFridrichsMomentumY< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Rea
          const RealType& velocity_y_north = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ north ];
          const RealType& velocity_y_south = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];         
          
-         return 1.0 / 4.0 * this->tau * ( rho_v[ west ] + rho_v[ east ] + rho_v[ south ] + rho_v[ north ] - 4.0 * rho_v[ center ] ) 
+         return 1.0 / 4.0 * this->tau * this->artificialViscosity * ( rho_v[ west ] + rho_v[ east ] + rho_v[ south ] + rho_v[ north ] - 4.0 * rho_v[ center ] ) 
                 - 0.5 * ( ( ( rho_v[ west ] * velocity_x_west )
                            - ( rho_v[ east ] * velocity_x_east ) )* hxInverse
                         + ( ( rho_v[ north ] * velocity_y_north + pressure_north )
@@ -227,7 +227,8 @@ class LaxFridrichsMomentumY< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real
          const RealType& velocity_y_south = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];
          const RealType& velocity_z_up    = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ up ];
          const RealType& velocity_z_down  = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ down ];
-         return 1.0 / 6.0 * this->tau * ( rho_v[ west ] + rho_v[ east ] + rho_v[ south ] + rho_v[ north ] + rho_v[ up ] + rho_v[ down ] - 6.0 * rho_v[ center ] ) 
+         return 1.0 / 6.0 * this->tau * this->artificialViscosity * 
+                   ( rho_v[ west ] + rho_v[ east ] + rho_v[ south ] + rho_v[ north ] + rho_v[ up ] + rho_v[ down ] - 6.0 * rho_v[ center ] ) 
                 - 0.5 * ( ( ( rho_v[ west ] * velocity_x_west )
                           - ( rho_v[ east ] * velocity_x_east ) ) * hxInverse
                         + ( ( rho_v[ north ] * velocity_y_north + pressure_north )

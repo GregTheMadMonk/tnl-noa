@@ -33,6 +33,9 @@ class LaxFridrichsEnergyBase
       typedef SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
       
+      LaxFridrichsEnergyBase()
+       : artificialViscosity( 1.0 ){};
+
       static String getType()
       {
          return String( "LaxFridrichsEnergy< " ) +
@@ -55,6 +58,11 @@ class LaxFridrichsEnergyBase
       {
           this->pressure = pressure;
       };
+      
+      void setArtificialViscosity( const RealType& artificialViscosity )
+      {
+         this->artificialViscosity = artificialViscosity;
+      }      
 
       protected:
          
@@ -63,6 +71,8 @@ class LaxFridrichsEnergyBase
          VelocityFieldPointer velocity;
          
          MeshFunctionPointer pressure;
+         
+         RealType artificialViscosity;
 };
    
 template< typename Mesh,
@@ -113,7 +123,7 @@ class LaxFridrichsEnergy< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, 
          const RealType& pressure_east = this->pressure.template getData< DeviceType >()[ east ];
          const RealType& velocity_x_east = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ east ];
          const RealType& velocity_x_west = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ west ];
-         return 1.0 / 2.0 * this->tau * ( e[ west ] - 2.0 * e[ center ]  + e[ east ] ) 
+         return 1.0 / 2.0 * this->tau * this->artificialViscosity * ( e[ west ] - 2.0 * e[ center ]  + e[ east ] ) 
                 - 0.5 * ( ( e[ west ] + pressure_west ) * velocity_x_west  
                          - ( e[ east ] + pressure_east ) * velocity_x_east ) * hxInverse;
          
@@ -186,7 +196,7 @@ class LaxFridrichsEnergy< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, 
          const RealType& velocity_y_north = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ north ];
          const RealType& velocity_y_south = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];         
          
-         return 1.0 / 4.0 * this->tau * ( e[ west ] + e[ east ] + e[ south ] + e[ north ] - 4.0 * e[ center ] ) 
+         return 1.0 / 4.0 * this->tau * this->artificialViscosity * ( e[ west ] + e[ east ] + e[ south ] + e[ north ] - 4.0 * e[ center ] ) 
                 - 0.5 * ( ( ( ( e[ west ] + pressure_west ) * velocity_x_west )
                           -( ( e[ east ] + pressure_east ) * velocity_x_east ) ) * hxInverse
                         + ( ( ( e[ north ] + pressure_north ) * velocity_y_north )
@@ -268,7 +278,8 @@ class LaxFridrichsEnergy< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, 
          const RealType& velocity_z_up    = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ up ];
          const RealType& velocity_z_down  = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ down ];         
          
-         return 1.0 / 6.0 * this->tau * ( e[ west ] + e[ east ] + e[ south ] + e[ north ] + e[ up ] + e[ down ] - 6.0 * e[ center ] ) 
+         return 1.0 / 6.0 * this->tau * this->artificialViscosity *
+                 ( e[ west ] + e[ east ] + e[ south ] + e[ north ] + e[ up ] + e[ down ] - 6.0 * e[ center ] ) 
                 - 0.5 * ( ( ( ( e[ west ] + pressure_west ) * velocity_x_west )
                            -( ( e[ east ] + pressure_east ) * velocity_x_east ) ) * hxInverse
                         + ( ( ( e[ north ] + pressure_north ) * velocity_y_north )
