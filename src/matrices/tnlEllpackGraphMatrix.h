@@ -171,10 +171,19 @@ template< typename Vector >
                   const int color ) const;
 #endif
 
-   void computeColorsVector( IndexType* colorsVector );
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   void computeColorsVector( tnlVector< Index, Device, Index >& colorsVector );
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    void computePermutationArray();
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    bool rearrangeMatrix();
 
    bool save( tnlFile& file ) const;
@@ -189,8 +198,14 @@ template< typename Vector >
 
    bool help();
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    Index getNumberOfColors() const;
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    Index getRowsOfColor( IndexType color ) const;
 
    protected:

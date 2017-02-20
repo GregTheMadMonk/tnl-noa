@@ -82,13 +82,16 @@ bool tnlEllpackGraphMatrix< Real, Device, Index >::setRowLengths( const RowLengt
    this->rowLengths = this->maxRowLength = rowLengths.max();
    this->permutationArray.setSize( this->getRows() );
    for( IndexType i = 0; i < this->getRows(); i++ )
-      this->permutationArray[ i ] = i;
+      this->permutationArray.setElement( i, i );
    return allocateElements();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
 Index tnlEllpackGraphMatrix< Real, Device, Index >::getNumberOfColors() const
 {
    return this->numberOfColors;
@@ -97,42 +100,50 @@ Index tnlEllpackGraphMatrix< Real, Device, Index >::getNumberOfColors() const
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
 Index tnlEllpackGraphMatrix< Real, Device, Index >::getRowsOfColor( IndexType color ) const
 {
-   return this->colorPointers[ color + 1 ] - this->colorPointers[ color ];
+   return this->colorPointers.getElement( color + 1 ) - this->colorPointers.getElement( color );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlEllpackGraphMatrix< Real, Device, Index >::computeColorsVector( IndexType* colorsVector )
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+void tnlEllpackGraphMatrix< Real, Device, Index >::computeColorsVector( tnlVector< Index, Device, Index >& colorsVector )
 {
     this->numberOfColors = 0;
 
     for( IndexType i = this->getRows() - 1; i >= 0; i-- )
     {
+        //cout << "Iteration number: " << this->getRows() - 1 - i << "/" << this->getRows() << flush;
         // init color array
-        IndexType *usedColors = new IndexType[ this->numberOfColors ];
+        tnlVector< Index, Device, Index > usedColors;
+        usedColors.setSize( this->numberOfColors );
         for( IndexType j = 0; j < this->numberOfColors; j++ )
-            usedColors[ j ] = 0;
+            usedColors.setElement( j, 0 );
 
         // find all colors used in given row
         for( IndexType j = i + 1; j < this->getColumns(); j++ )
             if( this->getElement( i, j ) != 0.0 )
-                usedColors[ colorsVector[ j ] ] = 1;
+                usedColors.setElement( colorsVector.getElement( j ), 1 );
 
         // find unused color
         bool found = false;
         for( IndexType j = 0; j < this->numberOfColors; j++ )
-            if( usedColors[ j ] == 0 )
+            if( usedColors.getElement( j ) == 0 )
             {
-                colorsVector[ i ] = j;
+                colorsVector.setElement( i, j );
                 found = true;
                 break;
             }
         if( !found )
         {
-            colorsVector[ i ] = this->numberOfColors;
+            colorsVector.setElement( i, this->numberOfColors );
             this->numberOfColors++;
         }
     }
@@ -141,13 +152,17 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::computeColorsVector( IndexTyp
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
 void tnlEllpackGraphMatrix< Real, Device, Index >::computePermutationArray()
 {
    // init vector of colors and permutation array
-   IndexType* colorsVector = new IndexType[ this->getRows() ];
+   tnlVector< Index, Device, Index > colorsVector;
+   colorsVector.setSize( this->getRows() );
    for( IndexType i = 0; i < this->getRows(); i++ )
    {
-      colorsVector[i] = 0;
+      colorsVector.setElement( i, 0 );
    }
 
    // compute colors for each row
@@ -160,33 +175,36 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::computePermutationArray()
    IndexType position = 0;
    for( IndexType color = 0; color < this->numberOfColors; color++ )
    {
-      this->colorPointers[ color ] = position;
+      this->colorPointers.setElement( color, position );
       for (IndexType i = 0; i < this->getRows(); i++)
-         if (colorsVector[i] == color)
+         if ( colorsVector.getElement( i ) == color)
          {
-            IndexType row1 = this->permutationArray[ i ];
-            IndexType row2 = this->permutationArray[ position ];
-            IndexType tmp = this->permutationArray[ row1 ];
-            this->permutationArray[ row1 ] = this->permutationArray[ row2 ];
-            this->permutationArray[ row2 ] = tmp;
+            IndexType row1 = this->permutationArray.getElement( i );
+            IndexType row2 = this->permutationArray.getElement( position );
+            IndexType tmp = this->permutationArray.getElement( row1 );
+            this->permutationArray.setElement( row1, this->permutationArray.getElement( row2 ) );
+            this->permutationArray.setElement( row2, tmp );
 
-            tmp = colorsVector[ position ];
-            colorsVector[ position ] = colorsVector[ i ];
-            colorsVector[ i ] = tmp;
+            tmp = colorsVector.getElement( position );
+            colorsVector.setElement( position, colorsVector.getElement( i ) );
+            colorsVector.setElement( i, tmp );
             position++;
          }
    }
 
    // TODO: index ma byt posledniho radku, nebo jak?
-   this->colorPointers[ this->numberOfColors ] = this->getRows();
+   this->colorPointers.setElement( this->numberOfColors, this->getRows() );
 
    // destroy colors vector
-   delete [] colorsVector;
+   colorsVector.reset();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
 bool tnlEllpackGraphMatrix< Real, Device, Index >::rearrangeMatrix()
 {
    // first we need to know permutation
@@ -202,14 +220,14 @@ bool tnlEllpackGraphMatrix< Real, Device, Index >::rearrangeMatrix()
    {
       typedef tnlEllpackGraphMatrixDeviceDependentCode< DeviceType > DDCType;
       IndexType elementPtrOrig = DDCType::getRowBegin( *this, row );
-      IndexType elementPtrNew = DDCType::getRowBegin( *this, this->permutationArray[ row ] );
+      IndexType elementPtrNew = DDCType::getRowBegin( *this, this->permutationArray.getElement( row ) );
       IndexType rowEnd = DDCType::getRowEnd( *this, row );
       IndexType step = DDCType::getElementStep( *this );
 
       for( IndexType i = 0; i < this->rowLengths; i++ )
       {
-         valuesVector[ elementPtrNew ] = this->values[ elementPtrOrig ];
-         columnsVector[ elementPtrNew ] = this->columnIndexes[ elementPtrOrig ];
+         valuesVector.setElement( elementPtrNew, this->values.getElement( elementPtrOrig ) );
+         columnsVector.setElement( elementPtrNew, this->columnIndexes.getElement( elementPtrOrig ) );
          elementPtrNew += step;
          elementPtrOrig += step;
       }
@@ -451,8 +469,8 @@ bool tnlEllpackGraphMatrix< Real, Device, Index > :: setRow( const IndexType row
                                                              const IndexType elements )
 {
    typedef tnlEllpackGraphMatrixDeviceDependentCode< DeviceType > DDCType;
-   IndexType elementPointer = DDCType::getRowBegin( *this, this->permutationArray[ row ] );
-   const IndexType rowEnd = DDCType::getRowEnd( *this, this->permutationArray[ row ] );
+   IndexType elementPointer = DDCType::getRowBegin( *this, this->permutationArray.getElement( row ) );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, this->permutationArray.getElement( row ) );
    const IndexType step = DDCType::getElementStep( *this );
 
    if( elements > this->rowLengths )
@@ -517,8 +535,8 @@ Real tnlEllpackGraphMatrix< Real, Device, Index >::getElementFast( const IndexTy
        return this->getElementFast( column, row );
 
    typedef tnlEllpackGraphMatrixDeviceDependentCode< DeviceType > DDCType;
-   IndexType elementPtr = DDCType::getRowBegin( *this, this->permutationArray[ row ] );
-   const IndexType rowEnd = DDCType::getRowEnd( *this, this->permutationArray[ row ] );
+   IndexType elementPtr = DDCType::getRowBegin( *this, this->permutationArray.getElement( row ) );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, this->permutationArray.getElement( row ) );
    const IndexType step = DDCType::getElementStep( *this );
 
    while( elementPtr < rowEnd &&
@@ -539,8 +557,8 @@ Real tnlEllpackGraphMatrix< Real, Device, Index >::getElement( const IndexType r
       return this->getElement( column, row );
 
    typedef tnlEllpackGraphMatrixDeviceDependentCode< DeviceType > DDCType;
-   IndexType elementPtr = DDCType::getRowBegin( *this, this->permutationArray[ row ] );
-   const IndexType rowEnd = DDCType::getRowEnd( *this, this->permutationArray[ row ] );
+   IndexType elementPtr = DDCType::getRowBegin( *this, this->permutationArray.getElement( row ) );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, this->permutationArray.getElement( row ) );
    const IndexType step = DDCType::getElementStep( *this );
 
    while( elementPtr < rowEnd &&
@@ -679,6 +697,7 @@ template< typename Real,
           typename Index >
 bool tnlEllpackGraphMatrix< Real, Device, Index >::help()
 {
+    printf("here i am");
     if( !this->rearranged )
         return this->rearrangeMatrix();
 }

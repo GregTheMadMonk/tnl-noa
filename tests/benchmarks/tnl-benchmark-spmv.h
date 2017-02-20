@@ -811,13 +811,16 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
          EllpackGraphMatrixCudaType cudaEllpackGraphMatrix;
          cout << "Copying matrix to GPU... ";
          for( int i = 0; i < rowLengthsHost.getSize(); i++ )
-             rowLengthsHost[ i ] = slicedEllpackSymMatrix.getRowLength( i );
+             rowLengthsHost[ i ] = ellpackGraphMatrix.getRowLength( i );
          rowLengthsCuda = rowLengthsHost;
          if( ! cudaEllpackGraphMatrix.copyFrom( ellpackGraphMatrix, rowLengthsCuda ) ) 
          {
-            cerr << "I am not able to transfer the matrix on GPU." << endl;
             writeTestFailed( logFile, 3 );
          }
+         else if( ! cudaEllpackGraphMatrix.help() )
+         {
+            writeTestFailed( logFile, 3 );
+         } 
          else
          {
             cout << " done.   \r";
