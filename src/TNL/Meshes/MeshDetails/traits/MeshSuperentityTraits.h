@@ -44,7 +44,8 @@ public:
    /****
     * Type of container for storing of the superentities indices.
     */
-   using StorageNetworkType      = EllpackIndexMultimap< GlobalIndexType, Device, LocalIndexType >;
+   // TODO: write general operator= for different SliceSize and remove the '32' here
+   using StorageNetworkType      = EllpackIndexMultimap< GlobalIndexType, Device, LocalIndexType, 32 >;
    using SuperentityAccessorType = typename StorageNetworkType::ValuesAccessorType;
 };
 

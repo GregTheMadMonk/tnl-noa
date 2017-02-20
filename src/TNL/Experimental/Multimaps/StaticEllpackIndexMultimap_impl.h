@@ -17,10 +17,11 @@ namespace TNL {
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
    template< typename Device_ >
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
-StaticEllpackIndexMultimap( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex >& other )
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
+StaticEllpackIndexMultimap( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex, SliceSize >& other )
 {
    operator=( other );
 }
@@ -28,11 +29,12 @@ StaticEllpackIndexMultimap( const StaticEllpackIndexMultimap< ValuesCount, Index
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
    template< typename Device_ >
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >&
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
-operator=( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex >& other )
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >&
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
+operator=( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex, SliceSize >& other )
 {
    values = other.values;
    keysRange = other.keysRange;
@@ -42,9 +44,10 @@ operator=( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalI
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
 String
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 getType()
 {
    return String( "StaticEllpackIndexMultimap< ") +
@@ -59,9 +62,10 @@ getType()
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
 String
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 getTypeVirtual() const
 {
    return this->getType();
@@ -70,9 +74,10 @@ getTypeVirtual() const
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
 void
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 setKeysRange( const IndexType& keysRange )
 {
    TNL_ASSERT( keysRange >= 0, );
@@ -82,10 +87,11 @@ setKeysRange( const IndexType& keysRange )
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
 __cuda_callable__
 const Index
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 getKeysRange() const
 {
    return this->keysRange;
@@ -94,24 +100,28 @@ getKeysRange() const
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
 bool
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 allocate()
 {
-   return this->values.setSize( this->keysRange * ValuesCount );
+   const IndexType ldSize = getAllocationKeysRange( this->getKeysRange() );
+   return this->values.setSize( ldSize * ValuesCount );
 }
 
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
    template< typename Device_ >
 bool
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
-setLike( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex >& other )
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
+setLike( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex, SliceSize >& other )
 {
-   if( ! values.setLike( other.values ) )
+   const IndexType ldSize = getAllocationKeysRange( other.getKeysRange() );
+   if( ! values.setSize( ldSize * ValuesCount ) )
       return false;
    keysRange = other.keysRange;
    return true;
@@ -120,47 +130,56 @@ setLike( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalInd
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
 __cuda_callable__
-typename StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::ValuesAccessorType
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
+typename StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::ValuesAccessorType
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 getValues( const IndexType& inputIndex )
 {
    TNL_ASSERT( inputIndex < this->getKeysRange(),
                std::cerr << "inputIndex = " << inputIndex << std::endl
                          << "this->getKeysRange() = " << this->getKeysRange() << std::endl; );
-   TNL_ASSERT( this->getKeysRange() * ValuesCount == this->values.getSize(),
+   TNL_ASSERT( getAllocationKeysRange( this->getKeysRange() ) * ValuesCount == this->values.getSize(),
                std::cerr << "The map has not been reallocated after calling setKeysRange()." << std::endl
                          << "this->getKeysRange() = " << this->getKeysRange() << std::endl
                          << "this->values.getSize() = " << this->values.getSize() << std::endl; );
-   return ValuesAccessorType( this->values.getData(), inputIndex );
+   const IndexType sliceIdx = inputIndex / SliceSize;
+   const IndexType sliceOffset = sliceIdx * SliceSize * ValuesCount;
+   const IndexType offset = sliceOffset + inputIndex - sliceIdx * SliceSize;
+   return ValuesAccessorType( &this->values[ offset ] );
 }
 
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
 __cuda_callable__
-typename StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::ConstValuesAccessorType
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
+typename StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::ConstValuesAccessorType
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 getValues( const IndexType& inputIndex ) const
 {
    TNL_ASSERT( inputIndex < this->getKeysRange(),
                std::cerr << "inputIndex = " << inputIndex << std::endl
                          << "this->getKeysRange() = " << this->getKeysRange() << std::endl; );
-   TNL_ASSERT( this->getKeysRange() * ValuesCount == this->values.getSize(),
+   TNL_ASSERT( getAllocationKeysRange( this->getKeysRange() ) * ValuesCount == this->values.getSize(),
                std::cerr << "The map has not been reallocated after calling setKeysRange()." << std::endl
                          << "this->getKeysRange() = " << this->getKeysRange() << std::endl
                          << "this->values.getSize() = " << this->values.getSize() << std::endl; );
-   return ConstValuesAccessorType( this->values.getData(), inputIndex );
+   const IndexType sliceIdx = inputIndex / SliceSize;
+   const IndexType sliceOffset = sliceIdx * SliceSize * ValuesCount;
+   const IndexType offset = sliceOffset + inputIndex - sliceIdx * SliceSize;
+   return ConstValuesAccessorType( &this->values[ offset ] );
 }
 
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
 bool
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 operator==( const StaticEllpackIndexMultimap& other ) const
 {
    return ( this->keysRange == other.keysRange && this->values == other.values );
@@ -169,9 +188,10 @@ operator==( const StaticEllpackIndexMultimap& other ) const
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
 bool
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 save( File& file ) const
 {
    if( ! Object::save( file ) )
@@ -186,9 +206,10 @@ save( File& file ) const
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
 bool
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 load( File& file )
 {
    if( ! Object::load( file ) )
@@ -203,9 +224,10 @@ load( File& file )
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
 void
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 print( std::ostream& str ) const
 {
    str << "[ ";
@@ -221,8 +243,23 @@ print( std::ostream& str ) const
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
-std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >& multimap )
+          typename LocalIndex,
+          int SliceSize >
+__cuda_callable__
+Index
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
+getAllocationKeysRange( IndexType keysRange ) const
+{
+   return SliceSize * roundUpDivision( keysRange, SliceSize );
+}
+
+
+template< int ValuesCount,
+          typename Index,
+          typename Device,
+          typename LocalIndex,
+          int SliceSize >
+std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >& multimap )
 {
    multimap.print( str );
    return str;

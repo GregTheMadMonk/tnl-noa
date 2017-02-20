@@ -54,7 +54,8 @@ public:
    /****
     * Type of container for storing of the subentities indices.
     */
-   using StorageNetworkType     = StaticEllpackIndexMultimap< count, GlobalIndexType, Device, LocalIndexType >;
+   // TODO: write general operator= for different SliceSize and remove the '32' here
+   using StorageNetworkType     = StaticEllpackIndexMultimap< count, GlobalIndexType, Device, LocalIndexType, 32 >;
    using SubentityAccessorType  = typename StorageNetworkType::ValuesAccessorType;
 
    // static array used in MeshSubentitySeedCreator

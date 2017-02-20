@@ -20,20 +20,22 @@ namespace TNL {
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 class StaticEllpackIndexMultimap;
 
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 class StaticEllpackIndexMultimapValues
 {
    public:
       using DeviceType     = Device;
       using IndexType      = Index;
       using LocalIndexType = LocalIndex;
-      using NetworkType    = StaticEllpackIndexMultimap< ValuesCount, IndexType, DeviceType, LocalIndexType >;
+      using NetworkType    = StaticEllpackIndexMultimap< ValuesCount, IndexType, DeviceType, LocalIndexType, step >;
 
       __cuda_callable__
       StaticEllpackIndexMultimapValues();
@@ -77,20 +79,20 @@ class StaticEllpackIndexMultimapValues
 
    protected:
       __cuda_callable__
-      StaticEllpackIndexMultimapValues( IndexType* values,
-                                        const IndexType& input );
+      StaticEllpackIndexMultimapValues( IndexType* values );
 
       IndexType* values;
 
-      friend StaticEllpackIndexMultimap< ValuesCount, IndexType, DeviceType, LocalIndexType >;
-      friend StaticEllpackIndexMultimap< ValuesCount, typename std::remove_const< IndexType >::type, DeviceType, LocalIndexType >;
+      friend StaticEllpackIndexMultimap< ValuesCount, IndexType, DeviceType, LocalIndexType, step >;
+      friend StaticEllpackIndexMultimap< ValuesCount, typename std::remove_const< IndexType >::type, DeviceType, LocalIndexType, step >;
 };
 
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
-std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >& ports );
+          typename LocalIndex,
+          int step >
+std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >& ports );
 
 } // namespace TNL
 

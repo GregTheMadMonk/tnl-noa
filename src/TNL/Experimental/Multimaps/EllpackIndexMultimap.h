@@ -15,9 +15,22 @@
 
 namespace TNL {
 
+template< typename Device >
+struct EllpackIndexMultimapSliceSizeGetter
+{
+   static constexpr int SliceSize = 1;
+};
+
+template<>
+struct EllpackIndexMultimapSliceSizeGetter< Devices::Cuda >
+{
+   static constexpr int SliceSize = 32;
+};
+
 template< typename Index = int,
           typename Device = Devices::Host,
-          typename LocalIndex = Index >
+          typename LocalIndex = Index,
+          int SliceSize = EllpackIndexMultimapSliceSizeGetter< Device >::SliceSize >
 class EllpackIndexMultimap
    : public virtual Object
 {
@@ -25,17 +38,17 @@ class EllpackIndexMultimap
       using DeviceType                 = Device;
       using IndexType                  = Index;
       using LocalIndexType             = LocalIndex;
-      using ValuesAccessorType         = EllpackIndexMultimapValues< IndexType, DeviceType, LocalIndexType >;
-      using ConstValuesAccessorType    = EllpackIndexMultimapValues< const IndexType, DeviceType, LocalIndexType >;
+      using ValuesAccessorType         = EllpackIndexMultimapValues< IndexType, DeviceType, LocalIndexType, SliceSize >;
+      using ConstValuesAccessorType    = EllpackIndexMultimapValues< const IndexType, DeviceType, LocalIndexType, SliceSize >;
       using ValuesAllocationVectorType = Containers::Vector< LocalIndexType, DeviceType, IndexType >;
 
       EllpackIndexMultimap() = default;
 
       template< typename Device_ >
-      EllpackIndexMultimap( const EllpackIndexMultimap< Index, Device_, LocalIndex >& other );
+      EllpackIndexMultimap( const EllpackIndexMultimap< Index, Device_, LocalIndex, SliceSize >& other );
 
       template< typename Device_ >
-      EllpackIndexMultimap& operator=( const EllpackIndexMultimap< Index, Device_, LocalIndex >& other );
+      EllpackIndexMultimap& operator=( const EllpackIndexMultimap< Index, Device_, LocalIndex, SliceSize >& other );
 
       static String getType();
 
@@ -50,8 +63,8 @@ class EllpackIndexMultimap
 
       bool allocate( const ValuesAllocationVectorType& valuesCounts );
 
-      template< typename Device_ >
-      bool setLike( const EllpackIndexMultimap< Index, Device_, LocalIndex >& other );
+      template< typename Device_, int SliceSize_ >
+      bool setLike( const EllpackIndexMultimap< Index, Device_, LocalIndex, SliceSize_ >& other );
 
       __cuda_callable__
       ValuesAccessorType getValues( const IndexType& inputIndex );
@@ -59,7 +72,7 @@ class EllpackIndexMultimap
       __cuda_callable__
       ConstValuesAccessorType getValues( const IndexType& inputIndex ) const;
 
-      bool operator==( const EllpackIndexMultimap< Index, Device, LocalIndex >& other ) const;
+      bool operator==( const EllpackIndexMultimap& other ) const;
 
       bool save( File& file ) const;
 
@@ -78,15 +91,19 @@ class EllpackIndexMultimap
       IndexType keysRange = 0;
       LocalIndexType maxValuesCount = 0;
 
+      __cuda_callable__
+      IndexType getAllocationKeysRange( IndexType keysRange ) const;
+
       // friend class is needed for templated assignment operators
-      template< typename Index_, typename Device_, typename LocalIndex_ >
+      template< typename Index_, typename Device_, typename LocalIndex_, int SliceSize_ >
       friend class EllpackIndexMultimap;
 };
 
 template< typename Index,
           typename Device,
-          typename LocalIndex >
-std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimap< Index, Device, LocalIndex >& multimap );
+          typename LocalIndex,
+          int SliceSize >
+std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimap< Index, Device, LocalIndex, SliceSize >& multimap );
 
 } // namespace TNL
 

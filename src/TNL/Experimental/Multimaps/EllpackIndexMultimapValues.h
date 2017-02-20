@@ -19,19 +19,21 @@ namespace TNL {
 
 template< typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int SliceSize >
 class EllpackIndexMultimap;
 
 template< typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step = 1 >
 class EllpackIndexMultimapValues
 {
    public:
       using DeviceType     = Device;
       using IndexType      = Index;
       using LocalIndexType = LocalIndex;
-      using NetworkType    = EllpackIndexMultimap< IndexType, DeviceType, LocalIndexType >;
+      using NetworkType    = EllpackIndexMultimap< IndexType, DeviceType, LocalIndexType, step >;
 
       __cuda_callable__
       EllpackIndexMultimapValues();
@@ -85,8 +87,7 @@ class EllpackIndexMultimapValues
 
       __cuda_callable__
       EllpackIndexMultimapValues( IndexType* values,
-                                  ValuesCountType* valuesCounts,
-                                  const IndexType& input,
+                                  ValuesCountType* valuesCount,
                                   const LocalIndexType& allocatedSize );
 
       IndexType* values;
@@ -96,14 +97,15 @@ class EllpackIndexMultimapValues
       // TODO: this is useless for a const-accessor (without setSize etc.)
       LocalIndexType allocatedSize;
 
-      friend EllpackIndexMultimap< IndexType, DeviceType, LocalIndexType >;
-      friend EllpackIndexMultimap< typename std::remove_const< IndexType >::type, DeviceType, LocalIndexType >;
+      friend EllpackIndexMultimap< IndexType, DeviceType, LocalIndexType, step >;
+      friend EllpackIndexMultimap< typename std::remove_const< IndexType >::type, DeviceType, LocalIndexType, step >;
 };
 
 template< typename Index,
           typename Device,
-          typename LocalIndex >
-std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimapValues< Index, Device, LocalIndex >& ports );
+          typename LocalIndex,
+          int step >
+std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimapValues< Index, Device, LocalIndex, step >& ports );
 
 } // namespace TNL
 

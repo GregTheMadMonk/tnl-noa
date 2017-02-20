@@ -19,9 +19,10 @@ namespace TNL {
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 __cuda_callable__
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 StaticEllpackIndexMultimapValues()
 : values( nullptr )
 {
@@ -30,9 +31,10 @@ StaticEllpackIndexMultimapValues()
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 __cuda_callable__
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 StaticEllpackIndexMultimapValues( StaticEllpackIndexMultimapValues&& other )
 : values( other.values )
 {
@@ -42,10 +44,23 @@ StaticEllpackIndexMultimapValues( StaticEllpackIndexMultimapValues&& other )
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 __cuda_callable__
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >&
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
+StaticEllpackIndexMultimapValues( IndexType* values )
+: values( values )
+{
+}
+
+template< int ValuesCount,
+          typename Index,
+          typename Device,
+          typename LocalIndex,
+          int step >
+__cuda_callable__
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >&
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 operator=( const StaticEllpackIndexMultimapValues& other )
 {
    if( this->values != other.values ) {
@@ -58,10 +73,11 @@ operator=( const StaticEllpackIndexMultimapValues& other )
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 __cuda_callable__
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >&
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >&
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 operator=( StaticEllpackIndexMultimapValues&& other )
 {
    this->values = other.values;
@@ -72,10 +88,11 @@ operator=( StaticEllpackIndexMultimapValues&& other )
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 __cuda_callable__
 void
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 bind( const StaticEllpackIndexMultimapValues& other )
 {
    this->values = other.values;
@@ -84,21 +101,10 @@ bind( const StaticEllpackIndexMultimapValues& other )
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
-__cuda_callable__
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
-StaticEllpackIndexMultimapValues( IndexType* values,
-                                  const IndexType& input )
-{
-   this->values = &values[ input * ValuesCount ];
-}
-
-template< int ValuesCount,
-          typename Index,
-          typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 constexpr LocalIndex
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 getSize() const
 {
    return ValuesCount;
@@ -107,9 +113,10 @@ getSize() const
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 constexpr LocalIndex
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 getAllocatedSize() const
 {
    return ValuesCount;
@@ -118,10 +125,11 @@ getAllocatedSize() const
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 __cuda_callable__
 void
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 setValue( const LocalIndexType& portIndex,
           const IndexType& value )
 {
@@ -131,16 +139,17 @@ setValue( const LocalIndexType& portIndex,
                std::cerr << " portIndex = " << portIndex
                          << " getSize() = " << this->getSize()
                          << std::endl );
-   this->values[ portIndex ] = value;
+   this->values[ portIndex * step ] = value;
 }
 
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 __cuda_callable__
 Index
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 getValue( const LocalIndexType& portIndex ) const
 {
    TNL_ASSERT( this->values,
@@ -149,16 +158,17 @@ getValue( const LocalIndexType& portIndex ) const
                std::cerr << " portIndex = " << portIndex
                          << " getSize() = " << this->getSize()
                          << std::endl );
-   return this->values[ portIndex ];
+   return this->values[ portIndex * step ];
 }
 
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 __cuda_callable__
 Index&
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 operator[]( const LocalIndexType& portIndex )
 {
    TNL_ASSERT( this->values,
@@ -167,16 +177,17 @@ operator[]( const LocalIndexType& portIndex )
                std::cerr << " portIndex = " << portIndex
                          << " getSize() = " << this->getSize()
                          << std::endl );
-   return this->values[ portIndex ];
+   return this->values[ portIndex * step ];
 }
 
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 __cuda_callable__
 const Index&
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 operator[]( const LocalIndexType& portIndex ) const
 {
    TNL_ASSERT( this->values,
@@ -185,16 +196,17 @@ operator[]( const LocalIndexType& portIndex ) const
                std::cerr << " portIndex = " << portIndex
                          << " getSize() = " << this->getSize()
                          << std::endl );
-   return this->values[ portIndex ];
+   return this->values[ portIndex * step ];
 }
 
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 __cuda_callable__
 bool
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 operator==( const StaticEllpackIndexMultimapValues& other ) const
 {
    if( this->values == other.values )
@@ -210,10 +222,11 @@ operator==( const StaticEllpackIndexMultimapValues& other ) const
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 __cuda_callable__
 bool
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 operator!=( const StaticEllpackIndexMultimapValues& other ) const
 {
    return ! ( *this == other );
@@ -222,9 +235,10 @@ operator!=( const StaticEllpackIndexMultimapValues& other ) const
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
+          typename LocalIndex,
+          int step >
 void
-StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >::
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
 print( std::ostream& str ) const
 {
    str << "[ ";
@@ -240,8 +254,9 @@ print( std::ostream& str ) const
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
-std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex >& ports )
+          typename LocalIndex,
+          int step >
+std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >& ports )
 {
    ports.print( str );
    return str;

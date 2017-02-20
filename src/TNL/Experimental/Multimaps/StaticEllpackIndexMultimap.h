@@ -15,10 +15,23 @@
 
 namespace TNL {
 
+template< typename Device >
+struct StaticEllpackIndexMultimapSliceSizeGetter
+{
+   static constexpr int SliceSize = 1;
+};
+
+template<>
+struct StaticEllpackIndexMultimapSliceSizeGetter< Devices::Cuda >
+{
+   static constexpr int SliceSize = 32;
+};
+
 template< int ValuesCount,
           typename Index = int,
           typename Device = Devices::Host,
-          typename LocalIndex = Index >
+          typename LocalIndex = Index,
+          int SliceSize = StaticEllpackIndexMultimapSliceSizeGetter< Device >::SliceSize >
 class StaticEllpackIndexMultimap
    : public virtual Object
 {
@@ -26,16 +39,16 @@ class StaticEllpackIndexMultimap
       using DeviceType                 = Device;
       using IndexType                  = Index;
       using LocalIndexType             = LocalIndex;
-      using ValuesAccessorType         = StaticEllpackIndexMultimapValues< ValuesCount, IndexType, DeviceType, LocalIndexType >;
-      using ConstValuesAccessorType    = StaticEllpackIndexMultimapValues< ValuesCount, const IndexType, DeviceType, LocalIndexType >;
+      using ValuesAccessorType         = StaticEllpackIndexMultimapValues< ValuesCount, IndexType, DeviceType, LocalIndexType, SliceSize >;
+      using ConstValuesAccessorType    = StaticEllpackIndexMultimapValues< ValuesCount, const IndexType, DeviceType, LocalIndexType, SliceSize >;
 
       StaticEllpackIndexMultimap() = default;
 
       template< typename Device_ >
-      StaticEllpackIndexMultimap( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex >& other );
+      StaticEllpackIndexMultimap( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex, SliceSize >& other );
 
       template< typename Device_ >
-      StaticEllpackIndexMultimap& operator=( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex >& other );
+      StaticEllpackIndexMultimap& operator=( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex, SliceSize >& other );
 
       static String getType();
 
@@ -49,7 +62,7 @@ class StaticEllpackIndexMultimap
       bool allocate();
 
       template< typename Device_ >
-      bool setLike( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex >& other );
+      bool setLike( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex, SliceSize >& other );
 
       __cuda_callable__
       ValuesAccessorType getValues( const IndexType& inputIndex );
@@ -74,16 +87,20 @@ class StaticEllpackIndexMultimap
 
       IndexType keysRange = 0;
 
+      __cuda_callable__
+      IndexType getAllocationKeysRange( IndexType keysRange ) const;
+
       // friend class is needed for templated assignment operators
-      template< int ValuesCount_, typename Index_, typename Device_, typename LocalIndex_ >
+      template< int ValuesCount_, typename Index_, typename Device_, typename LocalIndex_, int SliceSize_ >
       friend class StaticEllpackIndexMultimap;
 };
 
 template< int ValuesCount,
           typename Index,
           typename Device,
-          typename LocalIndex >
-std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex >& multimap );
+          typename LocalIndex,
+          int SliceSize >
+std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >& multimap );
 
 } // namespace TNL
 
