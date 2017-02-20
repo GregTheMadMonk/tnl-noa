@@ -591,6 +591,9 @@ writeProlog( Logger& logger )
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );
    logger.writeParameter( "Space steps:", this->getSpaceSteps() );
+   logger.writeParameter( "Number of cells:", getEntitiesCount< Cell >() );
+   logger.writeParameter( "Number of faces:", getEntitiesCount< Face >() );
+   logger.writeParameter( "Number of vertices:", getEntitiesCount< Vertex >() );
 }
 
 } // namespace Meshes
