@@ -58,6 +58,16 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
 
    void printStructure( ostream& str ) const;
 
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   void copyFromHostToCuda( tnlSparseMatrix< Real, tnlHost, Index >& matrix );
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   tnlVector< Index, Device, Index > getColumnIndexes();
+
    protected:
 
    bool allocateMatrixElements( const IndexType& numberOfMatrixElements );

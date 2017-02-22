@@ -171,10 +171,12 @@ template< typename Vector >
                   const int color ) const;
 #endif
 
+/*
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    void computeColorsVector( tnlVector< Index, Device, Index >& colorsVector );
+*/
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -207,6 +209,21 @@ template< typename Vector >
    __device__ __host__
 #endif
    Index getRowsOfColor( IndexType color ) const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   void copyFromHostToCuda( tnlEllpackGraphMatrix< Real, tnlHost, Index >& matrix );
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   tnlVector< Index, Device, Index > getPermutationArray();
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   tnlVector< Index, Device, Index > getColorPointers();
 
    protected:
 

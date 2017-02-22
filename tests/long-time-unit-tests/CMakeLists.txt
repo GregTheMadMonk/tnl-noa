@@ -15,3 +15,12 @@ INSTALL( FILES tnl-run-matrix-formats-test
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
          
 unset( ENABLE_CODECOVERAGE )
+
+IF( BUILD_CUDA )
+    CUDA_ADD_EXECUTABLE( matrix-cpu-cuda-test${debugExt} matrix-cpu-cuda-test.cu
+                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
+    SET_TARGET_PROPERTIES( matrix-cpu-cuda-test${debugExt} PROPERTIES CUDA_COMPILE_FLAG "${CXX_OPTIMIZE_FLAGS}" )
+    TARGET_LINK_LIBRARIES( matrix-cpu-cuda-test${debugExt} tnl${debugExt}-${tnlVersion} ${CUSPARSE_LIBRARY} )
+    INSTALL( TARGETS matrix-cpu-cuda-test${debugExt}
+             RUNTIME DESTINATION bin )
+ENDIF()

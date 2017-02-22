@@ -119,6 +119,31 @@ bool tnlSparseMatrix< Real, Device, Index >::load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+  __device__ __host__
+#endif
+tnlVector< Real, Device, Index > tnlSparseMatrix< Real, Device, Index >::getColumnIndexes()
+{
+    return this->columnIndexes;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+  __device__ __host__
+#endif
+void tnlSparseMatrix< Real, Device, Index >::copyFromHostToCuda( tnlSparseMatrix< Real, tnlHost, Index >& matrix )
+{
+    this->columnIndexes = matrix.getColumnIndexes();
+    this->maxRowLength = matrix.getMaxRowLength();
+
+    tnlMatrix< Real, Device, Index >::copyFromHostToCuda( matrix );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 bool tnlSparseMatrix< Real, Device, Index >::allocateMatrixElements( const IndexType& numberOfMatrixElements )
 {
    if( ! this->values.setSize( numberOfMatrixElements ) ||

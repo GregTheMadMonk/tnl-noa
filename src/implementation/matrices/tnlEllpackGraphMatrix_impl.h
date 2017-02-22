@@ -120,7 +120,6 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::computeColorsVector( tnlVecto
 
     for( IndexType i = this->getRows() - 1; i >= 0; i-- )
     {
-        //cout << "Iteration number: " << this->getRows() - 1 - i << "/" << this->getRows() << flush;
         // init color array
         tnlVector< Index, Device, Index > usedColors;
         usedColors.setSize( this->numberOfColors );
@@ -128,9 +127,33 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::computeColorsVector( tnlVecto
             usedColors.setElement( j, 0 );
 
         // find all colors used in given row
-        for( IndexType j = i + 1; j < this->getColumns(); j++ )
-            if( this->getElement( i, j ) != 0.0 )
-                usedColors.setElement( colorsVector.getElement( j ), 1 );
+
+        // optimization:
+        //     load the whole row in sparse format
+        //     traverse it while don't hit the padding index or end of the row
+        //     for each nonzero element write -> usedColors.setElement( colorsVector.getElement( column ), 1 )
+        IndexType* columns = new IndexType[ this->getRowLength( i ) ];
+        RealType* values = new RealType[ this->getRowLength( i ) ];
+        this->getRow( i, columns, values );
+        for( IndexType j = 0; j < this->getRowLength( i ); j++ )
+        {
+            // we are only interested in symmetric part of the matrix
+            if( columns[ j ] < i + 1 )
+                continue;
+
+            // if we hit padding index, there is no reason to continue iterations
+            if( columns[ j ] == this->getPaddingIndex() )
+                break;
+
+            usedColors.setElement( colorsVector.getElement( columns[ j ] ), 1 );
+        }
+        delete [] columns;
+        delete [] values;
+
+
+       //for( IndexType j = i + 1; j < this->getColumns(); j++ )
+       //     if( this->getElement( i, j ) != 0.0 )
+       //         usedColors.setElement( colorsVector.getElement( j ), 1 );
 
         // find unused color
         bool found = false;
@@ -192,7 +215,6 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::computePermutationArray()
          }
    }
 
-   // TODO: index ma byt posledniho radku, nebo jak?
    this->colorPointers.setElement( this->numberOfColors, this->getRows() );
 
    // destroy colors vector
@@ -249,6 +271,43 @@ bool tnlEllpackGraphMatrix< Real, Device, Index >::rearrangeMatrix()
 
    this->rearranged = true;
    return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+  __device__ __host__
+#endif
+tnlVector< Index, Device, Index > tnlEllpackGraphMatrix< Real, Device, Index >::getPermutationArray()
+{
+    return this->permutationArray;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+  __device__ __host__
+#endif
+tnlVector< Index, Device, Index > tnlEllpackGraphMatrix< Real, Device, Index >::getColorPointers()
+{
+    return this->colorPointers;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+#ifdef HAVE_CUDA
+  __device__ __host__
+#endif
+void tnlEllpackGraphMatrix< Real, Device, Index >::copyFromHostToCuda( tnlEllpackGraphMatrix< Real, tnlHost, Index >& matrix )
+{
+    this->rearranged = true;
+    this->colorPointers = matrix.getColorPointers();
+    this->permutationArray = matrix.getPermutationArray();
+
+    tnlSparseMatrix< Real, Device, Index >::copyFromHostToCuda( matrix );
 }
 
 template< typename Real,

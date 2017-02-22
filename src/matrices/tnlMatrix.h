@@ -116,11 +116,28 @@ class tnlMatrix : public virtual tnlObject
 
    virtual void print( ostream& str ) const;
 
+/*
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   void computeColorsVector( tnlVector< Index, Device, Index >& colorsVector );
+*/
+
    bool help();
+
+#ifdef  HAVE_CUDA
+   __device__ __host__
+#endif
+   void copyFromHostToCuda( tnlMatrix< Real, tnlHost, Index >& matrix );
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   void computeColorsVector( tnlVector< Index, Device, Index >& colorsVector );
 
    protected:
 
-   IndexType rows, columns;
+   IndexType rows, columns, numberOfColors;
 
    public: // TODO: remove this
 
