@@ -307,6 +307,11 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::copyFromHostToCuda( tnlEllpac
 {
     this->rearranged = true;
     this->colorPointers = matrix.getColorPointers();
+    tnlVector< Index, tnlHost, Index > colorPointers = matrix.getColorPointers();
+    this->colorPointers.setSize( colorPointers.getSize() );
+    for( IndexType i = 0; i < colorPointers.getSize(); i++ )
+        this->colorPointers.setElement( i, colorPointers[ i ] );
+
     this->permutationArray = matrix.getPermutationArray();
 
     tnlSparseMatrix< Real, Device, Index >::copyFromHostToCuda( matrix );

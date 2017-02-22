@@ -49,7 +49,8 @@ int main( int argc, char* argv[] )
 
     typedef tnlEllpackGraphMatrix< double, tnlHost, int > EllpackGraphHost;
     EllpackGraphHost hostMatrix;
-    if( !tnlMatrixReader< EllpackGraphHost >::readMtxFile( inputFile, hostMatrix, true, true ) )
+    if( !tnlMatrixReader< EllpackGraphHost >::readMtxFile( inputFile, hostMatrix, true, true ) ||
+        !hostMatrix.help() )
         return 1;
 
     typedef tnlEllpackGraphMatrix< double, tnlCuda, int > EllpackGraphCuda;
