@@ -54,8 +54,7 @@ int main( int argc, char* argv[] )
 
     typedef tnlEllpackGraphMatrix< double, tnlCuda, int > EllpackGraphCuda;
     EllpackGraphCuda cudaMatrix;
-    if( !cudaMatrix.copyFromHostToCuda( hostMatrix ) )
-        return 1;
+    cudaMatrix.copyFromHostToCuda( hostMatrix );
 
     return test( hostMatrix, cudaMatrix );
 }

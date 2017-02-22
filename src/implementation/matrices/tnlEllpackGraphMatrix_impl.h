@@ -108,6 +108,7 @@ Index tnlEllpackGraphMatrix< Real, Device, Index >::getRowsOfColor( IndexType co
    return this->colorPointers.getElement( color + 1 ) - this->colorPointers.getElement( color );
 }
 
+/*
 template< typename Real,
           typename Device,
           typename Index >
@@ -171,6 +172,7 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::computeColorsVector( tnlVecto
         }
     }
 }
+*/
 
 template< typename Real,
           typename Device,
