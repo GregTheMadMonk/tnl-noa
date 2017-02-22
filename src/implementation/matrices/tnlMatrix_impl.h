@@ -299,7 +299,7 @@ void tnlMatrix< Real, Device, Index >::computeColorsVector(tnlVector<Index, Devi
                 continue;
 
             // if we hit padding index, there is no reason to continue iterations
-            if( columns[ j ] == this->getPaddingIndex() )
+            if( columns[ j ] == this->getColumns() )
                 break;
 
             usedColors.setElement( colorsVector.getElement( columns[ j ] ), 1 );
