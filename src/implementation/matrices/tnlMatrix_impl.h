@@ -275,7 +275,11 @@ void tnlMatrix< Real, Device, Index >::copyFromHostToCuda( tnlMatrix< Real, tnlH
     this->numberOfColors = matrix.getNumberOfColors();
     this->columns = matrix.getColumns();
     this->rows = matrix.getRows();
-    this->values = matrix.values;
+
+    tnlVector< Real, tnlHost, Index > values = matrix.values;
+    this->values.setSize( values.getSize() );
+    for( IndexType i = 0; i < values.getSize(); i++ )
+        this->values.setElement( i, values[ i ] );
 }
 
 template< typename Real,

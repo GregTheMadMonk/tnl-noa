@@ -135,7 +135,11 @@ template< typename Real,
 #endif
 void tnlSparseMatrix< Real, Device, Index >::copyFromHostToCuda( tnlSparseMatrix< Real, tnlHost, Index >& matrix )
 {
-    this->columnIndexes = matrix.getColumnIndexes();
+    tnlVector< Index, tnlHost, Index > columnIndexes = matrix.getColumnIndexes();
+    this->columnIndexes.setSize( columnIndexes.getSize() );
+    for( IndexType i = 0; i < columnIndexes.getSize(); i++ )
+        this->columnIndexes.setElement( i, columnIndexes[ i ] );
+
     this->maxRowLength = matrix.getMaxRowLength();
 
     tnlMatrix< Real, Device, Index >::copyFromHostToCuda( matrix );

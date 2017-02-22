@@ -306,13 +306,15 @@ template< typename Real,
 void tnlEllpackGraphMatrix< Real, Device, Index >::copyFromHostToCuda( tnlEllpackGraphMatrix< Real, tnlHost, Index >& matrix )
 {
     this->rearranged = true;
-    this->colorPointers = matrix.getColorPointers();
     tnlVector< Index, tnlHost, Index > colorPointers = matrix.getColorPointers();
     this->colorPointers.setSize( colorPointers.getSize() );
     for( IndexType i = 0; i < colorPointers.getSize(); i++ )
         this->colorPointers.setElement( i, colorPointers[ i ] );
 
-    this->permutationArray = matrix.getPermutationArray();
+    tnlVector< Index,tnlHost, Index > permutationArray = matrix.getPermutationArray();
+    this->permutationArray.setSize( permutationArray.getSize() );
+    for( IndexType i = 0; i < permutationArray.getSize(); i++ )
+        this->permutationArray.setElement( i, permutationArray[ i ] );
 
     tnlSparseMatrix< Real, Device, Index >::copyFromHostToCuda( matrix );
 }
