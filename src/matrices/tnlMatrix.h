@@ -65,6 +65,11 @@ class tnlMatrix : public virtual tnlObject
 #endif
    IndexType getColumns() const;
 
+#ifdef HAVE_CUDA
+    __device__ __host__
+#endif
+    IndexType getNumberOfColors() const;
+
    /****
     * TODO: The fast variants of the following methods cannot be virtual.
     * If they were, they could not be used in the CUDA kernels. If CUDA allows it

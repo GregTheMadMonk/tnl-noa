@@ -87,6 +87,17 @@ Index tnlMatrix< Real, Device, Index >::getColumns() const
 }
 
 template< typename Real,
+        typename Device,
+        typename Index >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+Index tnlMatrix< Real, Device, Index >::getNumberOfColors() const
+{
+    return this->numberOfColors;
+}
+
+template< typename Real,
           typename Device,
           typename Index >
 void tnlMatrix< Real, Device, Index >::reset()
@@ -261,7 +272,7 @@ template< typename Real,
 #endif
 void tnlMatrix< Real, Device, Index >::copyFromHostToCuda( tnlMatrix< Real, tnlHost, Index >& matrix )
 {
-    this->numberOfColors = matrix.numberOfColors;
+    this->numberOfColors = matrix.getNumberOfColors();
     this->columns = matrix.getColumns();
     this->rows = matrix.getRows();
     this->values = matrix.values;
