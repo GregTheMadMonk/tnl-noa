@@ -189,7 +189,7 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::computePermutationArray()
    }
 
    // compute colors for each row
-   this->computeColorsVector( colorsVector );
+   tnlMatrix< Real, Device, Index >::computeColorsVector( colorsVector );
 
    // init color pointers
    this->colorPointers.setSize( this->numberOfColors + 1 );

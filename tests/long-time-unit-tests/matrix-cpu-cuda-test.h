@@ -13,7 +13,7 @@ void setupConfig( tnlConfigDescription& config )
     config.addRequiredEntry< tnlString >( "input-file" , "Input file name." );
 }
 
-int test( tnlMatrix< double, tnlHost, int >& hostMatrix, tnlMatrix< double, tnlCuda, int >& cudaMatrix )
+bool test( tnlMatrix< double, tnlHost, int >& hostMatrix, tnlMatrix< double, tnlCuda, int >& cudaMatrix )
 {
     // first perform compare test -- compare all elements using getElement( i, j ) method
     for( int i = 0; i < hostMatrix.getRows(); i++ )
