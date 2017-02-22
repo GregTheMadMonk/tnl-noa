@@ -122,7 +122,7 @@ template< typename Real,
 #ifdef HAVE_CUDA
   __device__ __host__
 #endif
-tnlVector< Real, Device, Index > tnlSparseMatrix< Real, Device, Index >::getColumnIndexes()
+tnlVector< Index, Device, Index > tnlSparseMatrix< Real, Device, Index >::getColumnIndexes()
 {
     return this->columnIndexes;
 }
