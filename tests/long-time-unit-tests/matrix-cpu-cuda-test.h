@@ -19,7 +19,9 @@ bool test( tnlMatrix< double, tnlHost, int >& hostMatrix, tnlMatrix< double, tnl
     for( int i = 0; i < hostMatrix.getRows(); i++ )
         for( int j = 0; j < hostMatrix.getColumns(); j++ )
         {
-            if( hostMatrix.getElement( i, j ) != cudaMatrix.getElement( i, j ) )
+            double a = hostMatrix.getElement( i, j );
+            double b = cudaMatrix.getElement( i, j );
+            if( a != b )
             {
                 cerr << "Matrices differ on position " << i << " " << j << "." << endl;
                 cerr << "Elements are: "

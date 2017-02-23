@@ -629,9 +629,14 @@ Real tnlEllpackGraphMatrix< Real, Device, Index >::getElement( const IndexType r
    const IndexType rowEnd = DDCType::getRowEnd( *this, this->permutationArray.getElement( row ) );
    const IndexType step = DDCType::getElementStep( *this );
 
+   IndexType currentColumn = this->columnIndexes.getElement( elementPtr );
+
    while( elementPtr < rowEnd &&
-          this->columnIndexes.getElement( elementPtr ) < column &&
-          this->columnIndexes.getElement( elementPtr ) != this->getPaddingIndex() ) elementPtr += step;
+          currentColumn < column &&
+          currentColumn != this->getPaddingIndex() )
+   {
+      elementPtr += step;
+   }
    if( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) == column )
       return this->values.getElement( elementPtr );
    return 0.0;

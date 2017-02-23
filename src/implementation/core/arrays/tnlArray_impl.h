@@ -86,10 +86,14 @@ template< typename Element,
            typename Index >
 bool tnlArray< Element, Device, Index > :: setSize( const Index size )
 {
+#ifdef HAVE_CUDA
+#else
    tnlAssert( size >= 0,
               cerr << "You try to set size of tnlArray to negative value."
                    << "Name: " << this -> getName() << endl
                    << "New size: " << size << endl );
+#endif
+
    if( this->size == size ) return true;
    if( this->data )
    {
@@ -115,11 +119,15 @@ template< typename Element,
    template< typename Array >
 bool tnlArray< Element, Device, Index > :: setLike( const Array& array )
 {
+#ifdef HAVE_CUDA
+#else
    tnlAssert( array. getSize() >= 0,
               cerr << "You try to set size of tnlArray to negative value."
                    << "Name: " << this -> getName() << endl
                    << "Array name:" << array. getName()
                    << "Array size: " << array. getSize() << endl );
+#endif
+
    return setSize( array.getSize() );
 };
 
@@ -158,11 +166,15 @@ template< typename Element,
            typename Index >
 void tnlArray< Element, Device, Index > :: setElement( const Index i, const Element& x )
 {
+#ifdef HAVE_CUDA
+#else
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for setElement method in tnlArray with name "
                    << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
+#endif
+
    return tnlArrayOperations< Device > :: setMemoryElement( &( this -> data[ i ] ), x );
 };
 
@@ -171,11 +183,15 @@ template< typename Element,
            typename Index >
 Element tnlArray< Element, Device, Index > :: getElement( Index i ) const
 {
+#ifdef HAVE_CUDA
+#else
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for getElement method in tnlArray with name "
                    << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
+#endif
+
    return tnlArrayOperations< Device > :: getMemoryElement( & ( this -> data[ i ] ) );
 };
 
@@ -187,11 +203,15 @@ template< typename Element,
 #endif
 Element& tnlArray< Element, Device, Index > :: operator[] ( Index i )
 {
+#ifdef HAV_CUDA
+#else
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for operator[] in tnlArray with name "
                    << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
+#endif
+
    return this->data[ i ];
 };
 
@@ -203,11 +223,15 @@ template< typename Element,
 #endif
 const Element& tnlArray< Element, Device, Index > :: operator[] ( Index i ) const
 {
+#ifdef HAVE_CUDA
+#else
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for operator[] in tnlArray with name "
                    << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
+#endif
+
    return this->data[ i ];
 };
 
@@ -217,11 +241,15 @@ template< typename Element,
 tnlArray< Element, Device, Index >&
    tnlArray< Element, Device, Index > :: operator = ( const tnlArray< Element, Device, Index >& array )
 {
+#ifdef HAVE_CUDA
+#else
    tnlAssert( array. getSize() == this -> getSize(),
            cerr << "Source name: " << array. getName() << endl
                 << "Source size: " << array. getSize() << endl
                 << "Target name: " << this -> getName() << endl
                 << "Target size: " << this -> getSize() << endl );
+#endif
+
    tnlArrayOperations< Device > :: 
    template copyMemory< Element,
                         Element,
@@ -239,11 +267,15 @@ template< typename Element,
 tnlArray< Element, Device, Index >&
    tnlArray< Element, Device, Index > :: operator = ( const Array& array )
 {
+#ifdef HAVE_CUDA
+#else
    tnlAssert( array. getSize() == this -> getSize(),
            cerr << "Source name: " << array. getName() << endl
                 << "Source size: " << array. getSize() << endl
                 << "Target name: " << this -> getName() << endl
                 << "Target size: " << this -> getSize() << endl );
+#endif
+
    tnlArrayOperations< Device,
                        typename Array :: DeviceType > ::
     template copyMemory< Element,
