@@ -18,40 +18,40 @@
 #ifndef TNL_MEAN_CURVATURE_FLOW_EOC_H_
 #define TNL_MEAN_CURVATURE_FLOW_EOC_H_
 
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfigTag.h>
-#include <solvers/tnlBuildConfigTags.h>
-#include <functions/tnlTestFunction.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include <operators/tnlNeumannBoundaryConditions.h>
-#include <problems/tnlMeanCurvatureFlowEocRhs.h>
-#include <problems/tnlMeanCurvatureFlowEocProblem.h>
-#include <operators/diffusion/tnlExactNonlinearDiffusion.h>
-#include <operators/diffusion/tnlNonlinearDiffusion.h>
-#include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
-#include <operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
-#include <operators/diffusion/tnlExactNonlinearDiffusion.h>
-#include <operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
-#include <operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
-#include <operators/geometric/tnlExactGradientNorm.h>
+#include <TNL/Solvers/Solver.h>
+#include <TNL/Solvers/FastBuildConfigTag.h>
+#include <TNL/Solvers/BuildConfigTags.h>
+#include <TNL/Functions/TestFunction.h>
+#include <TNL/Operators/DirichletBoundaryConditions.h>
+#include <TNL/Operators/NeumannBoundaryConditions.h>
+#include <TNL/Problems/MeanCurvatureFlowEocRhs.h>
+#include <TNL/Problems/MeanCurvatureFlowEocProblem.h>
+#include <TNL/Operators/diffusion/ExactNonlinearDiffusion.h>
+#include <TNL/Operators/diffusion/NonlinearDiffusion.h>
+#include <TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+#include <TNL/Operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
+#include <TNL/Operators/diffusion/ExactNonlinearDiffusion.h>
+#include <TNL/Operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
+#include <TNL/Operators/diffusion/nonlinear-diffusion-operators/FiniteVolumeNonlinearOperator.h>
+#include <TNL/Operators/geometric/ExactGradientNorm.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
-typedef tnlFastBuildConfig BuildConfig;
+typedef FastBuildConfig BuildConfig;
 
 template< typename ConfigTag >
 class meanCurvatureFlowEocConfig
 {
    public:
-      static void configSetup( tnlConfigDescription& config )
+      static void configSetup( Config::ConfigDescription& config )
       {
          config.addDelimiter( "Mean Curvature Flow EOC settings:" );         
-         config.addEntry< tnlString >( "numerical-scheme", "Numerical scheme for the solution approximation.", "fvm" );
-            config.addEntryEnum< tnlString >( "fdm" );
-            config.addEntryEnum< tnlString >( "fvm" );
+         config.addEntry< String >( "numerical-scheme", "Numerical scheme for the solution approximation.", "fvm" );
+            config.addEntryEnum< String >( "fdm" );
+            config.addEntryEnum< String >( "fvm" );
 
          config.addEntry< double >( "eps", "This sets a eps in operator Q.", 1.0 );
          config.addDelimiter( "Tests setting::" );         
-         tnlTestFunction< 3, double >::configSetup( config );
+         TestFunction< 3, double >::configSetup( config );
       }
 };
 
@@ -72,18 +72,18 @@ class meanCurvatureFlowEocSetter
    typedef typename MeshType::VertexType Vertex;
    enum { Dimensions = MeshType::meshDimensions };
 
-   static bool run( const tnlParameterContainer& parameters )
+   static bool run( const Config::ParameterContainer& parameters )
    {
 
       typedef tnlFiniteVolumeOperatorQ<MeshType, Real, Index, 0> OperatorQ;
-      typedef tnlFiniteVolumeNonlinearOperator<MeshType, OperatorQ, Real, Index > NonlinearOperator;
-      typedef tnlNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
-      typedef tnlExactNonlinearDiffusion< tnlExactGradientNorm< Dimensions >, Dimensions > ExactOperator;
-      typedef tnlTestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
-      typedef tnlMeanCurvatureFlowEocRhs< ExactOperator, TestFunction, Dimensions > RightHandSide;
-      typedef tnlStaticVector < MeshType::meshDimensions, Real > Vertex;
-      typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Dimensions, Real, Index > BoundaryConditions;
-      typedef tnlMeanCurvatureFlowEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
+      typedef FiniteVolumeNonlinearOperator<MeshType, OperatorQ, Real, Index > NonlinearOperator;
+      typedef NonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
+      typedef ExactNonlinearDiffusion< ExactGradientNorm< Dimensions >, Dimensions > ExactOperator;
+      typedef TestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
+      typedef MeanCurvatureFlowEocRhs< ExactOperator, TestFunction, Dimensions > RightHandSide;
+      typedef StaticVector < MeshType::meshDimensions, Real > Vertex;
+      typedef DirichletBoundaryConditions< MeshType, TestFunction, Dimensions, Real, Index > BoundaryConditions;
+      typedef MeanCurvatureFlowEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );
    };
@@ -91,7 +91,7 @@ class meanCurvatureFlowEocSetter
 
 int main( int argc, char* argv[] )
 {
-   tnlSolver< meanCurvatureFlowEocSetter, meanCurvatureFlowEocConfig, BuildConfig > solver;
+   Solver< meanCurvatureFlowEocSetter, meanCurvatureFlowEocConfig, BuildConfig > solver;
    if( ! solver. run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;

@@ -1,8 +1,0 @@
-group IO
-{
-   list of string input-files(!)   [Input files.];
-   list of string output-files     [Output files.];
-   integer output-step             [Decrease number of the output curve nodes.];
-   string output-file-format("gnuplot") [Output file format. Can be gnuplot.];
-},[Arguments describing input and output data.];
-

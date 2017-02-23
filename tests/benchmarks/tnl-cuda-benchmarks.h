@@ -6,250 +6,173 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDABENCHMARKS_H_
-#define TNLCUDBENCHMARKS_H_
+#pragma once
 
-#include <core/tnlList.h>
-#include <matrices/tnlSlicedEllpackMatrix.h>
-#include <matrices/tnlEllpackMatrix.h>
-#include <matrices/tnlCSRMatrix.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 
 #include "array-operations.h"
 #include "vector-operations.h"
+#include "spmv.h"
 
-using namespace tnl::benchmarks;
+using namespace TNL;
+using namespace TNL::benchmarks;
 
 
 // TODO: should benchmarks check the result of the computation?
 
 
-// silly alias to match the number of template parameters with other formats
-template< typename Real, typename Device, typename Index >
-using SlicedEllpackMatrix = tnlSlicedEllpackMatrix< Real, Device, Index >;
-
-template< typename Matrix >
-int setHostTestMatrix( Matrix& matrix,
-                       const int elementsPerRow )
+template< typename Real >
+void
+runCudaBenchmarks( Benchmark & benchmark,
+                   Benchmark::MetadataMap metadata,
+                   const unsigned & minSize,
+                   const unsigned & maxSize,
+                   const double & sizeStepFactor,
+                   const unsigned & loops,
+                   const unsigned & elementsPerRow )
 {
-   const int size = matrix.getRows();
-   int elements( 0 );
-   for( int row = 0; row < size; row++ )
-   {
-      int col = row - elementsPerRow / 2;
-      for( int element = 0; element < elementsPerRow; element++ )
-      {
-         if( col + element >= 0 &&
-             col + element < size )
-         {
-            matrix.setElement( row, col + element, element + 1 );
-            elements++;
-         }
-      }      
-   }
-   return elements;
+    const String precision = getType< Real >();
+    metadata["precision"] = precision;
+
+    // Array operations
+    benchmark.newBenchmark( String("Array operations (") + precision + ")",
+                            metadata );
+    for( unsigned size = minSize; size <= maxSize; size *= 2 ) {
+        benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+           {"size", size},
+        } ));
+        benchmarkArrayOperations< Real >( benchmark, loops, size );
+    }
+
+    // Vector operations
+    benchmark.newBenchmark( String("Vector operations (") + precision + ")",
+                            metadata );
+    for( unsigned size = minSize; size <= maxSize; size *= sizeStepFactor ) {
+        benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+           {"size", size},
+        } ));
+        benchmarkVectorOperations< Real >( benchmark, loops, size );
+    }
+
+    // Sparse matrix-vector multiplication
+    benchmark.newBenchmark( String("Sparse matrix-vector multiplication (") + precision + ")",
+                            metadata );
+    for( unsigned size = minSize; size <= maxSize; size *= 2 ) {
+        benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+            {"rows", size},
+            {"columns", size},
+            {"elements per row", elementsPerRow},
+        } ));
+        benchmarkSpmvSynthetic< Real >( benchmark, loops, size, elementsPerRow );
+    }
 }
 
-template< typename Matrix >
-__global__ void setCudaTestMatrixKernel( Matrix* matrix,
-                                         const int elementsPerRow,
-                                         const int gridIdx )
+void
+setupConfig( Config::ConfigDescription & config )
 {
-   const int rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   if( rowIdx >= matrix->getRows() )
-      return;
-   int col = rowIdx - elementsPerRow / 2;   
-   for( int element = 0; element < elementsPerRow; element++ )
-   {
-      if( col + element >= 0 &&
-          col + element < matrix->getColumns() )
-         matrix->setElementFast( rowIdx, col + element, element + 1 );
-   }      
+    config.addDelimiter( "Benchmark settings:" );
+    config.addEntry< String >( "log-file", "Log file name.", "tnl-cuda-benchmarks.log");
+    config.addEntry< String >( "output-mode", "Mode for opening the log file.", "overwrite" );
+    config.addEntryEnum( "append" );
+    config.addEntryEnum( "overwrite" );
+    config.addEntry< String >( "precision", "Precision of the arithmetics.", "double" );
+    config.addEntryEnum( "float" );
+    config.addEntryEnum( "double" );
+    config.addEntryEnum( "all" );
+    config.addEntry< int >( "min-size", "Minimum size of arrays/vectors used in the benchmark.", 100000 );
+    config.addEntry< int >( "max-size", "Minimum size of arrays/vectors used in the benchmark.", 10000000 );
+    config.addEntry< int >( "size-step-factor", "Factor determining the size of arrays/vectors used in the benchmark. First size is min-size and each following size is stepFactor*previousSize, up to max-size.", 2 );
+    config.addEntry< int >( "loops", "Number of iterations for every computation.", 10 );
+    config.addEntry< int >( "elements-per-row", "Number of elements per row of the sparse matrix used in the matrix-vector multiplication benchmark.", 5 );
+    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
 }
 
-template< typename Matrix >
-void setCudaTestMatrix( Matrix& matrix,
-                        const int elementsPerRow )
-{
-   typedef typename Matrix::IndexType IndexType;
-   typedef typename Matrix::RealType RealType;
-   Matrix* kernel_matrix = tnlCuda::passToDevice( matrix );
-   dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
-   const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-   const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
-   for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
-   {
-      if( gridIdx == cudaGrids - 1 )
-         cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
-      setCudaTestMatrixKernel< Matrix >
-       <<< cudaGridSize, cudaBlockSize >>>
-       ( kernel_matrix, elementsPerRow, gridIdx );
-      checkCudaDevice;
-   }
-   tnlCuda::freeFromDevice( kernel_matrix );
-}
-
-
-template< typename Real,
-          template< typename, typename, typename > class Matrix,
-          template< typename, typename, typename > class Vector = tnlVector >
-bool
-benchmarkSpMV( Benchmark & benchmark,
-               const int & loops,
-               const int & size,
-               const int elementsPerRow = 5 )
-{
-   typedef Matrix< Real, tnlHost, int > HostMatrix;
-   typedef Matrix< Real, tnlCuda, int > DeviceMatrix;
-   typedef tnlVector< Real, tnlHost, int > HostVector;
-   typedef tnlVector< Real, tnlCuda, int > CudaVector;
-
-   HostMatrix hostMatrix;
-   DeviceMatrix deviceMatrix;
-   tnlVector< int, tnlHost, int > hostRowLengths;
-   tnlVector< int, tnlCuda, int > deviceRowLengths;
-   HostVector hostVector, hostVector2;
-   CudaVector deviceVector, deviceVector2;
-
-   if( ! hostRowLengths.setSize( size ) ||
-       ! deviceRowLengths.setSize( size ) ||
-       ! hostMatrix.setDimensions( size, size ) ||
-       ! deviceMatrix.setDimensions( size, size ) ||
-       ! hostVector.setSize( size ) ||
-       ! hostVector2.setSize( size ) ||
-       ! deviceVector.setSize( size ) ||
-       ! deviceVector2.setSize( size ) )
-   {
-      cerr << "Unable to allocate all matrices and vectors for the SpMV benchmark." << endl;
-      return false;
-   }
-
-   hostRowLengths.setValue( elementsPerRow );
-   deviceRowLengths.setValue( elementsPerRow );
-
-   if( ! hostMatrix.setCompressedRowsLengths( hostRowLengths ) )
-   {
-      cerr << "Unable to allocate host matrix elements." << endl;
-      return false;
-   }
-   if( ! deviceMatrix.setCompressedRowsLengths( deviceRowLengths ) )
-   {
-      cerr << "Unable to allocate device matrix elements." << endl;
-      return false;
-   }
-
-   tnlList< tnlString > parsedType;
-   parseObjectType( HostMatrix::getType(), parsedType );
-   benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
-
-   const int elements = setHostTestMatrix< HostMatrix >( hostMatrix, elementsPerRow );
-   setCudaTestMatrix< DeviceMatrix >( deviceMatrix, elementsPerRow );
-   const double datasetSize = loops * elements * ( 2 * sizeof( Real ) + sizeof( int ) ) / oneGB;
-
-   // reset function
-   auto reset = [&]() {
-      hostVector.setValue( 1.0 );
-      deviceVector.setValue( 1.0 );
-      hostVector2.setValue( 0.0 );
-      deviceVector2.setValue( 0.0 );
-   };
-
-   // compute functions
-   auto spmvHost = [&]() {
-      hostMatrix.vectorProduct( hostVector, hostVector2 );
-   };
-   auto spmvCuda = [&]() {
-      deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
-   };
-
-   benchmark.setOperation( datasetSize );
-   benchmark.time( reset,
-                   "CPU", spmvHost,
-                   "GPU", spmvCuda );
-
-   return true;
-}
-
-int main( int argc, char* argv[] )
+int
+main( int argc, char* argv[] )
 {
 #ifdef HAVE_CUDA
-   
-   typedef double Real;
-   tnlString precision = getType< Real >();
-   
-   /****
-    * The first argument of this program is the size od data set to be reduced.
-    * If no argument is given we use hardcoded default value.
-    */
-   int size = 1 << 22;
-   if( argc > 1 )
-      size = atoi( argv[ 1 ] );
-   int loops = 10;
-   if( argc > 2 )
-      loops = atoi( argv[ 2 ] );
-   int elementsPerRow = 5;
-   if( argc > 3 )
-      elementsPerRow = atoi( argv[ 3 ] );
+    Config::ParameterContainer parameters;
+    Config::ConfigDescription conf_desc;
 
-   ofstream logFile( "tnl-cuda-benchmarks.log" );
-   Benchmark benchmark( loops, true );
-//   ostream & logFile = cout;
-//   Benchmark benchmark( loops, false );
-   
-   // TODO: add hostname, CPU info, GPU info, date, ...
-   Benchmark::MetadataMap metadata {
-      {"precision", precision},
-   };
-   // TODO: loop over sizes
-   
+    setupConfig( conf_desc );
 
-   // Array operations
-   benchmark.newBenchmark( tnlString("Array operations (") + precision + ")",
-                           metadata );
-   benchmark.setMetadataColumns( Benchmark::MetadataColumns({
-      {"size", size},
-   } ));
-   benchmarkArrayOperations< Real >( benchmark, loops, size );
-   
-   // Vector operations
-   benchmark.newBenchmark( tnlString("Vector operations (") + precision + ")",
-                           metadata );
-   benchmark.setMetadataColumns( Benchmark::MetadataColumns({
-      {"size", size},
-   } ));
-   benchmarkVectorOperations< Real >( benchmark, loops, size );
+    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) ) {
+        conf_desc.printUsage( argv[ 0 ] );
+        return 1;
+    }
 
+    const String & logFileName = parameters.getParameter< String >( "log-file" );
+    const String & outputMode = parameters.getParameter< String >( "output-mode" );
+    const String & precision = parameters.getParameter< String >( "precision" );
+    const unsigned minSize = parameters.getParameter< unsigned >( "min-size" );
+    const unsigned maxSize = parameters.getParameter< unsigned >( "max-size" );
+    const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
+    const unsigned loops = parameters.getParameter< unsigned >( "loops" );
+    const unsigned elementsPerRow = parameters.getParameter< unsigned >( "elements-per-row" );
+    const unsigned verbose = parameters.getParameter< unsigned >( "verbose" );
 
-   // SpMV
-   benchmark.newBenchmark( tnlString("SpMV (") + precision + ")",
-                           metadata );
-   benchmark.setMetadataColumns( Benchmark::MetadataColumns({
-      {"rows", size},
-      {"columns", size},
-      {"elements per row", elementsPerRow},
-   } ));
+    if( sizeStepFactor <= 1 ) {
+        std::cerr << "The value of --size-step-factor must be greater than 1." << std::endl;
+        return EXIT_FAILURE;
+    }
 
-   benchmarkSpMV< Real, tnlEllpackMatrix >( benchmark, loops, size, elementsPerRow );
-   benchmarkSpMV< Real, SlicedEllpackMatrix >( benchmark, loops, size, elementsPerRow );
-   benchmarkSpMV< Real, tnlCSRMatrix >( benchmark, loops, size, elementsPerRow );
+    // open log file
+    auto mode = std::ios::out;
+    if( outputMode == "append" )
+        mode |= std::ios::app;
+    std::ofstream logFile( logFileName.getString(), mode );
 
+    // init benchmark and common metadata
+    Benchmark benchmark( loops, verbose );
 
-   if( ! benchmark.save( logFile ) )
-       return EXIT_FAILURE;
-   
-   return EXIT_SUCCESS;
+    // prepare global metadata
+    const int cpu_id = 0;
+    Devices::CacheSizes cacheSizes = Devices::Host::getCPUCacheSizes( cpu_id );
+    String cacheInfo = String( cacheSizes.L1data ) + ", "
+                        + String( cacheSizes.L1instruction ) + ", "
+                        + String( cacheSizes.L2 ) + ", "
+                        + String( cacheSizes.L3 );
+    const int activeGPU = Devices::CudaDeviceInfo::getActiveDevice();
+    const String deviceArch = String( Devices::CudaDeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
+                                 String( Devices::CudaDeviceInfo::getArchitectureMinor( activeGPU ) );
+    Benchmark::MetadataMap metadata {
+        { "host name", Devices::Host::getHostname() },
+        { "architecture", Devices::Host::getArchitecture() },
+        { "system", Devices::Host::getSystemName() },
+        { "system release", Devices::Host::getSystemRelease() },
+        { "start time", Devices::Host::getCurrentTime() },
+        { "CPU model name", Devices::Host::getCPUModelName( cpu_id ) },
+        { "CPU cores", Devices::Host::getNumberOfCores( cpu_id ) },
+        { "CPU threads per core", Devices::Host::getNumberOfThreads( cpu_id ) / Devices::Host::getNumberOfCores( cpu_id ) },
+        { "CPU max frequency (MHz)", Devices::Host::getCPUMaxFrequency( cpu_id ) / 1e3 },
+        { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
+        { "GPU name", Devices::CudaDeviceInfo::getDeviceName( activeGPU ) },
+        { "GPU architecture", deviceArch },
+        { "GPU CUDA cores", Devices::CudaDeviceInfo::getCudaCores( activeGPU ) },
+        { "GPU clock rate (MHz)", (double) Devices::CudaDeviceInfo::getClockRate( activeGPU ) / 1e3 },
+        { "GPU global memory (GB)", (double) Devices::CudaDeviceInfo::getGlobalMemory( activeGPU ) / 1e9 },
+        { "GPU memory clock rate (MHz)", (double) Devices::CudaDeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 },
+        { "GPU memory ECC enabled", Devices::CudaDeviceInfo::getECCEnabled( activeGPU ) },
+    };
+
+    if( precision == "all" || precision == "float" )
+        runCudaBenchmarks< float >( benchmark, metadata, minSize, maxSize, sizeStepFactor, loops, elementsPerRow );
+    if( precision == "all" || precision == "double" )
+        runCudaBenchmarks< double >( benchmark, metadata, minSize, maxSize, sizeStepFactor, loops, elementsPerRow );
+
+    if( ! benchmark.save( logFile ) ) {
+        std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< String >( "log-file" ) << "'." << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
 #else
-   tnlCudaSupportMissingMessage;
-   return EXIT_FAILURE;
+    CudaSupportMissingMessage;
+    return EXIT_FAILURE;
 #endif
 }
-
-#endif /* TNLCUDABENCHMARKS_H_ */

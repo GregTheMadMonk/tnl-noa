@@ -32,12 +32,12 @@ void navierStokesSolverMonitor< Real, Index > :: refresh()
 {
    if( this->verbose > 0 && this->refresRate % this->refreshRate == 0 )
    {
-      cout << "V=( " << uMax
+     std::cout << "V=( " << uMax
            << " , " << uAvg
            << " ) E=( " << eMax
            << ", " << eAvg << " ) ";
    }
-   tnlODESolverMonitor< Real, Index > :: refresh();
+   ODESolverMonitor< Real, Index > :: refresh();
 }
 
 #endif /* TNLNAVIERSTOKESSOLVERMONITOR_IMPL_H_ */

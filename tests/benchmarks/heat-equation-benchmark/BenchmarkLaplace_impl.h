@@ -9,14 +9,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
-BenchmarkLaplace< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+String
+BenchmarkLaplace< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "BenchmarkLaplace< " ) +
+   return String( "BenchmarkLaplace< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -27,7 +27,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-BenchmarkLaplace< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+BenchmarkLaplace< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -56,7 +56,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-BenchmarkLaplace< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+BenchmarkLaplace< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -79,7 +79,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-BenchmarkLaplace< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+BenchmarkLaplace< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -113,14 +113,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
-BenchmarkLaplace< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+String
+BenchmarkLaplace< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "BenchmarkLaplace< " ) +
+   return String( "BenchmarkLaplace< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -131,7 +131,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-BenchmarkLaplace< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+BenchmarkLaplace< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -141,9 +141,9 @@ operator()( const MeshFunction& u,
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */
-    static_assert( MeshEntity::entityDimensions == 2, "Wrong mesh entity dimensions." ); 
-    static_assert( MeshFunction::getEntitiesDimensions() == 2, "Wrong preimage function" ); 
-    const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
+   /*static_assert( MeshEntity::entityDimensions == 2, "Wrong mesh entity dimensions." ); 
+   static_assert( MeshFunction::getEntitiesDimensions() == 2, "Wrong preimage function" ); 
+   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
 
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >(); 
    const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >(); 
@@ -151,9 +151,14 @@ operator()( const MeshFunction& u,
    const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0 >(); 
    const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0 >(); 
    const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >(); 
-   const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >(); 
-   return ( u[ west ] - 2.0 * u[ center ] + u[ east ]  ) * hxSquareInverse +
-          ( u[ south ] - 2.0 * u[ center ] + u[ north ] ) * hySquareInverse;
+   const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >(); */
+
+   const IndexType& xSize = entity.getMesh().getDimensions().x();
+   const IndexType& c = entity.getIndex();
+   const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >(); 
+   const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >(); 
+   return ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ]  ) * hxSquareInverse +
+          ( u[ c - xSize ] - 2.0 * u[ c ] + u[ c + xSize ] ) * hySquareInverse;
 }
 
 template< typename MeshReal,
@@ -164,7 +169,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-BenchmarkLaplace< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+BenchmarkLaplace< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -187,7 +192,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-BenchmarkLaplace< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+BenchmarkLaplace< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -226,14 +231,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
-BenchmarkLaplace< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+String
+BenchmarkLaplace< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "BenchmarkLaplace< " ) +
+   return String( "BenchmarkLaplace< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -244,7 +249,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-BenchmarkLaplace< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+BenchmarkLaplace< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -281,7 +286,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-BenchmarkLaplace< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+BenchmarkLaplace< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -304,7 +309,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-BenchmarkLaplace< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+BenchmarkLaplace< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,

@@ -27,22 +27,22 @@ include( UseCodeCoverage )
 # Settings for debug/release version
 #
 if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Debug/src )
-    set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Debug/tests )
-    set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Debug/tools )
+    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Debug/src/TNL )
+    set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Debug/src/Tests )
+    set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( debugExt -dbg )
 else()
-    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
-    set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Release/tests )
-    set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Release/tools )
+    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src/TNL )
+    set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Release/src/Tests )
+    set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Release/bin )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
 endif()
 
 # set Debug/Release options
-set( CMAKE_CXX_FLAGS "-std=c++11" )
+set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG" )
 #set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
@@ -67,7 +67,11 @@ if( WITH_CUDA STREQUAL "yes" )
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
         set(BUILD_SHARED_LIBS ON)
         set(CUDA_SEPARABLE_COMPILATION ON)        
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA  )
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA)
+        # disable false compiler warnings
+        #   reference for the -Xcudafe flag: http://stackoverflow.com/questions/14831051/how-to-disable-compiler-warnings-with-nvcc/17095910#17095910
+        #   list of possible tokens: http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Wno-deprecated-gpu-targets --expt-relaxed-constexpr -Xcudafe "\"--diag_suppress=code_is_unreachable --diag_suppress=implicit_return_from_non_void_function\"")
         #AddCompilerFlag( "-DHAVE_NOT_CXX11" ) # -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )
         set( ALL_CUDA_ARCHS -gencode arch=compute_20,code=sm_20
                             -gencode arch=compute_30,code=sm_30
@@ -84,10 +88,10 @@ if( WITH_CUDA STREQUAL "yes" )
                 # Select GPU architecture
                 #
                 set( CUDA_ARCH_EXECUTABLE ${EXECUTABLE_OUTPUT_PATH}/tnl-cuda-arch)
-                set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/tools/src/tnl-cuda-arch.cu)
+                set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/src/Tools/tnl-cuda-arch.cu)
                 message( "Compiling tnl-cuda-arch ..." )
                 file( MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
-                execute_process( COMMAND nvcc ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
+                execute_process( COMMAND nvcc --compiler-bindir ${CUDA_HOST_COMPILER} ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
                                  RESULT_VARIABLE CUDA_ARCH_RESULT
                                  OUTPUT_VARIABLE CUDA_ARCH_OUTPUT
                                  ERROR_VARIABLE CUDA_ARCH_OUTPUT )
@@ -108,7 +112,7 @@ if( WITH_CUDA STREQUAL "yes" )
                 set( CUDA_ARCH -gencode arch=compute_${WITH_CUDA_ARCH},code=sm_${WITH_CUDA_ARCH} )
             endif()
         endif()
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES )
         # TODO: this is necessary only due to a bug in cmake
         set( CUDA_ADD_LIBRARY_OPTIONS -shared )
         # TODO: workaround for a bug in cmake 3.5.0 (fixed in 3.5.1)
@@ -118,11 +122,19 @@ if( WITH_CUDA STREQUAL "yes" )
         ####
         # Check for cuBLAS
         #
-        if( WITH_CUBLAS STREQUAL "yes" ) 
-            message( "Enabling CUBLAS." )
-            set( HAVE_CUBLAS TRUE)
-            set( HAVE_CUBLAS "#define HAVE_CUBLAS 1" )
-        endif( WITH_CUBLAS STREQUAL "yes" )       
+        if( NOT WITH_CUBLAS STREQUAL "no" )
+            find_path( CUBLAS_INCLUDE_DIR cublas_v2.h
+                       /usr/local/cuda/include
+                       ${CUDA_INCLUDE_DIR}
+                       DOC "CUBLAS headers." )
+            if( ${CUBLAS_INCLUDE_DIR} STREQUAL "CUBLAS_INCLUDE_DIR-NOTFOUND" )
+                message( "CUBLAS not found." )
+                set( HAVE_CUBLAS "//#define HAVE_CUBLAS 1" )
+            else()
+                message( "CUBLAS found. -- ${CUBLAS_INCLUDE_DIR}" )
+                set( HAVE_CUBLAS "#define HAVE_CUBLAS 1" )
+            endif()
+        endif( NOT WITH_CUBLAS STREQUAL "no" )
 
         ####
         # Check for CUSP
@@ -142,7 +154,6 @@ if( WITH_CUDA STREQUAL "yes" )
         # Check for CUSPARSE
         #
         if( NOT WITH_CUSPARSE STREQUAL "no" )
-        
            find_path( CUSPARSE_INCLUDE_DIR cusparse.h
                       /usr/local/cuda/include                   
                       ${CUDA_INCLUDE_DIR}  
@@ -168,6 +179,7 @@ if( OPENMP_FOUND )
    message( "Compiler supports OpenMP." )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp" )
 endif()
+#set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp=libgomp" )
 
 ####
 # Check for MPI
@@ -237,58 +249,26 @@ else()
     set( HAVE_SYS_RESOURCE_H "#define HAVE_SYS_RESOURCE_H 1" )
 endif()
 
-####
-# Check for cppunit
-#
+find_path( SYS_IOCTL_INCLUDE_DIR sys/ioctl.h
+           /usr/include/x86_64-linux-gnu
+           /usr/include  
+           DOC "System ioctl headers." )
+if( ${SYS_IOCTL_INCLUDE_DIR} STREQUAL "SYS_IOCTL_INCLUDE_DIR-NOTFOUND" )
+    message( "Missing header file sys/time.h" )
+    set( HAVE_SYS_IOCTL_H "//#define HAVE_SYS_IOCTL_H 1" )
+else()
+    include_directories( ${SYS_IOCTL_INCLUDE_DIR}/tnl-${tnlVersion} )
+    set( HAVE_SYS_IOCTL_H "#define HAVE_SYS_IOCTL_H 1" )
+endif()
+
 if( WITH_TESTS STREQUAL "yes" )
-    FIND_PATH(CPPUNIT_INCLUDE_DIR cppunit/TestCase.h
-      /usr/local/include
-      /usr/include
-      DOC "CppUnit headers."
-    )
-
-    ####
-    # With Win32, important to have both
-    #
-    if(WIN32)
-      FIND_LIBRARY(CPPUNIT_LIBRARY cppunit
-                   ${CPPUNIT_INCLUDE_DIR}/../lib
-                   /usr/local/lib
-                   /usr/lib)
-      FIND_LIBRARY(CPPUNIT_DEBUG_LIBRARY cppunitd
-                   ${CPPUNIT_INCLUDE_DIR}/../lib
-                   /usr/local/lib
-                   /usr/lib)
-    else(WIN32)
-      # On unix system, debug and release have the same name
-      FIND_LIBRARY(CPPUNIT_LIBRARY cppunit
-                   ${CPPUNIT_INCLUDE_DIR}/../lib
-                   /usr/local/lib
-                   /usr/lib)
-      FIND_LIBRARY(CPPUNIT_DEBUG_LIBRARY cppunit
-                   ${CPPUNIT_INCLUDE_DIR}/../lib
-                   /usr/local/lib
-                   /usr/lib)
-    endif(WIN32)
-
-
-    if( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
-          message( "CPPUNIT not found." )
-          set( HAVE_CPPUNIT "//#define HAVE_CPPUNIT 1" )
-    else( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
-      message( "CPPUNIT headers found -- ${CPPUNIT_INCLUDE_DIR}" )
-      if(CPPUNIT_LIBRARY)
-        message( "CPPUNIT library found -- ${CPPUNIT_LIBRARY}" )
-        set(CPPUNIT_FOUND "YES")
-        set(CPPUNIT_LIBRARIES ${CPPUNIT_LIBRARY} ${CMAKE_DL_LIBS})
-        set(CPPUNIT_DEBUG_LIBRARIES ${CPPUNIT_DEBUG_LIBRARY}
-                                    ${CMAKE_DL_LIBS})
-       set( HAVE_CPPUNIT "#define HAVE_CPPUNIT 1" )
-      endif(CPPUNIT_LIBRARY)
-    endif( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
-    ENABLE_TESTING()
-    INCLUDE( Dart )
+   find_package( GTest )
+   if( GTEST_FOUND )
+      set( CXX_TESTS_FLAGS "-DHAVE_GTEST" )
+   endif( GTEST_FOUND )
 endif( WITH_TESTS STREQUAL "yes" )
+
+find_package( PythonInterp 3 )
 
 #if( BUILD_MPI )
 #   FIND_PATH( PETSC_INCLUDE_DIR petsc.h
@@ -318,28 +298,32 @@ endif( WITH_TESTS STREQUAL "yes" )
 ####
 # Explicit template instantiation
 #
-if( WITH_TEMPLATE_INSTANTIATION STREQUAL "yes" )
-   AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
+#if( WITH_TEMPLATE_INSTANTIATION STREQUAL "yes" )
+#   AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
+#
+#   if( INSTANTIATE_INT STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_INT " )
+#   endif()
+#
+#   if( INSTANTIATE_LONG_INT STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_LONG_INT " )
+#   endif()
+#
+#   if( INSTANTIATE_FLOAT STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_FLOAT " )
+#   endif()
+#
+#   if( INSTANTIATE_DOUBLE STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_DOUBLE " )
+#   endif()
+#
+#   if( INSTANTIATE_LONG_DOUBLE STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_LONG_DOUBLE " )
+#   endif()
+#endif()
 
-   if( INSTANTIATE_INT STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_INT " )
-   endif()
-
-   if( INSTANTIATE_LONG_INT STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_LONG_INT " )
-   endif()
-
-   if( INSTANTIATE_FLOAT STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_FLOAT " )
-   endif()
-
-   if( INSTANTIATE_DOUBLE STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_DOUBLE " )
-   endif()
-
-   if( INSTANTIATE_LONG_DOUBLE STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_LONG_DOUBLE " )
-   endif()
+if( OPTIMIZED_VECTOR_HOST_OPERATIONS STREQUAL "yes" )
+   AddCompilerFlag( "-DOPTIMIZED_VECTOR_HOST_OPERATIONS " )
 endif()
 
 set( CXX_TEST_FLAGS "-fprofile-arcs -ftest-coverage" )
@@ -348,8 +332,12 @@ set( LD_TEST_FLAGS "-lgcov -coverage" )
 set( configDirectory \"${CMAKE_INSTALL_PREFIX}/share/tnl-${tnlVersion}/\")
 set( sourceDirectory \"${PROJECT_SOURCE_DIR}/\" )
 set( testsDirectory \"${PROJECT_TESTS_PATH}/\" )
-CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/tnlConfig.h" )
-INSTALL( FILES ${PROJECT_BUILD_PATH}/tnlConfig.h DESTINATION include/tnl-${tnlVersion} )
+CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/TNL/tnlConfig.h" )
+INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.h DESTINATION include/tnl-${tnlVersion}/TNL )
+if( PYTHONINTERP_FOUND )
+    CONFIGURE_FILE( "Config.py.in" "${PROJECT_BUILD_PATH}/TNL/Config.py" )
+    INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/Config.py DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages/TNL )
+endif( PYTHONINTERP_FOUND )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )
@@ -359,8 +347,8 @@ LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
 #Pokracujeme dalsimi podadresari
 add_subdirectory( src )
+add_subdirectory( share )
 add_subdirectory( tests )
-add_subdirectory( tools )
 add_subdirectory( examples )
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")

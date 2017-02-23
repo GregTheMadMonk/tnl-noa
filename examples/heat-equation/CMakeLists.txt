@@ -12,10 +12,10 @@ IF( BUILD_CUDA )
 ELSE(  BUILD_CUDA )               
    ADD_EXECUTABLE(tnl-heat-equation${debugExt} tnl-heat-equation.cpp)     
    ADD_EXECUTABLE(tnl-heat-equation-eoc-test${debugExt} tnl-heat-equation-eoc.cpp)   
-   target_link_libraries (tnl-heat-equation${debugExt} tnl${debugExt}-${tnlVersion} )
+   target_link_libraries (tnl-heat-equation${debugExt} tnl${debugExt}-${tnlVersion})
    target_link_libraries (tnl-heat-equation-eoc-test${debugExt} tnl${debugExt}-${tnlVersion} )
    TARGET_COMPILE_DEFINITIONS( tnl-heat-equation${debugExt} PUBLIC -DHAVE_MIC )
-   TARGET_COMPILE_DEFINITIONS( tnl-heat-equation-eoc-test${debugExt} PUBLIC -DHAVE_MIC )
+#   TARGET_COMPILE_DEFINITIONS( tnl-heat-equation-eoc-test${debugExt} PUBLIC -DHAVE_MIC )
 ENDIF( BUILD_CUDA )
 
 

@@ -1,13 +1,31 @@
 #!/bin/bash
 
 function heat_eq {
-dofSize=256
+ext=""
+#cd Debug/bin
+#ext="-dbg"
+
+export LD_LIBRARY_PATH=`pwd`"/../lib":$LD_LIBRARY_PATH
+
+#echo $LD_LIBRARY_PATH
+#ldd ./tnl-heat-equation${ext}
+
+dofSize=512
+#procnum=4 #useless for MIC
+
+#export OMP_NUM_THREADS=2
+export MIC_OMP_NUM_THREADS=120
+export MIC_ENV_PREFIX=MIC
+
+
+
+proportions=`echo "$dofSize/64"|bc`
+origin=`echo "$proportions/-2"|bc`
 dimension=2;
-proportions=4
-origin="-2"
+
+
 
 analyticFunction="sin-bumps"
-timeFunction="cosinus"
 
 amplitude=1.0
 waveLength=1.0
@@ -24,7 +42,7 @@ phaseY=0.0
 phaseZ=0.0
 sigma=1.0
 
-./tnl-grid-setup --dimensions ${dimension} \
+./tnl-grid-setup${ext} --dimensions ${dimension} \
                --proportions-x ${proportions} \
                --proportions-y ${proportions} \
                --proportions-z ${proportions} \
@@ -33,11 +51,11 @@ sigma=1.0
                --origin-z ${origin} \
                --size-x ${dofSize} \
                --size-y ${dofSize} \
-               --size-z ${dofSize} \
+               --size-z ${dofSize}
 
-./tnl-init --mesh mesh.tnl \
+./tnl-init${ext} --mesh mesh.tnl \
          --test-function ${analyticFunction} \
-         --output-file initial.tnl \
+         --output-file init.tnl \
          --amplitude ${amplitude} \
          --wave-length ${waveLength} \
          --wave-length-x ${waveLengthX} \
@@ -51,24 +69,27 @@ sigma=1.0
              --phase-x ${phaseX} \
              --phase-y ${phaseY} \
              --phase-z ${phaseZ} \
-             --sigma ${sigma} \
+             --sigma ${sigma}
 
-mv ./initial.tnl init.tnl
-
-time ./tnl-heat-equation --device mic --time-discretisation explicit \
+./tnl-heat-equation${ext} --device mic \
                   --boundary-conditions-type dirichlet \
                   --boundary-conditions-constant 0.0 \
+                  --time-discretisation explicit \
                   --discrete-solver euler \
-                  --snapshot-period 0.0005 \
+                  --snapshot-period 0.005 \
                   --final-time 0.04 \
-                  --time-step 0.00005 #|grep Offload |grep Time | cut -d ']' -f5|cut -d '(' -f1| ./a.out
+                  --time-step 0.00005 \
+                  --time-step-order 0 \
+                  --openmp-enabled true \
+                  --openmp-max-threads 8 
 
-./tnl-view --mesh mesh.tnl \
+./tnl-view${ext} --mesh mesh.tnl \
          --input-files *.tnl \ 
 
 seznam=`ls u-*.gplt`
 
-for fname in $seznam ; do
+for fname in $seznam ; 
+do
    echo "Drawing $fname"
  gnuplot << EOF
      set terminal unknown
@@ -96,5 +117,5 @@ cd Release/bin
  export OFFLOAD_REPORT=0
 #./tnlSatanExperimentalTest-dbg
 #./tnlSatanExperimentalTest-dbg
-# ./tnlSatanMICVectorExperimentalTest-dbg
+#./tnlSatanMICVectorExperimentalTest-dbg
  heat_eq

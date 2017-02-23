@@ -1,22 +1,15 @@
 /***************************************************************************
-                          tnlRealTester.h  -  description
+                          RealTester.h  -  description
                              -------------------
     begin                : Jun 23, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLREALTESTER_H_
-#define TNLREALTESTER_H_
+#ifndef RealTESTER_H_
+#define RealTESTER_H_
 
 /*
  *
@@ -26,30 +19,30 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlReal.h>
+#include <TNL/Experimental/Arithmetics/Real.h>
 
-template< class T > class tnlRealTester : public CppUnit :: TestCase
+template< class T > class RealTester : public CppUnit :: TestCase
 {
    public:
-   tnlRealTester(){};
+   RealTester(){};
 
    virtual
-   ~tnlRealTester(){};
+   ~RealTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlRealTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "RealTester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRealTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< RealTester< T > >(
                                "testComparisonOperators",
-                               & tnlRealTester< T > :: testComparisonOperators ) );
+                               & RealTester< T > :: testComparisonOperators ) );
 
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRealTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< RealTester< T > >(
                                "testOperatorPlus",
-                               & tnlRealTester< T > :: testOperatorPlus ) );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlRealTester< T > >(
+                               & RealTester< T > :: testOperatorPlus ) );
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< RealTester< T > >(
                          "testOperatorDivide",
-                         & tnlRealTester< T > :: testOperatorDivide ) );
+                         & RealTester< T > :: testOperatorDivide ) );
 
 
       return suiteOfTests;
@@ -57,7 +50,7 @@ template< class T > class tnlRealTester : public CppUnit :: TestCase
 
    void testComparisonOperators()
    {
-      tnlReal< T > a( 1.5 ), b( 2.5 ), c( 1.5 );
+      Real< T > a( 1.5 ), b( 2.5 ), c( 1.5 );
       CPPUNIT_ASSERT( a == c );
       CPPUNIT_ASSERT( a < b );
       CPPUNIT_ASSERT( a <= b );
@@ -71,8 +64,8 @@ template< class T > class tnlRealTester : public CppUnit :: TestCase
    void testOperatorPlus()
    {
       T a( 1.5 ), b( 2.5 );
-      tnlReal< T > ta( 1.5 ), tb( 2.5 );
-      tnlReal< T > result = ta + tb;
+      Real< T > ta( 1.5 ), tb( 2.5 );
+      Real< T > result = ta + tb;
       //CPPUNIT_ASSERT( result. Data() == a + b );
       //CPPUNIT_ASSERT( result == a + b );
    };
@@ -80,21 +73,21 @@ template< class T > class tnlRealTester : public CppUnit :: TestCase
    void testOperatorDivide()
    {
       T a( 2.0 );
-      tnlReal< T > ta( 2.0 );
+      Real< T > ta( 2.0 );
 
       T b = 1.0 / a;
-      tnlReal< T > tb = 1.0 / ta;
+      Real< T > tb = 1.0 / ta;
 
       CPPUNIT_ASSERT( b == tb );
 
       int ia( 2 );
 
-      const tnlReal< T > tbi = 1.0 / ( T ) ia;
+      const Real< T > tbi = 1.0 / ( T ) ia;
 
-      //cerr << tbi << endl;
+      //cerr << tbi << std::endl;
 
       CPPUNIT_ASSERT( b == tbi );
    };
 };
 
-#endif /* TNLREALTESTER_H_ */
+#endif /* RealTESTER_H_ */

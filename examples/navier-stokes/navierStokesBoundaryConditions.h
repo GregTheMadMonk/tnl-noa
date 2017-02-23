@@ -18,7 +18,7 @@
 #ifndef NAVIERSTOKESBOUNDARYCONDITIONS_H_
 #define NAVIERSTOKESBOUNDARYCONDITIONS_H_
 
-#include <config/tnlParameterContainer.h>
+#include <TNL/Config/ParameterContainer.h>
 
 template< typename Mesh >
 class navierStokesBoundaryConditions
@@ -32,7 +32,7 @@ class navierStokesBoundaryConditions
 
    navierStokesBoundaryConditions();
 
-   bool setup( const tnlParameterContainer& parameters );
+   bool setup( const Config::ParameterContainer& parameters );
 
    void setMesh( const MeshType& mesh );
 
