@@ -122,7 +122,7 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitSORSolverTag >::enabled )
          config.addEntryEnum( "sor" );
 #ifdef HAVE_UMFPACK
-      if( MeshConfigSemiImplicitSolver< MeshConfig, SemiImplicitUmfpackSolverTag >::enabled )
+      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitUmfpackSolverTag >::enabled )
          config.addEntryEnum( "umfpack" );
 #endif
    }

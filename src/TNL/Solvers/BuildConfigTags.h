@@ -25,7 +25,7 @@
 namespace TNL {
 namespace Solvers {   
 
-class tnlDefaultBuildConfigTag{};
+class DefaultBuildConfigTag{};
 
 /****
  * All devices are enabled by default. Those which are not available

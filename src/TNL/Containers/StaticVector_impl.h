@@ -182,6 +182,7 @@ StaticVector< Size, Real >::abs() const
 
 
 template< int Size, typename Real, typename Scalar >
+__cuda_callable__
 StaticVector< Size, Real > operator * ( const Scalar& c, const StaticVector< Size, Real >& u )
 {
    return u * c;
