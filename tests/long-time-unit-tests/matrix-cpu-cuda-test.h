@@ -13,7 +13,7 @@ void setupConfig( tnlConfigDescription& config )
     config.addRequiredEntry< tnlString >( "input-file" , "Input file name." );
 }
 
-bool test( tnlMatrix< double, tnlHost, int >& hostMatrix, tnlMatrix< double, tnlCuda, int >& cudaMatrix )
+bool test( tnlMatrix< double, tnlHost, int >& hostMatrix, tnlMatrix< double, tnlCuda, int >& cudaMatrix)
 {
     // first perform compare test -- compare all elements using getElement( i, j ) method
     for( int i = 0; i < hostMatrix.getRows(); i++ )
@@ -51,8 +51,9 @@ int main( int argc, char* argv[] )
 
     typedef tnlEllpackGraphMatrix< double, tnlHost, int > EllpackGraphHost;
     EllpackGraphHost hostMatrix;
-    if( !tnlMatrixReader< EllpackGraphHost >::readMtxFile( inputFile, hostMatrix, true, true ) ||
-        !hostMatrix.help() )
+    if( !tnlMatrixReader< EllpackGraphHost >::readMtxFile( inputFile, hostMatrix, true, true ) )
+        return 1;
+    if( !hostMatrix.help( true ) )
         return 1;
 
     typedef tnlEllpackGraphMatrix< double, tnlCuda, int > EllpackGraphCuda;

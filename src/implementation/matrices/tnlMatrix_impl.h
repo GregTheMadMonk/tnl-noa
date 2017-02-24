@@ -259,7 +259,7 @@ void tnlMatrix< Real, Device, Index >::print( ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMatrix< Real, Device, Index >::help()
+bool tnlMatrix< Real, Device, Index >::help( bool verbose )
 {
    return true;
 }

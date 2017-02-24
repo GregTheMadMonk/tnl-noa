@@ -186,7 +186,7 @@ template< typename Vector >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   bool rearrangeMatrix();
+   bool rearrangeMatrix( bool verbose );
 
    bool save( tnlFile& file ) const;
 
@@ -198,7 +198,9 @@ template< typename Vector >
 
    void print( ostream& str ) const;
 
-   bool help();
+   bool help( bool verbose = false );
+
+   void verifyPermutationArray();
 
 #ifdef HAVE_CUDA
    __device__ __host__

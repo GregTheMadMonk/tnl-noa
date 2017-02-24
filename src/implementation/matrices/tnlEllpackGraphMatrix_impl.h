@@ -226,13 +226,28 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::computePermutationArray()
 template< typename Real,
           typename Device,
           typename Index >
+void tnlEllpackGraphMatrix< Real, Device, Index >::verifyPermutationArray()
+{
+    for( IndexType i = 0; i < this->getRows(); i++ )
+       if( this->permutationArray.getElement( i ) >= this->getRows() )
+       {
+           cerr << "There is wrong data in permutationArray position " << i << endl;
+           break;
+       }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-bool tnlEllpackGraphMatrix< Real, Device, Index >::rearrangeMatrix()
+bool tnlEllpackGraphMatrix< Real, Device, Index >::rearrangeMatrix( bool verbose )
 {
    // first we need to know permutation
    this->computePermutationArray();
+   if( verbose )
+      this->verifyPermutationArray();
 
    // then we need to create new matrix
    tnlVector< Real, Device, Index > valuesVector;
@@ -768,11 +783,11 @@ bool tnlEllpackGraphMatrix< Real, Device, Index >::load( const tnlString& fileNa
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackGraphMatrix< Real, Device, Index >::help()
+bool tnlEllpackGraphMatrix< Real, Device, Index >::help( bool verbose )
 {
     printf("here i am");
     if( !this->rearranged )
-        return this->rearrangeMatrix();
+        return this->rearrangeMatrix( verbose );
 }
 
 template< typename Real,

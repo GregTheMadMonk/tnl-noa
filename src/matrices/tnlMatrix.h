@@ -128,7 +128,7 @@ class tnlMatrix : public virtual tnlObject
    void computeColorsVector( tnlVector< Index, Device, Index >& colorsVector );
 */
 
-   bool help();
+   bool help( bool verbose = false );
 
 #ifdef  HAVE_CUDA
    __device__ __host__
