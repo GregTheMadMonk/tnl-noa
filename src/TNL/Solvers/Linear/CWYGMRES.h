@@ -27,8 +27,8 @@ public:
    typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
+   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
+   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
    typedef Containers::Vector< RealType, DeviceType, IndexType > DeviceVector;
    typedef Containers::Vector< RealType, Devices::Host, IndexType > HostVector;
 
