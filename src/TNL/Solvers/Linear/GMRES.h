@@ -90,6 +90,7 @@ protected:
    IndexType size, restarting;
 
    MatrixPointer matrix;
+   
    PreconditionerPointer preconditioner;
 };
 

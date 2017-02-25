@@ -229,6 +229,11 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
       {
          return true;
       }
+      
+      void clear()
+      {
+         this->free();
+      }
 
       ~SharedPointer()
       {
@@ -511,6 +516,11 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
          return false;
 #endif
       }
+      
+      void clear()
+      {
+         this->free();
+      }      
 
       ~SharedPointer()
       {
