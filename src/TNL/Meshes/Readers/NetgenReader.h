@@ -35,7 +35,7 @@ public:
       this->reset();
       this->fileName = fileName;
 
-      std::fstream inputFile( fileName.getString() );
+      std::ifstream inputFile( fileName.getString() );
       if( ! inputFile )
       {
          std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
@@ -153,7 +153,7 @@ public:
  
       const int dimension = PointType::size;
 
-      std::fstream inputFile( fileName.getString() );
+      std::ifstream inputFile( fileName.getString() );
       if( ! inputFile )
       {
          std::cerr << "I am not able to open the file " << fileName << "." << std::endl;

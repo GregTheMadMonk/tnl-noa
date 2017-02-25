@@ -30,7 +30,7 @@ public:
       this->reset();
       this->fileName = fileName;
 
-      std::fstream inputFile( fileName.getString() );
+      std::ifstream inputFile( fileName.getString() );
       if( ! inputFile ) {
          std::cerr << "Failed to open the file " << fileName << "." << std::endl;
          return false;
@@ -159,7 +159,7 @@ public:
       const VTKEntityType cellType = TopologyToVTKMap< typename MeshType::template EntityTraits< MeshType::getMeshDimension() >::EntityTopology >::type;
       MeshBuilder meshBuilder;
 
-      std::fstream inputFile( fileName.getString() );
+      std::ifstream inputFile( fileName.getString() );
       if( ! inputFile ) {
          std::cerr << "Failed to open the file " << fileName << "." << std::endl;
          return false;
