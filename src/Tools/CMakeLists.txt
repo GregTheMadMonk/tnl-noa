@@ -13,23 +13,8 @@ target_link_libraries (tnl-grid-setup tnl )
 ADD_EXECUTABLE(tnl-init tnl-init.cpp )
 target_link_libraries (tnl-init tnl )
 
-# TODO: refactoring, this is useful in multiple places
-find_package( VTK )
-if( VTK_FOUND )
-   include(${VTK_USE_FILE})
-
-   AddCompilerFlag( "-DHAVE_VTK " )
-
-   add_executable(tnl-view tnl-view.cpp )
-
-   target_link_libraries( tnl-view
-                          vtkCommonCore
-                          vtkIOLegacy
-                          tnl )
-else( VTK_FOUND )
-   add_executable(tnl-view tnl-view.cpp )
-   target_link_libraries (tnl-view tnl )
-endif( VTK_FOUND )
+ADD_EXECUTABLE(tnl-view tnl-view.cpp )
+target_link_libraries (tnl-view tnl )
 
 ADD_EXECUTABLE(tnl-diff tnl-diff.cpp )
 target_link_libraries (tnl-diff tnl )
