@@ -14,7 +14,7 @@
 #include <TNL/Containers/Array.h>
 
 #ifdef HAVE_GTEST 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #endif
 
 using namespace TNL;

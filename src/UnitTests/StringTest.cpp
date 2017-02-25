@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #ifdef HAVE_GTEST 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #endif
 
 #include <TNL/String.h>

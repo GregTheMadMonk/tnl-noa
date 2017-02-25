@@ -11,7 +11,7 @@
 #include <TNL/File.h>
 
 #ifdef HAVE_GTEST 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #endif
 
 #ifdef HAVE_CUDA
