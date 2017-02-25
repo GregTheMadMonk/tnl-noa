@@ -250,6 +250,14 @@ operator==( const Mesh& mesh ) const
 }
 
 template< typename MeshConfig, typename Device >
+bool
+Mesh< MeshConfig, Device >::
+operator!=( const Mesh& mesh ) const
+{
+   return ! operator==( mesh );
+}
+
+template< typename MeshConfig, typename Device >
 void
 Mesh< MeshConfig, Device >::
 writeProlog( Logger& logger )

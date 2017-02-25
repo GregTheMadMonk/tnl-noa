@@ -150,6 +150,8 @@ class Mesh
 
       bool operator==( const Mesh& mesh ) const;
 
+      bool operator!=( const Mesh& mesh ) const;
+
       void writeProlog( Logger& logger );
 
    protected:
