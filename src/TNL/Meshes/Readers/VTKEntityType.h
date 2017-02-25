@@ -96,6 +96,27 @@ std::ostream& operator<<( std::ostream& str, VTKEntityType type )
    return str;
 }
 
+int getVTKEntityDimension( VTKEntityType type )
+{
+   switch( type )
+   {
+      case VTKEntityType::Vertex:         return 0;
+      case VTKEntityType::PolyVertex:     return 0;
+      case VTKEntityType::Line:           return 1;
+      case VTKEntityType::PolyLine:       return 1;
+      case VTKEntityType::Triangle:       return 2;
+      case VTKEntityType::TriangleStrip:  return 2;
+      case VTKEntityType::Polygon:        return 2;
+      case VTKEntityType::Pixel:          return 2;
+      case VTKEntityType::Quad:           return 2;
+      case VTKEntityType::Tetra:          return 3;
+      case VTKEntityType::Voxel:          return 3;
+      case VTKEntityType::Hexahedron:     return 3;
+      case VTKEntityType::Wedge:          return 3;
+      case VTKEntityType::Pyramid:        return 3;
+   }
+}
+
 // static mapping of TNL entity topologies to VTK types
 template< typename Topology > struct TopologyToVTKMap {};
 template<> struct TopologyToVTKMap< Meshes::MeshVertexTopology >         { static constexpr VTKEntityType type = VTKEntityType::Vertex; };

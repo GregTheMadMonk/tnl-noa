@@ -93,7 +93,7 @@ bool resolveMeshType( const String& fileName_,
       // FIXME: The VTK files don't store the global index, local index and id types.
       // The reader has some defaults, but they might be disabled by the BuildConfigTags - in
       // this case we should use the first enabled type.
-      Readers::VTKReader<> reader;
+      Readers::VTKReader reader;
       if( ! reader.detectMesh( fileName_ ) )
          return false;
       if( reader.getMeshType() == "Meshes::Mesh" )
@@ -126,7 +126,7 @@ loadMesh( const String& fileName_, Mesh< MeshConfig, Device >& mesh )
       status = reader.readMesh( fileName_, mesh );
    }
    else if( ends_with( fileName, ".vtk" ) ) {
-      Readers::VTKReader<> reader;
+      Readers::VTKReader reader;
       status = reader.readMesh( fileName_, mesh );
    }
    else {

@@ -74,6 +74,7 @@ if( VTK_FOUND )
                              cudart dl rt "-L ${CUDA_TOOLKIT_ROOT_DIR}/lib64/" )
    else( BUILD_CUDA )
       add_executable( MeshReaderTest${mpiExt}${debugExt} MeshReaderTest.cpp )
+      set_target_properties( MeshReaderTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS}" )
 
       #target_link_libraries( MeshReaderTest${mpiExt}${debugExt}
       #                       ${VTK_LIBRARIES}

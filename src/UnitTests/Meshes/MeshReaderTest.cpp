@@ -3,6 +3,10 @@
 #include <TNL/Meshes/BuildConfigTags.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 
+#ifdef HAVE_VTK
+#include <TNL/Meshes/Readers/VTKReader_libvtk.h>
+#endif
+
 #include <TNL/Debugging/MemoryUsage.h>
 
 #include "MeshTest.h"
@@ -112,11 +116,21 @@ class MeshTester
 public:
    static bool run( const String& fileName )
    {
-      MeshType mesh;
-
       std::cout << "pre-init\t";
       Debugging::printMemoryUsage();
 
+#ifdef HAVE_VTK
+      MeshType mesh_libvtk;
+      Readers::VTKReader_libvtk<> reader;
+      if( ! reader.readMesh( fileName, mesh_libvtk ) )
+         return false;
+
+      std::cout << "libvtk vertices: " << mesh_libvtk.template getEntitiesCount< 0 >() << std::endl;
+      std::cout << "libvtk faces: " << mesh_libvtk.template getEntitiesCount< MeshType::getMeshDimension() - 1 >() << std::endl;
+      std::cout << "libvtk cells: " << mesh_libvtk.template getEntitiesCount< MeshType::getMeshDimension() >() << std::endl;
+#endif
+
+      MeshType mesh;
       if( ! loadMesh( fileName, mesh ) )
          return false;
 
@@ -126,6 +140,14 @@ public:
 
       std::cout << "post-init\t";
       Debugging::printMemoryUsage();
+
+#ifdef HAVE_VTK
+      std::cout << "mesh_libvtk == mesh: " << std::boolalpha << (mesh_libvtk == mesh) << std::endl;
+      if( mesh_libvtk != mesh ) {
+         std::cerr << "mesh_libvtk:\n" << mesh_libvtk << "\n\nmesh:\n" << mesh << std::endl;
+         return false;
+      }
+#endif
 
 #ifdef HAVE_GTEST 
       std::cout << "Running basic I/O tests..." << std::endl;
