@@ -23,10 +23,10 @@
 #include <TNL/Meshes/Readers/VTKEntityType.h>
 
 #ifdef HAVE_VTK
-#include <vtk/vtkSmartPointer.h>
-#include <vtk/vtkCell.h>
-#include <vtk/vtkUnstructuredGrid.h>
-#include <vtk/vtkUnstructuredGridReader.h>
+#include <vtkSmartPointer.h>
+#include <vtkCell.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkUnstructuredGridReader.h>
 #endif
 
 namespace TNL {
