@@ -1,6 +1,8 @@
 #pragma once
 
 #ifdef HAVE_GTEST
+#include <gtest/gtest.h>
+
 #include <sstream>
 #include <vector>
 

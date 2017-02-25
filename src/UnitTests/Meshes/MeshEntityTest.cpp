@@ -1,7 +1,3 @@
-#ifdef HAVE_GTEST 
-#include "gtest/gtest.h"
-#endif
-
 #include "MeshEntityTest.h"
 
 int main( int argc, char* argv[] )

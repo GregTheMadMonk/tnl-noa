@@ -7,7 +7,7 @@ using Device = Devices::Host;
 using LocalIndexType = short;
 
 #ifdef HAVE_GTEST 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 TEST( MultimapTest, TestTypedefs )
 {

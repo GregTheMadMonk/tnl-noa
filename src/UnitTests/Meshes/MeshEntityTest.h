@@ -1,6 +1,8 @@
 #pragma once
 
 #ifdef HAVE_GTEST
+#include <gtest/gtest.h>
+
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshConfigBase.h>
 #include <TNL/Meshes/Topologies/MeshVertexTopology.h>
