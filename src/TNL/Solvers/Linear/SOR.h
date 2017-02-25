@@ -36,8 +36,8 @@ class SOR : public Object,
    typedef typename Matrix :: DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
+   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
+   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
 
    SOR();
 

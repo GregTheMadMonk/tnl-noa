@@ -47,13 +47,8 @@
 
 namespace TNL {
 
-/***
- * Use the lazy mode if you do not want to call the object constructor in the
- * shared pointer constructor. You may call it later via the method recreate.
- */
 template< typename Object,
-          typename Device = typename Object::DeviceType,
-          bool lazy = false >
+          typename Device = typename Object::DeviceType >
 class SharedPointer
 {
    static_assert( ! std::is_same< Device, void >::value, "The device cannot be void. You need to specify the device explicitly in your code." );
@@ -62,8 +57,8 @@ class SharedPointer
 /****
  * Specialization for Devices::Host
  */
-template< typename Object, bool lazy >
-class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
+template< typename Object >
+class SharedPointer< Object, Devices::Host > : public SmartPointer
 {
    private:
       // Convenient template alias for controlling the selection of copy- and
@@ -75,14 +70,14 @@ class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
                                       std::is_same< typename std::remove_cv< Object >::type, Object_ >::value >;
 
       // friend class will be needed for templated assignment operators
-      template< typename Object_, typename Device_, bool lazy_ >
+      template< typename Object_, typename Device_ >
       friend class SharedPointer;
 
    public:
 
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
-      typedef SharedPointer< Object, Devices::Host, lazy > ThisType;
+      typedef SharedPointer< Object, Devices::Host > ThisType;
 
       template< typename... Args >
       explicit  SharedPointer( Args... args )
@@ -91,8 +86,7 @@ class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
 #ifdef TNL_DEBUG_SHARED_POINTERS
          std::cerr << "Creating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
 #endif
-         if( ! lazy )
-            this->allocate( args... );
+         this->allocate( args... );
       }
 
       // this is needed only to avoid the default compiler-generated constructor
@@ -103,9 +97,9 @@ class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
       }
 
       // conditional constructor for non-const -> const data
-      template< typename Object_, bool lazy_,
+      template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      SharedPointer( const SharedPointer< Object_, DeviceType, lazy_ >& pointer )
+      SharedPointer( const SharedPointer< Object_, DeviceType >& pointer )
       : pd( (PointerData*) pointer.pd )
       {
          this->pd->counter += 1;
@@ -119,9 +113,9 @@ class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
       }
 
       // conditional constructor for non-const -> const data
-      template< typename Object_, bool lazy_,
+      template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      SharedPointer( SharedPointer< Object_, DeviceType, lazy_ >&& pointer )
+      SharedPointer( SharedPointer< Object_, DeviceType >&& pointer )
       : pd( (PointerData*) pointer.pd )
       {
          pointer.pd = nullptr;
@@ -201,9 +195,9 @@ class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
       }
 
       // conditional operator for non-const -> const data
-      template< typename Object_, bool lazy_,
+      template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( const SharedPointer< Object_, DeviceType, lazy_ >& ptr )
+      const ThisType& operator=( const SharedPointer< Object_, DeviceType >& ptr )
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
@@ -221,9 +215,9 @@ class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
       }
 
       // conditional operator for non-const -> const data
-      template< typename Object_, bool lazy_,
+      template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( SharedPointer< Object_, DeviceType, lazy_ >&& ptr )
+      const ThisType& operator=( SharedPointer< Object_, DeviceType >&& ptr )
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
@@ -234,6 +228,11 @@ class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
       bool synchronize()
       {
          return true;
+      }
+      
+      void clear()
+      {
+         this->free();
       }
 
       ~SharedPointer()
@@ -282,8 +281,8 @@ class SharedPointer< Object, Devices::Host, lazy > : public SmartPointer
 /****
  * Specialization for CUDA
  */
-template< typename Object, bool lazy >
-class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
+template< typename Object >
+class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 {
    private:
       // Convenient template alias for controlling the selection of copy- and
@@ -295,22 +294,21 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
                                       std::is_same< typename std::remove_cv< Object >::type, Object_ >::value >;
 
       // friend class will be needed for templated assignment operators
-      template< typename Object_, typename Device_, bool lazy_ >
+      template< typename Object_, typename Device_ >
       friend class SharedPointer;
 
    public:
 
       typedef Object ObjectType;
       typedef Devices::Cuda DeviceType;
-      typedef SharedPointer< Object, Devices::Cuda, lazy > ThisType;
+      typedef SharedPointer< Object, Devices::Cuda > ThisType;
 
       template< typename... Args >
       explicit  SharedPointer( Args... args )
       : pd( nullptr ),
         cuda_pointer( nullptr )
       {
-         if( ! lazy )
-            this->allocate( args... );
+         this->allocate( args... );
       }
 
       // this is needed only to avoid the default compiler-generated constructor
@@ -322,9 +320,9 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       }
 
       // conditional constructor for non-const -> const data
-      template< typename Object_, bool lazy_,
+      template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      SharedPointer( const SharedPointer< Object_, DeviceType, lazy_ >& pointer )
+      SharedPointer( const SharedPointer< Object_, DeviceType >& pointer )
       : pd( (PointerData*) pointer.pd ),
         cuda_pointer( pointer.cuda_pointer )
       {
@@ -341,9 +339,9 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       }
 
       // conditional constructor for non-const -> const data
-      template< typename Object_, bool lazy_,
+      template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      SharedPointer( SharedPointer< Object_, DeviceType, lazy_ >&& pointer )
+      SharedPointer( SharedPointer< Object_, DeviceType >&& pointer )
       : pd( (PointerData*) pointer.pd ),
         cuda_pointer( pointer.cuda_pointer )
       {
@@ -450,9 +448,9 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       }
 
       // conditional operator for non-const -> const data
-      template< typename Object_, bool lazy_,
+      template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( const SharedPointer< Object_, DeviceType, lazy_ >& ptr )
+      const ThisType& operator=( const SharedPointer< Object_, DeviceType >& ptr )
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
@@ -479,9 +477,9 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
       }
 
       // conditional operator for non-const -> const data
-      template< typename Object_, bool lazy_,
+      template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( SharedPointer< Object_, DeviceType, lazy_ >&& ptr )
+      const ThisType& operator=( SharedPointer< Object_, DeviceType >&& ptr )
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
@@ -518,6 +516,11 @@ class SharedPointer< Object, Devices::Cuda, lazy > : public SmartPointer
          return false;
 #endif
       }
+      
+      void clear()
+      {
+         this->free();
+      }      
 
       ~SharedPointer()
       {
