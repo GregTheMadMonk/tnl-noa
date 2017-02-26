@@ -75,10 +75,10 @@ bool testMatrix( bool sym, const tnlParameterContainer& parameters )
    if( ! tnlMatrixReader< Matrix >::readMtxFile( file, matrix, verbose, sym ) )
       return false;
 
-   if( !matrix.help() )
+   if( !matrix.help( true ) )
        return false;
-   //if( ! tnlMatrixReader< Matrix >::verifyMtxFile( file, matrix, verbose ) )
-   //   return false;
+   if( ! tnlMatrixReader< Matrix >::verifyMtxFile( file, matrix, verbose ) )
+      return false;
    //for( int i = 0; i < matrix.getRows(); i++ )
    //   for( int j = 0; j < matrix.getColumns(); j++ )
    //   {

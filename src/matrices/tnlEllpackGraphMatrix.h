@@ -205,11 +205,6 @@ template< typename Vector >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-   Index getNumberOfColors() const;
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
    Index getRowsOfColor( IndexType color ) const;
 
 #ifdef HAVE_CUDA

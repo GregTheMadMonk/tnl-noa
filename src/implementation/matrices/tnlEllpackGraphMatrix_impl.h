@@ -92,17 +92,6 @@ template< typename Real,
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-Index tnlEllpackGraphMatrix< Real, Device, Index >::getNumberOfColors() const
-{
-   return this->numberOfColors;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
 Index tnlEllpackGraphMatrix< Real, Device, Index >::getRowsOfColor( IndexType color ) const
 {
    return this->colorPointers.getElement( color + 1 ) - this->colorPointers.getElement( color );
@@ -194,11 +183,11 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::computePermutationArray()
    tnlMatrix< Real, Device, Index >::computeColorsVector( colorsVector );
 
    // init color pointers
-   this->colorPointers.setSize( this->numberOfColors + 1 );
+   this->colorPointers.setSize( this->getNumberOfColors() + 1 );
 
    // compute permutation
    IndexType position = 0;
-   for( IndexType color = 0; color < this->numberOfColors; color++ )
+   for( IndexType color = 0; color < this->getNumberOfColors(); color++ )
    {
       this->colorPointers.setElement( color, position );
       for (IndexType i = 0; i < this->getRows(); i++)
@@ -217,7 +206,7 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::computePermutationArray()
          }
    }
 
-   this->colorPointers.setElement( this->numberOfColors, this->getRows() );
+   this->colorPointers.setElement( this->getNumberOfColors(), this->getRows() );
 
    // destroy colors vector
    colorsVector.reset();
@@ -368,7 +357,7 @@ bool tnlEllpackGraphMatrix< Real, Device, Index >::setLike( const tnlEllpackGrap
        ! this->colorPointers.setLike( matrix.colorPointers ) )
       return false;
    this->rowLengths = matrix.rowLengths;
-   this->numberOfColors = matrix.numberOfColors;
+   this->numberOfColors = matrix.getNumberOfColors();
    return true;
 }
 
@@ -644,11 +633,9 @@ Real tnlEllpackGraphMatrix< Real, Device, Index >::getElement( const IndexType r
    const IndexType rowEnd = DDCType::getRowEnd( *this, this->permutationArray.getElement( row ) );
    const IndexType step = DDCType::getElementStep( *this );
 
-   IndexType currentColumn = this->columnIndexes.getElement( elementPtr );
-
    while( elementPtr < rowEnd &&
-          currentColumn < column &&
-          currentColumn != this->getPaddingIndex() )
+          this->columnIndexes.getElement( elementPtr ) < column &&
+          this->columnIndexes.getElement( elementPtr ) != this->getPaddingIndex() )
    {
       elementPtr += step;
    }
@@ -830,7 +817,7 @@ template< typename InVector,
 void tnlEllpackGraphMatrix< Real, Device, Index >::vectorProductHost( const InVector& inVector,
                                                                       OutVector& outVector ) const
 {
-   for( IndexType color = 0; color < this->numberOfColors; color++ )
+   for( IndexType color = 0; color < this->getNumberOfColors(); color++ )
    {
       IndexType colorBegin = this->colorPointers[ color ];
       IndexType colorEnd = this->colorPointers[ color + 1 ];

@@ -26,7 +26,8 @@ template< typename Real,
           typename Index >
 tnlMatrix< Real, Device, Index >::tnlMatrix()
 : rows( 0 ),
-  columns( 0 )
+  columns( 0 ),
+  numberOfColors( 0 )
 {
 }
 
@@ -87,8 +88,8 @@ Index tnlMatrix< Real, Device, Index >::getColumns() const
 }
 
 template< typename Real,
-        typename Device,
-        typename Index >
+          typename Device,
+          typename Index >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
@@ -299,32 +300,9 @@ void tnlMatrix< Real, Device, Index >::computeColorsVector(tnlVector<Index, Devi
             usedColors.setElement( j, 0 );
 
         // find all colors used in given row
-
-        // optimization:
-        //     load the whole row in sparse format
-        //     traverse it while don't hit the padding index or end of the row
-        //     for each nonzero element write -> usedColors.setElement( colorsVector.getElement( column ), 1 )
-        IndexType* columns = new IndexType[ this->getRowLength( i ) ];
-        RealType* values = new RealType[ this->getRowLength( i ) ];
-        this->getRow( i, columns, values );
-        for( IndexType j = 0; j < this->getRowLength( i ); j++ )
-        {
-            // we are only interested in symmetric part of the matrix
-            if( columns[ j ] < i + 1 )
-                continue;
-
-            // if we hit padding index, there is no reason to continue iterations
-            if( columns[ j ] == this->getColumns() )
-                break;
-
-            usedColors.setElement( colorsVector.getElement( columns[ j ] ), 1 );
-        }
-        delete [] columns;
-        delete [] values;
-
-        //for( IndexType j = i + 1; j < this->getColumns(); j++ )
-        //     if( this->getElement( i, j ) != 0.0 )
-        //         usedColors.setElement( colorsVector.getElement( j ), 1 );
+        for( IndexType j = i + 1; j < this->getColumns(); j++ )
+             if( this->getElement( i, j ) != 0.0 )
+                 usedColors.setElement( colorsVector.getElement( j ), 1 );
 
         // find unused color
         bool found = false;
