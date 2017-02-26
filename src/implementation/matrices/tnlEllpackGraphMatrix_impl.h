@@ -323,7 +323,7 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::copyFromHostToCuda( tnlEllpac
     tnlSparseMatrix< Real, Device, Index >::copyFromHostToCuda( matrix );
 
     for( IndexType i = 0; i < this->getRows(); i++ )
-        for( IndexType j = 0; j < this->getColumns(); j++ )
+        for( IndexType j = 0; j < i; j++ )
             this->setElementFast( i, j, matrix.getElement( i, j ) );
 
     colorPointers.reset();
@@ -619,10 +619,10 @@ Real tnlEllpackGraphMatrix< Real, Device, Index >::getElementFast( const IndexTy
    const IndexType step = DDCType::getElementStep( *this );
 
    while( elementPtr < rowEnd &&
-          this->columnIndexes[ elementPtr ] < column &&
-          this->columnIndexes[ elementPtr ] != this->getPaddingIndex() ) elementPtr += step;
-   if( elementPtr < rowEnd && this->columnIndexes[ elementPtr ] == column )
-      return this->values[ elementPtr ];
+          this->columnIndexes.getElement( elementPtr ) < column &&
+          this->columnIndexes.getElement( elementPtr ) != this->getPaddingIndex() ) elementPtr += step;
+   if( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) == column )
+      return this->values.getElement( elementPtr );
    return 0.0;
 }
 
