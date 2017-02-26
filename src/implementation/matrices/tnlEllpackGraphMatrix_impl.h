@@ -324,7 +324,7 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::copyFromHostToCuda( tnlEllpac
 
     for( IndexType i = 0; i < this->getRows(); i++ )
         for( IndexType j = 0; j < this->getColumns(); j++ )
-            this->setElement( i, j, matrix.getElement( i, j ) );
+            this->setElementFast( i, j, matrix.getElement( i, j ) );
 
     colorPointers.reset();
     permutationArray.reset();
@@ -425,37 +425,37 @@ bool tnlEllpackGraphMatrix< Real, Device, Index > :: addElementFast( const Index
                                                                      const RealType& thisElementMultiplicator )
 {
    typedef tnlEllpackGraphMatrixDeviceDependentCode< DeviceType > DDCType;
-   IndexType i = DDCType::getRowBegin( *this, this->permutationArray[ row ] );
-   const IndexType rowEnd = DDCType::getRowEnd( *this, this->permutationArray[ row ] );
+   IndexType i = DDCType::getRowBegin( *this, this->permutationArray.getElement( row ) );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, this->permutationArray.getElement( row ) );
    const IndexType step = DDCType::getElementStep( *this );
 
    while( i < rowEnd &&
-         this->columnIndexes[ i ] < column &&
-         this->columnIndexes[ i ] != this->getPaddingIndex() ) i += step;
+         this->columnIndexes.getElement( i ) < column &&
+         this->columnIndexes.getElement( i ) != this->getPaddingIndex() ) i += step;
    if( i == rowEnd )
       return false;
-   if( this->columnIndexes[ i ] == column )
+   if( this->columnIndexes.getElement( i ) == column )
    {
-      this->values[ i ] = thisElementMultiplicator * this->values[ i ] + value;
+      this->values.setElement( i, thisElementMultiplicator * this->values.getElement( i ) + value);
       return true;
    }
    else
-      if( this->columnIndexes[ i ] == this->getPaddingIndex() ) // artificial zero
+      if( this->columnIndexes.getElement( i ) == this->getPaddingIndex() ) // artificial zero
       {
-         this->columnIndexes[ i ] = column;
-         this->values[ i ] = value;
+         this->columnIndexes.setElement( i, column);
+         this->values.setElement( i, value);
       }
       else
       {
          Index j = rowEnd - step;
          while( j > i )
          {
-            this->columnIndexes[ j ] = this->columnIndexes[ j - step ];
-            this->values[ j ] = this->values[ j - step ];
+            this->columnIndexes.setElement( j, this->columnIndexes.getElement( j - step ) );
+            this->values.setElement( j, this->values.getElement( j - step ) );
             j -= step;
          }
-         this->columnIndexes[ i ] = column;
-         this->values[ i ] = value;
+         this->columnIndexes.setElement( i, column );
+         this->values.setElement( i, value );
       }
    return true;
 }
