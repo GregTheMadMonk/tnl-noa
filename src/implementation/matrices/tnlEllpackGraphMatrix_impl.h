@@ -321,6 +321,13 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::copyFromHostToCuda( tnlEllpac
         this->permutationArray.setElement( i, permutationArray[ i ] );
 
     tnlSparseMatrix< Real, Device, Index >::copyFromHostToCuda( matrix );
+
+    for( IndexType i = 0; i < this->getRows(); i++ )
+        for( IndexType j = 0; j < this->getColumns(); j++ )
+            this->setElement( i, j, matrix.getElement( i, j ) );
+
+    colorPointers.reset();
+    permutationArray.reset();
 }
 
 template< typename Real,

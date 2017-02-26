@@ -5,6 +5,7 @@
 #include <config/tnlParameterContainer.h>
 #include <matrices/tnlMatrixReader.h>
 #include <matrices/tnlMatrix.h>
+#include <matrices/tnlDenseMatrix.h>
 #include <matrices/tnlEllpackGraphMatrix.h>
 
 void setupConfig( tnlConfigDescription& config )
@@ -58,7 +59,7 @@ int main( int argc, char* argv[] )
 
     typedef tnlDenseMatrix< double, tnlHost, int > DenseMatrix;
     DenseMatrix denseMatrix;
-    if( ! tnlMatrixReader< DenseMatrix >::readMtxFile( file, denseMatrix, verbose ) )
+    if( ! tnlMatrixReader< DenseMatrix >::readMtxFile( inputFile, denseMatrix, true ) )
         return false;
 
     typedef tnlEllpackGraphMatrix< double, tnlCuda, int > EllpackGraphCuda;
