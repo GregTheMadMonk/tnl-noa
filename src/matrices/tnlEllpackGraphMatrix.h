@@ -171,13 +171,6 @@ template< typename Vector >
                   const int color ) const;
 #endif
 
-/*
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void computeColorsVector( tnlVector< Index, Device, Index >& colorsVector );
-*/
-
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -201,6 +194,16 @@ template< typename Vector >
    bool help( bool verbose = false );
 
    void verifyPermutationArray();
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getRowLengthsInt() const;
+
+#ifdef HAVE_CUDA
+    __device__ __host__
+#endif
+    Index getAlignedRows() const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -233,7 +236,6 @@ template< typename Vector >
 
    tnlVector< Index, Device, Index > permutationArray;
    tnlVector< Index, Device, Index > colorPointers;
-   IndexType numberOfColors;
    bool rearranged;
 };
 

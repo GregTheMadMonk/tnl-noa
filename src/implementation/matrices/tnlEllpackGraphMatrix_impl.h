@@ -34,6 +34,25 @@ tnlEllpackGraphMatrix< Real, Device, Index > :: tnlEllpackGraphMatrix()
 template< typename Real,
           typename Device,
           typename Index >
+#ifdef HAVE_CUDA
+  __device__ __host__
+#endif
+Index tnlEllpackGraphMatrix< Real, Device, Index >::getRowLengthsInt() const
+{
+    return this->rowLengths;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Index tnlEllpackGraphMatrix< Real, Device, Index >::getAlignedRows() const
+{
+    return this->alignedRows;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 tnlString tnlEllpackGraphMatrix< Real, Device, Index > :: getType()
 {
    return tnlString( "tnlEllpackGraphMatrix< ") +
@@ -310,6 +329,8 @@ template< typename Real,
 void tnlEllpackGraphMatrix< Real, Device, Index >::copyFromHostToCuda( tnlEllpackGraphMatrix< Real, tnlHost, Index >& matrix )
 {
     this->rearranged = true;
+    this->rowLengths = matrix.getRowLengthsInt();
+    this->alignedRows = matrix.getAlignedRows();
     tnlVector< Index, tnlHost, Index > colorPointers = matrix.getColorPointers();
     this->colorPointers.setSize( colorPointers.getSize() );
     for( IndexType i = 0; i < colorPointers.getSize(); i++ )
@@ -323,7 +344,7 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::copyFromHostToCuda( tnlEllpac
     tnlSparseMatrix< Real, Device, Index >::copyFromHostToCuda( matrix );
 
     for( IndexType i = 0; i < this->getRows(); i++ )
-        for( IndexType j = 0; j < i; j++ )
+        for( IndexType j = 0; j <= i; j++ )
             this->setElementFast( i, j, matrix.getElement( i, j ) );
 
     colorPointers.reset();
