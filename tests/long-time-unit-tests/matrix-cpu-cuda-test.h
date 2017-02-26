@@ -56,11 +56,16 @@ int main( int argc, char* argv[] )
     if( !hostMatrix.help( true ) )
         return 1;
 
+    typedef tnlDenseMatrix< double, tnlHost, int > DenseMatrix;
+    DenseMatrix denseMatrix;
+    if( ! tnlMatrixReader< DenseMatrix >::readMtxFile( file, denseMatrix, verbose ) )
+        return false;
+
     typedef tnlEllpackGraphMatrix< double, tnlCuda, int > EllpackGraphCuda;
     EllpackGraphCuda cudaMatrix;
     cudaMatrix.copyFromHostToCuda( hostMatrix );
 
-    return test( hostMatrix, cudaMatrix );
+    return test( denseMatrix, cudaMatrix );
 }
 
 #endif // MATRIX_CPU_CUDA_TEST_H_
