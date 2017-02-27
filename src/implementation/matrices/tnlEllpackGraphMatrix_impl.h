@@ -345,7 +345,8 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::copyFromHostToCuda( tnlEllpac
 
     for( IndexType i = 0; i < this->getRows(); i++ )
         for( IndexType j = 0; j <= i; j++ )
-            this->setElementFast( i, j, matrix.getElement( i, j ) );
+            if( matrix.getElement( i, j ) != 0.0 )
+                this->setElementFast( i, j, matrix.getElement( i, j ) );
 
     colorPointers.reset();
     permutationArray.reset();
