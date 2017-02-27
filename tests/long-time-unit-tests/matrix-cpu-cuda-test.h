@@ -14,10 +14,11 @@ void setupConfig( tnlConfigDescription& config )
     config.addRequiredEntry< tnlString >( "input-file" , "Input file name." );
 }
 
-bool testGPU( tnlMatrix< double, tnlHost, int >& sparseMatrix, tnlMatrix< double, tnlHost, int >& denseMatrix )
+template< typename matrix >
+bool testCPU( matrix& sparseMatrix, tnlMatrix< double, tnlHost, int >& denseMatrix )
 {
     for( int i = 0; i < denseMatrix.getRows(); i++ )
-        for( int i = 0; i < denseMatrix.getColumns(); j++ )
+        for( int j = 0; j < denseMatrix.getColumns(); j++ )
         {
             double a = sparseMatrix.getElement( i, j );
             double b = denseMatrix.getElement( i, j );
@@ -51,12 +52,13 @@ bool testGPU( tnlMatrix< double, tnlHost, int >& sparseMatrix, tnlMatrix< double
                 return 1;
             }
     }
-    cout << "SPMV passed. We can go to production!" << endl;
+    cout << "SPMV passed. We can go to GPUs!" << endl;
 
     return 0;
 }
 
-bool testGPU( tnlMatrix< double, tnlHost, int >& hostMatrix, tnlMatrix< double, tnlCuda, int >& cudaMatrix)
+template< typename matrix >
+bool testGPU( tnlMatrix< double, tnlHost, int >& hostMatrix, matrix& cudaMatrix)
 {
     // first perform compare test -- compare all elements using getElement( i, j ) method
     for( int i = 0; i < hostMatrix.getRows(); i++ )
@@ -118,7 +120,7 @@ int main( int argc, char* argv[] )
     EllpackGraphHost hostMatrix;
     if( !tnlMatrixReader< EllpackGraphHost >::readMtxFile( inputFile, hostMatrix, true, true ) )
         return 1;
-    if( !hostMatrix.help( true ) )
+    if( hostMatrix.help( true ) )
         return 1;
 
     typedef tnlDenseMatrix< double, tnlHost, int > DenseMatrix;
@@ -126,11 +128,14 @@ int main( int argc, char* argv[] )
     if( ! tnlMatrixReader< DenseMatrix >::readMtxFile( inputFile, denseMatrix, true ) )
         return false;
 
+    if( !testCPU< tnlEllpackGraphMatrix< double, tnlHost, int > >( hostMatrix, denseMatrix ) == 1 )
+        return 1;
+
     typedef tnlEllpackGraphMatrix< double, tnlCuda, int > EllpackGraphCuda;
     EllpackGraphCuda cudaMatrix;
     cudaMatrix.copyFromHostToCuda( hostMatrix );
 
-    return testGPU( denseMatrix, cudaMatrix );
+    return testGPU< tnlEllpackGraphMatrix< double, tnlCuda, int > >( denseMatrix, cudaMatrix );
 }
 
 #endif // MATRIX_CPU_CUDA_TEST_H_
