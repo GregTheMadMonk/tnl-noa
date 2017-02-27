@@ -138,6 +138,11 @@ class tnlMatrix : public virtual tnlObject
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
+   Index getValuesSize() const;
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    void computeColorsVector( tnlVector< Index, Device, Index >& colorsVector );
 
    protected:

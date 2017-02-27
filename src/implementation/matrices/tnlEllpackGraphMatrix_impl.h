@@ -328,6 +328,8 @@ template< typename Real,
 #endif
 void tnlEllpackGraphMatrix< Real, Device, Index >::copyFromHostToCuda( tnlEllpackGraphMatrix< Real, tnlHost, Index >& matrix )
 {
+    tnlSparseMatrix< Real, Device, Index >::copyFromHostToCuda( matrix );
+
     this->rearranged = true;
     this->rowLengths = matrix.getRowLengthsInt();
     this->alignedRows = matrix.getAlignedRows();
@@ -340,8 +342,6 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::copyFromHostToCuda( tnlEllpac
     this->permutationArray.setSize( permutationArray.getSize() );
     for( IndexType i = 0; i < permutationArray.getSize(); i++ )
         this->permutationArray.setElement( i, permutationArray[ i ] );
-
-    tnlSparseMatrix< Real, Device, Index >::copyFromHostToCuda( matrix );
 
     for( IndexType i = 0; i < this->getRows(); i++ )
         for( IndexType j = 0; j <= i; j++ )

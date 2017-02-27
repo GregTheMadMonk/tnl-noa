@@ -277,7 +277,15 @@ void tnlMatrix< Real, Device, Index >::copyFromHostToCuda( tnlMatrix< Real, tnlH
     this->columns = matrix.getColumns();
     this->rows = matrix.getRows();
 
-    this->values.setSize( matrix.values.getSize() );
+    this->values.setSize( matrix.getValuesSize() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Index tnlMatrix< Real, Device, Index >::getValuesSize() const
+{
+    return this->values.getSize();
 }
 
 template< typename Real,

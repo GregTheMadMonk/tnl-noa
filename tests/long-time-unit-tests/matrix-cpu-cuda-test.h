@@ -120,7 +120,7 @@ int main( int argc, char* argv[] )
     EllpackGraphHost hostMatrix;
     if( !tnlMatrixReader< EllpackGraphHost >::readMtxFile( inputFile, hostMatrix, true, true ) )
         return 1;
-    if( hostMatrix.help( true ) )
+    if( !hostMatrix.help( true ) )
         return 1;
 
     typedef tnlDenseMatrix< double, tnlHost, int > DenseMatrix;
@@ -128,7 +128,7 @@ int main( int argc, char* argv[] )
     if( ! tnlMatrixReader< DenseMatrix >::readMtxFile( inputFile, denseMatrix, true ) )
         return false;
 
-    if( !testCPU< tnlEllpackGraphMatrix< double, tnlHost, int > >( hostMatrix, denseMatrix ) == 1 )
+    if( testCPU< tnlEllpackGraphMatrix< double, tnlHost, int > >( hostMatrix, denseMatrix ) == 1 )
         return 1;
 
     typedef tnlEllpackGraphMatrix< double, tnlCuda, int > EllpackGraphCuda;
