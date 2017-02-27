@@ -42,6 +42,7 @@ MeshEntity( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity )
    // TODO: check this
    : MeshEntityIndex< typename MeshConfig::IdType >( entity )
 {
+   static_assert( ! std::is_same< Device, Device_ >::value, "this should never happen" );
 }
 
 template< typename MeshConfig,
@@ -67,6 +68,8 @@ MeshEntity< MeshConfig, Device, EntityTopology >&
 MeshEntity< MeshConfig, Device, EntityTopology >::
 operator=( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity )
 {
+   static_assert( ! std::is_same< Device, Device_ >::value, "this should never happen" );
+
    // no cross-device copy here - Mesh::operator= has to rebind pointers
    // TODO: check this
 //   MeshSubentityAccess< MeshConfig, Device, EntityTopology >::operator=( entity );
@@ -211,6 +214,8 @@ MeshEntity( const MeshEntity< MeshConfig, Device_, MeshVertexTopology >& entity 
    // TODO: check this
    : MeshEntityIndex< typename MeshConfig::IdType >( entity )
 {
+   static_assert( ! std::is_same< Device, Device_ >::value, "this should never happen" );
+
    setPoint( entity.getPoint() );
 }
 
@@ -233,6 +238,8 @@ MeshEntity< MeshConfig, Device, MeshVertexTopology >&
 MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 operator=( const MeshEntity< MeshConfig, Device_, MeshVertexTopology >& entity )
 {
+   static_assert( ! std::is_same< Device, Device_ >::value, "this should never happen" );
+
    // no cross-device copy of subentities and superentities here - Mesh::operator= has to rebind pointers
    // TODO: check this
 //   MeshSuperentityAccess< MeshConfig, Device, EntityTopology >::operator=( entity );

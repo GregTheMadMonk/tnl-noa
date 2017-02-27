@@ -58,7 +58,7 @@ class MeshEntity
       // constructors
       MeshEntity() = default;
 
-      explicit MeshEntity( const MeshEntity& entity );
+      MeshEntity( const MeshEntity& entity );
 
       template< typename Device_ >
       MeshEntity( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity );

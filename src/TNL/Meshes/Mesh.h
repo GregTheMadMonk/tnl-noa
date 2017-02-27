@@ -77,7 +77,7 @@ class Mesh
       // constructors
       Mesh() = default;
 
-      explicit Mesh( const Mesh& mesh );
+      Mesh( const Mesh& mesh );
 
       template< typename Device_ >
       Mesh( const Mesh< MeshConfig, Device_ >& mesh );
