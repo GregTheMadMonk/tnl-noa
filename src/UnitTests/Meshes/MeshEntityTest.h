@@ -83,6 +83,28 @@ public:
    using BaseType::setSuperentityIndex;
    using BaseType::setIndex;
 };
+
+template< typename Entity >
+void generalTestSubentities( const Entity& entity )
+{
+   Entity copy1( entity );
+   Entity copy2 = entity;
+
+   // check that subentity accessors have been rebound, at least for the 0th subvertex
+   EXPECT_EQ( copy1.template getSubentityIndex< 0 >( 0 ), entity.template getSubentityIndex< 0 >( 0 ) );
+   EXPECT_EQ( copy2.template getSubentityIndex< 0 >( 0 ), entity.template getSubentityIndex< 0 >( 0 ) );
+}
+ 
+template< typename Entity >
+void generalTestSuperentities( const Entity& entity )
+{
+   Entity copy1( entity );
+   Entity copy2 = entity;
+
+   // check that subentity accessors have been rebound, at least for the 0th superentity
+   EXPECT_EQ( copy1.template getSuperentityIndex< Entity::getEntityDimension() + 1 >( 0 ), entity.template getSuperentityIndex< Entity::getEntityDimension() + 1 >( 0 ) );
+   EXPECT_EQ( copy2.template getSuperentityIndex< Entity::getEntityDimension() + 1 >( 0 ), entity.template getSuperentityIndex< Entity::getEntityDimension() + 1 >( 0 ) );
+}
  
 TEST( MeshEntityTest, VertexMeshEntityTest )
 {
@@ -90,14 +112,14 @@ TEST( MeshEntityTest, VertexMeshEntityTest )
    using VertexMeshEntityType = TestMeshEntity< TestEdgeMeshConfig, typename EdgeMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
 
    using PointType = typename VertexMeshEntityType::PointType;
-   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
+   EXPECT_EQ( PointType::getType(),  ( Containers::StaticVector< 2, RealType >::getType() ) );
 
    VertexMeshEntityType vertexEntity;
    PointType point;
    point.x() = 1.0;
    point.y() = 2.0;
    vertexEntity.setPoint( point );
-   ASSERT_TRUE( vertexEntity.getPoint() == point );
+   EXPECT_EQ( vertexEntity.getPoint(),  point );
 }
 
 TEST( MeshEntityTest, EdgeMeshEntityTest )
@@ -107,7 +129,7 @@ TEST( MeshEntityTest, EdgeMeshEntityTest )
    static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
 
    using PointType = typename VertexMeshEntityType::PointType;
-   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
+   EXPECT_EQ( PointType::getType(),  ( Containers::StaticVector< 2, RealType >::getType() ) );
 
    /****
     *
@@ -141,9 +163,9 @@ TEST( MeshEntityTest, EdgeMeshEntityTest )
    vertexEntities[ 1 ].setPoint( point1 );
    vertexEntities[ 2 ].setPoint( point2 );
 
-   ASSERT_TRUE( vertexEntities[ 0 ].getPoint() == point0 );
-   ASSERT_TRUE( vertexEntities[ 1 ].getPoint() == point1 );
-   ASSERT_TRUE( vertexEntities[ 2 ].getPoint() == point2 );
+   EXPECT_EQ( vertexEntities[ 0 ].getPoint(), point0 );
+   EXPECT_EQ( vertexEntities[ 1 ].getPoint(), point1 );
+   EXPECT_EQ( vertexEntities[ 2 ].getPoint(), point2 );
 
    Containers::StaticArray< 3, EdgeMeshEntityType > edgeEntities;
    SubentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 0 > edgeVertexSubentities;
@@ -163,12 +185,17 @@ TEST( MeshEntityTest, EdgeMeshEntityTest )
    edgeEntities[ 1 ].setIndex( 1 );
    edgeEntities[ 2 ].setIndex( 2 );
 
-   ASSERT_TRUE( vertexEntities[ edgeEntities[ 0 ].getVertexIndex( 0 ) ].getPoint() == point0 );
-   ASSERT_TRUE( vertexEntities[ edgeEntities[ 0 ].getVertexIndex( 1 ) ].getPoint() == point1 );
-   ASSERT_TRUE( vertexEntities[ edgeEntities[ 1 ].getVertexIndex( 0 ) ].getPoint() == point1 );
-   ASSERT_TRUE( vertexEntities[ edgeEntities[ 1 ].getVertexIndex( 1 ) ].getPoint() == point2 );
-   ASSERT_TRUE( vertexEntities[ edgeEntities[ 2 ].getVertexIndex( 0 ) ].getPoint() == point2 );
-   ASSERT_TRUE( vertexEntities[ edgeEntities[ 2 ].getVertexIndex( 1 ) ].getPoint() == point0 );
+   EXPECT_EQ( vertexEntities[ edgeEntities[ 0 ].getVertexIndex( 0 ) ].getPoint(), point0 );
+   EXPECT_EQ( vertexEntities[ edgeEntities[ 0 ].getVertexIndex( 1 ) ].getPoint(), point1 );
+   EXPECT_EQ( vertexEntities[ edgeEntities[ 1 ].getVertexIndex( 0 ) ].getPoint(), point1 );
+   EXPECT_EQ( vertexEntities[ edgeEntities[ 1 ].getVertexIndex( 1 ) ].getPoint(), point2 );
+   EXPECT_EQ( vertexEntities[ edgeEntities[ 2 ].getVertexIndex( 0 ) ].getPoint(), point2 );
+   EXPECT_EQ( vertexEntities[ edgeEntities[ 2 ].getVertexIndex( 1 ) ].getPoint(), point0 );
+
+
+   generalTestSubentities( edgeEntities[ 0 ] );
+   generalTestSubentities( edgeEntities[ 1 ] );
+   generalTestSubentities( edgeEntities[ 2 ] );
 }
 
 TEST( MeshEntityTest, TriangleMeshEntityTest )
@@ -182,7 +209,7 @@ TEST( MeshEntityTest, TriangleMeshEntityTest )
    static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
 
    using PointType = typename VertexMeshEntityType::PointType;
-   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
+   EXPECT_EQ( PointType::getType(), ( Containers::StaticVector< 2, RealType >::getType() ) );
 
    /****
     * We set-up the same situation as in the test above
@@ -196,9 +223,9 @@ TEST( MeshEntityTest, TriangleMeshEntityTest )
    vertexEntities[ 1 ].setPoint( point1 );
    vertexEntities[ 2 ].setPoint( point2 );
 
-   ASSERT_TRUE( vertexEntities[ 0 ].getPoint() == point0 );
-   ASSERT_TRUE( vertexEntities[ 1 ].getPoint() == point1 );
-   ASSERT_TRUE( vertexEntities[ 2 ].getPoint() == point2 );
+   EXPECT_EQ( vertexEntities[ 0 ].getPoint(), point0 );
+   EXPECT_EQ( vertexEntities[ 1 ].getPoint(), point1 );
+   EXPECT_EQ( vertexEntities[ 2 ].getPoint(), point2 );
 
    Containers::StaticArray< 3, EdgeMeshEntityType > edgeEntities;
    SubentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 0 > edgeVertexSubentities;
@@ -215,12 +242,12 @@ TEST( MeshEntityTest, TriangleMeshEntityTest )
    edgeEntities[ 2 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 0 >::index );
    edgeEntities[ 2 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 1 >::index );
 
-   ASSERT_TRUE( edgeEntities[ 0 ].getVertexIndex( 0 ) == ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 0, 0 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 0 ].getVertexIndex( 1 ) == ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 0, 1 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 1 ].getVertexIndex( 0 ) == ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 1, 0 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 1 ].getVertexIndex( 1 ) == ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 1, 1 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 2 ].getVertexIndex( 0 ) == ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 0 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 2 ].getVertexIndex( 1 ) == ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 0 ), ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 0, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 1 ), ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 0, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 0 ), ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 1, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 1 ), ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 1, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 0 ), ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 1 ), ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 1 >::index ) );
 
    TriangleMeshEntityType triangleEntity;
    SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 0 > triangleVertexSubentities;
@@ -235,18 +262,18 @@ TEST( MeshEntityTest, TriangleMeshEntityTest )
    triangleEntity.template setSubentityIndex< 0 >( 1 , 1 );
    triangleEntity.template setSubentityIndex< 0 >( 2 , 2 );
 
-   ASSERT_TRUE( triangleEntity.template getSubentityIndex< 0 >( 0 ) == 0 );
-   ASSERT_TRUE( triangleEntity.template getSubentityIndex< 0 >( 1 ) == 1 );
-   ASSERT_TRUE( triangleEntity.template getSubentityIndex< 0 >( 2 ) == 2 );
+   EXPECT_EQ( triangleEntity.template getSubentityIndex< 0 >( 0 ), 0 );
+   EXPECT_EQ( triangleEntity.template getSubentityIndex< 0 >( 1 ), 1 );
+   EXPECT_EQ( triangleEntity.template getSubentityIndex< 0 >( 2 ), 2 );
 
    triangleEntity.template bindSubentitiesStorageNetwork< 1 >( triangleEdgeSubentities.getValues( 0 ) );
    triangleEntity.template setSubentityIndex< 1 >( 0 , 0 );
    triangleEntity.template setSubentityIndex< 1 >( 1 , 1 );
    triangleEntity.template setSubentityIndex< 1 >( 2 , 2 );
 
-   ASSERT_TRUE( triangleEntity.template getSubentityIndex< 1 >( 0 ) == 0 );
-   ASSERT_TRUE( triangleEntity.template getSubentityIndex< 1 >( 1 ) == 1 );
-   ASSERT_TRUE( triangleEntity.template getSubentityIndex< 1 >( 2 ) == 2 );
+   EXPECT_EQ( triangleEntity.template getSubentityIndex< 1 >( 0 ), 0 );
+   EXPECT_EQ( triangleEntity.template getSubentityIndex< 1 >( 1 ), 1 );
+   EXPECT_EQ( triangleEntity.template getSubentityIndex< 1 >( 2 ), 2 );
 }
 
 TEST( MeshEntityTest, TetragedronMeshEntityTest )
@@ -264,7 +291,7 @@ TEST( MeshEntityTest, TetragedronMeshEntityTest )
    static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
 
    using PointType = typename VertexMeshEntityType::PointType;
-   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 3, RealType >::getType() ) );
+   EXPECT_EQ( PointType::getType(),  ( Containers::StaticVector< 3, RealType >::getType() ) );
 
    /****
     * We set-up similar situation as above but with
@@ -283,10 +310,10 @@ TEST( MeshEntityTest, TetragedronMeshEntityTest )
    vertexEntities[ 2 ].setPoint( point2 );
    vertexEntities[ 3 ].setPoint( point3 );
 
-   ASSERT_TRUE( vertexEntities[ 0 ].getPoint() == point0 );
-   ASSERT_TRUE( vertexEntities[ 1 ].getPoint() == point1 );
-   ASSERT_TRUE( vertexEntities[ 2 ].getPoint() == point2 );
-   ASSERT_TRUE( vertexEntities[ 3 ].getPoint() == point3 );
+   EXPECT_EQ( vertexEntities[ 0 ].getPoint(),  point0 );
+   EXPECT_EQ( vertexEntities[ 1 ].getPoint(),  point1 );
+   EXPECT_EQ( vertexEntities[ 2 ].getPoint(),  point2 );
+   EXPECT_EQ( vertexEntities[ 3 ].getPoint(),  point3 );
 
    Containers::StaticArray< MeshSubtopology< MeshTetrahedronTopology, 1 >::count,
                             EdgeMeshEntityType > edgeEntities;
@@ -313,18 +340,18 @@ TEST( MeshEntityTest, TetragedronMeshEntityTest )
    edgeEntities[ 5 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 5, 0 >::index );
    edgeEntities[ 5 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 5, 1 >::index );
 
-   ASSERT_TRUE( edgeEntities[ 0 ].getVertexIndex( 0 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 0, 0 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 0 ].getVertexIndex( 1 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 0, 1 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 1 ].getVertexIndex( 0 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 1, 0 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 1 ].getVertexIndex( 1 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 1, 1 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 2 ].getVertexIndex( 0 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 2, 0 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 2 ].getVertexIndex( 1 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 2, 1 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 3 ].getVertexIndex( 0 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 3, 0 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 3 ].getVertexIndex( 1 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 3, 1 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 4 ].getVertexIndex( 0 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 4, 0 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 4 ].getVertexIndex( 1 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 4, 1 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 5 ].getVertexIndex( 0 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 5, 0 >::index ) );
-   ASSERT_TRUE( edgeEntities[ 5 ].getVertexIndex( 1 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 5, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 0, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 0, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 1, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 1, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 2, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 2, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 3 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 3, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 3 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 3, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 4 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 4, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 4 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 4, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 5 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 5, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 5 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 5, 1 >::index ) );
 
    Containers::StaticArray< MeshSubtopology< MeshTetrahedronTopology, 2 >::count,
                             TriangleMeshEntityType > triangleEntities;
@@ -349,15 +376,15 @@ TEST( MeshEntityTest, TetragedronMeshEntityTest )
    triangleEntities[ 3 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 3, 1 >::index );
    triangleEntities[ 3 ].template setSubentityIndex< 0 >( 2, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 3, 2 >::index );
 
-   ASSERT_TRUE( triangleEntities[ 0 ].getVertexIndex( 0 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 0 >::index ) );
-   ASSERT_TRUE( triangleEntities[ 0 ].getVertexIndex( 1 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 1 >::index ) );
-   ASSERT_TRUE( triangleEntities[ 0 ].getVertexIndex( 2 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 2 >::index ) );
-   ASSERT_TRUE( triangleEntities[ 1 ].getVertexIndex( 0 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 0 >::index ) );
-   ASSERT_TRUE( triangleEntities[ 1 ].getVertexIndex( 1 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 1 >::index ) );
-   ASSERT_TRUE( triangleEntities[ 1 ].getVertexIndex( 2 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 2 >::index ) );
-   ASSERT_TRUE( triangleEntities[ 2 ].getVertexIndex( 0 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 0 >::index ) );
-   ASSERT_TRUE( triangleEntities[ 2 ].getVertexIndex( 1 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 1 >::index ) );
-   ASSERT_TRUE( triangleEntities[ 2 ].getVertexIndex( 2 ) == ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 2 >::index ) );
+   EXPECT_EQ( triangleEntities[ 0 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 0 >::index ) );
+   EXPECT_EQ( triangleEntities[ 0 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 1 >::index ) );
+   EXPECT_EQ( triangleEntities[ 0 ].getVertexIndex( 2 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 2 >::index ) );
+   EXPECT_EQ( triangleEntities[ 1 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 0 >::index ) );
+   EXPECT_EQ( triangleEntities[ 1 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 1 >::index ) );
+   EXPECT_EQ( triangleEntities[ 1 ].getVertexIndex( 2 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 2 >::index ) );
+   EXPECT_EQ( triangleEntities[ 2 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 0 >::index ) );
+   EXPECT_EQ( triangleEntities[ 2 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 1 >::index ) );
+   EXPECT_EQ( triangleEntities[ 2 ].getVertexIndex( 2 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 2 >::index ) );
 
    TetrahedronMeshEntityType tetrahedronEntity;
    SubentityStorage< TestTriangleMeshConfig, MeshTetrahedronTopology, 0 > tetrahedronVertexSubentities;
@@ -376,10 +403,10 @@ TEST( MeshEntityTest, TetragedronMeshEntityTest )
    tetrahedronEntity.template setSubentityIndex< 0 >( 2, 2 );
    tetrahedronEntity.template setSubentityIndex< 0 >( 3, 3 );
 
-   ASSERT_TRUE( tetrahedronEntity.getVertexIndex( 0 ) == 0 );
-   ASSERT_TRUE( tetrahedronEntity.getVertexIndex( 1 ) == 1 );
-   ASSERT_TRUE( tetrahedronEntity.getVertexIndex( 2 ) == 2 );
-   ASSERT_TRUE( tetrahedronEntity.getVertexIndex( 3 ) == 3 );
+   EXPECT_EQ( tetrahedronEntity.getVertexIndex( 0 ),  0 );
+   EXPECT_EQ( tetrahedronEntity.getVertexIndex( 1 ),  1 );
+   EXPECT_EQ( tetrahedronEntity.getVertexIndex( 2 ),  2 );
+   EXPECT_EQ( tetrahedronEntity.getVertexIndex( 3 ),  3 );
 
    tetrahedronEntity.template bindSubentitiesStorageNetwork< 2 >( tetrahedronTriangleSubentities.getValues( 0 ) );
    tetrahedronEntity.template setSubentityIndex< 2 >( 0, 0 );
@@ -387,10 +414,10 @@ TEST( MeshEntityTest, TetragedronMeshEntityTest )
    tetrahedronEntity.template setSubentityIndex< 2 >( 2, 2 );
    tetrahedronEntity.template setSubentityIndex< 2 >( 3, 3 );
 
-   ASSERT_TRUE( tetrahedronEntity.template getSubentityIndex< 2 >( 0 ) == 0 );
-   ASSERT_TRUE( tetrahedronEntity.template getSubentityIndex< 2 >( 1 ) == 1 );
-   ASSERT_TRUE( tetrahedronEntity.template getSubentityIndex< 2 >( 2 ) == 2 );
-   ASSERT_TRUE( tetrahedronEntity.template getSubentityIndex< 2 >( 3 ) == 3 );
+   EXPECT_EQ( tetrahedronEntity.template getSubentityIndex< 2 >( 0 ),  0 );
+   EXPECT_EQ( tetrahedronEntity.template getSubentityIndex< 2 >( 1 ),  1 );
+   EXPECT_EQ( tetrahedronEntity.template getSubentityIndex< 2 >( 2 ),  2 );
+   EXPECT_EQ( tetrahedronEntity.template getSubentityIndex< 2 >( 3 ),  3 );
 
    tetrahedronEntity.template bindSubentitiesStorageNetwork< 1 >( tetrahedronEdgeSubentities.getValues( 0 ) );
    tetrahedronEntity.template setSubentityIndex< 1 >( 0, 0 );
@@ -400,12 +427,18 @@ TEST( MeshEntityTest, TetragedronMeshEntityTest )
    tetrahedronEntity.template setSubentityIndex< 1 >( 4, 4 );
    tetrahedronEntity.template setSubentityIndex< 1 >( 5, 5 );
 
-   ASSERT_TRUE( tetrahedronEntity.template getSubentityIndex< 1 >( 0 ) == 0 );
-   ASSERT_TRUE( tetrahedronEntity.template getSubentityIndex< 1 >( 1 ) == 1 );
-   ASSERT_TRUE( tetrahedronEntity.template getSubentityIndex< 1 >( 2 ) == 2 );
-   ASSERT_TRUE( tetrahedronEntity.template getSubentityIndex< 1 >( 3 ) == 3 );
-   ASSERT_TRUE( tetrahedronEntity.template getSubentityIndex< 1 >( 4 ) == 4 );
-   ASSERT_TRUE( tetrahedronEntity.template getSubentityIndex< 1 >( 5 ) == 5 );
+   EXPECT_EQ( tetrahedronEntity.template getSubentityIndex< 1 >( 0 ),  0 );
+   EXPECT_EQ( tetrahedronEntity.template getSubentityIndex< 1 >( 1 ),  1 );
+   EXPECT_EQ( tetrahedronEntity.template getSubentityIndex< 1 >( 2 ),  2 );
+   EXPECT_EQ( tetrahedronEntity.template getSubentityIndex< 1 >( 3 ),  3 );
+   EXPECT_EQ( tetrahedronEntity.template getSubentityIndex< 1 >( 4 ),  4 );
+   EXPECT_EQ( tetrahedronEntity.template getSubentityIndex< 1 >( 5 ),  5 );
+
+
+   generalTestSubentities( edgeEntities[ 0 ] );
+   generalTestSubentities( edgeEntities[ 1 ] );
+   generalTestSubentities( edgeEntities[ 2 ] );
+   generalTestSubentities( tetrahedronEntity );
 }
 
 TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
@@ -422,7 +455,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    static_assert( VertexMeshEntityType::SuperentityTraits< 1 >::storageEnabled, "Testing vertex entity does not store edges as required." );
 
    using PointType = typename VertexMeshEntityType::PointType;
-   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
+   EXPECT_EQ( PointType::getType(),  ( Containers::StaticVector< 2, RealType >::getType() ) );
 
    /****
     * We set-up the following situation
@@ -454,10 +487,10 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    vertexEntities[ 2 ].setPoint( point2 );
    vertexEntities[ 3 ].setPoint( point3 );
 
-   ASSERT_TRUE( vertexEntities[ 0 ].getPoint() == point0 );
-   ASSERT_TRUE( vertexEntities[ 1 ].getPoint() == point1 );
-   ASSERT_TRUE( vertexEntities[ 2 ].getPoint() == point2 );
-   ASSERT_TRUE( vertexEntities[ 3 ].getPoint() == point3 );
+   EXPECT_EQ( vertexEntities[ 0 ].getPoint(),  point0 );
+   EXPECT_EQ( vertexEntities[ 1 ].getPoint(),  point1 );
+   EXPECT_EQ( vertexEntities[ 2 ].getPoint(),  point2 );
+   EXPECT_EQ( vertexEntities[ 3 ].getPoint(),  point3 );
 
    Containers::StaticArray< 5, EdgeMeshEntityType > edgeEntities;
    SubentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 0 > edgeVertexSubentities;
@@ -480,16 +513,16 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    edgeEntities[ 4 ].template setSubentityIndex< 0 >( 0, 3 );
    edgeEntities[ 4 ].template setSubentityIndex< 0 >( 1, 1 );
 
-   ASSERT_TRUE( edgeEntities[ 0 ].getVertexIndex( 0 ) == 1 );
-   ASSERT_TRUE( edgeEntities[ 0 ].getVertexIndex( 1 ) == 2 );
-   ASSERT_TRUE( edgeEntities[ 1 ].getVertexIndex( 0 ) == 2 );
-   ASSERT_TRUE( edgeEntities[ 1 ].getVertexIndex( 1 ) == 0 );
-   ASSERT_TRUE( edgeEntities[ 2 ].getVertexIndex( 0 ) == 0 );
-   ASSERT_TRUE( edgeEntities[ 2 ].getVertexIndex( 1 ) == 1 );
-   ASSERT_TRUE( edgeEntities[ 3 ].getVertexIndex( 0 ) == 2 );
-   ASSERT_TRUE( edgeEntities[ 3 ].getVertexIndex( 1 ) == 3 );
-   ASSERT_TRUE( edgeEntities[ 4 ].getVertexIndex( 0 ) == 3 );
-   ASSERT_TRUE( edgeEntities[ 4 ].getVertexIndex( 1 ) == 1 );
+   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 0 ),  1 );
+   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 1 ),  2 );
+   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 0 ),  2 );
+   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 1 ),  0 );
+   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 0 ),  0 );
+   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 1 ),  1 );
+   EXPECT_EQ( edgeEntities[ 3 ].getVertexIndex( 0 ),  2 );
+   EXPECT_EQ( edgeEntities[ 3 ].getVertexIndex( 1 ),  3 );
+   EXPECT_EQ( edgeEntities[ 4 ].getVertexIndex( 0 ),  3 );
+   EXPECT_EQ( edgeEntities[ 4 ].getVertexIndex( 1 ),  1 );
 
    Containers::StaticArray< 2, TriangleMeshEntityType > triangleEntities;
    SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 0 > triangleVertexSubentities;
@@ -516,18 +549,18 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    triangleEntities[ 1 ].template setSubentityIndex< 1 >( 1 , 4 );
    triangleEntities[ 1 ].template setSubentityIndex< 1 >( 2 , 0 );
 
-   ASSERT_TRUE( triangleEntities[ 0 ].template getSubentityIndex< 0 >( 0 ) == 0 );
-   ASSERT_TRUE( triangleEntities[ 0 ].template getSubentityIndex< 0 >( 1 ) == 1 );
-   ASSERT_TRUE( triangleEntities[ 0 ].template getSubentityIndex< 0 >( 2 ) == 2 );
-   ASSERT_TRUE( triangleEntities[ 0 ].template getSubentityIndex< 1 >( 0 ) == 0 );
-   ASSERT_TRUE( triangleEntities[ 0 ].template getSubentityIndex< 1 >( 1 ) == 1 );
-   ASSERT_TRUE( triangleEntities[ 0 ].template getSubentityIndex< 1 >( 2 ) == 2 );
-   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 0 >( 0 ) == 1 );
-   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 0 >( 1 ) == 2 );
-   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 0 >( 2 ) == 3 );
-   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 0 ) == 3 );
-   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 1 ) == 4 );
-   ASSERT_TRUE( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 2 ) == 0 );
+   EXPECT_EQ( triangleEntities[ 0 ].template getSubentityIndex< 0 >( 0 ),  0 );
+   EXPECT_EQ( triangleEntities[ 0 ].template getSubentityIndex< 0 >( 1 ),  1 );
+   EXPECT_EQ( triangleEntities[ 0 ].template getSubentityIndex< 0 >( 2 ),  2 );
+   EXPECT_EQ( triangleEntities[ 0 ].template getSubentityIndex< 1 >( 0 ),  0 );
+   EXPECT_EQ( triangleEntities[ 0 ].template getSubentityIndex< 1 >( 1 ),  1 );
+   EXPECT_EQ( triangleEntities[ 0 ].template getSubentityIndex< 1 >( 2 ),  2 );
+   EXPECT_EQ( triangleEntities[ 1 ].template getSubentityIndex< 0 >( 0 ),  1 );
+   EXPECT_EQ( triangleEntities[ 1 ].template getSubentityIndex< 0 >( 1 ),  2 );
+   EXPECT_EQ( triangleEntities[ 1 ].template getSubentityIndex< 0 >( 2 ),  3 );
+   EXPECT_EQ( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 0 ),  3 );
+   EXPECT_EQ( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 1 ),  4 );
+   EXPECT_EQ( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 2 ),  0 );
 
 
    /*
@@ -542,9 +575,9 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 0, 2 );
    vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 1, 1 );
 
-   ASSERT_EQ( vertexEntities[ 0 ].template getSuperentitiesCount< 1 >(),  2 );
-   ASSERT_EQ( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 0 ),    2 );
-   ASSERT_EQ( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 1 ),    1 );
+   EXPECT_EQ( vertexEntities[ 0 ].template getSuperentitiesCount< 1 >(),  2 );
+   EXPECT_EQ( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 0 ),    2 );
+   EXPECT_EQ( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 1 ),    1 );
 
    vertexEntities[ 1 ].template bindSuperentitiesStorageNetwork< 1 >( vertexEdgeSuperentities.getValues( 1 ) );
    vertexEntities[ 1 ].template setNumberOfSuperentities< 1 >( 3 );
@@ -552,10 +585,10 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 1, 2 );
    vertexEntities[ 1 ].template setSuperentityIndex< 1 >( 2, 4 );
 
-   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentitiesCount< 1 >(),  3 );
-   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 0 ),    0 );
-   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 1 ),    2 );
-   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 2 ),    4 );
+   EXPECT_EQ( vertexEntities[ 1 ].template getSuperentitiesCount< 1 >(),  3 );
+   EXPECT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 0 ),    0 );
+   EXPECT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 1 ),    2 );
+   EXPECT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 2 ),    4 );
 
 
    SuperentityStorage< TestTriangleMeshConfig, MeshVertexTopology, 2 > vertexCellSuperentities;
@@ -567,9 +600,9 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 0, 0 );
    vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 1, 1 );
 
-   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentitiesCount< 2 >(),  2 );
-   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 0 ),    0 );
-   ASSERT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 1 ),    1 );
+   EXPECT_EQ( vertexEntities[ 1 ].template getSuperentitiesCount< 2 >(),  2 );
+   EXPECT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 0 ),    0 );
+   EXPECT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 1 ),    1 );
 
 
    SuperentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 2 > edgeCellSuperentities;
@@ -581,9 +614,21 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 0, 0 );
    edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 1, 1 );
 
-   ASSERT_EQ( edgeEntities[ 0 ].template getSuperentitiesCount< 2 >(),  2 );
-   ASSERT_EQ( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 0 ),    0 );
-   ASSERT_EQ( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 1 ),    1 );
+   EXPECT_EQ( edgeEntities[ 0 ].template getSuperentitiesCount< 2 >(),  2 );
+   EXPECT_EQ( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 0 ),    0 );
+   EXPECT_EQ( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 1 ),    1 );
+
+
+   generalTestSuperentities( vertexEntities[ 0 ] );
+   generalTestSuperentities( vertexEntities[ 1 ] );
+   generalTestSuperentities( edgeEntities[ 0 ] );
+   generalTestSubentities( edgeEntities[ 0 ] );
+   generalTestSubentities( edgeEntities[ 1 ] );
+   generalTestSubentities( edgeEntities[ 2 ] );
+   generalTestSubentities( edgeEntities[ 3 ] );
+   generalTestSubentities( edgeEntities[ 4 ] );
+   generalTestSubentities( triangleEntities[ 0 ] );
+   generalTestSubentities( triangleEntities[ 1 ] );
 }
 
 TEST( MeshEntityTest, OneTriangleComparisonTest )
@@ -600,7 +645,7 @@ TEST( MeshEntityTest, OneTriangleComparisonTest )
    static_assert( VertexMeshEntityType::SuperentityTraits< 1 >::storageEnabled, "Testing vertex entity does not store edges as required." );
 
    using PointType = typename VertexMeshEntityType::PointType;
-   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
+   EXPECT_EQ( PointType::getType(),  ( Containers::StaticVector< 2, RealType >::getType() ) );
 
    PointType point0( 0.0, 0.0 ),
              point1( 1.0, 0.0 ),
