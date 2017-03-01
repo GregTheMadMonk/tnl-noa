@@ -11,12 +11,12 @@ tnl-grid-setup --dimensions 2 \
 tnl-init --test-function heaviside-of-vector-norm \
          --output-file init.tnl \
          --coefficient -1.0 \
-         --center-0 0.5 \
-         --center-1 0.5 \
-         --center-2 0.5 \
-         --radius 0.2 \
-         --power 0.6 \
-         --max-norm false
+         --vector-norm-center-0 0.5 \
+         --vector-norm-center-1 0.5 \
+         --vector-norm-center-2 0.5 \
+         --vector-norm-radius 0.2 \
+         --vector-norm-power 0.6 \
+         --vector-norm-max-norm false
 
 tnl-transport-equation --device host \
                        --initial-condition init.tnl \
