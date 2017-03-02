@@ -18,6 +18,11 @@ template< typename Matrix,
           typename Preconditioner >
 CG< Matrix, Preconditioner > :: CG()
 {
+   /****
+    * Clearing the shared pointer means that there is no
+    * preconditioner set.
+    */
+   this->preconditioner.clear();   
 }
 
 template< typename Matrix,
