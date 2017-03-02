@@ -153,25 +153,10 @@ operator()( const PreimageFunction& u,
 {  
    static_assert( EntityType::entityDimensions == 2, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimensions() == 2, "Wrong preimage function" );
-  // std::cerr << "Lin Diff op:" <<__LINE__ << std::endl<< std::flush;
    const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
-  // std::cerr << "Lin Diff op:" <<__LINE__ << std::endl<< std::flush;
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >();
- //  std::cerr << "Lin Diff op:" <<__LINE__ << std::endl<< std::flush;
    const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >();
- //  std::cerr << "Lin Diff op:" <<__LINE__ << std::endl<< std::flush;
-   
-   //int stop;
-   //std::cin >> stop;
-   
- /*  std::cerr << "Lin Diff indexes:" <<__LINE__ << "\t"
-           << neighbourEntities.template getEntityIndex< -1,  0 >()<<"\t"
-           << neighbourEntities.template getEntityIndex< 1,  0 >()<<"\t"
-           <<neighbourEntities.template getEntityIndex< 0,  -1 >()<<"\t"
-           <<neighbourEntities.template getEntityIndex< 0,  1 >()<<"\t"
-           <<std::endl<< std::flush;*/
-   
-   //std::cin >> stop;
+
    return ( u[ neighbourEntities.template getEntityIndex< -1,  0 >() ]
           + u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] ) * hxSquareInverse +
           ( u[ neighbourEntities.template getEntityIndex<  0, -1 >() ]

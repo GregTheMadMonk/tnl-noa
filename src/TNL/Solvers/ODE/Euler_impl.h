@@ -240,10 +240,7 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
 
    
    
-   localResidue /= tau * ( RealType ) size;
-   
-   std::cout << time << "   " << tau << std:: endl;
-   
+   localResidue /= tau * ( RealType ) size;   
    MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this->solver_comm );
 
 }
