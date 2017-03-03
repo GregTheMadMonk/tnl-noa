@@ -293,6 +293,10 @@ public:
          }
       }
 
+      // no cells found
+      if( cellIndex == 0 )
+         return false;
+
       return meshBuilder.build( mesh );
    }
 
