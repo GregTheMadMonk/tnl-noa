@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <limits>
+
 #include <TNL/Functions/MeshFunctionVTKWriter.h>
 #include <TNL/Meshes/Readers/VTKEntityType.h>
 
@@ -46,7 +48,8 @@ write( const MeshFunction& function,
    const GlobalIndex entitiesCount = mesh.template getEntitiesCount< MeshFunction::getEntitiesDimensions() >();
    const LocalIndex verticesPerEntity = EntityType::getVerticesCount();
 
-   str << "POINTS " << verticesCount << " float" << std::endl;
+   str << "POINTS " << verticesCount << " " << getType< typename MeshType::RealType >() << std::endl;
+   str.precision( std::numeric_limits< typename MeshType::RealType >::digits10 );
    for( GlobalIndex i = 0; i < verticesCount; i++ ) {
       const auto& vertex = mesh.template getEntity< 0 >( i );
       const auto& point = vertex.getPoint();
