@@ -11,7 +11,6 @@ SET( headers Domain.h
              MeshFunctionGnuplotWriter_impl.h
              MeshFunctionNormGetter.h
              MeshFunctionVTKWriter.h
-             MeshFunctionVTKWriter_impl.h             
              OperatorFunction.h
              TestFunction.h             
              TestFunction_impl.h

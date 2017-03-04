@@ -3,6 +3,7 @@ ADD_SUBDIRECTORY( MeshDetails )
 ADD_SUBDIRECTORY( Readers )
 ADD_SUBDIRECTORY( Topologies )
 ADD_SUBDIRECTORY( TypeResolver )
+ADD_SUBDIRECTORY( Writers )
 
 SET( headers BuildConfigTags.h
              DimensionTag.h
