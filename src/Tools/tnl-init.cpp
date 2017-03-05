@@ -65,7 +65,7 @@ int main( int argc, char* argv[] )
    if( ! parseObjectType( meshType, parsedMeshType ) )
    {
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
-      return false;
+      return EXIT_FAILURE;
    }
    if( ! resolveMeshType( parsedMeshType, parameters ) )
       return EXIT_FAILURE;
