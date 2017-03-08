@@ -801,7 +801,6 @@ template< typename Real,
           typename Index >
 bool tnlEllpackGraphMatrix< Real, Device, Index >::help( bool verbose )
 {
-    printf("here i am");
     if( !this->rearranged )
         return this->rearrangeMatrix( verbose );
 }

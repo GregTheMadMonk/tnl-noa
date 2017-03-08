@@ -28,6 +28,7 @@
 #include <matrices/tnlDenseMatrix.h>
 #include <matrices/tnlEllpackMatrix.h>
 #include <matrices/tnlEllpackSymMatrix.h>
+#include <matrices/tnlSlicedEllpackGraphMatrix.h>
 #include <matrices/tnlSlicedEllpackMatrix.h>
 #include <matrices/tnlChunkedEllpackMatrix.h>
 #include <matrices/tnlCSRMatrix.h>
@@ -44,6 +45,7 @@ void setupConfig( tnlConfigDescription& config )
        config.addEntryEnum< tnlString >( "ellpack" );
        config.addEntryEnum< tnlString >( "ellpack-sym" );
        config.addEntryEnum< tnlString >( "sliced-ellpack" );
+       config.addEntryEnum< tnlString >( "sliced-ellpack-graph" );
        config.addEntryEnum< tnlString >( "chunked-ellpack" );
        config.addEntryEnum< tnlString >( "csr" );
        config.addEntryEnum< tnlString >( "bi-ell" );
@@ -65,6 +67,7 @@ bool testMatrix( bool sym, const tnlParameterContainer& parameters )
 
    const tnlString& fileName = parameters.GetParameter< tnlString >( "input-file" );
    bool verbose = parameters.GetParameter< bool >( "verbose" );
+   cout << "verbose " << verbose << endl;
    fstream file;
    file.open( fileName.getString(), ios::in );
    if( ! file )
@@ -79,11 +82,6 @@ bool testMatrix( bool sym, const tnlParameterContainer& parameters )
        return false;
    if( ! tnlMatrixReader< Matrix >::verifyMtxFile( file, matrix, verbose ) )
       return false;
-   //for( int i = 0; i < matrix.getRows(); i++ )
-   //   for( int j = 0; j < matrix.getColumns(); j++ )
-   //   {
-   //      cout << "Row " << i << ", column " << j << ", value " << matrix.getElement( i, j ) << endl;
-   //   }
 
    if( parameters.GetParameter< bool >( "hard-test" ) )
    {
@@ -93,8 +91,6 @@ bool testMatrix( bool sym, const tnlParameterContainer& parameters )
          return false;
       //if( ! tnlMatrixReader< DenseMatrix >::verifyMtxFile( file, denseMatrix, verbose ) )
       //   return false;
-      //matrix.print( cout );
-      //denseMatrix.print( cout );
       for( IndexType i = 0; i < matrix.getRows(); i++ )
       {
          for( IndexType j = 0; j < matrix.getColumns(); j++ )
@@ -181,6 +177,12 @@ int main( int argc, char* argv[] )
    {
        if( !testMatrix< tnlSlicedEllpackMatrix< double, tnlHost, int > >( false, parameters ) )
           return EXIT_FAILURE;
+       return EXIT_SUCCESS;
+   }
+   if( matrixFormat == "sliced-ellpack-graph" )
+   {
+       if( !testMatrix< tnlSlicedEllpackGraphMatrix< double, tnlHost, int > >( true, parameters ) )
+           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "chunked-ellpack" )

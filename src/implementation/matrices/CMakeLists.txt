@@ -5,6 +5,7 @@ SET( headers tnlMatrix_impl.h
              tnlSparseMatrix_impl.h
              tnlEllpackMatrix_impl.h
              tnlEllpackSymMatrix_impl.h
+             tnlSlicedEllpackGraphMatrix_impl.h
              tnlSlicedEllpackMatrix_impl.h
              tnlSlicedEllpackSymMatrix_impl.h
              tnlChunkedEllpackMatrix_impl.h
