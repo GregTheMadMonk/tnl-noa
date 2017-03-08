@@ -96,13 +96,13 @@ typename enable_if_same_base< T, int >::type
 max( const T& a, const T& b )
 {
 #ifdef __CUDA_ARCH__
-   return ::max( a, b );
+   
 #else
-   /*return std::max( a, b );*/
-   if(a>=b)
-       return a;
-   else
-       return b;
+    #ifdef __MIC__
+       return ::max( a, b );
+    #else
+       return std::max( a, b );
+    #endif
 #endif
 }
 

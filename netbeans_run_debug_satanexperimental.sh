@@ -116,5 +116,5 @@ module load gcc-5.3.0 cmake-3.4.3 intel_parallel_studio_ex-2016.1
 cd Debug/bin
  export OFFLOAD_REPORT=0
 #./tnlMICArrayTest-dbg
-./tnlMICVectorTest-dbg
-# heat_eq
+#./tnlMICVectorTest-dbg
+ heat_eq
