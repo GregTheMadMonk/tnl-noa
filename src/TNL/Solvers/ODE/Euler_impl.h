@@ -221,9 +221,9 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
    {
 
 #ifdef HAVE_MIC
-      Devices::satanHider<RealType> mu;
+      Devices::MICHider<RealType> mu;
       mu.pointer=_u;
-      Devices::satanHider<RealType> mk1;
+      Devices::MICHider<RealType> mk1;
       mk1.pointer=_k1;
     #pragma offload target(mic) in(mu,mk1,size) inout(localResidue)
     {

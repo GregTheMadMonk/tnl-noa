@@ -183,10 +183,5 @@ std::ostream& operator << ( std::ostream& str, const Array< Element, Device, Ind
 } // namespace TNL
 
 #include <TNL/Containers/Array_impl.h>
-#include <TNL/Containers/ArrayMIC_impl.h>
 
-#ifdef HAVE_MIC
-    //MIC specializaton of Araray
-    #include <TNL/Containers/ArrayMIC_impl.h>
-#endif
 

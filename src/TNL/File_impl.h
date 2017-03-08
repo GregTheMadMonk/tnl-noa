@@ -144,7 +144,7 @@ bool File :: read( Type* buffer,
               perror( "Fread ended with the error code" );
               return false;
             }
-           Devices::satanHider<Type> device_buff;
+           Devices::MICHider<Type> device_buff;
            device_buff.pointer=buffer;
            #pragma offload target(mic) in(device_buff,readElements) in(host_buffer:length(transfer))
            {
@@ -275,7 +275,7 @@ bool File :: write( const Type* buffer,
          {
             Index transfer = std::min( elements - this->writtenElements, host_buffer_size );
             
-           Devices::satanHider<const Type> device_buff;
+           Devices::MICHider<const Type> device_buff;
            device_buff.pointer=buffer;
            #pragma offload target(mic) in(device_buff,writtenElements) out(host_buffer:length(transfer))
            {

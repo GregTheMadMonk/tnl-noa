@@ -45,7 +45,8 @@ min( const T& a, const T& b )
 #ifdef __CUDA_ARCH__
    return ::min( a, b );
 #else
-   return std::min( a, b );
+   //return std::min( a, b );
+   return !(b<a)?a:b;
 #endif
 }
 

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 function heat_eq {
-ext=""
+#ext=""
 #cd Debug/bin
-#ext="-dbg"
+ext="-dbg"
 
 export LD_LIBRARY_PATH=`pwd`"/../lib":$LD_LIBRARY_PATH
 
@@ -113,9 +113,8 @@ done
 
 
 module load gcc-5.3.0 cmake-3.4.3 intel_parallel_studio_ex-2016.1
-cd Release/bin
+cd Debug/bin
  export OFFLOAD_REPORT=0
-#./tnlSatanExperimentalTest-dbg
-#./tnlSatanExperimentalTest-dbg
-#./tnlSatanMICVectorExperimentalTest-dbg
- heat_eq
+#./tnlMICArrayTest-dbg
+./tnlMICVectorTest-dbg
+# heat_eq

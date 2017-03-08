@@ -36,16 +36,16 @@ namespace Devices {
 
 //useful if you have an adress to MIC memory
 template< typename Type >
-struct satanHider{
+struct MICHider{
     Type *pointer;
 };
 
 template <unsigned int VELIKOST>
-struct satanstruct{
+struct MICStruct{
 	uint8_t data[VELIKOST];
 };
 
-#define TNLMICSTRUCT(bb,typ) Devices::satanstruct<sizeof(typ)> s ## bb; \
+#define TNLMICSTRUCT(bb,typ) Devices::MICStruct<sizeof(typ)> s ## bb; \
                              memcpy((void*)& s ## bb,(void*)& bb,sizeof(typ));
 #define TNLMICSTRUCTOFF(bb,typ) s ## bb
 #define TNLMICSTRUCTUSE(bb,typ) typ * kernel ## bb = (typ*) &s ## bb;
@@ -54,12 +54,15 @@ struct satanstruct{
 
 
 #define TNLMICHIDE(bb,typ) uint8_t * u ## bb=(uint8_t *)&bb; \
-                           satanHider<typ> kernel ## bb;
+                           MICHider<typ> kernel ## bb;
 #define TNLMICHIDEALLOCOFF(bb,typ) in(u ## bb:length(sizeof(typ))) out(kernel ## bb)
 #define TNLMICHIDEALLOC(bb,typ) kernel ## bb.pointer=(typ*)malloc(sizeof(typ)); \
                                 memcpy((void*)kernel ## bb.pointer,(void*)u ## bb,sizeof(typ));
 #define TNLMICHIDEFREEOFF(bb,typ) in(kernel ## bb)
-#define TNLMICHIDEFREE(bb,typ) free((void*)kernel ## bb.pointer);
+#define TNLMICHIDEFREE(bb,typ) free((void*)kernel ## bb.pointer
+
+#define MICSupportMissingMessage \
+   std::cerr << "The MIC support is missing in the source file " << __FILE__ << " at line " << __LINE__ << "..." << std::endl;
 
 class MIC
 {
@@ -94,7 +97,7 @@ class MIC
         TYP * passToDevice(TYP &objektCPU)
         {
                 uint8_t * uk=(uint8_t *)&objektCPU; 
-                satanHider<TYP> ret;
+                MICHider<TYP> ret;
                 
                 #pragma offload target(mic) in(uk:length(sizeof(TYP))) out(ret)
                 {
@@ -110,7 +113,7 @@ class MIC
         static
         void freeFromDevice(TYP *objektMIC)
         {
-            satanHider<TYP> ptr;
+            MICHider<TYP> ptr;
             ptr.pointer=objektMIC;
             #pragma offload target(mic) in(ptr)
             {
@@ -123,7 +126,7 @@ class MIC
         {
             uint8_t image[size];
             std::memcpy((void*)&image,ptr,size);
-            Devices::satanHider<void> hide_ptr;
+            Devices::MICHider<void> hide_ptr;
             hide_ptr.pointer=mic_ptr;
             #pragma offload target(mic) in(hide_ptr) in(image) in(size)
             {
@@ -134,7 +137,7 @@ class MIC
         static inline
         void* AllocMIC(size_t size)
         {
-                Devices::satanHider<void> hide_ptr;
+                Devices::MICHider<void> hide_ptr;
                 #pragma offload target(mic) out(hide_ptr) in(size)
             {
                 hide_ptr.pointer=malloc(size);
@@ -145,7 +148,7 @@ class MIC
         static inline
         void FreeMIC(void* ptr)
         {
-                Devices::satanHider<void> hide_ptr;
+                Devices::MICHider<void> hide_ptr;
                 hide_ptr.pointer=ptr;
                 #pragma offload target(mic) in(hide_ptr)
                 {

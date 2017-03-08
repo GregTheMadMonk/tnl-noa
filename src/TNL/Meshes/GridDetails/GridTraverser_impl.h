@@ -476,9 +476,9 @@ processEntities(
     //GridEntity entity( gridPointer.template getData< Devices::MIC >(), begin, gridEntityParameters... );
 
 
-    Devices::satanHider<const GridType> hMicGrid;
+    Devices::MICHider<const GridType> hMicGrid;
     hMicGrid.pointer=& gridPointer.template getData< Devices::MIC >();
-    Devices::satanHider<UserData> hMicUserData;
+    Devices::MICHider<UserData> hMicUserData;
     hMicUserData.pointer=& userDataPointer.template modifyData<Devices::MIC>();
     TNLMICSTRUCT(begin, const CoordinatesType);
     TNLMICSTRUCT(end, const CoordinatesType);

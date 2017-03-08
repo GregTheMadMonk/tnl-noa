@@ -49,7 +49,7 @@ typename Vector::RealType VectorOperations< Devices::MIC >::getVectorMax( const 
  //tady je možnost paralelizace  
   typename Vector :: RealType result;
   typename Vector ::IndexType size=v.getSize();
-  Devices::satanHider<const typename Vector :: RealType > vct;
+  Devices::MICHider<const typename Vector :: RealType > vct;
   vct.pointer=v.getData();
   
   #pragma offload target(mic) in(vct,size) out(result)
@@ -70,7 +70,7 @@ typename Vector :: RealType VectorOperations< Devices::MIC > :: getVectorMin( co
  //tady je možnost paralelizace  
   typename Vector :: RealType result;
   typename Vector ::IndexType size=v.getSize();
-  Devices::satanHider<const typename Vector :: RealType > vct;
+  Devices::MICHider<const typename Vector :: RealType > vct;
   vct.pointer=v.getData();
   
   #pragma offload target(mic) in(vct,size) out(result)
@@ -91,7 +91,7 @@ typename Vector :: RealType VectorOperations< Devices::MIC > :: getVectorAbsMax(
  //tady je možnost paralelizace  
   typename Vector :: RealType result;
   typename Vector ::IndexType size=v.getSize();
-  Devices::satanHider<const typename Vector :: RealType > vct;
+  Devices::MICHider<const typename Vector :: RealType > vct;
   vct.pointer=v.getData();
   
   #pragma offload target(mic) in(vct,size) out(result)
@@ -113,7 +113,7 @@ typename Vector :: RealType VectorOperations< Devices::MIC > :: getVectorAbsMin(
  //tady je možnost paralelizace  
   typename Vector :: RealType result;
   typename Vector ::IndexType size=v.getSize();
-  Devices::satanHider<const typename Vector :: RealType > vct;
+  Devices::MICHider<const typename Vector :: RealType > vct;
   vct.pointer=v.getData();
   
   #pragma offload target(mic) in(vct,size) out(result)
@@ -138,7 +138,7 @@ VectorOperations< Devices::MIC >::getVectorL1Norm( const Vector& v )
    
    Real result( 0.0 );
    const Index n = v. getSize();
-   Devices::satanHider<const typename Vector :: RealType > vct;
+   Devices::MICHider<const Real > vct;
    vct.pointer=v.getData();
 
 #pragma offload target(mic) in(vct,n) inout(result)
@@ -159,7 +159,7 @@ VectorOperations< Devices::MIC >::getVectorL2Norm( const Vector& v )
    TNL_ASSERT( v. getSize() > 0, );
    Real result( 0.0 );
    const Index n = v. getSize();
-   Devices::satanHider<const typename Vector :: RealType > vct;
+   Devices::MICHider<const Real > vct;
    vct.pointer=v.getData();
 
 #pragma offload target(mic) in(vct,n) inout(result)
@@ -191,7 +191,7 @@ VectorOperations< Devices::MIC >:: getVectorLpNorm( const Vector& v,
    
    Real result( 0.0 );
    const Index n = v. getSize();
-   Devices::satanHider<const typename Vector :: RealType > vct;
+   Devices::MICHider<const Real > vct;
    vct.pointer=v.getData();
 
 #pragma offload target(mic) in(vct,n) inout(result)
@@ -215,7 +215,7 @@ typename Vector :: RealType VectorOperations< Devices::MIC > :: getVectorSum( co
 
    Real result( 0.0 );
    const Index n = v. getSize();
-   Devices::satanHider<const typename Vector :: RealType > vct;
+   Devices::MICHider<const Real > vct;
    vct.pointer=v.getData();
 
 #pragma offload target(mic) in(vct,n) inout(result)
@@ -239,8 +239,8 @@ typename Vector1 :: RealType VectorOperations< Devices::MIC> :: getVectorDiffere
  
    Real result( 0.0 );
    const Index n = v1. getSize();
-   Devices::satanHider<const typename Vector1 :: RealType > vct1;
-   Devices::satanHider<const typename Vector1 :: RealType > vct2;
+   Devices::MICHider<const Real > vct1;
+   Devices::MICHider<const Real > vct2;
    vct1.pointer=v1.getData();
    vct2.pointer=v2.getData();
   
@@ -264,8 +264,8 @@ typename Vector1 :: RealType VectorOperations< Devices::MIC > :: getVectorDiffer
  
    Real result( 0.0 );
    const Index n = v1. getSize();
-   Devices::satanHider<const typename Vector1 :: RealType > vct1;
-   Devices::satanHider<const typename Vector1 :: RealType > vct2;
+   Devices::MICHider<const Real > vct1;
+   Devices::MICHider<const Real > vct2;
    vct1.pointer=v1.getData();
    vct2.pointer=v2.getData();
   
@@ -289,8 +289,8 @@ typename Vector1 :: RealType VectorOperations< Devices::MIC > :: getVectorDiffer
  
    Real result( 0.0 );
    const Index n = v1. getSize();
-   Devices::satanHider<const typename Vector1 :: RealType > vct1;
-   Devices::satanHider<const typename Vector1 :: RealType > vct2;
+   Devices::MICHider<const Real > vct1;
+   Devices::MICHider<const Real > vct2;
    vct1.pointer=v1.getData();
    vct2.pointer=v2.getData();
   
@@ -314,8 +314,8 @@ typename Vector1 :: RealType VectorOperations< Devices::MIC > :: getVectorDiffer
  
    Real result( 0.0 );
    const Index n = v1. getSize();
-   Devices::satanHider<const typename Vector1 :: RealType > vct1;
-   Devices::satanHider<const typename Vector1 :: RealType > vct2;
+   Devices::MICHider<const Real > vct1;
+   Devices::MICHider<const Real > vct2;
    vct1.pointer=v1.getData();
    vct2.pointer=v2.getData();
   
@@ -342,8 +342,8 @@ getVectorDifferenceL1Norm( const Vector1& v1,
 
    Real result( 0.0 );
    const Index n = v1. getSize();
-   Devices::satanHider<const typename Vector1 :: RealType > vct1;
-   Devices::satanHider<const typename Vector1 :: RealType > vct2;
+   Devices::MICHider<const Real> vct1;
+   Devices::MICHider<const Real > vct2;
    vct1.pointer=v1.getData();
    vct2.pointer=v2.getData();
   
@@ -372,8 +372,8 @@ getVectorDifferenceL2Norm( const Vector1& v1,
    Real result( 0.0 );
    const Index n = v1. getSize();
    
-   Devices::satanHider<const typename Vector1 :: RealType > vct1;
-   Devices::satanHider<const typename Vector1 :: RealType > vct2;
+   Devices::MICHider<const Real > vct1;
+   Devices::MICHider<const Real > vct2;
    vct1.pointer=v1.getData();
    vct2.pointer=v2.getData();
   
@@ -415,8 +415,8 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    Real result( 0.0 );
    const Index n = v1. getSize();
    
-   Devices::satanHider<const typename Vector1 :: RealType > vct1;
-   Devices::satanHider<const typename Vector1 :: RealType > vct2;
+   Devices::MICHider<const Real > vct1;
+   Devices::MICHider<const Real > vct2;
    vct1.pointer=v1.getData();
    vct2.pointer=v2.getData();
   
@@ -443,8 +443,8 @@ typename Vector1::RealType VectorOperations< Devices::MIC > :: getVectorDifferen
 
    Real result( 0.0 );
    const Index n = v1. getSize();
-   Devices::satanHider<const typename Vector1 :: RealType > vct1;
-   Devices::satanHider<const typename Vector1 :: RealType > vct2;
+   Devices::MICHider<const Real > vct1;
+   Devices::MICHider<const Real > vct2;
    vct1.pointer=v1.getData();
    vct2.pointer=v2.getData();
   
@@ -467,7 +467,7 @@ void VectorOperations< Devices::MIC > :: vectorScalarMultiplication( Vector& v,
    TNL_ASSERT( v. getSize() > 0, );
 
    const Index n = v. getSize();
-   Devices::satanHider<typename Vector :: RealType > vct;
+   Devices::MICHider<Real > vct;
    vct.pointer=v.getData();
    Real a=alpha;
    
@@ -491,8 +491,8 @@ typename Vector1 :: RealType VectorOperations< Devices::MIC > :: getScalarProduc
 
    Real result( 0.0 );
    const Index n = v1. getSize();
-   Devices::satanHider<const typename Vector1 :: RealType > vct1;
-   Devices::satanHider<const typename Vector1 :: RealType > vct2;
+   Devices::MICHider<const Real > vct1;
+   Devices::MICHider<const Real > vct2;
    vct1.pointer=v1.getData();
    vct2.pointer=v2.getData();
    
@@ -536,8 +536,8 @@ void VectorOperations< Devices::MIC > :: addVector( Vector1& y,
    TNL_ASSERT( x. getSize() == y. getSize(), );
    
    const Index n = y. getSize();
-   Devices::satanHider<typename Vector1 :: RealType > vct;
-   Devices::satanHider<const typename Vector1 :: RealType > vct2;
+   Devices::MICHider<Real> vct;
+   Devices::MICHider<const Real> vct2;
    vct.pointer=y.getData();
    vct2.pointer=x.getData();
    Real a=alpha;
@@ -570,9 +570,9 @@ addVectors( Vector1& v,
    TNL_ASSERT( v.getSize() == v2.getSize(), );
    
     const Index n = v. getSize();
-    Devices::satanHider<typename Vector1 :: RealType > vct;
-    Devices::satanHider<const typename Vector1 :: RealType > vct1;
-    Devices::satanHider<const typename Vector1 :: RealType > vct2;
+    Devices::MICHider<Real> vct;
+    Devices::MICHider<const Real> vct1;
+    Devices::MICHider<const Real> vct2;
     vct.pointer=v.getData();
     vct1.pointer=v1.getData();
     vct2.pointer=v2.getData();
@@ -603,7 +603,7 @@ void VectorOperations< Devices::MIC >::computePrefixSum( Vector& v,
    TNL_ASSERT( v.getSize() > begin, );
    TNL_ASSERT( end > begin, );
    
-   Devices::satanHider<typename Vector :: RealType > vct;
+   Devices::MICHider<typename Vector :: RealType> vct;
    vct.pointer=v.getData();
 #pragma offload target(mic) in(vct,begin,end)
 {
@@ -627,7 +627,7 @@ void VectorOperations< Devices::MIC >::computeExclusivePrefixSum( Vector& v,
    TNL_ASSERT( begin >= 0, );
    TNL_ASSERT( end > begin, );
    
-   Devices::satanHider<typename Vector :: RealType > vct;
+   Devices::MICHider<Real> vct;
    vct.pointer=v.getData();
    
 #pragma offload target(mic) in(vct,begin,end)
