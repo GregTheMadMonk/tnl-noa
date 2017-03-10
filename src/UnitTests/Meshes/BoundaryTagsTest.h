@@ -13,6 +13,8 @@
 #include <TNL/Meshes/MeshDetails/initializer/MeshInitializer.h>
 #include <TNL/Meshes/MeshBuilder.h>
 
+namespace BoundaryTagsTest {
+
 using namespace TNL;
 using namespace TNL::Meshes;
 
@@ -111,5 +113,7 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
       EXPECT_EQ( mesh.template getInteriorEntityIndex< 1 >( i ), interiorFaces[ i ] );
    }
 }
+
+} // namespace BoundaryTagsTest
 
 #endif

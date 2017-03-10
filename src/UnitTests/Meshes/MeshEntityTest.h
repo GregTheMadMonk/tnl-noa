@@ -10,6 +10,8 @@
 #include <TNL/Meshes/Topologies/MeshTriangleTopology.h>
 #include <TNL/Meshes/Topologies/MeshTetrahedronTopology.h>
  
+namespace MeshEntityTest {
+
 using namespace TNL;
 using namespace TNL::Meshes;
 
@@ -786,5 +788,7 @@ TEST( MeshEntityTest, OneTriangleComparisonTest )
    TriangleMeshEntityType t2 = triangle;
    EXPECT_EQ( t2, triangle );
 }
+
+} // namespace MeshEntityTest
 
 #endif

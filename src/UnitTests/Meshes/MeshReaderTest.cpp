@@ -11,6 +11,10 @@
 
 #include "MeshTest.h"
 
+// TODO: remove this after refactoring with clang-rename
+#include "MeshEntityTest.h"
+#include "BoundaryTagsTest.h"
+
 using namespace TNL;
 using namespace TNL::Meshes;
 
@@ -151,7 +155,7 @@ public:
 
 #ifdef HAVE_GTEST 
       std::cout << "Running basic I/O tests..." << std::endl;
-      testFinishedMesh( mesh );
+      MeshTest::testFinishedMesh( mesh );
 #endif
 //      mesh.save( "mesh-test.tnl" );
 

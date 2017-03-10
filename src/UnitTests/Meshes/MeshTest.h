@@ -17,6 +17,8 @@
 #include <TNL/Meshes/MeshDetails/initializer/MeshInitializer.h>
 #include <TNL/Meshes/MeshBuilder.h>
 
+namespace MeshTest {
+
 using namespace TNL;
 using namespace TNL::Meshes;
 
@@ -804,5 +806,7 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
 
    testFinishedMesh( mesh );
 }
+
+} // namespace MeshTest
 
 #endif
