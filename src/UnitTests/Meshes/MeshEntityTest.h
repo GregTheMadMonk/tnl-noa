@@ -276,7 +276,7 @@ TEST( MeshEntityTest, TriangleMeshEntityTest )
    EXPECT_EQ( triangleEntity.template getSubentityIndex< 1 >( 2 ), 2 );
 }
 
-TEST( MeshEntityTest, TetragedronMeshEntityTest )
+TEST( MeshEntityTest, TetrahedronMeshEntityTest )
 {
    using TetrahedronMeshEntityType = TestMeshEntity< TestTetrahedronMeshConfig, MeshTetrahedronTopology >;
    using TriangleMeshEntityType = TestMeshEntity< TestTetrahedronMeshConfig, typename TetrahedronMeshEntityType::SubentityTraits< 2 >::SubentityTopology >;
