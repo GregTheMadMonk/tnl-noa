@@ -1,4 +1,5 @@
-SET( headers VTKWriter.h
+SET( headers NetgenWriter.h
+             VTKWriter.h
              VTKWriter_impl.h
 )
 

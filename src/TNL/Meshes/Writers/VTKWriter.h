@@ -29,6 +29,10 @@ template< typename Mesh, int EntityDimension > struct MeshEntityTypesVTKWriter;
 template< typename Mesh >
 class VTKWriter
 {
+   static_assert( Mesh::getMeshDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
+   // TODO: check also world dimension when grids allow it
+//   static_assert( Mesh::getWorldDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
+
    template< int EntityDimension >
    using EntitiesWriter = __impl::MeshEntitiesVTKWriter< Mesh, EntityDimension >;
 
