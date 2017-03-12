@@ -30,6 +30,7 @@ set( headers
      Logger_impl.h
      Math.h
      mpi-supp.h
+     ParallelFor.h
      param-types.h
      SharedPointer.h
      SmartPointer.h
