@@ -133,7 +133,7 @@ public:
 
          const GlobalIndexType facesCount = mesh.template getEntitiesCount< Mesh::getMeshDimension() - 1 >();
          DevicePointer< Mesh > meshPointer( mesh );
-         ParallelFor< DeviceType >::exec( 0, facesCount,
+         ParallelFor< DeviceType >::exec( (GlobalIndexType) 0, facesCount,
                                           kernel,
                                           &meshPointer.template modifyData< DeviceType >() );
 

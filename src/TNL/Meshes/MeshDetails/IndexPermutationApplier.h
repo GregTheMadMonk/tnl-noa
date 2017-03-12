@@ -125,27 +125,29 @@ public:
                      const IndexPermutationVector& perm,
                      const IndexPermutationVector& iperm )
    {
-      const auto entitiesCount = mesh.template getEntitiesCount< Dimension >();
-
+      using IndexType = typename Mesh::GlobalIndexType;
       using DeviceType = typename Mesh::DeviceType;
       using StorageArrayType = typename Mesh::template EntityTraits< Dimension >::StorageArrayType;
+
+      const IndexType entitiesCount = mesh.template getEntitiesCount< Dimension >();
+
       StorageArrayType entities;
       if( ! entities.setSize( entitiesCount ) )
          return false;
 
       // kernel to copy entities to new array, applying the permutation
       auto kernel1 = [] __cuda_callable__
-         ( typename Mesh::GlobalIndexType i,
+         ( IndexType i,
            const Mesh* mesh,
            typename StorageArrayType::ElementType* entitiesArray,
-           const typename Mesh::GlobalIndexType* perm )
+           const IndexType* perm )
       {
          entitiesArray[ i ] = mesh->template getEntity< Dimension >( perm[ i ] );
       };
 
       // kernel to copy permuted entities back to the mesh
       auto kernel2 = [] __cuda_callable__
-         ( typename Mesh::GlobalIndexType i,
+         ( IndexType i,
            Mesh* mesh,
            const typename StorageArrayType::ElementType* entitiesArray )
       {
@@ -155,12 +157,12 @@ public:
       };
 
       DevicePointer< Mesh > meshPointer( mesh );
-      ParallelFor< DeviceType >::exec( 0, entitiesCount,
+      ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
                                        kernel1,
                                        &meshPointer.template getData< DeviceType >(),
                                        entities.getData(),
                                        perm.getData() );
-      ParallelFor< DeviceType >::exec( 0, entitiesCount,
+      ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
                                        kernel2,
                                        &meshPointer.template modifyData< DeviceType >(),
                                        entities.getData() );

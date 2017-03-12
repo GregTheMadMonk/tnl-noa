@@ -21,6 +21,7 @@ bool permuteMultimapKeys( Multimap& multimap, const PermutationVector& perm )
 {
    static_assert( std::is_same< typename Multimap::DeviceType, typename PermutationVector::DeviceType >::value,
                   "The multimap and permutation vector must be stored on the same device." );
+   using IndexType = typename Multimap::IndexType;
    using DeviceType = typename Multimap::DeviceType;
    TNL_ASSERT( multimap.getKeysRange() == perm.getSize(),
                std::cerr << "multimap keys range is " << multimap.getKeysRange()
@@ -33,7 +34,7 @@ bool permuteMultimapKeys( Multimap& multimap, const PermutationVector& perm )
 
    // kernel to permute the rows of multimap into multimapCopy
    auto kernel = [] __cuda_callable__
-      ( typename Multimap::IndexType i,
+      ( IndexType i,
         const Multimap* multimap,
         Multimap* multimapCopy,
         const typename PermutationVector::RealType* perm )
@@ -46,7 +47,7 @@ bool permuteMultimapKeys( Multimap& multimap, const PermutationVector& perm )
    DevicePointer< Multimap > multimapPointer( multimap );
    DevicePointer< Multimap > multimapCopyPointer( multimapCopy );
 
-   ParallelFor< DeviceType >::exec( 0, multimap.getKeysRange(),
+   ParallelFor< DeviceType >::exec( (IndexType) 0, multimap.getKeysRange(),
                                     kernel,
                                     &multimapPointer.template getData< DeviceType >(),
                                     &multimapCopyPointer.template modifyData< DeviceType >(),
@@ -64,11 +65,12 @@ bool permuteMultimapValues( Multimap& multimap, const PermutationVector& iperm )
 {
    static_assert( std::is_same< typename Multimap::DeviceType, typename PermutationVector::DeviceType >::value,
                   "The multimap and permutation vector must be stored on the same device." );
+   using IndexType = typename Multimap::IndexType;
    using DeviceType = typename Multimap::DeviceType;
 
    // kernel to permute the multimap values
    auto kernel = [] __cuda_callable__
-      ( typename Multimap::IndexType i,
+      ( IndexType i,
         Multimap* multimap,
         const typename PermutationVector::RealType* iperm )
    {
@@ -78,7 +80,7 @@ bool permuteMultimapValues( Multimap& multimap, const PermutationVector& iperm )
    };
 
    DevicePointer< Multimap > multimapPointer( multimap );
-   ParallelFor< DeviceType >::exec( 0, multimap.getKeysRange(),
+   ParallelFor< DeviceType >::exec( (IndexType) 0, multimap.getKeysRange(),
                                     kernel,
                                     &multimapPointer.template modifyData< DeviceType >(),
                                     iperm.getData() );
