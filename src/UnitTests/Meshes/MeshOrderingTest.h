@@ -219,39 +219,47 @@ void testMesh( const Mesh< TestTriangleMeshConfig, Devices::Host >& mesh,
    }
 }
 
-TEST( MeshOrderingTest, TwoTrianglesTest )
+// hack due to TNL::Containers::Vector not supporting initilizer lists
+const std::array< int, 4 > _vertexIdentity { { 0, 1, 2, 3 } };
+const std::array< int, 5 > _edgeIdentity   { { 0, 1, 2, 3, 4 } };
+const std::array< int, 2 > _cellIdentity   { { 0, 1 } };
+
+const std::array< int, 4 > _vertexPermutation { { 3, 2, 0, 1 } };
+const std::array< int, 5 > _edgePermutation   { { 2, 0, 4, 1, 3 } };
+const std::array< int, 2 > _cellPermutation   { { 1, 0 } };
+
+const std::array< int, 4 > _vertexInversePermutation { { 2, 3, 1, 0 } };
+const std::array< int, 5 > _edgeInversePermutation   { { 1, 3, 0, 4, 2 } };
+const std::array< int, 2 > _cellInversePermutation   { { 1, 0 } };
+
+template< typename TNLVector, typename STDArray >
+void setPermutation( TNLVector& perm, const STDArray& stdperm )
+{
+   ASSERT_TRUE( perm.setSize( stdperm.size() ) );
+   for( int i = 0; i < perm.getSize(); i++ )
+      perm.setElement( i, stdperm[ i ] );
+}
+
+TEST( MeshOrderingTest, OrderingOnHost )
 {
    using MeshHost = Mesh< TestTriangleMeshConfig, Devices::Host >;
-   using MeshCuda = Mesh< TestTriangleMeshConfig, Devices::Cuda >;
 
    MeshHost mesh;
    ASSERT_TRUE( buildTriangleMesh( mesh ) );
 
-   // hack due to TNL::Containers::Vector not supporting initilizer lists
-   std::array< int, 4 > _vertexIdentity { { 0, 1, 2, 3 } };
-   std::array< int, 5 > _edgeIdentity   { { 0, 1, 2, 3, 4 } };
-   std::array< int, 2 > _cellIdentity   { { 0, 1 } };
-
-   std::array< int, 4 > _vertexPermutation { { 3, 2, 0, 1 } };
-   std::array< int, 5 > _edgePermutation   { { 2, 0, 4, 1, 3 } };
-   std::array< int, 2 > _cellPermutation   { { 1, 0 } };
-
-   std::array< int, 4 > _vertexInversePermutation { { 2, 3, 1, 0 } };
-   std::array< int, 5 > _edgeInversePermutation   { { 1, 3, 0, 4, 2 } };
-   std::array< int, 2 > _cellInversePermutation   { { 1, 0 } };
-
    using PermutationVector = typename MeshHost::IndexPermutationVector;
-   const PermutationVector vertexIdentity ( &_vertexIdentity[0], 4 );
-   const PermutationVector edgeIdentity   ( &_edgeIdentity[0],   5 );
-   const PermutationVector cellIdentity   ( &_cellIdentity[0],   2 );
-
-   const PermutationVector vertexPermutation ( &_vertexPermutation[0], 4 );
-   const PermutationVector edgePermutation   ( &_edgePermutation[0],   5 );
-   const PermutationVector cellPermutation   ( &_cellPermutation[0],   2 );
-
-   const PermutationVector vertexInversePermutation ( &_vertexInversePermutation[0], 4 );
-   const PermutationVector edgeInversePermutation   ( &_edgeInversePermutation[0],   5 );
-   const PermutationVector cellInversePermutation   ( &_cellInversePermutation[0],   2 );
+   PermutationVector vertexIdentity, edgeIdentity, cellIdentity,
+                     vertexPermutation, edgePermutation, cellPermutation,
+                     vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
+   setPermutation( vertexIdentity, _vertexIdentity );
+   setPermutation( edgeIdentity, _edgeIdentity );
+   setPermutation( cellIdentity, _cellIdentity );
+   setPermutation( vertexPermutation, _vertexPermutation );
+   setPermutation( edgePermutation, _edgePermutation );
+   setPermutation( cellPermutation, _cellPermutation );
+   setPermutation( vertexInversePermutation, _vertexInversePermutation );
+   setPermutation( edgeInversePermutation, _edgeInversePermutation );
+   setPermutation( cellInversePermutation, _cellInversePermutation );
 
    ASSERT_TRUE( mesh.template reorderEntities< 0 >( vertexPermutation, vertexInversePermutation ) );
    testMesh( mesh, vertexInversePermutation, edgeIdentity, cellIdentity );
@@ -261,41 +269,59 @@ TEST( MeshOrderingTest, TwoTrianglesTest )
 
    ASSERT_TRUE( mesh.template reorderEntities< 1 >( edgePermutation, edgeInversePermutation ) );
    testMesh( mesh, vertexInversePermutation, edgeInversePermutation, cellInversePermutation );
+};
 
 #ifdef HAVE_CUDA
-   MeshCuda meshCuda;
-   MeshHost mesh2;
-   ASSERT_TRUE( buildTriangleMesh( mesh2 ) );
-   meshCuda = mesh2;
-   using PermutationCuda = typename PermutationVector::CudaType;
+TEST( MeshOrderingTest, OrderingOnCuda )
+{
+   using MeshHost = Mesh< TestTriangleMeshConfig, Devices::Host >;
+   using MeshCuda = Mesh< TestTriangleMeshConfig, Devices::Cuda >;
 
-   PermutationCuda vertexPermutationCuda;
-   ASSERT_TRUE( vertexPermutationCuda.setLike( vertexPermutation ) );
-   vertexPermutationCuda = vertexPermutation;
-   PermutationCuda edgePermutationCuda;
-   ASSERT_TRUE( edgePermutationCuda.setLike( edgePermutation ) );
-   edgePermutationCuda = edgePermutation;
-   PermutationCuda cellPermutationCuda;
-   ASSERT_TRUE( cellPermutationCuda.setLike( cellPermutation ) );
-   cellPermutationCuda = cellPermutation;
+   MeshHost meshHost;
+   MeshCuda mesh;
+   ASSERT_TRUE( buildTriangleMesh( meshHost ) );
+   mesh = meshHost;
 
-   PermutationCuda vertexInversePermutationCuda;
-   ASSERT_TRUE( vertexInversePermutationCuda.setLike( vertexInversePermutation ) );
-   vertexInversePermutationCuda = vertexInversePermutation;
-   PermutationCuda edgeInversePermutationCuda;
-   ASSERT_TRUE( edgeInversePermutationCuda.setLike( edgeInversePermutation ) );
-   edgeInversePermutationCuda = edgeInversePermutation;
-   PermutationCuda cellInversePermutationCuda;
-   ASSERT_TRUE( cellInversePermutationCuda.setLike( cellInversePermutation ) );
-   cellInversePermutationCuda = cellInversePermutation;
+   using PermutationCuda = typename MeshCuda::IndexPermutationVector;
+   PermutationCuda vertexIdentity, edgeIdentity, cellIdentity,
+                   vertexPermutation, edgePermutation, cellPermutation,
+                   vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
+   setPermutation( vertexIdentity, _vertexIdentity );
+   setPermutation( edgeIdentity, _edgeIdentity );
+   setPermutation( cellIdentity, _cellIdentity );
+   setPermutation( vertexPermutation, _vertexPermutation );
+   setPermutation( edgePermutation, _edgePermutation );
+   setPermutation( cellPermutation, _cellPermutation );
+   setPermutation( vertexInversePermutation, _vertexInversePermutation );
+   setPermutation( edgeInversePermutation, _edgeInversePermutation );
+   setPermutation( cellInversePermutation, _cellInversePermutation );
 
-   ASSERT_TRUE( meshCuda.template reorderEntities< 0 >( vertexPermutationCuda, vertexInversePermutationCuda ) );
-   ASSERT_TRUE( meshCuda.template reorderEntities< 1 >( edgePermutationCuda, edgeInversePermutationCuda ) );
-   ASSERT_TRUE( meshCuda.template reorderEntities< 2 >( cellPermutationCuda, cellInversePermutationCuda ) );
+   ASSERT_TRUE( mesh.template reorderEntities< 0 >( vertexPermutation, vertexInversePermutation ) );
+   ASSERT_TRUE( mesh.template reorderEntities< 1 >( edgePermutation, edgeInversePermutation ) );
+   ASSERT_TRUE( mesh.template reorderEntities< 2 >( cellPermutation, cellInversePermutation ) );
 
-   EXPECT_EQ( meshCuda, mesh );
-#endif
+   // test is on host
+   {
+      // local scope so we can use the same names
+      using PermutationVector = typename MeshHost::IndexPermutationVector;
+      PermutationVector vertexIdentity, edgeIdentity, cellIdentity,
+                        vertexPermutation, edgePermutation, cellPermutation,
+                        vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
+      setPermutation( vertexIdentity, _vertexIdentity );
+      setPermutation( edgeIdentity, _edgeIdentity );
+      setPermutation( cellIdentity, _cellIdentity );
+      setPermutation( vertexPermutation, _vertexPermutation );
+      setPermutation( edgePermutation, _edgePermutation );
+      setPermutation( cellPermutation, _cellPermutation );
+      setPermutation( vertexInversePermutation, _vertexInversePermutation );
+      setPermutation( edgeInversePermutation, _edgeInversePermutation );
+      setPermutation( cellInversePermutation, _cellInversePermutation );
+
+      meshHost = mesh;
+      testMesh( meshHost, vertexInversePermutation, edgeInversePermutation, cellInversePermutation );
+   }
 };
+#endif
 
 } // namespace MeshOrderingTest
 
