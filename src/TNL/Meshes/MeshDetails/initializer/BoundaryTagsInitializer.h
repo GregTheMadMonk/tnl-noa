@@ -101,6 +101,10 @@ protected:
       }
    };
 
+// nvcc does not allow __cuda_callable__ lambdas inside private or protected sections
+#ifdef __NVCC__
+public:
+#endif
    // _T is necessary to force *partial* specialization, since explicit specializations
    // at class scope are forbidden
    template< bool AnyBoundaryTags = BoundaryTagsNeedInitialization<>::value, typename _T = void >
