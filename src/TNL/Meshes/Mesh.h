@@ -28,8 +28,11 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig > class MeshInitializer;
+template< typename Mesh > class BoundaryTagsInitializer;
 template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
 struct MeshEntityStorageRebinderDivisor;
+template< typename Mesh, int Dimension >
+struct IndexPermutationApplier;
 
 
 template< typename MeshConfig, typename Device, typename MeshType >
@@ -67,6 +70,7 @@ class Mesh
       using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
       using PointType       = typename MeshTraitsType::PointType;
       using RealType        = typename PointType::RealType;
+      using IndexPermutationVector = Containers::Vector< GlobalIndexType, DeviceType, GlobalIndexType >;
 
       template< int Dimension >
       using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
@@ -139,6 +143,17 @@ class Mesh
       const EntityType& getEntity( const GlobalIndexType& entityIndex ) const;
 
 
+      /*
+       * The permutations follow the definition used in the Metis library: Let M
+       * be the original mesh and M' the permuted mesh. Then entity with index i
+       * in M' is the entity with index perm[i] in M and entity with index j in
+       * M is the entity with index iperm[j] in M'.
+       */
+      template< int Dimension >
+      bool reorderEntities( const IndexPermutationVector& perm,
+                            const IndexPermutationVector& iperm );
+
+
       bool save( File& file ) const;
 
       bool load( File& file );
@@ -164,8 +179,13 @@ class Mesh
 
       friend MeshInitializer< MeshConfig >;
 
+      friend BoundaryTagsInitializer< Mesh >;
+
       template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
       friend struct MeshEntityStorageRebinderDivisor;
+
+      template< typename Mesh, int Dimension >
+      friend struct IndexPermutationApplier;
 };
 
 template< typename MeshConfig, typename Device >

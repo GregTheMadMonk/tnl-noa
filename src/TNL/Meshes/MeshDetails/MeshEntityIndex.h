@@ -45,6 +45,7 @@ public:
    }
 
 protected:
+   __cuda_callable__
    void setIndex( IDType id )
    {
       this->id = id;
@@ -65,6 +66,7 @@ public:
 
 protected:
    template< typename Index >
+   __cuda_callable__
    void setIndex( Index )
    {}
 };

@@ -30,6 +30,8 @@ template< typename MeshConfig >
 class MeshInitializer;
 template< typename DimensionTag, typename SuperdimensionTag >
 struct MeshEntityStorageRebinderWorker;
+template< typename Mesh, int Dimension >
+struct IndexPermutationApplier;
 
 template< typename MeshConfig,
           typename Device,
@@ -125,6 +127,9 @@ class MeshEntity
 
    template< typename DimensionTag, typename SuperdimensionTag >
    friend struct MeshEntityStorageRebinderWorker;
+
+   template< typename Mesh, int Dimension >
+   friend struct IndexPermutationApplier;
 };
 
 /****
@@ -206,6 +211,9 @@ class MeshEntity< MeshConfig, Device, MeshVertexTopology >
 
    template< typename DimensionTag, typename SuperdimensionTag >
    friend struct MeshEntityStorageRebinderWorker;
+
+   template< typename Mesh, int Dimension >
+   friend struct IndexPermutationApplier;
 };
 
 template< typename MeshConfig,

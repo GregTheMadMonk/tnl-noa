@@ -15,10 +15,23 @@ if( BUILD_CUDA )
                           ${GTEST_BOTH_LIBRARIES}
                           tnl${mpiExt}${debugExt}-${tnlVersion}
                           cudart dl rt "-L ${CUDA_TOOLKIT_ROOT_DIR}/lib64/" )
+
+   ADD_EXECUTABLE( MeshOrderingTest${mpiExt}${debugExt} ${headers} MeshOrderingTest.cpp )
+   SET_TARGET_PROPERTIES( MeshOrderingTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS
+                          "${CXX_TESTS_FLAGS} -DHAVE_CUDA -x cuda --cuda-path=${CUDA_TOOLKIT_ROOT_DIR} --cuda-gpu-arch=sm_21" )
+   TARGET_LINK_LIBRARIES( MeshOrderingTest${mpiExt}${debugExt}
+                          ${GTEST_BOTH_LIBRARIES}
+                          tnl${mpiExt}${debugExt}-${tnlVersion}
+                          cudart dl rt "-L ${CUDA_TOOLKIT_ROOT_DIR}/lib64/" )
 else( BUILD_CUDA )
    ADD_EXECUTABLE( MeshTest${mpiExt}${debugExt} ${headers} MeshTest.cpp )
    SET_TARGET_PROPERTIES( MeshTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS}" )
    TARGET_LINK_LIBRARIES( MeshTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
+                                                              tnl${mpiExt}${debugExt}-${tnlVersion} )
+
+   ADD_EXECUTABLE( MeshOrderingTest${mpiExt}${debugExt} ${headers} MeshOrderingTest.cpp )
+   SET_TARGET_PROPERTIES( MeshOrderingTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS}" )
+   TARGET_LINK_LIBRARIES( MeshOrderingTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
                                                               tnl${mpiExt}${debugExt}-${tnlVersion} )
 endif( BUILD_CUDA )
 
@@ -40,6 +53,7 @@ TARGET_LINK_LIBRARIES( StaticMultimapTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRA
 
 ADD_TEST( BoundaryTagsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/BoundaryTagsTest${mpiExt}${debugExt} )
 ADD_TEST( MeshTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MeshTest${mpiExt}${debugExt} )
+ADD_TEST( MeshOrderingTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MeshOrderingTest${mpiExt}${debugExt} )
 ADD_TEST( MeshEntityTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MeshEntityTest${mpiExt}${debugExt} )
 ADD_TEST( MultimapTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MultimapTest${mpiExt}${debugExt} )
 ADD_TEST( StaticMultimapTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MultimapTest${mpiExt}${debugExt} )

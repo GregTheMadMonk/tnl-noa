@@ -19,6 +19,7 @@
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshEntityStorageRebinder.h>
 #include <TNL/Meshes/MeshDetails/initializer/MeshInitializer.h>
+#include <TNL/Meshes/MeshDetails/IndexPermutationApplier.h>
 
 namespace TNL {
 namespace Meshes {
@@ -193,6 +194,47 @@ Mesh< MeshConfig, Device >::
 getEntity( const GlobalIndexType& entityIndex ) const
 {
    return getEntity< Entity::getEntityDimension() >( entityIndex );
+}
+
+
+template< typename MeshConfig, typename Device >
+   template< int Dimension >
+bool
+Mesh< MeshConfig, Device >::
+reorderEntities( const IndexPermutationVector& perm,
+                 const IndexPermutationVector& iperm )
+{
+   static_assert( entitiesAvailable< Dimension >(), "Entities which are not stored cannot be reordered." );
+
+   const GlobalIndexType entitiesCount = getEntitiesCount< Dimension >();
+
+   // basic sanity check
+   if( perm.getSize() != entitiesCount || iperm.getSize() != entitiesCount ) {
+      std::cerr << "Wrong size of permutation vectors: perm = " << perm << ", iperm = " << iperm << std::endl;
+      return false;
+   }
+   TNL_ASSERT( perm.min() == 0 && perm.max() == entitiesCount - 1,
+               std::cerr << "Given array is not a permutation: min = " << perm.min()
+                         << ", max = " << perm.max()
+                         << ", number of entities = " << entitiesCount
+                         << ", array = " << perm << std::endl; );
+   TNL_ASSERT( iperm.min() == 0 && iperm.max() == entitiesCount - 1,
+               std::cerr << "Given array is not a permutation: min = " << iperm.min()
+                         << ", max = " << iperm.max()
+                         << ", number of entities = " << entitiesCount
+                         << ", array = " << iperm << std::endl; );
+
+   const bool status = IndexPermutationApplier< Mesh, Dimension >::exec( *this, perm, iperm );
+   if( status ) {
+      // update pointers from entities into the subentity and superentity storage networks
+      // TODO: it would be enough to rebind just the permuted entities
+      MeshEntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
+
+      // update boundary tags
+      BoundaryTagsInitializer< Mesh >::exec( *this );
+   }
+
+   return status;
 }
 
 
