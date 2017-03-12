@@ -115,6 +115,9 @@ int getVTKEntityDimension( VTKEntityType type )
       case VTKEntityType::Wedge:          return 3;
       case VTKEntityType::Pyramid:        return 3;
    }
+   // this just avoids a compiler warning in GCC and nvcc (clang actually knows if the
+   // switch above covers all cases, and print a warning only when it does not)
+   throw 1;
 }
 
 // static mapping of TNL entity topologies to VTK types
