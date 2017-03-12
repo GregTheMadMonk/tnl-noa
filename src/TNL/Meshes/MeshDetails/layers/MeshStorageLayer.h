@@ -121,6 +121,27 @@ protected:
       static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
       return BaseType::getInteriorEntityIndex( DimensionTag< Dimension >(), i );
    }
+
+   // setters for boundary tags
+   template< int Dimension >
+   void resetBoundaryTags()
+   {
+      BaseType::resetBoundaryTags( DimensionTag< Dimension >() );
+   }
+
+   template< int Dimension >
+   bool updateBoundaryIndices()
+   {
+      return BaseType::updateBoundaryIndices( DimensionTag< Dimension >() );
+   }
+
+   template< int Dimension >
+   __cuda_callable__
+   void setIsBoundaryEntity( const typename EntityTraits< Dimension >::GlobalIndexType& entityIndex, bool isBoundary )
+   {
+      static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
+      BaseType::setIsBoundaryEntity( DimensionTag< Dimension >(), entityIndex, isBoundary );
+   }
 };
 
 

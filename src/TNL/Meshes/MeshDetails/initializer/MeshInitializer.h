@@ -104,7 +104,7 @@ class MeshInitializer
          // set pointers from entities into the subentity and superentity storage networks
          MeshEntityStorageRebinder< Mesh< MeshConfig > >::exec( mesh );
          // init boundary tags
-         BoundaryTagsInitializer< MeshType >::exec( *this, mesh );
+         BoundaryTagsInitializer< MeshType >::exec( mesh );
          return true;
       }
 
@@ -175,25 +175,6 @@ class MeshInitializer
       getReferenceOrientation( GlobalIndexType index ) const
       {
          return BaseType::getReferenceOrientation( DimensionTag(), index );
-      }
-
-
-      template< int Dimension >
-      void resetBoundaryTags()
-      {
-         mesh->resetBoundaryTags( Meshes::DimensionTag< Dimension >() );
-      }
-
-      template< int Dimension, typename GlobalIndexType >
-      void setIsBoundaryEntity( const GlobalIndexType& entityIndex, bool isBoundary )
-      {
-         mesh->setIsBoundaryEntity( Meshes::DimensionTag< Dimension >(), entityIndex, isBoundary );
-      }
-
-      template< int Dimension >
-      bool updateBoundaryIndices()
-      {
-         return mesh->updateBoundaryIndices( Meshes::DimensionTag< Dimension >() );
       }
 };
 

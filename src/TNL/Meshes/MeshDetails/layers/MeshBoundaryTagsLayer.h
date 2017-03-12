@@ -81,6 +81,7 @@ public:
       boundaryTags.setValue( false );
    }
 
+   __cuda_callable__
    void setIsBoundaryEntity( DimensionTag, const GlobalIndexType& entityIndex, bool isBoundary )
    {
       boundaryTags[ entityIndex ] = isBoundary;

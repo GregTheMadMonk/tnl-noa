@@ -11,6 +11,8 @@
 #pragma once
 
 #include <TNL/StaticFor.h>
+#include <TNL/ParallelFor.h>
+#include <TNL/DevicePointer.h>
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
@@ -18,68 +20,38 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename Mesh,
-          typename CurrentDimension = DimensionTag< Mesh::getMeshDimension() > >
-struct BoundaryTagsNeedInitialization
-{
-   using EntityTopology = typename MeshEntityTopology< typename Mesh::Config, CurrentDimension >::Topology;
-   static constexpr bool value = Mesh::Config::boundaryTagsStorage( EntityTopology() ) ||
-                                 BoundaryTagsNeedInitialization< Mesh, typename CurrentDimension::Decrement >::value;
-};
-
 template< typename Mesh >
-struct BoundaryTagsNeedInitialization< Mesh, DimensionTag< 0 > >
-{
-   using EntityTopology = typename MeshEntityTopology< typename Mesh::Config, DimensionTag< 0 > >::Topology;
-   static constexpr bool value = Mesh::Config::boundaryTagsStorage( EntityTopology() );
-};
-
-
-template< typename Mesh,
-          bool AnyBoundaryTags = BoundaryTagsNeedInitialization< Mesh >::value >
 class BoundaryTagsInitializer
 {
-   using GlobalIndexType = typename Mesh::Config::GlobalIndexType;
-   using LocalIndexType  = typename Mesh::Config::LocalIndexType;
-   using FaceTraits      = typename MeshTraits< typename Mesh::Config >::template EntityTraits< Mesh::getMeshDimension() - 1 >;
-   using FaceType        = typename FaceTraits::EntityType;
+   using DeviceType      = typename Mesh::DeviceType;
+   using GlobalIndexType = typename Mesh::GlobalIndexType;
+   using LocalIndexType  = typename Mesh::LocalIndexType;
+   using FaceType        = typename Mesh::Face;
 
-public:
-   template< typename MeshInitializer >
-   static bool exec( MeshInitializer& initializer, Mesh& mesh )
+protected:
+   // _T is necessary to force *partial* specialization, since explicit specializations
+   // at class scope are forbidden
+   template< typename CurrentDimension = DimensionTag< Mesh::getMeshDimension() >, typename _T = void >
+   struct BoundaryTagsNeedInitialization
    {
-      StaticFor< int, 0, Mesh::getMeshDimension() + 1, ResetBoundaryTags >::exec( initializer );
+      using EntityTopology = typename MeshEntityTopology< typename Mesh::Config, CurrentDimension >::Topology;
+      static constexpr bool value = Mesh::Config::boundaryTagsStorage( EntityTopology() ) ||
+                                    BoundaryTagsNeedInitialization< typename CurrentDimension::Decrement >::value;
+   };
 
-      const GlobalIndexType facesCount = mesh.template getEntitiesCount< Mesh::getMeshDimension() - 1 >();
-      for( GlobalIndexType faceIndex = 0; faceIndex < facesCount; faceIndex++ ) {
-         const auto& face = mesh.template getEntity< Mesh::getMeshDimension() - 1 >( faceIndex );
-         if( face.template getSuperentitiesCount< Mesh::getMeshDimension() >() == 1 ) {
-            // initialize the face
-            initializer.template setIsBoundaryEntity< Mesh::getMeshDimension() - 1 >( faceIndex, true );
-            // initialize the cell superentity
-            const GlobalIndexType cellIndex = face.template getSuperentityIndex< Mesh::getMeshDimension() >( 0 );
-            initializer.template setIsBoundaryEntity< Mesh::getMeshDimension() >( cellIndex, true );
-            // initialize all subentities
-            StaticFor< int, 0, Mesh::getMeshDimension() - 1, InitializeSubentities >::exec( initializer, faceIndex, face );
-         }
-      }
+   template< typename _T >
+   struct BoundaryTagsNeedInitialization< DimensionTag< 0 >, _T >
+   {
+      using EntityTopology = typename MeshEntityTopology< typename Mesh::Config, DimensionTag< 0 > >::Topology;
+      static constexpr bool value = Mesh::Config::boundaryTagsStorage( EntityTopology() );
+   };
 
-      // hack due to StaticFor operating only with void return type
-      bool result = true;
-
-      StaticFor< int, 0, Mesh::getMeshDimension() + 1, UpdateBoundaryIndices >::exec( initializer, result );
-
-      return result;
-   }
-
-private:
    template< int Dimension >
    struct ResetBoundaryTags
    {
-      template< typename MeshInitializer >
-      static void exec( MeshInitializer& initializer )
+      static void exec( Mesh& mesh )
       {
-         initializer.template resetBoundaryTags< Dimension >();
+         mesh.template resetBoundaryTags< Dimension >();
       }
    };
 
@@ -94,13 +66,13 @@ private:
       template< bool enabled = true, typename _T = void >
       struct Worker
       {
-         template< typename MeshInitializer >
-         static void exec( MeshInitializer& initializer, const GlobalIndexType& faceIndex, const FaceType& face )
+         __cuda_callable__
+         static void exec( Mesh& mesh, const GlobalIndexType& faceIndex, const FaceType& face )
          {
-            auto subentitiesCount = face.template getSubentitiesCount< Subdimension >();
-            for( decltype(subentitiesCount) i = 0; i < subentitiesCount; i++ ) {
+            const LocalIndexType subentitiesCount = face.template getSubentitiesCount< Subdimension >();
+            for( LocalIndexType i = 0; i < subentitiesCount; i++ ) {
                const GlobalIndexType subentityIndex = face.template getSubentityIndex< Subdimension >( i );
-               initializer.template setIsBoundaryEntity< Subdimension >( subentityIndex, true );
+               mesh.template setIsBoundaryEntity< Subdimension >( subentityIndex, true );
             }
          }
       };
@@ -108,38 +80,81 @@ private:
       template< typename _T >
       struct Worker< false, _T >
       {
-         template< typename MeshInitializer >
-         static void exec( MeshInitializer& initializer, const GlobalIndexType& faceIndex, const FaceType& face )
-         {}
+         __cuda_callable__
+         static void exec( Mesh& mesh, const GlobalIndexType& faceIndex, const FaceType& face ) {}
       };
 
-      public:
-         template< typename MeshInitializer >
-         static void
-         exec( MeshInitializer& initializer, const GlobalIndexType& faceIndex, const FaceType& face )
-         {
-            Worker< enabled >::exec( initializer, faceIndex, face );
-         }
+   public:
+      __cuda_callable__
+      static void exec( Mesh& mesh, const GlobalIndexType& faceIndex, const FaceType& face )
+      {
+         Worker< enabled >::exec( mesh, faceIndex, face );
+      }
    };
 
    template< int Dimension >
    struct UpdateBoundaryIndices
    {
-      template< typename MeshInitializer >
-      static void exec( MeshInitializer& initializer, bool& result )
+      static void exec( Mesh& mesh, bool& result )
       {
-         result &= initializer.template updateBoundaryIndices< Dimension >();
+         result &= mesh.template updateBoundaryIndices< Dimension >();
       }
    };
-};
 
-template< typename Mesh >
-struct BoundaryTagsInitializer< Mesh, false >
-{
-   template< typename MeshInitializer >
-   static bool exec( MeshInitializer& initializer, Mesh& mesh )
+   // _T is necessary to force *partial* specialization, since explicit specializations
+   // at class scope are forbidden
+   template< bool AnyBoundaryTags = BoundaryTagsNeedInitialization<>::value, typename _T = void >
+   class Worker
    {
-      return true;
+   public:
+      static bool exec( Mesh& mesh )
+      {
+         StaticFor< int, 0, Mesh::getMeshDimension() + 1, ResetBoundaryTags >::exec( mesh );
+
+         auto kernel = [] __cuda_callable__
+            ( GlobalIndexType faceIndex,
+              Mesh* mesh )
+         {
+            const auto& face = mesh->template getEntity< Mesh::getMeshDimension() - 1 >( faceIndex );
+            if( face.template getSuperentitiesCount< Mesh::getMeshDimension() >() == 1 ) {
+               // initialize the face
+               mesh->template setIsBoundaryEntity< Mesh::getMeshDimension() - 1 >( faceIndex, true );
+               // initialize the cell superentity
+               const GlobalIndexType cellIndex = face.template getSuperentityIndex< Mesh::getMeshDimension() >( 0 );
+               mesh->template setIsBoundaryEntity< Mesh::getMeshDimension() >( cellIndex, true );
+               // initialize all subentities
+               StaticFor< int, 0, Mesh::getMeshDimension() - 1, InitializeSubentities >::exec( *mesh, faceIndex, face );
+            }
+         };
+
+         const GlobalIndexType facesCount = mesh.template getEntitiesCount< Mesh::getMeshDimension() - 1 >();
+         DevicePointer< Mesh > meshPointer( mesh );
+         ParallelFor< DeviceType >::exec( 0, facesCount,
+                                          kernel,
+                                          &meshPointer.template modifyData< DeviceType >() );
+
+         // hack due to StaticFor operating only with void return type
+         bool result = true;
+
+         StaticFor< int, 0, Mesh::getMeshDimension() + 1, UpdateBoundaryIndices >::exec( mesh, result );
+
+         return result;
+      }
+   };
+
+   template< typename _T >
+   struct Worker< false, _T >
+   {
+      static bool exec( Mesh& mesh )
+      {
+         return true;
+      }
+   };
+
+public:
+   static bool exec( Mesh& mesh )
+   {
+      return Worker<>::exec( mesh );
    }
 };
 
