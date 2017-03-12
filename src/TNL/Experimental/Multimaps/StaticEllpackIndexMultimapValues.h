@@ -44,7 +44,12 @@ class StaticEllpackIndexMultimapValues
       StaticEllpackIndexMultimapValues( StaticEllpackIndexMultimapValues&& other );
 
       __cuda_callable__
-      StaticEllpackIndexMultimapValues& operator=( const StaticEllpackIndexMultimapValues& );
+      StaticEllpackIndexMultimapValues& operator=( const StaticEllpackIndexMultimapValues& other );
+
+      // converting assignment, needed for 'const int' -> 'int' etc.
+      template< typename Index_, typename LocalIndex_, int step_ >
+      __cuda_callable__
+      StaticEllpackIndexMultimapValues& operator=( const StaticEllpackIndexMultimapValues< ValuesCount, Index_, Device, LocalIndex_, step_ >& other );
 
       __cuda_callable__
       StaticEllpackIndexMultimapValues& operator=( StaticEllpackIndexMultimapValues&& other );

@@ -64,11 +64,29 @@ EllpackIndexMultimapValues< Index, Device, LocalIndex, step >&
 EllpackIndexMultimapValues< Index, Device, LocalIndex, step >::
 operator=( const EllpackIndexMultimapValues& other )
 {
-   TNL_ASSERT( this->getSize() == other.getSize(), );
+   TNL_ASSERT( this->getAllocatedSize() >= other.getSize(), );
+   this->setSize( other.getSize() );
    if( this->values != other.values ) {
       for( LocalIndexType i = 0; i < this->getSize(); i++ )
          this->setValue( i, other[ i ] );
    }
+   return *this;
+}
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex,
+          int step >
+   template< typename Index_, typename LocalIndex_, int step_ >
+__cuda_callable__
+EllpackIndexMultimapValues< Index, Device, LocalIndex, step >&
+EllpackIndexMultimapValues< Index, Device, LocalIndex, step >::
+operator=( const EllpackIndexMultimapValues< Index_, Device, LocalIndex_, step_ >& other )
+{
+   TNL_ASSERT( this->getAllocatedSize() >= other.getSize(), );
+   this->setSize( other.getSize() );
+   for( LocalIndexType i = 0; i < this->getSize(); i++ )
+      this->setValue( i, other[ i ] );
    return *this;
 }
 

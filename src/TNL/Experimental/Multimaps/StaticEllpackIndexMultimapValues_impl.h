@@ -75,6 +75,22 @@ template< int ValuesCount,
           typename Device,
           typename LocalIndex,
           int step >
+   template< typename Index_, typename LocalIndex_, int step_ >
+__cuda_callable__
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >&
+StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::
+operator=( const StaticEllpackIndexMultimapValues< ValuesCount, Index_, Device, LocalIndex_, step_ >& other )
+{
+   for( LocalIndexType i = 0; i < this->getSize(); i++ )
+      this->setValue( i, other[ i ] );
+   return *this;
+}
+
+template< int ValuesCount,
+          typename Index,
+          typename Device,
+          typename LocalIndex,
+          int step >
 __cuda_callable__
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >&
 StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >::

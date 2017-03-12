@@ -159,6 +159,7 @@ setLike( const EllpackIndexMultimap< Index, Device_, LocalIndex, SliceSize_ >& o
       return false;
    if( ! valuesCounts.setLike( other.valuesCounts ) )
       return false;
+   valuesCounts = other.valuesCounts;
    keysRange = other.keysRange;
    maxValuesCount = other.maxValuesCount;
 

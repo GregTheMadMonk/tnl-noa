@@ -44,6 +44,11 @@ class EllpackIndexMultimapValues
       __cuda_callable__
       EllpackIndexMultimapValues& operator=( const EllpackIndexMultimapValues& );
 
+      // converting assignment, needed for 'const int' -> 'int' etc.
+      template< typename Index_, typename LocalIndex_, int step_ >
+      __cuda_callable__
+      EllpackIndexMultimapValues& operator=( const EllpackIndexMultimapValues< Index_, Device, LocalIndex_, step_ >& other );
+
       __cuda_callable__
       EllpackIndexMultimapValues& operator=( EllpackIndexMultimapValues&& other );
 
