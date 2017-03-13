@@ -29,8 +29,7 @@ namespace Meshes {
 
 template< typename MeshConfig > class MeshInitializer;
 template< typename Mesh > class BoundaryTagsInitializer;
-template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
-struct MeshEntityStorageRebinderDivisor;
+template< typename Mesh > class MeshEntityStorageRebinder;
 template< typename Mesh, int Dimension >
 struct IndexPermutationApplier;
 
@@ -181,8 +180,7 @@ class Mesh
 
       friend BoundaryTagsInitializer< Mesh >;
 
-      template< typename Mesh, typename DimensionTag, typename SuperdimensionTag >
-      friend struct MeshEntityStorageRebinderDivisor;
+      friend MeshEntityStorageRebinder< Mesh >;
 
       template< typename Mesh, int Dimension >
       friend struct IndexPermutationApplier;

@@ -26,12 +26,10 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename MeshConfig >
-class MeshInitializer;
-template< typename DimensionTag, typename SuperdimensionTag >
-struct MeshEntityStorageRebinderWorker;
-template< typename Mesh, int Dimension >
-struct IndexPermutationApplier;
+template< typename MeshConfig, typename Device > class Mesh;
+template< typename MeshConfig > class MeshInitializer;
+template< typename Mesh > class MeshEntityStorageRebinder;
+template< typename Mesh, int Dimension > struct IndexPermutationApplier;
 
 template< typename MeshConfig,
           typename Device,
@@ -125,8 +123,7 @@ class MeshEntity
 
    friend MeshInitializer< MeshConfig >;
 
-   template< typename DimensionTag, typename SuperdimensionTag >
-   friend struct MeshEntityStorageRebinderWorker;
+   friend MeshEntityStorageRebinder< Mesh< MeshConfig, DeviceType > >;
 
    template< typename Mesh, int Dimension >
    friend struct IndexPermutationApplier;
@@ -209,8 +206,7 @@ class MeshEntity< MeshConfig, Device, MeshVertexTopology >
 
    friend MeshInitializer< MeshConfig >;
 
-   template< typename DimensionTag, typename SuperdimensionTag >
-   friend struct MeshEntityStorageRebinderWorker;
+   friend MeshEntityStorageRebinder< Mesh< MeshConfig, DeviceType > >;
 
    template< typename Mesh, int Dimension >
    friend struct IndexPermutationApplier;
