@@ -110,6 +110,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       protected:
          
          MeshFunctionPointer uPointer;
+         MeshFunctionPointer fuPointer;
       
          DifferentialOperatorPointer differentialOperatorPointer;
 

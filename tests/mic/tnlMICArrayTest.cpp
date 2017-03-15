@@ -1,7 +1,7 @@
 /**
  *  Experimentalní test pro získání zkušeností s TNL a (a strarým dobrým MIC, intel offloadingem a podobně) 
  */
-
+ 
 #include <iostream>
 #include <TNL/Devices/MIC.h>
 #include <omp.h>
@@ -16,7 +16,7 @@
 
 unsigned int errors=0;
 unsigned int success=0;
-#define TEST_TEST(a) if((a)){cout << __LINE__ <<":\t OK" <<endl;success++;}else{cout << __LINE__<<":\t FAIL" <<endl;errors++;}
+#define TEST_TEST(a) if((a)){cout << __LINE__ <<":\t OK " <<endl;success++;}else{cout << __LINE__<<":\t FAIL" <<endl;errors++;}
 #define TEST_RESULT cout<<"SUCCES: "<<success<<endl<<"ERRRORS: "<<errors<<endl;
 inline void Test_Say( const char * message)
 {

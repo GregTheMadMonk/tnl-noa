@@ -23,6 +23,7 @@
 #include <TNL/Timer.h>
 
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Debugging/StackBacktrace.h>
 
 namespace TNL {
 
