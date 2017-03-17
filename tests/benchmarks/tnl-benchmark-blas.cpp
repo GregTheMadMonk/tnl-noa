@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnl-cuda-benchmarks.cu  -  description
+                          tnl-benchmark-blas.cpp  -  description
                              -------------------
     begin                : May 28, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "tnl-cuda-benchmarks.h"
+#include "tnl-benchmark-blas.h"

@@ -107,13 +107,17 @@ benchmarkSpMV( Benchmark & benchmark,
     benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
 
     if( ! hostRowLengths.setSize( size ) ||
-        ! deviceRowLengths.setSize( size ) ||
         ! hostMatrix.setDimensions( size, size ) ||
-        ! deviceMatrix.setDimensions( size, size ) ||
         ! hostVector.setSize( size ) ||
-        ! hostVector2.setSize( size ) ||
+        ! hostVector2.setSize( size )
+#ifdef HAVE_CUDA
+        ||
+        ! deviceRowLengths.setSize( size ) ||
+        ! deviceMatrix.setDimensions( size, size ) ||
         ! deviceVector.setSize( size ) ||
-        ! deviceVector2.setSize( size ) )
+        ! deviceVector2.setSize( size )
+#endif
+        )
     {
         const char* msg = "error: allocation of vectors failed";
         std::cerr << msg << std::endl;
@@ -122,7 +126,9 @@ benchmarkSpMV( Benchmark & benchmark,
     }
 
     hostRowLengths.setValue( elementsPerRow );
+#ifdef HAVE_CUDA
     deviceRowLengths.setValue( elementsPerRow );
+#endif
 
     if( ! hostMatrix.setCompressedRowsLengths( hostRowLengths ) ) {
         const char* msg = "error: allocation of host matrix failed";
@@ -130,12 +136,14 @@ benchmarkSpMV( Benchmark & benchmark,
         benchmark.addErrorMessage( msg, 2 );
         return false;
     }
+#ifdef HAVE_CUDA
     if( ! deviceMatrix.setCompressedRowsLengths( deviceRowLengths ) ) {
         const char* msg = "error: allocation of device matrix failed";
         std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg, 2 );
         return false;
     }
+#endif
 
     const int elements = setHostTestMatrix< HostMatrix >( hostMatrix, elementsPerRow );
     setCudaTestMatrix< DeviceMatrix >( deviceMatrix, elementsPerRow );
@@ -144,9 +152,11 @@ benchmarkSpMV( Benchmark & benchmark,
     // reset function
     auto reset = [&]() {
         hostVector.setValue( 1.0 );
-        deviceVector.setValue( 1.0 );
         hostVector2.setValue( 0.0 );
+#ifdef HAVE_CUDA
+        deviceVector.setValue( 1.0 );
         deviceVector2.setValue( 0.0 );
+#endif
     };
 
     // compute functions
@@ -158,9 +168,10 @@ benchmarkSpMV( Benchmark & benchmark,
     };
 
     benchmark.setOperation( datasetSize );
-    benchmark.time( reset,
-                    "CPU", spmvHost,
-                    "GPU", spmvCuda );
+    benchmark.time( reset, "CPU", spmvHost );
+#ifdef HAVE_CUDA
+    benchmark.time( reset, "GPU", spmvCuda );
+#endif
 
     return true;
 }
