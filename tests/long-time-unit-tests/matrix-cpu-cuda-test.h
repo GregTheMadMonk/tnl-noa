@@ -61,7 +61,7 @@ template< typename matrix >
 bool testGPU( tnlMatrix< double, tnlHost, int >& hostMatrix, matrix& cudaMatrix)
 {
     // first perform compare test -- compare all elements using getElement( i, j ) method
-    for( int i = 0; i < hostMatrix.getRows(); i++ )
+    /*for( int i = 0; i < hostMatrix.getRows(); i++ )
         for( int j = 0; j < hostMatrix.getColumns(); j++ )
         {
             double a = hostMatrix.getElement( i, j );
@@ -76,7 +76,7 @@ bool testGPU( tnlMatrix< double, tnlHost, int >& hostMatrix, matrix& cudaMatrix)
                 return 1;
             }
         }
-    cout << "Elements in sparse and dense matrix are the same. Everything is peachy so far." << endl;
+    cout << "Elements in sparse and dense matrix are the same. Everything is peachy so far." << endl;*/
 
     tnlVector< double, tnlCuda, int > x, b;
     x.setSize( cudaMatrix.getColumns() );
@@ -95,6 +95,8 @@ bool testGPU( tnlMatrix< double, tnlHost, int >& hostMatrix, matrix& cudaMatrix)
                      << "\n cudaMatrix.vectorProduct() == " << b.getElement( j ) << endl;
                 return 1;
             }
+        if( i % 100 == 0 )
+            cout << ".";
     }
     cout << "SPMV passed. We can go to production!" << endl;
 
