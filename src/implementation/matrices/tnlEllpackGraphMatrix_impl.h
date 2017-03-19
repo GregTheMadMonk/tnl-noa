@@ -872,10 +872,14 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::vectorProductHost( const InVe
 {
    for( IndexType color = 0; color < this->getNumberOfColors(); color++ )
    {
-      IndexType colorBegin = this->colorPointers[ color ];
+      // IndexType colorBegin = this->colorPointers[ color ];
+      IndexType offset = this->colorPointers[ color ];
       IndexType colorEnd = this->colorPointers[ color + 1 ];
-      for( IndexType row = colorBegin; row < colorEnd; row++ )
+      for( IndexType j = 0; j < this->getRowsOfColor( color ); j++ )
       {
+         IndexType row = offset + j;
+         if( row >= colorEnd )
+            break;
          IndexType i = DeviceDependentCode::getRowBegin( *this, row );
          const IndexType rowEnd = DeviceDependentCode::getRowEnd( *this, row );
          const IndexType step = DeviceDependentCode::getElementStep( *this );
@@ -948,20 +952,21 @@ void tnlEllpackGraphMatrix< Real, Device, Index >::spmvCuda( const InVector& inV
                                                              const int color ) const
 {
    IndexType offset = this->colorPointers[ color ];
+   const IndexType colorEnd = this->colorPointers[ color + 1 ];
    IndexType row = offset + globalIdx;
-   if( row >= this->getRows() )
+   if( row >= colorEnd )
       return;
 
    IndexType i = DeviceDependentCode::getRowBegin( *this, row );
    const IndexType rowEnd = DeviceDependentCode::getRowEnd( *this, row );
    const IndexType step = DeviceDependentCode::getElementStep( *this );
-   const IndexType rowMapping = this->inversePermutation[ row ];
+   const IndexType rowMapping = this->inversePermutationArray[ row ];
 
    while( i < rowEnd && this->columnIndexes[ i ] != this->getPaddingIndex() )
    {
       const IndexType column = this->columnIndexes[ i ];
       outVector[ rowMapping ] += this->values[ i ] * inVector[ column ];
-      if( row != column )
+      if( rowMapping != column )
          outVector[ column ] += this->values[ i ] * inVector[ rowMapping ];
       i += step;
    }
