@@ -84,7 +84,7 @@ class tnlSlicedEllpackGraphMatrix : public tnlSparseMatrix< Real, Device, Index 
 
    template< typename InVector,
              typename OutVector >
-   void vectorProductHost( const InVector& inVector, OutVector& outVector );
+   void vectorProductHost( const InVector& inVector, OutVector& outVector ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -222,6 +222,7 @@ class tnlSlicedEllpackGraphMatrix : public tnlSparseMatrix< Real, Device, Index 
    friend class tnlSlicedEllpackGraphMatrixDeviceDependentCode< DeviceType >;
 
    tnlVector< Index, Device, Index > permutationArray;
+   tnlVector< Index, Device, Index > inversePermutationArray;
    tnlVector< Index, Device, Index > colorPointers;
    bool rearranged;
 #ifdef HAVE_CUDA
