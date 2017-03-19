@@ -223,6 +223,11 @@ template< typename Vector >
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
+   tnlVector< Index, Device, Index > getInversePermutation();
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
    tnlVector< Index, Device, Index > getColorPointers();
 
    protected:
@@ -235,6 +240,7 @@ template< typename Vector >
    friend class tnlEllpackGraphMatrixDeviceDependentCode< DeviceType >;
 
    tnlVector< Index, Device, Index > permutationArray;
+   tnlVector< Index, Device, Index > inversePermutationArray;
    tnlVector< Index, Device, Index > colorPointers;
    bool rearranged;
 };
