@@ -6,12 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-#include "GMRES.h"
-
-
 /* See Copyright Notice in tnl/Copyright */
 
 #pragma once
+
+#include "GMRES.h"
 
 namespace TNL {
 namespace Solvers {
