@@ -117,8 +117,13 @@ main( int argc, char* argv[] )
     const String & logFileName = parameters.getParameter< String >( "log-file" );
     const String & outputMode = parameters.getParameter< String >( "output-mode" );
     const String & precision = parameters.getParameter< String >( "precision" );
-    const std::size_t minSize = parameters.getParameter< std::size_t >( "min-size" );
-    const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
+    // FIXME: getParameter< std::size_t >() does not work with parameters added with addEntry< int >(),
+    // which have a default value. The workaround below works for int values, but it is not possible
+    // to pass 64-bit integer values
+//    const std::size_t minSize = parameters.getParameter< std::size_t >( "min-size" );
+//    const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
+    const std::size_t minSize = parameters.getParameter< int >( "min-size" );
+    const std::size_t maxSize = parameters.getParameter< int >( "max-size" );
     const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
     const unsigned loops = parameters.getParameter< unsigned >( "loops" );
     const unsigned elementsPerRow = parameters.getParameter< unsigned >( "elements-per-row" );
