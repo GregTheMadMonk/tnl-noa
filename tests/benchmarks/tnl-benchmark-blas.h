@@ -1,12 +1,14 @@
 /***************************************************************************
-                          tnl-benchmarks.h  -  description
+                          tnl-benchmark-blas.h  -  description
                              -------------------
     begin                : Jan 27, 2010
-    copyright            : (C) 2010 by Tomas Oberhuber
+    copyright            : (C) 2010 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Jakub Klinkovsky
 
 #pragma once
 
@@ -28,10 +30,10 @@ using namespace TNL::benchmarks;
 
 template< typename Real >
 void
-runCudaBenchmarks( Benchmark & benchmark,
+runBlasBenchmarks( Benchmark & benchmark,
                    Benchmark::MetadataMap metadata,
-                   const unsigned & minSize,
-                   const unsigned & maxSize,
+                   const std::size_t & minSize,
+                   const std::size_t & maxSize,
                    const double & sizeStepFactor,
                    const unsigned & loops,
                    const unsigned & elementsPerRow )
@@ -42,7 +44,7 @@ runCudaBenchmarks( Benchmark & benchmark,
     // Array operations
     benchmark.newBenchmark( String("Array operations (") + precision + ")",
                             metadata );
-    for( unsigned size = minSize; size <= maxSize; size *= 2 ) {
+    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
         benchmark.setMetadataColumns( Benchmark::MetadataColumns({
            {"size", size},
         } ));
@@ -52,7 +54,7 @@ runCudaBenchmarks( Benchmark & benchmark,
     // Vector operations
     benchmark.newBenchmark( String("Vector operations (") + precision + ")",
                             metadata );
-    for( unsigned size = minSize; size <= maxSize; size *= sizeStepFactor ) {
+    for( std::size_t size = minSize; size <= maxSize; size *= sizeStepFactor ) {
         benchmark.setMetadataColumns( Benchmark::MetadataColumns({
            {"size", size},
         } ));
@@ -62,7 +64,7 @@ runCudaBenchmarks( Benchmark & benchmark,
     // Sparse matrix-vector multiplication
     benchmark.newBenchmark( String("Sparse matrix-vector multiplication (") + precision + ")",
                             metadata );
-    for( unsigned size = minSize; size <= maxSize; size *= 2 ) {
+    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
         benchmark.setMetadataColumns( Benchmark::MetadataColumns({
             {"rows", size},
             {"columns", size},
@@ -76,7 +78,7 @@ void
 setupConfig( Config::ConfigDescription & config )
 {
     config.addDelimiter( "Benchmark settings:" );
-    config.addEntry< String >( "log-file", "Log file name.", "tnl-cuda-benchmarks.log");
+    config.addEntry< String >( "log-file", "Log file name.", "tnl-benchmark-blas.log");
     config.addEntry< String >( "output-mode", "Mode for opening the log file.", "overwrite" );
     config.addEntryEnum( "append" );
     config.addEntryEnum( "overwrite" );
@@ -90,12 +92,15 @@ setupConfig( Config::ConfigDescription & config )
     config.addEntry< int >( "loops", "Number of iterations for every computation.", 10 );
     config.addEntry< int >( "elements-per-row", "Number of elements per row of the sparse matrix used in the matrix-vector multiplication benchmark.", 5 );
     config.addEntry< int >( "verbose", "Verbose mode.", 1 );
+
+    config.addDelimiter( "Device settings:" );
+    Devices::Host::configSetup( config );
+    Devices::Cuda::configSetup( config );
 }
 
 int
 main( int argc, char* argv[] )
 {
-#ifdef HAVE_CUDA
     Config::ParameterContainer parameters;
     Config::ConfigDescription conf_desc;
 
@@ -106,11 +111,14 @@ main( int argc, char* argv[] )
         return 1;
     }
 
+    Devices::Host::setup( parameters );
+    Devices::Cuda::setup( parameters );
+
     const String & logFileName = parameters.getParameter< String >( "log-file" );
     const String & outputMode = parameters.getParameter< String >( "output-mode" );
     const String & precision = parameters.getParameter< String >( "precision" );
-    const unsigned minSize = parameters.getParameter< unsigned >( "min-size" );
-    const unsigned maxSize = parameters.getParameter< unsigned >( "max-size" );
+    const std::size_t minSize = parameters.getParameter< std::size_t >( "min-size" );
+    const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
     const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
     const unsigned loops = parameters.getParameter< unsigned >( "loops" );
     const unsigned elementsPerRow = parameters.getParameter< unsigned >( "elements-per-row" );
@@ -137,9 +145,11 @@ main( int argc, char* argv[] )
                         + String( cacheSizes.L1instruction ) + ", "
                         + String( cacheSizes.L2 ) + ", "
                         + String( cacheSizes.L3 );
+#ifdef HAVE_CUDA
     const int activeGPU = Devices::CudaDeviceInfo::getActiveDevice();
     const String deviceArch = String( Devices::CudaDeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
-                                 String( Devices::CudaDeviceInfo::getArchitectureMinor( activeGPU ) );
+                              String( Devices::CudaDeviceInfo::getArchitectureMinor( activeGPU ) );
+#endif
     Benchmark::MetadataMap metadata {
         { "host name", Devices::Host::getHostname() },
         { "architecture", Devices::Host::getArchitecture() },
@@ -151,6 +161,7 @@ main( int argc, char* argv[] )
         { "CPU threads per core", Devices::Host::getNumberOfThreads( cpu_id ) / Devices::Host::getNumberOfCores( cpu_id ) },
         { "CPU max frequency (MHz)", Devices::Host::getCPUMaxFrequency( cpu_id ) / 1e3 },
         { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
+#ifdef HAVE_CUDA
         { "GPU name", Devices::CudaDeviceInfo::getDeviceName( activeGPU ) },
         { "GPU architecture", deviceArch },
         { "GPU CUDA cores", Devices::CudaDeviceInfo::getCudaCores( activeGPU ) },
@@ -158,12 +169,13 @@ main( int argc, char* argv[] )
         { "GPU global memory (GB)", (double) Devices::CudaDeviceInfo::getGlobalMemory( activeGPU ) / 1e9 },
         { "GPU memory clock rate (MHz)", (double) Devices::CudaDeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 },
         { "GPU memory ECC enabled", Devices::CudaDeviceInfo::getECCEnabled( activeGPU ) },
+#endif
     };
 
     if( precision == "all" || precision == "float" )
-        runCudaBenchmarks< float >( benchmark, metadata, minSize, maxSize, sizeStepFactor, loops, elementsPerRow );
+        runBlasBenchmarks< float >( benchmark, metadata, minSize, maxSize, sizeStepFactor, loops, elementsPerRow );
     if( precision == "all" || precision == "double" )
-        runCudaBenchmarks< double >( benchmark, metadata, minSize, maxSize, sizeStepFactor, loops, elementsPerRow );
+        runBlasBenchmarks< double >( benchmark, metadata, minSize, maxSize, sizeStepFactor, loops, elementsPerRow );
 
     if( ! benchmark.save( logFile ) ) {
         std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< String >( "log-file" ) << "'." << std::endl;
@@ -171,8 +183,4 @@ main( int argc, char* argv[] )
     }
 
     return EXIT_SUCCESS;
-#else
-    CudaSupportMissingMessage;
-    return EXIT_FAILURE;
-#endif
 }

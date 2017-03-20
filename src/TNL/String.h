@@ -55,6 +55,8 @@ class String
 
    String( int number );
  
+   String( unsigned long int number );
+
    String( long int number );
 
    String( float number );

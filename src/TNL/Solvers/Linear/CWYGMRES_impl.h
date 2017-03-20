@@ -1,3 +1,15 @@
+/***************************************************************************
+                          CWYGMRES.h  -  description
+                             -------------------
+    begin                : May 13, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Jakub Klinkovsky
+
 #pragma once
 
 #include <type_traits>
@@ -19,6 +31,11 @@ CWYGMRES()
   ldSize( 0 ),
   restarting( 10 )
 {
+   /****
+    * Clearing the shared pointer means that there is no
+    * preconditioner set.
+    */
+   this->preconditioner.clear();   
 }
 
 template< typename Matrix,

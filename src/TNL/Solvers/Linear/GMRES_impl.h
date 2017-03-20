@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "GMRES.h"
+
 namespace TNL {
 namespace Solvers {
 namespace Linear {
@@ -21,6 +23,11 @@ GMRES()
 : size( 0 ),
   restarting( 10 )
 {
+   /****
+    * Clearing the shared pointer means that there is no
+    * preconditioner set.
+    */
+   this->preconditioner.clear();
 }
 
 template< typename Matrix,
