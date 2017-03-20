@@ -6,51 +6,47 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNL_HEAT_EQUATION_H_
 #define TNL_HEAT_EQUATION_H_
 
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfigTag.h>
-#include <solvers/tnlBuildConfigTags.h>
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include <operators/tnlNeumannBoundaryConditions.h>
-#include <functions/tnlConstantFunction.h>
-#include <functions/tnlMeshFunction.h>
-#include <problems/tnlHeatEquationProblem.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Solvers/Solver.h>
+#include <TNL/Solvers/FastBuildConfigTag.h>
+#include <TNL/Solvers/BuildConfigTags.h>
+#include <TNL/Operators/diffusion/LinearDiffusion.h>
+#include <TNL/Operators/DirichletBoundaryConditions.h>
+#include <TNL/Operators/NeumannBoundaryConditions.h>
+#include <TNL/Functions/Analytic/Constant.h>
+#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Problems/HeatEquationProblem.h>
+#include <TNL/Meshes/Grid.h>
+
+using namespace TNL;
+using namespace TNL::Problems;
 
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
-typedef tnlFastBuildConfig BuildConfig;
+typedef Solvers::FastBuildConfig BuildConfig;
 
 template< typename MeshConfig >
 class heatEquationConfig
 {
    public:
-      static void configSetup( tnlConfigDescription& config )
+      static void configSetup( Config::ConfigDescription& config )
       {
          config.addDelimiter( "Heat equation settings:" );
-         config.addEntry< tnlString >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
-            config.addEntryEnum< tnlString >( "dirichlet" );
-            config.addEntryEnum< tnlString >( "neumann" );
+         config.addEntry< String >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
+            config.addEntryEnum< String >( "dirichlet" );
+            config.addEntryEnum< String >( "neumann" );
 
-         typedef tnlGrid< 1, double, tnlHost, int > Mesh;
-         typedef tnlMeshFunction< Mesh > MeshFunction;
-         tnlDirichletBoundaryConditions< Mesh, MeshFunction >::configSetup( config );
-         tnlDirichletBoundaryConditions< Mesh, tnlConstantFunction< 1 > >::configSetup( config );
-         config.addEntry< tnlString >( "boundary-conditions-file", "File with the values of the boundary conditions.", "boundary.tnl" );
+         typedef Meshes::Grid< 1, double, Devices::Host, int > Mesh;
+         typedef Functions::MeshFunction< Mesh > MeshFunction;
+         Operators::DirichletBoundaryConditions< Mesh, MeshFunction >::configSetup( config );
+         Operators::DirichletBoundaryConditions< Mesh, Functions::Analytic::Constant< 1 > >::configSetup( config );
+         config.addEntry< String >( "boundary-conditions-file", "File with the values of the boundary conditions.", "boundary.tnl" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< double >( "right-hand-side-constant", "This sets a constant value for the right-hand side.", 0.0 );
-         //config.addEntry< tnlString >( "initial-condition", "File with the initial condition.", "initial.tnl");
+         //config.addEntry< String >( "initial-condition", "File with the initial condition.", "initial.tnl");
       };
 };
 
@@ -68,41 +64,38 @@ class heatEquationSetter
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef tnlStaticVector< MeshType::meshDimensions, Real > Vertex;
-
-   static bool run( const tnlParameterContainer& parameters )
+   static bool run( const Config::ParameterContainer& parameters )
    {
       enum { Dimensions = MeshType::meshDimensions };
-      typedef tnlLinearDiffusion< MeshType, Real, Index > ApproximateOperator;
-      typedef tnlConstantFunction< Dimensions, Real > RightHandSide;
-      typedef tnlStaticVector < MeshType::meshDimensions, Real > Vertex;
+      typedef Operators::LinearDiffusion< MeshType, Real, Index > ApproximateOperator;
+      typedef Functions::Analytic::Constant< Dimensions, Real > RightHandSide;
 
-      tnlString boundaryConditionsType = parameters.getParameter< tnlString >( "boundary-conditions-type" );
+      String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
       if( parameters.checkParameter( "boundary-conditions-constant" ) )
       {
-         typedef tnlConstantFunction< Dimensions, Real > ConstantFunction;
+         typedef Functions::Analytic::Constant< Dimensions, Real > Constant;
          if( boundaryConditionsType == "dirichlet" )
          {
-            typedef tnlDirichletBoundaryConditions< MeshType, ConstantFunction > BoundaryConditions;
-            typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+            typedef Operators::DirichletBoundaryConditions< MeshType, Constant > BoundaryConditions;
+            typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
             SolverStarter solverStarter;
             return solverStarter.template run< Problem >( parameters );
          }
-         typedef tnlNeumannBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
-         typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+         typedef Operators::NeumannBoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
+         typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
          SolverStarter solverStarter;
          return solverStarter.template run< Problem >( parameters );
       }
-      typedef tnlMeshFunction< MeshType > MeshFunction;
+      typedef Functions::MeshFunction< MeshType > MeshFunction;
       if( boundaryConditionsType == "dirichlet" )
       {
-         typedef tnlDirichletBoundaryConditions< MeshType, MeshFunction > BoundaryConditions;
-         typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+         typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction > BoundaryConditions;
+         typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
          SolverStarter solverStarter;
          return solverStarter.template run< Problem >( parameters );
       }
-      typedef tnlNeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
-      typedef tnlHeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+      typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
+      typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
       SolverStarter solverStarter;
       return solverStarter.template run< Problem >( parameters );
    };
@@ -110,7 +103,7 @@ class heatEquationSetter
 
 int main( int argc, char* argv[] )
 {
-   if( ! tnlSolver< heatEquationSetter, heatEquationConfig, BuildConfig >::run( argc, argv ) )
+   if( ! Solvers::Solver< heatEquationSetter, heatEquationConfig, BuildConfig >::run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

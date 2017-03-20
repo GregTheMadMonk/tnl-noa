@@ -1,3 +1,5 @@
 add_subdirectory( heat-equation )
 add_subdirectory( navier-stokes )
+add_subdirectory( advection )
+add_subdirectory( inviscid-flow )
 #add_subdirectory( mean-curvature-flow )

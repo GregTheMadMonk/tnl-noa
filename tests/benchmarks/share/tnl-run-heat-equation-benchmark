@@ -1,21 +1,14 @@
 #!/bin/bash
 
 device="cuda"
-dofSize=2000
+dofSize=128
 dimension=2;
 proportions=2
-finalTime=10.e-3
-timeStep=1.0e-6
+finalTime=1.0e-1
+timeStep=1.0e-5
 
 analyticFunction="exp-bump"
-sigma=1.0
-
-#tnl-heat-equation --device cuda --time-discretisation explicit --boundary-conditions-type neumann --boundary-conditions-constant 0 --discrete-solver euler --snapshot-period 1.0e-2 --final-time 1.0e-2 --time-step 1.0e-5 --refresh-rate 1000
-
-#tnl-benchmark-simple-heat-equation --device cuda --domain-x-size 2 --domain-y-size 2 --grid-x-size 100 --grid-y-size 100 --sigma 1.0 --time-step 1.0e-5 --final-time 1.0e-2
-
-
-#nvcc -std=c++11 -O3 $(tnl-compile --cuda) $(tnl-link --cuda) -lcusparse ~/workspace/tnl/examples/heat-equation/tnl-heat-equation.cu
+sigma=0.25
 
 tnl-grid-setup --dimensions ${dimension} \
                --proportions-x ${proportions} \
@@ -30,29 +23,44 @@ tnl-grid-setup --dimensions ${dimension} \
                
 tnl-init --mesh mesh.tnl \
          --test-function ${analyticFunction} \
-         --output-file initial.tnl \
+         --output-file init.tnl \
          --sigma ${sigma}
 
+#valgrind --tool=memcheck \
+echo "==================================================================="
+echo "================ Heat equation solver ============================="
+echo "==================================================================="
 tnl-heat-equation --device ${device} \
-                  --time-discretisation explicit \
-                  --boundary-conditions-type neumann \
+                 --time-discretisation explicit \
+                  --boundary-conditions-type dirichlet \
                   --boundary-conditions-constant 0 \
                   --discrete-solver euler \
                   --snapshot-period ${finalTime} \
                   --final-time ${finalTime} \
                   --time-step ${timeStep} \
-                  --refresh-rate 1000
+                  --max-iterations 100000000 \
+                  --refresh-rate 1000 \
+                  --openmp-enabled false
 
-./a.out --device ${device} \
+echo "==================================================================="
+echo "================ Heat equation benchmark =========================="
+echo "==================================================================="
+tnl-benchmark-heat-equation --device ${device} \
+                  --cuda-kernel-type templated-compact \
                   --time-discretisation explicit \
-                  --boundary-conditions-type neumann \
+                  --boundary-conditions-type dirichlet \
                   --boundary-conditions-constant 0 \
                   --discrete-solver euler \
                   --snapshot-period ${finalTime} \
                   --final-time ${finalTime} \
                   --time-step ${timeStep} \
-                  --refresh-rate 1000
-              
+                  --max-iterations 100000000 \
+                  --refresh-rate 1000 \
+                  --openmp-enabled false
+             
+echo "==================================================================="
+echo "=============== Heat equation pure C benchmark ===================="
+echo "==================================================================="
 tnl-benchmark-simple-heat-equation --device ${device} \
                                    --domain-x-size 2 \
                                    --domain-y-size 2 \
@@ -60,4 +68,17 @@ tnl-benchmark-simple-heat-equation --device ${device} \
                                    --grid-y-size ${dofSize} \
                                    --sigma ${sigma} \
                                    --time-step ${timeStep} \
-                                   --final-time ${finalTime}             
+                                   --final-time ${finalTime}       
+
+#tnl-benchmark-simple-heat-equation-bug --device ${device} \
+#                                   --domain-x-size 2 \
+#                                   --domain-y-size 2 \
+#                                   --grid-x-size ${dofSize} \
+#                                   --grid-y-size ${dofSize} \
+#                                   --sigma ${sigma} \
+#                                   --time-step ${timeStep} \
+#                                   --final-time ${finalTime}       
+                                   
+tnl-diff --input-files simple-heat-equation-result.tnl u-00001.tnl
+
+cat tnl-diff.log                                         

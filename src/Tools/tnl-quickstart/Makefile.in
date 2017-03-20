@@ -1,0 +1,41 @@
+# Uncomment the following line to enable CUDA
+#WITH_CUDA = yes
+
+TARGET = {problemBaseName}
+INSTALL_DIR = ${{HOME}}/local
+
+LDFLAGS = $(shell tnl-link )
+
+ifdef WITH_CUDA
+   CXX = nvcc
+   CXX_FLAGS = $(shell tnl-compile --cuda)
+else 
+   CXX = g++
+   CXX_FLAGS = $(shell tnl-compile)
+endif     
+
+SOURCES = {problemBaseName}.cpp
+HEADERS = {problemBaseName}.h
+OBJECTS = {problemBaseName}.o
+DIST = $(SOURCES) $(CUDA_SOURCES) $(HEADERS) Makefile
+
+ifdef WITH_CUDA
+   OBJECTS = {problemBaseName}-cuda.o
+endif
+     
+all: $(TARGET)
+
+clean:
+	rm -f *.o
+
+dist: $(DIST)
+	tar zcvf $(TARGET).tgz $(DIST)
+
+$(TARGET): $(OBJECTS)
+	$(CXX) -o $@ $< $(LDFLAGS)
+
+%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXX_FLAGS) -c -o $@ $<
+
+%.o: %.cu
+	$(CXX) $(CPPFLAGS) $(CXX_FLAGS) -c -o $@ $<
