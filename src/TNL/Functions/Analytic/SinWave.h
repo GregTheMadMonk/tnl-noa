@@ -8,6 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/****
+ * Tomas Sobotik
+ */
 #pragma once
 
 #include <TNL/Config/ParameterContainer.h>
@@ -24,26 +27,32 @@ class SinWaveBase : public Domain< dimensions, SpaceDomain >
 {
    public:
  
-   SinWaveBase();
+      SinWaveBase();
 
-   bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" );
 
-   void setWaveLength( const Real& waveLength );
+      void setWaveLength( const Real& waveLength );
+      
+      Real getWaveLength() const;
 
-   Real getWaveLength() const;
+      void setAmplitude( const Real& amplitude );
 
-   void setAmplitude( const Real& amplitude );
+      Real getAmplitude() const;
 
-   Real getAmplitude() const;
+      void setPhase( const Real& phase );
 
-   void setPhase( const Real& phase );
+      Real getPhase() const;
 
-   Real getPhase() const;
+      void setWavesNumber( const Real& wavesNumber );
+
+      Real getWavesNumber() const;
 
    protected:
+      
+      bool isInsideWaves( const Real& distance ) const;
 
-   Real waveLength, amplitude, phase, wavesNumber;
+      Real waveLength, amplitude, phase, wavesNumber;
 };
 
 template< int Dimensions, typename Real >
@@ -140,7 +149,8 @@ std::ostream& operator << ( std::ostream& str, const SinWave< Dimensions, Real >
 {
    str << "Sin Wave. function: amplitude = " << f.getAmplitude()
        << " wavelength = " << f.getWaveLength()
-       << " phase = " << f.getPhase();
+       << " phase = " << f.getPhase()
+       << " waves number = " << f.getWavesNumber();
    return str;
 }
 

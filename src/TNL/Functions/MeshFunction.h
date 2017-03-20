@@ -84,7 +84,6 @@ class MeshFunction :
                  const SharedPointer< Vector >& dataPtr,
                  const IndexType& offset = 0 );
       
-      
       void setMesh( const MeshPointer& meshPointer );
       
       template< typename Device = Devices::Host >
@@ -92,6 +91,8 @@ class MeshFunction :
       const MeshType& getMesh() const;
       
       const MeshPointer& getMeshPointer() const;
+      
+      __cuda_callable__ static IndexType getDofs( const MeshPointer& meshPointer );
       
       __cuda_callable__ const VectorType& getData() const;      
       
@@ -144,7 +145,8 @@ class MeshFunction :
       bool boundLoad( File& file );
  
       bool write( const String& fileName,
-                  const String& format = "vtk" ) const;
+                  const String& format = "vtk",
+                  const double& scale = 1.0 ) const;
  
       using Object::save;
  

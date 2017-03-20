@@ -34,6 +34,15 @@ StaticVector< 1, Real >::StaticVector( const StaticVector< 1, Real >& v )
 }
 
 template< typename Real >
+bool
+StaticVector< 1, Real >::setup( const Config::ParameterContainer& parameters,
+                                const String& prefix )
+{
+   this->data[ 0 ] = parameters.getParameter< double >( prefix + "0" );
+   return true;
+}
+
+template< typename Real >
 String StaticVector< 1, Real >::getType()
 {
    return String( "Containers::StaticVector< " ) +
@@ -146,6 +155,14 @@ StaticVector< 1, Real >
 StaticVector< 1, Real >::abs() const
 {
    return StaticVector< 1, Real >( TNL::abs( this->data[ 0 ] ) );
+}
+
+template< typename Real >
+__cuda_callable__
+Real
+StaticVector< 1, Real >::lpNorm( const Real& p ) const
+{
+   return TNL::abs( this->data[ 0 ] );
 }
 
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION

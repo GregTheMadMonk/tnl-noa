@@ -163,6 +163,7 @@ setup( const MeshPointer& meshPointer,
    else
    {
       std::cerr << "Missing parameter " << prefix << "file." << std::endl;
+      throw(0);
       return false;
    }
    return true;
@@ -248,6 +249,17 @@ MeshFunction< Mesh, MeshEntityDimensions, Real >::
 getMeshPointer() const
 {
    return this->meshPointer;
+}
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
+__cuda_callable__
+typename MeshFunction< Mesh, MeshEntityDimensions, Real >::IndexType
+MeshFunction< Mesh, MeshEntityDimensions, Real >::
+getDofs( const MeshPointer& meshPointer )
+{
+   return meshPointer->template getEntitiesCount< MeshEntityDimensions >();
 }
 
 template< typename Mesh,
@@ -482,19 +494,20 @@ template< typename Mesh,
 bool
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
 write( const String& fileName,
-       const String& format ) const
+       const String& format,
+       const double& scale ) const
 {
    std::fstream file;
    file.open( fileName.getString(), std::ios::out );
    if( ! file )
    {
-      std::cerr << "Unbable to open a file " << fileName << "." << std::endl;
+      std::cerr << "Unable to open a file " << fileName << "." << std::endl;
       return false;
    }
    if( format == "vtk" )
-      return MeshFunctionVTKWriter< ThisType >::write( *this, file );
+      return MeshFunctionVTKWriter< ThisType >::write( *this, file, scale );
    else if( format == "gnuplot" )
-      return MeshFunctionGnuplotWriter< ThisType >::write( *this, file );
+      return MeshFunctionGnuplotWriter< ThisType >::write( *this, file, scale );
    else {
       std::cerr << "Unknown output format: " << format << std::endl;
       return false;

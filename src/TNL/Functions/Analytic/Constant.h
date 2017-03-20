@@ -44,7 +44,7 @@ class Constant : public Domain< dimensions, NonspaceDomain >
                 int YDiffOrder,
                 int ZDiffOrder >
    #else
-      template< int XDiffOrder,
+      template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
    #endif

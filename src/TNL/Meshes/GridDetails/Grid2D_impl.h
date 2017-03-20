@@ -199,6 +199,31 @@ const typename Grid< 2, Real, Device, Index > :: VertexType&
 template< typename Real,
           typename Device,
           typename Index >
+   template< int EntityDimensions >
+__cuda_callable__ inline
+Index
+Grid< 2, Real, Device, Index >::
+getEntitiesCount() const
+{
+   static_assert( EntityDimensions <= 2 &&
+                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
+ 
+   switch( EntityDimensions )
+   {
+      case 2:
+         return this->numberOfCells;
+      case 1:
+         return this->numberOfFaces;
+      case 0:
+         return this->numberOfVertices;
+   }
+   return -1;
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename EntityType >
 __cuda_callable__ inline
 Index
@@ -274,16 +299,16 @@ getCellMeasure() const
 }
 
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__ inline
-const typename Grid< 2, Real, Device, Index >::VertexType&
+__cuda_callable__
+typename Grid< 2, Real, Device, Index >::VertexType&
 Grid< 2, Real, Device, Index >::
 getSpaceSteps() const
 {
    return this->spaceSteps;
-}
+}*/
 
 template< typename Real,
           typename Device,

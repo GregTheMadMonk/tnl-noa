@@ -7,8 +7,10 @@ SET( headers BackwardTimeDiscretisation.h
              LinearSystemAssembler.h
              LinearSystemAssembler_impl.h
              NoTimeDiscretisation.h
-             PDESolver.h
-             PDESolver_impl.h
+             TimeDependentPDESolver.h
+             TimeDependentPDESolver_impl.h
+             TimeIndependentPDESolver.h
+             TimeIndependentPDESolver_impl.h
              SemiImplicitTimeStepper.h
              SemiImplicitTimeStepper_impl.h )
 

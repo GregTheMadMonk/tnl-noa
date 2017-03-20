@@ -63,30 +63,35 @@ class Grid< 1, Real, Device, Index > : public Object
 
    void setDimensions( const CoordinatesType& dimensions );
 
-   __cuda_callable__ inline
+   __cuda_callable__
    const CoordinatesType& getDimensions() const;
 
    void setDomain( const VertexType& origin,
                    const VertexType& proportions );
 
    __cuda_callable__
-   inline const VertexType& getOrigin() const;
+   const VertexType& getOrigin() const;
 
    __cuda_callable__
-   inline const VertexType& getProportions() const;
- 
+   const VertexType& getProportions() const;
+   
    template< typename EntityType >
    __cuda_callable__
-   inline IndexType getEntitiesCount() const;
- 
+   IndexType getEntitiesCount() const;
+   
+   template< int EntiytDimensions >
+   __cuda_callable__
+   IndexType getEntitiesCount() const;
+   
+   
    template< typename EntityType >
    __cuda_callable__
-   inline EntityType getEntity( const IndexType& entityIndex ) const;
- 
+   EntityType getEntity( const IndexType& entityIndex ) const;
+   
    template< typename EntityType >
    __cuda_callable__
-   inline Index getEntityIndex( const EntityType& entity ) const;
- 
+   Index getEntityIndex( const EntityType& entity ) const;
+   
    template< typename EntityType >
    __cuda_callable__
    RealType getEntityMeasure( const EntityType& entity ) const;
@@ -95,14 +100,14 @@ class Grid< 1, Real, Device, Index > : public Object
    inline const RealType& getCellMeasure() const;
  
    __cuda_callable__
-   inline const VertexType& getSpaceSteps() const;
+   const VertexType& getSpaceSteps() const { return this->spaceSteps;}
 
    template< int xPow >
    __cuda_callable__
-   inline const RealType& getSpaceStepsProducts() const;
- 
+   const RealType& getSpaceStepsProducts() const;
+   
    __cuda_callable__
-   inline RealType getSmallestSpaceStep() const;
+   RealType getSmallestSpaceStep() const;
 
 
    template< typename GridFunction >
