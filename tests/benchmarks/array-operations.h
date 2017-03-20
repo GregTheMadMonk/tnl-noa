@@ -97,7 +97,9 @@ benchmarkArrayOperations( Benchmark & benchmark,
         deviceArray = deviceArray2;
     };
     benchmark.setOperation( "copy (operator=)", 2 * datasetSize );
-    benchmark.time( reset1, "CPU", copyAssignHostHost );
+    // copyBasetime is used later inside HAVE_CUDA guard, so the compiler will
+    // complain when compiling without CUDA
+    const double copyBasetime = benchmark.time( reset1, "CPU", copyAssignHostHost );
 #ifdef HAVE_CUDA
     benchmark.time( reset1, "GPU", copyAssignCudaCuda );
 #endif
@@ -110,7 +112,7 @@ benchmarkArrayOperations( Benchmark & benchmark,
         hostArray = deviceArray;
     };
 #ifdef HAVE_CUDA
-    benchmark.setOperation( "copy (operator=)", datasetSize );
+    benchmark.setOperation( "copy (operator=)", datasetSize, copyBasetime );
     benchmark.time( reset1,
                     "CPU->GPU", copyAssignHostCuda,
                     "GPU->CPU", copyAssignCudaHost );
