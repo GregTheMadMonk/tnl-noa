@@ -44,13 +44,13 @@ class LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, Pressu
 
    static String getTypeStatic();
 
-   void getExplicitRhs( const IndexType centralVolume,
+   void getExplicitUpdate( const IndexType centralVolume,
                         RealType& rho_t,
                         RealType& rho_u1_t,
                         RealType& rho_u2_t,
                         const RealType& tau ) const;
 
-   void getExplicitRhs( const IndexType centralVolume,
+   void getExplicitUpdate( const IndexType centralVolume,
                         RealType& rho_t,
                         RealType& rho_u1_t,
                         RealType& rho_u2_t,
@@ -111,13 +111,13 @@ class LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeomet
 
    LaxFridrichs();
 
-   void getExplicitRhs( const IndexType centralVolume,
+   void getExplicitUpdate( const IndexType centralVolume,
                         RealType& rho_t,
                         RealType& rho_u1_t,
                         RealType& rho_u2_t,
                         const RealType& tau ) const;
 
-   void getExplicitRhs( const IndexType centralVolume,
+   void getExplicitUpdate( const IndexType centralVolume,
                         RealType& rho_t,
                         RealType& rho_u1_t,
                         RealType& rho_u2_t,

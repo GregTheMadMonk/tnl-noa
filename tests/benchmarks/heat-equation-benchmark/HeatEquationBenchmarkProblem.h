@@ -70,7 +70,7 @@ class HeatEquationBenchmarkProblem:
       void bindDofs( const MeshPointer& meshPointer,
                      DofVectorPointer& dofsPointer );
 
-      void getExplicitRHS( const RealType& time,
+      void getExplicitUpdate( const RealType& time,
                            const RealType& tau,
                            const MeshPointer& meshPointer,
                            DofVectorPointer& _uPointer,

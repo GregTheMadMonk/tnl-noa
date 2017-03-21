@@ -212,12 +212,12 @@ template< typename Mesh,
           typename InviscidOperators >
 void
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
-getExplicitRHS( const RealType& time,
-                const RealType& tau,
-                const MeshPointer& mesh,
-                DofVectorPointer& _u,
-                DofVectorPointer& _fu,
-                MeshDependentDataPointer& meshDependentData )
+getExplicitUpdate( const RealType& time,
+                   const RealType& tau,
+                   const MeshPointer& mesh,
+                   DofVectorPointer& _u,
+                   DofVectorPointer& _fu,
+                   MeshDependentDataPointer& meshDependentData )
 {
     typedef typename MeshType::Cell Cell;
     

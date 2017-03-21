@@ -80,7 +80,7 @@ public PDEProblem< Mesh,
       void bindDofs( const MeshPointer& mesh,
                      DofVectorPointer& dofs );
 
-      void getExplicitRHS( const RealType& time,
+      void getExplicitUpdate( const RealType& time,
                            const RealType& tau,
                            const MeshPointer& mesh,
                            DofVectorPointer& _u,

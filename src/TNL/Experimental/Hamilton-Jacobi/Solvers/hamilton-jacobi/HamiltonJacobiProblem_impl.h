@@ -160,7 +160,7 @@ template< typename Mesh,
 		  typename RightHandSide>
 void
 HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide >::
-getExplicitRHS(  const RealType& time,
+getExplicitUpdate(  const RealType& time,
                  const RealType& tau,
                  const MeshType& mesh,
                  DofVectorType& _u,
@@ -170,14 +170,14 @@ getExplicitRHS(  const RealType& time,
 
 	/*
 	if(!(this->schemeTest))
-		scheme.GetExplicitRHS(time, tau, _u, _fu);
+		scheme.getExplicitUpdate(time, tau, _u, _fu);
 	else if(!(this->tested))
 	{
 		this->tested = true;
 		DofVectorType tmp;
 		if(tmp.setLike(_u))
 			tmp = _u;
-		scheme.GetExplicitRHS(time, tau, tmp, _u);
+		scheme.getExplicitUpdate(time, tau, tmp, _u);
 
 	}
 	*/
