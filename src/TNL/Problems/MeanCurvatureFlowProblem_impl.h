@@ -178,7 +178,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getExplicitRHS( const RealType& time,
+getExplicitUpdate( const RealType& time,
                 const RealType& tau,
                 const MeshType& mesh,
                 DofVectorType& inDofs,

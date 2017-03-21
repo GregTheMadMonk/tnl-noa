@@ -242,7 +242,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getExplicitRHS( const RealType& time,
+getExplicitUpdate( const RealType& time,
                 const RealType& tau,
                 const MeshPointer& mesh,
                 DofVectorPointer& _u,

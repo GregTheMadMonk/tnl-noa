@@ -75,7 +75,7 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
       void bindDofs( const MeshType& mesh,
                      DofVectorType& dofs );
 
-      void getExplicitRHS( const RealType& time,
+      void getExplicitUpdate( const RealType& time,
                            const RealType& tau,
                            const MeshType& mesh,
                            DofVectorType& _u,

@@ -105,7 +105,7 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
        * Compute the RHS
        */
       //timer.stop();
-      this->problem->getExplicitRHS( time, currentTau, u, k1 );
+      this->problem->getExplicitUpdate( time, currentTau, u, k1 );
       //timer.start();
 
       RealType lastResidue = this->getResidue();

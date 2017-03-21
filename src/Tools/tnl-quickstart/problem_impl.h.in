@@ -161,12 +161,12 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::                    
-getExplicitRHS( const RealType& time,
-                const RealType& tau,
-                const MeshPointer& mesh,
-                DofVectorPointer& _u,
-                DofVectorPointer& _fu,
-                MeshDependentDataPointer& meshDependentData )
+getExplicitUpdate( const RealType& time,
+                   const RealType& tau,
+                   const MeshPointer& mesh,
+                   DofVectorPointer& _u,
+                   DofVectorPointer& _fu,
+                   MeshDependentDataPointer& meshDependentData )
 {{
    /****
     * If you use an explicit solver like EulerSolver or MersonSolver, you

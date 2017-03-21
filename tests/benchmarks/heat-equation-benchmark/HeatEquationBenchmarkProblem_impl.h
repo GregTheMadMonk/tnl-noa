@@ -375,7 +375,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getExplicitRHS( const RealType& time,
+getExplicitUpdate( const RealType& time,
                 const RealType& tau,
                 const MeshPointer& mesh,
                 DofVectorPointer& uDofs,

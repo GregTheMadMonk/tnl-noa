@@ -64,12 +64,12 @@ class {problemBaseName}Problem:
       void bindDofs( const MeshPointer& mesh,
                      DofVectorPointer& dofs );
 
-      void getExplicitRHS( const RealType& time,
-                           const RealType& tau,
-                           const MeshPointer& mesh,
-                           DofVectorPointer& _u,
-                           DofVectorPointer& _fu,
-                           MeshDependentDataPointer& meshDependentData );
+      void getExplicitUpdate( const RealType& time,
+                              const RealType& tau,
+                              const MeshPointer& mesh,
+                              DofVectorPointer& _u,
+                              DofVectorPointer& _fu,
+                              MeshDependentDataPointer& meshDependentData );
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,

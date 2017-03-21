@@ -52,7 +52,7 @@ class SolverTesterProblem
 
    DofVectorType& getDofVector() { return this->dofVector;};
 
-   void GetExplicitRHS( const RealType& time,
+   void getExplicitUpdate( const RealType& time,
                         const RealType& tau,
                         DofVectorType& _u,
                         DofVectorType& _fu ){};

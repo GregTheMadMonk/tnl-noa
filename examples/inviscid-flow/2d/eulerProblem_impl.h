@@ -235,7 +235,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getExplicitRHS( const RealType& time,
+getExplicitUpdate( const RealType& time,
                 const RealType& tau,
                 const MeshPointer& mesh,
                 DofVectorPointer& _u,
