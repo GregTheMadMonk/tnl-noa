@@ -426,7 +426,6 @@ Real tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::getElement( 
       return this->getElement( column, row );
 
    Index elementPtr, rowEnd, step;
-   // DeviceDependentCode::initRowTraverse( *this, this->permutationArray.getElement( row ), elementPtr, rowEnd, step );
    DeviceDependentCode::initRowTraverse( *this, row, elementPtr, rowEnd, step );
 
    IndexType col;
@@ -471,7 +470,6 @@ void tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::getRow( cons
                                                                             RealType* values ) const
 {
    Index elementPtr, rowEnd, step, i( 0 );
-   //DeviceDependentCode::initRowTraverse( *this, this->permutationArray.getElement( row ), elementPtr, rowEnd, step );
    DeviceDependentCode::initRowTraverse( *this, row, elementPtr, rowEnd, step );
 
    while( elementPtr < rowEnd )
@@ -751,26 +749,6 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::testRowLengths( tnlVector< Index, Device, Index >& rowLengths,
-                                                                                    tnlVector< Index, Device, Index >& sliceRowLengths )
-{
-    for( IndexType row = 0; row < this->getRows(); row++ )
-    {
-        IndexType rowLength = rowLengths.getElement( row );
-        IndexType slice = this->permutationArray.getElement( row ) / SliceSize;
-        if( sliceRowLengths.getElement( slice ) < rowLength )
-        {
-            cout << "Row " << row << " has wrong length. Aborting!" << endl;
-            return false;
-        }
-    }
-    return true;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
 bool tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::rearrangeMatrix( bool verbose )
 {
     this->computePermutationArray();
@@ -786,7 +764,7 @@ bool tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::rearrangeMat
 
     slicePointers.computeExclusivePrefixSum();
 
-    this->testRowLengths( rowLengths, sliceRowLengths );
+    // this->testRowLengths( rowLengths, sliceRowLengths );
 
     // return this->allocateMatrixElements( this->slicePointers.getElement( slices ) );
     tnlVector< Real, Device, Index > valuesVector;
@@ -861,6 +839,7 @@ bool tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::help( bool v
 {
     if( !this->rearranged )
         this->rearrangeMatrix( verbose );
+    return true;
 }
 
 template< typename Real,
@@ -876,38 +855,36 @@ void tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::vectorProduc
     for( IndexType i = 0; i < this->getNumberOfColors(); i++ )
     {
         IndexType offset = this->colorPointers[ i ];
-        IndexType sliceOffset = offset - ( offset % SliceSize );
-        IndexType length = this->colorPointers[ i + 1 ] - this->colorPointers[ i ];
+        IndexType stop = this->colorPointers[ i + 1 ];
+        IndexType inSliceIdx = offset % SliceSize;
+        IndexType sliceOffset = offset - inSliceIdx;
+        IndexType length = this->colorPointers[ i + 1 ] - this->colorPointers[ i ] + inSliceIdx;
         IndexType cudaBlockSize = 256;
         IndexType blocks = roundUpDivision( length, cudaBlockSize );
         for( IndexType blockIdx = 0; blockIdx < blocks; blockIdx++ )
         {
             for( IndexType warpIdx = 0; warpIdx < 8; warpIdx++ )
             {
-                IndexType warpSize = 32;
-                for( IndexType threadIdx = 0; threadIdx < warpSize; threadIdx++ )
-                {
-                    const IndexType row = blockIdx * cudaBlockSize + warpIdx * warpSize + threadIdx + sliceOffset;
-                    if( row >= this->getRows() || row < offset )
-                       break;
-                    const IndexType sliceIdx = row / SliceSize;
-                    const IndexType sliceLength = this->sliceRowLengths[ sliceIdx ];
-                    const IndexType begin = this->slicePointers[ sliceIdx ] + sliceLength * threadIdx;
-                    const IndexType rowMapping = this->inversePermutationArray.getElement( row );
-                    for( IndexType elementPtr = begin; elementPtr < begin + sliceLength; elementPtr++ )
-                    {
-                        // if( elementPtr >= this->values.getSize() )
-                        //    break;
-                        IndexType column = this->columnIndexes[ elementPtr ];
-                        if( column == this->getPaddingIndex() )
-                            break;
-                        outVector[ rowMapping ] += inVector[ column ] * this->values[ elementPtr ];
-                        if( rowMapping != column )
-                        {
-                            outVector[ column ] += inVector[ rowMapping ] * this->values[ elementPtr ];
-                        }
-                    }
-                }
+               IndexType warpSize = 32;
+               for (IndexType threadIdx = 0; threadIdx < warpSize; threadIdx++) {
+                  IndexType row = blockIdx * cudaBlockSize + warpIdx * warpSize + threadIdx + sliceOffset;
+                  if (row >= stop || row < offset)
+                     continue;
+                  IndexType sliceIdx = row / SliceSize;
+                  IndexType sliceLength = this->sliceRowLengths[sliceIdx];
+                  IndexType begin = this->slicePointers[sliceIdx] + sliceLength * threadIdx;
+                  IndexType rowMapping = this->inversePermutationArray.getElement(row);
+                  for (IndexType elementPtr = begin; elementPtr < begin + sliceLength; elementPtr++) {
+                     IndexType column = this->columnIndexes[elementPtr];
+                     if (column == this->getPaddingIndex())
+                        break;
+                     outVector[rowMapping] += inVector[column] * this->values[elementPtr];
+                     if (rowMapping != column)
+                     {
+                        outVector[column] += inVector[rowMapping] * this->values[elementPtr];
+                     }
+                  }
+               }
             }
         }
     }

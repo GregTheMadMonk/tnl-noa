@@ -79,7 +79,10 @@ bool testMatrix( bool sym, const tnlParameterContainer& parameters )
       return false;
 
    if( !matrix.help( true ) )
+   {
+       cout << "Method matrix.help() failed. Aborting!" << endl;
        return false;
+   }
    if( ! tnlMatrixReader< Matrix >::verifyMtxFile( file, matrix, verbose ) )
       return false;
 

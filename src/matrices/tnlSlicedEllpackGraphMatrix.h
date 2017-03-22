@@ -189,9 +189,6 @@ class tnlSlicedEllpackGraphMatrix : public tnlSparseMatrix< Real, Device, Index 
 
    tnlVector< Index, Device, Index > getRealRowLengths();
 
-   bool testRowLengths( tnlVector< Index, Device, Index >& rowLengths,
-                        tnlVector< Index, Device, Index >& sliceRowLengths );
-
    bool save( tnlFile& file ) const;
 
    bool load( tnlFile& file );
