@@ -24,6 +24,12 @@
 
 #ifndef NDEBUG   
    
+#if defined( __NVCC__ ) && ( __CUDACC_VER__ < 80000 )
+    #define TNL_PRETTY_FUNCTION "(not known in CUDA 7.5 or older)"
+#else
+    #define TNL_PRETTY_FUNCTION __PRETTY_FUNCTION__
+#endif
+
 // __CUDA_ARCH__ is defined by the compiler only for code executed on GPU
 #ifdef __CUDA_ARCH__
 #define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                     \
@@ -37,31 +43,17 @@
    }
 
 #else // __CUDA_ARCH__
-#if ( __CUDA_API_VERSION >= 8000 )
-   #define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                  \
-      if( ! ( ___tnl__assert_condition ) )                                                                 \
-      {                                                                                                    \
-      std::cerr << "Assertion '" << __STRING( ___tnl__assert_condition ) << "' failed !!!" << std::endl    \
-                << "File: " << __FILE__ << std::endl                                                       \
-                << "Function: " << __PRETTY_FUNCTION__ << std::endl                                        \
-                << "Line: " << __LINE__ << std::endl                                                       \
-                << "Diagnostics: ";                                                                        \
-           ___tnl__assert_command;                                                                         \
-           throw EXIT_FAILURE;                                                                             \
-      }
-#else //  ( __CUDA_API_VERSION >= 8000 )
-   #define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                  \
-      if( ! ( ___tnl__assert_condition ) )                                                                 \
-      {                                                                                                    \
-      std::cerr << "Assertion '" << __STRING( ___tnl__assert_condition ) << "' failed !!!" << std::endl    \
-                << "File: " << __FILE__ << std::endl                                                       \
-                << "Function: (not known in CUDA 7.5 or older)" << std::endl                               \
-                << "Line: " << __LINE__ << std::endl                                                       \
-                << "Diagnostics: ";                                                                        \
-           ___tnl__assert_command;                                                                         \
-           throw EXIT_FAILURE;                                                                             \
-      }
-#endif //  ( __CUDA_API_VERSION >= 8000 )             
+#define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                  \
+   if( ! ( ___tnl__assert_condition ) )                                                                 \
+   {                                                                                                    \
+   std::cerr << "Assertion '" << __STRING( ___tnl__assert_condition ) << "' failed !!!" << std::endl    \
+             << "File: " << __FILE__ << std::endl                                                       \
+             << "Function: " << TNL_PRETTY_FUNCTION << std::endl                                        \
+             << "Line: " << __LINE__ << std::endl                                                       \
+             << "Diagnostics: ";                                                                        \
+        ___tnl__assert_command;                                                                         \
+        throw EXIT_FAILURE;                                                                             \
+   }
 #endif // __CUDA_ARCH__
 
 #else /* #ifndef NDEBUG */
