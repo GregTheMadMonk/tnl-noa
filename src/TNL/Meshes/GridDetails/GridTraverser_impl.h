@@ -312,17 +312,14 @@ GridTraverser2D(
    coordinates.x() = begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
 
-   if( coordinates <= end )
-   {
+   if( ( !processOnlyBoundaryEntities && coordinates <= end ) ||
+       (  processOnlyBoundaryEntities &&
+          ( coordinates.x() == begin.x() || coordinates.y() == begin.y() ||
+            coordinates.x() == end.x() || coordinates.y() == end.y() ) ) )
+   { 
       GridEntity entity( *grid, coordinates, gridEntityParameters... );
       entity.refresh();
-      if( ! processOnlyBoundaryEntities || entity.isBoundaryEntity() )
-      {
-         EntitiesProcessor::processEntity
-         ( entity.getMesh(),
-           *userData,
-           entity );
-      }
+      EntitiesProcessor::processEntity( entity.getMesh(), *userData, entity );      
    }
 }
 #endif
@@ -522,7 +519,19 @@ GridTraverser3D(
    coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
    coordinates.z() = begin.z() + ( gridZIdx * Devices::Cuda::getMaxGridSize() + blockIdx.z ) * blockDim.z + threadIdx.z;
 
-   if( coordinates <= end )
+   
+   if( ( !processOnlyBoundaryEntities && coordinates <= end ) ||
+    (  processOnlyBoundaryEntities &&
+       ( coordinates.x() == begin.x() || coordinates.y() == begin.y() || coordinates.z() == begin.z() ||
+         coordinates.x() == end.x() || coordinates.y() == end.y() || coordinates.z() == end.z() ) ) )
+   { 
+      GridEntity entity( *grid, coordinates, gridEntityParameters... );
+      entity.refresh();
+      EntitiesProcessor::processEntity( entity.getMesh(), *userData, entity );      
+   }
+
+   
+   /*if( coordinates <= end )
    {
       GridEntity entity( *grid, coordinates, gridEntityParameters... );
       entity.refresh();
@@ -533,7 +542,7 @@ GridTraverser3D(
            *userData,
            entity );
       }
-   }
+   }*/
 }
 #endif
 
