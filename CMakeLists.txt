@@ -265,9 +265,10 @@ if( WITH_TESTS STREQUAL "yes" )
    # build gtest libs
    include( BuildGtest )
 
-   # enable code coverage reports
-   set( ENABLE_CODECOVERAGE ON )
-   include( UseCodeCoverage )
+   if( WITH_COVERAGE STREQUAL "yes" AND CMAKE_BUILD_TYPE STREQUAL "Debug" )
+      # enable code coverage reports
+      include( UseCodeCoverage )
+   endif()
 endif( WITH_TESTS STREQUAL "yes" )
 
 find_package( PythonInterp 3 )
