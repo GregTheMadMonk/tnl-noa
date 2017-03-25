@@ -69,6 +69,7 @@ if( VTK_FOUND )
    include(${VTK_USE_FILE})
 
    AddCompilerFlag( "-DHAVE_VTK " )
+   SET( VTK_COMMON_LIBRARIES vtkCommonCore ; vtkIOLegacy )
 endif( VTK_FOUND )
 
 if( BUILD_CUDA AND ${CMAKE_CXX_COMPILER} MATCHES ".*clang\\+\\+" )
@@ -83,8 +84,7 @@ if( BUILD_CUDA AND ${CMAKE_CXX_COMPILER} MATCHES ".*clang\\+\\+" )
                           "${CXX_TESTS_FLAGS} -DHAVE_CUDA -x cuda --cuda-path=${CUDA_TOOLKIT_ROOT_DIR} --cuda-gpu-arch=sm_21" )
    TARGET_LINK_LIBRARIES( MeshReaderTest${mpiExt}${debugExt}
                           ${GTEST_BOTH_LIBRARIES}
-                          vtkCommonCore
-                          vtkIOLegacy
+                          ${VTK_COMMON_LIBRARIES}
                           tnl${mpiExt}${debugExt}-${tnlVersion}
                           cudart dl rt "-L ${CUDA_TOOLKIT_ROOT_DIR}/lib64/" )
 else()
@@ -96,7 +96,6 @@ else()
    #                       tnl${debugExt}-${tnlVersion} )
    target_link_libraries( MeshReaderTest${mpiExt}${debugExt}
                           ${GTEST_BOTH_LIBRARIES}
-                          vtkCommonCore
-                          vtkIOLegacy
+                          ${VTK_COMMON_LIBRARIES}
                           tnl${debugExt}-${tnlVersion} )
 endif()
