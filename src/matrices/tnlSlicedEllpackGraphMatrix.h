@@ -202,6 +202,21 @@ class tnlSlicedEllpackGraphMatrix : public tnlSparseMatrix< Real, Device, Index 
    bool help( bool verbose = false );
 
 #ifdef HAVE_CUDA
+    template< typename InVector,
+              typename OutVector >
+   __device__
+   void spmvCuda( const InVector& inVector,
+                  OutVector& outVector,
+                  const int globalIdx,
+                  const int color ) const;
+#endif
+
+#ifdef HAVE_CUDA
+  __device__ __host__
+#endif
+   void copyFromHostToCuda( tnlSlicedEllpackGraphMatrix< Real, tnlHost, Index, SliceSize >& matrix );
+
+#ifdef HAVE_CUDA
    __device__ __host__
 #endif
    bool rearrangeMatrix( bool verbose = false );
@@ -210,6 +225,16 @@ class tnlSlicedEllpackGraphMatrix : public tnlSparseMatrix< Real, Device, Index 
    __device__ __host__
 #endif
    void computePermutationArray();
+
+   tnlVector< Index, Device, Index > getSlicePointers();
+
+   tnlVector< Index, Device, Index > getSliceRowLengths();
+
+   tnlVector< Index, Device, Index > getPermutationArray();
+
+   tnlVector< Index, Device, Index > getInversePermutationArray();
+
+   tnlVector< Index, Device, Index > getColorPointers();
 
    protected:
 

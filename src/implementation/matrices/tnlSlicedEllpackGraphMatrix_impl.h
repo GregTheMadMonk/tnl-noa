@@ -211,7 +211,7 @@ bool tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::addElementFa
                    << " this->columns = " << this-> columns );
 
    Index elementPtr, rowEnd, step;
-   DeviceDependentCode::initRowTraverseFast( *this, this->permutationArray.getElement( row ), elementPtr, rowEnd, step );
+   DeviceDependentCode::initRowTraverseFast( *this, row, elementPtr, rowEnd, step );
 
    IndexType col;
    while( elementPtr < rowEnd &&
@@ -259,7 +259,7 @@ bool tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::addElement( 
                    << " this->columns = " << this-> columns );
 
    Index elementPtr, rowEnd, step;
-   DeviceDependentCode::initRowTraverse( *this, this->permutationArray.getElement( row ), elementPtr, rowEnd, step );
+   DeviceDependentCode::initRowTraverse( *this, row, elementPtr, rowEnd, step );
 
    IndexType col;
    while( elementPtr < rowEnd &&
@@ -450,7 +450,7 @@ void tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::getRowFast( 
                                                                                 RealType* values ) const
 {
    Index elementPtr, rowEnd, step, i( 0 );
-   DeviceDependentCode::initRowTraverseFast( *this, this->permutationArray.getElement( row ), elementPtr, rowEnd, step );
+   DeviceDependentCode::initRowTraverseFast( *this, row, elementPtr, rowEnd, step );
 
    while( elementPtr < rowEnd )
    {
@@ -494,7 +494,7 @@ typename Vector::RealType tnlSlicedEllpackGraphMatrix< Real, Device, Index, Slic
 {
    Real result = 0.0;
    Index elementPtr, rowEnd, step;
-   DeviceDependentCode::initRowTraverseFast( *this, this->permutationArray.getElement( row ), elementPtr, rowEnd, step );
+   DeviceDependentCode::initRowTraverseFast( *this, row, elementPtr, rowEnd, step );
 
    IndexType column;
    while( elementPtr < rowEnd &&
@@ -846,6 +846,100 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
+tnlVector< Index, Device, Index > tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::getSlicePointers()
+{
+    return this->slicePointers;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+tnlVector< Index, Device, Index > tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::getSliceRowLengths()
+{
+    return this->sliceRowLengths;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+tnlVector< Index, Device, Index > tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::getPermutationArray()
+{
+    return this->permutationArray;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+tnlVector< Index, Device, Index > tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::getInversePermutationArray()
+{
+    return this->inversePermutationArray;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+tnlVector< Index, Device, Index > tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::getColorPointers()
+{
+    return this->colorPointers;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+void tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::copyFromHostToCuda( tnlSlicedEllpackGraphMatrix<Real, tnlHost, Index, SliceSize>& matrix )
+{
+    tnlSparseMatrix< Real, Device, Index >::copyFromHostToCuda( matrix );
+
+    this->rearranged = true;
+
+    tnlVector< Index, Device, Index > colorPointers = matrix.getColorPointers();
+    this->colorPointers.setSize( colorPointers.getSize() );
+    for( IndexType i = 0; i < colorPointers.getSize(); i++ )
+        this->colorPointers.setElement( i, colorPointers[ i ] );
+
+    tnlVector< Index, Device, Index > slicePointers = matrix.getSlicePointers();
+    this->slicePointers.setSize( slicePointers.getSize() );
+    for( IndexType i = 0; i < slicePointers.getSize(); i++ )
+        this->slicePointers.setElement( i, slicePointers[ i ] );
+
+    tnlVector< Index, Device, Index > sliceRowLengths = matrix.getSliceRowLengths();
+    this->sliceRowLengths.setSize( sliceRowLengths.getSize() );
+    for( IndexType i = 0; i < sliceRowLengths.getSize(); i++ )
+        this->sliceRowLengths.setElement( i, sliceRowLengths[ i ] );
+
+    tnlVector< Index, Device, Index > permutationArray = matrix.getPermutationArray();
+    this->permutationArray.setSize( permutationArray.getSize() );
+    for( IndexType i = 0; i < permutationArray.getSize(); i++ )
+        this->permutationArray.setElement( i, permutationArray[ i ] );
+
+    tnlVector< Index, Device, Index > inversePermutation = matrix.getInversePermutationArray();
+    this->inversePermutationArray.setSize( inversePermutation.getize() );
+    for( IndexType i = 0; i < inversePermutation.getSize(); i++ )
+        this->inversePermutationArray.setElement( i, inversePermutation[ i ] );
+
+    for( IndexType i = 0; i < this->getRows(); i++ )
+        for( IndexType j = 0; j <= i; j++ )
+        {
+            if( matrix.getElement( i, j ) != 0.0 )
+                this->setElementFast( i, j, matrix.getElement( i, j ) );
+        }
+
+    colorPointers.reset();
+    slicePointers.reset();
+    sliceRowLengths.reset();
+    permutationArray.reset();
+    inversePermutation.reset();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
 template< typename InVector,
           typename OutVector >
 void tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::vectorProductHost( const InVector& inVector,
@@ -1052,6 +1146,62 @@ __global__ void tnlSlicedEllpackGraphMatrix_computeMaximalRowLengthInSlices_Cuda
 }
 #endif
 
+#ifdef HAVE_CUDA
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+template< typename InVector,
+          typename OutVector >
+void tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >::spmvCuda( const InVector& inVector,
+                                                                              OutVector& outVector,
+                                                                              const int globalIdx,
+                                                                              const int color ) const
+{
+    const IndexType offset = this->colorPointers[ i ];
+    const IndexType stop = this->colorPointers[ i + 1 ];
+    if( globalIdx >= stop || globalIdx < offset )
+        return;
+
+    IndexType inSliceIdx = threadIdx.x % SliceSize;
+    const IndexType sliceIdx = globalIdx / SliceSize;
+    const IndexType sliceLength = this->sliceRowLengths[ sliceIdx ];
+    const IndexType begin = this->slicePointers[ sliceIdx ] + inSliceIdx * sliceLength;
+    const IndexType rowMapping = this->inversePermutationArray[ globalIdx ];
+    for( IndexType elementPtr = begin; elementPtr < begin + sliceLength; elementPtr++ )
+    {
+        IndexType column = this->columnIndexes[ elementPtr ];
+        if( column == this->getPaddingIndex() )
+            break;
+
+        outVector[ rowMapping ] += inVector[ column ] * this->values[ elementPtr ];
+        if( rowMapping != column )
+        {
+            outVector[ column ] += inVector[ rowMapping ] * this->values[ elementPtr ];
+        }
+    }
+}
+#endif
+
+#ifdef HAVE_CUDA
+template< typename Real,
+          typename Index,
+          int SliceSize >
+template< typename InVector,
+          typename OutVector >
+__global__
+void tnlSlicedEllpackGraphMatrixVectorProductCuda( const tnlSlicedEllpackGraphMatrix< Real, tnlCuda, Index, SliceSize >& matrix,
+                                                   const InVector* inVector,
+                                                   OutVector* outVector,
+                                                   const int gridIdx,
+                                                   const int color,
+                                                   const int sliceOffset )
+{
+    int globalIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x + sliceOffset;
+    matrix->smvCuda( *inVector, *outVector, globalIdx, color );
+}
+#endif
+
 template<>
 class tnlSlicedEllpackGraphMatrixDeviceDependentCode< tnlCuda >
 {
@@ -1103,7 +1253,9 @@ class tnlSlicedEllpackGraphMatrixDeviceDependentCode< tnlCuda >
                 typename Index,
                 int SliceSize >
       static bool computeMaximalRowLengthInSlices( tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize >& matrix,
-                                                   const typename tnlSlicedEllpackGraphMatrix< Real, Device, Index >::RowLengthsVector& rowLengths )
+                                                   const typename tnlSlicedEllpackGraphMatrix< Real, Device, Index >::RowLengthsVector& rowLengths,
+                                                   tnlVector< Index, Device, Index >& sliceRowLengths,
+                                                   tnlVector< Index, Device, Index >& slicePointers )
       {
 #ifdef HAVE_CUDA
          typedef tnlSlicedEllpackGraphMatrix< Real, Device, Index, SliceSize > Matrix;
@@ -1138,7 +1290,44 @@ class tnlSlicedEllpackGraphMatrixDeviceDependentCode< tnlCuda >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
-         tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+         // TODO: tohle
+#ifdef HAVE_CUDA
+         typedef tnlSlicedEllpackGraphMatrix< Real, tnlCuda, Index, SliceSize > Matrix;
+         typedef typename Matrix::IndexType IndexType
+         Matrix* kernel_this = tnlCuda::passToDevice( matrix );
+         InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
+         OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
+         dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+         for( IndexType color = 0; color < matrix.getNumberOfColors(); color++ )
+         {
+            IndexType offset = matrix.colorPointers.getElement( color ); can be computed in kernel
+            // IndexType rowStop = matrix.colorPointers.getElement( color + 1 ); can be computed in kernel
+            IndexType inSliceOffset = offset % SliceSize;
+            IndexType rows = matrix.colorPointers.getElement( color + 1 ) - matrix.colorPointers.getElement( color ) + inSliceIdx;
+            const IndexType cudaBlocks = roundUpDivision( rows, cudaBlockSize.x );
+            const IndexType cudaGrids = rondUpDivision( cudaBlocks, tnlCuda::getMaxGridSize );
+            for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+            {
+               if( gridIdx == cudaGrids - 1 )
+                  cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+               IndexType offset = this->colorPointers[ i ];
+               IndexType inSliceIdx = offset % SliceSize;
+               IndexType sliceOffset = offset - inSliceIdx;
+               tnlSlicedEllpackGraphMatrixVectorProductCuda< Real, Index, InVector, OutVector >
+                                                           <<< cudaGridSize, cudaBlockSize >>>
+                                                           ( kernel_this,
+                                                             kernel_inVector,
+                                                             kernel_outVector,
+                                                             gridIdx,
+                                                             color,
+                                                             sliceOffset );
+            }
+         }
+         tnlCuda::freeFromDevice( kernel_this );
+         tnlCuda::freeFromDevice( kernel_inVector );
+         tnlCuda::freeFromDevice( kernel_outVector );
+         checkCudaDevice;
+#endif
       }
 
 };
