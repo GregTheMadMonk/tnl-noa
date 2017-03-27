@@ -495,15 +495,11 @@ processEntities(
                  gridIdx,
                  gridEntityParameters... );
       }
-      // only launches into the stream 0 are synchronized
-      if( stream == 0 )
-      {
-         //cudaStreamSynchronize( s1 );
-         //cudaStreamSynchronize( s2 );
-         //cudaStreamSynchronize( s3 );
-         //cudaStreamSynchronize( s4 );
-         checkCudaDevice;
-      }         
+      cudaStreamSynchronize( s1 );
+      cudaStreamSynchronize( s2 );
+      cudaStreamSynchronize( s3 );
+      cudaStreamSynchronize( s4 );
+      checkCudaDevice;
    }
    else
    {
