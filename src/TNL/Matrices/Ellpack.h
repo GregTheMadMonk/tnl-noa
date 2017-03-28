@@ -35,6 +35,7 @@ class Ellpack : public Sparse< Real, Device, Index >
    typedef Ellpack< Real, Devices::Cuda, Index > CudaType;
    typedef Sparse< Real, Device, Index > BaseType;
    typedef typename BaseType::MatrixRow MatrixRow;
+   typedef SparseRow< const RealType, const IndexType > ConstMatrixRow;
 
    Ellpack();
 
@@ -128,7 +129,7 @@ class Ellpack : public Sparse< Real, Device, Index >
    MatrixRow getRow( const IndexType rowIndex );
 
    __cuda_callable__
-   const MatrixRow getRow( const IndexType rowIndex ) const;
+   ConstMatrixRow getRow( const IndexType rowIndex ) const;
 
    template< typename Vector >
    __cuda_callable__

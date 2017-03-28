@@ -77,7 +77,7 @@ template< typename Real,
           typename Index>
 bool tnlSpmvBenchmarkAdaptiveRgCSR< Real, Device, Index > :: setup( const CSR< Real, Devices::Host, Index >& matrix )
 {
-   //Assert( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
+   //TNL_ASSERT( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
    if( Device :: getDevice() == Devices::HostDevice )
    {
       this->matrix. tuneFormat( desiredChunkSize, cudaBlockSize );

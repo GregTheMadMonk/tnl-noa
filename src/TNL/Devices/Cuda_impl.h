@@ -16,41 +16,45 @@ namespace TNL {
 namespace Devices {   
 
 __cuda_callable__ 
-inline int Cuda::getMaxGridSize()
+inline constexpr int Cuda::getMaxGridSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 65535;
 };
 
 __cuda_callable__
-inline int Cuda::getMaxBlockSize()
+inline constexpr int Cuda::getMaxBlockSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 1024;
 };
 
 __cuda_callable__ 
-inline int Cuda::getWarpSize()
+inline constexpr int Cuda::getWarpSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 32;
+}
+
+__cuda_callable__
+inline constexpr int Cuda::getNumberOfSharedMemoryBanks()
+{
+   // TODO: make it preprocessor macro constant defined in tnlConfig
+   return 32;
+}
+
+inline constexpr int Cuda::getGPUTransferBufferSize()
+{
+   return 1 << 20;
 }
 
 #ifdef HAVE_CUDA
-template< typename Index >
-__device__ Index Cuda::getGlobalThreadIdx( const Index gridIdx )
+__device__ inline int Cuda::getGlobalThreadIdx( const int gridIdx, const int gridSize )
 {
-   return ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   return ( gridIdx * gridSize + blockIdx.x ) * blockDim.x + threadIdx.x;
 }
 #endif
 
-
-__cuda_callable__ 
-inline int Cuda::getNumberOfSharedMemoryBanks()
-{
-   // TODO: make it preprocessor macro constant defined in tnlConfig
-   return 32;
-}
 
 template< typename ObjectType >
 ObjectType* Cuda::passToDevice( const ObjectType& object )
@@ -74,7 +78,7 @@ ObjectType* Cuda::passToDevice( const ObjectType& object )
    }
    return deviceObject;
 #else
-   Assert( false, std::cerr << "CUDA support is missing." );
+   TNL_ASSERT( false, std::cerr << "CUDA support is missing." );
    return 0;
 #endif
 }
@@ -91,7 +95,7 @@ ObjectType Cuda::passFromDevice( const ObjectType* object )
    checkCudaDevice;
    return aux;
 #else
-   Assert( false, std::cerr << "CUDA support is missing." );
+   TNL_ASSERT( false, std::cerr << "CUDA support is missing." );
    return 0;
 #endif
 }
@@ -107,7 +111,7 @@ void Cuda::passFromDevice( const ObjectType* deviceObject,
                cudaMemcpyDeviceToHost );
    checkCudaDevice;
 #else
-   Assert( false, std::cerr << "CUDA support is missing." );
+   TNL_ASSERT( false, std::cerr << "CUDA support is missing." );
 #endif
 }
 
@@ -129,7 +133,7 @@ void Cuda::freeFromDevice( ObjectType* deviceObject )
    cudaFree( ( void* ) deviceObject );
    checkCudaDevice;
 #else
-   Assert( false, std::cerr << "CUDA support is missing." );
+   TNL_ASSERT( false, std::cerr << "CUDA support is missing." );
 #endif
 }
 
@@ -140,25 +144,12 @@ __device__ Index Cuda::getInterleaving( const Index index )
    return index + index / Cuda::getNumberOfSharedMemoryBanks();
 }
 
-template< typename Element >
-__device__ getSharedMemory< Element >::operator Element*()
+template< typename Element, size_t Alignment >
+__device__ Element* Cuda::getSharedMemory()
 {
-   extern __shared__ int __sharedMemory[];
-   return ( Element* ) __sharedMemory;
-};
-
-__device__ inline getSharedMemory< double >::operator double*()
-{
-   extern __shared__ double __sharedMemoryDouble[];
-   return ( double* ) __sharedMemoryDouble;
-};
-
-__device__ inline getSharedMemory< long int >::operator long int*()
-{
-   extern __shared__ long int __sharedMemoryLongInt[];
-   return ( long int* ) __sharedMemoryLongInt;
-};
-
+   extern __shared__ __align__ ( Alignment ) unsigned char __sdata[];
+   return reinterpret_cast< Element* >( __sdata );
+}
 #endif /* HAVE_CUDA */
 
 } // namespace Devices

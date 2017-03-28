@@ -76,12 +76,12 @@ void
 EllpackIndexMultimap< Index, Device >::
 allocate( const ValuesAllocationVectorType& portsCount )
 {
-   Assert( portsCount.getSize() == this->keysRange,
+   TNL_ASSERT( portsCount.getSize() == this->keysRange,
               std::cerr << "portsCount.getSize() =  " << portsCount.getSize()
                    << "this->inputs = " << this->keysRange );
    this->valuesMaxCount = portsCount.max();
  
-   Assert( this->valuesMaxCount >= 0 && this->valuesMaxCount <= this->valuesRange,
+   TNL_ASSERT( this->valuesMaxCount >= 0 && this->valuesMaxCount <= this->valuesRange,
               std::cerr << "this->portsMaxCount = " << this->valuesMaxCount
                    << " this->outputs = " << this->valuesRange );
    this->values.setSize( this->keysRange * this->valuesMaxCount );

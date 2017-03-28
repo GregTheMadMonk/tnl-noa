@@ -65,7 +65,7 @@ template< typename Real,
 bool ChunkedEllpack< Real, Device, Index >::setDimensions( const IndexType rows,
                                                                     const IndexType columns )
 {
-   Assert( rows > 0 && columns > 0,
+   TNL_ASSERT( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
    if( ! Sparse< Real, Device, Index >::setDimensions( rows, columns ) )
@@ -110,7 +110,7 @@ void ChunkedEllpack< Real, Device, Index >::resolveSliceSizes( const Containers:
       row++;
       if( allocatedElementsInSlice < desiredElementsInSlice  )
           if( row < this->rows && sliceSize < chunksInSlice ) continue;
-      Assert( sliceSize >0, );
+      TNL_ASSERT( sliceSize >0, );
       this->slices[ numberOfSlices ].size = sliceSize;
       this->slices[ numberOfSlices ].firstRow = row - sliceSize;
       this->slices[ numberOfSlices ].pointer = allocatedElementsInSlice; // this is only temporary
@@ -173,7 +173,7 @@ bool ChunkedEllpack< Real, Device, Index >::setSlice( const CompressedRowsLength
       maxChunkInSlice = max( maxChunkInSlice,
                           ceil( ( RealType ) rowLengths[ i ] /
                                 ( RealType ) this->rowToChunkMapping[ i ] ) );
-   Assert( maxChunkInSlice > 0,
+   TNL_ASSERT( maxChunkInSlice > 0,
               std::cerr << " maxChunkInSlice = " << maxChunkInSlice << std::endl );
 
    /****
@@ -189,9 +189,9 @@ bool ChunkedEllpack< Real, Device, Index >::setSlice( const CompressedRowsLength
    for( IndexType i = sliceBegin; i < sliceEnd; i++ )
    {
       this->rowPointers[ i + 1 ] = maxChunkInSlice*rowToChunkMapping[ i ];
-      Assert( this->rowPointers[ i ] >= 0,
+      TNL_ASSERT( this->rowPointers[ i ] >= 0,
                  std::cerr << "this->rowPointers[ i ] = " << this->rowPointers[ i ] );
-      Assert( this->rowPointers[ i + 1 ] >= 0,
+      TNL_ASSERT( this->rowPointers[ i + 1 ] >= 0,
                  std::cerr << "this->rowPointers[ i + 1 ] = " << this->rowPointers[ i + 1 ] );
    }
 
@@ -208,8 +208,8 @@ template< typename Real,
           typename Index >
 bool ChunkedEllpack< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
-   Assert( this->getRows() > 0, );
-   Assert( this->getColumns() > 0, );
+   TNL_ASSERT( this->getRows() > 0, );
+   TNL_ASSERT( this->getColumns() > 0, );
 
    IndexType elementsToAllocation( 0 );
 
@@ -254,7 +254,7 @@ template< typename Real,
 Index ChunkedEllpack< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
    const IndexType& sliceIndex = rowToSliceMapping[ row ];
-   Assert( sliceIndex < this->rows, );
+   TNL_ASSERT( sliceIndex < this->rows, );
    const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
    return rowPointers[ row + 1 ] - rowPointers[ row ];
 }
@@ -338,7 +338,7 @@ template< typename Real,
              typename Index2 >
 bool ChunkedEllpack< Real, Device, Index >::operator == ( const ChunkedEllpack< Real2, Device2, Index2 >& matrix ) const
 {
-   Assert( this->getRows() == matrix.getRows() &&
+   TNL_ASSERT( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
               std::cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
@@ -390,7 +390,7 @@ bool ChunkedEllpack< Real, Device, Index >::addElementFast( const IndexType row,
                                                                      const RealType& _thisElementMultiplicator )
 {
    // TODO: return this back when CUDA kernels support std::cerr
-   /*Assert( row >= 0 && row < this->rows &&
+   /*TNL_ASSERT( row >= 0 && row < this->rows &&
               _column >= 0 && _column <= this->columns,
               std::cerr << " row = " << row
                    << " column = " << _column
@@ -398,7 +398,7 @@ bool ChunkedEllpack< Real, Device, Index >::addElementFast( const IndexType row,
                    << " this->columns = " << this-> columns );*/
 
    const IndexType& sliceIndex = rowToSliceMapping[ row ];
-   Assert( sliceIndex < this->rows, );
+   TNL_ASSERT( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices[ sliceIndex ].firstRow )
       chunkIndex = rowToChunkMapping[ row - 1 ];
@@ -489,7 +489,7 @@ bool ChunkedEllpack< Real, Device, Index >::addElement( const IndexType row,
                                                                  const RealType& _value,
                                                                  const RealType& _thisElementMultiplicator )
 {
-   Assert( row >= 0 && row < this->rows &&
+   TNL_ASSERT( row >= 0 && row < this->rows &&
               _column >= 0 && _column <= this->columns,
               std::cerr << " row = " << row
                    << " column = " << _column
@@ -497,7 +497,7 @@ bool ChunkedEllpack< Real, Device, Index >::addElement( const IndexType row,
                    << " this->columns = " << this-> columns );
 
    const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
-   Assert( sliceIndex < this->rows, );
+   TNL_ASSERT( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices.getElement( sliceIndex ).firstRow )
       chunkIndex = rowToChunkMapping.getElement( row - 1 );
@@ -586,11 +586,11 @@ bool ChunkedEllpack< Real, Device, Index >::setRowFast( const IndexType row,
                                                                  const IndexType elements )
 {
    // TODO: return this back when CUDA kernels support std::cerr
-   /*Assert( row >= 0 && row < this->rows,
+   /*TNL_ASSERT( row >= 0 && row < this->rows,
               std::cerr << " row = " << row
                    << " this->rows = " << this->rows );*/
    const IndexType sliceIndex = rowToSliceMapping[ row ];
-   //Assert( sliceIndex < this->rows, );
+   //TNL_ASSERT( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices[ sliceIndex ].firstRow )
       chunkIndex = rowToChunkMapping[ row - 1 ];
@@ -661,12 +661,12 @@ bool ChunkedEllpack< Real, Device, Index >::setRow( const IndexType row,
                                                              const RealType* values,
                                                              const IndexType elements )
 {
-   Assert( row >= 0 && row < this->rows,
+   TNL_ASSERT( row >= 0 && row < this->rows,
               std::cerr << " row = " << row
                    << " this->rows = " << this->rows );
 
    const IndexType sliceIndex = rowToSliceMapping.getElement( row );
-   Assert( sliceIndex < this->rows, );
+   TNL_ASSERT( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices.getElement( sliceIndex ).firstRow )
       chunkIndex = rowToChunkMapping.getElement( row - 1 );
@@ -762,7 +762,7 @@ Real ChunkedEllpack< Real, Device, Index >::getElementFast( const IndexType row,
                                                                      const IndexType column ) const
 {
    const IndexType sliceIndex = rowToSliceMapping[ row ];
-   Assert( sliceIndex < this->rows, );
+   TNL_ASSERT( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices[ sliceIndex ].firstRow )
       chunkIndex = rowToChunkMapping[ row - 1 ];
@@ -808,7 +808,7 @@ Real ChunkedEllpack< Real, Device, Index >::getElement( const IndexType row,
                                                                  const IndexType column ) const
 {
    const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
-   Assert( sliceIndex < this->rows,
+   TNL_ASSERT( sliceIndex < this->rows,
               std::cerr << " sliceIndex = " << sliceIndex
                    << " this->rows = " << this->rows << std::endl; );
    IndexType chunkIndex( 0 );
@@ -863,7 +863,7 @@ void ChunkedEllpack< Real, Device, Index >::getRowFast( const IndexType row,
                                                                  RealType* values ) const
 {
    const IndexType& sliceIndex = rowToSliceMapping[ row ];
-   Assert( sliceIndex < this->rows, );
+   TNL_ASSERT( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices[ sliceIndex ].firstRow )
       chunkIndex = rowToChunkMapping[ row - 1 ];
@@ -947,7 +947,7 @@ void ChunkedEllpack< Real, Device, Index >::getRow( const IndexType row,
                                                              RealType* values ) const
 {
    const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
-   Assert( sliceIndex < this->rows, );
+   TNL_ASSERT( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices.getElement( sliceIndex ).firstRow )
       chunkIndex = rowToChunkMapping.getElement( row - 1 );
@@ -1003,11 +1003,11 @@ __cuda_callable__
 typename Vector::RealType ChunkedEllpack< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                             const Vector& vector ) const
 {
-   /*Assert( row >=0 && row < this->rows,
+   /*TNL_ASSERT( row >=0 && row < this->rows,
             std::cerr << " row = " << row << " this->rows = " << this->rows );*/
 
    const IndexType sliceIndex = rowToSliceMapping[ row ];
-   //Assert( sliceIndex < this->rows, );
+   //TNL_ASSERT( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices[ sliceIndex ].firstRow )
       chunkIndex = rowToChunkMapping[ row - 1 ];
@@ -1068,7 +1068,7 @@ __device__ void ChunkedEllpack< Real, Device, Index >::computeSliceVectorProduct
 {
    static_assert( std::is_same < DeviceType, Devices::Cuda >::value, "" );
 
-   RealType* chunkProducts = Devices::getSharedMemory< RealType >();
+   RealType* chunkProducts = Devices::Cuda::getSharedMemory< RealType >();
    ChunkedEllpackSliceInfo* sliceInfo = ( ChunkedEllpackSliceInfo* ) & chunkProducts[ blockDim.x ];
 
    if( threadIdx.x == 0 )
@@ -1115,7 +1115,7 @@ void ChunkedEllpack< Real, Device, Index >::addMatrix( const ChunkedEllpack< Rea
                                                                           const RealType& matrixMultiplicator,
                                                                           const RealType& thisMatrixMultiplicator )
 {
-   Assert( false, std::cerr << "TODO: implement" );
+   TNL_ASSERT( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -1127,7 +1127,7 @@ template< typename Real,
 void ChunkedEllpack< Real, Device, Index >::getTransposition( const ChunkedEllpack< Real2, Device, Index2 >& matrix,
                                                                        const RealType& matrixMultiplicator )
 {
-   Assert( false, std::cerr << "TODO: implement" );
+   TNL_ASSERT( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -1140,7 +1140,7 @@ bool ChunkedEllpack< Real, Device, Index >::performSORIteration( const Vector& b
                                                                                     Vector& x,
                                                                                     const RealType& omega ) const
 {
-   Assert( row >=0 && row < this->getRows(),
+   TNL_ASSERT( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row
                    << " this->getRows() = " << this->getRows() << std::endl );
 
@@ -1148,7 +1148,7 @@ bool ChunkedEllpack< Real, Device, Index >::performSORIteration( const Vector& b
    RealType sum( 0.0 );
 
    const IndexType& sliceIndex = rowToSliceMapping[ row ];
-   Assert( sliceIndex < this->rows, );
+   TNL_ASSERT( sliceIndex < this->rows, );
    const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
    IndexType elementPtr = rowPointers[ row ];
    const IndexType rowEnd = rowPointers[ row + 1 ];
@@ -1225,7 +1225,7 @@ void ChunkedEllpack< Real, Device, Index >::print( std::ostream& str ) const
       str <<"Row: " << row << " -> ";
 
       const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
-      //Assert( sliceIndex < this->rows, );
+      //TNL_ASSERT( sliceIndex < this->rows, );
       const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
       IndexType elementPtr = rowPointers.getElement( row );
       const IndexType rowEnd = rowPointers.getElement( row + 1 );

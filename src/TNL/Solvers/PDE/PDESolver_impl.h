@@ -71,7 +71,6 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Setup the problem
     */
-  
    if( ! problem->setup( this->meshPointer, parameters, prefix ) )
    {
       std::cerr << "The problem initiation failed!" << std::endl;
@@ -81,7 +80,7 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Set DOFs (degrees of freedom)
     */
-   Assert( problem->getDofs( this->meshPointer ) != 0, );
+   TNL_ASSERT( problem->getDofs( this->meshPointer ) != 0, );
    std::cout << "Allocating dofs ... ";
    if( ! this->dofsPointer->setSize( problem->getDofs( this->meshPointer ) ) )
    {
@@ -96,15 +95,15 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Set mesh dependent data
     */
-   this->problem->setMeshDependentData( this->meshPointer, this->meshDependentData );
-   this->problem->bindMeshDependentData( this->meshPointer, this->meshDependentData );
+   this->problem->setMeshDependentData( this->meshPointer, this->meshDependentDataPointer );
+   this->problem->bindMeshDependentData( this->meshPointer, this->meshDependentDataPointer );
    
    /***
     * Set-up the initial condition
     */
   std::cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! this->problem->setInitialCondition( parameters, meshPointer, this->dofsPointer, this->meshDependentData ) )
+   if( ! this->problem->setInitialCondition( parameters, meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
       return false;
   std::cout << " [ OK ]" << std::endl;
 
@@ -320,9 +319,9 @@ bool
 PDESolver< Problem, TimeStepper >::
 solve()
 {
-   Assert( timeStepper != 0,
+   TNL_ASSERT( timeStepper != 0,
               std::cerr << "No time stepper was set in PDESolver." );
-   Assert( problem != 0,
+   TNL_ASSERT( problem != 0,
               std::cerr << "No problem was set in PDESolver." );
 
    if( snapshotPeriod == 0 )
@@ -338,7 +337,7 @@ solve()
    this->computeTimer->reset();
  
    this->ioTimer->start();
-   if( ! this->problem->makeSnapshot( t, step, meshPointer, this->dofsPointer, this->meshDependentData ) )
+   if( ! this->problem->makeSnapshot( t, step, meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
    {
       std::cerr << "Making the snapshot failed." << std::endl;
       return false;
@@ -356,14 +355,14 @@ solve()
    {
       RealType tau = min( this->snapshotPeriod,
                           this->finalTime - t );
-      if( ! this->timeStepper->solve( t, t + tau, this->meshPointer, this->dofsPointer, this->meshDependentData ) )
+      if( ! this->timeStepper->solve( t, t + tau, this->meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
          return false;
       step ++;
       t += tau;
 
       this->ioTimer->start();
       this->computeTimer->stop();
-      if( ! this->problem->makeSnapshot( t, step, this->meshPointer, this->dofsPointer, this->meshDependentData ) )
+      if( ! this->problem->makeSnapshot( t, step, this->meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
       {
          std::cerr << "Making the snapshot failed." << std::endl;
          return false;

@@ -1,19 +1,14 @@
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
                           UniquePointer.h  -  description
                              -------------------
     begin                : May 6, 2016
-    copyright            : (C) 2016 by Tomas Oberhuber
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Tomas Oberhuber, Jakub Klinkovsky
 
 #pragma once
 
@@ -162,8 +157,8 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       const Object& getData() const
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
-         Assert( this->pd, );
-         Assert( this->cuda_pointer, );
+         TNL_ASSERT( this->pd, );
+         TNL_ASSERT( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
             return this->pd->data;
          if( std::is_same< Device, Devices::Cuda >::value )
@@ -174,8 +169,8 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       Object& modifyData()
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
-         Assert( this->pd, );
-         Assert( this->cuda_pointer, );
+         TNL_ASSERT( this->pd, );
+         TNL_ASSERT( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
          {
             this->pd->maybe_modified = true;
@@ -258,14 +253,14 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       void set_last_sync_state()
       {
-         Assert( this->pd, );
+         TNL_ASSERT( this->pd, );
          std::memcpy( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( ObjectType ) );
          this->pd->maybe_modified = false;
       }
 
       bool modified()
       {
-         Assert( this->pd, );
+         TNL_ASSERT( this->pd, );
          // optimization: skip bitwise comparison if we're sure that the data is the same
          if( ! this->pd->maybe_modified )
             return false;

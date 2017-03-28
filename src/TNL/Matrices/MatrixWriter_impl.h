@@ -10,21 +10,23 @@
 
 #pragma once
 
+#include <TNL/Matrices/MatrixWriter.h>
+
 namespace TNL {
 namespace Matrices {   
 
 template< typename Matrix >
-bool MatrixWriter< Matrix >::writeToGnuplot( std::ostream str,
-                                                const Matrix& matrix,
-                                                bool verbose )
+bool MatrixWriter< Matrix >::writeToGnuplot( std::ostream& str,
+                                             const Matrix& matrix,
+                                             bool verbose )
 {
    for( IndexType row = 0; row < matrix.getRows(); row ++ )
    {
       for( IndexType column = 0; column < matrix.getColumns(); column ++ )
       {
-         RealType elementValue = maytrix.getElement( row, column );
+         RealType elementValue = matrix.getElement( row, column );
          if(  elementValue != ( RealType ) 0.0 )
-            str << column << " " << getSize() - row << " " << elementValue << std::endl;
+            str << column << " " << row << " " << elementValue << std::endl;
       }
       if( verbose )
         std::cout << "Drawing the row " << row << "      \r" << std::flush;
@@ -35,9 +37,9 @@ bool MatrixWriter< Matrix >::writeToGnuplot( std::ostream str,
 }
 
 template< typename Matrix >
-bool MatrixWriter< Matrix >::writeToEps( std::ostream str,
-                                            const Matrix& matrix,
-                                            bool verbose )
+bool MatrixWriter< Matrix >::writeToEps( std::ostream& str,
+                                         const Matrix& matrix,
+                                         bool verbose )
 {
    const int elementSize = 10;
    if( ! writeEpsHeader( str, matrix, elementSize ) )
@@ -54,9 +56,9 @@ bool MatrixWriter< Matrix >::writeToEps( std::ostream str,
 }
 
 template< typename Matrix >
-bool MatrixWriter< Matrix >::writeEpsHeader( std::ostream str,
-                                                const Marix& matrix,
-                                                const int elementSize )
+bool MatrixWriter< Matrix >::writeEpsHeader( std::ostream& str,
+                                             const Matrix& matrix,
+                                             const int elementSize )
 {
    const double scale = elementSize * max( matrix.getRows(), matrix.getColumns() );
    str << "%!PS-Adobe-2.0 EPSF-2.0" << std::endl;
@@ -69,14 +71,15 @@ bool MatrixWriter< Matrix >::writeEpsHeader( std::ostream str,
 }
 
 template< typename Matrix >
-bool MatrixWriter< Matrix >::writeEpsBody( std::ostream str,
-                                              const Marix& matrix,
-                                              const int elementSize )
+bool MatrixWriter< Matrix >::writeEpsBody( std::ostream& str,
+                                           const Matrix& matrix,
+                                           const int elementSize,
+                                           bool verbose )
 {
    IndexType lastRow( 0 ), lastColumn( 0 );
-   for( IndexType row = 0; row < getSize(); row ++ )
+   for( IndexType row = 0; row < matrix.getRows(); row ++ )
    {
-      for( IndexType column = 0; column < getSize(); column ++ )
+      for( IndexType column = 0; column < matrix.getColumns(); column ++ )
       {
          RealType elementValue = getElement( row, column );
          if( elementValue != ( RealType ) 0.0 )

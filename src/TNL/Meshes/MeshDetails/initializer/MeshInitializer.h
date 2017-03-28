@@ -570,13 +570,13 @@ class MeshInitializerLayer< MeshConfig,
 
       MeshType& getMesh()
       {
-         Assert( this->mesh, );
+         TNL_ASSERT( this->mesh, );
          return *( this->mesh );
       }
 
       VertexInitializerType& getEntityInitializer( DimensionsTag, GlobalIndexType index )
       {
-         Assert( index >= 0 && index < vertexInitializerContainer.getSize(),
+         TNL_ASSERT( index >= 0 && index < vertexInitializerContainer.getSize(),
                   std::cerr << " index = " << index
                        << " vertexInitializerContainer.getSize() = " << vertexInitializerContainer.getSize() << std::endl; );
          return vertexInitializerContainer[ index ];

@@ -44,7 +44,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
-      typedef Matrices::CSR< RealType, DeviceType, IndexType > MatrixType;
+      typedef Matrices::SlicedEllpack< RealType, DeviceType, IndexType > MatrixType;
       typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
@@ -90,12 +90,12 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       void bindDofs( const MeshPointer& meshPointer,
                      const DofVectorPointer& dofs );
 
-      void getExplicitRHS( const RealType& time,
-                           const RealType& tau,
-                           const MeshPointer& meshPointer,
-                           DofVectorPointer& _u,
-                           DofVectorPointer& _fu,
-                           MeshDependentDataPointer& meshDependentData );
+      void getExplicitUpdate( const RealType& time,
+                              const RealType& tau,
+                              const MeshPointer& meshPointer,
+                              DofVectorPointer& _u,
+                              DofVectorPointer& _fu,
+                              MeshDependentDataPointer& meshDependentData );
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,

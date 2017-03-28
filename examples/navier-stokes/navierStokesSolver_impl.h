@@ -260,12 +260,12 @@ bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
 }
 
 template< typename Mesh, typename EulerScheme >
-void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType& time,
+void navierStokesSolver< Mesh, EulerScheme > :: getExplicitUpdate(  const RealType& time,
                                                                  const RealType& tau,
                                                                  DofVectorType& u,
                                                                  DofVectorType& fu )
 {
-   nsSolver.getExplicitRhs( time, tau, u, fu );
+   nsSolver.getExplicitUpdate( time, tau, u, fu );
    solverMonitor.uMax = this->mesh.getAbsMax( nsSolver.getU() );
    solverMonitor.uAvg = this->mesh.getLpNorm( nsSolver.getU(), 1.0 );
    solverMonitor.eMax = this->mesh.getAbsMax( nsSolver.getEnergy() );

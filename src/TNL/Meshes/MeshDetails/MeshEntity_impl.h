@@ -146,7 +146,7 @@ MeshEntity< MeshConfig, EntityTopology >::
 getSubentityIndex( const LocalIndexType localIndex) const
 {
    static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to get subentity which is not configured for storage." );
-   Assert( 0 <= localIndex &&
+   TNL_ASSERT( 0 <= localIndex &&
               localIndex < SubentityTraits< Subdimensions >::count,
               std::cerr << "localIndex = " << localIndex
                    << " subentitiesCount = "
@@ -200,7 +200,7 @@ MeshEntity< MeshConfig, EntityTopology >::
 getSuperentityIndex( const LocalIndexType localIndex ) const
 {
    static_assert( SuperentityTraits< SuperDimensions >::storageEnabled, "You try to get superentity which is not configured for storage." );
-   Assert( localIndex < this->getNumberOfSuperentities< SuperDimensions >(),
+   TNL_ASSERT( localIndex < this->getNumberOfSuperentities< SuperDimensions >(),
               std::cerr << " localIndex = " << localIndex
                    << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< SuperDimensions >() << std::endl; );
    typedef MeshSuperentityAccess< MeshConfig, EntityTopology >  SuperentityBaseType;
@@ -276,7 +276,7 @@ MeshEntity< MeshConfig, EntityTopology >::
 subentityOrientation( LocalIndexType index ) const
 {
    static const LocalIndexType subentitiesCount = SubentityTraits< Dimensions >::count;
-   Assert( 0 <= index && index < subentitiesCount, );
+   TNL_ASSERT( 0 <= index && index < subentitiesCount, );
 
    return SubentityStorageLayers::subentityOrientation( MeshDimensionsTag< Dimensions >(), index );
 }
@@ -294,7 +294,7 @@ setSubentityIndex( const LocalIndexType localIndex,
                    const GlobalIndexType globalIndex )
 {
    static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to set subentity which is not configured for storage." );
-   Assert( 0 <= localIndex &&
+   TNL_ASSERT( 0 <= localIndex &&
               localIndex < SubentityTraits< Subdimensions >::count,
               std::cerr << "localIndex = " << localIndex
                    << " subentitiesCount = "
@@ -448,7 +448,7 @@ typename MeshEntity< MeshConfig, MeshVertexTopology >::GlobalIndexType
 MeshEntity< MeshConfig, MeshVertexTopology >::
 getSuperentityIndex( const LocalIndexType localIndex ) const
 {
-   Assert( localIndex < this->getNumberOfSuperentities< Dimensions >(),
+   TNL_ASSERT( localIndex < this->getNumberOfSuperentities< Dimensions >(),
               std::cerr << " localIndex = " << localIndex
                    << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << std::endl; );
    typedef MeshSuperentityAccess< MeshConfig, MeshVertexTopology >  SuperentityBaseType;

@@ -29,7 +29,7 @@ template< typename Type, typename Device, typename Index >
 bool File :: read( Type* buffer,
                    const Index& _elements )
 {
-   Assert( _elements >= 0,
+   TNL_ASSERT( _elements >= 0,
            std::cerr << " elements = " << _elements << std::endl; );
 
    // convert _elements from Index to size_t, which is *unsigned* type
@@ -126,7 +126,7 @@ template< class Type, typename Device, typename Index >
 bool File :: write( const Type* buffer,
                     const Index _elements )
 {
-   Assert( _elements >= 0,
+   TNL_ASSERT( _elements >= 0,
            std::cerr << " elements = " << _elements << std::endl; );
 
    // convert _elements from Index to size_t, which is *unsigned* type

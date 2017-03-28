@@ -155,7 +155,7 @@ inline bool DicomSeries::retrieveFileList( const String& filePath)
       String fileNamePrefix(fileName.getString(), 0, fileName.getLength() - separatorPosition);
 
       struct dirent **dirp;
-      List<String > files;
+      Containers::List<String > files;
 
       //scan and sort directory
       int ndirs = scandir(directoryPath.getString(), &dirp, filter, alphasort);

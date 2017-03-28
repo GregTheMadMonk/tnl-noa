@@ -17,7 +17,7 @@
 
 #pragma once 
 
-#include <core/tnlAssert.h>
+#include <core/tnlTNL_ASSERT.h>
 
 
 template< typename GridEntity,
@@ -33,14 +33,14 @@ class tnlTestNeighbourGridEntityGetter
       __cuda_callable__
       tnlTestNeighbourGridEntityGetter( const GridEntity& entity )
       {
-         //tnlAssert( false, );
+         //tnlTNL_ASSERT( false, );
       };
       
       __cuda_callable__
       void refresh( const typename GridEntity::GridType& grid,
                     const typename GridEntity::IndexType& entityIndex )
       {
-         //tnlAssert( false, );
+         //tnlTNL_ASSERT( false, );
       };
 
 };

@@ -1,3 +1,15 @@
+/***************************************************************************
+                          CWYGMRES.h  -  description
+                             -------------------
+    begin                : May 13, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Jakub Klinkovsky
+
 #pragma once
 
 #include <type_traits>
@@ -19,6 +31,11 @@ CWYGMRES()
   ldSize( 0 ),
   restarting( 10 )
 {
+   /****
+    * Clearing the shared pointer means that there is no
+    * preconditioner set.
+    */
+   this->preconditioner.clear();   
 }
 
 template< typename Matrix,
@@ -98,7 +115,7 @@ bool
 CWYGMRES< Matrix, Preconditioner >::
 solve( const Vector& b, Vector& x )
 {
-   Assert( matrix, std::cerr << "No matrix was set in CWYGMRES. Call setMatrix() before solve()." << std::endl );
+   TNL_ASSERT( matrix, std::cerr << "No matrix was set in CWYGMRES. Call setMatrix() before solve()." << std::endl );
    if( restarting <= 0 )
    {
       std::cerr << "I have wrong value for the restarting of the CWYGMRES solver. It is set to " << restarting
@@ -434,8 +451,8 @@ hauseholder_apply_trunc( HostVector& out,
       // here we duplicate the upper (m+1)x(m+1) submatrix of Y on host for fast access
       RealType* host_yi = &YL[ i * (restarting + 1) ];
       RealType host_z[ i + 1 ];
-      if( ! Containers::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( host_yi, y_i.getData(), restarting + 1 ) ||
-          ! Containers::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( host_z, z.getData(), i + 1 ) )
+      if( ! Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( host_yi, y_i.getData(), restarting + 1 ) ||
+          ! Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( host_z, z.getData(), i + 1 ) )
       {
          std::cerr << "Failed to copy part of device vectors y_i or z to host buffer." << std::endl;
          throw 1;
@@ -616,8 +633,12 @@ bool CWYGMRES< Matrix, Preconditioner > :: setSize( IndexType _size, IndexType m
 {
    if( size == _size && restarting == m ) return true;
    size = _size;
-   // align each column to 256 bytes
-   ldSize = roundToMultiple( size, 256 / sizeof( RealType ) );
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
+      // align each column to 256 bytes - optimal for CUDA
+      ldSize = roundToMultiple( size, 256 / sizeof( RealType ) );
+   else
+       // on the host, we add 1 to disrupt the cache false-sharing pattern
+      ldSize = roundToMultiple( size, 256 / sizeof( RealType ) ) + 1;
    restarting = m;
    if( ! r.setSize( size ) ||
        ! z.setSize( size ) ||

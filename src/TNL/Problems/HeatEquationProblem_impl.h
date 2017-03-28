@@ -69,8 +69,6 @@ bool
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 writeEpilog( Logger& logger )
 {
-   logger.writeParameter< const char* >( "GPU transfer time:", "" );
-   this->gpuTransferTimer.writeLog( logger, 1 );
    return true;
 }
 
@@ -204,7 +202,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getExplicitRHS( const RealType& time,
+getExplicitUpdate( const RealType& time,
                 const RealType& tau,
                 const MeshPointer& meshPointer,
                 DofVectorPointer& uDofs,
@@ -239,9 +237,9 @@ getExplicitRHS( const RealType& time,
       time + tau,
       this->uPointer );*/
    
-   //uPointer->write( "u.txt", "gnuplot" );
-   //fuPointer->write( "fu.txt", "gnuplot" );
-   //getchar();
+   /*uPointer->write( "u.txt", "gnuplot" );
+   fuPointer->write( "fu.txt", "gnuplot" );
+   getchar();*/
 }
 
 template< typename Mesh,
@@ -278,8 +276,9 @@ assemblyLinearSystem( const RealType& time,
       this->uPointer,
       matrixPointer,
       bPointer );
-   /*matrix.print( cout );
-   cout << endl << b << endl;
+   //matrixPointer->print( std::cout );
+   //getchar();
+   /*cout << endl << b << endl;
    cout << endl << u << endl;
    abort();*/
    /*cout << "Matrix multiplication test ..." << std::endl;

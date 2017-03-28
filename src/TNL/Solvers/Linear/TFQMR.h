@@ -39,8 +39,8 @@ class TFQMR : public Object,
    typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
+   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
+   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
 
    TFQMR();
 
@@ -56,9 +56,9 @@ class TFQMR : public Object,
 
    void setPreconditioner( const PreconditionerPointer& preconditioner );
 
-   template< typename VectorPointer,
-             typename ResidueGetter = LinearResidueGetter< Matrix, typename VectorPointer::ObjectType >  >
-   bool solve( const VectorPointer& b, VectorPointer& x );
+   template< typename Vector,
+             typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
+   bool solve( const Vector& b, Vector& x );
 
    ~TFQMR();
 

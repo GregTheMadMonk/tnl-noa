@@ -141,14 +141,14 @@ template< typename Real,
           typename Index,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
-void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: getExplicitUpdate( const IndexType centralVolume,
                                                                                                               RealType& rho_t,
                                                                                                               RealType& rho_u1_t,
                                                                                                               RealType& rho_u2_t,
                                                                                                               const RealType& tau ) const
 {
-   Assert( mesh, std::cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
-   Assert( pressureGradient, std::cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
+   TNL_ASSERT( mesh, std::cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
+   TNL_ASSERT( pressureGradient, std::cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
 
    const IndexType& c = centralVolume;
    const IndexType e = this->mesh -> getElementNeighbour( centralVolume,  1,  0 );
@@ -392,14 +392,14 @@ template< typename Real,
           typename Device,
           typename Index,
           typename PressureGradient >
-void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: getExplicitUpdate( const IndexType centralVolume,
                                                                                                                           RealType& rho_t,
                                                                                                                           RealType& rho_u1_t,
                                                                                                                           RealType& rho_u2_t,
                                                                                                                           const RealType& tau ) const
 {
-   Assert( mesh, std::cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
-   Assert( pressureGradient, std::cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
+   TNL_ASSERT( mesh, std::cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
+   TNL_ASSERT( pressureGradient, std::cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
 
    const IndexType& xSize = this->mesh -> getDimensions(). x();
    const IndexType& ySize = this->mesh -> getDimensions(). y();
@@ -449,15 +449,15 @@ template< typename Real,
           typename Device,
           typename Index,
           typename PressureGradient >
-void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: getExplicitUpdate( const IndexType centralVolume,
                                                                                                                           RealType& rho_t,
                                                                                                                           RealType& rho_u1_t,
                                                                                                                           RealType& rho_u2_t,
                                                                                                                           RealType& e_t,
                                                                                                                           const RealType& tau ) const
 {
-   Assert( mesh, std::cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
-   Assert( pressureGradient, std::cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
+   TNL_ASSERT( mesh, std::cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
+   TNL_ASSERT( pressureGradient, std::cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
 
    const IndexType& xSize = this->mesh -> getDimensions(). x();
    const IndexType& ySize = this->mesh -> getDimensions(). y();

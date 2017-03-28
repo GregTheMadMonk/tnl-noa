@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/String.h>
-#include <TNL/List.h>
+#include <TNL/Containers/List.h>
 #include <TNL/param-types.h>
 #include <TNL/Config/ConfigEntryType.h>
 #include <TNL/Config/ConfigEntry.h>
@@ -88,13 +88,13 @@ class ConfigDescription
    template< typename EntryType >
    void addEntryEnum( const EntryType& entryEnum )
    {
-      Assert( this->currentEntry,);
+      TNL_ASSERT( this->currentEntry,);
       ( ( ConfigEntry< EntryType >* ) currentEntry )->getEnumValues().Append( entryEnum );
    }
 
    void addEntryEnum( const char* entryEnum )
    {
-      Assert( this->currentEntry,);
+      TNL_ASSERT( this->currentEntry,);
       ( ( ConfigEntry< String >* ) currentEntry )->getEnumValues().Append( String( entryEnum ) );
    }
 
@@ -166,7 +166,7 @@ class ConfigDescription
 
    protected:
 
-   List< ConfigEntryBase* > entries;
+   Containers::List< ConfigEntryBase* > entries;
 
    ConfigEntryBase* currentEntry;
 

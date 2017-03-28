@@ -10,8 +10,6 @@
 
 #include <TNL/Object.h>
 #include <TNL/Assert.h>
-#include <TNL/File.h>
-#include <TNL/List.h>
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -171,7 +169,7 @@ bool getObjectType( const String& fileName, String& type )
 }
 
 bool parseObjectType( const String& objectType,
-                      List< String >& parsedObjectType )
+                      Containers::List< String >& parsedObjectType )
 {
    parsedObjectType.reset();
    int objectTypeLength = objectType. getLength();
@@ -191,7 +189,7 @@ bool parseObjectType( const String& objectType,
 
    /****
     * Now, we will extract the parameters.
-    * Each parameter can be template, so we must compute and pair
+    * Each parameter can be template, so we must count and pair
     * '<' with '>'.
     */
    int templateBrackets( 0 );
@@ -203,13 +201,12 @@ bool parseObjectType( const String& objectType,
          templateBrackets ++;
       if( ! templateBrackets )
       {
-         if( objectType[ i ] == ' ' ||
-             objectType[ i ] == ',' ||
+         if( objectType[ i ] == ',' ||
              objectType[ i ] == '>' )
          {
             if( buffer != "" )
             {
-               if( ! parsedObjectType. Append( buffer ) )
+               if( ! parsedObjectType. Append( buffer.strip( ' ' ) ) )
                   return false;
                buffer. setString( "" );
             }

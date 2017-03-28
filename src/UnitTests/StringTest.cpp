@@ -106,6 +106,17 @@ TEST( StringTest, AdditionAssignmentOperator )
    ASSERT_EQ( strcmp( string2. getString(), "stringstring2" ), 0 );
 }
 
+TEST( StringTest, strip )
+{
+   EXPECT_EQ( String( "string" ).strip(), String( "string" ) );
+   EXPECT_EQ( String( "  string" ).strip(), String( "string" ) );
+   EXPECT_EQ( String( "string  " ).strip(), String( "string" ) );
+   EXPECT_EQ( String( "  string  " ).strip(), String( "string" ) );
+   EXPECT_EQ( String( " string1  string2  " ).strip(), String( "string1  string2" ) );
+   EXPECT_EQ( String( "" ).strip(), String( "" ) );
+   EXPECT_EQ( String( "  " ).strip(), String( "" ) );
+}
+
 
 TEST( StringTest, SaveLoad )
 {

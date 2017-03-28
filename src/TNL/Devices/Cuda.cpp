@@ -19,15 +19,11 @@ namespace TNL {
 namespace Devices {
 
 SmartPointersRegister Cuda::smartPointersRegister;
+Timer Cuda::smartPointersSynchronizationTimer;
 
 String Cuda::getDeviceType()
 {
    return String( "Cuda" );
-}
-
-int Cuda::getGPUTransferBufferSize()
-{
-   return 1 << 20;
 }
 
 int Cuda::getNumberOfBlocks( const int threads,
@@ -42,14 +38,10 @@ int Cuda::getNumberOfGrids( const int blocks,
    return roundUpDivision( blocks, gridSize );
 }
 
-/*size_t Cuda::getFreeMemory()
-{
-
-}*/
-
 void Cuda::configSetup( Config::ConfigDescription& config,
                         const String& prefix )
 {
+// FIXME: HAVE_CUDA is never defined in .cpp files
 #ifdef HAVE_CUDA
    config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device to run the computation.", 0 );
 #else
@@ -60,13 +52,16 @@ void Cuda::configSetup( Config::ConfigDescription& config,
 bool Cuda::setup( const Config::ParameterContainer& parameters,
                   const String& prefix )
 {
+// FIXME: HAVE_CUDA is never defined in .cpp files
 #ifdef HAVE_CUDA
-   int cudaDevice = parameters.getParameter< int >( "cuda-device" );
+   int cudaDevice = parameters.getParameter< int >( prefix + "cuda-device" );
    if( cudaSetDevice( cudaDevice ) != cudaSuccess )
    {
       std::cerr << "I cannot activate CUDA device number " << cudaDevice << "." << std::endl;
       return false;
    }
+   smartPointersSynchronizationTimer.reset();
+   smartPointersSynchronizationTimer.stop();
 #endif
    return true;
 }
@@ -85,7 +80,10 @@ bool Cuda::synchronizeDevice( int deviceId )
 {
    if( deviceId < 0 )
       deviceId = Devices::CudaDeviceInfo::getActiveDevice();
-   return smartPointersRegister.synchronizeDevice( deviceId );
+   smartPointersSynchronizationTimer.start();
+   bool b = smartPointersRegister.synchronizeDevice( deviceId );
+   smartPointersSynchronizationTimer.stop();
+   return b;
 }
 
 } // namespace Devices

@@ -26,7 +26,6 @@ class Logger
 
    void writeSeparator();
 
-   // TODO: move this to Devices::Host
    bool writeSystemInformation( const Config::ParameterContainer& parameters );
  
 
@@ -59,28 +58,28 @@ namespace TNL {
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 extern template void Logger::writeParameter< char* >( const String&,
-                                                         const String&,
-                                                         const Config::ParameterContainer&,
-                                                         int );
+                                                      const String&,
+                                                      const Config::ParameterContainer&,
+                                                      int );
 extern template void Logger::writeParameter< double >( const String&,
-                                                          const String&,
-                                                          const Config::ParameterContainer&,
-                                                          int );
-extern template void Logger::writeParameter< int >( const String&,
                                                        const String&,
                                                        const Config::ParameterContainer&,
                                                        int );
+extern template void Logger::writeParameter< int >( const String&,
+                                                    const String&,
+                                                    const Config::ParameterContainer&,
+                                                    int );
 
 // TODO: fix this
 //extern template void Logger :: WriteParameter< char* >( const char*,
-//                                                           const char*&,
-//                                                           int );
+//                                                        const char*&,
+//                                                        int );
 extern template void Logger::writeParameter< double >( const String&,
-                                                          const double&,
-                                                          int );
-extern template void Logger::writeParameter< int >( const String&,
-                                                       const int&,
+                                                       const double&,
                                                        int );
+extern template void Logger::writeParameter< int >( const String&,
+                                                    const int&,
+                                                    int );
 #endif
 
 } // namespace TNL

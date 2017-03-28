@@ -13,7 +13,7 @@
 #include <assert.h>
 #include <TNL/String.h>
 #include <TNL/Assert.h>
-#include <TNL/List.h>
+#include <TNL/Containers/List.h>
 #include <TNL/File.h>
 #include <TNL/Math.h>
 #ifdef HAVE_MPI
@@ -50,6 +50,12 @@ String :: String( unsigned number )
 }
 
 String :: String( int number )
+: string( 0 ), length( 0 )
+{
+   this->setString( convertToString( number ).getString() );
+}
+
+String :: String( unsigned long int number )
 : string( 0 ), length( 0 )
 {
    this->setString( convertToString( number ).getString() );
@@ -104,21 +110,21 @@ void String :: setString( const char* c, int prefix_cut_off, int sufix_cut_off )
       length = STRING_PAGE * ( _length / STRING_PAGE + 1 );
       string = new char[ length ];
    }
-   Assert( string, );
+   TNL_ASSERT( string, );
    memcpy( string, c + min( c_len, prefix_cut_off ), sizeof( char ) * ( _length ) );
    string[ _length ] = 0;
 }
 
 const char& String :: operator[]( int i ) const
 {
-   Assert( i >= 0 && i < length,
+   TNL_ASSERT( i >= 0 && i < length,
               std::cerr << "Accessing char outside the string." );
    return string[ i ];
 }
 
 char& String :: operator[]( int i )
 {
-   Assert( i >= 0 && i < length,
+   TNL_ASSERT( i >= 0 && i < length,
               std::cerr << "Accessing char outside the string." );
    return string[ i ];
 }
@@ -269,6 +275,23 @@ replace( const String& pattern,
    this->string = newString;
 }
 
+String
+String::strip( char strip ) const
+{
+   int prefix_cut_off = 0;
+   int sufix_cut_off = 0;
+
+   while( prefix_cut_off < getLength() && (*this)[ prefix_cut_off ] == strip )
+      prefix_cut_off++;
+
+   while( sufix_cut_off < getLength() && (*this)[ getLength() - 1 - sufix_cut_off ] == strip )
+      sufix_cut_off++;
+
+   if( prefix_cut_off + sufix_cut_off < getLength() )
+      return String( getString(), prefix_cut_off, sufix_cut_off );
+   return "";
+}
+
 
 const char* String :: getString() const
 {
@@ -323,7 +346,7 @@ bool String :: load( std::istream& file )
 
 bool String :: save( File& file ) const
 {
-   Assert( string,
+   TNL_ASSERT( string,
               std::cerr << "string = " << string );
 
    int len = strlen( string );
@@ -421,7 +444,7 @@ bool String :: getLine( std::istream& stream )
    return true;
 }
 
-int String :: parse( List< String >& list, const char separator ) const
+int String :: parse( Containers::List< String >& list, const char separator ) const
 {
    list.reset();
    String copy( *this );

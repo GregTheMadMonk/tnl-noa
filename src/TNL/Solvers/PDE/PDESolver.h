@@ -87,7 +87,7 @@ class PDESolver : public Object
 
       DofVectorPointer dofsPointer;
 
-      MeshDependentDataPointer meshDependentData;
+      MeshDependentDataPointer meshDependentDataPointer;
 
       TimeStepper* timeStepper;
 

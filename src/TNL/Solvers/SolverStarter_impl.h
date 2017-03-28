@@ -79,12 +79,6 @@ bool SolverStarter< ConfigTag > :: run( const Config::ParameterContainer& parame
        ! Devices::Cuda::setup( parameters ) )
       return false;
    Problem problem;
-   /*if( ! problem.setup( parameters ) )
-   {
-      std::cerr << "The problem initiation failed!" << std::endl;
-      return false;
-   }*/
-
    return tnlUserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
 }
 
@@ -484,6 +478,11 @@ bool SolverStarter< ConfigTag > :: writeEpilog( std::ostream& str, const Solver&
       return false;
    logger.writeParameter< const char* >( "Compute time:", "" );
    this->computeTimer.writeLog( logger, 1 );
+   if( std::is_same< typename Solver::DeviceType, TNL::Devices::Cuda >::value )
+   {
+      logger.writeParameter< const char* >( "GPU synchronization time:", "" );
+      TNL::Devices::Cuda::smartPointersSynchronizationTimer.writeLog( logger, 1 );
+   }   
    logger.writeParameter< const char* >( "I/O time:", "" );
    this->ioTimer.writeLog( logger, 1 );
    logger.writeParameter< const char* >( "Total time:", "" );

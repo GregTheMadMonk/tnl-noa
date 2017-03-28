@@ -61,7 +61,7 @@ bool MultiVector< 3, Real, Device, Index > :: setDimensions( const Index kSize,
                                                                        const Index jSize,
                                                                        const Index iSize )
 {
-   Assert( iSize > 0 && jSize > 0 && kSize > 0,
+   TNL_ASSERT( iSize > 0 && jSize > 0 && kSize > 0,
               std::cerr << "iSize = " << iSize
                    << "jSize = " << jSize
                    << "kSize = " << kSize );
@@ -75,7 +75,7 @@ bool MultiVector< 3, Real, Device, Index > :: setDimensions( const Index kSize,
 template< typename Real, typename Device, typename Index >
 bool MultiVector< 3, Real, Device, Index > :: setDimensions( const StaticVector< 3, Index >& dimensions )
 {
-   Assert( dimensions[ 0 ] > 0 && dimensions[ 1 ] > 0 && dimensions[ 2 ],
+   TNL_ASSERT( dimensions[ 0 ] > 0 && dimensions[ 1 ] > 0 && dimensions[ 2 ],
               std::cerr << "dimensions = " << dimensions );
    this->dimensions = dimensions;
    return Vector< Real, Device, Index > :: setSize( this->dimensions[ 2 ] *
@@ -111,7 +111,7 @@ Index MultiVector< 3, Real, Device, Index > :: getElementIndex( const Index k,
                                                                      const Index j,
                                                                      const Index i ) const
 {
-   Assert( i >= 0 && i < this->dimensions[ 0 ] &&
+   TNL_ASSERT( i >= 0 && i < this->dimensions[ 0 ] &&
               j >= 0 && j < this->dimensions[ 1 ] &&
               k >= 0 && k < this->dimensions[ 2 ],
               std::cerr << " i = " << i
@@ -159,7 +159,7 @@ template< typename Real, typename Device, typename Index >
 bool MultiVector< 3, Real, Device, Index > :: operator == ( const MultiVectorT& vector ) const
 {
    // TODO: Static assert on dimensions
-   Assert( this->getDimensions() == vector. getDimensions(),
+   TNL_ASSERT( this->getDimensions() == vector. getDimensions(),
               std::cerr << "You are attempting to compare two Vectors with different dimensions." << std::endl
                    << "First vector dimensions are ( " << this->getDimensions() << " )" << std::endl
                    << "Second vector dimensions are ( " << vector. getDimensions() << " )" << std::endl; );
@@ -178,7 +178,7 @@ MultiVector< 3, Real, Device, Index >&
    MultiVector< 3, Real, Device, Index > :: operator = ( const MultiVector< 3, Real, Device, Index >& vector )
 {
    // TODO: Static assert on dimensions
-   Assert( this->getDimensions() == vector. getDimensions(),
+   TNL_ASSERT( this->getDimensions() == vector. getDimensions(),
               std::cerr << "You are attempting to assign two Vectors with different dimensions." << std::endl
                    << "First vector dimensions are ( " << this->getDimensions() << " )" << std::endl
                    << "Second vector dimensions are ( " << vector. getDimensions() << " )" << std::endl; );
@@ -192,7 +192,7 @@ MultiVector< 3, Real, Device, Index >&
    MultiVector< 3, Real, Device, Index > :: operator = ( const MultiVectorT& vector )
 {
    // TODO: Static assert on dimensions
-   Assert( this->getDimensions() == vector. getDimensions(),
+   TNL_ASSERT( this->getDimensions() == vector. getDimensions(),
               std::cerr << "You are attempting to assign two Vectors with different dimensions." << std::endl
                    << "First vector dimensions are ( " << this->getDimensions() << " )" << std::endl
                    << "Second vector dimensions are ( " << vector. getDimensions() << " )" << std::endl; );

@@ -94,7 +94,7 @@ bool
 setInitialCondition( const TNL::Config::ParameterContainer& parameters,    
                      const MeshPointer& mesh,
                      DofVectorPointer& dofs,
-                     MeshDependentDataType& meshDependentData )
+                     MeshDependentDataPointer& meshDependentData )
 {{
    const TNL::String& initialConditionFile = parameters.getParameter< TNL::String >( "initial-condition" );
    TNL::Functions::MeshFunction< Mesh > u( mesh, dofs );
@@ -142,7 +142,7 @@ makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshPointer& mesh,
               DofVectorPointer& dofs,
-              MeshDependentDataType& meshDependentData )
+              MeshDependentDataPointer& meshDependentData )
 {{
    std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
@@ -161,15 +161,15 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::                    
-getExplicitRHS( const RealType& time,
-                const RealType& tau,
-                const MeshPointer& mesh,
-                DofVectorPointer& _u,
-                DofVectorPointer& _fu,
-                MeshDependentDataType& meshDependentData )
+getExplicitUpdate( const RealType& time,
+                   const RealType& tau,
+                   const MeshPointer& mesh,
+                   DofVectorPointer& _u,
+                   DofVectorPointer& _fu,
+                   MeshDependentDataPointer& meshDependentData )
 {{
    /****
-    * If you use an explicit solver like tnlEulerSolver or tnlMersonSolver, you
+    * If you use an explicit solver like EulerSolver or MersonSolver, you
     * need to implement this method. Compute the right-hand side of
     *
     *   d/dt u(x) = fu( x, u )
@@ -208,7 +208,7 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& _u,
                       MatrixPointer& matrixPointer,
                       DofVectorPointer& b,
-                      MeshDependentDataType& meshDependentData )
+                      MeshDependentDataPointer& meshDependentData )
 {{
    TNL::Solvers::PDE::LinearSystemAssembler< Mesh,
                              MeshFunctionType,

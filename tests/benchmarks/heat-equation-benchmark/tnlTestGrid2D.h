@@ -189,7 +189,7 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
 
 #include <fstream>
 #include <iomanip>
-#include <core/tnlAssert.h>
+#include <core/tnlTNL_ASSERT.h>
 #include <mesh/GnuplotWriter.h>
 #include <mesh/grids/GridEntityGetter_impl.h>
 #include <mesh/grids/NeighbourGridEntityGetter2D_impl.h>
@@ -310,8 +310,8 @@ template< typename Real,
           typename Index >
 void Meshes::Grid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
 {
-   tnlAssert( xSize > 0, cerr << "xSize = " << xSize );
-   tnlAssert( ySize > 0, cerr << "ySize = " << ySize );
+   tnlTNL_ASSERT( xSize > 0, cerr << "xSize = " << xSize );
+   tnlTNL_ASSERT( ySize > 0, cerr << "ySize = " << ySize );
 
    this->dimensions.x() = xSize;
    this->dimensions.y() = ySize;
@@ -470,9 +470,9 @@ const Real&
 Meshes::Grid< 2, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
-   tnlAssert( xPow >= -2 && xPow <= 2, 
+   tnlTNL_ASSERT( xPow >= -2 && xPow <= 2, 
               cerr << " xPow = " << xPow );
-   tnlAssert( yPow >= -2 && yPow <= 2, 
+   tnlTNL_ASSERT( yPow >= -2 && yPow <= 2, 
               cerr << " yPow = " << yPow );
 
    return this->spaceStepsProducts[ yPow + 2 ][ xPow + 2 ];
@@ -1075,8 +1075,8 @@ template< typename Real,
           typename Index >
 void Meshes::Grid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
 {
-   tnlAssert( xSize > 0, cerr << "xSize = " << xSize );
-   tnlAssert( ySize > 0, cerr << "ySize = " << ySize );
+   tnlTNL_ASSERT( xSize > 0, cerr << "xSize = " << xSize );
+   tnlTNL_ASSERT( ySize > 0, cerr << "ySize = " << ySize );
 
    this->dimensions.x() = xSize;
    this->dimensions.y() = ySize;
@@ -1235,9 +1235,9 @@ const Real&
 Meshes::Grid< 2, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
-   tnlAssert( xPow >= -2 && xPow <= 2, 
+   tnlTNL_ASSERT( xPow >= -2 && xPow <= 2, 
               cerr << " xPow = " << xPow );
-   tnlAssert( yPow >= -2 && yPow <= 2, 
+   tnlTNL_ASSERT( yPow >= -2 && yPow <= 2, 
               cerr << " yPow = " << yPow );
 
    return this->spaceStepsProducts[ yPow + 2 ][ xPow + 2 ];

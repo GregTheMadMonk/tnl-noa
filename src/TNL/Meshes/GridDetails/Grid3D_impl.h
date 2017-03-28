@@ -164,9 +164,9 @@ template< typename Real,
           typename Index >
 void Grid< 3, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize, const Index zSize )
 {
-   Assert( xSize > 0, std::cerr << "xSize = " << xSize );
-   Assert( ySize > 0, std::cerr << "ySize = " << ySize );
-   Assert( zSize > 0, std::cerr << "zSize = " << zSize );
+   TNL_ASSERT( xSize > 0, std::cerr << "xSize = " << xSize );
+   TNL_ASSERT( ySize > 0, std::cerr << "ySize = " << ySize );
+   TNL_ASSERT( zSize > 0, std::cerr << "zSize = " << zSize );
 
    this->dimensions.x() = xSize;
    this->dimensions.y() = ySize;
@@ -325,7 +325,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-typename Grid< 3, Real, Device, Index >::VertexType
+const typename Grid< 3, Real, Device, Index >::VertexType&
 Grid< 3, Real, Device, Index >::
 getSpaceSteps() const
 {
@@ -341,11 +341,11 @@ const Real&
 Grid< 3, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
-   Assert( xPow >= -2 && xPow <= 2,
+   TNL_ASSERT( xPow >= -2 && xPow <= 2,
               std::cerr << " xPow = " << xPow );
-   Assert( yPow >= -2 && yPow <= 2,
+   TNL_ASSERT( yPow >= -2 && yPow <= 2,
               std::cerr << " yPow = " << yPow );
-   Assert( zPow >= -2 && zPow <= 2,
+   TNL_ASSERT( zPow >= -2 && zPow <= 2,
               std::cerr << " zPow = " << zPow );
 
    return this->spaceStepsProducts[ xPow + 2 ][ yPow + 2 ][ zPow + 2 ];
@@ -511,7 +511,7 @@ template< typename Real,
 bool Grid< 3, Real, Device, Index >::writeMesh( const String& fileName,
                                                    const String& format ) const
 {
-   Assert( false, std::cerr << "TODO: FIX THIS"); // TODO: FIX THIS
+   TNL_ASSERT( false, std::cerr << "TODO: FIX THIS"); // TODO: FIX THIS
    return true;
 }
 

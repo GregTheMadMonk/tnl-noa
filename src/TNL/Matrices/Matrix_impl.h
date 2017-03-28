@@ -31,7 +31,7 @@ template< typename Real,
  bool Matrix< Real, Device, Index >::setDimensions( const IndexType rows,
                                                        const IndexType columns )
 {
-   Assert( rows > 0 && columns > 0,
+   TNL_ASSERT( rows > 0 && columns > 0,
             std::cerr << " rows = " << rows << " columns = " << columns );
    this->rows = rows;
    this->columns = columns;
@@ -93,8 +93,8 @@ template< typename Real,
 bool Matrix< Real, Device, Index >::copyFrom( const MatrixT& matrix,
                                               const CompressedRowsLengthsVector& rowLengths )
 {
-   /*tnlStaticAssert( DeviceType::DeviceType == Devices::HostDevice, );
-   tnlStaticAssert( DeviceType::DeviceType == Matrix:DeviceType::DeviceType, );*/
+   /*tnlStaticTNL_ASSERT( DeviceType::DeviceType == Devices::HostDevice, );
+   tnlStaticTNL_ASSERT( DeviceType::DeviceType == Matrix:DeviceType::DeviceType, );*/
 
    this->setLike( matrix );
    if( ! this->setCompressedRowsLengths( rowLengths ) )
@@ -106,7 +106,7 @@ bool Matrix< Real, Device, Index >::copyFrom( const MatrixT& matrix,
       return false;
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
-      Assert( false, );
+      TNL_ASSERT( false, );
       // TODO: fix this
       //matrix.getRow( row, columns.getData(), values.getData() );
       this->setRow( row, columns.getData(), values.getData(), rowLengths.getElement( row ) );

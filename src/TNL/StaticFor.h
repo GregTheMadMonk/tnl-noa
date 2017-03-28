@@ -129,7 +129,7 @@ class StaticFor
                          StaticForIndexTag< IndexType, end - begin >,
                          LoopBody >::exec();
 #else
-     Assert( false, );
+     TNL_ASSERT( false, );
 #endif
    }
 
@@ -143,7 +143,7 @@ class StaticFor
                          StaticForIndexTag< IndexType, end - begin >,
                          LoopBody >::exec( p );
 #else
-     Assert( false, );
+     TNL_ASSERT( false, );
 #endif
    }
 
@@ -158,7 +158,7 @@ class StaticFor
                          StaticForIndexTag< IndexType, end - begin >,
                          LoopBody >::exec( p0, p1 );
 #else
-     Assert( false, );
+     TNL_ASSERT( false, );
 #endif
    }
 
@@ -174,7 +174,7 @@ class StaticFor
                          StaticForIndexTag< IndexType, end - begin >,
                          LoopBody >::exec( p0, p1, p2 );
 #else
-     Assert( false, );
+     TNL_ASSERT( false, );
 #endif
    }
 
@@ -191,7 +191,7 @@ class StaticFor
                          StaticForIndexTag< IndexType, end - begin >,
                          LoopBody >::exec( p0, p1, p2, p3 );
 #else
-     Assert( false, );
+     TNL_ASSERT( false, );
 #endif
    }
 };

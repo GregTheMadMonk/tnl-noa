@@ -81,7 +81,7 @@ template< int Size, typename Element >
 __cuda_callable__
 inline const Element& StaticArray< Size, Element >::operator[]( int i ) const
 {
-   Assert( i >= 0 && i < size,
+   TNL_ASSERT( i >= 0 && i < size,
             std::cerr << "i = " << i << " size = " << size << std::endl; );
    return data[ i ];
 }
@@ -90,7 +90,7 @@ template< int Size, typename Element >
 __cuda_callable__
 inline Element& StaticArray< Size, Element >::operator[]( int i )
 {
-   Assert( i >= 0 && i < size,
+   TNL_ASSERT( i >= 0 && i < size,
             std::cerr << "i = " << i << " size = " << size << std::endl; );
    return data[ i ];
 }

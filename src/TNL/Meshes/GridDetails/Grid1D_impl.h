@@ -90,7 +90,7 @@ template< typename Real,
           typename Index  >
 void Grid< 1, Real, Device, Index >::setDimensions( const Index xSize )
 {
-   Assert( xSize > 0, std::cerr << "xSize = " << xSize );
+   TNL_ASSERT( xSize > 0, std::cerr << "xSize = " << xSize );
    this->dimensions.x() = xSize;
    this->numberOfCells = xSize;
    this->numberOfVertices = xSize + 1;
@@ -225,7 +225,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-typename Grid< 1, Real, Device, Index >::VertexType
+const typename Grid< 1, Real, Device, Index >::VertexType&
 Grid< 1, Real, Device, Index >::
 getSpaceSteps() const
 {
@@ -241,7 +241,7 @@ const Real&
 Grid< 1, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
-   Assert( xPow >= -2 && xPow <= 2,
+   TNL_ASSERT( xPow >= -2 && xPow <= 2,
               std::cerr << " xPow = " << xPow );
    return this->spaceStepsProducts[ xPow + 2 ];
 }

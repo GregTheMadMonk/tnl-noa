@@ -107,27 +107,5 @@ then
     BUILD_PREFIX="Debug"
 fi
 
-
-PYTHON_TEST="`python src/Tools/python-path-test.py 2> /dev/null`"
-#echo "xxxxx ${PYTHON_TEST} xxxxx\n"
-if test PYTHON_TEST != "xOK";
-then
-    source ${BUILD_PREFIX}/python-version    
-    echo ""
-    echo "WARNING !!!"
-    echo ""
-    echo "Your system does not see TNL Python modules which were installed right now."
-    echo "You need to add it to your system variables PATH and LD_LIBRARY_PATH."
-    echo "Add the following to your .bashrc file:"
-    echo ""
-    echo "if test x\${PYTHONPATH} = x;"
-    echo "then"
-    echo "   PYTHONPATH=${PREFIX}/lib/python${PYTHON_VERSION}"
-    echo "else"
-    echo "   PYTHONPATH=\${PYTHONPATH}:${PREFIX}/lib/python${PYTHON_VERSION}"
-    echo "fi" 
-    echo "export PYTHONPATH" 
-fi
-
 exit 0
 

@@ -1,5 +1,6 @@
 ADD_SUBDIRECTORY( Config )
 ADD_SUBDIRECTORY( Containers )
+ADD_SUBDIRECTORY( Debugging )
 ADD_SUBDIRECTORY( Devices )
 ADD_SUBDIRECTORY( Experimental )
 ADD_SUBDIRECTORY( Functions )
@@ -25,8 +26,6 @@ set( headers
      File_impl.h
      FileName.h
      Object.h
-     List.h
-     List_impl.h
      Logger.h
      Logger_impl.h
      Math.h
@@ -37,7 +36,6 @@ set( headers
      SmartPointersRegister.h
      StaticFor.h
      String.h
-     SystemInfo.h
      Timer.h
      UniquePointer.h )
 
@@ -48,7 +46,6 @@ set( common_SOURCES
      Logger.cpp
      SmartPointersRegister.cpp
      String.cpp
-     SystemInfo.cpp
      Timer.cpp )
      
 set( tnl_SOURCES ${tnl_config_SOURCES}

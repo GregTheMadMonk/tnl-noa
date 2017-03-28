@@ -20,7 +20,7 @@ HELP="no"
 VERBOSE=""
 ROOT_DIR="."
 DCMTK_DIR="/usr/include/dcmtk"
-BUILD_JOBS=`grep -c processor /proc/cpuinfo`
+BUILD_JOBS=""
 
 for option in "$@"
 do
@@ -112,9 +112,23 @@ then
     exit 1
 fi
 
-echo "Building ${BUILD} $TARGET using $BUILD_JOBS processors ..."
+if [[ -n ${BUILD_JOBS} ]]; then
+    # override $MAKEFLAGS from parent environment
+    export MAKEFLAGS=-j${BUILD_JOBS}
+elif [[ -z ${MAKEFLAGS} ]]; then
+    # $BUILD_JOBS and $MAKEFLAGS are not set => set default value
+    BUILD_JOBS=$(grep "core id" /proc/cpuinfo | sort -u | wc -l)
+    export MAKEFLAGS=-j${BUILD_JOBS}
+fi
 
-make -j${BUILD_JOBS} ${VERBOSE}
+if [[ -n ${BUILD_JOBS} ]]; then
+    echo "Building ${BUILD} $TARGET using $BUILD_JOBS processors ..."
+else
+    # number of processors is unknown - it is encoded in $MAKEFLAGS from parent environment
+    echo "Building ${BUILD} $TARGET ..."
+fi
+
+make ${VERBOSE}
 if test $? != 0; then
     echo "Error: Build process failed."
     exit 1
@@ -123,7 +137,7 @@ fi
 
 if test WITH_TESTS = "yes";
 then
-    make -j${BUILD_JOBS} test
+    make test
     if test $? != 0; then
         echo "Error: Some test did not pass successfuly."
     fi

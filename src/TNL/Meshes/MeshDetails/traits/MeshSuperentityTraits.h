@@ -12,7 +12,7 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/ConstSharedArray.h>
-#include <TNL/List.h>
+#include <TNL/Containers/List.h>
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshConfigBase.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
@@ -60,7 +60,7 @@ class MeshSuperentityTraits
    /****
     * This is used by the mesh initializer.
     */
-   typedef List< GlobalIndexType >                                       GrowableContainerType;
+   typedef Containers::List< GlobalIndexType >                                       GrowableContainerType;
 
 };
 

@@ -69,7 +69,7 @@ template< typename Real,
           typename Index>
 bool tnlSpmvBenchmarkRgCSR< Real, Device, Index > :: setup( const CSR< Real, Devices::Host, Index >& csrMatrix )
 {
-   Assert( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
+   TNL_ASSERT( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
    if( Device :: getDevice() == Devices::HostDevice )
    {
       this->matrix. tuneFormat( groupSize,

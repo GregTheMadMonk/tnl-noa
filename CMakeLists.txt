@@ -44,8 +44,8 @@ endif()
 # set Debug/Release options
 set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
-set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG" )
-#set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
+set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG" )
+#set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
 # pass -rdynamic only in Debug mode
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "" )
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG "-rdynamic" )
@@ -91,7 +91,7 @@ if( WITH_CUDA STREQUAL "yes" )
                 set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/src/Tools/tnl-cuda-arch.cu)
                 message( "Compiling tnl-cuda-arch ..." )
                 file( MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
-                execute_process( COMMAND nvcc ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
+                execute_process( COMMAND nvcc --compiler-bindir ${CUDA_HOST_COMPILER} ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
                                  RESULT_VARIABLE CUDA_ARCH_RESULT
                                  OUTPUT_VARIABLE CUDA_ARCH_OUTPUT
                                  ERROR_VARIABLE CUDA_ARCH_OUTPUT )
@@ -170,6 +170,7 @@ if( WITH_CUDA STREQUAL "yes" )
         endif( NOT WITH_CUSPARSE STREQUAL "no" )        
     endif( CUDA_FOUND )
 endif( WITH_CUDA STREQUAL "yes" )
+
 
 ####
 # Check for OpenMP
@@ -360,8 +361,7 @@ CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/TNL/tnlConfig.h" )
 INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.h DESTINATION include/tnl-${tnlVersion}/TNL )
 if( PYTHONINTERP_FOUND )
     CONFIGURE_FILE( "Config.py.in" "${PROJECT_BUILD_PATH}/TNL/Config.py" )
-    INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/Config.py DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/TNL )
-    CONFIGURE_FILE( "python-version.in" "${PROJECT_TOOLS_PATH}/../python-version" )
+    INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/Config.py DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages/TNL )
 endif( PYTHONINTERP_FOUND )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam

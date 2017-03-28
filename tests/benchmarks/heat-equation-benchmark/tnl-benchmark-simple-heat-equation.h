@@ -190,20 +190,27 @@ template< typename Real, typename Index >
 __global__ void updateKernel( Real* u,
                               Real* aux,
                               Real* cudaBlockResidue,
-                              const Index dofs )
+                              const Index dofs,
+                              Real tau )
 {
+   extern __shared__ Real du[];
    const Index blockOffset = blockIdx.x * blockDim.x;
    Index idx = blockOffset + threadIdx.x;
  
    if( idx < dofs )
-      u[ idx ] += aux[ idx ];
+   {
+      u[ idx ] += tau * aux[ idx ];
+      du[ threadIdx.x ] = fabs( aux[ idx ] );
+   }
+   else
+      du[ threadIdx.x ] = 0.0;
  
    __syncthreads();
 
    const Index rest = dofs - blockOffset;
    Index n =  rest < blockDim.x ? rest : blockDim.x;
 
-   computeBlockResidue< Real, Index >( aux,
+   computeBlockResidue< Real, Index >( du,
                                        cudaBlockResidue,
                                        n );
 }
@@ -346,29 +353,31 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
       const Real timeLeft = finalTime - time;
       const Real currentTau = tau < timeLeft ? tau : timeLeft;    
       
-      if( ! pureCRhsCuda( cudaGridSize, cudaBlockSize, cuda_u, cuda_aux, tau, hx_inv, hy_inv, gridXSize, gridYSize) )
+      if( ! pureCRhsCuda( cudaGridSize, cudaBlockSize, cuda_u, cuda_aux, currentTau, hx_inv, hy_inv, gridXSize, gridYSize) )
          return false;
       computationTimer.stop();
       
-      /*cudaMemcpy( aux, cuda_aux, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
-      writeFunction( "rhs", aux, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
-      getchar();*/
-        
+      /*if( iteration % 100 == 0 )
+      {
+         cudaMemcpy( aux, cuda_aux, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
+         writeFunction( "rhs", aux, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
+
+         cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
+         writeFunction( "u", aux, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
+         getchar();
+      }*/      
+      
       updateTimer.start();
       /****
        * Update
        */
       //cout << "Update ... " << std::endl;
-      updateKernel<<< cudaUpdateBlocks, cudaUpdateBlockSize >>>( cuda_u, cuda_aux, cuda_max_du, dofsCount );
+      updateKernel<<< cudaUpdateBlocks, cudaUpdateBlockSize, cudaUpdateBlockSize.x * sizeof( Real ) >>>( cuda_u, cuda_aux, cuda_max_du, dofsCount, tau );
       if( cudaGetLastError() != cudaSuccess )
       {
          std::cerr << "Update failed." << std::endl;
          return false;
-      }
-      /*cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
-      writeFunction( "u", aux, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
-      getchar();*/
-      
+      }            
       
       cudaThreadSynchronize();
       cudaMemcpy( max_du, cuda_max_du, cudaUpdateBlocks.x * sizeof( Real ), cudaMemcpyDeviceToHost );
@@ -391,12 +400,18 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
          cout << "Iteration: " << iteration << "\t Time:" << time << "    \r" << flush;                 
    }
    timer.stop();
+   if( verbose )
+     cout << endl;
+   
    //cudaMemcpy( u, cuda_u, dofsCount * sizeof( Real ), cudaMemcpyDeviceToHost );
    //writeFunction( "final", u, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
 
    /****
     * Saving the result
     */
+   if( verbose )
+     std::cout << "Saving result..." << std::endl;
+   
    meshFunction.save( "simple-heat-equation-result.tnl" );
    
    /***
@@ -535,6 +550,9 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
         std::cout << "Iteration: " << iteration << "\t \t Time:" << time << "    \r" << std::flush;
    }
    timer.stop();
+   if( verbose )
+     cout << endl;
+
    
    /****
     * Saving the result

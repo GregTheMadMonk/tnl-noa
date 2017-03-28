@@ -10,7 +10,7 @@
 
 #pragma once 
 
-#include <TNL/List.h>
+#include <TNL/Containers/List.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/mpi-supp.h>
 #include <TNL/param-types.h>
@@ -96,7 +96,7 @@ class ParameterContainer
 
    protected:
 
-   List< tnlParameterBase* > parameters;
+   Containers::List< tnlParameterBase* > parameters;
 
 };
 

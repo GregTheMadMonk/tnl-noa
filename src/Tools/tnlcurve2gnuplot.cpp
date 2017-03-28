@@ -36,9 +36,9 @@ int main( int argc, char* argv[] )
       return 1;
    }
 
-   List< String > input_files = parameters. getParameter< List< String > >( "input-files" );
-   List< String > output_files;
-   if( ! parameters. getParameter< List< String > >( "output-files", output_files ) )
+   Containers::List< String > input_files = parameters. getParameter< Containers::List< String > >( "input-files" );
+   Containers::List< String > output_files;
+   if( ! parameters. getParameter< Containers::List< String > >( "output-files", output_files ) )
       std::cout << "No output files were given." << std::endl;
    int output_step( 1 );
    parameters. getParameter< int >( "output-step", output_step );

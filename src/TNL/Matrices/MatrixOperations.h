@@ -1,3 +1,15 @@
+/***************************************************************************
+                          MatrixOperations.h  -  description
+                             -------------------
+    begin                : May 13, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Jakub Klinkovsky
+
 #pragma once
 
 /*
@@ -37,7 +49,7 @@ public:
          const RealType& beta,
          RealType* y )
    {
-      Assert( m <= lda, );
+      TNL_ASSERT( m <= lda, );
 
       if( beta != 0.0 ) {
 #ifdef HAVE_OPENMP
@@ -90,16 +102,7 @@ GemvCudaKernel( const IndexType m,
    IndexType elementIdx = blockIdx.x * blockDim.x + threadIdx.x;
    const IndexType gridSize = blockDim.x * gridDim.x;
 
-   // NOTE: Plain declaration such as
-   //          extern __shared__ RealType shx[];
-   //       won't work because extern variables must be declared exactly once.
-   //       In templated functions we need to have same variable name with
-   //       different type, which causes the conflict. In CUDA samples they
-   //       solve it using template specialization via classes, but using char
-   //       as the base type and reinterpret_cast works too.
-   //       See http://stackoverflow.com/a/19339004/4180822
-   extern __shared__ __align__ ( 8 ) char __sdata[];
-   RealType* shx = reinterpret_cast< RealType* >( __sdata );
+   RealType* shx = Devices::Cuda::getSharedMemory< RealType >();
 
    if( threadIdx.x < n )
       shx[ threadIdx.x ] = x[ threadIdx.x ];
@@ -154,14 +157,14 @@ public:
          const RealType& beta,
          RealType* y )
    {
-      Assert( m <= lda, );
-      Assert( n <= 256,
+      TNL_ASSERT( m <= lda, );
+      TNL_ASSERT( n <= 256,
               std::cerr << "The gemv kernel is optimized only for small 'n' and assumes that n <= 256." << std::endl; );
 
 #ifdef HAVE_CUDA
       Containers::Vector< RealType, Devices::Cuda, IndexType > xDevice;
       xDevice.setSize( n );
-      if( ! Containers::ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< RealType, RealType, IndexType >( xDevice.getData(), x, n ) )
+      if( ! Containers::Algorithms::ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< RealType, RealType, IndexType >( xDevice.getData(), x, n ) )
          throw 1;
 
       dim3 blockSize( 256 );

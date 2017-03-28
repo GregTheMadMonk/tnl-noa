@@ -1,3 +1,14 @@
+/***************************************************************************
+                          Diagonal_impl.h  -  description
+                             -------------------
+    begin                : Dec 17, 2015
+    copyright            : (C) 2015 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Jakub Klinkovsky
 
 #pragma once
 
@@ -46,7 +57,7 @@ update( const MatrixPointer& matrix )
 {
 //  std::cout << getType() << "->setMatrix()" << std::endl;
 
-   Assert( matrix->getRows() > 0 && matrix->getRows() == matrix->getColumns(), );
+   TNL_ASSERT( matrix->getRows() > 0 && matrix->getRows() == matrix->getColumns(), );
 
    if( diagonal.getSize() != matrix->getRows() )
       diagonal.setSize( matrix->getRows() );

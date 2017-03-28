@@ -20,7 +20,6 @@
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/MeshFunction.h>
 
-using namespace std;
 using namespace TNL;
 
 bool getOutputFileName( const String& inputFileName,
@@ -50,6 +49,7 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
                         const Config::ParameterContainer& parameters  )
 {
    MeshFunction function( meshPointer );
+   std::cout << "Mesh function: " << function.getType() << std::endl;
    if( ! function.load( inputFileName ) )
    {
       std::cerr << "Unable to load mesh function from a file " << inputFileName << "." << std::endl;
@@ -83,7 +83,7 @@ template< typename MeshPointer,
           int EntityDimensions >
 bool setMeshEntityType( const MeshPointer& meshPointer,
                         const String& inputFileName,
-                        const List< String >& parsedObjectType,
+                        const Containers::List< String >& parsedObjectType,
                         const Config::ParameterContainer& parameters )
 {
    if( parsedObjectType[ 3 ] == "float" )
@@ -100,7 +100,7 @@ template< typename MeshReal,
           typename MeshIndex >
 bool setMeshEntityDimensions( const SharedPointer< Meshes::Grid< 1, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
                               const String& inputFileName,
-                              const List< String >& parsedObjectType,
+                              const Containers::List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
    typedef Meshes::Grid< 1, MeshReal, Devices::Host, MeshIndex > Mesh;
@@ -124,7 +124,7 @@ template< typename MeshReal,
           typename MeshIndex >
 bool setMeshEntityDimensions( const SharedPointer< Meshes::Grid< 2, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
                               const String& inputFileName,
-                              const List< String >& parsedObjectType,
+                              const Containers::List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
    typedef Meshes::Grid< 2, MeshReal, Devices::Host, MeshIndex > Mesh;
@@ -151,7 +151,7 @@ template< typename MeshReal,
           typename MeshIndex >
 bool setMeshEntityDimensions( const SharedPointer< Meshes::Grid< 3, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
                               const String& inputFileName,
-                              const List< String >& parsedObjectType,
+                              const Containers::List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
    typedef Meshes::Grid< 3, MeshReal, Devices::Host, MeshIndex > Mesh;
@@ -180,7 +180,7 @@ bool setMeshEntityDimensions( const SharedPointer< Meshes::Grid< 3, MeshReal, De
 template< typename MeshPointer >
 bool setMeshFunction( const MeshPointer& meshPointer,
                       const String& inputFileName,
-                      const List< String >& parsedObjectType,
+                      const Containers::List< String >& parsedObjectType,
                       const Config::ParameterContainer& parameters )
 {
    if( parsedObjectType[ 1 ] != meshPointer->getSerializationType() )
@@ -195,7 +195,7 @@ bool setMeshFunction( const MeshPointer& meshPointer,
 template< typename MeshPointer, typename Element, typename Real, typename Index, int Dimensions >
 bool convertObject( const MeshPointer& meshPointer,
                     const String& inputFileName,
-                    const List< String >& parsedObjectType,
+                    const Containers::List< String >& parsedObjectType,
                     const Config::ParameterContainer& parameters )
 {
    int verbose = parameters. getParameter< int >( "verbose");
@@ -213,10 +213,15 @@ bool convertObject( const MeshPointer& meshPointer,
        parsedObjectType[ 0 ] == "tnlSharedVector" ||   // TODO: remove deprecated type names
        parsedObjectType[ 0 ] == "tnlVector" )          //
    {
-      Containers::Vector< Element, Devices::Host, Index > vector;
-      if( ! vector. load( inputFileName ) )
+      using MeshType = typename MeshPointer::ObjectType;
+      // FIXME: why is MeshType::IndexType not the same as Index?
+//      Containers::Vector< Element, Devices::Host, Index > vector;
+      Containers::Vector< Element, Devices::Host, typename MeshType::IndexType > vector;
+      if( ! vector.load( inputFileName ) )
          return false;
-      if( ! meshPointer->write( vector, outputFileName, outputFormat ) )
+      Functions::MeshFunction< MeshType, MeshType::meshDimensions, Element > mf;
+      mf.bind( meshPointer, vector );
+      if( ! mf.write( outputFileName, outputFormat ) )
          return false;
    }
 
@@ -243,7 +248,7 @@ bool convertObject( const MeshPointer& meshPointer,
 template< typename MeshPointer, typename Element, typename Real, typename Index >
 bool setDimensions( const MeshPointer& meshPointer,
                     const String& inputFileName,
-                    const List< String >& parsedObjectType,
+                    const Containers::List< String >& parsedObjectType,
                     const Config::ParameterContainer& parameters )
 {
    int dimensions( 0 );
@@ -271,7 +276,7 @@ bool setDimensions( const MeshPointer& meshPointer,
 template< typename MeshPointer, typename Element, typename Real >
 bool setIndexType( const MeshPointer& meshPointer,
                    const String& inputFileName,
-                   const List< String >& parsedObjectType,
+                   const Containers::List< String >& parsedObjectType,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
@@ -288,15 +293,15 @@ bool setIndexType( const MeshPointer& meshPointer,
       return setDimensions< MeshPointer, Element, Real, int >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( indexType == "long-int" )
       return setDimensions< MeshPointer, Element, Real, long int >( meshPointer, inputFileName, parsedObjectType, parameters );
-   cerr << "Unknown index type " << indexType << "." << endl;
+   std::cerr << "Unknown index type " << indexType << "." << std::endl;
    return false;
 }
 
 template< typename MeshPointer >
 bool setTupleType( const MeshPointer& meshPointer,
                    const String& inputFileName,
-                   const List< String >& parsedObjectType,
-                   const List< String >& parsedElementType,
+                   const Containers::List< String >& parsedObjectType,
+                   const Containers::List< String >& parsedElementType,
                    const Config::ParameterContainer& parameters )
 {
    int dimensions = atoi( parsedElementType[ 1 ].getString() );
@@ -346,7 +351,7 @@ bool setTupleType( const MeshPointer& meshPointer,
 template< typename MeshPointer >
 bool setElementType( const MeshPointer& meshPointer,
                      const String& inputFileName,
-                     const List< String >& parsedObjectType,
+                     const Containers::List< String >& parsedObjectType,
                      const Config::ParameterContainer& parameters )
 {
    String elementType;
@@ -368,7 +373,7 @@ bool setElementType( const MeshPointer& meshPointer,
       return setIndexType< MeshPointer, double, double >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "long double" )
       return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-   List< String > parsedElementType;
+   Containers::List< String > parsedElementType;
    if( ! parseObjectType( elementType, parsedElementType ) )
    {
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
@@ -400,7 +405,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
    meshPointer->writeMesh( "mesh.asy", "asymptote" );
 
    bool checkOutputFile = parameters. getParameter< bool >( "check-output-file" );
-   List< String > inputFiles = parameters. getParameter< List< String > >( "input-files" );
+   Containers::List< String > inputFiles = parameters. getParameter< Containers::List< String > >( "input-files" );
    bool error( false );
 //#ifdef HAVE_OPENMP
 //#pragma omp parallel for
@@ -434,7 +439,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
          if( verbose )
            std::cout << objectType << " detected ... ";
 
-         List< String > parsedObjectType;
+         Containers::List< String > parsedObjectType;
          if( ! parseObjectType( objectType, parsedObjectType ) )
          {
             std::cerr << "Unable to parse object type " << objectType << "." << std::endl;

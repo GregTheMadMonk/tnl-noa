@@ -25,7 +25,7 @@ class MeshEntityId
 
    const IDType &getId() const
    {
-      Assert( this->id >= 0, );
+      TNL_ASSERT( this->id >= 0, );
       return this->id;
    }
 

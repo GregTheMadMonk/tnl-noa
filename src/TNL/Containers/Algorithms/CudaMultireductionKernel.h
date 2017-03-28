@@ -1,3 +1,15 @@
+/***************************************************************************
+                          CudaMultireductionKernel.h  -  description
+                             -------------------
+    begin                : May 13, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Jakub Klinkovsky
+
 #pragma once
 
 #ifdef HAVE_CUDA
@@ -29,7 +41,7 @@ static constexpr int Multireduction_maxThreadsPerBlock = 256;  // must be a powe
 template< typename Operation, int blockSizeX >      
 __global__ void
 __launch_bounds__( Multireduction_maxThreadsPerBlock, Multireduction_minBlocksPerMultiprocessor )
-CudaMultireductionKernel( Operation& operation,
+CudaMultireductionKernel( Operation operation,
                           const typename Operation::IndexType n,
                           const typename Operation::IndexType size,
                           const typename Operation::RealType* input1,
@@ -40,9 +52,7 @@ CudaMultireductionKernel( Operation& operation,
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::ResultType ResultType;
 
-   extern __shared__ __align__ ( 8 ) char __sdata[];
-
-   ResultType* sdata = reinterpret_cast< ResultType* >( __sdata );
+   ResultType* sdata = Devices::Cuda::getSharedMemory< ResultType >();
 
    /***
     * Get thread id (tid) and global element id (gid).
@@ -216,10 +226,10 @@ CudaMultireductionKernelLauncher( Operation& operation,
       throw 1;
    }
 
-   // create reference to the reduction buffer singleton and set default size
+   // create reference to the reduction buffer singleton and set size
    // (make an overestimate to avoid reallocation on every call if n is increased by 1 each time)
    const size_t buf_size = 8 * ( n / 8 + 1 ) * desGridSizeX * sizeof( ResultType );
-   CudaReductionBuffer & cudaReductionBuffer = CudaReductionBuffer::getInstance();
+   CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
    if( ! cudaReductionBuffer.setSize( buf_size ) )
       throw 1;
    output = cudaReductionBuffer.template getData< ResultType >();
@@ -290,9 +300,9 @@ CudaMultireductionKernelLauncher( Operation& operation,
          <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
          break;
       case   1:
-         Assert( false, std::cerr << "blockSize should not be 1." << std::endl );
+         TNL_ASSERT( false, std::cerr << "blockSize should not be 1." << std::endl );
       default:
-         Assert( false, std::cerr << "Block size is " << blockSize.x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." << std::endl );
+         TNL_ASSERT( false, std::cerr << "Block size is " << blockSize.x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." << std::endl );
    }
    checkCudaDevice;
 

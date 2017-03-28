@@ -1,4 +1,14 @@
+/***************************************************************************
+                          UmfpackWrapper_impl.h  -  description
+                             -------------------
+    begin                : Mar 21, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Jakub Klinkovsky
 
 #pragma once
 
@@ -11,13 +21,13 @@ namespace Solvers {
 namespace Linear {   
 
 template< typename Preconditioner >
-UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
+UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
 UmfpackWrapper()
 {}
 
 template< typename Preconditioner >
 void
-UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
+UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
@@ -25,7 +35,7 @@ configSetup( Config::ConfigDescription& config,
 
 template< typename Preconditioner >
 bool
-UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
+UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -33,14 +43,14 @@ setup( const Config::ParameterContainer& parameters,
 }
 
 template< typename Preconditioner >
-void UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
+void UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
 setMatrix( const MatrixPointer& matrix )
 {
     this -> matrix = matrix;
 }
 
 template< typename Preconditioner >
-void UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
+void UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
 setPreconditioner( const PreconditionerPointer& preconditioner )
 {
     this -> preconditioner = preconditioner;
@@ -49,12 +59,12 @@ setPreconditioner( const PreconditionerPointer& preconditioner )
 
 template< typename Preconditioner >
     template< typename Vector, typename ResidueGetter >
-bool UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
+bool UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
 solve( const Vector& b,
        Vector& x )
 {
-    Assert( matrix->getRows() == matrix->getColumns(), );
-    Assert( matrix->getColumns() == x.getSize() && matrix->getColumns() == b.getSize(), );
+    TNL_ASSERT( matrix->getRows() == matrix->getColumns(), );
+    TNL_ASSERT( matrix->getColumns() == x.getSize() && matrix->getColumns() == b.getSize(), );
 
     const IndexType size = matrix -> getRows();
 
@@ -77,9 +87,9 @@ solve( const Vector& b,
 
     // symbolic reordering of the sparse matrix
     status = umfpack_di_symbolic( size, size,
-                                  matrix->rowPointers.getData(),
-                                  matrix->columnIndexes.getData(),
-                                  matrix->values.getData(),
+                                  matrix->getRowPointers(),
+                                  matrix->getColumnIndexes(),
+                                  matrix->getValues(),
                                   &Symbolic, Control, Info );
     if( status != UMFPACK_OK ) {
         std::cerr << "error: symbolic reordering failed" << std::endl;
@@ -87,9 +97,9 @@ solve( const Vector& b,
     }
 
     // numeric factorization
-    status = umfpack_di_numeric( matrix->rowPointers.getData(),
-                                 matrix->columnIndexes.getData(),
-                                 matrix->values.getData(),
+    status = umfpack_di_numeric( matrix->getRowPointers(),
+                                 matrix->getColumnIndexes(),
+                                 matrix->getValues(),
                                  Symbolic, &Numeric, Control, Info );
     if( status != UMFPACK_OK ) {
         std::cerr << "error: numeric factorization failed" << std::endl;
@@ -98,9 +108,9 @@ solve( const Vector& b,
 
     // solve with specified right-hand-side
     status = umfpack_di_solve( system_type,
-                               matrix->rowPointers.getData(),
-                               matrix->columnIndexes.getData(),
-                               matrix->values.getData(),
+                               matrix->getRowPointers(),
+                               matrix->getColumnIndexes(),
+                               matrix->getValues(),
                                x.getData(),
                                b.getData(),
                                Numeric, Control, Info );

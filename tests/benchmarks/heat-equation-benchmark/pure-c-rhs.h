@@ -52,12 +52,12 @@ __global__ void boundaryConditionsKernel( Real* u,
       aux[ j * gridXSize + gridYSize - 1 ] = 0.0;
       u[ j * gridXSize + gridYSize - 1 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
    }
-   if( j == 0 && i > 0 && i < gridXSize - 1 )
+   if( j == 0 && i < gridXSize )
    {
       aux[ i ] = 0.0; //u[ j * gridXSize + 1 ];
       u[ i ] = 0.0; //u[ j * gridXSize + 1 ];
    }
-   if( j == gridYSize -1  && i > 0 && i < gridXSize - 1 )
+   if( j == gridYSize -1  && i < gridXSize )
    {
       aux[ j * gridXSize + i ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
       u[ j * gridXSize + i ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
@@ -80,9 +80,11 @@ __global__ void heatEquationKernel( const Real* u,
        j > 0 && j < gridYSize - 1 )
    {
       const Index c = j * gridXSize + i;
-      aux[ c ] = tau * ( ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ] ) * hx_inv +
-                       ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
-   }
+      aux[ c ] = ( ( u[ c - 1 ]         - 2.0 * u[ c ] + u[ c + 1 ]         ) * hx_inv +
+                   ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
+      //aux[ c ] = ( ( __ldg( &u[ c - 1 ] ) - 2.0 * __ldg( &u[ c ] ) + __ldg( &u[ c + 1 ] ) ) * hx_inv +
+      //                   ( __ldg( &u[ c - gridXSize ] ) - 2.0 * __ldg( &u[ c ] ) + __ldg( &u[ c + gridXSize ] ) ) * hy_inv );
+   }  
 }
 
 template< typename RealType >

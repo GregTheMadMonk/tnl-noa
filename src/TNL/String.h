@@ -18,8 +18,10 @@
 
 namespace TNL {
 
-template< class T > class List;
 class File;
+namespace Containers {
+   template< class T > class List;
+}
 
 //! Class for managing strings
 class String
@@ -53,6 +55,8 @@ class String
 
    String( int number );
  
+   String( unsigned long int number );
+
    String( long int number );
 
    String( float number );
@@ -126,6 +130,8 @@ class String
    void replace( const String& pattern,
                  const String& replaceWith );
 
+   String strip( char strip = ' ' ) const;
+
    // TODO: remove
    //! Write to a binary file
    bool save( std::ostream& file ) const;
@@ -147,7 +153,7 @@ class String
    bool getLine( std::istream& stream );
 
    //! Parse the string into list of strings w.r.t. given separator.
-   int parse( List< String >& list, const char separator = ' ' ) const;
+   int parse( Containers::List< String >& list, const char separator = ' ' ) const;
 
    friend std::ostream& operator << ( std::ostream& stream, const String& str );
 };

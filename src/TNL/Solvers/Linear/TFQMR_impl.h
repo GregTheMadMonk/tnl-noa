@@ -19,6 +19,11 @@ template< typename Matrix,
 TFQMR< Matrix, Preconditioner > :: TFQMR()
 : size( 0 )
 {
+   /****
+    * Clearing the shared pointer means that there is no
+    * preconditioner set.
+    */
+   this->preconditioner.clear();   
 }
 
 template< typename Matrix,

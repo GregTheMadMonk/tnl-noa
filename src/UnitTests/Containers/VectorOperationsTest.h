@@ -19,6 +19,7 @@
 
 using namespace TNL;
 using namespace TNL::Containers;
+using namespace TNL::Containers::Algorithms;
 
 #ifdef HAVE_GTEST
 

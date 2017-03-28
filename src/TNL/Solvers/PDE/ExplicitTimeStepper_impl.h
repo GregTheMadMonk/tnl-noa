@@ -122,7 +122,7 @@ solve( const RealType& time,
        DofVectorPointer& dofVector,
        MeshDependentDataPointer& meshDependentData )
 {
-   Assert( this->odeSolver, );
+   TNL_ASSERT( this->odeSolver, );
    mainTimer.start();
    this->odeSolver->setTau( this->timeStep );
    this->odeSolver->setProblem( * this );
@@ -144,7 +144,7 @@ template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
 void
 ExplicitTimeStepper< Problem, OdeSolver >::
-getExplicitRHS( const RealType& time,
+getExplicitUpdate( const RealType& time,
                 const RealType& tau,
                 DofVectorPointer& u,
                 DofVectorPointer& fu )
@@ -172,7 +172,7 @@ getExplicitRHS( const RealType& time,
 
    this->explicitUpdaterTimer.start();
    this->problem->setExplicitBoundaryConditions( time, *this->mesh, u, *this->meshDependentData );
-   this->problem->getExplicitRHS( time, tau, *this->mesh, u, fu, *this->meshDependentData );
+   this->problem->getExplicitUpdate( time, tau, *this->mesh, u, fu, *this->meshDependentData );
    this->explicitUpdaterTimer.stop();
 
    if( this->solverMonitor )
