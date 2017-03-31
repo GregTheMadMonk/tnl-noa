@@ -103,10 +103,10 @@ void Cuda::printThreadsSetup( const dim3& blockSize,
                               const dim3& gridsCount,
                               std::ostream& str )
 {
-   /*str << "Block size: " << blockSize << std::endl
+   str << "Block size: " << blockSize << std::endl
        << " Blocks count: " << blocksCount << std::endl
        << " Grid size: " << gridSize << std::endl
-       << " Grids count: " << gridsCount << std::endl;*/
+       << " Grids count: " << gridsCount << std::endl;
 }
 
 

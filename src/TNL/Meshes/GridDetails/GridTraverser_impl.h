@@ -302,15 +302,14 @@ GridTraverser2D(
    UserData* userData,
    const typename GridEntity::CoordinatesType begin,
    const typename GridEntity::CoordinatesType end,
-   const Index gridXIdx,
-   const Index gridYIdx,
+   const dim3 gridIdx,
    const GridEntityParameters... gridEntityParameters )
 {
    typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
 
-   coordinates.x() = begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
+   coordinates.x() = begin.x() + Devices::Cuda::getGlobalThreadIdx_x( gridIdx );
+   coordinates.y() = begin.y() + Devices::Cuda::getGlobalThreadIdx_y( gridIdx );
    
    /*if( processOnlyBoundaryEntities && 
       ( GridEntity::getDimensions() == 2 || GridEntity::getDimensions() == 0 ) )
@@ -442,15 +441,7 @@ processEntities(
            cudaBlocksCountAlongY, cudaGridsCountAlongY;
       Devices::Cuda::setupThreads( cudaBlockSize, cudaBlocksCountAlongX, cudaGridsCountAlongX, end.x() - begin.x() + 1 );
       Devices::Cuda::setupThreads( cudaBlockSize, cudaBlocksCountAlongY, cudaGridsCountAlongY, end.y() - begin.y() - 1 );
-      
-      /*const IndexType entitiesAlongX = end.x() - begin.x() + 1;
-      const IndexType entitiesAlongY = end.y() - begin.y() - 1;
-      dim3 cudaBlocksAlongX, cudaBlocksAlongY;
-      cudaBlocksAlongX.x = Devices::Cuda::getNumberOfBlocks( entitiesAlongX, cudaBlockSize.x );
-      cudaBlocksAlongY.x = Devices::Cuda::getNumberOfBlocks( entitiesAlongY, cudaBlockSize.x );
-      const IndexType cudaGridsAlongX = Devices::Cuda::getNumberOfGrids( cudaBlocksAlongX.x );
-      const IndexType cudaGridsAlongY = Devices::Cuda::getNumberOfGrids( cudaBlocksAlongY.x );*/
-      
+            
       auto& pool = CudaStreamPool::getInstance();
       Devices::Cuda::synchronizeDevice();
       
@@ -512,27 +503,35 @@ processEntities(
    else
    {
       dim3 cudaBlockSize( 16, 16 );
-      dim3 cudaBlocks;
-      cudaBlocks.x = Devices::Cuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
+      dim3 cudaBlocksCount, cudaGridsCount;
+      Devices::Cuda::setupThreads( cudaBlockSize, cudaBlocksCount, cudaGridsCount,
+                                   end.x() - begin.x() + 1,
+                                   end.y() - begin.y() + 1 );
+      
+      /*cudaBlocks.x = Devices::Cuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
       cudaBlocks.y = Devices::Cuda::getNumberOfBlocks( end.y() - begin.y() + 1, cudaBlockSize.y );
       const IndexType cudaXGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.x );
-      const IndexType cudaYGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.y );
+      const IndexType cudaYGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.y );*/
 
       auto& pool = CudaStreamPool::getInstance();
       const cudaStream_t& s = pool.getStream( stream );
 
       Devices::Cuda::synchronizeDevice();
-      for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
-         for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
+      dim3 gridIdx, cudaGridSize;
+      for( gridIdx.y = 0; gridIdx.y < cudaGridsCount.y; gridIdx.y ++ )
+         for( gridIdx.x = 0; gridIdx.x < cudaGridsCount.x; gridIdx.x ++ )
+         {
+            Devices::Cuda::setupGrid( cudaBlocksCount, cudaGridsCount, gridIdx, cudaGridSize );
+            Devices::Cuda::printThreadsSetup( cudaBlockSize, cudaBlocksCount, cudaGridSize, cudaGridsCount );
             GridTraverser2D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
-               <<< cudaBlocks, cudaBlockSize, 0 >>> //, s >>>
+               <<< cudaGridSize, cudaBlockSize, 0, s >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
                  &userDataPointer.template modifyData< Devices::Cuda >(),
                  begin,
                  end,
-                 gridXIdx,
-                 gridYIdx,
+                 gridIdx,
                  gridEntityParameters... );
+         }
 
       // only launches into the stream 0 are synchronized
       if( stream == 0 )
