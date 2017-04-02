@@ -451,6 +451,7 @@ processEntities(
       for( gridIdx.x = 0; gridIdx.x < cudaGridsCountAlongX.x; gridIdx.x++ )
       {
          Devices::Cuda::setupGrid( cudaBlocksCountAlongX, cudaGridsCountAlongX, gridIdx, cudaGridSize );
+         //Devices::Cuda::printThreadsSetup( cudaBlockSize, cudaBlocksCountAlongX, cudaGridSize, cudaGridsCountAlongX );
          GridTraverser2DBoundaryAlongX< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                <<< cudaGridSize, cudaBlockSize, 0, s1 >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
@@ -475,6 +476,7 @@ processEntities(
       for( gridIdx.x = 0; gridIdx.x < cudaGridsCountAlongY.x; gridIdx.x++ )
       {
          Devices::Cuda::setupGrid( cudaBlocksCountAlongY, cudaGridsCountAlongY, gridIdx, cudaGridSize );
+         //Devices::Cuda::printThreadsSetup( cudaBlockSize, cudaBlocksCountAlongY, cudaGridSize, cudaGridsCountAlongY );
          GridTraverser2DBoundaryAlongY< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                <<< cudaGridSize, cudaBlockSize, 0, s3 >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
@@ -494,6 +496,7 @@ processEntities(
                  gridIdx,
                  gridEntityParameters... );
       }
+      //getchar();
       cudaStreamSynchronize( s1 );
       cudaStreamSynchronize( s2 );
       cudaStreamSynchronize( s3 );
@@ -522,7 +525,7 @@ processEntities(
          for( gridIdx.x = 0; gridIdx.x < cudaGridsCount.x; gridIdx.x ++ )
          {
             Devices::Cuda::setupGrid( cudaBlocksCount, cudaGridsCount, gridIdx, cudaGridSize );
-            Devices::Cuda::printThreadsSetup( cudaBlockSize, cudaBlocksCount, cudaGridSize, cudaGridsCount );
+            //Devices::Cuda::printThreadsSetup( cudaBlockSize, cudaBlocksCount, cudaGridSize, cudaGridsCount );
             GridTraverser2D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                <<< cudaGridSize, cudaBlockSize, 0, s >>>
                ( &gridPointer.template getData< Devices::Cuda >(),

@@ -23,18 +23,9 @@ void Cuda::setupThreads( const dim3& blockSize,
                          long long int yThreads,
                          long long int zThreads )
 {
-   if( blockSize.x )
-      blocksCount.x = xThreads / blockSize.x + ( xThreads % blockSize.x != 0 );
-   else
-      blocksCount.x = 0;
-   if( blockSize.y )
-      blocksCount.y = yThreads / blockSize.y + ( yThreads % blockSize.y != 0 );
-   else
-      blocksCount.y = 0;
-   if( blockSize.z )
-      blocksCount.z = xThreads / blockSize.z + ( zThreads % blockSize.z != 0 );
-   else
-      blocksCount.z = 0;
+   blocksCount.x = max( 1, xThreads / blockSize.x + ( xThreads % blockSize.x != 0 ) );
+   blocksCount.y = max( 1, yThreads / blockSize.y + ( yThreads % blockSize.y != 0 ) );
+   blocksCount.z = max( 1, zThreads / blockSize.z + ( zThreads % blockSize.z != 0 ) );
    
    /****
     * TODO: Fix the following:
@@ -50,7 +41,7 @@ void Cuda::setupThreads( const dim3& blockSize,
    */
    gridsCount.x = blocksCount.x / getMaxGridSize() + ( blocksCount.x % getMaxGridSize() != 0 );
    gridsCount.y = blocksCount.y / getMaxGridSize() + ( blocksCount.y % getMaxGridSize() != 0 );
-   gridsCount.z = blocksCount.z / getMaxGridSize() + ( blocksCount.z % getMaxGridSize() != 0 );   
+   gridsCount.z = blocksCount.z / getMaxGridSize() + ( blocksCount.z % getMaxGridSize() != 0 );
 }
 
 void Cuda::setupGrid( const dim3& blocksCount,
@@ -80,21 +71,20 @@ void Cuda::setupGrid( const dim3& blocksCount,
    else
       gridSize.z = blocksCount.z % properties.maxGridSize[ 2 ];*/
    
-   if( gridIdx.x < gridsCount.x )
+   if( gridIdx.x < gridsCount.x - 1 )
       gridSize.x = getMaxGridSize();
    else
       gridSize.x = blocksCount.x % getMaxGridSize();
    
-   if( gridIdx.y < gridsCount.y )
+   if( gridIdx.y < gridsCount.y - 1 )
       gridSize.y = getMaxGridSize();
    else
       gridSize.y = blocksCount.y % getMaxGridSize();
 
-   if( gridIdx.z < gridsCount.z )
+   if( gridIdx.z < gridsCount.z - 1 )
       gridSize.z = getMaxGridSize();
    else
       gridSize.z = blocksCount.z % getMaxGridSize();
-   
 }
 
 void Cuda::printThreadsSetup( const dim3& blockSize,

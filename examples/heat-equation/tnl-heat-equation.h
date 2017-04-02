@@ -21,12 +21,14 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Problems/HeatEquationProblem.h>
 #include <TNL/Meshes/Grid.h>
+#include "HeatEquationBuildConfigTag.h"
 
 using namespace TNL;
 using namespace TNL::Problems;
 
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
-typedef Solvers::FastBuildConfig BuildConfig;
+//typedef Solvers::FastBuildConfig BuildConfig;
+typedef Solvers::HeatEquationBuildConfig BuildConfig;
 
 template< typename MeshConfig >
 class heatEquationConfig
