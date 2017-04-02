@@ -476,7 +476,6 @@ processEntities(
       for( gridIdx.x = 0; gridIdx.x < cudaGridsCountAlongY.x; gridIdx.x++ )
       {
          Devices::Cuda::setupGrid( cudaBlocksCountAlongY, cudaGridsCountAlongY, gridIdx, cudaGridSize );
-         //Devices::Cuda::printThreadsSetup( cudaBlockSize, cudaBlocksCountAlongY, cudaGridSize, cudaGridsCountAlongY );
          GridTraverser2DBoundaryAlongY< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                <<< cudaGridSize, cudaBlockSize, 0, s3 >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
@@ -496,7 +495,6 @@ processEntities(
                  gridIdx,
                  gridEntityParameters... );
       }
-      //getchar();
       cudaStreamSynchronize( s1 );
       cudaStreamSynchronize( s2 );
       cudaStreamSynchronize( s3 );
@@ -511,11 +509,6 @@ processEntities(
                                    end.x() - begin.x() + 1,
                                    end.y() - begin.y() + 1 );
       
-      /*cudaBlocks.x = Devices::Cuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
-      cudaBlocks.y = Devices::Cuda::getNumberOfBlocks( end.y() - begin.y() + 1, cudaBlockSize.y );
-      const IndexType cudaXGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.x );
-      const IndexType cudaYGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.y );*/
-
       auto& pool = CudaStreamPool::getInstance();
       const cudaStream_t& s = pool.getStream( stream );
 
@@ -525,7 +518,6 @@ processEntities(
          for( gridIdx.x = 0; gridIdx.x < cudaGridsCount.x; gridIdx.x ++ )
          {
             Devices::Cuda::setupGrid( cudaBlocksCount, cudaGridsCount, gridIdx, cudaGridSize );
-            //Devices::Cuda::printThreadsSetup( cudaBlockSize, cudaBlocksCount, cudaGridSize, cudaGridsCount );
             GridTraverser2D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                <<< cudaGridSize, cudaBlockSize, 0, s >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
@@ -539,7 +531,7 @@ processEntities(
       // only launches into the stream 0 are synchronized
       if( stream == 0 )
       {
-         //cudaStreamSynchronize( s );
+         cudaStreamSynchronize( s );
          checkCudaDevice;
       }
    }
@@ -676,30 +668,16 @@ GridTraverser3D(
    UserData* userData,
    const typename GridEntity::CoordinatesType begin,
    const typename GridEntity::CoordinatesType end,
-   const Index gridXIdx,
-   const Index gridYIdx,
-   const Index gridZIdx,
+   const dim3 gridIdx,
    const GridEntityParameters... gridEntityParameters )
 {
    typedef Meshes::Grid< 3, Real, Devices::Cuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
 
-   coordinates.x() = begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
-   coordinates.z() = begin.z() + ( gridZIdx * Devices::Cuda::getMaxGridSize() + blockIdx.z ) * blockDim.z + threadIdx.z;
+   coordinates.x() = begin.x() + Devices::Cuda::getGlobalThreadIdx_x( gridIdx );
+   coordinates.y() = begin.y() + Devices::Cuda::getGlobalThreadIdx_y( gridIdx );
+   coordinates.z() = begin.z() + Devices::Cuda::getGlobalThreadIdx_z( gridIdx );
 
-   
-   /*if( ( !processOnlyBoundaryEntities && coordinates <= end ) ||
-    (  processOnlyBoundaryEntities &&
-       ( coordinates.x() == begin.x() || coordinates.y() == begin.y() || coordinates.z() == begin.z() ||
-         coordinates.x() == end.x() || coordinates.y() == end.y() || coordinates.z() == end.z() ) ) )
-   { 
-      GridEntity entity( *grid, coordinates, gridEntityParameters... );
-      entity.refresh();
-      EntitiesProcessor::processEntity( entity.getMesh(), *userData, entity );      
-   }*/
-
-   
    if( coordinates <= end )
    {
       GridEntity entity( *grid, coordinates, gridEntityParameters... );
@@ -730,15 +708,14 @@ GridTraverser3DBoundaryAlongXY(
    const Index beginY,
    const Index endY,   
    const Index fixedZ,
-   const Index gridIdx_x,
-   const Index gridIdx_y,   
+   const dim3 gridIdx,
    const GridEntityParameters... gridEntityParameters )
 {
    typedef Meshes::Grid< 3, Real, Devices::Cuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
 
-   coordinates.x() = beginX + ( gridIdx_x * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = beginY + ( gridIdx_y * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
+   coordinates.x() = beginX + Devices::Cuda::getGlobalThreadIdx_x( gridIdx );
+   coordinates.y() = beginY + Devices::Cuda::getGlobalThreadIdx_y( gridIdx );
    coordinates.z() = fixedZ;  
    
    if( coordinates.x() <= endX && coordinates.y() <= endY )
@@ -768,16 +745,15 @@ GridTraverser3DBoundaryAlongXZ(
    const Index beginZ,
    const Index endZ,   
    const Index fixedY,
-   const Index gridIdx_x,
-   const Index gridIdx_y,   
+   const dim3 gridIdx,
    const GridEntityParameters... gridEntityParameters )
 {
    typedef Meshes::Grid< 3, Real, Devices::Cuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
 
-   coordinates.x() = beginX + ( gridIdx_x * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   coordinates.x() = beginX + Devices::Cuda::getGlobalThreadIdx_x( gridIdx );
    coordinates.y() = fixedY;
-   coordinates.z() = beginZ + ( gridIdx_y * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;   
+   coordinates.z() = beginZ + Devices::Cuda::getGlobalThreadIdx_y( gridIdx );
    
    if( coordinates.x() <= endX && coordinates.z() <= endZ )
    {
@@ -806,16 +782,15 @@ GridTraverser3DBoundaryAlongYZ(
    const Index beginZ,
    const Index endZ,   
    const Index fixedX,
-   const Index gridIdx_x,
-   const Index gridIdx_y,   
+   const dim3 gridIdx,
    const GridEntityParameters... gridEntityParameters )
 {
    typedef Meshes::Grid< 3, Real, Devices::Cuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
 
    coordinates.x() = fixedX;
-   coordinates.y() = beginY + ( gridIdx_x * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.z() = beginZ + ( gridIdx_y * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;   
+   coordinates.y() = beginY + Devices::Cuda::getGlobalThreadIdx_x( gridIdx );
+   coordinates.z() = beginZ + Devices::Cuda::getGlobalThreadIdx_y( gridIdx );
    
    if( coordinates.y() <= endY && coordinates.z() <= endZ )
    {
@@ -850,7 +825,6 @@ processEntities(
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
-   // TODO: Fix the grid sizes inside the for loops -- even in 2D
 #ifdef HAVE_CUDA   
    if( processOnlyBoundaryEntities && 
       ( GridEntity::getDimensions() == 3 || GridEntity::getDimensions() == 0 ) )
@@ -860,22 +834,13 @@ processEntities(
       const IndexType entitiesAlongY = end.y() - begin.y() + 1;
       const IndexType entitiesAlongZ = end.z() - begin.z() + 1;
       
-      dim3 cudaBlocksAlongXY, cudaBlocksAlongXZ, cudaBlocksAlongYZ;
-      cudaBlocksAlongXY.x = Devices::Cuda::getNumberOfBlocks( entitiesAlongX, cudaBlockSize.x );
-      cudaBlocksAlongXY.y = Devices::Cuda::getNumberOfBlocks( entitiesAlongY, cudaBlockSize.y );
-      cudaBlocksAlongXZ.x = Devices::Cuda::getNumberOfBlocks( entitiesAlongX, cudaBlockSize.x );
-      cudaBlocksAlongXZ.y = Devices::Cuda::getNumberOfBlocks( entitiesAlongZ - 2, cudaBlockSize.y );
-      cudaBlocksAlongYZ.x = Devices::Cuda::getNumberOfBlocks( entitiesAlongY - 2, cudaBlockSize.x );
-      cudaBlocksAlongYZ.y = Devices::Cuda::getNumberOfBlocks( entitiesAlongZ - 2, cudaBlockSize.y );
+      dim3 cudaBlocksCountAlongXY, cudaBlocksCountAlongXZ, cudaBlocksCountAlongYZ,
+           cudaGridsCountAlongXY, cudaGridsCountAlongXZ, cudaGridsCountAlongYZ;
       
-      
-      const IndexType cudaGridsAlongXY_x = Devices::Cuda::getNumberOfGrids( cudaBlocksAlongXY.x );
-      const IndexType cudaGridsAlongXY_y = Devices::Cuda::getNumberOfGrids( cudaBlocksAlongXY.y );
-      const IndexType cudaGridsAlongXZ_x = Devices::Cuda::getNumberOfGrids( cudaBlocksAlongXZ.x );
-      const IndexType cudaGridsAlongXZ_y = Devices::Cuda::getNumberOfGrids( cudaBlocksAlongXZ.y );
-      const IndexType cudaGridsAlongYZ_x = Devices::Cuda::getNumberOfGrids( cudaBlocksAlongYZ.x );
-      const IndexType cudaGridsAlongYZ_y = Devices::Cuda::getNumberOfGrids( cudaBlocksAlongYZ.y );
-    
+      Devices::Cuda::setupThreads( cudaBlockSize, cudaBlocksCountAlongXY, cudaGridsCountAlongXY, entitiesAlongX, entitiesAlongY );
+      Devices::Cuda::setupThreads( cudaBlockSize, cudaBlocksCountAlongXZ, cudaGridsCountAlongXZ, entitiesAlongX, entitiesAlongZ - 2 );
+      Devices::Cuda::setupThreads( cudaBlockSize, cudaBlocksCountAlongYZ, cudaGridsCountAlongYZ, entitiesAlongY - 2, entitiesAlongZ - 2 );
+
       auto& pool = CudaStreamPool::getInstance();
       Devices::Cuda::synchronizeDevice();
       
@@ -886,11 +851,13 @@ processEntities(
       const cudaStream_t& s5 = pool.getStream( stream + 4 );
       const cudaStream_t& s6 = pool.getStream( stream + 5 );
       
-      for( IndexType gridIdx_y = 0; gridIdx_y < cudaGridsAlongXY_y; gridIdx_y++ )
-         for( IndexType gridIdx_x = 0; gridIdx_x < cudaGridsAlongXY_x; gridIdx_x++ )
+      dim3 gridIdx, gridSize;
+      for( gridIdx.y = 0; gridIdx.y < cudaGridsCountAlongXY.y; gridIdx.y++ )
+         for( gridIdx.x = 0; gridIdx.x < cudaGridsCountAlongXY.x; gridIdx.x++ )
          {
+            Devices::Cuda::setupGrid( cudaBlocksCountAlongXY, cudaGridsCountAlongXY, gridIdx, gridSize );
             GridTraverser3DBoundaryAlongXY< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
-                  <<< cudaBlocksAlongXY, cudaBlockSize, 0 , s1 >>>
+                  <<< cudaBlocksCountAlongXY, cudaBlockSize, 0 , s1 >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
                     &userDataPointer.template modifyData< Devices::Cuda >(),
                     begin.x(),
@@ -898,11 +865,10 @@ processEntities(
                     begin.y(),
                     end.y(),
                     begin.z(),
-                    gridIdx_x,
-                    gridIdx_y,
+                    gridIdx,
                     gridEntityParameters... );
             GridTraverser3DBoundaryAlongXY< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
-                  <<< cudaBlocksAlongXY, cudaBlockSize, 0, s2 >>>
+                  <<< cudaBlocksCountAlongXY, cudaBlockSize, 0, s2 >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
                     &userDataPointer.template modifyData< Devices::Cuda >(),
                     begin.x(),
@@ -910,15 +876,15 @@ processEntities(
                     begin.y(),
                     end.y(),
                     end.z(),
-                    gridIdx_x,
-                    gridIdx_y,
+                    gridIdx,
                     gridEntityParameters... );
          }
-      for( IndexType gridIdx_y = 0; gridIdx_y < cudaGridsAlongXZ_y; gridIdx_y++ )
-         for( IndexType gridIdx_x = 0; gridIdx_x < cudaGridsAlongXZ_x; gridIdx_x++ )
+      for( gridIdx.y = 0; gridIdx.y < cudaGridsCountAlongXZ.y; gridIdx.y++ )
+         for( gridIdx.x = 0; gridIdx.x < cudaGridsCountAlongXZ.x; gridIdx.x++ )
          {
+            Devices::Cuda::setupGrid( cudaBlocksCountAlongXZ, cudaGridsCountAlongXZ, gridIdx, gridSize );
             GridTraverser3DBoundaryAlongXZ< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
-                  <<< cudaBlocksAlongXZ, cudaBlockSize, 0, s3 >>>
+                  <<< cudaBlocksCountAlongXZ, cudaBlockSize, 0, s3 >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
                     &userDataPointer.template modifyData< Devices::Cuda >(),
                     begin.x(),
@@ -926,11 +892,10 @@ processEntities(
                     begin.z() + 1,
                     end.z() - 1,
                     begin.y(),
-                    gridIdx_x,
-                    gridIdx_y,
+                    gridIdx,
                     gridEntityParameters... );
             GridTraverser3DBoundaryAlongXZ< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
-                  <<< cudaBlocksAlongXZ, cudaBlockSize, 0, s4 >>>
+                  <<< cudaBlocksCountAlongXZ, cudaBlockSize, 0, s4 >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
                     &userDataPointer.template modifyData< Devices::Cuda >(),
                     begin.x(),
@@ -938,15 +903,15 @@ processEntities(
                     begin.z() + 1,
                     end.z() - 1,
                     end.y(),
-                    gridIdx_x,
-                    gridIdx_y,
+                    gridIdx,
                     gridEntityParameters... );
          }
-      for( IndexType gridIdx_y = 0; gridIdx_y < cudaGridsAlongYZ_y; gridIdx_y++ )
-         for( IndexType gridIdx_x = 0; gridIdx_x < cudaGridsAlongYZ_x; gridIdx_x++ )
+      for( gridIdx.y = 0; gridIdx.y < cudaGridsCountAlongYZ.y; gridIdx.y++ )
+         for( gridIdx.x = 0; gridIdx.x < cudaGridsCountAlongYZ.x; gridIdx.x++ )
          {
+            Devices::Cuda::setupGrid( cudaBlocksCountAlongYZ, cudaGridsCountAlongYZ, gridIdx, gridSize );
             GridTraverser3DBoundaryAlongYZ< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
-                  <<< cudaBlocksAlongYZ, cudaBlockSize, 0, s5 >>>
+                  <<< cudaBlocksCountAlongYZ, cudaBlockSize, 0, s5 >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
                     &userDataPointer.template modifyData< Devices::Cuda >(),
                     begin.y() + 1,
@@ -954,11 +919,10 @@ processEntities(
                     begin.z() + 1,
                     end.z() - 1,
                     begin.x(),
-                    gridIdx_x,
-                    gridIdx_y,
+                    gridIdx,
                     gridEntityParameters... );
             GridTraverser3DBoundaryAlongYZ< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
-                  <<< cudaBlocksAlongYZ, cudaBlockSize, 0, s6 >>>
+                  <<< cudaBlocksCountAlongYZ, cudaBlockSize, 0, s6 >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
                     &userDataPointer.template modifyData< Devices::Cuda >(),
                     begin.y() + 1,
@@ -966,8 +930,7 @@ processEntities(
                     begin.z() + 1,
                     end.z() - 1,
                     end.x(),
-                    gridIdx_x,
-                    gridIdx_y,
+                    gridIdx,
                     gridEntityParameters... );
          }
       cudaStreamSynchronize( s1 );
@@ -981,31 +944,32 @@ processEntities(
    else
    {
       dim3 cudaBlockSize( 8, 8, 8 );
-      dim3 cudaBlocks;
-      cudaBlocks.x = Devices::Cuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
-      cudaBlocks.y = Devices::Cuda::getNumberOfBlocks( end.y() - begin.y() + 1, cudaBlockSize.y );
-      cudaBlocks.z = Devices::Cuda::getNumberOfBlocks( end.z() - begin.z() + 1, cudaBlockSize.z );
-      const IndexType cudaXGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.x );
-      const IndexType cudaYGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.y );
-      const IndexType cudaZGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.z );
+      dim3 cudaBlocksCount, cudaGridsCount;
+      
+      Devices::Cuda::setupThreads( cudaBlockSize, cudaBlocksCount, cudaGridsCount,
+                                   end.x() - begin.x() + 1,
+                                   end.y() - begin.y() + 1,
+                                   end.z() - begin.z() + 1 );
 
       auto& pool = CudaStreamPool::getInstance();
       const cudaStream_t& s = pool.getStream( stream );
 
       Devices::Cuda::synchronizeDevice();
-      for( IndexType gridZIdx = 0; gridZIdx < cudaZGrids; gridZIdx ++ )
-         for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
-            for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
+      dim3 gridIdx, gridSize;
+      for( gridIdx.z = 0; gridIdx.z < cudaGridsCount.z; gridIdx.z ++ )
+         for( gridIdx.y = 0; gridIdx.y < cudaGridsCount.y; gridIdx.y ++ )
+            for( gridIdx.x = 0; gridIdx.x < cudaGridsCount.x; gridIdx.x ++ )
+            {
+               Devices::Cuda::setupGrid( cudaBlocksCount, cudaGridsCount, gridIdx, gridSize );
                GridTraverser3D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
-                  <<< cudaBlocks, cudaBlockSize, 0, s >>>
+                  <<< gridSize, cudaBlockSize, 0, s >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
                     &userDataPointer.template modifyData< Devices::Cuda >(),
                     begin,
                     end,
-                    gridXIdx,
-                    gridYIdx,
-                    gridZIdx,
+                    gridIdx,
                     gridEntityParameters... );
+            }
 
       // only launches into the stream 0 are synchronized
       if( stream == 0 )
