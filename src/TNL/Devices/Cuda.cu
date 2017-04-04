@@ -31,10 +31,11 @@ void Cuda::setupThreads( const dim3& blockSize,
     * TODO: Fix the following:
     * I do not known how to get max grid size in kernels :(
     * 
+   /* Also, this is very slow.
    int currentDevice( 0 );
    cudaGetDevice( currentDevice );
    cudaDeviceProp properties;
-   cudaGetDeviceProperties( &properties, currentDevice );
+   cudaGetDeviceProperties( &properties, currentDevice );*/
    gridsCount.x = blocksCount.x / properties.maxGridSize[ 0 ] + ( blocksCount.x % properties.maxGridSize[ 0 ] != 0 );
    gridsCount.y = blocksCount.y / properties.maxGridSize[ 1 ] + ( blocksCount.y % properties.maxGridSize[ 1 ] != 0 );
    gridsCount.z = blocksCount.z / properties.maxGridSize[ 2 ] + ( blocksCount.z % properties.maxGridSize[ 2 ] != 0 );
@@ -49,10 +50,11 @@ void Cuda::setupGrid( const dim3& blocksCount,
                       const dim3& gridIdx,
                       dim3& gridSize )
 {
+   /* TODO: this is extremely slow!!!!
    int currentDevice( 0 );
    cudaGetDevice( &currentDevice );
    cudaDeviceProp properties;
-   cudaGetDeviceProperties( &properties, currentDevice );
+   cudaGetDeviceProperties( &properties, currentDevice );*/
  
    /****
     * TODO: fix the following
