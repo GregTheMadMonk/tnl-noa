@@ -47,7 +47,7 @@ public:
       str << "SCALARS " << functionName << " " << getType< typename MeshFunction::RealType >() << " 1" << std::endl;
       str << "LOOKUP_TABLE default" << std::endl;
       for( GlobalIndex i = 0; i < entitiesCount; i++ ) {
-         str << function.getData().getElement( i ) << std::endl;
+         str << function.getData().getElement( i ) << "\n";
       }
    }
 };
