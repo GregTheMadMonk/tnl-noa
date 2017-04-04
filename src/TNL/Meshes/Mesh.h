@@ -71,6 +71,10 @@ class Mesh
       using RealType        = typename PointType::RealType;
       using IndexPermutationVector = Containers::Vector< GlobalIndexType, DeviceType, GlobalIndexType >;
 
+      // shortcuts, compatibility with grids
+      using HostType = Mesh< MeshConfig, Devices::Host >;
+      using CudaType = Mesh< MeshConfig, Devices::Cuda >;
+
       template< int Dimension >
       using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
 
