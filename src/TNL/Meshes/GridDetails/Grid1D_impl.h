@@ -76,13 +76,39 @@ void Grid< 1, Real, Device, Index >::computeSpaceSteps()
    if( this->getDimensions().x() != 0 )
    {
       this->spaceSteps.x() = this->proportions.x() / ( Real )  this->getDimensions().x();
+      this->computeSpaceStepPowers();
+   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 1, Real, Device, Index > ::computeSpaceStepPowers()
+{
       const RealType& hx = this->spaceSteps.x();
       this->spaceStepsProducts[ 0 ] = 1.0 / ( hx * hx );
       this->spaceStepsProducts[ 1 ] = 1.0 / hx;
       this->spaceStepsProducts[ 2 ] = 1.0;
       this->spaceStepsProducts[ 3 ] = hx;
       this->spaceStepsProducts[ 4 ] = hx * hx;
-   }
+   
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 1, Real, Device, Index > ::computeProportions()
+{
+    this->proportions.x()=this->dimensions.x()*this->spaceSteps.x();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 1, Real, Device, Index > :: setOrigin( const VertexType& origin)
+{
+   this->origin = origin;
 }
 
 template< typename Real,
@@ -230,6 +256,18 @@ Grid< 1, Real, Device, Index >::
 getSpaceSteps() const
 {
    return this->spaceSteps;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+inline void 
+Grid< 1, Real, Device, Index >::
+setSpaceSteps(const typename Grid< 1, Real, Device, Index >::VertexType& steps)
+{
+    this->spaceSteps=steps;
+    computeSpaceStepPowers();
+    computeProportions();
 }
 
 template< typename Real,

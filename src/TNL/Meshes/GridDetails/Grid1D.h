@@ -68,6 +68,8 @@ class Grid< 1, Real, Device, Index > : public Object
 
    void setDomain( const VertexType& origin,
                    const VertexType& proportions );
+   
+   void setOrigin( const VertexType& origin);
 
    __cuda_callable__
    inline const VertexType& getOrigin() const;
@@ -96,6 +98,8 @@ class Grid< 1, Real, Device, Index > : public Object
  
    __cuda_callable__
    inline const VertexType& getSpaceSteps() const;
+   
+   inline void setSpaceSteps(const VertexType& steps);
 
    template< int xPow >
    __cuda_callable__
@@ -139,6 +143,10 @@ class Grid< 1, Real, Device, Index > : public Object
    void writeProlog( Logger& logger );
 
    protected:
+
+   void computeProportions();
+       
+   void computeSpaceStepPowers();
 
    void computeSpaceSteps();
 

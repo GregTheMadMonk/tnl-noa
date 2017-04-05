@@ -145,7 +145,7 @@ class String
    bool load( File& file );
 
    //! Broadcast to other nodes in MPI cluster
-   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+//   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
    //! Read one line from given stream.
    bool getLine( std::istream& stream );

@@ -79,6 +79,16 @@ void Grid< 2, Real, Device, Index > :: computeSpaceSteps()
    {
       this->spaceSteps.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
       this->spaceSteps.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
+      this->computeSpaceStepPowers();
+   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+void Grid< 2, Real, Device, Index > ::computeSpaceStepPowers()
+{
       const RealType& hx = this->spaceSteps.x();
       const RealType& hy = this->spaceSteps.y();
  
@@ -126,7 +136,15 @@ void Grid< 2, Real, Device, Index > :: computeSpaceSteps()
             this->spaceStepsProducts[ i ][ j ] = auxX * auxY;
          }
       }
-   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 2, Real, Device, Index > ::computeProportions()
+{
+    this->proportions.x()=this->dimensions.x()*this->spaceSteps.x();
+    this->proportions.y()=this->dimensions.y()*this->spaceSteps.y();
 }
 
 template< typename Real,
@@ -174,6 +192,14 @@ void Grid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
    this->origin = origin;
    this->proportions = proportions;
    computeSpaceSteps();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 2, Real, Device, Index > :: setOrigin( const VertexType& origin)
+{
+   this->origin = origin;
 }
 
 template< typename Real,
@@ -283,6 +309,18 @@ Grid< 2, Real, Device, Index >::
 getSpaceSteps() const
 {
    return this->spaceSteps;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+inline void 
+Grid< 2, Real, Device, Index >::
+setSpaceSteps(const typename Grid< 2, Real, Device, Index >::VertexType& steps)
+{
+    this->spaceSteps=steps;
+    computeSpaceStepPowers();
+    computeProportions();
 }
 
 template< typename Real,

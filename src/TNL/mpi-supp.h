@@ -28,7 +28,7 @@ namespace TNL {
    
 class String;
 
-#ifdef HAVE_MPI
+/*#ifdef HAVE_MPI
 inline MPI_Datatype MPIDataType( const signed char ) { return MPI_CHAR; };
 inline MPI_Datatype MPIDataType( const signed short int ) { return MPI_SHORT; };
 inline MPI_Datatype MPIDataType( const signed int ) { return MPI_INT; };
@@ -41,8 +41,8 @@ inline MPI_Datatype MPIDataType( const float& ) { return MPI_FLOAT; };
 inline MPI_Datatype MPIDataType( const double& ) { return MPI_DOUBLE; };
 inline MPI_Datatype MPIDataType( const long double& ) { return MPI_LONG_DOUBLE; };
 #endif
-
-
+*/
+/*
 void MPIInit( int* argc, char** argv[] );
 
 void MPIFinalize();
@@ -154,7 +154,8 @@ template< typename T > void MPIAllreduce( T& data,
                   op,
                   comm );
 };
-#else
+#else*/
+#ifndef HAVE_MPI
 template< typename T > void MPIAllreduce( T& data,
                                           T& reduced_data,
                                           int,
@@ -163,6 +164,23 @@ template< typename T > void MPIAllreduce( T& data,
 {
    reduced_data = data;
 };
+
+template< typename T > void MPIReduce( T& data,
+                                       T& reduced_data,
+                                       int,
+                                       MPI_Op,
+                                       int,
+                                       MPI_Comm )
+{
+   reduced_data = data;
+};
+
+template< class T > void MPIBcast( T&,
+                                   int,
+                                   int,
+                                   MPI_Comm = MPI_COMM_WORLD )
+{
+}
 #endif
 
 } // namespace TNL

@@ -90,7 +90,7 @@ class ParameterContainer
    }
  
    //! Broadcast to other nodes in MPI cluster
-   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+  // void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
    ~ParameterContainer();
 

@@ -402,7 +402,7 @@ bool String :: load( File& file )
    return true;
 }
 
-void String :: MPIBcast( int root, MPI_Comm comm )
+/*void String :: MPIBcast( int root, MPI_Comm comm )
 {
 #ifdef HAVE_MPI
    dbgFunctionName( "mString", "MPIBcast" );
@@ -428,7 +428,7 @@ void String :: MPIBcast( int root, MPI_Comm comm )
    dbgExpr( string );
 #endif
 }
-
+*/
 bool String :: getLine( std::istream& stream )
 {
    std :: string str;
