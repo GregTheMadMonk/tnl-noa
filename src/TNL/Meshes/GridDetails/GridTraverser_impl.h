@@ -518,6 +518,7 @@ processEntities(
          for( gridIdx.x = 0; gridIdx.x < cudaGridsCount.x; gridIdx.x ++ )
          {
             Devices::Cuda::setupGrid( cudaBlocksCount, cudaGridsCount, gridIdx, cudaGridSize );
+	    //Devices::Cuda::printThreadsSetup( cudaBlockSize, cudaBlocksCount, cudaGridSize, cudaGridsCount );
             GridTraverser2D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                <<< cudaGridSize, cudaBlockSize, 0, s >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
