@@ -49,16 +49,66 @@ class Cuda
    static inline constexpr int getGPUTransferBufferSize();
 
 #ifdef HAVE_CUDA
+   /***
+    * This function is obsolete and should be replaced by the following functions.
+    */
    __device__ static inline int
    getGlobalThreadIdx( const int gridIdx = 0,
-                       const int gridSize = getMaxGridSize() );
+                       const int gridSize = getMaxGridSize() );   
+
+   __device__ static inline int
+   getGlobalThreadIdx_x( const dim3& gridIdx );
+
+   __device__ static inline int
+   getGlobalThreadIdx_y( const dim3& gridIdx );
+
+   __device__ static inline int
+   getGlobalThreadIdx_z( const dim3& gridIdx );   
 #endif
 
+   /****
+    * This functions helps to count number of CUDA blocks depending on the 
+    * number of the CUDA threads and the block size.
+    * It is obsolete and it will be replaced by setupThreads.
+    */
    static int getNumberOfBlocks( const int threads,
                                  const int blockSize );
 
+   /****
+    * This functions helps to count number of CUDA grids depending on the 
+    * number of the CUDA blocks and maximum grid size.
+    * It is obsolete and it will be replaced by setupThreads.
+    */
    static int getNumberOfGrids( const int blocks,
                                 const int gridSize = getMaxGridSize() );
+   
+#ifdef HAVE_CUDA   
+   /*! This method sets up gridSize and computes number of grids depending
+    *  on total number of CUDA threads.
+    */
+   static void setupThreads( const dim3& blockSize,
+                             dim3& blocksCount,
+                             dim3& gridsCount,
+                             long long int xThreads,
+                             long long int yThreads = 0,
+                             long long int zThreads = 0 );
+   
+   /*! This method sets up grid size when one iterates over more grids.
+    * If gridIdx.? < gridsCount.? then the gridSize.? is set to maximum
+    * allowed by CUDA. Otherwise gridSize.? is set to the size of the grid
+    * in the last loop i.e. blocksCount.? % maxGridSize.?.
+    */
+   static void setupGrid( const dim3& blocksCount,
+                          const dim3& gridsCount,
+                          const dim3& gridIdx,
+                          dim3& gridSize );
+   
+   static void printThreadsSetup( const dim3& blockSize,
+                                  const dim3& blocksCount,
+                                  const dim3& gridSize,
+                                  const dim3& gridsCount,
+                                  std::ostream& str = std::cout );
+#endif   
 
    template< typename ObjectType >
    static ObjectType* passToDevice( const ObjectType& object );
@@ -135,6 +185,7 @@ class Cuda
 
 #ifdef HAVE_CUDA
 #define checkCudaDevice ::TNL::Devices::Cuda::checkDevice( __FILE__, __LINE__, cudaGetLastError() )
+std::ostream& operator << ( std::ostream& str, const dim3& d );
 #else
 #define checkCudaDevice ::TNL::Devices::Cuda::checkDevice()
 #endif
