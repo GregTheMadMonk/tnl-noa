@@ -35,7 +35,7 @@ class CSR : public Sparse< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowsLengthsVector CompressedRowsLengthsVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef CSR< Real, Device, Index > ThisType;
    typedef CSR< Real, Devices::Host, Index > HostType;
    typedef CSR< Real, Devices::Cuda, Index > CudaType;
@@ -55,7 +55,7 @@ class CSR : public Sparse< Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
+   bool setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 

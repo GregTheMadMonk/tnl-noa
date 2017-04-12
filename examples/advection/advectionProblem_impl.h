@@ -198,17 +198,17 @@ setupLinearSystem( const MeshPointer& mesh,
                    Matrix& matrix )
 {
    const IndexType dofs = this->getDofs( mesh );
-   typedef typename Matrix::ObjectType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   SharedPointer< CompressedRowsLengthsVectorType > rowLengths;
+   typedef typename Matrix::ObjectType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
+   SharedPointer< CompressedRowLengthsVectorType > rowLengths;
    if( ! rowLengths->setSize( dofs ) )
       return false;
-   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >( mesh,
+   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
+   matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( mesh,
                                                                           differentialOperatorPointer,
                                                                           boundaryConditionPointer,
                                                                           rowLengths );
    matrix->setDimensions( dofs, dofs );
-   if( ! matrix->setCompressedRowsLengths( *rowLengths ) )
+   if( ! matrix->setCompressedRowLengths( *rowLengths ) )
       return false;
    return true;
 }

@@ -62,7 +62,7 @@ bool Tridiagonal< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
-bool Tridiagonal< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
+bool Tridiagonal< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
    if( rowLengths[ 0 ] > 2 )
       return false;

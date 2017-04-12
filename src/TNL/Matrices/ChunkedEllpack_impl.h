@@ -123,7 +123,7 @@ void ChunkedEllpack< Real, Device, Index >::resolveSliceSizes( const Containers:
 template< typename Real,
           typename Device,
           typename Index >
-bool ChunkedEllpack< Real, Device, Index >::setSlice( const CompressedRowsLengthsVector& rowLengths,
+bool ChunkedEllpack< Real, Device, Index >::setSlice( const CompressedRowLengthsVector& rowLengths,
                                                                const IndexType sliceIndex,
                                                                IndexType& elementsToAllocation )
 {
@@ -206,7 +206,7 @@ bool ChunkedEllpack< Real, Device, Index >::setSlice( const CompressedRowsLength
 template< typename Real,
           typename Device,
           typename Index >
-bool ChunkedEllpack< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
+bool ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
    TNL_ASSERT( this->getRows() > 0, );
    TNL_ASSERT( this->getColumns() > 0, );
@@ -226,12 +226,12 @@ bool ChunkedEllpack< Real, Device, Index >::setCompressedRowsLengths( const Comp
    {
       ChunkedEllpack< RealType, Devices::Host, IndexType > hostMatrix;
       hostMatrix.setDimensions( this->getRows(), this->getColumns() );
-      Containers::Vector< IndexType, Devices::Host, IndexType > hostCompressedRowsLengths;
-      hostCompressedRowsLengths.setLike( rowLengths);
-      hostCompressedRowsLengths = rowLengths;
+      Containers::Vector< IndexType, Devices::Host, IndexType > hostCompressedRowLengths;
+      hostCompressedRowLengths.setLike( rowLengths);
+      hostCompressedRowLengths = rowLengths;
       hostMatrix.setNumberOfChunksInSlice( this->chunksInSlice );
       hostMatrix.setDesiredChunkSize( this->desiredChunkSize );
-      hostMatrix.setCompressedRowsLengths( hostCompressedRowsLengths );
+      hostMatrix.setCompressedRowLengths( hostCompressedRowLengths );
 
       this->rowToChunkMapping.setLike( hostMatrix.rowToChunkMapping );
       this->rowToChunkMapping = hostMatrix.rowToChunkMapping;
@@ -1276,7 +1276,7 @@ class ChunkedEllpackDeviceDependentCode< Devices::Host >
       template< typename Real,
                 typename Index >
       static void resolveSliceSizes( ChunkedEllpack< Real, Device, Index >& matrix,
-                                     const typename ChunkedEllpack< Real, Device, Index >::CompressedRowsLengthsVector& rowLengths )
+                                     const typename ChunkedEllpack< Real, Device, Index >::CompressedRowLengthsVector& rowLengths )
       {
          matrix.resolveSliceSizes( rowLengths );
       }
@@ -1337,7 +1337,7 @@ class ChunkedEllpackDeviceDependentCode< Devices::Cuda >
       template< typename Real,
                 typename Index >
       static void resolveSliceSizes( ChunkedEllpack< Real, Device, Index >& matrix,
-                                     const typename ChunkedEllpack< Real, Device, Index >::CompressedRowsLengthsVector& rowLengths )
+                                     const typename ChunkedEllpack< Real, Device, Index >::CompressedRowLengthsVector& rowLengths )
       {
       }
  

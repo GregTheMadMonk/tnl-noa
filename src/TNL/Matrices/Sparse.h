@@ -26,7 +26,7 @@ class Sparse : public Matrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename Matrix< RealType, DeviceType, IndexType >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
+   typedef typename Matrix< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Matrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef Containers::Vector< IndexType, DeviceType, IndexType > ColumnIndexesVector;
    typedef Matrix< Real, Device, Index > BaseType;
@@ -34,7 +34,7 @@ class Sparse : public Matrix< Real, Device, Index >
 
    Sparse();
 
-   virtual bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths ) = 0;
+   virtual bool setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths ) = 0;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const Sparse< Real2, Device2, Index2 >& matrix );

@@ -45,7 +45,7 @@ bool MatrixReader< Matrix >::readMtxFile( std::istream& file,
 template< typename Matrix >
 bool MatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
                                                        Matrix& matrix,
-                                                       typename Matrix::CompressedRowsLengthsVector& rowLengths,
+                                                       typename Matrix::CompressedRowLengthsVector& rowLengths,
                                                        bool verbose )
 {
    IndexType rows, columns;
@@ -62,10 +62,10 @@ bool MatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
       return false;
    }
 
-   if( ! computeCompressedRowsLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
+   if( ! computeCompressedRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
       return false;
 
-   if( ! matrix.setCompressedRowsLengths( rowLengths ) )
+   if( ! matrix.setCompressedRowLengths( rowLengths ) )
       return false;
 
    if( ! readMatrixElementsFromMtxFile( file, matrix, symmetricMatrix, verbose ) )
@@ -252,7 +252,7 @@ bool MatrixReader< Matrix >::readMtxHeader( std::istream& file,
 }
 
 template< typename Matrix >
-bool MatrixReader< Matrix >::computeCompressedRowsLengthsFromMtxFile( std::istream& file,
+bool MatrixReader< Matrix >::computeCompressedRowLengthsFromMtxFile( std::istream& file,
                                                               Containers::Vector< int, Devices::Host, int >& rowLengths,
                                                               const int columns,
                                                               const int rows,
@@ -387,7 +387,7 @@ class MatrixReaderDeviceDependentCode< Devices::Host >
                             Matrix& matrix,
                             bool verbose )
    {
-      typename Matrix::CompressedRowsLengthsVector rowLengths;
+      typename Matrix::CompressedRowLengthsVector rowLengths;
       return MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose );
    }
 };
@@ -403,17 +403,17 @@ class MatrixReaderDeviceDependentCode< Devices::Cuda >
                             bool verbose )
    {
       typedef typename Matrix::HostType HostMatrixType;
-      typedef typename HostMatrixType::CompressedRowsLengthsVector CompressedRowsLengthsVector;
+      typedef typename HostMatrixType::CompressedRowLengthsVector CompressedRowLengthsVector;
 
       HostMatrixType hostMatrix;
-      CompressedRowsLengthsVector rowLengthsVector;
+      CompressedRowLengthsVector rowLengthsVector;
       if( ! MatrixReader< HostMatrixType >::readMtxFileHostMatrix( file, hostMatrix, rowLengthsVector, verbose ) )
          return false;
 
-      typename Matrix::CompressedRowsLengthsVector cudaCompressedRowsLengthsVector;
-      cudaCompressedRowsLengthsVector.setLike( rowLengthsVector );
-      cudaCompressedRowsLengthsVector = rowLengthsVector;
-      if( ! matrix.copyFrom( hostMatrix, cudaCompressedRowsLengthsVector ) )
+      typename Matrix::CompressedRowLengthsVector cudaCompressedRowLengthsVector;
+      cudaCompressedRowLengthsVector.setLike( rowLengthsVector );
+      cudaCompressedRowLengthsVector = rowLengthsVector;
+      if( ! matrix.copyFrom( hostMatrix, cudaCompressedRowLengthsVector ) )
          return false;
       return true;
    }
