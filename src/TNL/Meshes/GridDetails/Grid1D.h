@@ -17,6 +17,7 @@
 #include <TNL/Meshes/GridDetails/NeighbourGridEntityGetter.h>
 #include <TNL/Meshes/GridEntity.h>
 #include <TNL/Meshes/GridEntityConfig.h>
+#include <TNL/Meshes/DistributedGrid.h>
 
 namespace TNL {
 namespace Meshes {
@@ -117,6 +118,10 @@ class Grid< 1, Real, Device, Index > : public Object
    typename GridFunction::RealType getDifferenceLpNorm( const GridFunction& f1,
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const;
+   
+   void SetDistGrid(DistributedGrid <ThisType,1> * distGrid);
+   
+   DistributedGrid <ThisType,1> * GetDistGrid(void) const;
 
    /****
     *  Method for saving the object to a file as a binary data
@@ -159,6 +164,8 @@ class Grid< 1, Real, Device, Index > : public Object
    VertexType spaceSteps;
  
    RealType spaceStepsProducts[ 5 ];
+   
+   DistributedGrid <ThisType,1> *distGrid;
 };
 
 } // namespace Meshes

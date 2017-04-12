@@ -28,7 +28,8 @@ template< typename Real,
           typename Index >
 Grid< 1, Real, Device, Index >::Grid()
 : numberOfCells( 0 ),
-  numberOfVertices( 0 )
+  numberOfVertices( 0 ),
+        distGrid(nullptr)
 {
 }
 
@@ -339,6 +340,22 @@ Grid< 1, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
    return ::pow( lpNorm, 1.0 / p );
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 1, Real, Device, Index >:: SetDistGrid(DistributedGrid <ThisType,1> * distGrid)
+{
+    this->distGrid=distGrid;
+}
+   
+template< typename Real,
+          typename Device,
+          typename Index >
+DistributedGrid <Grid< 1, Real, Device, Index >,1> * Grid< 1, Real, Device, Index >:: GetDistGrid(void) const
+{
+    return this->distGrid;
+}
+    
 template< typename Real,
           typename Device,
           typename Index >

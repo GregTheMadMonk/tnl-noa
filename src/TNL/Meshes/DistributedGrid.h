@@ -99,15 +99,19 @@ class DistributedGrid <GridType,1>
            else
            {
                //With MPI
-                  
-               //compute local mesh size
                
+               //nearnodes
+               if(rank!=0)
+                   left=rank-1;
+               if(rank!=nproc-1)
+                   right=rank+1;
+                  
+               //compute local mesh size               
                numberoflarger=GlobalGrid.getDimensions().x()%nproc;
                  
-               localsize.x()=(GlobalGrid.getDimensions().x()/nproc);
-               
+               localsize.x()=(GlobalGrid.getDimensions().x()/nproc);               
                if(numberoflarger>rank)
-                    localsize.x()+=1;   
+                    localsize.x()+=1;                      
                                   
                if(numberoflarger>rank)
                    localorigin.x()=GlobalGrid.getOrigin().x()
@@ -116,15 +120,17 @@ class DistributedGrid <GridType,1>
                    localorigin.x()=GlobalGrid.getOrigin().x()
                                 +(numberoflarger*(localsize.x()+1)+(rank-numberoflarger)*localsize.x()-overlap.x())
                                 *GlobalGrid.getSpaceSteps().x();
-                              
-               localsize.x()+=2*overlap.x();
                
-               //nearnodes
-               if(rank!=0)
-                   left=rank-1;
-               if(rank!=nproc-1)
-                   right=rank+1;
+               //vlevo neni prekryv
+               if(left==-1)
+                   localorigin.x()+=overlap.x()*GlobalGrid.getSpaceSteps().x();
                
+               //add overlaps
+               if(left==-1||right==-1)
+                   localsize.x()+=overlap.x();
+               else
+                   localsize.x()+=2*overlap.x();
+                         
            }
                      
            
@@ -137,6 +143,7 @@ class DistributedGrid <GridType,1>
            grid.setDimensions(localsize);
            //compute local proporions by sideefect
            grid.setSpaceSteps(GlobalGrid.getSpaceSteps());
+           grid.SetDistGrid(this);
        };
        
        void printcoords(void)
@@ -276,10 +283,7 @@ class DistributedGrid <GridType,2>
                    localorigin.y()=GlobalGrid.getOrigin().y()
                                 +(numberoflarger[1]*(localsize.y()+1)+(myproccoord[1]-numberoflarger[1])*localsize.y()-overlap.y())
                                 *GlobalGrid.getSpaceSteps().y();
-               
-               localsize.x()+=2*overlap.x();
-               localsize.y()+=2*overlap.y();
-               
+                             
                //nearnodes
                if(myproccoord[0]>0)
                    neighbors[Left]=getRangOfProcCoord(myproccoord[0]-1,myproccoord[1]);
@@ -297,6 +301,23 @@ class DistributedGrid <GridType,2>
                    neighbors[UpRight]=getRangOfProcCoord(myproccoord[0]+1,myproccoord[1]-1);
                if(myproccoord[0]<procsdistr[0]-1 && myproccoord[1]<procsdistr[1]-1)
                    neighbors[DownRight]=getRangOfProcCoord(myproccoord[0]+1,myproccoord[1]+1);
+               
+               
+               if(neighbors[Left]==-1)
+                   localorigin.x()+=overlap.x()*GlobalGrid.getSpaceSteps().x();
+               if(neighbors[Up]==-1)
+                   localorigin.y()+=overlap.y()*GlobalGrid.getSpaceSteps().y();
+               
+               //Tady je BUG pro distribuci v jednom řádku, jednom sloupci
+               if(neighbors[Left]==-1||neighbors[Right]==-1)
+                    localsize.x()+=overlap.x();
+               else
+                    localsize.x()+=2*overlap.x();
+               
+               if(neighbors[Up]==-1||neighbors[Down]==-1)
+                    localsize.y()+=overlap.y();
+               else
+                    localsize.y()+=2*overlap.y();
            }
                      
            
@@ -309,6 +330,7 @@ class DistributedGrid <GridType,2>
            grid.setDimensions(localsize);
            //compute local proporions by sideefect
            grid.setSpaceSteps(GlobalGrid.getSpaceSteps());
+           grid.SetDistGrid(this);
        };
        
        void printcoords(void)

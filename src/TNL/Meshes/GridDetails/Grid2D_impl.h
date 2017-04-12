@@ -422,6 +422,22 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
+void Grid< 2, Real, Device, Index >:: SetDistGrid(DistributedGrid <ThisType,2> * distGrid)
+{
+    this->distGrid=distGrid;
+}
+   
+template< typename Real,
+          typename Device,
+          typename Index >
+DistributedGrid <Grid< 2, Real, Device, Index >,2> * Grid< 2, Real, Device, Index >:: GetDistGrid(void) const
+{
+    return this->distGrid;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 bool Grid< 2, Real, Device, Index > :: save( File& file ) const
 {
    if( ! Object::save( file ) )

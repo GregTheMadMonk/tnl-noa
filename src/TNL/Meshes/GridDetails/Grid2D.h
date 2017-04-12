@@ -129,6 +129,10 @@ class Grid< 2, Real, Device, Index > : public Object
    typename GridFunction::RealType getDifferenceLpNorm( const GridFunction& f1,
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const;
+   
+   void SetDistGrid(DistributedGrid <ThisType,2> * distGrid);
+   
+   DistributedGrid <ThisType,2> * GetDistGrid(void) const;
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -169,6 +173,8 @@ class Grid< 2, Real, Device, Index > : public Object
    VertexType spaceSteps;
  
    RealType spaceStepsProducts[ 5 ][ 5 ];
+   
+   DistributedGrid <ThisType,2> *distGrid;
  
    template< typename, typename, int >
    friend class GridEntityGetter;

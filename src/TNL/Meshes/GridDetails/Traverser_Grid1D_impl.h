@@ -11,6 +11,8 @@
 #pragma once
 
 #include <TNL/Meshes/GridDetails/GridTraverser.h>
+#include <TNL/Meshes/DistributedGrid.h>
+
 
 namespace TNL {
 namespace Meshes {
@@ -33,12 +35,38 @@ processBoundaryEntities( const GridPointer& gridPointer,
     * Boundary cells
     */
    static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
-
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true >(
-      gridPointer,
-      CoordinatesType( 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 1 ),
-      userDataPointer );
+   
+   auto distributedgrid=gridPointer->GetDistGrid();
+   if(distributedgrid==nullptr||!distributedgrid->isMPIUsed())
+   {
+        GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true >(
+           gridPointer,
+           CoordinatesType( 0 ),
+           gridPointer->getDimensions() - CoordinatesType( 1 ),
+           userDataPointer );
+   }
+   else
+   {
+       //MPI
+       if(distributedgrid->getLeft()==-1)
+       {
+          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+              gridPointer,
+              CoordinatesType( 0 ),
+              CoordinatesType( 0 ),
+              userDataPointer );
+       }
+       
+       if(distributedgrid->getRight()==-1)
+       {
+          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+              gridPointer,
+              gridPointer->getDimensions() - CoordinatesType( 1 ),
+              gridPointer->getDimensions() - CoordinatesType( 1 ),
+              userDataPointer );
+       }
+   }
+   
 }
 
 template< typename Real,
@@ -57,11 +85,37 @@ processInteriorEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
 
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-      gridPointer,
-      CoordinatesType( 1 ),
-      gridPointer->getDimensions() - CoordinatesType( 2 ),
-      userDataPointer );
+   auto distributedgrid=gridPointer->GetDistGrid();
+   if(distributedgrid==nullptr||!distributedgrid->isMPIUsed())
+   {
+        GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+           gridPointer,
+           CoordinatesType( 1 ),
+           gridPointer->getDimensions() - CoordinatesType( 2 ),
+           userDataPointer );   
+   }
+   else
+   {
+       //MPI
+       CoordinatesType begin( distributedgrid->getOverlap().x() );
+       CoordinatesType end( gridPointer->getDimensions() - distributedgrid->getOverlap().x()-1 );
+       if(distributedgrid->getLeft()==-1)
+       {
+           begin=CoordinatesType( 1 );
+       }
+       
+       if(distributedgrid->getRight()==-1)
+       {
+           begin=gridPointer->getDimensions() - CoordinatesType( 2 );
+       }
+       
+       GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+          gridPointer,
+          begin,
+          end,
+          userDataPointer );
+   }
+   
 }
 
 template< typename Real,
@@ -80,12 +134,37 @@ processAllEntities(
     * All cells
     */
    static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
-
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-      gridPointer,
-      CoordinatesType( 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 1 ),
-      userDataPointer );
+   
+   auto distributedgrid=gridPointer->GetDistGrid();
+   if(distributedgrid==nullptr||!distributedgrid->isMPIUsed())
+   {
+        GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+           gridPointer,
+           CoordinatesType( 0 ),
+           gridPointer->getDimensions() - CoordinatesType( 1 ),
+           userDataPointer );  
+   }
+   else
+   {
+       //MPI
+       CoordinatesType begin( distributedgrid->getOverlap().x() );
+       CoordinatesType end( gridPointer->getDimensions() - distributedgrid->getOverlap().x()-1 );
+       if(distributedgrid->getLeft()==-1)
+       {
+           begin=CoordinatesType( 0 );
+       }
+       
+       if(distributedgrid->getRight()==-1)
+       {
+           end=gridPointer->getDimensions() - CoordinatesType( 1 );
+       }
+       
+       GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+          gridPointer,
+          begin,
+          end,
+          userDataPointer );
+   }
 }
 
 /****
