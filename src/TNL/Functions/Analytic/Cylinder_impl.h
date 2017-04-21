@@ -17,9 +17,9 @@ namespace Functions {
 namespace Analytic {   
 
 template< typename Real,
-          int Dimensions >
+          int Dimension >
 bool
-CylinderBase< Real, Dimensions >::
+CylinderBase< Real, Dimension >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -28,17 +28,17 @@ setup( const Config::ParameterContainer& parameters,
 }
 
 template< typename Real,
-          int Dimensions >
+          int Dimension >
 void
-CylinderBase< Real, Dimensions >::
+CylinderBase< Real, Dimension >::
 setDiameter( const Real& sigma )
 {
    this->diameter = diameter;
 }
 
 template< typename Real,
-          int Dimensions >
-const Real& CylinderBase< Real, Dimensions >::getDiameter() const
+          int Dimension >
+const Real& CylinderBase< Real, Dimension >::getDiameter() const
 {
    return this->diameter;
 }

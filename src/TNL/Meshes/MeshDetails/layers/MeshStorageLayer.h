@@ -19,35 +19,35 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
-          typename DimensionsTag,
-          bool EntityStorage = MeshEntityTraits< MeshConfig, DimensionsTag::value >::storageEnabled >
+          typename DimensionTag,
+          bool EntityStorage = MeshEntityTraits< MeshConfig, DimensionTag::value >::storageEnabled >
 class MeshStorageLayer;
 
 
 template< typename MeshConfig >
 class MeshStorageLayers
-   : public MeshStorageLayer< MeshConfig, typename MeshTraits< MeshConfig >::DimensionsTag >
+   : public MeshStorageLayer< MeshConfig, typename MeshTraits< MeshConfig >::DimensionTag >
 {
 };
 
 
 template< typename MeshConfig,
-          typename DimensionsTag >
+          typename DimensionTag >
 class MeshStorageLayer< MeshConfig,
-                           DimensionsTag,
+                           DimensionTag,
                            true >
-   : public MeshStorageLayer< MeshConfig, typename DimensionsTag::Decrement >,
+   : public MeshStorageLayer< MeshConfig, typename DimensionTag::Decrement >,
      public MeshSuperentityStorageLayers< MeshConfig,
-                                             typename MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::EntityTopology >
+                                             typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::EntityTopology >
 {
    public:
 
-      static const int Dimensions = DimensionsTag::value;
-      typedef MeshStorageLayer< MeshConfig, typename DimensionsTag::Decrement >   BaseType;
+      static const int Dimension = DimensionTag::value;
+      typedef MeshStorageLayer< MeshConfig, typename DimensionTag::Decrement >   BaseType;
       typedef MeshSuperentityStorageLayers< MeshConfig,
-                                               typename MeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::EntityTopology > SuperentityStorageBaseType;
+                                               typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::EntityTopology > SuperentityStorageBaseType;
       typedef MeshTraits< MeshConfig >                                             MeshTraitsType;
-      typedef typename MeshTraitsType::template EntityTraits< Dimensions >         EntityTraitsType;
+      typedef typename MeshTraitsType::template EntityTraits< Dimension >         EntityTraitsType;
 
       typedef typename EntityTraitsType::StorageArrayType                          StorageArrayType;
       typedef typename EntityTraitsType::AccessArrayType                           AccessArrayType;
@@ -64,29 +64,29 @@ class MeshStorageLayer< MeshConfig,
       {
       }
 
-      GlobalIndexType getNumberOfEntities( DimensionsTag ) const
+      GlobalIndexType getNumberOfEntities( DimensionTag ) const
       {
          return this->entities.getSize();
       }
 
-      EntityType& getEntity( DimensionsTag,
+      EntityType& getEntity( DimensionTag,
                              const GlobalIndexType entityIndex )
       {
          return this->entities[ entityIndex ];
       }
 
-      const EntityType& getEntity( DimensionsTag,
+      const EntityType& getEntity( DimensionTag,
                                    const GlobalIndexType entityIndex ) const
       {
          return this->entities[ entityIndex ];
       }
 
-      AccessArrayType& getEntities( DimensionsTag )
+      AccessArrayType& getEntities( DimensionTag )
       {
          return this->sharedEntities;
       }
 
-      const AccessArrayType& getEntities( DimensionsTag ) const
+      const AccessArrayType& getEntities( DimensionTag ) const
       {
          return this->sharedEntities;
       }
@@ -96,7 +96,7 @@ class MeshStorageLayer< MeshConfig,
          if( ! BaseType::save( file ) ||
              ! this->entities.save( file ) )
          {
-            std::cerr << "Saving of the mesh entities with " << DimensionsTag::value << " dimensions failed." << std::endl;
+            std::cerr << "Saving of the mesh entities with " << DimensionTag::value << " dimensions failed." << std::endl;
             return false;
          }
          return true;
@@ -104,11 +104,11 @@ class MeshStorageLayer< MeshConfig,
 
       bool load( File& file )
       {
-         //cout << "Loading mesh layer with dimensions " << DimensionsTag::value << std::endl;
+         //cout << "Loading mesh layer with dimensions " << DimensionTag::value << std::endl;
          if( ! BaseType::load( file ) ||
              ! this->entities.load( file ) )
          {
-            std::cerr << "Loading of the mesh entities with " << DimensionsTag::value << " dimensions failed." << std::endl;
+            std::cerr << "Loading of the mesh entities with " << DimensionTag::value << " dimensions failed." << std::endl;
             return false;
          }
          this->entitiesAccess.bind( this->entities );
@@ -118,7 +118,7 @@ class MeshStorageLayer< MeshConfig,
       void print( std::ostream& str ) const
       {
          BaseType::print( str );
-         str << "The entities with " << DimensionsTag::value << " dimensions are: " << std::endl;
+         str << "The entities with " << DimensionTag::value << " dimensions are: " << std::endl;
          for( GlobalIndexType i = 0; i < entities.getSize();i ++ )
          {
             str << i << " ";
@@ -144,44 +144,44 @@ class MeshStorageLayer< MeshConfig,
 
       using BaseType::entitiesArray;
  
-      typename EntityTraitsType::StorageArrayType& entitiesArray( DimensionsTag )
+      typename EntityTraitsType::StorageArrayType& entitiesArray( DimensionTag )
       {
          return entities;
       }
  
       using BaseType::superentityIdsArray;
 	
-      template< typename SuperDimensionsTag >
-      typename MeshTraitsType::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
+      template< typename SuperDimensionTag >
+      typename MeshTraitsType::GlobalIdArrayType& superentityIdsArray( DimensionTag )
       {
-         return SuperentityStorageBaseType::superentityIdsArray( SuperDimensionsTag() );
+         return SuperentityStorageBaseType::superentityIdsArray( SuperDimensionTag() );
       }
  
       using BaseType::getSuperentityStorageNetwork;
       template< typename SuperdimensionsTag >
       typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
-      getSuperentityStorageNetwork( MeshDimensionsTag< EntityTopology::dimensions > )
+      getSuperentityStorageNetwork( MeshDimensionTag< EntityTopology::dimensions > )
       {
          return SuperentityStorageBaseType::getStorageNetwork( SuperdimensionsTag() );
       }
 };
 
 template< typename MeshConfig,
-          typename DimensionsTag >
-class MeshStorageLayer< MeshConfig, DimensionsTag, false >
-   : public MeshStorageLayer< MeshConfig, typename DimensionsTag::Decrement  >
+          typename DimensionTag >
+class MeshStorageLayer< MeshConfig, DimensionTag, false >
+   : public MeshStorageLayer< MeshConfig, typename DimensionTag::Decrement  >
 {
 };
 
 template< typename MeshConfig >
-class MeshStorageLayer< MeshConfig, MeshDimensionsTag< 0 >, true > :
+class MeshStorageLayer< MeshConfig, MeshDimensionTag< 0 >, true > :
    public MeshSuperentityStorageLayers< MeshConfig,
                                            MeshVertexTopology >
 
 {
    public:
 
-   typedef MeshDimensionsTag< 0 >                        DimensionsTag;
+   typedef MeshDimensionTag< 0 >                        DimensionTag;
  
    typedef MeshSuperentityStorageLayers< MeshConfig,
                                             MeshVertexTopology >     SuperentityStorageBaseType;
@@ -233,29 +233,29 @@ class MeshStorageLayer< MeshConfig, MeshDimensionsTag< 0 >, true > :
     * with higher dimensions entities storage layers.
     */
 
-   GlobalIndexType getNumberOfEntities( DimensionsTag ) const
+   GlobalIndexType getNumberOfEntities( DimensionTag ) const
    {
       return this->vertices.getSize();
    }
 
-   VertexType& getEntity( DimensionsTag,
+   VertexType& getEntity( DimensionTag,
                           const GlobalIndexType entityIndex )
    {
       return this->vertices[ entityIndex ];
    }
 
-   const VertexType& getEntity( DimensionsTag,
+   const VertexType& getEntity( DimensionTag,
                                 const GlobalIndexType entityIndex ) const
    {
       return this->vertices.getElement( entityIndex );
    }
 
-   AccessArrayType& getEntities( DimensionsTag )
+   AccessArrayType& getEntities( DimensionTag )
    {
       return this->sharedVertices;
    }
 
-   const AccessArrayType& getEntities( DimensionsTag ) const
+   const AccessArrayType& getEntities( DimensionTag ) const
    {
       return this->sharedVertices;
    }
@@ -264,7 +264,7 @@ class MeshStorageLayer< MeshConfig, MeshDimensionsTag< 0 >, true > :
    {
       if( ! this->vertices.save( file ) )
       {
-         std::cerr << "Saving of the mesh entities with " << DimensionsTag::value << " dimensions failed." << std::endl;
+         std::cerr << "Saving of the mesh entities with " << DimensionTag::value << " dimensions failed." << std::endl;
          return false;
       }
       return true;
@@ -274,7 +274,7 @@ class MeshStorageLayer< MeshConfig, MeshDimensionsTag< 0 >, true > :
    {
       if( ! this->vertices.load( file ) )
       {
-         std::cerr << "Loading of the mesh entities with " << DimensionsTag::value << " dimensions failed." << std::endl;
+         std::cerr << "Loading of the mesh entities with " << DimensionTag::value << " dimensions failed." << std::endl;
          return false;
       }
       this->verticesAccess.bind( this->vertices );
@@ -305,20 +305,20 @@ class MeshStorageLayer< MeshConfig, MeshDimensionsTag< 0 >, true > :
    // TODO: this is only for the mesh initializer - fix it
    public:
  
-      typename EntityTraitsType::StorageArrayType& entitiesArray( DimensionsTag )
+      typename EntityTraitsType::StorageArrayType& entitiesArray( DimensionTag )
       {
          return vertices;
       }
 
  
-      template< typename SuperDimensionsTag >
-      typename MeshTraitsType::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
+      template< typename SuperDimensionTag >
+      typename MeshTraitsType::GlobalIdArrayType& superentityIdsArray( DimensionTag )
       {
-         return SuperentityStorageBaseType::superentityIdsArray( SuperDimensionsTag() );
+         return SuperentityStorageBaseType::superentityIdsArray( SuperDimensionTag() );
       }
 
       template< typename SuperdimensionsTag >
-      typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType& getSuperentityStorageNetwork( MeshDimensionsTag< EntityTopology::dimensions > )
+      typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType& getSuperentityStorageNetwork( MeshDimensionTag< EntityTopology::dimensions > )
       {
          return SuperentityStorageBaseType::getStorageNetwork( SuperdimensionsTag() );
       }
@@ -329,7 +329,7 @@ class MeshStorageLayer< MeshConfig, MeshDimensionsTag< 0 >, true > :
  * Forces termination of recursive inheritance (prevents compiler from generating huge error logs)
  */
 template< typename MeshConfig >
-class MeshStorageLayer< MeshConfig, MeshDimensionsTag< 0 >, false >
+class MeshStorageLayer< MeshConfig, MeshDimensionTag< 0 >, false >
 {
 };
 

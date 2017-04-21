@@ -27,7 +27,7 @@ class LaxFridrichsEnergy< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, I
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
+      enum { Dimension = MeshType::getDimension() };
 
       static String getType();
       Real tau;
@@ -87,7 +87,7 @@ class LaxFridrichsEnergy< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, I
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
+      enum { Dimension = MeshType::getDimension() };
 
       static String getType();
       Real tau;
@@ -147,7 +147,7 @@ class LaxFridrichsEnergy< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, I
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
+      enum { Dimension = MeshType::getDimension() };
 
       static String getType();
       Real tau;

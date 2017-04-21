@@ -46,9 +46,9 @@ class LinearDiffusion< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Inde
       typedef Index IndexType;
       typedef ExactLinearDiffusion< 1 > ExactOperatorType;
  
-      static const int Dimensions = MeshType::meshDimensions;
+      static const int Dimension = MeshType::meshDimension;
  
-      static constexpr int getMeshDimensions() { return Dimensions; }
+      static constexpr int getDimension() { return Dimension; }
  
       static String getType();
 
@@ -97,9 +97,9 @@ class LinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Ind
       typedef Index IndexType;
       typedef ExactLinearDiffusion< 2 > ExactOperatorType;
  
-      static const int Dimensions = MeshType::meshDimensions;
+      static const int Dimension = MeshType::meshDimension;
  
-      static constexpr int getMeshDimensions() { return Dimensions; }
+      static constexpr int getDimension() { return Dimension; }
 
       static String getType();
 
@@ -147,9 +147,9 @@ class LinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Ind
       typedef Index IndexType;
       typedef ExactLinearDiffusion< 3 > ExactOperatorType;
 
-      static const int Dimensions = MeshType::meshDimensions;
+      static const int Dimension = MeshType::meshDimension;
  
-      static constexpr int getMeshDimensions() { return Dimensions; }
+      static constexpr int getDimension() { return Dimension; }
 
       static String getType();
 

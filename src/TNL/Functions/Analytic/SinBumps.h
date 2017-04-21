@@ -25,7 +25,7 @@ class SinBumpsBase : public Domain< Vertex::size, SpaceDomain >
  
       typedef Vertex VertexType;
       typedef typename Vertex::RealType RealType;
-      enum { Dimensions = VertexType::size };
+      enum { Dimension = VertexType::size };
 
       void setWaveLength( const VertexType& waveLength );
 
@@ -46,7 +46,7 @@ class SinBumpsBase : public Domain< Vertex::size, SpaceDomain >
       VertexType waveLength, phase;
 };
 
-template< int Dimensions, typename Real >
+template< int Dimension, typename Real >
 class SinBumps
 {
 };
@@ -149,9 +149,9 @@ class SinBumps< 3, Real > : public SinBumpsBase< Containers::StaticVector< 3, Re
  
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const SinBumps< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const SinBumps< Dimension, Real >& f )
 {
    str << "Sin Bumps. function: amplitude = " << f.getAmplitude()
        << " wavelength = " << f.getWaveLength()

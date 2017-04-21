@@ -11,29 +11,29 @@
 #pragma once
 
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
-#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/MeshDimensionTag.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename MeshType,
-          typename DimensionsTag,
+          typename DimensionTag,
           bool EntityStorageTag = MeshEntityTraits< typename MeshType::Config,
-                                                       DimensionsTag::value >::storageEnabled >
+                                                       DimensionTag::value >::storageEnabled >
 class MeshIntegrityCheckerLayer;
 
 template< typename MeshType,
-          typename DimensionsTag >
+          typename DimensionTag >
 class MeshIntegrityCheckerLayer< MeshType,
-                                    DimensionsTag,
+                                    DimensionTag,
                                     true >
    : public MeshIntegrityCheckerLayer< MeshType,
-                                          typename DimensionsTag::Decrement >
+                                          typename DimensionTag::Decrement >
 {
    public:
       typedef MeshIntegrityCheckerLayer< MeshType,
-                                            typename DimensionsTag::Decrement >     BaseType;
-      enum { dimensions = DimensionsTag::value };
+                                            typename DimensionTag::Decrement >     BaseType;
+      enum { dimensions = DimensionTag::value };
 
       static bool checkEntities( const MeshType& mesh )
       {
@@ -55,7 +55,7 @@ class MeshIntegrityCheckerLayer< MeshType,
 
 template< typename MeshType >
 class MeshIntegrityCheckerLayer< MeshType,
-                                    MeshDimensionsTag< 0 >,
+                                    MeshDimensionTag< 0 >,
                                     true >
 {
    public:
@@ -79,19 +79,19 @@ class MeshIntegrityCheckerLayer< MeshType,
 };
 
 template< typename MeshType,
-          typename DimensionsTag >
+          typename DimensionTag >
 class MeshIntegrityCheckerLayer< MeshType,
-                                    DimensionsTag,
+                                    DimensionTag,
                                     false >
    : public MeshIntegrityCheckerLayer< MeshType,
-                                          typename DimensionsTag::Decrement >
+                                          typename DimensionTag::Decrement >
 {
 
 };
 
 template< typename MeshType >
 class MeshIntegrityCheckerLayer< MeshType,
-                                    MeshDimensionsTag< 0 >,
+                                    MeshDimensionTag< 0 >,
                                     false >
 {
 

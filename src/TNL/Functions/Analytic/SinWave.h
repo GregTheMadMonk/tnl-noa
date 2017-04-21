@@ -46,7 +46,7 @@ class SinWaveBase : public Domain< dimensions, SpaceDomain >
    Real waveLength, amplitude, phase, wavesNumber;
 };
 
-template< int Dimensions, typename Real >
+template< int Dimension, typename Real >
 class SinWave
 {
 };
@@ -134,9 +134,9 @@ class SinWave< 3, Real > : public SinWaveBase< 3, Real >
  
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const SinWave< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const SinWave< Dimension, Real >& f )
 {
    str << "Sin Wave. function: amplitude = " << f.getAmplitude()
        << " wavelength = " << f.getWaveLength()

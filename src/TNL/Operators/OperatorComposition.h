@@ -32,8 +32,8 @@ template< typename OuterOperator,
 class OperatorComposition
    : public Operator< typename InnerOperator::MeshType,
                          InnerOperator::getDomainType(),
-                         InnerOperator::getPreimageEntitiesDimensions(),
-                         OuterOperator::getImageEntitiesDimensions(),
+                         InnerOperator::getPreimageEntitiesDimension(),
+                         OuterOperator::getImageEntitiesDimension(),
                          typename InnerOperator::RealType,
                          typename OuterOperator::IndexType >
 {
@@ -42,8 +42,8 @@ class OperatorComposition
    public:
  
       typedef typename InnerOperator::MeshType MeshType;
-      typedef Functions::MeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimensions() > PreimageFunctionType;
-      typedef Functions::MeshFunction< MeshType, InnerOperator::getImageEntitiesDimensions() > ImageFunctionType;
+      typedef Functions::MeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimension() > PreimageFunctionType;
+      typedef Functions::MeshFunction< MeshType, InnerOperator::getImageEntitiesDimension() > ImageFunctionType;
       typedef Functions::OperatorFunction< InnerOperator, PreimageFunctionType, InnerBoundaryConditions > InnerOperatorFunction;
       typedef Functions::OperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
       typedef typename InnerOperator::RealType RealType;
@@ -52,8 +52,8 @@ class OperatorComposition
                                            typename InnerOperator::ExactOperatorType > ExactOperatorType;
       typedef SharedPointer< MeshType > MeshPointer;
       
-      static constexpr int getPreimageEntitiesDimensions() { return InnerOperator::getImageEntitiesDimensions(); };
-      static constexpr int getImageEntitiesDimensions() { return OuterOperator::getImageEntitiesDimensions(); };
+      static constexpr int getPreimageEntitiesDimension() { return InnerOperator::getImageEntitiesDimension(); };
+      static constexpr int getImageEntitiesDimension() { return OuterOperator::getImageEntitiesDimension(); };
  
       OperatorComposition( OuterOperator& outerOperator,
                               InnerOperator& innerOperator,
@@ -102,7 +102,7 @@ class OperatorComposition
          const MeshEntity& meshEntity,
          const RealType& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getDimensions() == InnerOperator::getDimensions(),
+         static_assert( MeshFunction::getDimension() == InnerOperator::getDimension(),
             "Mesh function and operator have both different number of dimensions." );
          //InnerOperatorFunction innerOperatorFunction( innerOperator, function );
          return outerOperator( innerOperatorFunction, meshEntity, time );
@@ -118,15 +118,15 @@ class OperatorComposition
 template< typename OuterOperator,
           typename InnerOperator >
 class OperatorComposition< OuterOperator, InnerOperator, void >
-   : public Functions::Domain< InnerOperator::getDimensions(), InnerOperator::getDomainType() >
+   : public Functions::Domain< InnerOperator::getDimension(), InnerOperator::getDomainType() >
 {
       static_assert( std::is_same< typename OuterOperator::MeshType, typename InnerOperator::MeshType >::value,
          "Both operators have different mesh types." );
    public:
  
       typedef typename InnerOperator::MeshType MeshType;
-      typedef Functions::MeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimensions() > PreimageFunctionType;
-      typedef Functions::MeshFunction< MeshType, InnerOperator::getImageEntitiesDimensions() > ImageFunctionType;
+      typedef Functions::MeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimension() > PreimageFunctionType;
+      typedef Functions::MeshFunction< MeshType, InnerOperator::getImageEntitiesDimension() > ImageFunctionType;
       typedef Functions::OperatorFunction< InnerOperator, PreimageFunctionType, void > InnerOperatorFunction;
       typedef Functions::OperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
       typedef typename InnerOperator::RealType RealType;
@@ -157,7 +157,7 @@ class OperatorComposition< OuterOperator, InnerOperator, void >
       bool refresh( const RealType& time = 0.0 )
       {
          return this->innerOperatorFunction.refresh( time );
-         /*MeshFunction< MeshType, MeshType::getMeshDimensions() - 1 > f( this->innerOperatorFunction.getMesh() );
+         /*MeshFunction< MeshType, MeshType::getDimension() - 1 > f( this->innerOperatorFunction.getMesh() );
          f = this->innerOperatorFunction;
          this->innerOperatorFunction.getPreimageFunction().write( "preimageFunction", "gnuplot" );
          f.write( "innerFunction", "gnuplot" );
@@ -178,7 +178,7 @@ class OperatorComposition< OuterOperator, InnerOperator, void >
          const MeshEntity& meshEntity,
          const RealType& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getDimensions() == InnerOperator::getDimensions(),
+         static_assert( MeshFunction::getDimension() == InnerOperator::getDimension(),
             "Mesh function and operator have both different number of dimensions." );
          //InnerOperatorFunction innerOperatorFunction( innerOperator, function );
          return outerOperator( innerOperatorFunction, meshEntity, time );

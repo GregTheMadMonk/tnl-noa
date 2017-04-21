@@ -21,8 +21,8 @@ template< typename OperatorT >
 class FunctionInverseOperator
 : public Operator< typename OperatorT::MeshType,
                       OperatorT::getDomainType(),
-                      OperatorT::getPreimageEntitiesDimensions(),
-                      OperatorT::getImageEntitiesDimensions(),
+                      OperatorT::getPreimageEntitiesDimension(),
+                      OperatorT::getImageEntitiesDimension(),
                       typename OperatorT::RealType,
                       typename OperatorT::IndexType >
 {

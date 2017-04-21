@@ -15,7 +15,7 @@ namespace Meshes {
 
 
 template< typename Grid,
-          int EntityDimensions,
+          int EntityDimension,
           typename EntityOrientation_,
           typename EntityProportions_ >
 class GridEntityTopology
@@ -25,17 +25,17 @@ class GridEntityTopology
       typedef Grid GridType;
  
       // TODO: restore when CUDA allows it
-      //static const int meshDimensions = GridType::Dimensions;
-      enum { meshDimensions = GridType::Dimensions };
+      //static const int meshDimension = GridType::Dimension;
+      enum { meshDimension = GridType::Dimension };
  
-      static const int entityDimensions = EntityDimensions;
+      static const int entityDimension = EntityDimension;
  
       typedef EntityOrientation_ EntityOrientation;
  
       typedef EntityProportions_ EntityProportions;
  
       // TODO: restore when CUDA allows it
-   //static_assert( meshDimensions == EntityOrientation_::size,
+   //static_assert( meshDimension == EntityOrientation_::size,
    //               "Entity orientation is not a proper static multiindex." );
 };
 

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/MeshDimensionTag.h>
 
 namespace TNL {
 namespace Meshes {
@@ -21,7 +21,7 @@ class MeshEntitySeed;
 
 template< typename MeshConfig,
           typename EntityTopology,
-          int Dimensions >
+          int Dimension >
 class MeshSubentityTraits;
 
 /****

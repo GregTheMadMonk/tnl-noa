@@ -13,19 +13,19 @@
 namespace TNL {
 namespace Operators {   
 
-template< int Dimensions,
+template< int Dimension,
           int XDerivative,
           int YDerivative,
           int ZDerivative >
 class ExactDifference
-   : public Functions::Domain< Dimensions, Functions::SpaceDomain >
+   : public Functions::Domain< Dimension, Functions::SpaceDomain >
 {
    public:
  
       static String getType()
       {
          return String( "ExactDifference< " ) +
-            String( Dimensions ) + ", " +
+            String( Dimension ) + ", " +
             String( XDerivative ) + ", " +
             String( YDerivative ) + ", " +
             String( ZDerivative ) + " >";

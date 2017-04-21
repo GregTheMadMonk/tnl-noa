@@ -68,14 +68,14 @@ class heatEquationSetter
 
    static bool run( const Config::ParameterContainer& parameters )
    {
-      enum { Dimensions = MeshType::meshDimensions };
+      enum { Dimension = MeshType::meshDimension };
       typedef Operators::LinearDiffusion< MeshType, Real, Index > ApproximateOperator;
-      typedef Functions::Analytic::Constant< Dimensions, Real > RightHandSide;
+      typedef Functions::Analytic::Constant< Dimension, Real > RightHandSide;
 
       String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
       if( parameters.checkParameter( "boundary-conditions-constant" ) )
       {
-         typedef Functions::Analytic::Constant< Dimensions, Real > Constant;
+         typedef Functions::Analytic::Constant< Dimension, Real > Constant;
          if( boundaryConditionsType == "dirichlet" )
          {
             typedef Operators::DirichletBoundaryConditions< MeshType, Constant > BoundaryConditions;

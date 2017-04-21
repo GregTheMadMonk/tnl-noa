@@ -38,8 +38,8 @@ operator()( const MeshFunction& u,
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */
-    static_assert( MeshEntity::entityDimensions == 1, "Wrong mesh entity dimensions." ); 
-    static_assert( MeshFunction::getEntitiesDimensions() == 1, "Wrong preimage function" ); 
+    static_assert( MeshEntity::entityDimension == 1, "Wrong mesh entity dimension." ); 
+    static_assert( MeshFunction::getEntitiesDimension() == 1, "Wrong preimage function" ); 
     const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -1 >(); 
    const IndexType& center = entity.getIndex(); 
@@ -68,7 +68,7 @@ getLinearSystemRowLength( const MeshType& mesh,
     * by the Finite difference method.
     */
 
-   return 2*Dimensions + 1;
+   return 2*Dimension + 1;
 }
 
 template< typename MeshReal,
@@ -141,8 +141,8 @@ operator()( const MeshFunction& u,
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */
-    static_assert( MeshEntity::entityDimensions == 2, "Wrong mesh entity dimensions." ); 
-    static_assert( MeshFunction::getEntitiesDimensions() == 2, "Wrong preimage function" ); 
+    static_assert( MeshEntity::entityDimension == 2, "Wrong mesh entity dimension." ); 
+    static_assert( MeshFunction::getEntitiesDimension() == 2, "Wrong preimage function" ); 
     const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
    //velX
    const IndexType& center = entity.getIndex(); 
@@ -169,7 +169,7 @@ getLinearSystemRowLength( const MeshType& mesh,
     * by the Finite difference method.
     */
 
-   return 2*Dimensions + 1;
+   return 2*Dimension + 1;
 }
 
 template< typename MeshReal,
@@ -247,8 +247,8 @@ operator()( const MeshFunction& u,
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */
-    static_assert( MeshEntity::entityDimensions == 3, "Wrong mesh entity dimensions." ); 
-    static_assert( MeshFunction::getEntitiesDimensions() == 3, "Wrong preimage function" ); 
+    static_assert( MeshEntity::entityDimension == 3, "Wrong mesh entity dimension." ); 
+    static_assert( MeshFunction::getEntitiesDimension() == 3, "Wrong preimage function" ); 
     const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
 
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >(); 
@@ -286,7 +286,7 @@ getLinearSystemRowLength( const MeshType& mesh,
     * by the Finite difference method.
     */
 
-   return 2*Dimensions + 1;
+   return 2*Dimension + 1;
 }
 
 template< typename MeshReal,

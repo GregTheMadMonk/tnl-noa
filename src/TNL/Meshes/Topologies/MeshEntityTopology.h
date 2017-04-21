@@ -27,13 +27,13 @@ struct tnlSubentityVertex;
 
 
 template< typename MeshConfig,
-          int Dimensions >
+          int Dimension >
 class MeshEntityTopology
 {
    public:
 
    typedef typename MeshSubtopology< typename MeshConfig::CellTopology,
-                                        Dimensions >::Topology Topology;
+                                        Dimension >::Topology Topology;
 };
 
 template< typename MeshConfig >

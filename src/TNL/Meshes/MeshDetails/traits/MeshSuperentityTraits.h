@@ -25,7 +25,7 @@ namespace Meshes {
 
 template< typename MeshConfig,
           typename EntityTopology,
-          int Dimensions >
+          int Dimension >
 class MeshSuperentityTraits
 {
    public:
@@ -34,10 +34,10 @@ class MeshSuperentityTraits
    typedef typename MeshConfig::LocalIndexType                               LocalIndexType;
 
 
-   static const bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimensions );
+   static const bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimension );
    //typedef tnlStorageTraits< storageEnabled >                               SuperentityStorageTag;
    typedef MeshEntity< MeshConfig, EntityTopology >                            EntityType;
-   typedef MeshEntityTraits< MeshConfig, Dimensions >                     EntityTraits;
+   typedef MeshEntityTraits< MeshConfig, Dimension >                     EntityTraits;
    typedef typename EntityTraits::EntityTopology                             SuperentityTopology;
    typedef typename EntityTraits::EntityType                                 SuperentityType;
 

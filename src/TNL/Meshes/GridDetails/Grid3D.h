@@ -34,18 +34,18 @@ class Grid< 3, Real, Device, Index > : public Object
    typedef Grid< 3, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 3, Real, Device, Index > ThisType;
  
-   static const int meshDimensions = 3;
+   static const int meshDimension = 3;
 
-   template< int EntityDimensions,
+   template< int EntityDimension,
              typename Config = GridEntityCrossStencilStorage< 1 > >
-   using MeshEntity = GridEntity< ThisType, EntityDimensions, Config >;
+   using MeshEntity = GridEntity< ThisType, EntityDimension, Config >;
 
-   typedef MeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
-   typedef MeshEntity< meshDimensions - 1 > Face;
+   typedef MeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
+   typedef MeshEntity< meshDimension - 1 > Face;
    typedef MeshEntity< 1 > Edge;
    typedef MeshEntity< 0 > Vertex;
 
-   static constexpr int getMeshDimensions() { return meshDimensions; };
+   static constexpr int getDimension() { return meshDimension; };
 
    Grid();
 

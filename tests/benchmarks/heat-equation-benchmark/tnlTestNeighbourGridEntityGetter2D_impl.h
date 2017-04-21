@@ -23,7 +23,7 @@
 
 /****
  * +-----------------+---------------------------+-------------------+
- * | EntityDimenions | NeighbourEntityDimensions |  Stencil Storage  |
+ * | EntityDimenions | NeighbourEntityDimension |  Stencil Storage  |
  * +-----------------+---------------------------+-------------------+
  * |       2         |              2            | No specialization |
  * +-----------------+---------------------------+-------------------+
@@ -40,11 +40,11 @@ class tnlTestNeighbourGridEntityGetter<
 {
    public:
       
-      static const int EntityDimensions = 2;
-      static const int NeighbourEntityDimensions = 2;
+      static const int EntityDimension = 2;
+      static const int NeighbourEntityDimension = 2;
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-      typedef GridEntity< GridType, EntityDimensions, Config > GridEntityType;
-      typedef GridEntity< GridType, NeighbourEntityDimensions, Config > NeighbourGridEntityType;
+      typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
+      typedef GridEntity< GridType, NeighbourEntityDimension, Config > NeighbourGridEntityType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
@@ -67,7 +67,7 @@ class tnlTestNeighbourGridEntityGetter<
 
 /****
  * +-----------------+---------------------------+-------------------+
- * | EntityDimenions | NeighbourEntityDimensions |  Stencil Storage  |
+ * | EntityDimenions | NeighbourEntityDimension |  Stencil Storage  |
  * +-----------------+---------------------------+-------------------+
  * |       2         |              2            |       Cross       |
  * +-----------------+---------------------------+-------------------+
@@ -83,11 +83,11 @@ class tnlTestNeighbourGridEntityGetter<
 {
    public:
       
-      static const int EntityDimensions = 2;
-      static const int NeighbourEntityDimensions = 2;
+      static const int EntityDimension = 2;
+      static const int NeighbourEntityDimension = 2;
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-      typedef GridEntity< GridType, EntityDimensions, Config > GridEntityType;
-      typedef GridEntity< GridType, NeighbourEntityDimensions, Config > NeighbourGridEntityType;
+      typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
+      typedef GridEntity< GridType, NeighbourEntityDimension, Config > NeighbourGridEntityType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;

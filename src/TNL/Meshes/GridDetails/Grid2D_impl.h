@@ -39,7 +39,7 @@ template< typename Real,
 String Grid< 2, Real, Device, Index > :: getType()
 {
    return String( "Meshes::Grid< " ) +
-          String( getMeshDimensions() ) + ", " +
+          String( getDimension() ) + ", " +
           String( TNL::getType< RealType >() ) + ", " +
           String( Device :: getDeviceType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";
@@ -205,10 +205,10 @@ Index
 Grid< 2, Real, Device, Index >::
 getEntitiesCount() const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
-   switch( EntityType::entityDimensions )
+   switch( EntityType::entityDimension )
    {
       case 2:
          return this->numberOfCells;
@@ -229,8 +229,8 @@ EntityType
 Grid< 2, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
    return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
@@ -244,8 +244,8 @@ Index
 Grid< 2, Real, Device, Index >::
 getEntityIndex( const EntityType& entity ) const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
    return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
@@ -608,7 +608,7 @@ void
 Grid< 2, Real, Device, Index >::
 writeProlog( Logger& logger )
 {
-   logger.writeParameter( "Dimensions:", getMeshDimensions() );
+   logger.writeParameter( "Dimension:", getDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

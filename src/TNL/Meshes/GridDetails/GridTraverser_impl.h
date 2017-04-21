@@ -312,7 +312,7 @@ GridTraverser2D(
    coordinates.y() = begin.y() + Devices::Cuda::getGlobalThreadIdx_y( gridIdx );
    
    /*if( processOnlyBoundaryEntities && 
-      ( GridEntity::getDimensions() == 2 || GridEntity::getDimensions() == 0 ) )
+      ( GridEntity::getMeshDimension() == 2 || GridEntity::getMeshDimension() == 0 ) )
    {
       if( coordinates.x() == begin.x() || coordinates.x() == end.x() ||
           coordinates.y() == begin.y() || coordinates.y() == end.y() )
@@ -434,7 +434,7 @@ processEntities(
 {
 #ifdef HAVE_CUDA
    if( processOnlyBoundaryEntities && 
-      ( GridEntity::getDimensions() == 2 || GridEntity::getDimensions() == 0 ) )
+      ( GridEntity::getMeshDimension() == 2 || GridEntity::getMeshDimension() == 0 ) )
    {
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocksCountAlongX, cudaGridsCountAlongX,
@@ -828,7 +828,7 @@ processEntities(
 {
 #ifdef HAVE_CUDA   
    if( processOnlyBoundaryEntities && 
-      ( GridEntity::getDimensions() == 3 || GridEntity::getDimensions() == 0 ) )
+      ( GridEntity::getMeshDimension() == 3 || GridEntity::getMeshDimension() == 0 ) )
    {
       dim3 cudaBlockSize( 16, 16 );
       const IndexType entitiesAlongX = end.x() - begin.x() + 1;

@@ -6,7 +6,7 @@ SET( headers Grid.h
              GridEntity.h
              GridEntityConfig.h
              DummyMesh.h
-             MeshDimensionsTag.h             
+             MeshDimensionTag.h             
              Mesh.h
              MeshEntity.h
              Traverser.h

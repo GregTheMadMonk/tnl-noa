@@ -97,20 +97,20 @@ class MatrixSetter
 };
 
 /*
-template< int Dimensions,
+template< int Dimension,
           typename Real,
           typename Device,
           typename Index,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename CompressedRowLengthsVector >
-class MatrixSetter< Meshes::Grid< Dimensions, Real, Device, Index >,
+class MatrixSetter< Meshes::Grid< Dimension, Real, Device, Index >,
                        DifferentialOperator,
                        BoundaryConditions,
                        CompressedRowLengthsVector >
 {
    public:
-   typedef Meshes::Grid< Dimensions, Real, Device, Index > MeshType;
+   typedef Meshes::Grid< Dimension, Real, Device, Index > MeshType;
    typedef typename MeshType::DeviceType DeviceType;
    typedef typename CompressedRowLengthsVector::RealType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;

@@ -10,7 +10,7 @@ template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class EulerVelGetter
-: public Functions::Domain< Mesh::getMeshDimensions(), Functions::MeshDomain >
+: public Functions::Domain< Mesh::getDimension(), Functions::MeshDomain >
 {
    public:
       
@@ -19,7 +19,7 @@ class EulerVelGetter
       typedef Real RealType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
+      enum { Dimension = MeshType::getDimension() };
 
       static String getType();
       

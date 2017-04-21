@@ -20,8 +20,8 @@ namespace Functions {
 namespace Analytic {   
 
 template< typename Real,
-          int Dimensions >
-class FlowerpotBase : public Domain< Dimensions, SpaceDomain >
+          int Dimension >
+class FlowerpotBase : public Domain< Dimension, SpaceDomain >
 {
    public:
 
@@ -39,7 +39,7 @@ class FlowerpotBase : public Domain< Dimensions, SpaceDomain >
       RealType diameter;
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
 class Flowerpot
 {
@@ -50,9 +50,9 @@ class Flowerpot< 1, Real > : public FlowerpotBase< Real, 1 >
 {
    public:
 
-      enum { Dimensions = 1 };
+      enum { Dimension = 1 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > VertexType;
 
       static String getType();
 
@@ -84,9 +84,9 @@ class Flowerpot< 2, Real > : public FlowerpotBase< Real, 2 >
 {
    public:
 
-      enum { Dimensions = 2 };
+      enum { Dimension = 2 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > VertexType;
 
       static String getType();
 
@@ -118,9 +118,9 @@ class Flowerpot< 3, Real > : public FlowerpotBase< Real, 3 >
 {
    public:
 
-      enum { Dimensions = 3 };
+      enum { Dimension = 3 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > VertexType;
 
       static String getType();
 
@@ -147,9 +147,9 @@ class Flowerpot< 3, Real > : public FlowerpotBase< Real, 3 >
  
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const Flowerpot< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const Flowerpot< Dimension, Real >& f )
 {
    str << "Flowerpot function.";
    return str;

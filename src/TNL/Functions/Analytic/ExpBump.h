@@ -44,7 +44,7 @@ class ExpBumpBase : public Domain< dimensions, SpaceDomain >
       RealType amplitude, sigma;
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
 class ExpBump
 {
@@ -142,9 +142,9 @@ class ExpBump< 3, Real > : public ExpBumpBase< 3, Real >
  
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const ExpBump< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const ExpBump< Dimension, Real >& f )
 {
    str << "ExpBump. function: amplitude = " << f.getAmplitude() << " sigma = " << f.getSigma();
    return str;

@@ -18,17 +18,17 @@
 namespace TNL {
 namespace Operators {
 
-template< int Dimensions,
-          typename InnerOperator= ExactIdentityOperator< Dimensions > >
+template< int Dimension,
+          typename InnerOperator= ExactIdentityOperator< Dimension > >
 class ExactFunctionInverseOperator
-   : public Functions::Domain< Dimensions, Functions::SpaceDomain >
+   : public Functions::Domain< Dimension, Functions::SpaceDomain >
 {
    public:
  
       static String getType()
       {
          return String( "ExactFunctionInverseOperator< " ) +
-                String( Dimensions) + " >";
+                String( Dimension) + " >";
       }
  
       InnerOperator& getInnerOperator()

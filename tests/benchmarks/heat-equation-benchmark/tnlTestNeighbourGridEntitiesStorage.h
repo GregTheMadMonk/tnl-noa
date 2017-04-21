@@ -19,18 +19,18 @@
 #pragma once
 
 #include <core/tnlCuda.h>
-#include <mesh/MeshDimensionsTag.h>
+#include <mesh/MeshDimensionTag.h>
 #include "tnlTestNeighbourGridEntityGetter.h"
 
 template< typename GridEntity,
-          int NeighbourEntityDimensions >
+          int NeighbourEntityDimension >
 class tnlTestNeighbourGridEntityLayer 
-: public tnlTestNeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions - 1 >
+: public tnlTestNeighbourGridEntityLayer< GridEntity, NeighbourEntityDimension - 1 >
 {   
    public:
       
-      typedef tnlTestNeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions - 1 > BaseType;
-      typedef tnlTestNeighbourGridEntityGetter< GridEntity, NeighbourEntityDimensions > NeighbourEntityGetterType;
+      typedef tnlTestNeighbourGridEntityLayer< GridEntity, NeighbourEntityDimension - 1 > BaseType;
+      typedef tnlTestNeighbourGridEntityGetter< GridEntity, NeighbourEntityDimension > NeighbourEntityGetterType;
       
       using BaseType::getNeighbourEntities;
       
@@ -80,9 +80,9 @@ class tnlTestNeighbourGridEntityLayer< GridEntity, 0 >
 
 template< typename GridEntity >
 class tnlTestNeighbourGridEntitiesStorage
-: public tnlTestNeighbourGridEntityLayer< GridEntity, GridEntity::meshDimensions >
+: public tnlTestNeighbourGridEntityLayer< GridEntity, GridEntity::meshDimension >
 {
-   typedef tnlTestNeighbourGridEntityLayer< GridEntity, GridEntity::meshDimensions > BaseType;
+   typedef tnlTestNeighbourGridEntityLayer< GridEntity, GridEntity::meshDimension > BaseType;
    
    public:
       

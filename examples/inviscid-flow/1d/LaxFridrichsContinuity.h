@@ -27,7 +27,7 @@ class LaxFridrichsContinuity< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Rea
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
+      enum { Dimension = MeshType::getDimension() };
 
       static String getType();
       Real tau;
@@ -81,7 +81,7 @@ class LaxFridrichsContinuity< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Rea
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
+      enum { Dimension = MeshType::getDimension() };
 
       static String getType();
       Real tau;
@@ -136,7 +136,7 @@ class LaxFridrichsContinuity< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Rea
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
+      enum { Dimension = MeshType::getDimension() };
 
       static String getType();
       Real tau;

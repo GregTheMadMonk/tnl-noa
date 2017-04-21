@@ -70,10 +70,10 @@ class GridEntityCrossStencilStorage
    public:
  
       template< typename GridEntity >
-      constexpr static bool neighbourEntityStorage( const int neighbourEntityDimensions )
+      constexpr static bool neighbourEntityStorage( const int neighbourEntityDimension )
       {
-         return ( GridEntity::entityDimensions == GridEntity::GridType::meshDimensions &&
-                  neighbourEntityDimensions == GridEntity::GridType::meshDimensions )
+         return ( GridEntity::entityDimension == GridEntity::GridType::meshDimension &&
+                  neighbourEntityDimension == GridEntity::GridType::meshDimension )
                // FIXME: how is GridEntityCrossStencil cast to int?
                 * GridEntityCrossStencil;
       }

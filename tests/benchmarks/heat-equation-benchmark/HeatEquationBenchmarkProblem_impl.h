@@ -267,11 +267,11 @@ boundaryConditionsTemplatedCompact( const GridType* grid,
    }
 }
 
-/*template< typename EntityType, int Dimensions >
-struct EntityPointer : public EntityPointer< EntityType, Dimensions - 1 >
+/*template< typename EntityType, int Dimension >
+struct EntityPointer : public EntityPointer< EntityType, Dimension - 1 >
 {
    __device__ EntityPointer( const EntityType* ptr )
-      : EntityPointer< EntityType, Dimensions - 1 >( ptr ), pointer( ptr )
+      : EntityPointer< EntityType, Dimension - 1 >( ptr ), pointer( ptr )
    {      
    }
    

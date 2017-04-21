@@ -65,7 +65,7 @@ bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::ru
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
       return false;
    }
-   return resolveMeshDimensions( parameters, parsedMeshType );
+   return resolveMeshDimension( parameters, parsedMeshType );
 }
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
@@ -75,7 +75,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename ConfigTag >
 bool
 MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
-resolveMeshDimensions( const Config::ParameterContainer& parameters,
+resolveMeshDimension( const Config::ParameterContainer& parameters,
                        const Containers::List< String >& parsedMeshType )
 {
    int dimensions = atoi( parsedMeshType[ 1 ].getString() );
@@ -86,7 +86,7 @@ resolveMeshDimensions( const Config::ParameterContainer& parameters,
       return resolveMeshRealType< 2 >( parameters, parsedMeshType );
    if( dimensions == 3 )
       return resolveMeshRealType< 3 >( parameters, parsedMeshType );
-   std::cerr << "Dimensions higher than 3 are not supported." << std::endl;
+   std::cerr << "Dimension higher than 3 are not supported." << std::endl;
    return false;
 }
 
@@ -95,13 +95,13 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-   template< int MeshDimensions, typename, typename >
+   template< int MeshDimension, typename, typename >
 bool
 MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
 resolveMeshRealType( const Config::ParameterContainer& parameters,
                      const Containers::List< String >& parsedMeshType )
 {
-   std::cerr << "Mesh dimension " << MeshDimensions << " is not supported." << std::endl;
+   std::cerr << "Mesh dimension " << MeshDimension << " is not supported." << std::endl;
    return false;
 }
 
@@ -110,18 +110,18 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-   template< int MeshDimensions, typename >
+   template< int MeshDimension, typename >
 bool
 MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::
 resolveMeshRealType( const Config::ParameterContainer& parameters,
                      const Containers::List< String >& parsedMeshType )
 {
    if( parsedMeshType[ 2 ] == "float" )
-      return resolveMeshIndexType< MeshDimensions, float >( parameters, parsedMeshType );
+      return resolveMeshIndexType< MeshDimension, float >( parameters, parsedMeshType );
    if( parsedMeshType[ 2 ] == "double" )
-      return resolveMeshIndexType< MeshDimensions, double >( parameters, parsedMeshType );
+      return resolveMeshIndexType< MeshDimension, double >( parameters, parsedMeshType );
    if( parsedMeshType[ 2 ] == "long-double" )
-      return resolveMeshIndexType< MeshDimensions, long double >( parameters, parsedMeshType );
+      return resolveMeshIndexType< MeshDimension, long double >( parameters, parsedMeshType );
    std::cerr << "The type '" << parsedMeshType[ 2 ] << "' is not allowed for real type." << std::endl;
    return false;
 }
@@ -131,7 +131,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-   template< int MeshDimensions,
+   template< int MeshDimension,
              typename MeshRealType,
              typename, typename >
 bool
@@ -148,7 +148,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-   template< int MeshDimensions,
+   template< int MeshDimension,
              typename MeshRealType,
              typename >
 bool
@@ -157,11 +157,11 @@ resolveMeshIndexType( const Config::ParameterContainer& parameters,
                       const Containers::List< String >& parsedMeshType )
 {
    if( parsedMeshType[ 4 ] == "short int" )
-      return resolveMeshType< MeshDimensions, MeshRealType, short int >( parameters, parsedMeshType );
+      return resolveMeshType< MeshDimension, MeshRealType, short int >( parameters, parsedMeshType );
    if( parsedMeshType[ 4 ] == "int" )
-      return resolveMeshType< MeshDimensions, MeshRealType, int >( parameters, parsedMeshType );
+      return resolveMeshType< MeshDimension, MeshRealType, int >( parameters, parsedMeshType );
    if( parsedMeshType[ 4 ] == "long int" )
-      return resolveMeshType< MeshDimensions, MeshRealType, long int >( parameters, parsedMeshType );
+      return resolveMeshType< MeshDimension, MeshRealType, long int >( parameters, parsedMeshType );
    std::cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for indexing type." << std::endl;
    return false;
 }
@@ -171,7 +171,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-   template< int MeshDimensions,
+   template< int MeshDimension,
              typename MeshRealType,
              typename MeshIndexType,
              typename, typename >
@@ -189,7 +189,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-   template< int MeshDimensions,
+   template< int MeshDimension,
              typename MeshRealType,
              typename MeshIndexType,
              typename >
@@ -200,7 +200,7 @@ resolveMeshType( const Config::ParameterContainer& parameters,
 {
    if( parsedMeshType[ 0 ] == "Meshes::Grid" )
    {
-      typedef Meshes::Grid< MeshDimensions, MeshRealType, Device, MeshIndexType > MeshType;
+      typedef Meshes::Grid< MeshDimension, MeshRealType, Device, MeshIndexType > MeshType;
       return MeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag >::run( parameters );
    }
    std::cerr << "Unknown mesh type " << parsedMeshType[ 0 ] << "." << std::endl;

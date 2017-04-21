@@ -23,9 +23,9 @@ template<> struct ConfigTagIndex< HeatEquationBenchmarkBuildConfigTag, long int 
 /****
  * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
  */
-template< int Dimensions, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< HeatEquationBenchmarkBuildConfigTag, Meshes::Grid< Dimensions, Real, Device, Index > >
-      { enum { enabled = ( Dimensions == 2 )  &&
+template< int Dimension, typename Real, typename Device, typename Index >
+   struct ConfigTagMesh< HeatEquationBenchmarkBuildConfigTag, Meshes::Grid< Dimension, Real, Device, Index > >
+      { enum { enabled = ( Dimension == 2 )  &&
                          ConfigTagReal< HeatEquationBenchmarkBuildConfigTag, Real >::enabled &&
                          ConfigTagDevice< HeatEquationBenchmarkBuildConfigTag, Device >::enabled &&
                          ConfigTagIndex< HeatEquationBenchmarkBuildConfigTag, Index >::enabled }; };

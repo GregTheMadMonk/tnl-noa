@@ -22,7 +22,7 @@ template< typename Real, typename Device, typename Index >
 String MultiVector< 1, Real, Device, Index > :: getType()
 {
    return String( "Containers::MultiVector< ") +
-          String( Dimensions ) +
+          String( Dimension ) +
           String( ", " ) +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
@@ -66,7 +66,7 @@ bool MultiVector< 1, Real, Device, Index > :: setDimensions( const Index iSize )
 }
 
 template< typename Real, typename Device, typename Index >
-bool MultiVector< 1, Real, Device, Index > :: setDimensions( const StaticVector< Dimensions, Index >& dimensions )
+bool MultiVector< 1, Real, Device, Index > :: setDimensions( const StaticVector< Dimension, Index >& dimensions )
 {
    TNL_ASSERT( dimensions[ 0 ] > 0,
               std::cerr << " dimensions[ 0 ] = " << dimensions[ 0 ] );

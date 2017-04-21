@@ -41,8 +41,8 @@ class OperatorFunctionTest
    typedef typename OperatorType::IndexType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::VertexType VertexType;
-   typedef Functions::Analytic::ExpBump< MeshType::getMeshDimensions(), RealType > TestFunctionType;
-   typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
+   typedef Functions::Analytic::ExpBump< MeshType::getDimension(), RealType > TestFunctionType;
+   typedef Functions::MeshFunction< MeshType, MeshType::getDimension() > MeshFunctionType;
    typedef SharedPointer< MeshType > MeshPointer;
 
    OperatorFunctionTest(){};

@@ -54,7 +54,7 @@ template< typename ConfigTag > struct ConfigTagMeshResolve{ enum { enabled = tru
 /****
  * 1, 2, and 3 dimensions are enabled by default
  */
-template< typename ConfigTag, int Dimensions > struct ConfigTagDimensions{ enum { enabled = ( Dimensions > 0 && Dimensions <= 3 ) }; };
+template< typename ConfigTag, int Dimension > struct ConfigTagDimension{ enum { enabled = ( Dimension > 0 && Dimension <= 3 ) }; };
 
 /****
  * Up to the exceptions enlisted below, all mesh types are disabled by default.
@@ -64,9 +64,9 @@ template< typename ConfigTag, typename MeshType > struct ConfigTagMesh{ enum { e
 /****
  * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
  */
-template< typename ConfigTag, int Dimensions, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< ConfigTag, Meshes::Grid< Dimensions, Real, Device, Index > >
-      { enum { enabled = ConfigTagDimensions< ConfigTag, Dimensions >::enabled  &&
+template< typename ConfigTag, int Dimension, typename Real, typename Device, typename Index >
+   struct ConfigTagMesh< ConfigTag, Meshes::Grid< Dimension, Real, Device, Index > >
+      { enum { enabled = ConfigTagDimension< ConfigTag, Dimension >::enabled  &&
                          ConfigTagReal< ConfigTag, Real >::enabled &&
                          ConfigTagDevice< ConfigTag, Device >::enabled &&
                          ConfigTagIndex< ConfigTag, Index >::enabled }; };

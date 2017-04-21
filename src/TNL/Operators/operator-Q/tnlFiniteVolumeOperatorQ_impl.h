@@ -242,7 +242,7 @@ void
 tnlFiniteVolumeOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 update( const MeshType& mesh, const RealType& time )
 {
-    CoordinatesType dimensions = mesh.getDimensions();
+    CoordinatesType dimensions = mesh.getDimension();
     CoordinatesType coordinates;
     
     for( coordinates.x()=1; coordinates.x() < dimensions.x()-1; coordinates.x()++ )
@@ -453,7 +453,7 @@ void
 tnlFiniteVolumeOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 update( const MeshType& mesh, const RealType& time )
 {
-    CoordinatesType dimensions = mesh.getDimensions();
+    CoordinatesType dimensions = mesh.getDimension();
     CoordinatesType coordinates;
     
     for( coordinates.x()=1; coordinates.x() < dimensions.x()-1; coordinates.x()++ )

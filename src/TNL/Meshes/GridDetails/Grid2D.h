@@ -34,25 +34,25 @@ class Grid< 2, Real, Device, Index > : public Object
    typedef Grid< 2, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 2, Real, Device, Index > ThisType;
  
-   static const int meshDimensions = 2;
+   static const int meshDimension = 2;
 
-   template< int EntityDimensions,
+   template< int EntityDimension,
              typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   using MeshEntity = GridEntity< ThisType, EntityDimensions, Config >;
+   using MeshEntity = GridEntity< ThisType, EntityDimension, Config >;
  
-   typedef MeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
-   typedef MeshEntity< meshDimensions - 1, GridEntityNoStencilStorage > Face;
+   typedef MeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
+   typedef MeshEntity< meshDimension - 1, GridEntityNoStencilStorage > Face;
    typedef MeshEntity< 0 > Vertex;
    
 
    // TODO: remove this
-   //template< int EntityDimensions, 
+   //template< int EntityDimension, 
    //          typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   //using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimensions, Config >;
-   //typedef TestMeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > TestCell;
+   //using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimension, Config >;
+   //typedef TestMeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > TestCell;
    /////
    
-   static constexpr int getMeshDimensions() { return meshDimensions; };
+   static constexpr int getDimension() { return meshDimension; };
 
    Grid();
 

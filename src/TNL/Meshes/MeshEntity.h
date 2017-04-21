@@ -14,7 +14,7 @@
 #include <TNL/Containers/DynamicTypeTag.h>
 #include <TNL/Meshes/MeshDetails/MeshEntityId.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/MeshDimensionTag.h>
 #include <TNL/Meshes/Topologies/MeshVertexTopology.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSubentityStorageLayer.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSuperentityStorageLayer.h>
@@ -47,8 +47,8 @@ class MeshEntity
       template< int Subdimensions > using SubentityTraits =
       typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimensions >;
  
-      template< int SuperDimensions > using SuperentityTraits =
-      typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimensions >;
+      template< int SuperDimension > using SuperentityTraits =
+      typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimension >;
  
       MeshEntity( const SeedType& entitySeed );
 
@@ -68,7 +68,7 @@ class MeshEntity
 
       bool operator==( const MeshEntity& entity ) const;
  
-      constexpr int getEntityDimensions() const;
+      constexpr int getEntityDimension() const;
 
       /****
        * Subentities
@@ -91,17 +91,17 @@ class MeshEntity
       /****
        * Superentities
        */
-      template< int SuperDimensions >
+      template< int SuperDimension >
       LocalIndexType getNumberOfSuperentities() const;
 
-      template< int SuperDimensions >
+      template< int SuperDimension >
       GlobalIndexType getSuperentityIndex( const LocalIndexType localIndex ) const;
 
-      template< int SuperDimensions >
-         typename SuperentityTraits< SuperDimensions >::AccessArrayType& getSuperentitiesIndices();
+      template< int SuperDimension >
+         typename SuperentityTraits< SuperDimension >::AccessArrayType& getSuperentitiesIndices();
 
-      template< int SuperDimensions >
-         const typename SuperentityTraits< SuperDimensions >::AccessArrayType& getSuperentitiesIndices() const;
+      template< int SuperDimension >
+         const typename SuperentityTraits< SuperDimension >::AccessArrayType& getSuperentitiesIndices() const;
 
       /****
        * Vertices
@@ -114,7 +114,7 @@ class MeshEntity
 
       const typename SubentityTraits< 0 >::AccessArrayType& getVerticesIndices() const;
 
-      template< int Dimensions >
+      template< int Dimension >
       IdPermutationArrayAccessorType subentityOrientation( LocalIndexType index ) const;
  
    protected:
@@ -162,8 +162,8 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       typedef typename MeshTraitsType::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
       typedef MeshEntitySeed< MeshConfig, EntityTopology >     SeedType;
  
-      template< int SuperDimensions > using SuperentityTraits =
-      typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimensions >;
+      template< int SuperDimension > using SuperentityTraits =
+      typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperDimension >;
 
       static String getType();
 
@@ -179,7 +179,7 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
 
       bool operator==( const MeshEntity& entity ) const;
  
-      constexpr int getEntityDimensions() const;
+      constexpr int getEntityDimension() const;
 
       template< int Superdimensions > LocalIndexType getNumberOfSuperentities() const;
 
@@ -189,7 +189,7 @@ class MeshEntity< MeshConfig, MeshVertexTopology >
       template< int Superdimensions >
          const typename SuperentityTraits< Superdimensions >::AccessArrayType& getSuperentitiesIndeces() const;
 
-      template< int Dimensions >
+      template< int Dimension >
       GlobalIndexType getSuperentityIndex( const LocalIndexType localIndex ) const;
 
       /****

@@ -18,7 +18,7 @@
 namespace TNL {
 namespace Containers {   
 
-template< int Dimensions, typename Element = double, typename Device = Devices::Host, typename Index = int >
+template< int Dimension, typename Element = double, typename Device = Devices::Host, typename Index = int >
 class MultiArray : public Array< Element, Device, Index >
 {
 };
@@ -27,7 +27,7 @@ template< typename Element, typename Device, typename Index >
 class MultiArray< 1, Element, Device, Index > : public Array< Element, Device, Index >
 {
    public:
-   enum { Dimensions = 1};
+   enum { Dimension = 1};
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -106,7 +106,7 @@ template< typename Element, typename Device, typename Index >
 class MultiArray< 2, Element, Device, Index > : public Array< Element, Device, Index >
 {
    public:
-   enum { Dimensions = 2 };
+   enum { Dimension = 2 };
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -189,7 +189,7 @@ class MultiArray< 3, Element, Device, Index > : public Array< Element, Device, I
 {
    public:
 
-   enum { Dimensions = 3 };
+   enum { Dimension = 3 };
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -272,7 +272,7 @@ class MultiArray< 4, Element, Device, Index > : public Array< Element, Device, I
 {
    public:
 
-   enum { Dimensions = 4 };
+   enum { Dimension = 4 };
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;

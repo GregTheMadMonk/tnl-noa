@@ -17,9 +17,9 @@ namespace TNL {
 namespace Meshes {
 
 template< typename GridEntity,
-          int NeighbourEntityDimensions,
+          int NeighbourEntityDimension,
           typename EntityStencilTag =
-            GridEntityStencilStorageTag< GridEntity::ConfigType::template neighbourEntityStorage< GridEntity >( NeighbourEntityDimensions ) > >
+            GridEntityStencilStorageTag< GridEntity::ConfigType::template neighbourEntityStorage< GridEntity >( NeighbourEntityDimension ) > >
 class NeighbourGridEntityGetter
 {
    public:

@@ -66,10 +66,10 @@ class eulerSetter
 
       static bool run( const Config::ParameterContainer & parameters )
       {
-          enum { Dimensions = MeshType::getMeshDimensions() };
+          enum { Dimension = MeshType::getDimension() };
           typedef LaxFridrichs< MeshType, Real, Index > ApproximateOperator;
           typedef eulerRhs< MeshType, Real > RightHandSide;
-          typedef Containers::StaticVector < MeshType::getMeshDimensions(), Real > Vertex;
+          typedef Containers::StaticVector < MeshType::getDimension(), Real > Vertex;
 
          /****
           * Resolve the template arguments of your solver here.
@@ -79,10 +79,10 @@ class eulerSetter
           String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )
           {
-             typedef Functions::Analytic::Constant< Dimensions, Real > Constant;
+             typedef Functions::Analytic::Constant< Dimension, Real > Constant;
              if( boundaryConditionsType == "dirichlet" )
              {
-                typedef Operators::DirichletBoundaryConditions< MeshType, Constant, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+                typedef Operators::DirichletBoundaryConditions< MeshType, Constant, MeshType::getDimension(), Real, Index > BoundaryConditions;
                 typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
@@ -95,7 +95,7 @@ class eulerSetter
           typedef Functions::MeshFunction< MeshType > MeshFunction;
           if( boundaryConditionsType == "dirichlet" )
           {
-             typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+             typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getDimension(), Real, Index > BoundaryConditions;
              typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );

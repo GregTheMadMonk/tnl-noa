@@ -14,7 +14,7 @@
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/SharedArray.h>
 #include <TNL/Containers/ConstSharedArray.h>
-#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/MeshDimensionTag.h>
 
 namespace TNL {
 namespace Meshes {
@@ -22,9 +22,9 @@ namespace Meshes {
 struct MeshVertexTopology;
 template< typename MeshConfig, typename EntityTopology > class MeshEntity;
 template< typename MeshConfig, typename EntityTopology > class MeshEntitySeed;
-template< typename MeshConfig, int Dimensions > class MeshEntityTraits;
-template< typename MeshConfig, typename MeshEntity, int SubDimensions > class MeshSubentityTraits;
-template< typename MeshConfig, typename MeshEntity, int SuperDimensions > class MeshSuperentityTraits;
+template< typename MeshConfig, int Dimension > class MeshEntityTraits;
+template< typename MeshConfig, typename MeshEntity, int SubDimension > class MeshSubentityTraits;
+template< typename MeshConfig, typename MeshEntity, int SuperDimension > class MeshSuperentityTraits;
 
 template< typename MeshConfig,
           typename Device = Devices::Host >
@@ -32,8 +32,8 @@ class MeshTraits
 {
    public:
  
-      static const int meshDimensions = MeshConfig::CellTopology::dimensions;
-      static const int worldDimensions = MeshConfig::worldDimensions;
+      static const int meshDimension = MeshConfig::CellTopology::dimensions;
+      static const int worldDimension = MeshConfig::worldDimension;
 
       typedef Device                                                               DeviceType;
       typedef typename MeshConfig::GlobalIndexType                                 GlobalIndexType;
@@ -42,7 +42,7 @@ class MeshTraits
       typedef typename MeshConfig::CellTopology                                    CellTopology;
       typedef MeshEntity< MeshConfig, CellTopology >                            CellType;
       typedef MeshEntity< MeshConfig, MeshVertexTopology >                   VertexType;
-      typedef Containers::StaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
+      typedef Containers::StaticVector< worldDimension, typename MeshConfig::RealType >    PointType;
       typedef MeshEntitySeed< MeshConfig, CellTopology >                        CellSeedType;
  
       typedef Containers::Array< PointType, Devices::Host, GlobalIndexType >                  PointArrayType;
@@ -51,17 +51,17 @@ class MeshTraits
       typedef Containers::tnlConstSharedArray< GlobalIndexType, Devices::Host, LocalIndexType >  IdArrayAccessorType;
       typedef Containers::tnlConstSharedArray< LocalIndexType, Devices::Host, LocalIndexType >   IdPermutationArrayAccessorType;
  
-      template< int Dimensions > using EntityTraits =
-         MeshEntityTraits< MeshConfig, Dimensions >;
+      template< int Dimension > using EntityTraits =
+         MeshEntityTraits< MeshConfig, Dimension >;
  
-      template< typename EntityTopology, int SubDimensions > using SubentityTraits =
-         MeshSubentityTraits< MeshConfig, EntityTopology, SubDimensions >;
+      template< typename EntityTopology, int SubDimension > using SubentityTraits =
+         MeshSubentityTraits< MeshConfig, EntityTopology, SubDimension >;
  
-      template< typename EntityTopology, int SuperDimensions > using SuperentityTraits =
-         MeshSuperentityTraits< MeshConfig, EntityTopology, SuperDimensions >;
+      template< typename EntityTopology, int SuperDimension > using SuperentityTraits =
+         MeshSuperentityTraits< MeshConfig, EntityTopology, SuperDimension >;
  
  
-      typedef MeshDimensionsTag< meshDimensions >                                   DimensionsTag;
+      typedef MeshDimensionTag< meshDimension >                                   DimensionTag;
 
 };
 

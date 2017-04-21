@@ -23,7 +23,7 @@ template< typename Element, typename Device, typename Index >
 String MultiArray< 4, Element, Device, Index > :: getType()
 {
    return String( "Containers::MultiArray< ") +
-          String( Dimensions ) +
+          String( Dimension ) +
           String( ", " ) +
           String( TNL::getType< Element >() ) +
           String( ", " ) +

@@ -224,7 +224,7 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
          {
             //const IndexType cellIndex = grid.getEntityIndex( cell );
             cell.refresh(); //setIndex( cellIndex );
-            auto neighbourEntities = cell.template getNeighbourEntities< GridType::Face::entityDimensions >();
+            auto neighbourEntities = cell.template getNeighbourEntities< GridType::Face::entityDimension >();
 
             FaceType face1( grid,
                             cell.getCoordinates(),
@@ -281,7 +281,7 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
                face.setOrientation( EntityOrientationType( 1, 0 ) );
                //const IndexType faceIndex = grid.getEntityIndex( face );
                face.refresh(); //setIndex( faceIndex );
-               auto neighbourCells = face.template getNeighbourEntities< GridType::Cell::entityDimensions >();
+               auto neighbourCells = face.template getNeighbourEntities< GridType::Cell::entityDimension >();
 
 
                if( face.getCoordinates().x() > 0 )
@@ -302,7 +302,7 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
                face.setOrientation( EntityOrientationType( 0, 1 ) );
                //const IndexType faceIndex = grid.getEntityIndex( face );
                face.refresh();//setIndex( faceIndex );
-               auto neighbourCells = face.template getNeighbourEntities< GridType::Cell::entityDimensions >();
+               auto neighbourCells = face.template getNeighbourEntities< GridType::Cell::entityDimension >();
  
                if( face.getCoordinates().y() > 0 )
                {

@@ -23,16 +23,16 @@ template< typename MeshConfig, typename EntityTopology > class MeshEntityOrienta
 
 template< typename MeshConfig,
           typename EntityTopology,
-          int Dimensions >
+          int Dimension >
 class MeshSubentityTraits
 {
    public:
-      static const bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimensions );
-      static const bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimensions );
+      static const bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimension );
+      static const bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimension );
 
       typedef typename MeshConfig::GlobalIndexType                                GlobalIndexType;
       typedef typename MeshConfig::LocalIndexType                                 LocalIndexType;
-      typedef MeshSubtopology< EntityTopology, Dimensions >                    Subtopology;
+      typedef MeshSubtopology< EntityTopology, Dimension >                    Subtopology;
       typedef typename Subtopology::Topology                                      SubentityTopology;
       typedef MeshEntity< MeshConfig, SubentityTopology >                      SubentityType;
       typedef MeshEntitySeed< MeshConfig, SubentityTopology >                  Seed;
@@ -61,7 +61,7 @@ class MeshSubentityTraits
                                             subentityVertexIndex>::index };
       };
 
-      static_assert( EntityTopology::dimensions > Dimensions, "You try to create subentities traits where subentity dimensions are not smaller than the entity dimensions." );
+      static_assert( EntityTopology::dimensions > Dimension, "You try to create subentities traits where subentity dimension are not smaller than the entity dimension." );
 };
 
 } // namespace Meshes

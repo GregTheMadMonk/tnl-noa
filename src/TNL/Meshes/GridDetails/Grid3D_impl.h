@@ -45,7 +45,7 @@ template< typename Real,
 String Grid< 3, Real, Device, Index > :: getType()
 {
    return String( "Meshes::Grid< " ) +
-          String( meshDimensions ) + ", " +
+          String( meshDimension ) + ", " +
           String( TNL::getType< RealType >() ) + ", " +
           String( Device :: getDeviceType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";
@@ -251,10 +251,10 @@ Index
 Grid< 3, Real, Device, Index >::
 getEntitiesCount() const
 {
-   static_assert( EntityType::entityDimensions <= 3 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 3 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
-   switch( EntityType::entityDimensions )
+   switch( EntityType::entityDimension )
    {
       case 3:
          return this->numberOfCells;
@@ -277,8 +277,8 @@ EntityType
 Grid< 3, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( EntityType::entityDimensions <= 3 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 3 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
    return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
@@ -292,8 +292,8 @@ Index
 Grid< 3, Real, Device, Index >::
 getEntityIndex( const EntityType& entity ) const
 {
-   static_assert( EntityType::entityDimensions <= 3 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 3 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
    return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
@@ -379,7 +379,7 @@ typename GridFunction::RealType
                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   MeshEntity< getMeshDimensions() > cell;
+   MeshEntity< getDimension() > cell;
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -407,7 +407,7 @@ template< typename Real,
                                                                            const GridFunction& f2 ) const
 {
    typename GridFunction::RealType maxDiff( -1.0 );
-   MeshEntity< getMeshDimensions() > cell( *this );
+   MeshEntity< getDimension() > cell( *this );
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -434,7 +434,7 @@ template< typename Real,
                                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   MeshEntity< getMeshDimensions() > cell( *this );
+   MeshEntity< getDimension() > cell( *this );
 
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
@@ -573,7 +573,7 @@ void
 Grid< 3, Real, Device, Index >::
 writeProlog( Logger& logger )
 {
-   logger.writeParameter( "Dimensions:", getMeshDimensions() );
+   logger.writeParameter( "Dimension:", getDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

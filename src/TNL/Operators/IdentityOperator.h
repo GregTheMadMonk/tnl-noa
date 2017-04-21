@@ -17,7 +17,7 @@ namespace Operators {
 
 template< typename MeshFunction >
 class IdentityOperator
-   : public Domain< MeshFunction::getDimensions(), MeshFunction::getDomainType() >
+   : public Domain< MeshFunction::getDimension(), MeshFunction::getDomainType() >
 {
    public:
  
@@ -35,7 +35,7 @@ class IdentityOperator
          const MeshEntity& meshEntity,
          const RealType& time = 0 ) const
       {
-         static_assert( MeshFunction::getDimensions() == InnerOperator::getDimensions(),
+         static_assert( MeshFunction::getDimension() == InnerOperator::getDimension(),
             "Mesh function and operator have both different number of dimensions." );
          return this->meshFunction( meshEntity, time );
       }
