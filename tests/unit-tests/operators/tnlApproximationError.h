@@ -33,7 +33,7 @@ class tnlApproximationError
       typedef typename ApproximateOperator::MeshType MeshType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
-      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::PointType PointType;
       typedef SharedPointer< MeshType > MeshPointer;
       typedef Functions::Analytic::Constant< MeshType::meshDimension, RealType > ConstantType;
       typedef Operators::DirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
@@ -117,7 +117,7 @@ class tnlApproximationError< Mesh, ExactOperator, ApproximateOperator, Function,
       typedef Mesh MeshType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
-      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::PointType PointType;
       typedef Constant< MeshType::meshDimension, RealType > ConstantType;
       typedef DirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 

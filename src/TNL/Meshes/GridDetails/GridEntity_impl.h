@@ -243,7 +243,7 @@ template< int Dimension,
           int EntityDimension,
           typename Config >
 __cuda_callable__ inline
-typename Meshes::Grid< Dimension, Real, Device, Index >::VertexType
+typename Meshes::Grid< Dimension, Real, Device, Index >::PointType
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimension, Config >::
 getCenter() const
 {
@@ -456,7 +456,7 @@ template< int Dimension,
           typename Index,
           typename Config >
 __cuda_callable__ inline
-typename Meshes::Grid< Dimension, Real, Device, Index >::VertexType
+typename Meshes::Grid< Dimension, Real, Device, Index >::PointType
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >::
 getCenter() const
 {
@@ -483,7 +483,7 @@ template< int Dimension,
           typename Index,
           typename Config >
 __cuda_callable__ inline
-const typename GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >::VertexType&
+const typename GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >::PointType&
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >::
 getEntityProportions() const
 {
@@ -674,7 +674,7 @@ template< int Dimension,
           typename Index,
           typename Config >
 __cuda_callable__ inline
-typename Meshes::Grid< Dimension, Real, Device, Index >::VertexType
+typename Meshes::Grid< Dimension, Real, Device, Index >::PointType
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::
 getCenter() const
 {
@@ -701,11 +701,11 @@ template< int Dimension,
           typename Index,
           typename Config >
 __cuda_callable__ inline
-typename GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::VertexType
+typename GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::PointType
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::
 getEntityProportions() const
 {
-   return VertexType( 0.0 );
+   return PointType( 0.0 );
 }
 
 template< int Dimension,

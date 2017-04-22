@@ -31,10 +31,10 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       std::cout << "Writing the grid to the file " << outputFile << " .... ";
 
       typedef Meshes::Grid< 1, RealType, Devices::Host, IndexType > GridType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;
-      grid.setDomain( VertexType( originX ), VertexType( proportionsX ) );
+      grid.setDomain( PointType( originX ), PointType( proportionsX ) );
       grid.setDimensions( CoordinatesType( sizeX ) );
       if( ! grid.save( outputFile ) )
       {
@@ -54,10 +54,10 @@ bool setupGrid( const Config::ParameterContainer& parameters )
      std::cout << "Writing the grid to the file " << outputFile << " .... ";
 
       typedef Meshes::Grid< 2, RealType, Devices::Host, IndexType > GridType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;
-      grid.setDomain( VertexType( originX, originY ), VertexType( proportionsX, proportionsY ) );
+      grid.setDomain( PointType( originX, originY ), PointType( proportionsX, proportionsY ) );
       grid.setDimensions( CoordinatesType( sizeX, sizeY ) );
       if( ! grid.save( outputFile ) )
       {
@@ -80,10 +80,10 @@ bool setupGrid( const Config::ParameterContainer& parameters )
      std::cout << "Writing the grid to the file " << outputFile << " .... ";
 
       typedef Meshes::Grid< 3, RealType, Devices::Host, IndexType > GridType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;
-      grid.setDomain( VertexType( originX, originY, originZ ), VertexType( proportionsX, proportionsY, proportionsZ ) );
+      grid.setDomain( PointType( originX, originY, originZ ), PointType( proportionsX, proportionsY, proportionsZ ) );
       grid.setDimensions( CoordinatesType( sizeX, sizeY, sizeZ ) );
       if( ! grid.save( outputFile ) )
       {

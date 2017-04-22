@@ -25,7 +25,7 @@ class MeanCurvatureFlowEocRhs : public Domain< Dimension, SpaceDomain >
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
       typedef typename TestFunctionType::RealType RealType;
-      typedef StaticVector< Dimension, RealType > VertexType;
+      typedef StaticVector< Dimension, RealType > PointType;
 
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
@@ -35,10 +35,10 @@ class MeanCurvatureFlowEocRhs : public Domain< Dimension, SpaceDomain >
          return true;
       };
 
-      template< typename Vertex,
+      template< typename Point,
                 typename Real >
       __cuda_callable__
-      Real operator()( const Vertex& vertex,
+      Real operator()( const Point& vertex,
                        const Real& time ) const
       {
          return testFunction.getTimeDerivative( vertex, time )

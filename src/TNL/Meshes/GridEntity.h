@@ -62,7 +62,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimensio
       typedef Containers::StaticVector< meshDimension, IndexType > EntityOrientationType;
       typedef Containers::StaticVector< meshDimension, IndexType > EntityBasisType;
       typedef GridEntity< GridType, entityDimension, Config > ThisType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
  
       typedef NeighbourGridEntitiesStorage< ThisType, Config > NeighbourGridEntitiesStorageType;
  
@@ -125,7 +125,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimensio
       bool isBoundaryEntity() const;
  
       __cuda_callable__ inline
-      VertexType getCenter() const;
+      PointType getCenter() const;
  
       __cuda_callable__ inline
       const RealType& getMeasure() const;
@@ -172,7 +172,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Con
       typedef typename GridType::RealType RealType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
       typedef Config ConfigType;
  
       static const int meshDimension = GridType::meshDimension;
@@ -249,13 +249,13 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Con
       bool isBoundaryEntity() const;
  
       __cuda_callable__ inline
-      VertexType getCenter() const;
+      PointType getCenter() const;
  
       __cuda_callable__ inline
       const RealType& getMeasure() const;
  
       __cuda_callable__ inline
-      const VertexType& getEntityProportions() const;
+      const PointType& getEntityProportions() const;
  
       __cuda_callable__ inline
       const GridType& getMesh() const;
@@ -295,7 +295,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >
       typedef typename GridType::RealType RealType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
       typedef Config ConfigType;
  
       static const int meshDimension = GridType::meshDimension;
@@ -372,13 +372,13 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >
       bool isBoundaryEntity() const;
  
       __cuda_callable__ inline
-      VertexType getCenter() const;
+      PointType getCenter() const;
 
       __cuda_callable__ inline
       const RealType getMeasure() const;
  
       __cuda_callable__ inline
-      VertexType getEntityProportions() const;
+      PointType getEntityProportions() const;
  
       __cuda_callable__ inline
       const GridType& getMesh() const;

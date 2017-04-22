@@ -41,7 +41,7 @@ class tnlTestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimensi
       typedef typename GridType::RealType RealType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
       typedef Config ConfigType;
       
       static const int meshDimension = GridType::meshDimension;

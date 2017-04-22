@@ -163,7 +163,7 @@ setGrid( Grid& grid,
          bool verbose )
 {
     grid.setDimensions( this->getWidth(), this->getHeight() );
-    typename Grid::VertexType origin, proportions;
+    typename Grid::PointType origin, proportions;
     origin.x() = 0.0;
     origin.y() = 0.0;
     proportions.x() = 1.0;

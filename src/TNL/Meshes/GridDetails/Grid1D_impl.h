@@ -118,8 +118,8 @@ const typename Grid< 1, Real, Device, Index >::CoordinatesType&
 template< typename Real,
           typename Device,
           typename Index >
-void Grid< 1, Real, Device, Index >::setDomain( const VertexType& origin,
-                                                     const VertexType& proportions )
+void Grid< 1, Real, Device, Index >::setDomain( const PointType& origin,
+                                                     const PointType& proportions )
 {
    this->origin = origin;
    this->proportions = proportions;
@@ -130,7 +130,7 @@ template< typename Real,
           typename Device,
           typename Index  >
 __cuda_callable__ inline
-const typename Grid< 1, Real, Device, Index >::VertexType&
+const typename Grid< 1, Real, Device, Index >::PointType&
   Grid< 1, Real, Device, Index >::getOrigin() const
 {
    return this->origin;
@@ -140,7 +140,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 1, Real, Device, Index >::VertexType&
+const typename Grid< 1, Real, Device, Index >::PointType&
    Grid< 1, Real, Device, Index >::getProportions() const
 {
    return this->proportions;
@@ -225,7 +225,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 1, Real, Device, Index >::VertexType&
+const typename Grid< 1, Real, Device, Index >::PointType&
 Grid< 1, Real, Device, Index >::
 getSpaceSteps() const
 {
@@ -396,7 +396,7 @@ bool Grid< 1, Real, Device, Index >::write( const MeshFunction& function,
            entity.getCoordinates().x() < getDimensions(). x();
            entity.getCoordinates().x() ++ )
       {
-         VertexType v = entity.getCenter();
+         PointType v = entity.getCenter();
          GnuplotWriter::write( file,  v );
          GnuplotWriter::write( file,  function[ this->getEntityIndex( entity ) ] );
          file << std::endl;

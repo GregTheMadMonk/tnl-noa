@@ -41,14 +41,14 @@ class tnlPDEOperatorEocTestSetter< ApproximateOperator,
       typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
       typedef ExactOperator ExactOperatorType;
       typedef ApproximateOperator ApproximateOperatorType;
-      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::PointType PointType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef ExpBump< 1, Real > FunctionType;
 
    static void setMesh( MeshType& mesh,
                         const IndexType& size )
    {
-      VertexType origin, proportions;
+      PointType origin, proportions;
       origin.x() = -2.0;
       proportions.x() = 4.0;
       mesh.setDomain( origin, proportions );
@@ -82,14 +82,14 @@ class tnlPDEOperatorEocTestSetter< ApproximateOperator,
       typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
       typedef ExactOperator ExactOperatorType;
       typedef ApproximateOperator ApproximateOperatorType;
-      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::PointType PointType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef ExpBump< 2, Real > FunctionType;
 
    static void setMesh( MeshType& mesh,
                         const IndexType& size )
    {
-      VertexType origin, proportions;
+      PointType origin, proportions;
       origin.x() = -1.0;
       origin.y() = -1.0;
       proportions.x() = 2.0;
@@ -126,14 +126,14 @@ class tnlPDEOperatorEocTestSetter< ApproximateOperator,
       typedef Meshes::Grid< 3, Real, Device, Index > MeshType;
       typedef ExactOperator ExactOperatorType;
       typedef ApproximateOperator ApproximateOperatorType;
-      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::PointType PointType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef ExpBump< 3, Real > FunctionType;
 
    static void setMesh( MeshType& mesh,
                         const IndexType& size )
    {
-      VertexType origin, proportions;
+      PointType origin, proportions;
       origin.x() = -1.0;
       origin.y() = -1.0;
       origin.z() = -1.0;

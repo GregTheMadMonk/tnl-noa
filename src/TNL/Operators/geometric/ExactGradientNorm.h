@@ -49,7 +49,7 @@ class ExactGradientNorm< 1, Real >
       __cuda_callable__
       typename Function::RealType
          operator()( const Function& function,
-                     const typename Function::VertexType& v,
+                     const typename Function::PointType& v,
                      const typename Function::RealType& time = 0.0 ) const
       {
          typedef typename Function::RealType RealType;
@@ -64,7 +64,7 @@ class ExactGradientNorm< 1, Real >
       __cuda_callable__
       typename Function::RealType
          getPartialDerivative( const Function& function,
-                               const typename Function::VertexType& v,
+                               const typename Function::PointType& v,
                                const typename Function::RealType& time = 0.0 ) const
       {
          static_assert( XDerivative >= 0 && YDerivative >= 0 && ZDerivative >= 0,
@@ -117,7 +117,7 @@ class ExactGradientNorm< 2, Real >
       __cuda_callable__
       typename Function::RealType
          operator()( const Function& function,
-                     const typename Function::VertexType& v,
+                     const typename Function::PointType& v,
                      const typename Function::RealType& time = 0.0 ) const
       {
          typedef typename Function::RealType RealType;
@@ -133,7 +133,7 @@ class ExactGradientNorm< 2, Real >
       __cuda_callable__
       typename Function::RealType
          getPartialDerivative( const Function& function,
-                               const typename Function::VertexType& v,
+                               const typename Function::PointType& v,
                                const typename Function::RealType& time = 0.0 ) const
       {
          static_assert( XDerivative >= 0 && YDerivative >= 0 && ZDerivative >= 0,
@@ -191,7 +191,7 @@ class ExactGradientNorm< 3, Real >
       __cuda_callable__
       typename Function::RealType
          operator()( const Function& function,
-                     const typename Function::VertexType& v,
+                     const typename Function::PointType& v,
                      const typename Function::RealType& time = 0.0 ) const
       {
          typedef typename Function::RealType RealType;
@@ -208,7 +208,7 @@ class ExactGradientNorm< 3, Real >
       __cuda_callable__
       typename Function::RealType
          getPartialDerivative( const Function& function,
-                               const typename Function::VertexType& v,
+                               const typename Function::PointType& v,
                                const typename Function::RealType& time = 0.0 ) const
       {
          static_assert( XDerivative >= 0 && YDerivative >= 0 && ZDerivative >= 0,

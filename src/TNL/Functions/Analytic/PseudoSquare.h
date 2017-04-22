@@ -48,7 +48,7 @@ class PseudoSquare< 1, Real > : public PseudoSquareBase< Real, 1 >
 
       enum { Dimension = 1 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimension, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
@@ -64,11 +64,11 @@ class PseudoSquare< 1, Real > : public PseudoSquareBase< Real, 1 >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
 };
 
@@ -79,7 +79,7 @@ class PseudoSquare< 2, Real > : public PseudoSquareBase< Real, 2 >
 
       enum { Dimension = 2 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimension, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
@@ -95,11 +95,11 @@ class PseudoSquare< 2, Real > : public PseudoSquareBase< Real, 2 >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
 };
 
@@ -110,7 +110,7 @@ class PseudoSquare< 3, Real > : public PseudoSquareBase< Real, 3 >
 
       enum { Dimension = 3 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimension, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
@@ -126,11 +126,11 @@ class PseudoSquare< 3, Real > : public PseudoSquareBase< Real, 3 >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
  
 };

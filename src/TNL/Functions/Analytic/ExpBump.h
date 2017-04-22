@@ -56,7 +56,7 @@ class ExpBump< 1, Real > : public ExpBumpBase< 1, Real >
    public:
  
       typedef Real RealType;
-      typedef Containers::StaticVector< 1, RealType > VertexType;
+      typedef Containers::StaticVector< 1, RealType > PointType;
 
       static String getType();
 
@@ -72,11 +72,11 @@ class ExpBump< 1, Real > : public ExpBumpBase< 1, Real >
                 int ZDiffOrder = 0 >
 #endif
    __cuda_callable__
-   RealType getPartialDerivative( const VertexType& v,
+   RealType getPartialDerivative( const PointType& v,
                                   const Real& time = 0.0 ) const;
  
    __cuda_callable__
-   RealType operator()( const VertexType& v,
+   RealType operator()( const PointType& v,
                         const RealType& time = 0.0 ) const;
 };
 
@@ -86,7 +86,7 @@ class ExpBump< 2, Real > : public ExpBumpBase< 2, Real >
    public:
  
       typedef Real RealType;
-      typedef Containers::StaticVector< 2, RealType > VertexType;
+      typedef Containers::StaticVector< 2, RealType > PointType;
 
       static String getType();
 
@@ -102,11 +102,11 @@ class ExpBump< 2, Real > : public ExpBumpBase< 2, Real >
                 int ZDiffOrder = 0 >
 #endif
    __cuda_callable__ inline
-   RealType getPartialDerivative( const VertexType& v,
+   RealType getPartialDerivative( const PointType& v,
                                   const Real& time = 0.0 ) const;
  
    __cuda_callable__
-   RealType operator()( const VertexType& v,
+   RealType operator()( const PointType& v,
                         const Real& time = 0.0 ) const;
 };
 
@@ -116,7 +116,7 @@ class ExpBump< 3, Real > : public ExpBumpBase< 3, Real >
    public:
  
       typedef Real RealType;
-      typedef Containers::StaticVector< 3, RealType > VertexType;
+      typedef Containers::StaticVector< 3, RealType > PointType;
 
  
       static String getType();
@@ -133,11 +133,11 @@ class ExpBump< 3, Real > : public ExpBumpBase< 3, Real >
                 int ZDiffOrder = 0 >
 #endif
    __cuda_callable__
-   RealType getPartialDerivative( const VertexType& v,
+   RealType getPartialDerivative( const PointType& v,
                                   const Real& time = 0.0 ) const;
  
    __cuda_callable__
-   RealType operator()( const VertexType& v,
+   RealType operator()( const PointType& v,
                         const Real& time = 0.0 ) const;
  
 };

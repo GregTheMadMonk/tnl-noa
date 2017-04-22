@@ -52,7 +52,7 @@ class Flowerpot< 1, Real > : public FlowerpotBase< Real, 1 >
 
       enum { Dimension = 1 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimension, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
@@ -62,19 +62,19 @@ class Flowerpot< 1, Real > : public FlowerpotBase< Real, 1 >
       template< int XDiffOrder,
                 int YDiffOrder,
                 int ZDiffOrder,
-                typename Vertex >
+                typename Point >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                typename Point = PointType >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
+      RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
  
 };
@@ -86,7 +86,7 @@ class Flowerpot< 2, Real > : public FlowerpotBase< Real, 2 >
 
       enum { Dimension = 2 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimension, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
@@ -96,19 +96,19 @@ class Flowerpot< 2, Real > : public FlowerpotBase< Real, 2 >
       template< int XDiffOrder,
                 int YDiffOrder,
                 int ZDiffOrder,
-                typename Vertex >
+                typename Point >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                typename Point = PointType >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
+      RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
  
 };
@@ -120,7 +120,7 @@ class Flowerpot< 3, Real > : public FlowerpotBase< Real, 3 >
 
       enum { Dimension = 3 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimension, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
@@ -130,19 +130,19 @@ class Flowerpot< 3, Real > : public FlowerpotBase< Real, 3 >
       template< int XDiffOrder,
                 int YDiffOrder,
                 int ZDiffOrder,
-                typename Vertex >
+                typename Point >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                typename Point = PointType >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
+      RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
  
 };

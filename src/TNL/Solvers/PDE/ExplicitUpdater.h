@@ -118,7 +118,7 @@ class ExplicitUpdater
       {
          public:
 
-            typedef typename MeshType::VertexType VertexType;
+            typedef typename MeshType::PointType PointType;
 
             template< typename EntityType >
             __cuda_callable__

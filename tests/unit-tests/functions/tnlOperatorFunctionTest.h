@@ -40,7 +40,7 @@ class OperatorFunctionTest
    typedef typename OperatorType::RealType RealType;
    typedef typename OperatorType::IndexType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef typename MeshType::VertexType VertexType;
+   typedef typename MeshType::PointType PointType;
    typedef Functions::Analytic::ExpBump< MeshType::getDimension(), RealType > TestFunctionType;
    typedef Functions::MeshFunction< MeshType, MeshType::getDimension() > MeshFunctionType;
    typedef SharedPointer< MeshType > MeshPointer;
@@ -65,7 +65,7 @@ class OperatorFunctionTest
       MeshPointer meshPointer;
       typedef Functions::OperatorFunction< Operator, MeshFunctionType, void, EvaluateOnFly > OperatorFunctionType;
       meshPointer->setDimensions( CoordinatesType( 25 ) );
-      meshPointer->setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
+      meshPointer->setDomain( PointType( -1.0 ), PointType( 2.0 ) );
       TestFunctionType testFunction;
       testFunction.setAmplitude( 1.0 );
       testFunction.setSigma( 1.0 );
@@ -94,7 +94,7 @@ class OperatorFunctionTest
       typedef Operators::DirichletBoundaryConditions< MeshType > BoundaryConditionsType;
       typedef Functions::OperatorFunction< Operator, MeshFunctionType, BoundaryConditionsType, EvaluateOnFly > OperatorFunctionType;
       mesh->setDimensions( CoordinatesType( 25 ) );
-      mesh->setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
+      mesh->setDomain( PointType( -1.0 ), PointType( 2.0 ) );
       TestFunctionType testFunction;
       testFunction.setAmplitude( 1.0 );
       testFunction.setSigma( 1.0 );

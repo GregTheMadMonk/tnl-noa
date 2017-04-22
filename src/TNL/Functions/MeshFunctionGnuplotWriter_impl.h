@@ -44,7 +44,7 @@ write( const MeshFunctionType& function,
         entity.getCoordinates().x() ++ )
    {
       entity.refresh();
-      typename MeshType::VertexType v = entity.getCenter();
+      typename MeshType::PointType v = entity.getCenter();
       str << v.x() << " "
           << function.getData().getElement( entity.getIndex() ) << std::endl;
    }
@@ -70,7 +70,7 @@ write( const MeshFunctionType& function,
         entity.getCoordinates().x() ++ )
    {
       entity.refresh();
-      typename MeshType::VertexType v = entity.getCenter();
+      typename MeshType::PointType v = entity.getCenter();
       str << v.x() << " "
           << function.getData().getElement( entity.getIndex() ) << std::endl;
    }
@@ -101,7 +101,7 @@ write( const MeshFunctionType& function,
            entity.getCoordinates().x() ++ )
       {
          entity.refresh();
-         typename MeshType::VertexType v = entity.getCenter();
+         typename MeshType::PointType v = entity.getCenter();
          str << v.x() << " " << v.y() << " "
              << function.getData().getElement( entity.getIndex() ) << std::endl;
       }
@@ -137,7 +137,7 @@ write( const MeshFunctionType& function,
            entity.getCoordinates().x() ++ )
       {
          entity.refresh();
-         typename MeshType::VertexType v = entity.getCenter();
+         typename MeshType::PointType v = entity.getCenter();
          str << v.x() << " " << v.y() << " "
              << function.getData().getElement( entity.getIndex() ) << std::endl;
       }
@@ -156,7 +156,7 @@ write( const MeshFunctionType& function,
 
       {
          entity.refresh();
-         typename MeshType::VertexType v = entity.getCenter();
+         typename MeshType::PointType v = entity.getCenter();
          str << v.x() << " " << v.y() << " "
              << function.getData().getElement( entity.getIndex() ) << std::endl;
       }
@@ -189,7 +189,7 @@ write( const MeshFunctionType& function,
            entity.getCoordinates().x() ++ )
       {
          entity.refresh();
-         typename MeshType::VertexType v = entity.getCenter();
+         typename MeshType::PointType v = entity.getCenter();
          str << v.x() << " " << v.y() << " "
              << function.getData().getElement( entity.getIndex() ) << std::endl;
       }
@@ -225,7 +225,7 @@ write( const MeshFunctionType& function,
               entity.getCoordinates().x() ++ )
          {
             entity.refresh();
-            typename MeshType::VertexType v = entity.getCenter();
+            typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z() << " "
                 << function.getData().getElement( entity.getIndex() ) << std::endl;
          }
@@ -264,7 +264,7 @@ write( const MeshFunctionType& function,
               entity.getCoordinates().x() ++ )
          {
             entity.refresh();
-            typename MeshType::VertexType v = entity.getCenter();
+            typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z() << " "
                 << function.getData().getElement( entity.getIndex() ) << std::endl;
          }
@@ -284,7 +284,7 @@ write( const MeshFunctionType& function,
               entity.getCoordinates().y() ++ )
          {
             entity.refresh();
-            typename MeshType::VertexType v = entity.getCenter();
+            typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z() << " "
                 << function.getData().getElement( entity.getIndex() ) << std::endl;
          }
@@ -304,7 +304,7 @@ write( const MeshFunctionType& function,
               entity.getCoordinates().z() ++ )
          {
             entity.refresh();
-            typename MeshType::VertexType v = entity.getCenter();
+            typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z() << " "
                 << function.getData().getElement( entity.getIndex() ) << std::endl;
          }
@@ -340,7 +340,7 @@ write( const MeshFunctionType& function,
               entity.getCoordinates().x() ++ )
          {
             entity.refresh();
-            typename MeshType::VertexType v = entity.getCenter();
+            typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z() << " "
                 << function.getData().getElement( entity.getIndex() ) << std::endl;
          }

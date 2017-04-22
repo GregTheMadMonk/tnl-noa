@@ -233,10 +233,10 @@ bool convertObject( const MeshPointer& meshPointer,
       if( ! multiVector. load( inputFileName ) )
          return false;
       typedef Meshes::Grid< Dimension, Real, Devices::Host, Index > GridType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;
-      grid. setDomain( VertexType( 0.0 ), VertexType( 1.0 ) );
+      grid. setDomain( PointType( 0.0 ), PointType( 1.0 ) );
       grid. setDimensions( CoordinatesType( multiVector. getDimensions() ) );
       const Real spaceStep = grid. getSpaceSteps(). x();
       if( ! grid. write( multiVector, outputFileName, outputFormat ) )

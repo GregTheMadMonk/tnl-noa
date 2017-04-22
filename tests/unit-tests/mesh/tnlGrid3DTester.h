@@ -21,7 +21,7 @@ class GridTester< 3, RealType, Device, IndexType >: public CppUnit :: TestCase
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
    typedef Meshes::Grid< 3, RealType, Device, IndexType > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename GridType::VertexType VertexType;
+   typedef typename GridType::PointType PointType;
 
 
    GridTester(){};
@@ -50,7 +50,7 @@ class GridTester< 3, RealType, Device, IndexType >: public CppUnit :: TestCase
    void setDomainTest()
    {
       GridType grid;
-      grid.setDomain( VertexType( 0.0, 0.0, 0.0 ), VertexType( 1.0, 1.0, 1.0 ) );
+      grid.setDomain( PointType( 0.0, 0.0, 0.0 ), PointType( 1.0, 1.0, 1.0 ) );
       grid.setDimensions( 10, 20, 40 );
 
       CPPUNIT_ASSERT( grid.getSpaceSteps().x() == 0.1 );
@@ -241,10 +241,10 @@ class GridTester< 3, RealType, Device, IndexType >: public CppUnit :: TestCase
       GridType grid;
       grid.setDimensions( xSize, ySize, zSize );
  
-      typedef typename GridType::template MeshEntity< 0 > VertexType;
-      typedef typename VertexType::EntityOrientationType OrientationType;
-      typedef typename VertexType::EntityBasisType BasisType;
-      VertexType vertex( grid );
+      typedef typename GridType::template MeshEntity< 0 > PointType;
+      typedef typename PointType::EntityOrientationType OrientationType;
+      typedef typename PointType::EntityBasisType BasisType;
+      PointType vertex( grid );
  
       for( vertex.getCoordinates().z() = 0;
            vertex.getCoordinates().z() < zSize + 1;

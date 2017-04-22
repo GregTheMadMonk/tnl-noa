@@ -82,7 +82,7 @@ template< typename Real >
 __cuda_callable__
 Real
 ExpBump< 1, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    using namespace std;
@@ -102,7 +102,7 @@ template< typename Real >
 __cuda_callable__
 Real
 ExpBump< 1, Real >::
-operator()( const VertexType& v,
+operator()( const PointType& v,
             const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
@@ -132,7 +132,7 @@ template< typename Real >
 __cuda_callable__ inline
 Real
 ExpBump< 2, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();
@@ -158,7 +158,7 @@ template< typename Real >
 __cuda_callable__
 Real
 ExpBump< 2, Real >::
-operator()( const VertexType& v,
+operator()( const PointType& v,
             const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
@@ -187,7 +187,7 @@ template< typename Real >
 __cuda_callable__
 Real
 ExpBump< 3, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();
@@ -220,7 +220,7 @@ template< typename Real >
 __cuda_callable__
 Real
 ExpBump< 3, Real >::
-operator()( const VertexType& v,
+operator()( const PointType& v,
             const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );

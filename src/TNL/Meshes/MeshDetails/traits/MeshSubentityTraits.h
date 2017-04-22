@@ -52,13 +52,13 @@ class MeshSubentityTraits
       typedef Containers::StaticArray< count, LocalIndexType >               IdPermutationArrayType;
 
       template< LocalIndexType subentityIndex,
-                LocalIndexType subentityVertexIndex >
-      struct Vertex
+                LocalIndexType subentityPointIndex >
+      struct Point
       {
-         enum { index = tnlSubentityVertex< EntityTopology,
+         enum { index = tnlSubentityPoint< EntityTopology,
                                             SubentityTopology,
                                             subentityIndex,
-                                            subentityVertexIndex>::index };
+                                            subentityPointIndex>::index };
       };
 
       static_assert( EntityTopology::dimensions > Dimension, "You try to create subentities traits where subentity dimension are not smaller than the entity dimension." );

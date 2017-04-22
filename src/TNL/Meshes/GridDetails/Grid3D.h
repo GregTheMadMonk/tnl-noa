@@ -28,7 +28,7 @@ class Grid< 3, Real, Device, Index > : public Object
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Containers::StaticVector< 3, Real > VertexType;
+   typedef Containers::StaticVector< 3, Real > PointType;
    typedef Containers::StaticVector< 3, Index > CoordinatesType;
    typedef Grid< 3, Real, Devices::Host, Index > HostType;
    typedef Grid< 3, Real, Devices::Cuda, Index > CudaType;
@@ -64,13 +64,13 @@ class Grid< 3, Real, Device, Index > : public Object
    __cuda_callable__
    inline const CoordinatesType& getDimensions() const;
 
-   void setDomain( const VertexType& origin,
-                   const VertexType& proportions );
+   void setDomain( const PointType& origin,
+                   const PointType& proportions );
    __cuda_callable__
-   inline const VertexType& getOrigin() const;
+   inline const PointType& getOrigin() const;
 
    __cuda_callable__
-   inline const VertexType& getProportions() const;
+   inline const PointType& getProportions() const;
 
    template< typename EntityType >
    __cuda_callable__
@@ -92,7 +92,7 @@ class Grid< 3, Real, Device, Index > : public Object
    inline const RealType& getCellMeasure() const;
 
    __cuda_callable__
-   inline const VertexType& getSpaceSteps() const;
+   inline const PointType& getSpaceSteps() const;
  
    template< int xPow, int yPow, int zPow >
    __cuda_callable__
@@ -149,11 +149,11 @@ class Grid< 3, Real, Device, Index > : public Object
           numberOfDxEdges, numberOfDyEdges, numberOfDzEdges, numberOfDxAndDyEdges, numberOfEdges,
           numberOfVertices;
 
-   VertexType origin, proportions;
+   PointType origin, proportions;
 
    IndexType cellZNeighboursStep;
  
-   VertexType spaceSteps;
+   PointType spaceSteps;
  
    RealType spaceStepsProducts[ 5 ][ 5 ][ 5 ];
 
