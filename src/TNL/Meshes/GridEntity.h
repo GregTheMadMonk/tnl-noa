@@ -55,7 +55,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimensio
  
       static const int entityDimension = EntityDimension;
  
-      constexpr static int getDimensions() { return EntityDimension; };
+      constexpr static int getDimension() { return EntityDimension; };
  
       constexpr static int getMeshDimension() { return meshDimension; };            
  
@@ -179,7 +179,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Con
  
       static const int entityDimension = meshDimension;
 
-      constexpr static int getDimensions() { return entityDimension; };
+      constexpr static int getDimension() { return entityDimension; };
  
       constexpr static int getMeshDimension() { return meshDimension; };
  
@@ -302,7 +302,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >
  
       static const int entityDimension = 0;
  
-      constexpr static int getDimensions() { return entityDimension; };
+      constexpr static int getDimension() { return entityDimension; };
  
       constexpr static int getMeshDimension() { return meshDimension; };
  
