@@ -32,13 +32,13 @@ class GridEntityCenterGetter< GridEntity< Meshes::Grid< 1, Real, Device, Index >
  
       typedef Meshes::Grid< 1, Real, Device, Index > GridType;
       typedef GridEntity< GridType, 1, Config > GridEntityType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
  
       __cuda_callable__ inline
-      static VertexType getEntityCenter( const GridEntityType& entity )
+      static PointType getEntityCenter( const GridEntityType& entity )
       {
          const GridType& grid = entity.getMesh();
-         return VertexType(
+         return PointType(
             grid.getOrigin().x() + ( entity.getCoordinates().x() + 0.5 ) * grid.getSpaceSteps().x() );
       }
 };
@@ -53,13 +53,13 @@ class GridEntityCenterGetter< GridEntity< Meshes::Grid< 1, Real, Device, Index >
  
       typedef Meshes::Grid< 1, Real, Device, Index > GridType;
       typedef GridEntity< GridType, 0, Config > GridEntityType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
  
       __cuda_callable__ inline
-      static VertexType getEntityCenter( const GridEntityType& entity )
+      static PointType getEntityCenter( const GridEntityType& entity )
       {
          const GridType& grid = entity.getMesh();
-         return VertexType(
+         return PointType(
             grid.getOrigin().x() + ( entity.getCoordinates().x() ) * grid.getSpaceSteps().x() );
       }
 };
@@ -77,13 +77,13 @@ class GridEntityCenterGetter< GridEntity< Meshes::Grid< 2, Real, Device, Index >
  
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef GridEntity< GridType, 2, Config > GridEntityType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
  
       __cuda_callable__ inline
-      static VertexType getEntityCenter( const GridEntityType& entity )
+      static PointType getEntityCenter( const GridEntityType& entity )
       {
          const GridType& grid = entity.getMesh();
-         return VertexType(
+         return PointType(
             grid.getOrigin().x() + ( entity.getCoordinates().x() + 0.5 ) * grid.getSpaceSteps().x(),
             grid.getOrigin().y() + ( entity.getCoordinates().y() + 0.5 ) * grid.getSpaceSteps().y() );
       }
@@ -99,13 +99,13 @@ class GridEntityCenterGetter< GridEntity< Meshes::Grid< 2, Real, Device, Index >
  
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef GridEntity< GridType, 1, Config > GridEntityType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
  
       __cuda_callable__ inline
-      static VertexType getEntityCenter( const GridEntityType& entity )
+      static PointType getEntityCenter( const GridEntityType& entity )
       {
          const GridType& grid = entity.getMesh();
-         return VertexType(
+         return PointType(
             grid.getOrigin().x() +
                ( entity.getCoordinates().x() + 0.5 * entity.getBasis().x() ) * grid.getSpaceSteps().x(),
             grid.getOrigin().y() +
@@ -124,13 +124,13 @@ class GridEntityCenterGetter< GridEntity< Meshes::Grid< 2, Real, Device, Index >
  
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef GridEntity< GridType, 0, Config > GridEntityType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
  
       __cuda_callable__ inline
-      static VertexType getEntityCenter( const GridEntityType& entity )
+      static PointType getEntityCenter( const GridEntityType& entity )
       {
          const GridType& grid = entity.getMesh();
-         return VertexType(
+         return PointType(
             grid.getOrigin().x() + entity.getCoordinates().x() * grid.getSpaceSteps().x(),
             grid.getOrigin().y() + entity.getCoordinates().y() * grid.getSpaceSteps().y() );
       }
@@ -151,13 +151,13 @@ class GridEntityCenterGetter< GridEntity< Meshes::Grid< 3, Real, Device, Index >
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
       typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
  
       __cuda_callable__ inline
-      static VertexType getEntityCenter( const GridEntityType& entity )
+      static PointType getEntityCenter( const GridEntityType& entity )
       {
          const GridType& grid = entity.getMesh();
-         return VertexType(
+         return PointType(
             grid.getOrigin().x() +
                ( entity.getCoordinates().x() + 0.5 * entity.getBasis().x() ) * grid.getSpaceSteps().x(),
             grid.getOrigin().y() +
@@ -177,13 +177,13 @@ class GridEntityCenterGetter< GridEntity< Meshes::Grid< 3, Real, Device, Index >
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
       typedef GridEntity< GridType, 3, Config > GridEntityType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
  
       __cuda_callable__ inline
-      static VertexType getEntityCenter( const GridEntityType& entity )
+      static PointType getEntityCenter( const GridEntityType& entity )
       {
          const GridType& grid = entity.getMesh();
-         return VertexType(
+         return PointType(
             grid.getOrigin().x() + ( entity.getCoordinates().x() + 0.5 ) * grid.getSpaceSteps().x(),
             grid.getOrigin().y() + ( entity.getCoordinates().y() + 0.5 ) * grid.getSpaceSteps().y(),
             grid.getOrigin().z() + ( entity.getCoordinates().z() + 0.5 ) * grid.getSpaceSteps().z() );
@@ -200,13 +200,13 @@ class GridEntityCenterGetter< GridEntity< Meshes::Grid< 3, Real, Device, Index >
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
       typedef GridEntity< GridType, 0, Config > GridEntityType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
  
       __cuda_callable__ inline
-      static VertexType getEntityCenter( const GridEntityType& entity )
+      static PointType getEntityCenter( const GridEntityType& entity )
       {
          const GridType& grid = entity.getMesh();
-         return VertexType(
+         return PointType(
             grid.getOrigin().x() + ( entity.getCoordinates().x() ) * grid.getSpaceSteps().x(),
             grid.getOrigin().y() + ( entity.getCoordinates().y() ) * grid.getSpaceSteps().y(),
             grid.getOrigin().z() + ( entity.getCoordinates().z() ) * grid.getSpaceSteps().z() );

@@ -19,36 +19,36 @@ namespace TNL {
       namespace Analytic {
 
 
-template< typename Vertex >
-class SinBumpsSDFBase : public Domain< Vertex::size, SpaceDomain >
+template< typename Point >
+class SinBumpsSDFBase : public Domain< Point::size, SpaceDomain >
 {
    public:
 
-      typedef Vertex VertexType;
-      typedef typename Vertex::RealType RealType;
-      enum { Dimensions = VertexType::size };
+      typedef Point PointType;
+      typedef typename Point::RealType RealType;
+      enum { Dimensions = PointType::size };
 
-      void setWaveLength( const VertexType& waveLength );
+      void setWaveLength( const PointType& waveLength );
 
-      const VertexType& getWaveLength() const;
+      const PointType& getWaveLength() const;
 
       void setAmplitude( const RealType& amplitude );
 
       const RealType& getAmplitude() const;
 
-      void setPhase( const VertexType& phase );
+      void setPhase( const PointType& phase );
 
-      const VertexType& getPhase() const;
+      const PointType& getPhase() const;
 
-      void setWavesNumber( const VertexType& wavesNumber );
+      void setWavesNumber( const PointType& wavesNumber );
 
-      const VertexType& getWavesNumber() const;
+      const PointType& getWavesNumber() const;
 
    protected:
 
       RealType amplitude;
 
-      VertexType waveLength, phase, wavesNumber;
+      PointType waveLength, phase, wavesNumber;
 };
 
 template< int Dimensions, typename Real >
@@ -62,7 +62,7 @@ class SinBumpsSDF< 1, Real  > : public SinBumpsSDFBase< Containers::StaticVector
    public:
 
       typedef Real RealType;
-      typedef Containers::StaticVector< 1, RealType > VertexType;
+      typedef Containers::StaticVector< 1, RealType > PointType;
 
 
       SinBumpsSDF();
@@ -80,11 +80,11 @@ class SinBumpsSDF< 1, Real  > : public SinBumpsSDFBase< Containers::StaticVector
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
 
    __cuda_callable__
-   RealType operator()( const VertexType& v,
+   RealType operator()( const PointType& v,
                         const Real& time = 0.0 ) const;
 
 };
@@ -95,7 +95,7 @@ class SinBumpsSDF< 2, Real > : public SinBumpsSDFBase< Containers::StaticVector<
    public:
 
       typedef Real RealType;
-      typedef Containers::StaticVector< 2, RealType > VertexType;
+      typedef Containers::StaticVector< 2, RealType > PointType;
 
 
       SinBumpsSDF();
@@ -113,11 +113,11 @@ class SinBumpsSDF< 2, Real > : public SinBumpsSDFBase< Containers::StaticVector<
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
 
    __cuda_callable__
-   RealType operator()( const VertexType& v,
+   RealType operator()( const PointType& v,
                         const Real& time = 0.0 ) const;
 
 };
@@ -128,7 +128,7 @@ class SinBumpsSDF< 3, Real > : public SinBumpsSDFBase< Containers::StaticVector<
    public:
 
       typedef Real RealType;
-      typedef Containers::StaticVector< 3, RealType > VertexType;
+      typedef Containers::StaticVector< 3, RealType > PointType;
 
       SinBumpsSDF();
 
@@ -145,11 +145,11 @@ class SinBumpsSDF< 3, Real > : public SinBumpsSDFBase< Containers::StaticVector<
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                          const Real& time = 0.0 ) const;
 
    __cuda_callable__
-   RealType operator()( const VertexType& v,
+   RealType operator()( const PointType& v,
                         const Real& time = 0.0 ) const;
 
 };

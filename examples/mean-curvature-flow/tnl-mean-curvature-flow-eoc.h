@@ -69,7 +69,7 @@ class meanCurvatureFlowEocSetter
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef typename MeshType::VertexType Vertex;
+   typedef typename MeshType::PointType Point;
    enum { Dimension = MeshType::meshDimension };
 
    static bool run( const Config::ParameterContainer& parameters )
@@ -81,7 +81,7 @@ class meanCurvatureFlowEocSetter
       typedef ExactNonlinearDiffusion< ExactGradientNorm< Dimension >, Dimension > ExactOperator;
       typedef TestFunction< MeshType::meshDimension, Real, Device > TestFunction;
       typedef MeanCurvatureFlowEocRhs< ExactOperator, TestFunction, Dimension > RightHandSide;
-      typedef StaticVector < MeshType::meshDimension, Real > Vertex;
+      typedef StaticVector < MeshType::meshDimension, Real > Point;
       typedef DirichletBoundaryConditions< MeshType, TestFunction, Dimension, Real, Index > BoundaryConditions;
       typedef MeanCurvatureFlowEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;

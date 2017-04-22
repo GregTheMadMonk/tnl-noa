@@ -168,8 +168,8 @@ Grid< 2, Real, Device, Index > :: getDimensions() const
 template< typename Real,
           typename Device,
           typename Index >
-void Grid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
-                                                     const VertexType& proportions )
+void Grid< 2, Real, Device, Index > :: setDomain( const PointType& origin,
+                                                     const PointType& proportions )
 {
    this->origin = origin;
    this->proportions = proportions;
@@ -180,7 +180,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 2, Real, Device, Index >::VertexType&
+const typename Grid< 2, Real, Device, Index >::PointType&
 Grid< 2, Real, Device, Index >::getOrigin() const
 {
    return this->origin;
@@ -190,7 +190,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 2, Real, Device, Index > :: VertexType&
+const typename Grid< 2, Real, Device, Index > :: PointType&
    Grid< 2, Real, Device, Index > :: getProportions() const
 {
    return this->proportions;
@@ -299,16 +299,16 @@ getCellMeasure() const
 }
 
 
-/*template< typename Real,
+template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
-typename Grid< 2, Real, Device, Index >::VertexType&
+__cuda_callable__ inline
+const typename Grid< 2, Real, Device, Index >::PointType&
 Grid< 2, Real, Device, Index >::
 getSpaceSteps() const
 {
    return this->spaceSteps;
-}*/
+}
 
 template< typename Real,
           typename Device,
@@ -479,7 +479,7 @@ bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
            << std::endl << std::endl;
       MeshEntity< 0 > vertex( *this );
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
-      VertexType v;
+      PointType v;
       for( Index j = 0; j < this->dimensions. y(); j ++ )
       {
          file << "draw( ";
@@ -531,13 +531,13 @@ bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
       for( Index i = 0; i < this->dimensions. x(); i ++ )
          for( Index j = 0; j < this->dimensions. y(); j ++ )
          {
-            VertexType v1, v2, c;
+            PointType v1, v2, c;
 
             /****
              * East edge normal
              */
-            /*v1 = this->getVertex( CoordinatesType( i + 1, j ), v1 );
-            v2 = this->getVertex( CoordinatesType( i + 1, j + 1 ), v2 );
+            /*v1 = this->getPoint( CoordinatesType( i + 1, j ), v1 );
+            v2 = this->getPoint( CoordinatesType( i + 1, j + 1 ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< 1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
@@ -547,8 +547,8 @@ bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
             /****
              * West edge normal
              */
-            /*this->getVertex< -1, -1 >( CoordinatesType( i, j ), v1 );
-            this->getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
+            /*this->getPoint< -1, -1 >( CoordinatesType( i, j ), v1 );
+            this->getPoint< -1, 1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< -1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
@@ -558,8 +558,8 @@ bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
             /****
              * North edge normal
              */
-            /*this->getVertex< 1, 1 >( CoordinatesType( i, j ), v1 );
-            this->getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
+            /*this->getPoint< 1, 1 >( CoordinatesType( i, j ), v1 );
+            this->getPoint< -1, 1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< 0, 1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
@@ -569,8 +569,8 @@ bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
             /****
              * South edge normal
              */
-            /*this->getVertex< 1, -1 >( CoordinatesType( i, j ), v1 );
-            this->getVertex< -1, -1 >( CoordinatesType( i, j ), v2 );
+            /*this->getPoint< 1, -1 >( CoordinatesType( i, j ), v1 );
+            this->getPoint< -1, -1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< 0, -1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
@@ -614,7 +614,7 @@ bool Grid< 2, Real, Device, Index > :: write( const MeshFunction& function,
       {
          for( cellCoordinates.x() = 0; cellCoordinates.x() < getDimensions(). x(); cellCoordinates.x() ++ )
          {
-            VertexType v = cell.getCenter();
+            PointType v = cell.getCenter();
             GnuplotWriter::write( file,  v );
             GnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
             file << std::endl;

@@ -28,7 +28,7 @@ class RiemannProblemInitialCondition
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       static const int Dimensions = MeshType::getDimension();
-      typedef Containers::StaticVector< Dimensions, RealType > VertexType;
+      typedef Containers::StaticVector< Dimensions, RealType > PointType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef Functions::VectorField< Dimensions, MeshType > VectorFieldType;
@@ -73,12 +73,12 @@ class RiemannProblemInitialCondition
          return true;
       };
       
-      void setDiscontinuityPlacement( const VertexType& v )
+      void setDiscontinuityPlacement( const PointType& v )
       {
          this->discontinuityPlacement = v;
       }
       
-      const VertexType& getDiscontinuityPlasement() const
+      const PointType& getDiscontinuityPlasement() const
       {
          return this->discontinuityPlacement;
       }
@@ -103,12 +103,12 @@ class RiemannProblemInitialCondition
          return this->rightDensity;
       }
 
-      void setLeftVelocity( const VertexType& leftVelocity )
+      void setLeftVelocity( const PointType& leftVelocity )
       {
          this->leftVelocity = leftVelocity;
       }
       
-      const VertexType& getLeftVelocity() const
+      const PointType& getLeftVelocity() const
       {
          return this->leftVelocity;
       }
@@ -118,7 +118,7 @@ class RiemannProblemInitialCondition
          this->rightVelocity = rightVelocity;
       }
       
-      const VertexType& getRightVelocity() const
+      const PointType& getRightVelocity() const
       {
          return this->rightVelocity;
       }
@@ -144,7 +144,7 @@ class RiemannProblemInitialCondition
       }
       
       void setInitialCondition( CompressibleConservativeVariables< MeshType >& conservativeVariables,
-                                const VertexType& center = VertexType( 0.0 ) )
+                                const PointType& center = PointType( 0.0 ) )
       {
          typedef Functions::Analytic::VectorNorm< Dimensions, RealType > VectorNormType;
          typedef Operators::Analytic::Sign< Dimensions, RealType > SignType;
@@ -197,10 +197,10 @@ class RiemannProblemInitialCondition
       
    protected:
       
-      VertexType discontinuityPlacement;
+      PointType discontinuityPlacement;
       
       RealType leftDensity, rightDensity;
-      VertexType leftVelocity, rightVelocity;
+      PointType leftVelocity, rightVelocity;
       RealType leftPressure, rightPressure;
       
       RealType gamma; // gamma in the ideal gas state equation

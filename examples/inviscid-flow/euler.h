@@ -65,7 +65,7 @@ class eulerSetter
           enum { Dimension = MeshType::getDimension() };
           typedef LaxFridrichs< MeshType, Real, Index > ApproximateOperator;
           typedef eulerRhs< MeshType, Real > RightHandSide;
-          typedef Containers::StaticVector < MeshType::getDimension(), Real > Vertex;
+          typedef Containers::StaticVector < MeshType::getDimension(), Real > Point;
 
          /****
           * Resolve the template arguments of your solver here.

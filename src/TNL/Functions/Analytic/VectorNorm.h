@@ -24,7 +24,7 @@ class VectorNormBase : public Domain< Dimensions_, SpaceDomain >
    public:
       
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions_, RealType > VertexType;
+      typedef Containers::StaticVector< Dimensions_, RealType > PointType;
  
       VectorNormBase()
          : center( 0.0 ),
@@ -60,7 +60,7 @@ class VectorNormBase : public Domain< Dimensions_, SpaceDomain >
                  this->anisotropy.setup( parameters, prefix + "anisotropy-" ) );
       };
 
-      void setCenter( const VertexType& center )
+      void setCenter( const PointType& center )
       {
          this->center = center;
       };
@@ -70,7 +70,7 @@ class VectorNormBase : public Domain< Dimensions_, SpaceDomain >
          return this->center;
       }
       
-      void setAnisotropy( const VertexType& anisotropy )
+      void setAnisotropy( const PointType& anisotropy )
       {
          this->anisotropy = anisotropy;
       };
@@ -122,7 +122,7 @@ class VectorNormBase : public Domain< Dimensions_, SpaceDomain >
       
    protected:
 
-      VertexType center, anisotropy;
+      PointType center, anisotropy;
       
       RealType power, radius, multiplicator;
       
@@ -142,7 +142,7 @@ class VectorNorm< 1, Real > : public VectorNormBase< 1, Real >
  
       typedef VectorNormBase< 1, Real > BaseType;      
       using typename BaseType::RealType;
-      using typename BaseType::VertexType;
+      using typename BaseType::PointType;
 
       static String getType();
 
@@ -150,7 +150,7 @@ class VectorNorm< 1, Real > : public VectorNormBase< 1, Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const
       {
          const RealType& x = v.x() - this->center.x();
@@ -168,7 +168,7 @@ class VectorNorm< 1, Real > : public VectorNormBase< 1, Real >
       }
       
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const RealType& time = 0.0 ) const
       {
          return this->template getPartialDerivative< 0, 0, 0 >( v, time );
@@ -182,7 +182,7 @@ class VectorNorm< 2, Real > : public VectorNormBase< 2, Real >
       
       typedef VectorNormBase< 2, Real > BaseType;      
       using typename BaseType::RealType;
-      using typename BaseType::VertexType;
+      using typename BaseType::PointType;
 
       static String getType();
 
@@ -190,7 +190,7 @@ class VectorNorm< 2, Real > : public VectorNormBase< 2, Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
       __cuda_callable__ inline
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const
       {
          const RealType& x = v.x() - this->center.x();
@@ -216,7 +216,7 @@ class VectorNorm< 2, Real > : public VectorNormBase< 2, Real >
       }
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const
       {
          return this->template getPartialDerivative< 0, 0, 0 >( v, time );
@@ -230,7 +230,7 @@ class VectorNorm< 3, Real > : public VectorNormBase< 3, Real >
  
       typedef VectorNormBase< 3, Real > BaseType;      
       using typename BaseType::RealType;
-      using typename BaseType::VertexType;
+      using typename BaseType::PointType;
 
       static String getType();
 
@@ -238,7 +238,7 @@ class VectorNorm< 3, Real > : public VectorNormBase< 3, Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const
       {
          const RealType& x = v.x() - this->center.x();
@@ -267,7 +267,7 @@ class VectorNorm< 3, Real > : public VectorNormBase< 3, Real >
       }
       
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const
       {
          return this->template getPartialDerivative< 0, 0, 0 >( v, time );

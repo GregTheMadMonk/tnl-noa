@@ -65,7 +65,7 @@ class Paraboloid< 1, Real > : public ParaboloidBase< 1, Real >
    public:
 
       typedef Real RealType;
-      typedef Containers::StaticVector< 1, RealType > VertexType;
+      typedef Containers::StaticVector< 1, RealType > PointType;
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -77,11 +77,11 @@ class Paraboloid< 1, Real > : public ParaboloidBase< 1, Real >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
 
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const
       {
          return this->getPartialDerivative< 0, 0, 0 >( v, time );
@@ -95,7 +95,7 @@ class Paraboloid< 2, Real > : public ParaboloidBase< 2, Real >
    public:
 
       typedef Real RealType;
-      typedef Containers::StaticVector< 2, RealType > VertexType;
+      typedef Containers::StaticVector< 2, RealType > PointType;
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -107,11 +107,11 @@ class Paraboloid< 2, Real > : public ParaboloidBase< 2, Real >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
 
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const
       {
          return this->getPartialDerivative< 0, 0, 0 >( v, time );
@@ -125,7 +125,7 @@ class Paraboloid< 3, Real > : public ParaboloidBase< 3, Real >
    public:
 
       typedef Real RealType;
-      typedef Containers::StaticVector< 3, RealType > VertexType;
+      typedef Containers::StaticVector< 3, RealType > PointType;
 
 
 
@@ -139,11 +139,11 @@ class Paraboloid< 3, Real > : public ParaboloidBase< 3, Real >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                          const Real& time = 0.0 ) const;
 
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const
       {
          return this->getPartialDerivative< 0, 0, 0 >( v, time );

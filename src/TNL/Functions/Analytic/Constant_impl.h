@@ -68,7 +68,7 @@ template< int Dimension,
              int ZDiffOrder >
 Real
 Constant< Dimension, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    if( XDiffOrder || YDiffOrder || ZDiffOrder )

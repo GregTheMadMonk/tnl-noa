@@ -374,7 +374,7 @@ class OperatorFunction< Operator, Function, void, false, true >
       
       typedef Function FunctionType;
       typedef typename FunctionType::RealType RealType;
-      typedef typename FunctionType::VertexType VertexType;
+      typedef typename FunctionType::PointType PointType;
       typedef Operator OperatorType;
       
       bool setup( const Config::ParameterContainer& parameters,
@@ -409,7 +409,7 @@ class OperatorFunction< Operator, Function, void, false, true >
       }
       
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const RealType& time = 0.0 ) const
       {
          return this->operator_( this->function, v, time );

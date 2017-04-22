@@ -41,7 +41,7 @@ class DirichletBoundaryConditions
       
       typedef SharedPointer< Mesh > MeshPointer;
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
-      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::PointType PointType;
 
       static constexpr int getDimension() { return MeshType::meshDimension; }
 

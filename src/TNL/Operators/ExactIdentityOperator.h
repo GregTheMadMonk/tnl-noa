@@ -33,7 +33,7 @@ class ExactIdentityOperator
       __cuda_callable__
       typename Function::RealType
          operator()( const Function& function,
-                     const typename Function::VertexType& v,
+                     const typename Function::PointType& v,
                      const typename Function::RealType& time = 0.0 ) const
       {
          return function( v, time );
@@ -46,7 +46,7 @@ class ExactIdentityOperator
       __cuda_callable__
       typename Function::RealType
          getPartialDerivative( const Function& function,
-                               const typename Function::VertexType& v,
+                               const typename Function::PointType& v,
                                const typename Function::RealType& time = 0.0 ) const
       {
          static_assert( XDerivative >= 0 && YDerivative >= 0 && ZDerivative >= 0,

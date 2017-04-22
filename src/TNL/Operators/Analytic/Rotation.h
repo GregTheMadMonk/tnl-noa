@@ -29,24 +29,24 @@ class RotationBase
 {
    public:
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimenions, RealType > VertexType;
+      typedef Containers::StaticVector< Dimenions, RealType > PointType;
       
       RotationBase() : center( 0.0 ) {};
       
-      void setCenter( const VertexType& center )
+      void setCenter( const PointType& center )
       {
          this->center = center;
       }
       
       __cuda_callable__
-      const VertexType& getCenter() const
+      const PointType& getCenter() const
       {
          return this->center;
       }
       
    protected:
       
-      VertexType center;
+      PointType center;
 };
    
 template< typename Function,
@@ -61,7 +61,7 @@ class Rotation: public Functions::Domain< Function::getDomainDimenions(),
       
       typedef typename Function::RealType RealType;
       typedef Containers::StaticVector< Function::getDomainDimenions(), 
-                                        RealType > VertexType;
+                                        RealType > PointType;
       
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" ){};
@@ -69,7 +69,7 @@ class Rotation: public Functions::Domain< Function::getDomainDimenions(),
       
       __cuda_callable__
       RealType operator()( const Function& function,
-                           const VertexType& vertex,
+                           const PointType& vertex,
                            const RealType& time = 0 ) const
       {
          return function( vertex, time );

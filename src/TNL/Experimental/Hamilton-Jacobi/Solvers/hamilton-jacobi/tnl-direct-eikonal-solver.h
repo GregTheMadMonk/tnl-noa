@@ -50,7 +50,7 @@ class tnlDirectEikonalSolverSetter
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef Containers::StaticVector< MeshType::meshDimensions, Real > Vertex;
+   typedef Containers::StaticVector< MeshType::meshDimensions, Real > Point;
 
    static bool run( const Config::ParameterContainer& parameters )
    {

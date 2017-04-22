@@ -16,38 +16,38 @@ namespace TNL {
    namespace Functions {
       namespace Analytic {
 
-template< typename Vertex >
-void SinBumpsSDFBase< Vertex >::setWaveLength( const Vertex& waveLength )
+template< typename Point >
+void SinBumpsSDFBase< Point >::setWaveLength( const Point& waveLength )
 {
    this->waveLength = waveLength;
 }
 
-template< typename Vertex >
-const Vertex& SinBumpsSDFBase< Vertex >::getWaveLength() const
+template< typename Point >
+const Point& SinBumpsSDFBase< Point >::getWaveLength() const
 {
    return this->waveLength;
 }
 
-template< typename Vertex >
-void SinBumpsSDFBase< Vertex >::setAmplitude( const typename Vertex::RealType& amplitude )
+template< typename Point >
+void SinBumpsSDFBase< Point >::setAmplitude( const typename Point::RealType& amplitude )
 {
    this->amplitude = amplitude;
 }
 
-template< typename Vertex >
-const typename Vertex::RealType& SinBumpsSDFBase< Vertex >::getAmplitude() const
+template< typename Point >
+const typename Point::RealType& SinBumpsSDFBase< Point >::getAmplitude() const
 {
    return this->amplitude;
 }
 
-template< typename Vertex >
-void SinBumpsSDFBase< Vertex >::setPhase( const Vertex& phase )
+template< typename Point >
+void SinBumpsSDFBase< Point >::setPhase( const Point& phase )
 {
    this->phase = phase;
 }
 
-template< typename Vertex >
-const Vertex& SinBumpsSDFBase< Vertex >::getPhase() const
+template< typename Point >
+const Point& SinBumpsSDFBase< Point >::getPhase() const
 {
    return this->phase;
 }
@@ -82,7 +82,7 @@ template< typename Real >
 __cuda_callable__
 Real
 SinBumpsSDF< 1, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();
@@ -135,7 +135,7 @@ template< typename Real >
 __cuda_callable__
 Real
 SinBumpsSDF< 2, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
 	   const RealType& x = v.x();
@@ -202,7 +202,7 @@ template< typename Real >
 __cuda_callable__
 Real
 SinBumpsSDF< 3, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
 	   const RealType& x = v.x();

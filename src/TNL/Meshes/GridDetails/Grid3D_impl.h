@@ -214,8 +214,8 @@ const typename Grid< 3, Real, Device, Index > :: CoordinatesType&
 template< typename Real,
           typename Device,
           typename Index >
-void Grid< 3, Real, Device, Index > :: setDomain( const VertexType& origin,
-                                                     const VertexType& proportions )
+void Grid< 3, Real, Device, Index > :: setDomain( const PointType& origin,
+                                                     const PointType& proportions )
 {
    this->origin = origin;
    this->proportions = proportions;
@@ -226,7 +226,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 3, Real, Device, Index >::VertexType&
+const typename Grid< 3, Real, Device, Index >::PointType&
 Grid< 3, Real, Device, Index >::getOrigin() const
 {
    return this->origin;
@@ -236,7 +236,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 3, Real, Device, Index > :: VertexType&
+const typename Grid< 3, Real, Device, Index > :: PointType&
    Grid< 3, Real, Device, Index > :: getProportions() const
 {
 	return this->proportions;
@@ -347,16 +347,16 @@ getCellMeasure() const
    return this->template getSpaceStepsProducts< 1, 1, 1 >();
 }
 
-/*template< typename Real,
+template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
-typename Grid< 3, Real, Device, Index >::VertexType&
+__cuda_callable__ inline
+const typename Grid< 3, Real, Device, Index >::PointType&
 Grid< 3, Real, Device, Index >::
 getSpaceSteps() const
 {
    return this->spaceSteps;
-}*/
+}
 
 template< typename Real,
           typename Device,
@@ -578,7 +578,7 @@ bool Grid< 3, Real, Device, Index > :: write( const MeshFunction& function,
                  cell.getCoordinates().x() < getDimensions().x();
                  cell.getCoordinates().x()++ )
             {
-               VertexType v = cell.getCenter();
+               PointType v = cell.getCenter();
                GnuplotWriter::write( file, v );
                GnuplotWriter::write( file, function[ this->template getEntityIndex( cell ) ] );
                file << std::endl;

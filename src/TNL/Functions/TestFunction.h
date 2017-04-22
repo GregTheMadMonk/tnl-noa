@@ -53,7 +53,7 @@ class TestFunction : public Domain< FunctionDimension, SpaceDomain >
 
       enum{ Dimension = FunctionDimension };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimension, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       TestFunction();
 
@@ -75,11 +75,11 @@ class TestFunction : public Domain< FunctionDimension, SpaceDomain >
                 int ZDiffOrder = 0 >
    #endif
       __cuda_callable__
-      Real getPartialDerivative( const VertexType& vertex,
+      Real getPartialDerivative( const PointType& vertex,
                                  const Real& time = 0 ) const;
 
       __cuda_callable__
-      Real operator()( const VertexType& vertex,
+      Real operator()( const PointType& vertex,
                      const Real& time = 0 ) const
       {
          return this->getPartialDerivative< 0, 0, 0 >( vertex, time );
@@ -96,16 +96,15 @@ class TestFunction : public Domain< FunctionDimension, SpaceDomain >
                 int ZDiffOrder = 0 >
    #endif
       __cuda_callable__
-      Real getTimeDerivative( const VertexType& vertex,
+      Real getTimeDerivative( const PointType& vertex,
                               const Real& time = 0 ) const;
-
    #ifdef HAVE_NOT_CXX11
-      template< typename Vertex >
+      template< typename Point >
       __cuda_callable__
-      Real getTimeDerivative( const Vertex& vertex,
+      Real getTimeDerivative( const Point& vertex,
                               const Real& time = 0 ) const
       {
-         return this->getTimeDerivative< 0, 0, 0, Vertex >( vertex, time );
+         return this->getTimeDerivative< 0, 0, 0, Point >( vertex, time );
       }
    #endif
 
@@ -122,7 +121,6 @@ class TestFunction : public Domain< FunctionDimension, SpaceDomain >
       template< typename OperatorType >
       bool setupOperator( const Config::ParameterContainer& parameters,
                           const String& prefix = "" );
-
 
       template< typename FunctionType >
       void deleteFunction();

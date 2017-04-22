@@ -37,7 +37,7 @@ class LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, Pressu
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename MeshType :: VertexType VertexType;
+   typedef typename MeshType :: PointType PointType;
    typedef typename MeshType :: CoordinatesType CoordinatesType;
 
    LaxFridrichs();
@@ -106,7 +106,7 @@ class LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeomet
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename MeshType :: VertexType VertexType;
+   typedef typename MeshType :: PointType PointType;
    typedef typename MeshType :: CoordinatesType CoordinatesType;
 
    LaxFridrichs();

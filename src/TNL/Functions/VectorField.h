@@ -29,7 +29,7 @@ class VectorField
       
       typedef Function FunctionType;
       typedef typename FunctionType::RealType RealType;
-      typedef typename FunctionType::VertexType VertexType;
+      typedef typename FunctionType::PointType PointType;
       
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )

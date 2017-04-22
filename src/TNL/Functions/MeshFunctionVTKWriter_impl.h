@@ -40,8 +40,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -110,8 +110,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -180,8 +180,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -261,8 +261,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -351,8 +351,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -431,8 +431,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -528,8 +528,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -648,8 +648,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -762,8 +762,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;

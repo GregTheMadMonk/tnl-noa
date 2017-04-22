@@ -190,7 +190,7 @@ void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, Pressur
    /****
     * Get the edge normals
     */
-   VertexType e_normal, w_normal, n_normal, s_normal;
+   PointType e_normal, w_normal, n_normal, s_normal;
    this->mesh -> template getEdgeNormal<  1,  0 >( c_coordinates, e_normal );
    this->mesh -> template getEdgeNormal< -1,  0 >( c_coordinates, w_normal );
    this->mesh -> template getEdgeNormal<  0,  1 >( c_coordinates, n_normal );
@@ -229,7 +229,7 @@ void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, Pressur
    /****
     * Compute the pressure gradient
     */
-   VertexType grad_p;
+   PointType grad_p;
    pressureGradient -> getGradient( c, grad_p );
 
    /****
@@ -426,7 +426,7 @@ void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometr
    /****
     * Compute the pressure gradient
     */
-   VertexType grad_p;
+   PointType grad_p;
    pressureGradient -> getGradient( c, grad_p );
 
    /****
@@ -484,7 +484,7 @@ void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometr
    /****
     * Compute the pressure gradient
     */
-   VertexType grad_p;
+   PointType grad_p;
    pressureGradient -> getGradient( c, grad_p );
 
    /****

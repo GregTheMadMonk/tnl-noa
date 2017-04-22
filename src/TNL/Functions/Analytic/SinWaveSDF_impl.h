@@ -106,7 +106,7 @@ template< typename Real >
 __cuda_callable__
 Real
 SinWaveSDF< 1, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -127,7 +127,7 @@ template< typename Real >
 __cuda_callable__
 Real
 SinWaveSDF< 2, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    if( ZDiffOrder != 0 )
@@ -149,7 +149,7 @@ template< typename Real >
 __cuda_callable__
 Real
 SinWaveSDF< 3, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();

@@ -407,8 +407,8 @@ template< int FunctionDimension,
 __cuda_callable__
 Real
 TestFunction< FunctionDimension, Real, Device >::
-getPartialDerivative( const VertexType& vertex,
-                      const Real& time ) const
+getPartialDerivative( const PointType& vertex,
+          const Real& time ) const
 {
    using namespace TNL::Functions::Analytic;
    using namespace TNL::Operators::Analytic;
@@ -578,7 +578,7 @@ template< int FunctionDimension,
 __cuda_callable__
 Real
 TestFunction< FunctionDimension, Real, Device >::
-getTimeDerivative( const VertexType& vertex,
+getTimeDerivative( const PointType& vertex,
                    const Real& time ) const
 {
    using namespace TNL::Functions::Analytic;

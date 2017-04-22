@@ -35,7 +35,7 @@ class ExactDifference
       __cuda_callable__
       typename Function::RealType operator()(
          const Function& function,
-         const typename Function::VertexType& vertex,
+         const typename Function::PointType& vertex,
          const typename Function::RealType& time = 0 ) const
       {
          return function.template getPartialDerivative<

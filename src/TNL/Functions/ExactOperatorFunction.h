@@ -27,7 +27,7 @@ class ExactOperatorFunction : public Domain< Operator::getDomainDimension(), Spa
       typedef Operator OperatorType;
       typedef Function FunctionType;
       typedef typename FunctionType::RealType RealType;
-      typedef typename FunctionType::VertexType VertexType;
+      typedef typename FunctionType::PointType PointType;
  
       static constexpr int getDomainDimension() { return Operator::getDomainDimension(); }
  
@@ -38,7 +38,7 @@ class ExactOperatorFunction : public Domain< Operator::getDomainDimension(), Spa
  
       __cuda_callable__
       RealType operator()(
-         const VertexType& vertex,
+         const PointType& vertex,
          const RealType& time ) const
       {
          return this->operator_( function, vertex, time );

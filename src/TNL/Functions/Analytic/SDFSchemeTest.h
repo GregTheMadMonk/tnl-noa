@@ -51,13 +51,13 @@ class SDFSchemeTest< function, 1, Real > : public SDFSchemeTestBase< function, R
 
 
    enum { Dimensions = 1 };
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+   typedef Point PointType;
+   typedef typename PointType::RealType RealType;
 
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
              int ZDiffOrder = 0 >
-   RealType getValue( const VertexType& v,
+   RealType getValue( const PointType& v,
            const Real& time = 0.0 ) const;
 
 
@@ -71,13 +71,13 @@ class SDFSchemeTest< function, 2, Real > : public SDFSchemeTestBase< function, R
 
 
    enum { Dimensions = 2 };
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+   typedef Point PointType;
+   typedef typename PointType::RealType RealType;
 
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
              int ZDiffOrder = 0 >
-   RealType getValue( const VertexType& v,
+   RealType getValue( const PointType& v,
            const Real& time = 0.0 ) const;
 
 
@@ -90,13 +90,13 @@ class SDFSchemeTest< function, 3, Real > : public SDFSchemeTestBase< function,  
 
 
    enum { Dimensions = 3 };
-   typedef Vertex VertexType;
-   typedef typename VertexType::RealType RealType;
+   typedef Point PointType;
+   typedef typename PointType::RealType RealType;
 
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
              int ZDiffOrder = 0 >
-   RealType getValue( const VertexType& v,
+   RealType getValue( const PointType& v,
            const Real& time = 0.0 ) const;
 
 };

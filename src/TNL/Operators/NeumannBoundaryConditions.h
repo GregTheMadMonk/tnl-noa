@@ -108,7 +108,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 1, MeshReal, Device, MeshIndex >,
 
    typedef Function FunctionType;
    typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef Containers::StaticVector< 1, RealType > VertexType;
+   typedef Containers::StaticVector< 1, RealType > PointType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef NeumannBoundaryConditions< MeshType, Function, Real, Index > ThisType;
    typedef NeumannBoundaryConditionsBase< Function > BaseType;
@@ -201,7 +201,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
 
       typedef Function FunctionType;
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
-      typedef Containers::StaticVector< 2, RealType > VertexType;
+      typedef Containers::StaticVector< 2, RealType > PointType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef NeumannBoundaryConditions< MeshType, Function, Real, Index > ThisType;
       typedef NeumannBoundaryConditionsBase< Function > BaseType;
@@ -321,7 +321,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
 
       typedef Function FunctionType;
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
-      typedef Containers::StaticVector< 3, RealType > VertexType;
+      typedef Containers::StaticVector< 3, RealType > PointType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef NeumannBoundaryConditions< MeshType, Function, Real, Index > ThisType;
       typedef NeumannBoundaryConditionsBase< Function > BaseType;   

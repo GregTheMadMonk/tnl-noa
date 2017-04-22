@@ -29,7 +29,7 @@ class tnlNeumannReflectionBoundaryConditions< tnlGrid< 1, MeshReal, Device, Mesh
 
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef Containers::StaticVector< 1, RealType > VertexType;
+   typedef Containers::StaticVector< 1, RealType > PointType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
    bool setup( const Config::ParameterContainer& parameters,
@@ -62,7 +62,7 @@ class tnlNeumannReflectionBoundaryConditions< tnlGrid< 2, MeshReal, Device, Mesh
 
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef Containers::StaticVector< 2, RealType > VertexType;
+   typedef Containers::StaticVector< 2, RealType > PointType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
@@ -99,7 +99,7 @@ class tnlNeumannReflectionBoundaryConditions< tnlGrid< 3, MeshReal, Device, Mesh
 
    typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef Containers::StaticVector< 3, RealType > VertexType;
+   typedef Containers::StaticVector< 3, RealType > PointType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
 

@@ -42,7 +42,7 @@ bool HamiltonJacobiProblemSetter< RealType, DeviceType, IndexType, MeshType, Con
    }
    else
    {
-      typedef Containers::StaticVector < Dimensions, RealType > Vertex;
+      typedef Containers::StaticVector < Dimensions, RealType > Point;
       typedef tnlConstantFunction< Dimensions, RealType > ConstantFunctionType;
       typedef tnlNeumannBoundaryConditions< MeshType, ConstantFunctionType, RealType, IndexType > BoundaryConditions;
 
