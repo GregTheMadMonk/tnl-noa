@@ -17,7 +17,7 @@ namespace TNL {
 namespace Operators {   
 
 template< typename Mesh,
-          int InEntityDimensions,
+          int InEntityDimension,
           int OutEntityDimenions >
 class MeshEntitiesInterpolants
 {
@@ -42,7 +42,7 @@ class MeshEntitiesInterpolants< Meshes::Grid< 1, Real, Device, Index >, 1, 0 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntityDimensions() == 1,
+         static_assert( MeshFunction::getEntityDimension() == 1,
             "Mesh function must be defined on cells." );
 
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
@@ -74,7 +74,7 @@ class MeshEntitiesInterpolants< Meshes::Grid< 1, Real, Device, Index >, 0, 1 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntitiesDimensions() == 0,
+         static_assert( MeshFunction::getEntitiesDimension() == 0,
             "Mesh function must be defined on vertices (or faces in case on 1D grid)." );
  
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
@@ -106,7 +106,7 @@ class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 2, 1 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntityDimensions() == 2,
+         static_assert( MeshFunction::getEntityDimension() == 2,
             "Mesh function must be defined on cells." );
  
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
@@ -142,7 +142,7 @@ class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 2, 0 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntityDimensions() == 2,
+         static_assert( MeshFunction::getEntityDimension() == 2,
             "Mesh function must be defined on cells." );
  
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
@@ -176,7 +176,7 @@ class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 1, 2 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntitiesDimensions() == 1,
+         static_assert( MeshFunction::getEntitiesDimension() == 1,
             "Mesh function must be defined on faces." );
  
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
@@ -210,7 +210,7 @@ class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 0, 2 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntityDimensions() == 1,
+         static_assert( MeshFunction::getEntityDimension() == 1,
             "Mesh function must be defined on vertices." );
 
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
@@ -244,7 +244,7 @@ class MeshEntitiesInterpolants< Meshes::Grid< 3, Real, Device, Index >, 3, 2 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntityDimensions() == 3,
+         static_assert( MeshFunction::getEntityDimension() == 3,
             "Mesh function must be defined on cells." );
 
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
@@ -283,7 +283,7 @@ class MeshEntitiesInterpolants< Meshes::Grid< 3, Real, Device, Index >, 2, 3 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntitiesDimensions() == 2,
+         static_assert( MeshFunction::getEntitiesDimension() == 2,
             "Mesh function must be defined on faces." );
 
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,

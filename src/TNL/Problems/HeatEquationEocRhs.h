@@ -24,7 +24,7 @@ namespace Problems {
 template< typename ExactOperator,
           typename TestFunction >
 class HeatEquationEocRhs
- : public Functions::Domain< TestFunction::Dimensions, Functions::SpaceDomain >
+ : public Functions::Domain< TestFunction::Dimension, Functions::SpaceDomain >
 {
    public:
 

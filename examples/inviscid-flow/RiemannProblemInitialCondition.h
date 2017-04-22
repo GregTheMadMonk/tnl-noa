@@ -27,7 +27,7 @@ class RiemannProblemInitialCondition
       typedef typename MeshType::RealType RealType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
-      static const int Dimensions = MeshType::getMeshDimensions();
+      static const int Dimensions = MeshType::getDimension();
       typedef Containers::StaticVector< Dimensions, RealType > VertexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef SharedPointer< MeshFunctionType > MeshFunctionPointer;

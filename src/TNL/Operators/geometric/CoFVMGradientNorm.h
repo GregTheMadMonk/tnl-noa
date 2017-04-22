@@ -20,36 +20,36 @@ namespace TNL {
 namespace Operators {   
 
 template< typename Mesh,
-          int MeshEntityDimensions = Mesh::getMeshDimensions(),
+          int MeshEntityDimension = Mesh::getDimension(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class CoFVMGradientNorm
 {
 };
 
-template< int MeshDimensions,
+template< int MeshDimension,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
           typename Index >
-class CoFVMGradientNorm< Meshes::Grid< MeshDimensions, MeshReal, Device, MeshIndex >, MeshDimensions, Real, Index >
+class CoFVMGradientNorm< Meshes::Grid< MeshDimension, MeshReal, Device, MeshIndex >, MeshDimension, Real, Index >
 : public OperatorComposition<
-   MeshEntitiesInterpolants< Meshes::Grid< MeshDimensions, MeshReal, Device, MeshIndex >,
-                                MeshDimensions - 1,
-                                MeshDimensions >,
-   CoFVMGradientNorm< Meshes::Grid< MeshDimensions, MeshReal, Device, MeshIndex >, MeshDimensions - 1, Real, Index > >
+   MeshEntitiesInterpolants< Meshes::Grid< MeshDimension, MeshReal, Device, MeshIndex >,
+                                MeshDimension - 1,
+                                MeshDimension >,
+   CoFVMGradientNorm< Meshes::Grid< MeshDimension, MeshReal, Device, MeshIndex >, MeshDimension - 1, Real, Index > >
 {
    public:
-      typedef Meshes::Grid< MeshDimensions, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< MeshDimension, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef CoFVMGradientNorm< MeshType, MeshDimensions - 1, Real, Index > InnerOperator;
-      typedef MeshEntitiesInterpolants< MeshType, MeshDimensions - 1, MeshDimensions > OuterOperator;
+      typedef CoFVMGradientNorm< MeshType, MeshDimension - 1, Real, Index > InnerOperator;
+      typedef MeshEntitiesInterpolants< MeshType, MeshDimension - 1, MeshDimension > OuterOperator;
       typedef OperatorComposition< OuterOperator, InnerOperator > BaseType;
-      typedef ExactGradientNorm< MeshDimensions, RealType > ExactOperatorType;
+      typedef ExactGradientNorm< MeshDimension, RealType > ExactOperatorType;
       typedef SharedPointer< MeshType > MeshPointer;
          
       CoFVMGradientNorm( const OuterOperator& outerOperator,
@@ -62,7 +62,7 @@ class CoFVMGradientNorm< Meshes::Grid< MeshDimensions, MeshReal, Device, MeshInd
       {
          return String( "CoFVMGradientNorm< " ) +
             MeshType::getType() + ", " +
-            String( MeshDimensions ) + ", " +
+            String( MeshDimension ) + ", " +
            TNL::getType< Real >() + ", " +
            TNL::getType< Index >() + " >";
       }
@@ -72,8 +72,8 @@ class CoFVMGradientNorm< Meshes::Grid< MeshDimensions, MeshReal, Device, MeshInd
          this->getInnerOperator().setEps( eps );
       }
  
-      static constexpr int getPreimageEntitiesDimensions() { return MeshDimensions; };
-      static constexpr int getImageEntitiesDimensions() { return MeshDimensions; };
+      static constexpr int getPreimageEntitiesDimension() { return MeshDimension; };
+      static constexpr int getImageEntitiesDimension() { return MeshDimension; };
 
 };
 
@@ -94,8 +94,8 @@ class CoFVMGradientNorm< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, 0, Real,
    typedef Index IndexType;
    typedef ExactGradientNorm< 1, RealType > ExactOperatorType;
  
-   constexpr static int getPreimageEntitiesDimensions() { return MeshType::getMeshDimensions(); };
-   constexpr static int getImageEntitiesDimensions() { return MeshType::getMeshDimensions() - 1; };
+   constexpr static int getPreimageEntitiesDimension() { return MeshType::getDimension(); };
+   constexpr static int getImageEntitiesDimension() { return MeshType::getDimension() - 1; };
  
    CoFVMGradientNorm()
    : epsSquare( 0.0 ){}
@@ -114,9 +114,9 @@ class CoFVMGradientNorm< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, 0, Real,
                     const MeshEntity& entity,
                     const Real& time = 0.0 ) const
    {
-      static_assert( MeshFunction::getDimensions() == 1,
+      static_assert( MeshFunction::getDimension() == 1,
          "The mesh function u must be stored on mesh cells.." );
-      static_assert( MeshEntity::getDimensions() == 0,
+      static_assert( MeshEntity::getMeshDimension() == 0,
          "The complementary finite volume gradient norm may be evaluated only on faces." );
       const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.template getNeighbourEntities< 1 >();
  
@@ -154,8 +154,8 @@ class CoFVMGradientNorm< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real
    typedef Index IndexType;
    typedef ExactGradientNorm< 2, RealType > ExactOperatorType;
  
-   constexpr static int getPreimageEntitiesDimensions() { return MeshType::getMeshDimensions(); };
-   constexpr static int getImageEntitiesDimensions() { return MeshType::getMeshDimensions() - 1; };
+   constexpr static int getPreimageEntitiesDimension() { return MeshType::getDimension(); };
+   constexpr static int getImageEntitiesDimension() { return MeshType::getDimension() - 1; };
  
    CoFVMGradientNorm()
    : epsSquare( 0.0 ){}
@@ -176,9 +176,9 @@ class CoFVMGradientNorm< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real
                     const MeshEntity& entity,
                     const Real& time = 0.0 ) const
    {
-      static_assert( MeshFunction::getDimensions() == 2,
+      static_assert( MeshFunction::getDimension() == 2,
          "The mesh function u must be stored on mesh cells.." );
-      static_assert( MeshEntity::getDimensions() == 1,
+      static_assert( MeshEntity::getMeshDimension() == 1,
          "The complementary finite volume gradient norm may be evaluated only on faces." );
       const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.template getNeighbourEntities< 2 >();
       const RealType& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1,  0 >();
@@ -272,8 +272,8 @@ class CoFVMGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real
    typedef Index IndexType;
    typedef ExactGradientNorm< 3, RealType > ExactOperatorType;
  
-   constexpr static int getPreimageEntitiesDimensions() { return MeshType::getMeshDimensions(); };
-   constexpr static int getImageEntitiesDimensions() { return MeshType::getMeshDimensions() - 1; };
+   constexpr static int getPreimageEntitiesDimension() { return MeshType::getDimension(); };
+   constexpr static int getImageEntitiesDimension() { return MeshType::getDimension() - 1; };
  
    CoFVMGradientNorm()
    : epsSquare( 0.0 ){}
@@ -292,9 +292,9 @@ class CoFVMGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real
                     const MeshEntity& entity,
                     const Real& time = 0.0 ) const
    {
-      static_assert( MeshFunction::getDimensions() == 3,
+      static_assert( MeshFunction::getDimension() == 3,
          "The mesh function u must be stored on mesh cells.." );
-      static_assert( MeshEntity::getDimensions() == 2,
+      static_assert( MeshEntity::getMeshDimension() == 2,
          "The complementary finite volume gradient norm may be evaluated only on faces." );
       const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.template getNeighbourEntities< 3 >();
       const RealType& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1,  0,  0 >();

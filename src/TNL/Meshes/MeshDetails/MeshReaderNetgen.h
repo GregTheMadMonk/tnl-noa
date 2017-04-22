@@ -225,7 +225,7 @@ class MeshReaderNetgen
        return true;
    }
 
-   int getDimensions() const
+   int getDimension() const
    {
       return this->dimensions;
    }

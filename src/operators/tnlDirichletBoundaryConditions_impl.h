@@ -22,11 +22,11 @@
 
 template< typename Mesh,
           typename Function,
-          int MeshEntitiesDimensions,
+          int MeshEntitiesDimension,
           typename Real,
           typename Index >
 void
-tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimension, Real, Index >::
 configSetup( tnlConfigDescription& config,
              const String& prefix )
 {
@@ -35,11 +35,11 @@ configSetup( tnlConfigDescription& config,
 
 template< typename Mesh,
           typename Function,
-          int MeshEntitiesDimensions,
+          int MeshEntitiesDimension,
           typename Real,
           typename Index >
 bool
-tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimension, Real, Index >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -48,11 +48,11 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Mesh,
           typename Function,
-          int MeshEntitiesDimensions,
+          int MeshEntitiesDimension,
           typename Real,
           typename Index >
 void
-tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimension, Real, Index >::
 setFunction( const Function& function )
 {
    this->function = function;
@@ -60,11 +60,11 @@ setFunction( const Function& function )
 
 template< typename Mesh,
           typename Function,
-          int MeshEntitiesDimensions,
+          int MeshEntitiesDimension,
           typename Real,
           typename Index >
 Function&
-tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimension, Real, Index >::
 getFunction()
 {
    return this->function;
@@ -72,11 +72,11 @@ getFunction()
 
 template< typename Mesh,
           typename Function,
-          int MeshEntitiesDimensions,
+          int MeshEntitiesDimension,
           typename Real,
           typename Index >
 const Function&
-tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimension, Real, Index >::
 getFunction() const
 {
    return *this->function;
@@ -85,31 +85,31 @@ getFunction() const
 
 template< typename Mesh,
           typename Function,
-          int MeshEntitiesDimensions,
+          int MeshEntitiesDimension,
           typename Real,
           typename Index >
 template< typename EntityType,
           typename MeshFunction >
 __cuda_callable__
 const Real
-tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimension, Real, Index >::
 operator()( const MeshFunction& u,
             const EntityType& entity,            
             const RealType& time ) const
 {
-   //static_assert( EntityType::getDimensions() == MeshEntitiesDimensions, "Wrong mesh entity dimensions." );
+   //static_assert( EntityType::getDimensions() == MeshEntitiesDimension, "Wrong mesh entity dimensions." );
    return tnlFunctionAdapter< MeshType, Function >::template getValue( this->function, entity, time );
 }
 
 template< typename Mesh,
           typename Function,
-          int MeshEntitiesDimensions,
+          int MeshEntitiesDimension,
           typename Real,
           typename Index >
    template< typename EntityType >
 __cuda_callable__
 Index
-tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimension, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const EntityType& entity ) const
@@ -119,7 +119,7 @@ getLinearSystemRowLength( const MeshType& mesh,
 
 template< typename Mesh,
           typename Function,
-          int MeshEntitiesDimensions,
+          int MeshEntitiesDimension,
           typename Real,
           typename Index >
    template< typename Matrix,
@@ -127,7 +127,7 @@ template< typename Mesh,
              typename MeshFunction >
 __cuda_callable__
 void
-tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimension, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,

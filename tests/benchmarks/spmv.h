@@ -142,14 +142,14 @@ benchmarkSpMV( Benchmark & benchmark,
     deviceRowLengths.setValue( elementsPerRow );
 #endif
 
-    if( ! hostMatrix.setCompressedRowsLengths( hostRowLengths ) ) {
+    if( ! hostMatrix.setCompressedRowLengths( hostRowLengths ) ) {
         const char* msg = "error: allocation of host matrix failed";
         std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg, 2 );
         return false;
     }
 #ifdef HAVE_CUDA
-    if( ! deviceMatrix.setCompressedRowsLengths( deviceRowLengths ) ) {
+    if( ! deviceMatrix.setCompressedRowLengths( deviceRowLengths ) ) {
         const char* msg = "error: allocation of device matrix failed";
         std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg, 2 );

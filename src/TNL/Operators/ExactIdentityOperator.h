@@ -17,16 +17,16 @@
 namespace TNL {
 namespace Operators {
 
-template< int Dimensions >
+template< int Dimension >
 class ExactIdentityOperator
-   : public Functions::Domain< Dimensions, Functions::SpaceDomain >
+   : public Functions::Domain< Dimension, Functions::SpaceDomain >
 {
    public:
  
       static String getType()
       {
          return String( "ExactIdentityOperator< " ) +
-                String( Dimensions) + " >";
+                String( Dimension) + " >";
       }
  
       template< typename Function >

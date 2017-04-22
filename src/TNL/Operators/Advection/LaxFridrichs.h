@@ -31,7 +31,7 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
       
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef SharedPointer< MeshType > MeshPointer;
-      static const int Dimensions = MeshType::getMeshDimensions();
+      static const int Dimensions = MeshType::getDimension();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
@@ -89,8 +89,8 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         static_assert( MeshEntity::entityDimensions == 1, "Wrong mesh entity dimensions." ); 
-         static_assert( MeshFunction::getEntitiesDimensions() == 1, "Wrong preimage function" ); 
+         static_assert( MeshEntity::entityDimension == 1, "Wrong mesh entity dimensions." ); 
+         static_assert( MeshFunction::getEntitiesDimension() == 1, "Wrong preimage function" ); 
          const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
 
          const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1 >(); 
@@ -123,7 +123,7 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
       
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef SharedPointer< MeshType > MeshPointer;
-      static const int Dimensions = MeshType::getMeshDimensions();
+      static const int Dimensions = MeshType::getDimension();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
@@ -181,8 +181,8 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         static_assert( MeshEntity::entityDimensions == 2, "Wrong mesh entity dimensions." ); 
-         static_assert( MeshFunction::getEntitiesDimensions() == 2, "Wrong preimage function" ); 
+         static_assert( MeshEntity::entityDimension == 2, "Wrong mesh entity dimensions." ); 
+         static_assert( MeshFunction::getEntitiesDimension() == 2, "Wrong preimage function" ); 
          const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
 
          const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1, 0 >(); 
@@ -221,7 +221,7 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
       
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef SharedPointer< MeshType > MeshPointer;
-      static const int Dimensions = MeshType::getMeshDimensions();
+      static const int Dimensions = MeshType::getDimension();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
@@ -279,8 +279,8 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         static_assert( MeshEntity::entityDimensions == 3, "Wrong mesh entity dimensions." ); 
-         static_assert( MeshFunction::getEntitiesDimensions() == 3, "Wrong preimage function" ); 
+         static_assert( MeshEntity::entityDimension == 3, "Wrong mesh entity dimensions." ); 
+         static_assert( MeshFunction::getEntitiesDimension() == 3, "Wrong preimage function" ); 
          const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
 
          const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1,  0,  0 >(); 

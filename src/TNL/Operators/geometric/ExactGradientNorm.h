@@ -18,7 +18,7 @@
 namespace TNL {
 namespace Operators {   
 
-template< int Dimensions,
+template< int Dimension,
           typename Real = double >
 class ExactGradientNorm
 {};

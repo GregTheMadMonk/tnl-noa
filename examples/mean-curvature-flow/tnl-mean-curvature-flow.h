@@ -71,7 +71,7 @@ class meanCurvatureFlowSetter
    typedef Index IndexType;
 
    typedef typename MeshType::VertexType Vertex;
-   enum { Dimensions = MeshType::meshDimensions };
+   enum { Dimension = MeshType::meshDimension };
 
    static bool run( const Config::ParameterContainer& parameters )
    {
@@ -101,16 +101,16 @@ class meanCurvatureFlowSetter
    static bool setBoundaryConditions( const Config::ParameterContainer& parameters )
    {
       typedef OneSidedNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
-      typedef Constant< Dimensions, Real > RightHandSide;
-      typedef StaticVector< MeshType::meshDimensions, Real > Vertex;
+      typedef Constant< Dimension, Real > RightHandSide;
+      typedef StaticVector< MeshType::meshDimension, Real > Vertex;
 
       String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
       if( parameters.checkParameter( "boundary-conditions-constant" ) )
       {
-         typedef Constant< Dimensions, Real > Constant;
+         typedef Constant< Dimension, Real > Constant;
          if( boundaryConditionsType == "dirichlet" )
          {
-            typedef DirichletBoundaryConditions< MeshType, Constant, Dimensions, Real, Index > BoundaryConditions;
+            typedef DirichletBoundaryConditions< MeshType, Constant, Dimension, Real, Index > BoundaryConditions;
             typedef MeanCurvatureFlowProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
             SolverStarter solverStarter;
             return solverStarter.template run< Solver >( parameters );
@@ -124,7 +124,7 @@ class meanCurvatureFlowSetter
       typedef Functions::MeshFunction< MeshType > MeshFunction;
       if( boundaryConditionsType == "dirichlet" )
       {
-         typedef DirichletBoundaryConditions< MeshType, MeshFunction, Dimensions, Real, Index > BoundaryConditions;
+         typedef DirichletBoundaryConditions< MeshType, MeshFunction, Dimension, Real, Index > BoundaryConditions;
          typedef MeanCurvatureFlowProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
          SolverStarter solverStarter;
          return solverStarter.template run< Solver >( parameters );

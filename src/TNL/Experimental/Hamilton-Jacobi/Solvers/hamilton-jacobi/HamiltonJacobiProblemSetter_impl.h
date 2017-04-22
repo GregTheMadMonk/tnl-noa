@@ -33,7 +33,7 @@ template< typename RealType,
           typename SolverStarter >
 bool HamiltonJacobiProblemSetter< RealType, DeviceType, IndexType, MeshType, ConfigTag, SolverStarter > :: run( const Config::ParameterContainer& parameters )
 {
-   static const int Dimensions = MeshType::getMeshDimensions();
+   static const int Dimensions = MeshType::getDimension();
 
    if( Dimensions <= 0 || Dimensions > 3 )
    {

@@ -39,11 +39,10 @@
 namespace TNL {
 namespace Functions {   
 
-
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 TestFunction()
 : function( 0 ),
   operator_( 0 ),
@@ -52,11 +51,11 @@ TestFunction()
 {
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
 void
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
@@ -108,12 +107,12 @@ configSetup( Config::ConfigDescription& config,
 
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
    template< typename FunctionType >
 bool
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 setupFunction( const Config::ParameterContainer& parameters,
                const String& prefix )
 {
@@ -138,12 +137,12 @@ setupFunction( const Config::ParameterContainer& parameters,
    return true;
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
    template< typename OperatorType >
 bool
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 setupOperator( const Config::ParameterContainer& parameters,
                const String& prefix )
 {
@@ -168,11 +167,11 @@ setupOperator( const Config::ParameterContainer& parameters,
    return true;
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
 bool
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -199,8 +198,8 @@ setup( const Config::ParameterContainer& parameters,
    std::cout << "Test function ... " << testFunction << std::endl;
    if( testFunction == "constant" )
    {
-      typedef Constant< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef Constant< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = constant;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -208,8 +207,8 @@ setup( const Config::ParameterContainer& parameters,
    }
    if( testFunction == "paraboloid" )
    {
-      typedef Paraboloid< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef Paraboloid< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = paraboloid;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -217,8 +216,8 @@ setup( const Config::ParameterContainer& parameters,
    }   
    if( testFunction == "exp-bump" )
    {
-      typedef ExpBump< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef ExpBump< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = expBump;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -226,8 +225,8 @@ setup( const Config::ParameterContainer& parameters,
    }
    if( testFunction == "sin-bumps" )
    {
-      typedef SinBumps< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef SinBumps< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = sinBumps;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -235,8 +234,8 @@ setup( const Config::ParameterContainer& parameters,
    }
    if( testFunction == "sin-wave" )
    {
-      typedef SinWave< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef SinWave< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = sinWave;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -244,8 +243,8 @@ setup( const Config::ParameterContainer& parameters,
    }
    if( testFunction == "cylinder" )
    {
-      typedef Cylinder< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef Cylinder< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = cylinder;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -253,8 +252,8 @@ setup( const Config::ParameterContainer& parameters,
    }
    if( testFunction == "flowerpot" )
    {
-      typedef Flowerpot< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef Flowerpot< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = flowerpot;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -262,8 +261,8 @@ setup( const Config::ParameterContainer& parameters,
    }
    if( testFunction == "twins" )
    {
-      typedef Twins< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef Twins< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = twins;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -271,8 +270,8 @@ setup( const Config::ParameterContainer& parameters,
    }
    if( testFunction == "pseudoSquare" )
    {
-      typedef PseudoSquare< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef PseudoSquare< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = pseudoSquare;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -280,8 +279,8 @@ setup( const Config::ParameterContainer& parameters,
    }
    if( testFunction == "blob" )
    {
-      typedef Blob< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef Blob< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = blob;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -289,8 +288,8 @@ setup( const Config::ParameterContainer& parameters,
    }
    if( testFunction == "paraboloid-sdf" )
    {
-      typedef ParaboloidSDF< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef ParaboloidSDF< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = paraboloidSDF;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -298,8 +297,8 @@ setup( const Config::ParameterContainer& parameters,
    }   
    if( testFunction == "sin-bumps-sdf" )
    {
-      typedef SinBumpsSDF< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef SinBumpsSDF< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = sinBumpsSDF;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -307,8 +306,8 @@ setup( const Config::ParameterContainer& parameters,
    }   
    if( testFunction == "sin-wave-sdf" )
    {
-      typedef SinWaveSDF< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef SinWaveSDF< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = sinWaveSDF;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -316,8 +315,8 @@ setup( const Config::ParameterContainer& parameters,
    }
    if( testFunction == "vector-norm" )
    {
-      typedef VectorNorm< Dimensions, Real > FunctionType;
-      typedef Identity< Dimensions, Real > OperatorType;
+      typedef VectorNorm< Dimension, Real > FunctionType;
+      typedef Identity< Dimension, Real > OperatorType;
       functionType = vectorNorm;
       operatorType = identity;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -325,8 +324,8 @@ setup( const Config::ParameterContainer& parameters,
    }
    if( testFunction == "heaviside-of-vector-norm" )
    {
-      typedef VectorNorm< Dimensions, Real > FunctionType;
-      typedef Heaviside< Dimensions, Real > OperatorType;
+      typedef VectorNorm< Dimension, Real > FunctionType;
+      typedef Heaviside< Dimension, Real > OperatorType;
       functionType = vectorNorm;
       operatorType = heaviside;
       return ( setupFunction< FunctionType >( parameters, prefix ) && 
@@ -336,11 +335,11 @@ setup( const Config::ParameterContainer& parameters,
    return false;
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
-const TestFunction< FunctionDimensions, Real, Device >&
-TestFunction< FunctionDimensions, Real, Device >::
+const TestFunction< FunctionDimension, Real, Device >&
+TestFunction< FunctionDimension, Real, Device >::
 operator = ( const TestFunction& function )
 {
    /*****
@@ -357,41 +356,41 @@ operator = ( const TestFunction& function )
    switch( this->functionType )
    {
       case constant:
-         this->copyFunction< Constant< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< Constant< FunctionDimension, Real > >( function.function );
          break;
       case expBump:
-         this->copyFunction< ExpBump< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< ExpBump< FunctionDimension, Real > >( function.function );
          break;
       case sinBumps:
-         this->copyFunction< SinBumps< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< SinBumps< FunctionDimension, Real > >( function.function );
          break;
       case sinWave:
-         this->copyFunction< SinWave< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< SinWave< FunctionDimension, Real > >( function.function );
          break;
       case cylinder:
-         this->copyFunction< Cylinder< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< Cylinder< FunctionDimension, Real > >( function.function );
          break;
       case flowerpot:
-         this->copyFunction< Flowerpot< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< Flowerpot< FunctionDimension, Real > >( function.function );
          break;
       case twins:
-         this->copyFunction< Twins< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< Twins< FunctionDimension, Real > >( function.function );
          break;
       case pseudoSquare:
-         this->copyFunction< PseudoSquare< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< PseudoSquare< FunctionDimension, Real > >( function.function );
          break;
       case blob:
-         this->copyFunction< Blob< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< Blob< FunctionDimension, Real > >( function.function );
          break;
 
       case paraboloidSDF:
-         this->copyFunction< Paraboloid< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< Paraboloid< FunctionDimension, Real > >( function.function );
          break;
       case sinBumpsSDF:
-         this->copyFunction< SinBumpsSDF< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< SinBumpsSDF< FunctionDimension, Real > >( function.function );
          break;
       case sinWaveSDF:
-         this->copyFunction< SinWaveSDF< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< SinWaveSDF< FunctionDimension, Real > >( function.function );
          break;
       default:
          TNL_ASSERT( false, );
@@ -399,7 +398,7 @@ operator = ( const TestFunction& function )
    }
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
    template< int XDiffOrder,
@@ -407,7 +406,7 @@ template< int FunctionDimensions,
              int ZDiffOrder >
 __cuda_callable__
 Real
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 getPartialDerivative( const VertexType& vertex,
                       const Real& time ) const
 {
@@ -434,25 +433,25 @@ getPartialDerivative( const VertexType& vertex,
    {
       case constant:
       {
-         typedef Constant< Dimensions, Real > FunctionType;
-         typedef Identity< Dimensions, Real > OperatorType;
+         typedef Constant< Dimension, Real > FunctionType;
+         typedef Identity< Dimension, Real > OperatorType;
 
          return scale * ( ( OperatorType* ) this->operator_ )->
                    template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
       }
       case paraboloid:
       {
-         typedef Paraboloid< Dimensions, Real > FunctionType;
+         typedef Paraboloid< Dimension, Real > FunctionType;
          if( operatorType == identity )
          {
-            typedef Identity< Dimensions, Real > OperatorType;
+            typedef Identity< Dimension, Real > OperatorType;
 
             return scale * ( ( OperatorType* ) this->operator_ )->
                       template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
          }
          if( operatorType == heaviside )
          {
-            typedef Heaviside< Dimensions, Real > OperatorType;
+            typedef Heaviside< Dimension, Real > OperatorType;
 
             return scale * ( ( OperatorType* ) this->operator_ )->
                       template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
@@ -460,81 +459,81 @@ getPartialDerivative( const VertexType& vertex,
       }
       case expBump:
       {
-         typedef ExpBump< Dimensions, Real > FunctionType;
-         typedef Identity< Dimensions, Real > OperatorType;
+         typedef ExpBump< Dimension, Real > FunctionType;
+         typedef Identity< Dimension, Real > OperatorType;
          
          return scale * ( ( OperatorType* ) this->operator_ )->
                    template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
       }
       case sinBumps:
       {
-         typedef SinBumps< Dimensions, Real > FunctionType;
-         typedef Identity< Dimensions, Real > OperatorType;
+         typedef SinBumps< Dimension, Real > FunctionType;
+         typedef Identity< Dimension, Real > OperatorType;
          
          return scale * ( ( OperatorType* ) this->operator_ )->
                    template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
       }
       case sinWave:
       {
-         typedef SinWave< Dimensions, Real > FunctionType;
-         typedef Identity< Dimensions, Real > OperatorType;
+         typedef SinWave< Dimension, Real > FunctionType;
+         typedef Identity< Dimension, Real > OperatorType;
          
          return scale * ( ( OperatorType* ) this->operator_ )->
                    template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
       }
       case cylinder:
       {
-         typedef Cylinder< Dimensions, Real > FunctionType;
-         typedef Identity< Dimensions, Real > OperatorType;
+         typedef Cylinder< Dimension, Real > FunctionType;
+         typedef Identity< Dimension, Real > OperatorType;
          
          return scale * ( ( OperatorType* ) this->operator_ )->
                    template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
       }
       case flowerpot:
       {
-         typedef Flowerpot< Dimensions, Real > FunctionType;
-         typedef Identity< Dimensions, Real > OperatorType;
+         typedef Flowerpot< Dimension, Real > FunctionType;
+         typedef Identity< Dimension, Real > OperatorType;
          
          return scale * ( ( OperatorType* ) this->operator_ )->
                    template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
       }
       case twins:
       {
-         typedef Twins< Dimensions, Real > FunctionType;
-         typedef Identity< Dimensions, Real > OperatorType;
+         typedef Twins< Dimension, Real > FunctionType;
+         typedef Identity< Dimension, Real > OperatorType;
          
          return scale * ( ( OperatorType* ) this->operator_ )->
                    template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
       }
       case pseudoSquare:
       {
-         typedef PseudoSquare< Dimensions, Real > FunctionType;
-         typedef Identity< Dimensions, Real > OperatorType;
+         typedef PseudoSquare< Dimension, Real > FunctionType;
+         typedef Identity< Dimension, Real > OperatorType;
          
          return scale * ( ( OperatorType* ) this->operator_ )->
                    template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
       }
       case blob:
       {
-         typedef Blob< Dimensions, Real > FunctionType;
-         typedef Identity< Dimensions, Real > OperatorType;
+         typedef Blob< Dimension, Real > FunctionType;
+         typedef Identity< Dimension, Real > OperatorType;
          
          return scale * ( ( OperatorType* ) this->operator_ )->
                    template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
       }
       case vectorNorm:
       {
-         typedef VectorNorm< Dimensions, Real > FunctionType;
+         typedef VectorNorm< Dimension, Real > FunctionType;
          if( operatorType == identity )
          {
-            typedef Identity< Dimensions, Real > OperatorType;
+            typedef Identity< Dimension, Real > OperatorType;
 
             return scale * ( ( OperatorType* ) this->operator_ )->
                       template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
          }
          if( operatorType == heaviside )
          {
-            typedef Heaviside< Dimensions, Real > OperatorType;
+            typedef Heaviside< Dimension, Real > OperatorType;
 
             return scale * ( ( OperatorType* ) this->operator_ )->
                       template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
@@ -542,24 +541,24 @@ getPartialDerivative( const VertexType& vertex,
       }      
       case sinBumpsSDF:
       {
-         typedef SinBumpsSDF< Dimensions, Real > FunctionType;
-         typedef Identity< Dimensions, Real > OperatorType;
+         typedef SinBumpsSDF< Dimension, Real > FunctionType;
+         typedef Identity< Dimension, Real > OperatorType;
                   
          return scale * ( ( OperatorType* ) this->operator_ )->
                    template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
       }
       case sinWaveSDF:
       {
-         typedef SinWaveSDF< Dimensions, Real > FunctionType;
-         typedef Identity< Dimensions, Real > OperatorType;
+         typedef SinWaveSDF< Dimension, Real > FunctionType;
+         typedef Identity< Dimension, Real > OperatorType;
          
          return scale * ( ( OperatorType* ) this->operator_ )->
                    template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
       }
       case paraboloidSDF:
       {
-         typedef ParaboloidSDF< Dimensions, Real > FunctionType;
-         typedef Identity< Dimensions, Real > OperatorType;
+         typedef ParaboloidSDF< Dimension, Real > FunctionType;
+         typedef Identity< Dimension, Real > OperatorType;
          
          return scale * ( ( OperatorType* ) this->operator_ )->
                    template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
@@ -570,7 +569,7 @@ getPartialDerivative( const VertexType& vertex,
    }
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
    template< int XDiffOrder,
@@ -578,7 +577,7 @@ template< int FunctionDimensions,
              int ZDiffOrder >
 __cuda_callable__
 Real
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 getTimeDerivative( const VertexType& vertex,
                    const Real& time ) const
 {
@@ -602,66 +601,66 @@ getTimeDerivative( const VertexType& vertex,
    {
       case constant:
       {
-         typedef Constant< Dimensions, Real > FunctionType;
+         typedef Constant< Dimension, Real > FunctionType;
          return scale * ( ( FunctionType* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       case paraboloid:
       {
-         typedef Paraboloid< Dimensions, Real > FunctionType;
+         typedef Paraboloid< Dimension, Real > FunctionType;
          return scale * ( ( FunctionType* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       case expBump:
       {
-         typedef ExpBump< Dimensions, Real > FunctionType;
+         typedef ExpBump< Dimension, Real > FunctionType;
          return scale * ( ( FunctionType* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       case sinBumps:
       {
-         typedef SinBumps< Dimensions, Real > FunctionType;
+         typedef SinBumps< Dimension, Real > FunctionType;
          return scale * ( ( FunctionType* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       case sinWave:
       {
-         typedef SinWave< Dimensions, Real > FunctionType;
+         typedef SinWave< Dimension, Real > FunctionType;
          return scale * ( ( FunctionType* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       }
       case cylinder:
       {
-         typedef Cylinder< Dimensions, Real > FunctionType;
+         typedef Cylinder< Dimension, Real > FunctionType;
          return scale * ( ( FunctionType* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       }
       case flowerpot:
       {
-         typedef Flowerpot< Dimensions, Real > FunctionType;
+         typedef Flowerpot< Dimension, Real > FunctionType;
          return scale * ( ( FunctionType* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       }
       case twins:
       {
-         typedef Twins< Dimensions, Real > FunctionType;
+         typedef Twins< Dimension, Real > FunctionType;
          return scale * ( ( FunctionType* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       }
       case pseudoSquare:
       {
-         typedef PseudoSquare< Dimensions, Real > FunctionType;
+         typedef PseudoSquare< Dimension, Real > FunctionType;
          return scale * ( ( FunctionType* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       }
       case blob:
       {
-         typedef Blob< Dimensions, Real > FunctionType;
+         typedef Blob< Dimension, Real > FunctionType;
          return scale * ( ( FunctionType* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
@@ -670,19 +669,19 @@ getTimeDerivative( const VertexType& vertex,
 
       case paraboloidSDF:
       {
-         typedef ParaboloidSDF< Dimensions, Real > FunctionType;
+         typedef ParaboloidSDF< Dimension, Real > FunctionType;
          return scale * ( ( FunctionType* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       case sinBumpsSDF:
       {
-         typedef SinBumpsSDF< Dimensions, Real > FunctionType;
+         typedef SinBumpsSDF< Dimension, Real > FunctionType;
          return scale * ( ( FunctionType* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       case sinWaveSDF:
       {
-         typedef SinWaveSDF< Dimensions, Real > FunctionType;
+         typedef SinWaveSDF< Dimension, Real > FunctionType;
          return scale * ( ( FunctionType* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
@@ -691,12 +690,12 @@ getTimeDerivative( const VertexType& vertex,
    }
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
    template< typename FunctionType >
 void
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 deleteFunction()
 {
    if( std::is_same< Device, Devices::Host >::value )
@@ -711,12 +710,12 @@ deleteFunction()
    }
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
    template< typename OperatorType >
 void
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 deleteOperator()
 {
    if( std::is_same< Device, Devices::Host >::value )
@@ -731,11 +730,11 @@ deleteOperator()
    }
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
 void
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 deleteFunctions()
 {
    using namespace TNL::Functions::Analytic;
@@ -744,116 +743,116 @@ deleteFunctions()
    {
       case constant:
       {
-         typedef Constant< Dimensions, Real> FunctionType;
+         typedef Constant< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
-         deleteOperator< Identity< Dimensions, Real > >();
+         deleteOperator< Identity< Dimension, Real > >();
          break;
       }
       case paraboloid:
       {
-         typedef Paraboloid< Dimensions, Real> FunctionType;
+         typedef Paraboloid< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
          if( operatorType == identity )
-            deleteOperator< Identity< Dimensions, Real > >();
+            deleteOperator< Identity< Dimension, Real > >();
          if( operatorType == heaviside )
-            deleteOperator< Heaviside< Dimensions, Real > >();
+            deleteOperator< Heaviside< Dimension, Real > >();
          break;
       }
       case expBump:
       {
-         typedef ExpBump< Dimensions, Real> FunctionType;
+         typedef ExpBump< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
-         deleteOperator< Identity< Dimensions, Real > >();
+         deleteOperator< Identity< Dimension, Real > >();
          break;
       }
       case sinBumps:
       {
-         typedef SinBumps< Dimensions, Real> FunctionType;
+         typedef SinBumps< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
-         deleteOperator< Identity< Dimensions, Real > >();
+         deleteOperator< Identity< Dimension, Real > >();
          break;
       }
       case sinWave:
       {
-         typedef SinWave< Dimensions, Real> FunctionType;
+         typedef SinWave< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
-         deleteOperator< Identity< Dimensions, Real > >();
+         deleteOperator< Identity< Dimension, Real > >();
          break;
       }
       case cylinder:
       {
-         typedef Cylinder< Dimensions, Real> FunctionType;
+         typedef Cylinder< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
-         deleteOperator< Identity< Dimensions, Real > >();
+         deleteOperator< Identity< Dimension, Real > >();
          break;
       }
       case flowerpot:
       {
-         typedef Flowerpot< Dimensions, Real> FunctionType;
+         typedef Flowerpot< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
-         deleteOperator< Identity< Dimensions, Real > >();
+         deleteOperator< Identity< Dimension, Real > >();
          break;
       }
       case twins:
       {
-         typedef Twins< Dimensions, Real> FunctionType;
+         typedef Twins< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
-         deleteOperator< Identity< Dimensions, Real > >();
+         deleteOperator< Identity< Dimension, Real > >();
          break;
       }
       case pseudoSquare:
       {
-         typedef PseudoSquare< Dimensions, Real> FunctionType;
+         typedef PseudoSquare< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
-         deleteOperator< Identity< Dimensions, Real > >();
+         deleteOperator< Identity< Dimension, Real > >();
          break;
       }
       case blob:
       {
-         typedef Blob< Dimensions, Real> FunctionType;
+         typedef Blob< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
-         deleteOperator< Identity< Dimensions, Real > >();
+         deleteOperator< Identity< Dimension, Real > >();
          break;
       }
       case vectorNorm:
       {
-         typedef VectorNorm< Dimensions, Real> FunctionType;
+         typedef VectorNorm< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
-         deleteOperator< Identity< Dimensions, Real > >();
+         deleteOperator< Identity< Dimension, Real > >();
          break;
       }
       
       
       case paraboloidSDF:
       {
-         typedef ParaboloidSDF< Dimensions, Real> FunctionType;
+         typedef ParaboloidSDF< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
-         deleteOperator< Identity< Dimensions, Real > >();
+         deleteOperator< Identity< Dimension, Real > >();
          break;
       }
       case sinBumpsSDF:
       {
-         typedef SinBumpsSDF< Dimensions, Real> FunctionType;
+         typedef SinBumpsSDF< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
-         deleteOperator< Identity< Dimensions, Real > >();
+         deleteOperator< Identity< Dimension, Real > >();
          break;
       }
       case sinWaveSDF:
       {
-         typedef SinWaveSDF< Dimensions, Real> FunctionType;
+         typedef SinWaveSDF< Dimension, Real> FunctionType;
          deleteFunction< FunctionType >();
-         deleteOperator< Identity< Dimensions, Real > >();
+         deleteOperator< Identity< Dimension, Real > >();
          break;
       }
    }
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
    template< typename FunctionType >
 void
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 copyFunction( const void* function )
 {
    if( std::is_same< Device, Devices::Host >::value )
@@ -868,12 +867,12 @@ copyFunction( const void* function )
    }
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
    template< typename FunctionType >
 std::ostream&
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 printFunction( std::ostream& str ) const
 {
    FunctionType* f = ( FunctionType* ) this->function;
@@ -889,11 +888,11 @@ printFunction( std::ostream& str ) const
    }
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
 std::ostream&
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 print( std::ostream& str ) const
 {
    using namespace TNL::Functions::Analytic;
@@ -903,31 +902,31 @@ print( std::ostream& str ) const
    switch( functionType )
    {
       case constant:
-         return printFunction< Constant< Dimensions, Real> >( str );
+         return printFunction< Constant< Dimension, Real> >( str );
       case expBump:
-         return printFunction< ExpBump< Dimensions, Real> >( str );
+         return printFunction< ExpBump< Dimension, Real> >( str );
       case sinBumps:
-         return printFunction< SinBumps< Dimensions, Real> >( str );
+         return printFunction< SinBumps< Dimension, Real> >( str );
       case sinWave:
-         return printFunction< SinWave< Dimensions, Real> >( str );
+         return printFunction< SinWave< Dimension, Real> >( str );
       case cylinder:
-         return printFunction< Cylinder< Dimensions, Real> >( str );
+         return printFunction< Cylinder< Dimension, Real> >( str );
       case flowerpot:
-         return printFunction< Flowerpot< Dimensions, Real> >( str );
+         return printFunction< Flowerpot< Dimension, Real> >( str );
       case twins:
-         return printFunction< Twins< Dimensions, Real> >( str );
+         return printFunction< Twins< Dimension, Real> >( str );
       case pseudoSquare:
-         return printFunction< PseudoSquare< Dimensions, Real> >( str );
+         return printFunction< PseudoSquare< Dimension, Real> >( str );
       case blob:
-         return printFunction< Blob< Dimensions, Real> >( str );
+         return printFunction< Blob< Dimension, Real> >( str );
    }
    return str;
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
-TestFunction< FunctionDimensions, Real, Device >::
+TestFunction< FunctionDimension, Real, Device >::
 ~TestFunction()
 {
    deleteFunctions();

@@ -17,21 +17,21 @@
 namespace TNL {
 namespace Operators {   
 
-template< int Dimensions,
-          typename InnerOperator = ExactIdentityOperator< Dimensions > >
+template< int Dimension,
+          typename InnerOperator = ExactIdentityOperator< Dimension > >
 class ExactMeanCurvature
-: public Functions::Domain< Dimensions, Functions::SpaceDomain >
+: public Functions::Domain< Dimension, Functions::SpaceDomain >
 {
    public:
  
-      typedef ExactGradientNorm< Dimensions > ExactGradientNormType;
-      typedef ExactFunctionInverseOperator< Dimensions, ExactGradientNormType > FunctionInverse;
-      typedef ExactNonlinearDiffusion< Dimensions, FunctionInverse > NonlinearDiffusion;
+      typedef ExactGradientNorm< Dimension > ExactGradientNormType;
+      typedef ExactFunctionInverseOperator< Dimension, ExactGradientNormType > FunctionInverse;
+      typedef ExactNonlinearDiffusion< Dimension, FunctionInverse > NonlinearDiffusion;
  
       static String getType()
       {
          return String( "ExactMeanCurvature< " ) +
-                String( Dimensions) + ", " +
+                String( Dimension) + ", " +
                 InnerOperator::getType() + " >";
       }
  

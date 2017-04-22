@@ -17,15 +17,15 @@ namespace Problems {
 
 template< typename ExactOperator,
           typename TestFunction,
-          int Dimensions >
-class MeanCurvatureFlowEocRhs : public Domain< Dimensions, SpaceDomain >
+          int Dimension >
+class MeanCurvatureFlowEocRhs : public Domain< Dimension, SpaceDomain >
 {
    public:
 
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
       typedef typename TestFunctionType::RealType RealType;
-      typedef StaticVector< Dimensions, RealType > VertexType;
+      typedef StaticVector< Dimension, RealType > VertexType;
 
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" )

@@ -143,14 +143,14 @@ class GridEntityCenterGetter< GridEntity< Meshes::Grid< 2, Real, Device, Index >
 template< typename Real,
           typename Device,
           typename Index,
-          int EntityDimensions,
+          int EntityDimension,
           typename Config >
-class GridEntityCenterGetter< GridEntity< Meshes::Grid< 3, Real, Device, Index >, EntityDimensions, Config > >
+class GridEntityCenterGetter< GridEntity< Meshes::Grid< 3, Real, Device, Index >, EntityDimension, Config > >
 {
    public:
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-      typedef GridEntity< GridType, EntityDimensions, Config > GridEntityType;
+      typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
       typedef typename GridType::VertexType VertexType;
  
       __cuda_callable__ inline

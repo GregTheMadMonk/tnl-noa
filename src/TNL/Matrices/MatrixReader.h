@@ -39,7 +39,7 @@ class MatrixReader
 
    static bool readMtxFileHostMatrix( std::istream& file,
                                       Matrix& matrix,
-                                      typename Matrix::CompressedRowsLengthsVector& rowLengths,
+                                      typename Matrix::CompressedRowLengthsVector& rowLengths,
                                       bool verbose );
 
 
@@ -63,7 +63,7 @@ class MatrixReader
                               bool& symmetricMatrix,
                               bool verbose );
 
-   static bool computeCompressedRowsLengthsFromMtxFile( std::istream& file,
+   static bool computeCompressedRowLengthsFromMtxFile( std::istream& file,
                                              Containers::Vector< int, Devices::Host, int >& rowLengths,
                                              const int columns,
                                              const int rows,

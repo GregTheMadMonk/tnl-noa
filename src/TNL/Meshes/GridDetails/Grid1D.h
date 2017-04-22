@@ -37,17 +37,17 @@ class Grid< 1, Real, Device, Index > : public Object
    typedef Grid< 1, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 1, Real, Device, Index > ThisType;
  
-   static const int meshDimensions = 1;
+   static const int meshDimension = 1;
  
-   template< int EntityDimensions,
+   template< int EntityDimension,
              typename Config = GridEntityCrossStencilStorage< 1 > >
-   using MeshEntity = GridEntity< ThisType, EntityDimensions, Config >;
+   using MeshEntity = GridEntity< ThisType, EntityDimension, Config >;
  
-   typedef MeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
+   typedef MeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
    typedef MeshEntity< 0 > Face;
    typedef MeshEntity< 0 > Vertex;
 
-   static constexpr int getMeshDimensions() { return meshDimensions; };
+   static constexpr int getDimension() { return meshDimension; };
  
    Grid();
 

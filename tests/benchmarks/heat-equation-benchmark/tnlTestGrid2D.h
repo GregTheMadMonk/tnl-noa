@@ -17,7 +17,7 @@
 #include <TNL/Containers/StaticVector.h>
 #include <core/vectors/tnlVector.h>
 
-template< int Dimensions,
+template< int Dimension,
           typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
@@ -56,25 +56,25 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef Meshes::Grid< 2, Real, tnlCuda, Index > CudaType;   
    typedef Meshes::Grid< 2, Real, Device, Index > ThisType;
    
-   static const int meshDimensions = 2;
+   static const int meshDimension = 2;
 
-   //template< int EntityDimensions, 
+   //template< int EntityDimension, 
    //          typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   //using MeshEntity = GridEntity< ThisType, EntityDimensions, Config >;
+   //using MeshEntity = GridEntity< ThisType, EntityDimension, Config >;
    
-   //typedef MeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
-   //typedef MeshEntity< meshDimensions - 1, GridEntityNoStencilStorage > Face;
+   //typedef MeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
+   //typedef MeshEntity< meshDimension - 1, GridEntityNoStencilStorage > Face;
    //typedef MeshEntity< 0 > Vertex;
    
 
    // TODO: remove this
-   template< int EntityDimensions, 
+   template< int EntityDimension, 
              typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimensions, Config >;
-   typedef TestMeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > TestCell;
+   using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimension, Config >;
+   typedef TestMeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > TestCell;
    /////
    
-   static constexpr int getMeshDimensions() { return meshDimensions; };
+   static constexpr int getDimension() { return meshDimension; };
 
    Grid();
 
@@ -214,11 +214,11 @@ template< typename Real,
           typename Index >
 String Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
-   return String( "Meshes::Grid< " ) +
-          String( getMeshDimensions() ) + ", " +
-          String( ::getType< RealType >() ) + ", " +
-          String( Device :: getDeviceType() ) + ", " +
-          String( ::getType< IndexType >() ) + " >";
+   return tnlString( "Meshes::Grid< " ) +
+          tnlString( getDimension() ) + ", " +
+          tnlString( ::getType< RealType >() ) + ", " +
+          tnlString( Device :: getDeviceType() ) + ", " +
+          tnlString( ::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -381,10 +381,10 @@ Index
 Meshes::Grid< 2, Real, Device, Index >:: 
 getEntitiesCount() const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
    
-   switch( EntityType::entityDimensions )
+   switch( EntityType::entityDimension )
    {
       case 2:
          return this->numberOfCells;
@@ -405,8 +405,8 @@ EntityType
 Meshes::Grid< 2, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
    
    return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
@@ -420,8 +420,8 @@ Index
 Meshes::Grid< 2, Real, Device, Index >::
 getEntityIndex( const EntityType& entity ) const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
    
    return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
@@ -784,7 +784,7 @@ void
 Meshes::Grid< 2, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
-   logger.writeParameter( "Dimensions:", getMeshDimensions() );
+   logger.writeParameter( "Dimension:", getDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );
@@ -801,7 +801,7 @@ writeProlog( tnlLogger& logger )
 
 #ifdef UNDEF
 
-template< int Dimensions,
+template< int Dimension,
           typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
@@ -832,25 +832,25 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef Meshes::Grid< 2, Real, tnlCuda, Index > CudaType;   
    typedef Meshes::Grid< 2, Real, Device, Index > ThisType;
    
-   static const int meshDimensions = 2;
+   static const int meshDimension = 2;
 
-   /*template< int EntityDimensions, 
+   /*template< int EntityDimension, 
              typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   using MeshEntity = GridEntity< ThisType, EntityDimensions, Config >;
+   using MeshEntity = GridEntity< ThisType, EntityDimension, Config >;
    
-   typedef MeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
-   typedef MeshEntity< meshDimensions - 1, GridEntityNoStencilStorage > Face;
+   typedef MeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
+   typedef MeshEntity< meshDimension - 1, GridEntityNoStencilStorage > Face;
    typedef MeshEntity< 0 > Vertex;*/
    
 
    // TODO: remove this
-   template< int EntityDimensions, 
+   template< int EntityDimension, 
              typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimensions, Config >;
-   typedef TestMeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
+   using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimension, Config >;
+   typedef TestMeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
    /////
    
-   static constexpr int getMeshDimensions() { return meshDimensions; };
+   static constexpr int getDimension() { return meshDimension; };
 
    Grid();
 
@@ -979,11 +979,11 @@ template< typename Real,
           typename Index >
 String Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
-   return String( "Meshes::Grid< " ) +
-          String( getMeshDimensions() ) + ", " +
-          String( ::getType< RealType >() ) + ", " +
-          String( Device :: getDeviceType() ) + ", " +
-          String( ::getType< IndexType >() ) + " >";
+   return tnlString( "Meshes::Grid< " ) +
+          tnlString( getDimension() ) + ", " +
+          tnlString( ::getType< RealType >() ) + ", " +
+          tnlString( Device :: getDeviceType() ) + ", " +
+          tnlString( ::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -1146,10 +1146,10 @@ Index
 Meshes::Grid< 2, Real, Device, Index >:: 
 getEntitiesCount() const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
    
-   switch( EntityType::entityDimensions )
+   switch( EntityType::entityDimension )
    {
       case 2:
          return this->numberOfCells;
@@ -1170,8 +1170,8 @@ EntityType
 Meshes::Grid< 2, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
    
    return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
@@ -1185,8 +1185,8 @@ Index
 Meshes::Grid< 2, Real, Device, Index >::
 getEntityIndex( const EntityType& entity ) const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
    
    return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
@@ -1549,7 +1549,7 @@ void
 Meshes::Grid< 2, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
-   logger.writeParameter( "Dimensions:", getMeshDimensions() );
+   logger.writeParameter( "Dimension:", getDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

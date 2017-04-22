@@ -72,7 +72,7 @@ class SlicedEllpackTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m1.getRows() );
       rowLengths.setValue( 5 );
-      m1.setCompressedRowsLengths( rowLengths );
+      m1.setCompressedRowLengths( rowLengths );
       m2.setLike( m1 );
       CPPUNIT_ASSERT( m1.getRows() == m2.getRows() );
    }
@@ -84,7 +84,7 @@ class SlicedEllpackTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       for( int i = 0; i < 7; i++ )
          CPPUNIT_ASSERT( m.setElement( 0, i, i ) );
@@ -98,7 +98,7 @@ class SlicedEllpackTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
@@ -122,7 +122,7 @@ class SlicedEllpackTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
@@ -139,7 +139,7 @@ class SlicedEllpackTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 9; i >= 0; i-- )
          for( int j = 9; j >= 0; j-- )
             m.setElement( i, j, i+j );
@@ -157,7 +157,7 @@ class SlicedEllpackTester : public CppUnit :: TestCase
       rowLengths.setSize( m.getRows() );
       for( int i = 0; i < 10; i++ )
          rowLengths.setElement( i, i+1 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j <= i; j++ )
@@ -172,7 +172,7 @@ class SlicedEllpackTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 9; i >= 0; i-- )
          for( int j = i; j >= 0; j-- )
             m.setElement( i, j, i + j );
@@ -192,7 +192,7 @@ class SlicedEllpackTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
@@ -222,7 +222,7 @@ class SlicedEllpackTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 0; i < size; i++ )
       {
          v.setElement( i, i );

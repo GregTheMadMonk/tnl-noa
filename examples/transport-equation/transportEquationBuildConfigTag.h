@@ -37,7 +37,7 @@ template<> struct ConfigTagIndex< transportEquationBuildConfigTag, long int >{ e
 
 template< int Dimensions, typename Real, typename Device, typename Index >
    struct ConfigTagMesh< transportEquationBuildConfigTag, Meshes::Grid< Dimensions, Real, Device, Index > >
-      { enum { enabled = ConfigTagDimensions< transportEquationBuildConfigTag, Dimensions >::enabled  &&
+      { enum { enabled = ConfigTagDimension< transportEquationBuildConfigTag, Dimensions >::enabled  &&
                          ConfigTagReal< transportEquationBuildConfigTag, Real >::enabled &&
                          ConfigTagDevice< transportEquationBuildConfigTag, Device >::enabled &&
                          ConfigTagIndex< transportEquationBuildConfigTag, Index >::enabled }; };

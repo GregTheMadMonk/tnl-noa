@@ -17,9 +17,9 @@ namespace Functions {
 namespace Analytic {   
 
 template< typename Real,
-          int Dimensions >
+          int Dimension >
 bool
-TwinsBase< Real, Dimensions >::
+TwinsBase< Real, Dimension >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {

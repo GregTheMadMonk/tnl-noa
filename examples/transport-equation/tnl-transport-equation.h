@@ -68,7 +68,7 @@ class advectionSetter
       typedef Device DeviceType;
       typedef Index IndexType;
       
-      static const int Dimensions = MeshType::getMeshDimensions();
+      static const int Dimensions = MeshType::getDimension();
       
       template< typename Problem >
       static bool callSolverStarter( const Config::ParameterContainer& parameters )
@@ -84,13 +84,13 @@ class advectionSetter
          String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
          if( boundaryConditionsType == "dirichlet" )
          {
-            typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunctionType, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+            typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunctionType, MeshType::getDimension(), Real, Index > BoundaryConditions;
             typedef transportEquationProblem< MeshType, BoundaryConditions, ConstantFunctionType, DifferentialOperatorType > Problem;
             return callSolverStarter< Problem >( parameters );
          }
          if( boundaryConditionsType == "neumann" )
          {
-            typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunctionType, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+            typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunctionType, MeshType::getDimension(), Real, Index > BoundaryConditions;
             typedef transportEquationProblem< MeshType, BoundaryConditions, ConstantFunctionType, DifferentialOperatorType > Problem;
             return callSolverStarter< Problem >( parameters );
          }

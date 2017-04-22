@@ -19,10 +19,10 @@
 namespace TNL {
 namespace Functions {   
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real = double,
           typename Device = Devices::Host >
-class TestFunction : public Domain< FunctionDimensions, SpaceDomain >
+class TestFunction : public Domain< FunctionDimension, SpaceDomain >
 {
    protected:
 
@@ -51,9 +51,9 @@ class TestFunction : public Domain< FunctionDimensions, SpaceDomain >
 
    public:
 
-      enum{ Dimensions = FunctionDimensions };
+      enum{ Dimension = FunctionDimension };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > VertexType;
 
       TestFunction();
 
@@ -152,10 +152,10 @@ class TestFunction : public Domain< FunctionDimensions, SpaceDomain >
 
 };
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
-std::ostream& operator << ( std::ostream& str, const TestFunction< FunctionDimensions, Real, Device >& f )
+std::ostream& operator << ( std::ostream& str, const TestFunction< FunctionDimension, Real, Device >& f )
 {
    str << "Test function: ";
    return f.print( str );

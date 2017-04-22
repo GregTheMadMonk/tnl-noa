@@ -17,9 +17,9 @@
 namespace TNL {
 namespace Operators {   
 
-template<  int Dimensions,
+template<  int Dimension,
            typename Nonlinearity,
-           typename InnerOperator = ExactIdentityOperator< Dimensions > >
+           typename InnerOperator = ExactIdentityOperator< Dimension > >
 class ExactNonlinearDiffusion
 {};
 

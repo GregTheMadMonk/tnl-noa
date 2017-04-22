@@ -18,7 +18,7 @@
 namespace TNL {
 namespace Operators {   
 
-template< typename ExactOperatorQ, int Dimensions >
+template< typename ExactOperatorQ, int Dimension >
 class ExactOperatorCurvature
 {};
 
@@ -27,7 +27,7 @@ class ExactOperatorCurvature< OperatorQ, 1 >
 {
    public:
 
-      enum { Dimensions = 1 };
+      enum { Dimension = 1 };
 
       static String getType();
 
@@ -50,7 +50,7 @@ class ExactOperatorCurvature< ExactOperatorQ, 2 >
 {
    public:
 
-      enum { Dimensions = 2 };
+      enum { Dimension = 2 };
 
       static String getType();
          
@@ -72,7 +72,7 @@ class ExactOperatorCurvature< ExactOperatorQ, 3 >
 {
    public:
 
-      enum { Dimensions = 3 };
+      enum { Dimension = 3 };
 
       static String getType();
    
@@ -92,8 +92,8 @@ class ExactOperatorCurvature< ExactOperatorQ, 3 >
       }
 };
 
-template< typename ExactOperatorQ, int Dimensions >
-class tnlFunctionType< ExactOperatorCurvature< ExactOperatorQ, Dimensions > >
+template< typename ExactOperatorQ, int Dimension >
+class tnlFunctionType< ExactOperatorCurvature< ExactOperatorQ, Dimension > >
 {
    public:
       enum { Type = tnlSpaceDomain };

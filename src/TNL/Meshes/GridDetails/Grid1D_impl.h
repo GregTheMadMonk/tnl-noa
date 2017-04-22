@@ -38,7 +38,7 @@ template< typename Real,
 String Grid< 1, Real, Device, Index >::getType()
 {
    return String( "Meshes::Grid< " ) +
-          String( getMeshDimensions() ) + ", " +
+          String( getDimension() ) + ", " +
           String( TNL::getType< RealType >() ) + ", " +
           String( Device::getDeviceType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";
@@ -155,10 +155,10 @@ Index
 Grid< 1, Real, Device, Index >::
 getEntitiesCount() const
 {
-   static_assert( EntityType::entityDimensions <= 1 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 1 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
-   switch( EntityType::entityDimensions )
+   switch( EntityType::entityDimension )
    {
       case 1:
          return this->numberOfCells;
@@ -200,8 +200,8 @@ EntityType
 Grid< 1, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( EntityType::entityDimensions <= 1 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 1 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
    return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
@@ -215,8 +215,8 @@ Index
 Grid< 1, Real, Device, Index >::
 getEntityIndex( const EntityType& entity ) const
 {
-   static_assert( EntityType::entityDimensions <= 1 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 1 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
    return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
@@ -414,7 +414,7 @@ bool Grid< 1, Real, Device, Index >::write( const MeshFunction& function,
    const RealType hx = getSpaceSteps(). x();
    if( format == "gnuplot" )
    {
-      typename ThisType::template MeshEntity< getMeshDimensions() > entity( *this );
+      typename ThisType::template MeshEntity< getDimension() > entity( *this );
       for( entity.getCoordinates().x() = 0;
            entity.getCoordinates().x() < getDimensions(). x();
            entity.getCoordinates().x() ++ )
@@ -436,7 +436,7 @@ void
 Grid< 1, Real, Device, Index >::
 writeProlog( Logger& logger )
 {
-   logger.writeParameter( "Dimensions:", getMeshDimensions() );
+   logger.writeParameter( "Dimension:", getDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

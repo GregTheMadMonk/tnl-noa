@@ -22,7 +22,7 @@ namespace Functions {
 template< int Size,
           typename Function >
 class VectorField 
-   : public Functions::Domain< Function::getDomainDimensions(), 
+   : public Functions::Domain< Function::getDomainDimension(), 
                                Function::getDomainType() >
 {
    public:
@@ -75,7 +75,7 @@ template< int Size,
           int MeshEntityDimensions,
           typename Real >
 class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
-: public Functions::Domain< MeshFunction< Mesh, MeshEntityDimensions, Real >::getDomainDimensions(), 
+: public Functions::Domain< MeshFunction< Mesh, MeshEntityDimensions, Real >::getDomainDimension(), 
                             MeshFunction< Mesh, MeshEntityDimensions, Real >::getDomainType() >,
    public Object
 {

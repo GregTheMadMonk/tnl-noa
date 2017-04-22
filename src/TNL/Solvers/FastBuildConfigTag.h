@@ -37,9 +37,9 @@ template<> struct ConfigTagIndex< FastBuildConfig, long int >{ enum { enabled = 
 /****
  * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
  */
-template< int Dimensions, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< FastBuildConfig, Meshes::Grid< Dimensions, Real, Device, Index > >
-      { enum { enabled = ConfigTagDimensions< FastBuildConfig, Dimensions >::enabled  &&
+template< int Dimension, typename Real, typename Device, typename Index >
+   struct ConfigTagMesh< FastBuildConfig, Meshes::Grid< Dimension, Real, Device, Index > >
+      { enum { enabled = ConfigTagDimension< FastBuildConfig, Dimension >::enabled  &&
                          ConfigTagReal< FastBuildConfig, Real >::enabled &&
                          ConfigTagDevice< FastBuildConfig, Device >::enabled &&
                          ConfigTagIndex< FastBuildConfig, Index >::enabled }; };

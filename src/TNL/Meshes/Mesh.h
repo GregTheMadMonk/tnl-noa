@@ -36,34 +36,34 @@ class Mesh : public Object/*,
       typedef typename MeshTraitsType::CellType                 CellType;
       typedef typename MeshTraitsType::VertexType               VertexType;
       typedef typename MeshTraitsType::PointType                PointType;
-      static const int dimensions = MeshTraitsType::meshDimensions;
-      template< int Dimensions > using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimensions >;
-      template< int Dimensions > using EntityType = typename EntityTraits< Dimensions >::EntityType;
+      static const int dimension = MeshTraitsType::meshDimension;
+      template< int Dimension > using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
+      template< int Dimension > using EntityType = typename EntityTraits< Dimension >::EntityType;
 
       static String getType();
  
       virtual String getTypeVirtual() const;
  
-      static constexpr int getDimensions();
+      static constexpr int getDimension();
 
-      template< int Dimensions >
+      template< int Dimension >
       bool entitiesAvalable() const;
  
       GlobalIndexType getNumberOfCells() const;
 
       // TODO: rename to getEntitiesCount
-      template< int Dimensions >
+      template< int Dimension >
       GlobalIndexType getNumberOfEntities() const;
 
       CellType& getCell( const GlobalIndexType entityIndex );
 
       const CellType& getCell( const GlobalIndexType entityIndex ) const;
 
-      template< int Dimensions >
-       EntityType< Dimensions >& getEntity( const GlobalIndexType entityIndex );
+      template< int Dimension >
+       EntityType< Dimension >& getEntity( const GlobalIndexType entityIndex );
  
-      template< int Dimensions >
-      const EntityType< Dimensions >& getEntity( const GlobalIndexType entityIndex ) const;
+      template< int Dimension >
+      const EntityType< Dimension >& getEntity( const GlobalIndexType entityIndex ) const;
 
       bool save( File& file ) const;
 
@@ -77,18 +77,18 @@ class Mesh : public Object/*,
       bool operator==( const Mesh& mesh ) const;
 
       // TODO: this is only for mesh intializer - remove it if possible
-      template< typename DimensionsTag >
-           typename EntityTraits< DimensionsTag::value >::StorageArrayType& entitiesArray();
+      template< typename DimensionTag >
+           typename EntityTraits< DimensionTag::value >::StorageArrayType& entitiesArray();
 
  
-      template< typename DimensionsTag, typename SuperDimensionsTag >
+      template< typename DimensionTag, typename SuperDimensionTag >
            typename MeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray();
  
       template< typename EntityTopology, typename SuperdimensionsTag >
       typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
       getSuperentityStorageNetwork()
       {
-         return entitiesStorage.template getSuperentityStorageNetwork< SuperdimensionsTag >( MeshDimensionsTag< EntityTopology::dimensions >() );
+         return entitiesStorage.template getSuperentityStorageNetwork< SuperdimensionsTag >( MeshDimensionTag< EntityTopology::dimensions >() );
       }
  
       bool init( const typename MeshTraitsType::PointArrayType& points,

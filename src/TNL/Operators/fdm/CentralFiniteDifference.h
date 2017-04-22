@@ -27,7 +27,7 @@ class CentralFiniteDifference
 {
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename MeshReal,
           typename MeshDevice,
           typename MeshIndex,
@@ -36,19 +36,19 @@ template< int Dimensions,
           int ZDifference,
           typename Real,
           typename Index >
-class CentralFiniteDifference< Meshes::Grid< Dimensions, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
-: public Operator< Meshes::Grid< Dimensions, MeshReal, MeshDevice, MeshIndex >,
-                      Functions::MeshInteriorDomain, Dimensions, Dimensions, Real, Index >
+class CentralFiniteDifference< Meshes::Grid< Dimension, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
+: public Operator< Meshes::Grid< Dimension, MeshReal, MeshDevice, MeshIndex >,
+                      Functions::MeshInteriorDomain, Dimension, Dimension, Real, Index >
 {
    public:
  
-      typedef Meshes::Grid< Dimensions, MeshReal, MeshDevice, MeshIndex > MeshType;
+      typedef Meshes::Grid< Dimension, MeshReal, MeshDevice, MeshIndex > MeshType;
       typedef Real RealType;
       typedef MeshDevice DeviceType;
       typedef Index IndexType;
-      typedef ExactDifference< Dimensions, XDifference, YDifference, ZDifference > ExactOperatorType;
+      typedef ExactDifference< Dimension, XDifference, YDifference, ZDifference > ExactOperatorType;
  
-      //static constexpr int getMeshDimensions() { return Dimensions; }
+      //static constexpr int getDimension() { return Dimension; }
  
       static String getType()
       {
@@ -68,7 +68,7 @@ class CentralFiniteDifference< Meshes::Grid< Dimensions, MeshReal, MeshDevice, M
                               const MeshEntity& entity,
                               const RealType& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntitiesDimensions() == Dimensions,
+         static_assert( MeshFunction::getEntitiesDimension() == Dimension,
             "Finite differences can be evaluate only on mesh cells, i.e. the dimensions count of the mesh entities of mesh function must be the same as mesh dimensions count." );
          return FiniteDifferences< MeshType, Real, Index, XDifference, YDifference, ZDifference, 0, 0, 0 >::getValue( u, entity );
       };

@@ -154,18 +154,18 @@ setupLinearSystem( const MeshPointer& meshPointer,
                    MatrixPointer& matrixPointer )
 {
    const IndexType dofs = this->getDofs( meshPointer );
-   typedef typename MatrixPointer::ObjectType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   SharedPointer< CompressedRowsLengthsVectorType > rowLengthsPointer;
+   typedef typename MatrixPointer::ObjectType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
+   SharedPointer< CompressedRowLengthsVectorType > rowLengthsPointer;
    if( ! rowLengthsPointer->setSize( dofs ) )
       return false;
-   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >(
+   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
+   matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >(
       meshPointer,
       differentialOperatorPointer,
       boundaryConditionPointer,
       rowLengthsPointer );
    matrixPointer->setDimensions( dofs, dofs );
-   if( ! matrixPointer->setCompressedRowsLengths( *rowLengthsPointer ) )
+   if( ! matrixPointer->setCompressedRowLengths( *rowLengthsPointer ) )
       return false;
    return true;
    //return MultidiagonalMatrixSetter< Mesh >::setupMatrix( mesh, matrix );

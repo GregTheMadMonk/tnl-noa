@@ -34,27 +34,27 @@ getTypeVirtual() const
 template< typename MeshConfig >
 constexpr int
 Mesh< MeshConfig >::
-getDimensions()
+getDimension()
 {
-   return dimensions;
+   return dimension;
 }
 
 template< typename MeshConfig >
-   template< int Dimensions >
+   template< int Dimension >
 bool
 Mesh< MeshConfig >::
 entitiesAvalable() const
 {
-   return MeshTraitsType::template EntityTraits< Dimensions >::available;
+   return MeshTraitsType::template EntityTraits< Dimension >::available;
 }
 
 template< typename MeshConfig >
-   template< int Dimensions >
+   template< int Dimension >
 typename Mesh< MeshConfig >::GlobalIndexType
 Mesh< MeshConfig >::
 getNumberOfEntities() const
 {
-   return entitiesStorage.getNumberOfEntities( MeshDimensionsTag< Dimensions >() );
+   return entitiesStorage.getNumberOfEntities( MeshDimensionTag< Dimension >() );
 }
 
 template< typename MeshConfig >
@@ -62,7 +62,7 @@ typename Mesh< MeshConfig >::GlobalIndexType
 Mesh< MeshConfig >::
 template getNumberOfCells() const
 {
-   return entitiesStorage.getNumberOfEntities( MeshDimensionsTag< dimensions >() );
+   return entitiesStorage.getNumberOfEntities( MeshDimensionTag< dimensions >() );
 }
 
 template< typename MeshConfig >
@@ -70,7 +70,7 @@ typename Mesh< MeshConfig >::CellType&
 Mesh< MeshConfig >::
 getCell( const GlobalIndexType cellIndex )
 {
-   return entitiesStorage.getEntity( MeshDimensionsTag< dimensions >(), cellIndex );
+   return entitiesStorage.getEntity( MeshDimensionTag< dimensions >(), cellIndex );
 }
 
 template< typename MeshConfig >
@@ -78,25 +78,25 @@ const typename Mesh< MeshConfig >::CellType&
 Mesh< MeshConfig >::
 getCell( const GlobalIndexType cellIndex ) const
 {
-   return entitiesStorage.getEntity( MeshDimensionsTag< dimensions >(), cellIndex );
+   return entitiesStorage.getEntity( MeshDimensionTag< dimensions >(), cellIndex );
 }
 
 template< typename MeshConfig >
-   template< int Dimensions >
-typename Mesh< MeshConfig >::template EntityType< Dimensions >&
+   template< int Dimension >
+typename Mesh< MeshConfig >::template EntityType< Dimension >&
 Mesh< MeshConfig >::
 getEntity( const GlobalIndexType entityIndex )
 {
-   return entitiesStorage.getEntity( MeshDimensionsTag< Dimensions >(), entityIndex );
+   return entitiesStorage.getEntity( MeshDimensionTag< Dimension >(), entityIndex );
 }
 
 template< typename MeshConfig >
-   template< int Dimensions >
-const typename Mesh< MeshConfig >::template EntityType< Dimensions >&
+   template< int Dimension >
+const typename Mesh< MeshConfig >::template EntityType< Dimension >&
 Mesh< MeshConfig >::
 getEntity( const GlobalIndexType entityIndex ) const
 {
-   return entitiesStorage.getEntity( MeshDimensionsTag< Dimensions >(), entityIndex );
+   return entitiesStorage.getEntity( MeshDimensionTag< Dimension >(), entityIndex );
 }
  
 template< typename MeshConfig >
@@ -144,21 +144,21 @@ operator==( const Mesh& mesh ) const
 }
 
 template< typename MeshConfig >
-   template< typename DimensionsTag >
-typename Mesh< MeshConfig >::template EntityTraits< DimensionsTag::value >::StorageArrayType&
+   template< typename DimensionTag >
+typename Mesh< MeshConfig >::template EntityTraits< DimensionTag::value >::StorageArrayType&
 Mesh< MeshConfig >::
 entitiesArray()
 {
-   return entitiesStorage.entitiesArray( DimensionsTag() );
+   return entitiesStorage.entitiesArray( DimensionTag() );
 }
 
 template< typename MeshConfig >
-   template< typename DimensionsTag, typename SuperDimensionsTag >
+   template< typename DimensionTag, typename SuperDimensionTag >
 typename Mesh< MeshConfig >::MeshTraitsType::GlobalIdArrayType&
 Mesh< MeshConfig >::
 superentityIdsArray()
 {
-   return entitiesStorage.template superentityIdsArray< SuperDimensionsTag >( DimensionsTag() );
+   return entitiesStorage.template superentityIdsArray< SuperDimensionTag >( DimensionTag() );
 }
 
 template< typename MeshConfig >

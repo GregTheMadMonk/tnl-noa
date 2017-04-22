@@ -28,7 +28,7 @@ class Multidiagonal : public Matrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename Matrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
+   typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef Multidiagonal< Real, Device, Index > ThisType;
    typedef Multidiagonal< Real, Devices::Host, Index > HostType;
    typedef Multidiagonal< Real, Devices::Cuda, Index > CudaType;
@@ -45,7 +45,7 @@ class Multidiagonal : public Matrix< Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
+   bool setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 

@@ -67,26 +67,26 @@ setup( const MeshPointer& meshPointer,
    const String& initialCondition = parameters.getParameter< String >( "initial-condition" );
    const double& finalTime = parameters.getParameter< double >( "final-time" );
    const double& snapshotPeriod = parameters.getParameter< double >( "snapshot-period" );
-   static const int Dimensions = Mesh::getMeshDimensions();
+   static const int Dimension = Mesh::getDimension();
    typedef typename MeshPointer::ObjectType MeshType;
    typedef Functions::MeshFunction< MeshType > MeshFunction;
    SharedPointer< MeshFunction > u( meshPointer );
    if( initialCondition == "heaviside-vector-norm" )
    {
-      typedef Functions::Analytic::VectorNorm< Dimensions, RealType > VectorNormType;
-      typedef Operators::Analytic::Heaviside< Dimensions, RealType > HeavisideType;
+      typedef Functions::Analytic::VectorNorm< Dimension, RealType > VectorNormType;
+      typedef Operators::Analytic::Heaviside< Dimension, RealType > HeavisideType;
       typedef Functions::OperatorFunction< HeavisideType, VectorNormType > InitialConditionType;
       String velocityFieldType = parameters.getParameter< String >( "velocity-field" );
       if( velocityFieldType == "constant" )
       {      
-         typedef Operators::Analytic::Shift< Dimensions, RealType > ShiftOperatorType;
+         typedef Operators::Analytic::Shift< Dimension, RealType > ShiftOperatorType;
          typedef Functions::OperatorFunction< ShiftOperatorType, InitialConditionType > ExactSolutionType;
          SharedPointer< ExactSolutionType, Devices::Host > exactSolution;
          if( ! exactSolution->getFunction().setup( parameters, prefix + "vector-norm-" ) ||
              ! exactSolution->getOperator().setup( parameters, prefix + "heaviside-" ) )
             return false;
-         Containers::StaticVector< Dimensions, RealType > velocity;
-         for( int i = 0; i < Dimensions; i++ )
+         Containers::StaticVector< Dimension, RealType > velocity;
+         for( int i = 0; i < Dimension; i++ )
             velocity[ i ] = parameters.getParameter< double >( "velocity-field-" + String( i ) + "-constant" );
 
          Functions::MeshFunctionEvaluator< MeshFunction, ExactSolutionType > evaluator;

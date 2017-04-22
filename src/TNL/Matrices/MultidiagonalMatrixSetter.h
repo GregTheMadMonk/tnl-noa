@@ -31,7 +31,7 @@ class MultidiagonalMatrixSetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex > 
       typedef MeshIndex MeshIndexType;
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      enum { Dimensions = 1 };
+      enum { Dimension = 1 };
 
       template< typename Real, typename Index >
       static bool setupMatrix( const MeshType& mesh,
@@ -52,7 +52,7 @@ class MultidiagonalMatrixSetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex > 
       typedef MeshIndex MeshIndexType;
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      enum { Dimensions = 2 };
+      enum { Dimension = 2 };
 
       template< typename Real, typename Index >
       static bool setupMatrix( const MeshType& mesh,
@@ -72,7 +72,7 @@ class MultidiagonalMatrixSetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex > 
       typedef MeshIndex MeshIndexType;
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      enum { Dimensions = 3 };
+      enum { Dimension = 3 };
 
       template< typename Real, typename Index >
       static bool setupMatrix( const MeshType& mesh,

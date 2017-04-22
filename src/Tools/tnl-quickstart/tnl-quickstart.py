@@ -40,7 +40,7 @@ with open( definitions['problemBaseName']+".h", 'w') as file:
 
 with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/main.cu.in", 'r') as ftemp:
     templateString = ftemp.read()
-with open( definitions['problemBaseName']+".cu", 'w') as file:
+with open( definitions['problemBaseName']+"-cuda.cu", 'w') as file:
     file.write( templateString.format(**definitions ) )
 
 with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/main.cpp.in", 'r') as ftemp:

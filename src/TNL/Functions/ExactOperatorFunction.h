@@ -17,9 +17,9 @@ namespace Functions {
 
 template< typename Operator,
           typename Function >
-class ExactOperatorFunction : public Domain< Operator::getDomainDimensions(), SpaceDomain >
+class ExactOperatorFunction : public Domain< Operator::getDomainDimension(), SpaceDomain >
 {
-   static_assert( Operator::getDomainDimensions() == Function::getDomainDimensions(),
+   static_assert( Operator::getDomainDimension() == Function::getDomainDimension(),
       "Operator and function have different number of domain dimensions." );
  
    public:
@@ -29,7 +29,7 @@ class ExactOperatorFunction : public Domain< Operator::getDomainDimensions(), Sp
       typedef typename FunctionType::RealType RealType;
       typedef typename FunctionType::VertexType VertexType;
  
-      static constexpr int getDomainDimensions() { return Operator::getDomainDimensions(); }
+      static constexpr int getDomainDimension() { return Operator::getDomainDimension(); }
  
       ExactOperatorFunction(
          const OperatorType& operator_,
