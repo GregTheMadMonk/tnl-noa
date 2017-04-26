@@ -280,13 +280,10 @@ getExplicitUpdate( const RealType& time,
    lF2DContinuity->setVelocityX( *velocityX );
    lF2DContinuity->setVelocityY( *velocityY );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity; 
-   explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           lF2DContinuity,
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
-                                                           uRho,
-                                                           fuRho );
+   explicitUpdaterContinuity.setDifferentialOperator( lF2DContinuity );
+   explicitUpdaterContinuity.setBoundaryConditions( this->boundaryConditionPointer );
+   explicitUpdaterContinuity.setRightHandSide( this->rightHandSidePointer );
+   explicitUpdaterContinuity.template update< typename Mesh::Cell >( time, tau, mesh, uRho, fuRho );
 
    //rhoVelocityX
    lF2DMomentumX->setTau(tau);
@@ -294,13 +291,10 @@ getExplicitUpdate( const RealType& time,
    lF2DMomentumX->setVelocityY( *velocityY );
    lF2DMomentumX->setPressure( *pressure );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumX, BoundaryCondition, RightHandSide > explicitUpdaterMomentumX; 
-   explicitUpdaterMomentumX.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           lF2DMomentumX,
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
-                                                           uRhoVelocityX,
-                                                           fuRhoVelocityX );
+   explicitUpdaterMomentumX.setDifferentialOperator( lF2DMomentumX );
+   explicitUpdaterMomentumX.setBoundaryConditions( this->boundaryConditionPointer );
+   explicitUpdaterMomentumX.setRightHandSide( this->rightHandSidePointer );   
+   explicitUpdaterMomentumX.template update< typename Mesh::Cell >( time, tau, mesh, uRhoVelocityX, fuRhoVelocityX );
 
    //rhoVelocityY
    lF2DMomentumY->setTau(tau);
@@ -308,13 +302,10 @@ getExplicitUpdate( const RealType& time,
    lF2DMomentumY->setVelocityY( *velocityY );
    lF2DMomentumY->setPressure( *pressure );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumY, BoundaryCondition, RightHandSide > explicitUpdaterMomentumY;
-   explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           lF2DMomentumY,
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
-                                                           uRhoVelocityY,
-                                                           fuRhoVelocityY );
+   explicitUpdaterMomentumY.setDifferentialOperator( lF2DMomentumY );
+   explicitUpdaterMomentumY.setBoundaryConditions( this->boundaryConditionPointer );
+   explicitUpdaterMomentumY.setRightHandSide( this->rightHandSidePointer );
+   explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time, tau, mesh, uRhoVelocityY, fuRhoVelocityY );
   
    //energy
    lF2DEnergy->setTau(tau);
@@ -322,21 +313,12 @@ getExplicitUpdate( const RealType& time,
    lF2DEnergy->setVelocityY( *velocityY ); 
    lF2DEnergy->setPressure( *pressure );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
-   explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           lF2DEnergy,
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
-                                                           uEnergy,
-                                                           fuEnergy );
+   explicitUpdaterEnergy.setDifferentialOperator( lF2DEnergy );
+   explicitUpdaterEnergy.setBoundaryConditions( this->boundaryConditionPointer );
+   explicitUpdaterEnergy.setRightHandSide( this->rightHandSidePointer );
+   explicitUpdaterEnergy.template update< typename Mesh::Cell >( time, tau, mesh, uEnergy, fuEnergy );
 
-/*
-   BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
-   boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
-      this->boundaryCondition, 
-      time + tau, 
-       u );*/
- }
+}
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -433,7 +415,7 @@ postIterate( const RealType& time,
    euler2DPressure.setRho(uRho);
 //   OperatorFunction< euler2DPressure, MeshFunction, void, time > OFPressure;
 //   pressure = OFPressure;
-
+   return true;
 }
 
 } // namespace TNL
