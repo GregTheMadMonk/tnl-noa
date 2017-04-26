@@ -21,8 +21,6 @@
 #include <TNL/Matrices/MultidiagonalMatrixSetter.h>
 #include <TNL/Logger.h>
 #include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
-#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
-#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 #include "HeatEquationProblem.h"
 
@@ -219,27 +217,11 @@ getExplicitUpdate( const RealType& time,
     */
    
    this->bindDofs( meshPointer, uDofs );
-   MeshFunctionPointer fuPointer( meshPointer, fuDofs );   
-   explicitUpdater.template update< typename Mesh::Cell >(
-      time,
-      meshPointer,
-      this->differentialOperatorPointer,
-      this->boundaryConditionPointer,
-      this->rightHandSidePointer,
-      this->uPointer,
-      fuPointer );
-   //std::cerr << "******************************************************************************************" << std::endl;
-   //std::cerr << "******************************************************************************************" << std::endl;
-   //std::cerr << "******************************************************************************************" << std::endl;
-   /*Solvers::PDE::BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
-   boundaryConditionsSetter.template apply< typename Mesh::Cell >(
-      this->boundaryConditionPointer,
-      time + tau,
-      this->uPointer );*/
-   
-   /*uPointer->write( "u.txt", "gnuplot" );
-   fuPointer->write( "fu.txt", "gnuplot" );
-   getchar();*/
+   MeshFunctionPointer fuPointer( meshPointer, fuDofs );
+   this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer ),
+   this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer ),
+   this->explicitUpdater.setRightHandSide( this->rightHandSidePointer ),
+   this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, meshPointer, this->uPointer, fuPointer );
 }
 
 template< typename Mesh,
@@ -258,49 +240,16 @@ assemblyLinearSystem( const RealType& time,
                       MeshDependentDataPointer& meshDependentData )
 {
    this->bindDofs( meshPointer, dofsPointer );
-   Solvers::PDE::LinearSystemAssembler< Mesh,
-                             MeshFunctionType,
-                             DifferentialOperator,
-                             BoundaryCondition,
-                             RightHandSide,
-                             Solvers::PDE::BackwardTimeDiscretisation,
-                             typename MatrixPointer::ObjectType,
-                             DofVectorType > systemAssembler;
-   systemAssembler.template assembly< typename Mesh::Cell >(
+   this->systemAssembler.setDifferentialOperator( this->differentialOperatorPointer );
+   this->systemAssembler.setBoundaryConditions( this->boundaryConditionPointer );
+   this->systemAssembler.setRightHandSide( this->rightHandSidePointer );
+   this->systemAssembler.template assembly< typename Mesh::Cell, typename MatrixPointer::ObjectType >( 
       time,
       tau,
       meshPointer,
-      this->differentialOperatorPointer,
-      this->boundaryConditionPointer,
-      this->rightHandSidePointer,
       this->uPointer,
       matrixPointer,
       bPointer );
-   //matrixPointer->print( std::cout );
-   //getchar();
-   /*cout << endl << b << endl;
-   cout << endl << u << endl;
-   abort();*/
-   /*cout << "Matrix multiplication test ..." << std::endl;
-   Vector< RealType, DeviceType, IndexType > y;
-   y.setLike( u );
-   Timer timer;
-   timer.reset();
-   timer.start();
-   for( int i = 0; i < 100; i++ )
-      matrix.vectorProduct( u, y );
-   timer.stop();
-  std::cout << "The time is " << timer.getRealTime();
-  std::cout << "Scalar product test ..." << std::endl;
-   timer.reset();
-   RealType a;
-   timer.start();
-   for( int i = 0; i < 100; i++ )
-      a = y.scalarProduct( u );
-   timer.stop();
-  std::cout << "The time is " << timer.getRealTime();
-  std::cout << std::endl;
-   abort();*/
 }
 
 } // namespace Problems

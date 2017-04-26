@@ -34,7 +34,7 @@ getTypeVirtual() const
 template< typename MeshConfig >
 constexpr int
 Mesh< MeshConfig >::
-getDimension()
+getMeshDimension()
 {
    return dimension;
 }

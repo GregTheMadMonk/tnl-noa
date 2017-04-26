@@ -39,6 +39,8 @@ class MeshFunction :
       typedef Functions::MeshFunction< Mesh, MeshEntityDimension, Real > ThisType;
  
       static constexpr int getEntitiesDimension() { return MeshEntityDimension; }
+      
+      static constexpr int getMeshDimensions() { return MeshType::getMeshDimension(); }
  
       MeshFunction();
       

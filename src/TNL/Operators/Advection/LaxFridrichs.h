@@ -31,7 +31,7 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
       
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef SharedPointer< MeshType > MeshPointer;
-      static const int Dimensions = MeshType::getDimension();
+      static const int Dimensions = MeshType::getMeshDimension();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
@@ -123,7 +123,7 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
       
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef SharedPointer< MeshType > MeshPointer;
-      static const int Dimensions = MeshType::getDimension();
+      static const int Dimensions = MeshType::getMeshDimension();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
@@ -221,7 +221,7 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
       
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef SharedPointer< MeshType > MeshPointer;
-      static const int Dimensions = MeshType::getDimension();
+      static const int Dimensions = MeshType::getMeshDimension();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;

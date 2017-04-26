@@ -74,7 +74,7 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef TestMeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > TestCell;
    /////
    
-   static constexpr int getDimension() { return meshDimension; };
+   static constexpr int getMeshDimension() { return meshDimension; };
 
    Grid();
 
@@ -215,7 +215,7 @@ template< typename Real,
 String Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
    return tnlString( "Meshes::Grid< " ) +
-          tnlString( getDimension() ) + ", " +
+          tnlString( getMeshDimension() ) + ", " +
           tnlString( ::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
           tnlString( ::getType< IndexType >() ) + " >";
@@ -784,7 +784,7 @@ void
 Meshes::Grid< 2, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
-   logger.writeParameter( "Dimension:", getDimension() );
+   logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );
@@ -850,7 +850,7 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef TestMeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
    /////
    
-   static constexpr int getDimension() { return meshDimension; };
+   static constexpr int getMeshDimension() { return meshDimension; };
 
    Grid();
 
@@ -980,7 +980,7 @@ template< typename Real,
 String Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
    return tnlString( "Meshes::Grid< " ) +
-          tnlString( getDimension() ) + ", " +
+          tnlString( getMeshDimension() ) + ", " +
           tnlString( ::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
           tnlString( ::getType< IndexType >() ) + " >";
@@ -1549,7 +1549,7 @@ void
 Meshes::Grid< 2, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
-   logger.writeParameter( "Dimension:", getDimension() );
+   logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

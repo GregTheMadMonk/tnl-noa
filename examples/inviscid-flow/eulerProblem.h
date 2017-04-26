@@ -43,7 +43,7 @@ class eulerProblem:
       using typename BaseType::MeshDependentDataType;
       using typename BaseType::MeshDependentDataPointer;
 
-      static const int Dimensions = Mesh::getDimension();      
+      static const int Dimensions = Mesh::getMeshDimension();      
 
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef CompressibleConservativeVariables< MeshType > ConservativeVariablesType;

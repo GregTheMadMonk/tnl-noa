@@ -200,19 +200,12 @@ getExplicitUpdate( const RealType& time,
    SharedPointer< MeshFunctionType > fu( mesh, _fu );
    differentialOperatorPointer->setTau(tau); 
    differentialOperatorPointer->setVelocityField( this->velocityField );
-   explicitUpdater.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           this->differentialOperatorPointer,
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
-                                                           u,
-                                                           fu );
-   /*BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
-   boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
-      this->boundaryCondition, 
-      time + tau, 
-       u ); */
+   explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
+   explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
+   explicitUpdater.setRightHandSide( this->rightHandSidePointer );
+   explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, u, fu );
 }
+
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,

@@ -27,7 +27,7 @@ class PhysicalVariablesGetter
       typedef typename MeshType::RealType RealType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
-      static const int Dimensions = MeshType::getDimension();
+      static const int Dimensions = MeshType::getMeshDimension();
       
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef SharedPointer< MeshFunctionType > MeshFunctionPointer;

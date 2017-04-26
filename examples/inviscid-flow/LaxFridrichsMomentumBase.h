@@ -26,7 +26,7 @@ class LaxFridrichsMomentumBase
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      static const int Dimensions = MeshType::getDimension();
+      static const int Dimensions = MeshType::getMeshDimension();
       typedef Functions::VectorField< Dimensions, MeshFunctionType > VelocityFieldType;
       typedef SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;

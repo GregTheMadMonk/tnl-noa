@@ -12,7 +12,7 @@
 
 template< typename GradientNormOperator,
           typename Anisotropy = 
-            tnlConstantFunction< GradientNormOperator::MeshType::getDimension(),
+            tnlConstantFunction< GradientNormOperator::MeshType::getMeshDimension(),
                                  typename GradientNormOperator::MeshType::RealType > >
 class tnlEikonalOperator
    : public tnlOperator< typename GradientNormOperator::MeshType, MeshDomain >

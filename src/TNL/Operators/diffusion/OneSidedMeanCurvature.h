@@ -27,7 +27,7 @@ template< typename Mesh,
           typename Index = typename Mesh::IndexType,
           bool EvaluateNonlinearityOnFly = false >
 class OneSidedMeanCurvature
-   : public Operator< Mesh, Functions::MeshInteriorDomain, Mesh::getDimension(), Mesh::getDimension(), Real, Index >
+   : public Operator< Mesh, Functions::MeshInteriorDomain, Mesh::getMeshDimension(), Mesh::getMeshDimension(), Real, Index >
 {
    public:
  
@@ -37,12 +37,12 @@ class OneSidedMeanCurvature
       typedef Index IndexType;
       typedef FDMGradientNorm< MeshType, ForwardFiniteDifference, RealType, IndexType > GradientNorm;
       typedef FunctionInverseOperator< GradientNorm > NonlinearityOperator;
-      typedef Functions::MeshFunction< MeshType, MeshType::getDimension(), RealType > NonlinearityMeshFunction;
-      typedef Functions::Analytic::Constant< MeshType::getDimension(), RealType > NonlinearityBoundaryConditionsFunction;
+      typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimension(), RealType > NonlinearityMeshFunction;
+      typedef Functions::Analytic::Constant< MeshType::getMeshDimension(), RealType > NonlinearityBoundaryConditionsFunction;
       typedef NeumannBoundaryConditions< MeshType, NonlinearityBoundaryConditionsFunction > NonlinearityBoundaryConditions;
       typedef Functions::OperatorFunction< NonlinearityOperator, NonlinearityMeshFunction, NonlinearityBoundaryConditions, EvaluateNonlinearityOnFly > Nonlinearity;
       typedef OneSidedNonlinearDiffusion< Mesh, Nonlinearity, RealType, IndexType > NonlinearDiffusion;
-      typedef ExactMeanCurvature< Mesh::getDimension(), RealType > ExactOperatorType;
+      typedef ExactMeanCurvature< Mesh::getMeshDimension(), RealType > ExactOperatorType;
       
       OneSidedMeanCurvature( const MeshPointer& meshPointer )
       : nonlinearityOperator( gradientNorm ),

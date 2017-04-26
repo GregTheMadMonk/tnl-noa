@@ -22,6 +22,8 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Timer.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 namespace TNL {
 namespace Problems {
@@ -120,6 +122,14 @@ class HeatEquationProblem : public PDEProblem< Mesh,
          Timer gpuTransferTimer;
          
          Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+         
+         Solvers::PDE::LinearSystemAssembler< Mesh, 
+                                              MeshFunctionType,
+                                              DifferentialOperator,
+                                              BoundaryCondition,
+                                              RightHandSide,
+                                              Solvers::PDE::BackwardTimeDiscretisation,
+                                              DofVectorType > systemAssembler;
 };
 
 } // namespace Problems

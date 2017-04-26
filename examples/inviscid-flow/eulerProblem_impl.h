@@ -253,34 +253,31 @@ getExplicitUpdate( const RealType& time,
     * Continuity equation
     */ 
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, ContinuityOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterContinuity; 
-   explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           this->inviscidOperatorsPointer->getContinuityOperator(),
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
-                                                           this->conservativeVariables->getDensity(),
-                                                           this->conservativeVariablesRHS->getDensity() );
+   explicitUpdaterContinuity.setDifferentialOperator( this->inviscidOperatorsPointer->getContinuityOperator() );
+   explicitUpdaterContinuity.setBoundaryConditions( this->boundaryConditionPointer );
+   explicitUpdaterContinuity.setRightHandSide( this->rightHandSidePointer );
+   explicitUpdaterContinuity.template update< typename Mesh::Cell >( time, tau, mesh, 
+                                                                     this->conservativeVariables->getDensity(),
+                                                                     this->conservativeVariablesRHS->getDensity() );
 
    /****
     * Momentum equations
     */
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumXOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterMomentumX; 
-   explicitUpdaterMomentumX.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           this->inviscidOperatorsPointer->getMomentumXOperator(),
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
+   explicitUpdaterMomentumX.setDifferentialOperator( this->inviscidOperatorsPointer->getMomentumXOperator() );
+   explicitUpdaterMomentumX.setBoundaryConditions( this->boundaryConditionPointer );
+   explicitUpdaterMomentumX.setRightHandSide( this->rightHandSidePointer );   
+   explicitUpdaterMomentumX.template update< typename Mesh::Cell >( time, tau, mesh,
                                                            ( *this->conservativeVariables->getMomentum() )[ 0 ], // uRhoVelocityX,
                                                            ( *this->conservativeVariablesRHS->getMomentum() )[ 0 ] ); //, fuRhoVelocityX );
 
    if( Dimensions > 1 )
    {
       Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumYOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterMomentumY;
-      explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time,
-                                                              mesh,
-                                                              this->inviscidOperatorsPointer->getMomentumYOperator(),
-                                                              this->boundaryConditionPointer,
-                                                              this->rightHandSidePointer,
+      explicitUpdaterMomentumY.setDifferentialOperator( this->inviscidOperatorsPointer->getMomentumYOperator() );
+      explicitUpdaterMomentumY.setBoundaryConditions( this->boundaryConditionPointer );
+      explicitUpdaterMomentumY.setRightHandSide( this->rightHandSidePointer );         
+      explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time, tau, mesh,
                                                               ( *this->conservativeVariables->getMomentum() )[ 1 ], // uRhoVelocityX,
                                                               ( *this->conservativeVariablesRHS->getMomentum() )[ 1 ] ); //, fuRhoVelocityX );
    }
@@ -288,11 +285,10 @@ getExplicitUpdate( const RealType& time,
    if( Dimensions > 2 )
    {
       Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumZOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterMomentumZ;
-      explicitUpdaterMomentumZ.template update< typename Mesh::Cell >( time,
-                                                              mesh,
-                                                              this->inviscidOperatorsPointer->getMomentumZOperator(),
-                                                              this->boundaryConditionPointer,
-                                                              this->rightHandSidePointer,
+      explicitUpdaterMomentumZ.setDifferentialOperator( this->inviscidOperatorsPointer->getMomentumZOperator() );
+      explicitUpdaterMomentumZ.setBoundaryConditions( this->boundaryConditionPointer );
+      explicitUpdaterMomentumZ.setRightHandSide( this->rightHandSidePointer );               
+      explicitUpdaterMomentumZ.template update< typename Mesh::Cell >( time, tau, mesh,
                                                               ( *this->conservativeVariables->getMomentum() )[ 2 ], // uRhoVelocityX,
                                                               ( *this->conservativeVariablesRHS->getMomentum() )[ 2 ] ); //, fuRhoVelocityX );
    }
@@ -302,11 +298,10 @@ getExplicitUpdate( const RealType& time,
     * Energy equation
     */
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, EnergyOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
-   explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           this->inviscidOperatorsPointer->getEnergyOperator(),
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
+   explicitUpdaterEnergy.setDifferentialOperator( this->inviscidOperatorsPointer->getEnergyOperator() );
+   explicitUpdaterEnergy.setBoundaryConditions( this->boundaryConditionPointer );
+   explicitUpdaterEnergy.setRightHandSide( this->rightHandSidePointer );                  
+   explicitUpdaterEnergy.template update< typename Mesh::Cell >( time, tau, mesh,
                                                            this->conservativeVariables->getEnergy(), // uRhoVelocityX,
                                                            this->conservativeVariablesRHS->getEnergy() ); //, fuRhoVelocityX );
    
@@ -315,13 +310,7 @@ getExplicitUpdate( const RealType& time,
    this->conservativeVariablesRHS->getMomentum()->write( "momentum", "gnuplot", 0.05 );
    getchar();*/
 
-/*
-   BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
-   boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
-      this->boundaryCondition, 
-      time + tau, 
-       u );*/
- }
+}
 
 template< typename Mesh,
           typename BoundaryCondition,

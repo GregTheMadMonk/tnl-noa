@@ -73,8 +73,8 @@ class OneSidedMeanCurvatureTest
       void runUnitTest()
       {
          RealType coarseErrors[ 3 ], fineErrors[ 3 ];
-         this->getApproximationError( coarseMeshSize[ MeshType::getDimension() - 1 ], coarseErrors );
-         this->getApproximationError( 2 * coarseMeshSize[ MeshType::getDimension() - 1 ], fineErrors );
+         this->getApproximationError( coarseMeshSize[ MeshType::getMeshDimension() - 1 ], coarseErrors );
+         this->getApproximationError( 2 * coarseMeshSize[ MeshType::getMeshDimension() - 1 ], fineErrors );
          this->checkEoc( coarseErrors, fineErrors, eoc, tolerance, verbose );
       }
  
@@ -109,7 +109,7 @@ template< typename Mesh,
           bool verbose >
 bool setTestFunction()
 {
-   return runTest< Mesh, Functions::Analytic::ExpBump< Mesh::getDimension(), double >, write, verbose >();
+   return runTest< Mesh, Functions::Analytic::ExpBump< Mesh::getMeshDimension(), double >, write, verbose >();
 }
 
 template< typename Device,

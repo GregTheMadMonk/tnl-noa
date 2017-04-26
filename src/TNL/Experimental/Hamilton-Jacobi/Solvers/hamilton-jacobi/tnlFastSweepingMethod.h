@@ -18,7 +18,7 @@
 #include "tnlDirectEikonalMethodsBase.h"
 
 template< typename Mesh,
-          typename Anisotropy = tnlConstantFunction< Mesh::getDimension(), typename Mesh::RealType > >
+          typename Anisotropy = tnlConstantFunction< Mesh::getMeshDimension(), typename Mesh::RealType > >
 class tnlFastSweepingMethod
 {   
 };

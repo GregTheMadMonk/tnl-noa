@@ -38,7 +38,7 @@ template< typename Real,
 String Grid< 1, Real, Device, Index >::getType()
 {
    return String( "Meshes::Grid< " ) +
-          String( getDimension() ) + ", " +
+          String( getMeshDimension() ) + ", " +
           String( TNL::getType< RealType >() ) + ", " +
           String( Device::getDeviceType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";
@@ -414,7 +414,7 @@ bool Grid< 1, Real, Device, Index >::write( const MeshFunction& function,
    const RealType hx = getSpaceSteps(). x();
    if( format == "gnuplot" )
    {
-      typename ThisType::template MeshEntity< getDimension() > entity( *this );
+      typename ThisType::template MeshEntity< getMeshDimension() > entity( *this );
       for( entity.getCoordinates().x() = 0;
            entity.getCoordinates().x() < getDimensions(). x();
            entity.getCoordinates().x() ++ )
@@ -436,7 +436,7 @@ void
 Grid< 1, Real, Device, Index >::
 writeProlog( Logger& logger )
 {
-   logger.writeParameter( "Dimension:", getDimension() );
+   logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

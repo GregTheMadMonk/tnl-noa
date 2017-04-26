@@ -202,21 +202,12 @@ getExplicitUpdate( const RealType& time,
    MeshFunctionType fu( mesh, outDofs );
    //differentialOperator.nonlinearDiffusionOperator.operatorQ.update( mesh, time );
    ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   explicitUpdater.template update< typename Mesh::Cell >(
-      time,
-      mesh,
-      this->differentialOperator,
-      this->boundaryCondition,
-      this->rightHandSide,
-      u,
-      fu );
+   explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
+   explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
+   explicitUpdater.setRightHandSide( this->rightHandSidePointer );
+   
+   explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, u, fu );
  
-   BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
-   boundaryConditionsSetter.template apply< typename Mesh::Cell >(
-      this->boundaryCondition,
-      time,
-      u );
-
    /*cout << "u = " << u << std::endl;
   std::cout << "fu = " << fu << std::endl;
    u.save( "u.tnl" );

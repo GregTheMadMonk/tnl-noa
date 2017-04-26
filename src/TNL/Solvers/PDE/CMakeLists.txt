@@ -3,9 +3,7 @@ SET( headers BackwardTimeDiscretisation.h
              ExplicitTimeStepper.h
              ExplicitTimeStepper_impl.h
              ExplicitUpdater.h
-             ExplicitUpdater_impl.h
              LinearSystemAssembler.h
-             LinearSystemAssembler_impl.h
              NoTimeDiscretisation.h
              TimeDependentPDESolver.h
              TimeDependentPDESolver_impl.h
