@@ -61,11 +61,11 @@ class tnlApproximationError
 
          String meshSizeString( meshPointer->getDimensions().x() );
          String dimensionsString;
-         if( MeshType::getDimension() == 1 )
+         if( MeshType::getMeshDimension() == 1 )
             dimensionsString = "1D-";
-         if( MeshType::getDimension() == 2 )
+         if( MeshType::getMeshDimension() == 2 )
             dimensionsString = "2D-";
-         if( MeshType::getDimension() == 3 )
+         if( MeshType::getMeshDimension() == 3 )
             dimensionsString = "3D-";
 
          //if( writeFunctions )

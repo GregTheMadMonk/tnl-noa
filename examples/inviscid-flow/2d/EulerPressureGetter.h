@@ -27,7 +27,7 @@ class EulerPressureGetter< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, 
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimension = MeshType::getDimension() };
+      enum { Dimension = MeshType::getMeshDimension() };
 
       static String getType();
       Real gamma;
@@ -94,7 +94,7 @@ class EulerPressureGetter< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, 
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimension = MeshType::getDimension() };
+      enum { Dimension = MeshType::getMeshDimension() };
 
       static String getType();
       Real gamma;
@@ -161,7 +161,7 @@ class EulerPressureGetter< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, 
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimension = MeshType::getDimension() };
+      enum { Dimension = MeshType::getMeshDimension() };
 
       static String getType();
       Real gamma;

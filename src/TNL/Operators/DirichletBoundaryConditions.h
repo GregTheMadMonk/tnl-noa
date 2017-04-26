@@ -19,8 +19,8 @@ namespace TNL {
 namespace Operators {
 
 template< typename Mesh,
-          typename Function = Functions::Analytic::Constant< Mesh::getDimension(), typename Mesh::RealType >,
-          int MeshEntitiesDimension = Mesh::getDimension(),
+          typename Function = Functions::Analytic::Constant< Mesh::getMeshDimension(), typename Mesh::RealType >,
+          int MeshEntitiesDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class DirichletBoundaryConditions

@@ -47,7 +47,7 @@ class Grid< 1, Real, Device, Index > : public Object
    typedef MeshEntity< 0 > Face;
    typedef MeshEntity< 0 > Vertex;
 
-   static constexpr int getDimension() { return meshDimension; };
+   static constexpr int getMeshDimension() { return meshDimension; };
  
    Grid();
 

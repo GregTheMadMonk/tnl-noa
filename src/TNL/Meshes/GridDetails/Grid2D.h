@@ -52,7 +52,7 @@ class Grid< 2, Real, Device, Index > : public Object
    //typedef TestMeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > TestCell;
    /////
    
-   static constexpr int getDimension() { return meshDimension; };
+   static constexpr int getMeshDimension() { return meshDimension; };
 
    Grid();
 

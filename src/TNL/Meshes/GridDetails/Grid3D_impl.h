@@ -379,7 +379,7 @@ typename GridFunction::RealType
                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   MeshEntity< getDimension() > cell;
+   MeshEntity< getMeshDimension() > cell;
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -407,7 +407,7 @@ template< typename Real,
                                                                            const GridFunction& f2 ) const
 {
    typename GridFunction::RealType maxDiff( -1.0 );
-   MeshEntity< getDimension() > cell( *this );
+   MeshEntity< getMeshDimension() > cell( *this );
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -434,7 +434,7 @@ template< typename Real,
                                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   MeshEntity< getDimension() > cell( *this );
+   MeshEntity< getMeshDimension() > cell( *this );
 
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
@@ -573,7 +573,7 @@ void
 Grid< 3, Real, Device, Index >::
 writeProlog( Logger& logger )
 {
-   logger.writeParameter( "Dimension:", getDimension() );
+   logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

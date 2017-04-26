@@ -42,8 +42,8 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 1,MeshReal, Device, MeshIndex >,
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Nonlinearity NonlinearityType;
-      typedef typename MeshType::template MeshEntity< MeshType::getDimension() > CellType;
-      typedef ExactNonlinearDiffusion< MeshType::getDimension(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
+      typedef typename MeshType::template MeshEntity< MeshType::getMeshDimension() > CellType;
+      typedef ExactNonlinearDiffusion< MeshType::getMeshDimension(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
 
       OneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
@@ -137,7 +137,7 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Nonlinearity NonlinearityType;
-      typedef ExactNonlinearDiffusion< MeshType::getDimension(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
+      typedef ExactNonlinearDiffusion< MeshType::getMeshDimension(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
 
       OneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
@@ -246,7 +246,7 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Nonlinearity NonlinearityType;
-      typedef ExactNonlinearDiffusion< MeshType::getDimension(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
+      typedef ExactNonlinearDiffusion< MeshType::getMeshDimension(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
 
       OneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}

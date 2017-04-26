@@ -20,7 +20,7 @@ namespace TNL {
 namespace Operators {   
 
 template< typename Mesh,
-          int MeshEntityDimension = Mesh::getDimension(),
+          int MeshEntityDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class CoFVMGradientNorm
@@ -94,8 +94,8 @@ class CoFVMGradientNorm< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, 0, Real,
    typedef Index IndexType;
    typedef ExactGradientNorm< 1, RealType > ExactOperatorType;
  
-   constexpr static int getPreimageEntitiesDimension() { return MeshType::getDimension(); };
-   constexpr static int getImageEntitiesDimension() { return MeshType::getDimension() - 1; };
+   constexpr static int getPreimageEntitiesDimension() { return MeshType::getMeshDimension(); };
+   constexpr static int getImageEntitiesDimension() { return MeshType::getMeshDimension() - 1; };
  
    CoFVMGradientNorm()
    : epsSquare( 0.0 ){}
@@ -114,7 +114,7 @@ class CoFVMGradientNorm< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, 0, Real,
                     const MeshEntity& entity,
                     const Real& time = 0.0 ) const
    {
-      static_assert( MeshFunction::getDimension() == 1,
+      static_assert( MeshFunction::getMeshDimension() == 1,
          "The mesh function u must be stored on mesh cells.." );
       static_assert( MeshEntity::getMeshDimension() == 0,
          "The complementary finite volume gradient norm may be evaluated only on faces." );
@@ -154,8 +154,8 @@ class CoFVMGradientNorm< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real
    typedef Index IndexType;
    typedef ExactGradientNorm< 2, RealType > ExactOperatorType;
  
-   constexpr static int getPreimageEntitiesDimension() { return MeshType::getDimension(); };
-   constexpr static int getImageEntitiesDimension() { return MeshType::getDimension() - 1; };
+   constexpr static int getPreimageEntitiesDimension() { return MeshType::getMeshDimension(); };
+   constexpr static int getImageEntitiesDimension() { return MeshType::getMeshDimension() - 1; };
  
    CoFVMGradientNorm()
    : epsSquare( 0.0 ){}
@@ -176,7 +176,7 @@ class CoFVMGradientNorm< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real
                     const MeshEntity& entity,
                     const Real& time = 0.0 ) const
    {
-      static_assert( MeshFunction::getDimension() == 2,
+      static_assert( MeshFunction::getMeshDimension() == 2,
          "The mesh function u must be stored on mesh cells.." );
       static_assert( MeshEntity::getMeshDimension() == 1,
          "The complementary finite volume gradient norm may be evaluated only on faces." );
@@ -272,8 +272,8 @@ class CoFVMGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real
    typedef Index IndexType;
    typedef ExactGradientNorm< 3, RealType > ExactOperatorType;
  
-   constexpr static int getPreimageEntitiesDimension() { return MeshType::getDimension(); };
-   constexpr static int getImageEntitiesDimension() { return MeshType::getDimension() - 1; };
+   constexpr static int getPreimageEntitiesDimension() { return MeshType::getMeshDimension(); };
+   constexpr static int getImageEntitiesDimension() { return MeshType::getMeshDimension() - 1; };
  
    CoFVMGradientNorm()
    : epsSquare( 0.0 ){}
@@ -292,7 +292,7 @@ class CoFVMGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real
                     const MeshEntity& entity,
                     const Real& time = 0.0 ) const
    {
-      static_assert( MeshFunction::getDimension() == 3,
+      static_assert( MeshFunction::getMeshDimension() == 3,
          "The mesh function u must be stored on mesh cells.." );
       static_assert( MeshEntity::getMeshDimension() == 2,
          "The complementary finite volume gradient norm may be evaluated only on faces." );

@@ -27,7 +27,7 @@ class LaxFridrichs< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimension = MeshType::getDimension() };
+      enum { Dimension = MeshType::getMeshDimension() };
       Real tau;
       Real artificalViscosity;
       Real advectionSpeedX;
@@ -94,7 +94,7 @@ class LaxFridrichs< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimension = MeshType::getDimension() };
+      enum { Dimension = MeshType::getMeshDimension() };
       Real tau;
       Real artificalViscosity;
       Real advectionSpeedX;
@@ -161,7 +161,7 @@ class LaxFridrichs< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimension = MeshType::getDimension() };
+      enum { Dimension = MeshType::getMeshDimension() };
       Real tau;
       Real artificalViscosity;
       Real advectionSpeedX;

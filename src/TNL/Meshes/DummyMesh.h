@@ -27,7 +27,7 @@ class DummyMesh
  
    static const int meshDimension = 1;
  
-   constexpr static int getDimension() { return meshDimension; }
+   constexpr static int getMeshDimension() { return meshDimension; }
  
  
    const Real& getParametricStep(){ return 0.0; }

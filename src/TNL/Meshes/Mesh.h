@@ -44,7 +44,7 @@ class Mesh : public Object/*,
  
       virtual String getTypeVirtual() const;
  
-      static constexpr int getDimension();
+      static constexpr int getMeshDimension();
 
       template< int Dimension >
       bool entitiesAvalable() const;

@@ -50,7 +50,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
       std::cout << std::endl;
    
    typedef typename MeshPointer::ObjectType Mesh;
-   Functions::MeshFunction< Mesh, Mesh::getDimension(), Real > v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
+   Functions::MeshFunction< Mesh, Mesh::getMeshDimension(), Real > v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {

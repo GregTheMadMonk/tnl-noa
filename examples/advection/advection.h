@@ -70,10 +70,10 @@ class advectionSetter
 
       static bool run( const Config::ParameterContainer & parameters )
       {
-          enum { Dimension = MeshType::getDimension() };
+          enum { Dimension = MeshType::getMeshDimension() };
           typedef LaxFridrichs< MeshType, Real, Index > ApproximateOperator;
           typedef advectionRhs< MeshType, Real > RightHandSide;
-          typedef Containers::StaticVector < MeshType::getDimension(), Real > Point;
+          typedef Containers::StaticVector < MeshType::getMeshDimension(), Real > Point;
 
          /****
           * Resolve the template arguments of your solver here.
@@ -86,7 +86,7 @@ class advectionSetter
              typedef Functions::Analytic::Constant< Dimension, Real > Constant;
              if( boundaryConditionsType == "dirichlet" )
              {
-                typedef Operators::DirichletBoundaryConditions< MeshType, Constant, MeshType::getDimension(), Real, Index > BoundaryConditions;
+                typedef Operators::DirichletBoundaryConditions< MeshType, Constant, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
                 typedef advectionProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
@@ -99,7 +99,7 @@ class advectionSetter
           typedef Functions::MeshFunction< MeshType > MeshFunction;
           if( boundaryConditionsType == "dirichlet" )
           {
-             typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getDimension(), Real, Index > BoundaryConditions;
+             typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
              typedef advectionProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );

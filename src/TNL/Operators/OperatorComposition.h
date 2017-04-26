@@ -102,7 +102,7 @@ class OperatorComposition
          const MeshEntity& meshEntity,
          const RealType& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getDimension() == InnerOperator::getDimension(),
+         static_assert( MeshFunction::getMeshDimension() == InnerOperator::getDimension(),
             "Mesh function and operator have both different number of dimensions." );
          //InnerOperatorFunction innerOperatorFunction( innerOperator, function );
          return outerOperator( innerOperatorFunction, meshEntity, time );
@@ -157,7 +157,7 @@ class OperatorComposition< OuterOperator, InnerOperator, void >
       bool refresh( const RealType& time = 0.0 )
       {
          return this->innerOperatorFunction.refresh( time );
-         /*MeshFunction< MeshType, MeshType::getDimension() - 1 > f( this->innerOperatorFunction.getMesh() );
+         /*MeshFunction< MeshType, MeshType::getMeshDimension() - 1 > f( this->innerOperatorFunction.getMesh() );
          f = this->innerOperatorFunction;
          this->innerOperatorFunction.getPreimageFunction().write( "preimageFunction", "gnuplot" );
          f.write( "innerFunction", "gnuplot" );
@@ -178,7 +178,7 @@ class OperatorComposition< OuterOperator, InnerOperator, void >
          const MeshEntity& meshEntity,
          const RealType& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getDimension() == InnerOperator::getDimension(),
+         static_assert( MeshFunction::getMeshDimension() == InnerOperator::getDimension(),
             "Mesh function and operator have both different number of dimensions." );
          //InnerOperatorFunction innerOperatorFunction( innerOperator, function );
          return outerOperator( innerOperatorFunction, meshEntity, time );
