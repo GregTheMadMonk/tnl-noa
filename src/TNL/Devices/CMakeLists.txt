@@ -6,7 +6,8 @@ set (headers Cuda.h
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Devices )
 set( common_SOURCES
      ${CURRENT_DIR}/Cuda.cpp
-     ${CURRENT_DIR}/Host.cpp )
+     ${CURRENT_DIR}/Host.cpp 
+     ${CURRENT_DIR}/MIC.cpp )
 
 IF( BUILD_CUDA )
    set( tnl_devices_CUDA__SOURCES

@@ -935,5 +935,62 @@ class SlicedEllpackDeviceDependentCode< Devices::Cuda >
 
 };
 
+template<>
+class SlicedEllpackDeviceDependentCode< Devices::MIC >
+{
+   public:
+
+      typedef Devices::MIC Device;
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+      static void initRowTraverse( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                   const Index row,
+                                   Index& rowBegin,
+                                   Index& rowEnd,
+                                   Index& step )
+      {
+          std::cout << "Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverse" << std::endl;
+      }
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+      __cuda_callable__
+      static void initRowTraverseFast( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                       const Index row,
+                                       Index& rowBegin,
+                                       Index& rowEnd,
+                                       Index& step )
+      {
+         std::cout << "Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverseFast" << std::endl;
+      }
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+      static bool computeMaximalRowLengthInSlices( SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                                   const typename SlicedEllpack< Real, Device, Index >::CompressedRowsLengthsVector& rowLengths )
+      {
+            std::cout << "Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::computeMaximalRowLengthInSlices" << std::endl;
+         return true;
+      }
+
+      template< typename Real,
+                typename Index,
+                typename InVector,
+                typename OutVector,
+                int SliceSize >
+      static void vectorProduct( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+      {
+        std::cout << "Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::vectorProduct" << std::endl;
+      }
+
+
+};
+
 } // namespace Matrices
 } // namespace TNL

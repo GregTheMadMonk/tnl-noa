@@ -51,6 +51,12 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    if( ConfigTagDevice< ConfigTag, Devices::Cuda >::enabled )
       config.addEntryEnum( "cuda" );
 #endif
+   
+#ifdef HAVE_MIC
+   if( ConfigTagDevice< ConfigTag, Devices::MIC >::enabled )
+      config.addEntryEnum( "mic" );
+#endif
+   
 
    /****
     * Setup index type.

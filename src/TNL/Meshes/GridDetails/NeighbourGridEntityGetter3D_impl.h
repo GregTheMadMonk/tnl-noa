@@ -171,8 +171,8 @@ class NeighbourGridEntityGetter<
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ ) = "
                    << entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
-#ifndef HAVE_CUDA // TODO: fix this to work with CUDA
+                   << " EntityDimensions = " << EntityDimensions );
+#if !defined(HAVE_CUDA) && !defined(HAVE_ICPC)  // TODO: fix this to work with CUDA         
          if( ( stepX != 0 && stepY != 0 && stepZ != 0 ) ||
              ( stepX < -stencilSize || stepX > stencilSize ||
                stepY < -stencilSize || stepY > stencilSize ||
@@ -231,13 +231,13 @@ class NeighbourGridEntityGetter<
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex )
       {
-#ifndef HAVE_CUDA // TODO: fix this to work with CUDA
+#if !defined(HAVE_CUDA) && !defined(HAVE_ICPC) // TODO: fix this to work with CUDA                  
          StaticFor< IndexType, -stencilSize, 0, StencilZRefresher >::exec( *this, entityIndex );
          StaticFor< IndexType, 1, stencilSize + 1, StencilZRefresher >::exec( *this, entityIndex );
          StaticFor< IndexType, -stencilSize, 0, StencilYRefresher >::exec( *this, entityIndex );
-         StaticFor< IndexType, 1, stencilSize + 1, StencilYRefresher >::exec( *this, entityIndex );
+         StaticFor< IndexType, 1, stencilSize + 1, StencilYRefresher >::exec( *this, entityIndex );         
          StaticFor< IndexType, -stencilSize, stencilSize + 1, StencilXRefresher >::exec( *this, entityIndex );
-#endif
+#endif         
       };
  
    protected:

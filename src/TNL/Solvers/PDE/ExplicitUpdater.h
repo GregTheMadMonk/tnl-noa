@@ -13,6 +13,7 @@
 #include <TNL/Functions/FunctionAdapter.h>
 #include <TNL/Timer.h>
 #include <TNL/SharedPointer.h>
+#include <cstdio>
 
 namespace TNL {
 namespace Solvers {
@@ -126,12 +127,23 @@ class ExplicitUpdater
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
+           /*    std::cerr<<"===========================================================" << std::endl; 
+               std::cerr<<"fu:" << userData.fu << std::endl; 
+               std::cerr<< "diffOp:" << userData.differentialOperator << std::endl; 
+               std::cerr<<"===========================================================" << std::endl; 
+               
+               std::cerr<<std::flush;*/
+               
+            //   int blabla;
+             //  std::cin >> blabla; 
+               
                ( *userData.fu )( entity ) = 
-                  ( *userData.differentialOperator )( *userData.u, entity, userData.time );
-
+                       ( *userData.differentialOperator )( *userData.u, entity, userData.time );
+            
                typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
                (  *userData.fu )( entity ) += 
                   FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
+               
             }
       }; 
 

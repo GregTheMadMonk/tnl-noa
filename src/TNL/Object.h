@@ -33,7 +33,9 @@ class Object
    public:
 
       //! Basic constructor
+#ifndef HAVE_MIC
       __cuda_callable__
+#endif
       Object() : deprecatedReadMode( false ) {};
 
       /****

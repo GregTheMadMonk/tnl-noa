@@ -90,6 +90,8 @@ if( BUILD_CUDA )
 else( BUILD_CUDA )
    ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED 
                 ${tnl_SOURCES} )
+#ifMIC
+  #TARGET_COMPILE_DEFINITIONS( tnl${debugExt}-${tnlVersion} PUBLIC -DHAVE_MIC )
 endif( BUILD_CUDA )                                    
                
 SET_TARGET_PROPERTIES( tnl${debugExt}-${tnlVersion} PROPERTIES 

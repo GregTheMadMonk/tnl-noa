@@ -156,6 +156,7 @@ operator()( const PreimageFunction& u,
    const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >();
    const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >();
+
    return ( u[ neighbourEntities.template getEntityIndex< -1,  0 >() ]
           + u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] ) * hxSquareInverse +
           ( u[ neighbourEntities.template getEntityIndex<  0, -1 >() ]

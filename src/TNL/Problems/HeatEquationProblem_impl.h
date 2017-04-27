@@ -219,7 +219,7 @@ getExplicitUpdate( const RealType& time,
     */
    
    this->bindDofs( meshPointer, uDofs );
-   MeshFunctionPointer fuPointer( meshPointer, fuDofs );   
+   this->fuPointer->bind( meshPointer, fuDofs );   
    explicitUpdater.template update< typename Mesh::Cell >(
       time,
       meshPointer,
@@ -227,7 +227,7 @@ getExplicitUpdate( const RealType& time,
       this->boundaryConditionPointer,
       this->rightHandSidePointer,
       this->uPointer,
-      fuPointer );
+      this->fuPointer );
    //std::cerr << "******************************************************************************************" << std::endl;
    //std::cerr << "******************************************************************************************" << std::endl;
    //std::cerr << "******************************************************************************************" << std::endl;

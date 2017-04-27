@@ -188,6 +188,23 @@ StaticVector< Size, Real > operator * ( const Scalar& c, const StaticVector< Siz
    return u * c;
 }
 
+#ifdef HAVE_MIC
+template< int Size, typename Real >
+__cuda_callable__
+inline StaticVector< Size, Real >& StaticVector< Size, Real >::operator = ( const StaticVector< Size, Real >& vct )
+{
+    StaticArray<Size,Real>::operator =(vct);
+}
+
+template< int Size, typename Real >
+template< typename Vct >
+__cuda_callable__
+inline StaticVector< Size, Real >& StaticVector< Size, Real >::operator = ( const Vct& vct )
+{
+    StaticArray<Size,Real>::operator =(vct);
+}
+#endif
+
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifndef HAVE_CUDA

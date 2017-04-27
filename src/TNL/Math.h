@@ -45,7 +45,8 @@ min( const T& a, const T& b )
 #ifdef __CUDA_ARCH__
    return ::min( a, b );
 #else
-   return std::min( a, b );
+   //return std::min( a, b );
+   return !(b<a)?a:b;
 #endif
 }
 
@@ -95,9 +96,13 @@ typename enable_if_same_base< T, int >::type
 max( const T& a, const T& b )
 {
 #ifdef __CUDA_ARCH__
-   return ::max( a, b );
+   
 #else
-   return std::max( a, b );
+    #ifdef __MIC__
+       return ::max( a, b );
+    #else
+       return std::max( a, b );
+    #endif
 #endif
 }
 
@@ -152,7 +157,11 @@ abs( const T& n )
 #ifdef __CUDA_ARCH__
    return ::abs( n );
 #else
-   return std::abs( n );
+   /*return std::abs( n );*/
+   if(n>=0)
+       return n;
+   else
+       return -n;
 #endif
 }
 

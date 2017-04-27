@@ -26,11 +26,14 @@ namespace Config {
 
 namespace Devices {
 
-#ifdef HAVE_CUDA
-#define __cuda_callable__ __device__ __host__
+#ifdef HAVE_MIC 
+    #define __cuda_callable__ __attribute__((target(mic)))
+#elif HAVE_CUDA
+    #define __cuda_callable__ __device__ __host__
 #else
-#define __cuda_callable__
+    #define __cuda_callable__
 #endif
+
 
 class Cuda
 {

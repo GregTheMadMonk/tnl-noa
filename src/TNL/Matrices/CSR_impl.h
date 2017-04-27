@@ -731,6 +731,38 @@ class CSRDeviceDependentCode< Devices::Host >
 
 };
 
+#ifdef HAVE_MIC
+template<>
+class CSRDeviceDependentCode< Devices::MIC >
+{
+   public:
+
+      typedef Devices::MIC Device;
+
+      template< typename Real,
+                typename Index,
+                typename InVector,
+                typename OutVector >
+      static void vectorProduct( const CSR< Real, Device, Index >& matrix,      
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+      {
+          cout <<"Not Implemented YET tnlCSRMatrixDeviceDependentCode for MIC" <<endl;
+      };
+  /*       const Index rows = matrix.getRows();
+         const tnlCSRMatrix< Real, Device, Index >* matrixPtr = &matrix;
+         const InVector* inVectorPtr = &inVector;
+         OutVector* outVectorPtr = &outVector;
+#ifdef HAVE_OPENMP
+#pragma omp parallel for firstprivate( matrixPtr, inVectorPtr, outVectorPtr ), schedule(static ), if( tnlHost::isOMPEnabled() )
+#endif         
+         for( Index row = 0; row < rows; row ++ )
+            ( *outVectorPtr )[ row ] = matrixPtr->rowVectorProduct( row, *inVectorPtr );
+      }*/
+
+};
+#endif
+
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Index,

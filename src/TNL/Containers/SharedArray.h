@@ -113,6 +113,7 @@ class SharedArray : public Object
 
    __cuda_callable__ Element* getData();
 
+
    /*!
     * Returns true if non-zero size is set.
     */
@@ -123,6 +124,7 @@ class SharedArray : public Object
     * Every time one touches this grid touches * size * sizeof( Real ) bytes are added
     * to transfered bytes in tnlStatistics.
     */
+   
 #ifdef HAVE_NOT_CXX11
    template< typename IndexType2 >
    void touch( IndexType2 touches = 1 ) const;

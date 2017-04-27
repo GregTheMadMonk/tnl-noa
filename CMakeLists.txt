@@ -43,9 +43,9 @@ endif()
 
 # set Debug/Release options
 set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
-set( CMAKE_CXX_FLAGS_DEBUG "-g" )
-set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG" )
-#set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
+set( CMAKE_CXX_FLAGS_DEBUG "-g -rdynamic" )
+set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG" )
+#set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
 # pass -rdynamic only in Debug mode
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "" )
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG "-rdynamic" )
@@ -54,7 +54,17 @@ set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE "" )
 get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
 if( CXX_COMPILER_NAME MATCHES "icpc" )
    message( "Intel compiler detected..."    )
-   set( CMAKE_CXX_FLAGS "${CXXFLAGS} -DHAVE_ICPC ")
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_ICPC -wd2568 -wd2571 -wd2570")
+   #####
+   #  Ckeck for MIC 
+   #
+   if( WITH_MIC STREQUAL "yes" )
+       message( "Compile MIC support..."    )
+       set( MIC_CXX_FLAGS "-DHAVE_MIC")
+       set( WITH_CUDA "no")
+   else()
+       set( MIC_CXX_FLAGS "")
+   endif( )	
 endif()
 
 #####

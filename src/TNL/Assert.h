@@ -43,17 +43,17 @@
    }
 
 #else // __CUDA_ARCH__
-#define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                  \
-   if( ! ( ___tnl__assert_condition ) )                                                                 \
-   {                                                                                                    \
-   std::cerr << "Assertion '" << __STRING( ___tnl__assert_condition ) << "' failed !!!" << std::endl    \
-             << "File: " << __FILE__ << std::endl                                                       \
-             << "Function: " << TNL_PRETTY_FUNCTION << std::endl                                        \
-             << "Line: " << __LINE__ << std::endl                                                       \
-             << "Diagnostics: ";                                                                        \
-        ___tnl__assert_command;                                                                         \
-        throw EXIT_FAILURE;                                                                             \
-   }
+#define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                       \
+	if( ! ( ___tnl__assert_condition ) )                                                     \
+	{                                                                                        \
+	std::cerr << "Assertion '" << __STRING( ___tnl__assert_condition ) << "' failed !!!" << std::endl  \
+             << "File: " << __FILE__ << std::endl                                                \
+             << "Function: " << __PRETTY_FUNCTION__ << std::endl                                 \
+             << "Line: " << __LINE__ << std::endl                                                \
+             << "Diagnostics: ";                                                            \
+        /*___tnl__assert_command;  TODO: this is because of MIC*/                                                             \
+        throw EXIT_FAILURE;                                                                 \
+	}
 #endif // __CUDA_ARCH__
 
 #else /* #ifndef NDEBUG */

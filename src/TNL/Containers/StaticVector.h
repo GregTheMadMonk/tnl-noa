@@ -22,7 +22,7 @@ class StaticVector : public Containers::StaticArray< Size, Real >
    typedef Real RealType;
    typedef StaticVector< Size, Real > ThisType;
    enum { size = Size };
-
+   
    __cuda_callable__
    StaticVector();
 
@@ -82,9 +82,21 @@ class StaticVector : public Containers::StaticArray< Size, Real >
    template< typename OtherReal >
    __cuda_callable__
    operator StaticVector< Size, OtherReal >() const;
+   
  
    __cuda_callable__
    ThisType abs() const;
+   
+#ifdef HAVE_MIC
+      __cuda_callable__
+   inline StaticVector< Size, Real >& operator = ( const StaticVector< Size, Real >& vct );
+
+
+   template< typename Vct >
+   __cuda_callable__
+   inline StaticVector< Size, Real >& operator = ( const Vct& Real );
+   
+#endif
 };
 
 template< typename Real >
@@ -154,6 +166,16 @@ class StaticVector< 1, Real > : public Containers::StaticArray< 1, Real >
  
    __cuda_callable__
    ThisType abs() const;
+   
+#ifdef HAVE_MIC
+   __cuda_callable__
+   inline StaticVector< 1, Real >& operator = ( const StaticVector< 1, Real >& vct );
+
+   template< typename Vct >
+   __cuda_callable__
+   inline StaticVector< 1, Real >& operator = ( const Vct& Real ); 
+#endif
+   
 };
 
 template< typename Real >
@@ -229,6 +251,17 @@ class StaticVector< 2, Real > : public Containers::StaticArray< 2, Real >
  
    __cuda_callable__
    ThisType abs() const;
+   
+#ifdef HAVE_MIC
+   __cuda_callable__
+   inline StaticVector< 2, Real >& operator = ( const StaticVector< 2, Real >& vct );
+
+   template< typename Vct >
+   __cuda_callable__
+   inline StaticVector< 2, Real >& operator = ( const Vct& Real ); 
+#endif
+   
+   
 };
 
 template< typename Real >
@@ -304,6 +337,16 @@ class StaticVector< 3, Real > : public Containers::StaticArray< 3, Real >
  
    __cuda_callable__
    ThisType abs() const;
+   
+   #ifdef HAVE_MIC
+   __cuda_callable__
+   inline StaticVector< 3, Real >& operator = ( const StaticVector< 3, Real >& vct );
+
+   template< typename Vct >
+   __cuda_callable__
+   inline StaticVector< 3, Real >& operator = ( const Vct& Real ); 
+#endif
+   
 };
 
 template< int Size, typename Real, typename Scalar >
