@@ -57,6 +57,8 @@ class File
 
    File();
 
+   ~File();
+
    bool open( const String& fileName,
               const tnlIOMode mode );
 

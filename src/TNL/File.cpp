@@ -23,6 +23,14 @@ File :: File()
 {
 }
 
+File :: ~File()
+{
+   // destroying a file without closing is a memory leak
+   // (an open file descriptor is left behind, on Linux there is typically
+   // only a limited number of descriptors available to each process)
+   close();
+}
+
 bool File :: open( const String& fileName,
                       const tnlIOMode mode )
 {
@@ -60,6 +68,11 @@ bool File :: close()
       std::cerr << "I was not able to close the file " << fileName << " properly!" << std::endl;
       return false;
    }
+   // reset all attributes
+   mode = tnlUndefinedMode;
+   file = NULL;
+   fileOK = false;
+   fileName = "";
    readElements = writtenElements = 0;
    return true;
 };
