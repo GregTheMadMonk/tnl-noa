@@ -85,14 +85,10 @@ bool Object :: save( const String& fileName ) const
       std::cerr << "I am not bale to open the file " << fileName << " for writing." << std::endl;
       return false;
    }
-   if( ! this->save( file ) )
-      return false;
+   const bool status = this->save( file );
    if( ! file. close() )
-   {
       std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
-      return false;
-   }
-   return true;
+   return status;
 }
 
 bool Object :: load( const String& fileName )
@@ -103,14 +99,10 @@ bool Object :: load( const String& fileName )
       std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
       return false;
    }
-   if( ! this->load( file ) )
-      return false;
+   const bool status = this->load( file );
    if( ! file. close() )
-   {
       std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
-      return false;
-   }
-   return true;
+   return status;
 }
 
 bool Object :: boundLoad( const String& fileName )
