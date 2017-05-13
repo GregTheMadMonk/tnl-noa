@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 #include <ostream>

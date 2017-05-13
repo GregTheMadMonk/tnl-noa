@@ -4,7 +4,7 @@
 
 template< typename Mesh, typename Real >
 class {problemBaseName}Rhs
-  : public TNL::Functions::Domain< Mesh::meshDimensions, TNL::Functions::MeshDomain >
+  : public TNL::Functions::Domain< Mesh::meshDimension, TNL::Functions::MeshDomain >
 {{
    public:
 
@@ -22,8 +22,8 @@ class {problemBaseName}Rhs
       Real operator()( const MeshEntity& entity,
                        const Real& time = 0.0 ) const    
       {{   
-         typedef typename MeshEntity::MeshType::VertexType VertexType;
-         VertexType v = entity.getCenter();        
+         typedef typename MeshEntity::MeshType::PointType PointType;
+         PointType p = entity.getCenter();        
          return 0.0;    
       }}
 }};

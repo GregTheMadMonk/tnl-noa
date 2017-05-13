@@ -7,6 +7,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #pragma once
 
 #include "FiniteVolumeNonlinearOperator.h"
