@@ -60,13 +60,11 @@ class TFQMR : public Object,
              typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
    bool solve( const Vector& b, Vector& x );
 
-   ~TFQMR();
-
    protected:
 
    bool setSize( IndexType size );
 
-   Containers::Vector< RealType, DeviceType, IndexType >  d, r, w, u, v, r_ast, Au, M_tmp;
+   Containers::Vector< RealType, DeviceType, IndexType > d, r, w, u, v, r_ast, Au, M_tmp;
 
    IndexType size;
 
