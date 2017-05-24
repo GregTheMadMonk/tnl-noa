@@ -8,6 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
 
 #pragma once
 
@@ -42,8 +47,8 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 1,MeshReal, Device, MeshIndex >,
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Nonlinearity NonlinearityType;
-      typedef typename MeshType::template MeshEntity< MeshType::getMeshDimensions() > CellType;
-      typedef ExactNonlinearDiffusion< MeshType::getMeshDimensions(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
+      typedef typename MeshType::template MeshEntity< MeshType::getMeshDimension() > CellType;
+      typedef ExactNonlinearDiffusion< MeshType::getMeshDimension(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
 
       OneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
@@ -137,7 +142,7 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Nonlinearity NonlinearityType;
-      typedef ExactNonlinearDiffusion< MeshType::getMeshDimensions(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
+      typedef ExactNonlinearDiffusion< MeshType::getMeshDimension(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
 
       OneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
@@ -246,7 +251,7 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Nonlinearity NonlinearityType;
-      typedef ExactNonlinearDiffusion< MeshType::getMeshDimensions(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
+      typedef ExactNonlinearDiffusion< MeshType::getMeshDimension(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
 
       OneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}

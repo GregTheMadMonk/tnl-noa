@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "CG.h"
+
 namespace TNL {
 namespace Solvers {
 namespace Linear {
@@ -140,9 +142,9 @@ solve( const Vector& b, Vector& x )
       new_r.swap( r );
  
       if( this->getIterations() % 10 == 0 )
-         this->setResidue( ResidueGetter::getResidue( *matrix, b, x, bNorm ) );
+         this->setResidue( ResidueGetter::getResidue( *matrix, x, b, bNorm ) );
    }
-   this->setResidue( ResidueGetter::getResidue( *matrix, b, x, bNorm ) );
+   this->setResidue( ResidueGetter::getResidue( *matrix, x, b, bNorm ) );
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
 };

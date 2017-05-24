@@ -8,9 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
-#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/MeshDimensionTag.h>
 
 namespace TNL {
 namespace Meshes {
@@ -21,7 +27,7 @@ class MeshEntitySeed;
 
 template< typename MeshConfig,
           typename EntityTopology,
-          int Dimensions >
+          int Dimension >
 class MeshSubentityTraits;
 
 /****

@@ -74,7 +74,7 @@ bool CSR< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
-bool CSR< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
+bool CSR< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
    /****
     * Compute the rows pointers. The last one is

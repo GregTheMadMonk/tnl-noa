@@ -139,17 +139,17 @@ setupLinearSystem( const MeshType& mesh,
                    Matrix& matrix )
 {
    const IndexType dofs = this->getDofs( mesh );
-   typedef typename Matrix::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   CompressedRowsLengthsVectorType rowLengths;
+   typedef typename Matrix::CompressedRowLengthsVector CompressedRowLengthsVectorType;
+   CompressedRowLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
-   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >( mesh,
+   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
+   matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( mesh,
                                                                           differentialOperatorPointer,
                                                                           boundaryConditionPointer,
                                                                           rowLengths );
    matrix.setDimensions( dofs, dofs );
-   if( ! matrix.setCompressedRowsLengths( rowLengths ) )
+   if( ! matrix.setCompressedRowLengths( rowLengths ) )
       return false;
    return true;
 }
@@ -267,11 +267,11 @@ boundaryConditionsTemplatedCompact( const GridType* grid,
    }
 }
 
-/*template< typename EntityType, int Dimensions >
-struct EntityPointer : public EntityPointer< EntityType, Dimensions - 1 >
+/*template< typename EntityType, int Dimension >
+struct EntityPointer : public EntityPointer< EntityType, Dimension - 1 >
 {
    __device__ EntityPointer( const EntityType* ptr )
-      : EntityPointer< EntityType, Dimensions - 1 >( ptr ), pointer( ptr )
+      : EntityPointer< EntityType, Dimension - 1 >( ptr ), pointer( ptr )
    {      
    }
    
@@ -375,7 +375,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getExplicitRHS( const RealType& time,
+getExplicitUpdate( const RealType& time,
                 const RealType& tau,
                 const MeshPointer& mesh,
                 DofVectorPointer& uDofs,
@@ -524,15 +524,12 @@ getExplicitRHS( const RealType& time,
          this->u->bind( mesh, uDofs );
          this->fu->bind( mesh, fuDofs );         
          //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
-         this->explicitUpdater.template update< typename Mesh::Cell >( 
-            time,
-            mesh,
-            this->differentialOperatorPointer,
-            this->boundaryConditionPointer,
-            this->rightHandSidePointer,
-            this->u,
-            this->fu );
-            }
+         explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
+         explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
+         explicitUpdater.setRightHandSide( this->rightHandSidePointer );
+         
+         this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, this->u, this->fu );
+      }
    }
 }
 
@@ -558,21 +555,15 @@ assemblyLinearSystem( const RealType& time,
                              BoundaryCondition,
                              RightHandSide,
                              Solvers::PDE::BackwardTimeDiscretisation,
-                             typename MatrixPointer::ObjectType,
                              typename DofVectorPointer::ObjectType > systemAssembler;
 
    typedef Functions::MeshFunction< Mesh > MeshFunctionType;
    typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
    MeshFunctionPointer u( mesh, *_u );
-   systemAssembler.template assembly< typename Mesh::Cell >( time,
-                                                             tau,
-                                                             mesh,
-                                                             this->differentialOperator,
-                                                             this->boundaryCondition,
-                                                             this->rightHandSide,
-                                                             u,
-                                                             matrix,
-                                                             b );
+   systemAssembler.setDifferentialOperator( this->differentialOperator );
+   systemAssembler.setBoundaryConditions( this->boundaryCondition );
+   systemAssembler.setRightHandSide( this->rightHandSide );
+   systemAssembler.template assembly< typename Mesh::Cell >( time, tau, mesh, u, matrix, b );
 }
 
 template< typename Mesh,

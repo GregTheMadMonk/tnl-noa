@@ -22,6 +22,8 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Timer.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 namespace TNL {
 namespace Problems {
@@ -32,9 +34,9 @@ template< typename Mesh,
           typename DifferentialOperator = Operators::LinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
 class HeatEquationProblem : public PDEProblem< Mesh,
-                                                     typename DifferentialOperator::RealType,
-                                                     typename Mesh::DeviceType,
-                                                     typename DifferentialOperator::IndexType  >
+                                               typename DifferentialOperator::RealType,
+                                               typename Mesh::DeviceType,
+                                               typename DifferentialOperator::IndexType  >
 {
    public:
 
@@ -90,12 +92,12 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       void bindDofs( const MeshPointer& meshPointer,
                      const DofVectorPointer& dofs );
 
-      void getExplicitRHS( const RealType& time,
-                           const RealType& tau,
-                           const MeshPointer& meshPointer,
-                           DofVectorPointer& _u,
-                           DofVectorPointer& _fu,
-                           MeshDependentDataPointer& meshDependentData );
+      void getExplicitUpdate( const RealType& time,
+                              const RealType& tau,
+                              const MeshPointer& meshPointer,
+                              DofVectorPointer& _u,
+                              DofVectorPointer& _fu,
+                              MeshDependentDataPointer& meshDependentData );
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
@@ -120,6 +122,14 @@ class HeatEquationProblem : public PDEProblem< Mesh,
          Timer gpuTransferTimer;
          
          Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+         
+         Solvers::PDE::LinearSystemAssembler< Mesh, 
+                                              MeshFunctionType,
+                                              DifferentialOperator,
+                                              BoundaryCondition,
+                                              RightHandSide,
+                                              Solvers::PDE::BackwardTimeDiscretisation,
+                                              DofVectorType > systemAssembler;
 };
 
 } // namespace Problems

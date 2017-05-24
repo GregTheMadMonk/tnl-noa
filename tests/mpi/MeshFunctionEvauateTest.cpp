@@ -54,14 +54,14 @@ int main ( int argc, char *argv[])
   typedef Vector<double,Host,int> DofType;
   typedef typename MeshType::Cell Cell;
   typedef typename MeshType::IndexType IndexType; 
-  typedef typename MeshType::VertexType VertexType; 
+  typedef typename MeshType::PointType PointType; 
   
   
- VertexType globalOrigin;
+ PointType globalOrigin;
  globalOrigin.x()=-0.5;
  globalOrigin.y()=-0.5;
  
- VertexType globalProportions;
+ PointType globalProportions;
  globalProportions.x()=8;
  globalProportions.y()=7;
  

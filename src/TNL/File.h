@@ -119,4 +119,3 @@ bool fileExists( const String& fileName );
 } // namespace TNL
 
 #include <TNL/File_impl.h>
-

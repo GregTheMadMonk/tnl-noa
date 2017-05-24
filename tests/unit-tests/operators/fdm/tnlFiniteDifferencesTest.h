@@ -97,8 +97,8 @@ class tnlFiniteDifferenceTest
       void runUnitTest()
       {
          RealType coarseErrors[ 3 ], fineErrors[ 3 ];
-         this->getApproximationError( coarseMeshSize[ MeshType::getMeshDimensions() - 1 ], coarseErrors );
-         this->getApproximationError( 2 * coarseMeshSize[ MeshType::getMeshDimensions() - 1 ], fineErrors );
+         this->getApproximationError( coarseMeshSize[ MeshType::getMeshDimension() - 1 ], coarseErrors );
+         this->getApproximationError( 2 * coarseMeshSize[ MeshType::getMeshDimension() - 1 ], fineErrors );
          this->checkEoc( coarseErrors, fineErrors, this->eoc, this->tolerance, verbose );
       }
  
@@ -160,8 +160,8 @@ template< typename Mesh,
           bool Verbose >
 bool setFunction()
 {
-    const int Dimensions = Mesh::meshDimensions;
-    typedef Functions::Analytic::ExpBump< Dimensions, RealType >  Function;
+    const int Dimension = Mesh::meshDimension;
+    typedef Functions::Analytic::ExpBump< Dimension, RealType >  Function;
     return setFiniteDifferenceOperator< Mesh, Function, RealType, IndexType, XDifference, YDifference, ZDifference, MeshSize, WriteFunctions, Verbose  >();
 }
 

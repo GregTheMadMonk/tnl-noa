@@ -52,6 +52,9 @@ getVectorMax( const Vector& v )
 
    Real result = v.getElement( 0 );
    const Index n = v.getSize();
+#if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
+#pragma omp parallel for reduction(max:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif
    for( Index i = 1; i < n; i ++ )
       result = max( result, v.getElement( i ) );
    return result;
@@ -69,6 +72,9 @@ getVectorMin( const Vector& v )
 
    Real result = v.getElement( 0 );
    const Index n = v.getSize();
+#if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
+#pragma omp parallel for reduction(min:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif
    for( Index i = 1; i < n; i ++ )
       result = min( result, v.getElement( i ) );
    return result;
@@ -86,6 +92,9 @@ getVectorAbsMax( const Vector& v )
 
    Real result = std::fabs( v.getElement( 0 ) );
    const Index n = v.getSize();
+#if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
+#pragma omp parallel for reduction(max:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif
    for( Index i = 1; i < n; i ++ )
       result = max( result, ( Real ) std::fabs( v.getElement( i ) ) );
    return result;
@@ -104,6 +113,9 @@ getVectorAbsMin( const Vector& v )
 
    Real result = std::fabs( v.getElement( 0 ) );
    const Index n = v.getSize();
+#if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
+#pragma omp parallel for reduction(min:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif
    for( Index i = 1; i < n; i ++ )
       result = min( result, ( Real ) std::fabs( v.getElement( i ) ) );
    return result;
@@ -253,6 +265,9 @@ getVectorDifferenceMax( const Vector1& v1,
 
    Real result = v1.getElement( 0 ) - v2.getElement( 0 );
    const Index n = v1.getSize();
+#if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
+#pragma omp parallel for reduction(max:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif
    for( Index i = 1; i < n; i ++ )
       result =  max( result, v1.getElement( i ) - v2.getElement( i ) );
    return result;
@@ -272,6 +287,9 @@ getVectorDifferenceMin( const Vector1& v1,
 
    Real result = v1.getElement( 0 ) - v2.getElement( 0 );
    const Index n = v1.getSize();
+#if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
+#pragma omp parallel for reduction(min:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif
    for( Index i = 1; i < n; i ++ )
       result =  min( result, v1.getElement( i ) - v2.getElement( i ) );
    return result;
@@ -291,6 +309,9 @@ getVectorDifferenceAbsMax( const Vector1& v1,
 
    Real result = std::fabs( v1.getElement( 0 ) - v2.getElement( 0 ) );
    const Index n = v1.getSize();
+#if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
+#pragma omp parallel for reduction(max:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif
    for( Index i = 1; i < n; i ++ )
       result =  max( result, ( Real ) std::fabs( v1.getElement( i ) - v2.getElement( i ) ) );
    return result;
@@ -310,6 +331,9 @@ getVectorDifferenceAbsMin( const Vector1& v1,
 
    Real result = std::fabs( v1[ 0 ] - v2[ 0 ] );
    const Index n = v1.getSize();
+#if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
+#pragma omp parallel for reduction(min:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif
    for( Index i = 1; i < n; i ++ )
       result =  min( result, ( Real ) std::fabs( v1[ i ] - v2[ i ] ) );
    return result;

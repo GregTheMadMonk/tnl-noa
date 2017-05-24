@@ -18,7 +18,7 @@
 namespace TNL {
 namespace Operators {   
 
-template< typename ExactOperatorQ, int Dimensions >
+template< typename ExactOperatorQ, int Dimension >
 class ExactOperatorCurvature
 {};
 
@@ -27,20 +27,20 @@ class ExactOperatorCurvature< OperatorQ, 1 >
 {
    public:
 
-      enum { Dimensions = 1 };
+      enum { Dimension = 1 };
 
       static String getType();
 
 #ifdef HAVE_NOT_CXX11      
-      template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Vertex, typename Real >
+      template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Point, typename Real >
 #else   
-      template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Vertex, typename Real = typename Vertex::RealType >
+      template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Point, typename Real = typename Point::RealType >
 #endif
 #ifdef HAVE_CUDA
       __device__ __host__
 #endif
       static Real getValue( const Function& function,
-                            const Vertex& v,
+                            const Point& v,
                             const Real& time = 0.0, const Real& eps = 1.0 );
       
 };
@@ -50,20 +50,20 @@ class ExactOperatorCurvature< ExactOperatorQ, 2 >
 {
    public:
 
-      enum { Dimensions = 2 };
+      enum { Dimension = 2 };
 
       static String getType();
          
 #ifdef HAVE_NOT_CXX11      
-      template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Vertex, typename Real >
+      template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Point, typename Real >
 #else   
-      template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Vertex, typename Real = typename Vertex::RealType >
+      template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Point, typename Real = typename Point::RealType >
 #endif
 #ifdef HAVE_CUDA
       __device__ __host__
 #endif      
       static Real getValue( const Function& function,
-                            const Vertex& v,
+                            const Point& v,
                             const Real& time = 0.0, const Real& eps = 1.0 );
 };
 
@@ -72,28 +72,28 @@ class ExactOperatorCurvature< ExactOperatorQ, 3 >
 {
    public:
 
-      enum { Dimensions = 3 };
+      enum { Dimension = 3 };
 
       static String getType();
    
 #ifdef HAVE_NOT_CXX11      
-      template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Vertex, typename Real >
+      template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Point, typename Real >
 #else   
-      template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Vertex, typename Real = typename Vertex::RealType >
+      template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Point, typename Real = typename Point::RealType >
 #endif
 #ifdef HAVE_CUDA
       __device__ __host__
 #endif
       static Real getValue( const Function& function,
-                            const Vertex& v,
+                            const Point& v,
                             const Real& time = 0.0, const Real& eps = 1.0 )
       {
          return 0;
       }
 };
 
-template< typename ExactOperatorQ, int Dimensions >
-class tnlFunctionType< ExactOperatorCurvature< ExactOperatorQ, Dimensions > >
+template< typename ExactOperatorQ, int Dimension >
+class tnlFunctionType< ExactOperatorCurvature< ExactOperatorQ, Dimension > >
 {
    public:
       enum { Type = tnlSpaceDomain };

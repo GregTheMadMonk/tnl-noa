@@ -50,6 +50,16 @@ StaticVector< 2, Real >::StaticVector( const StaticVector< 2, Real >& v )
 }
 
 template< typename Real >
+bool
+StaticVector< 2, Real >::setup( const Config::ParameterContainer& parameters,
+                                const String& prefix )
+{
+   this->data[ 0 ] = parameters.getParameter< double >( prefix + "0" );
+   this->data[ 1 ] = parameters.getParameter< double >( prefix + "1" );
+   return true;
+}
+
+template< typename Real >
 String StaticVector< 2, Real >::getType()
 {
    return String( "Containers::StaticVector< " ) +
@@ -177,6 +187,19 @@ StaticVector< 2, Real >::abs() const
                                       ::abs( this->data[ 1 ] ) );
 }
 
+template< typename Real >
+__cuda_callable__
+Real
+StaticVector< 2, Real >::lpNorm( const Real& p ) const
+{
+   if( p == 1.0 )
+      return TNL::abs( this->data[ 0 ] ) + TNL::abs( this->data[ 1 ] );
+   if( p == 2.0 )
+      return std::sqrt( this->data[ 0 ] * this->data[ 0 ] + 
+                        this->data[ 1 ] * this->data[ 1 ] );
+   return std::pow( std::pow( TNL::abs( this->data[ 0 ] ), p ) +
+                    std::pow( TNL::abs( this->data[ 1 ] ), p ), 1.0 / p ); 
+}
 
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -195,3 +218,4 @@ extern template class StaticVector< 2, long double >;
 
 } // namespace Containers
 } // namespace TNL
+

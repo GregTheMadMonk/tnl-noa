@@ -17,9 +17,9 @@ namespace Functions {
 namespace Analytic {   
 
 template< typename Real,
-          int Dimensions >
+          int Dimension >
 bool
-FlowerpotBase< Real, Dimensions >::
+FlowerpotBase< Real, Dimension >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -28,15 +28,15 @@ setup( const Config::ParameterContainer& parameters,
 }
 
 template< typename Real,
-          int Dimensions >
-void FlowerpotBase< Real, Dimensions >::setDiameter( const Real& sigma )
+          int Dimension >
+void FlowerpotBase< Real, Dimension >::setDiameter( const Real& sigma )
 {
    this->diameter = diameter;
 }
 
 template< typename Real,
-          int Dimensions >
-const Real& FlowerpotBase< Real, Dimensions >::getDiameter() const
+          int Dimension >
+const Real& FlowerpotBase< Real, Dimension >::getDiameter() const
 {
    return this->diameter;
 }
@@ -61,10 +61,10 @@ template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex >
+             typename Point >
 __cuda_callable__
 Real
-Flowerpot< 1, Real >::getPartialDerivative( const Vertex& v,
+Flowerpot< 1, Real >::getPartialDerivative( const Point& v,
                                                        const Real& time ) const
 {
    const RealType& x = v.x();
@@ -79,7 +79,7 @@ template< typename Real >
 __cuda_callable__
 Real
 Flowerpot< 1, Real >::
-operator()( const VertexType& v,
+operator()( const PointType& v,
             const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
@@ -105,11 +105,11 @@ template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex >
+             typename Point >
 __cuda_callable__
 Real
 Flowerpot< 2, Real >::
-getPartialDerivative( const Vertex& v,
+getPartialDerivative( const Point& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();
@@ -125,7 +125,7 @@ template< typename Real >
 __cuda_callable__
 Real
 Flowerpot< 2, Real >::
-operator()( const VertexType& v,
+operator()( const PointType& v,
             const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
@@ -152,11 +152,11 @@ template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
-             typename Vertex >
+             typename Point >
 __cuda_callable__
 Real
 Flowerpot< 3, Real >::
-getPartialDerivative( const Vertex& v,
+getPartialDerivative( const Point& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();
@@ -171,7 +171,7 @@ template< typename Real >
 __cuda_callable__
 Real
 Flowerpot< 3, Real >::
-operator()( const VertexType& v,
+operator()( const PointType& v,
             const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );

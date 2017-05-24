@@ -73,7 +73,7 @@ bool Dense< Real, Device, Index >::setLike( const Dense< Real2, Device2, Index2 
 template< typename Real,
           typename Device,
           typename Index >
-bool Dense< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
+bool Dense< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
    return true;
 }
@@ -153,8 +153,8 @@ template< typename Real,
           typename Device,
           typename Index >
 bool Dense< Real, Device, Index >::setElement( const IndexType row,
-                                                        const IndexType column,
-                                                        const RealType& value )
+                                               const IndexType column,
+                                               const RealType& value )
 {
    this->values.setElement( this->getElementIndex( row, column ), value );
    return true;
@@ -166,9 +166,9 @@ template< typename Real,
           typename Index >
 __cuda_callable__
 bool Dense< Real, Device, Index >::addElementFast( const IndexType row,
-                                                            const IndexType column,
-                                                            const RealType& value,
-                                                            const RealType& thisElementMultiplicator )
+                                                   const IndexType column,
+                                                   const RealType& value,
+                                                   const RealType& thisElementMultiplicator )
 {
    TNL_ASSERT( row >= 0 && row < this->getRows() &&
               column >= 0 && column < this->getColumns(),

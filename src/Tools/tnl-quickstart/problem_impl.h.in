@@ -117,17 +117,17 @@ setupLinearSystem( const MeshPointer& meshPointer,
                    MatrixPointer& matrixPointer )
 {{
    const IndexType dofs = this->getDofs( meshPointer );
-   typedef typename MatrixPointer::ObjectType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   TNL::SharedPointer< CompressedRowsLengthsVectorType > rowLengthsPointer;
+   typedef typename MatrixPointer::ObjectType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
+   TNL::SharedPointer< CompressedRowLengthsVectorType > rowLengthsPointer;
    if( ! rowLengthsPointer->setSize( dofs ) )
       return false;
-   TNL::Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >( meshPointer,
-                                                                          differentialOperator,
-                                                                          boundaryCondition,
-                                                                          rowLengthsPointer );
+   TNL::Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
+   matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( meshPointer,
+                                                                         differentialOperator,
+                                                                         boundaryCondition,
+                                                                         rowLengthsPointer );
    matrixPointer->setDimensions( dofs, dofs );
-   if( ! matrixPointer->setCompressedRowsLengths( *rowLengthsPointer ) )
+   if( ! matrixPointer->setCompressedRowLengths( *rowLengthsPointer ) )
       return false;
    return true;
 }}
@@ -161,12 +161,12 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::                    
-getExplicitRHS( const RealType& time,
-                const RealType& tau,
-                const MeshPointer& mesh,
-                DofVectorPointer& _u,
-                DofVectorPointer& _fu,
-                MeshDependentDataPointer& meshDependentData )
+getExplicitUpdate( const RealType& time,
+                   const RealType& tau,
+                   const MeshPointer& mesh,
+                   DofVectorPointer& _u,
+                   DofVectorPointer& _fu,
+                   MeshDependentDataPointer& meshDependentData )
 {{
    /****
     * If you use an explicit solver like EulerSolver or MersonSolver, you
@@ -177,22 +177,12 @@ getExplicitRHS( const RealType& time,
     * You may use supporting mesh dependent data if you need.
     */
 
-   this->bindDofs( mesh, _u );
-   TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   TNL::SharedPointer< MeshFunctionType > u( mesh, _u ); 
-   TNL::SharedPointer< MeshFunctionType > fu( mesh, _fu ); 
-   explicitUpdater.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           this->differentialOperator,
-                                                           this->boundaryCondition,
-                                                           this->rightHandSide,
-                                                           u,
-                                                           fu );
-   TNL::Solvers::PDE::BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
-   boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
-      this->boundaryCondition, 
-      time + tau,
-      u );
+   TNL::SharedPointer< MeshFunctionType > uPointer( mesh, _u ); 
+   TNL::SharedPointer< MeshFunctionType > fuPointer( mesh, _fu ); 
+   this->explicitUpdater.setDifferentialOperator( this->differentialOperator ),
+   this->explicitUpdater.setBoundaryConditions( this->boundaryCondition ),
+   this->explicitUpdater.setRightHandSide( this->rightHandSide ),
+   this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, uPointer, fuPointer );
 }}
 
 template< typename Mesh,
@@ -210,23 +200,21 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& b,
                       MeshDependentDataPointer& meshDependentData )
 {{
-   TNL::Solvers::PDE::LinearSystemAssembler< Mesh,
-                             MeshFunctionType,
-                             DifferentialOperator,
-                             BoundaryCondition,
-                             RightHandSide,
-                             TNL::Solvers::PDE::BackwardTimeDiscretisation,
-                             typename MatrixPointer::ObjectType,
-                             DofVectorType > systemAssembler;
+   /****
+    * If you implement a (semi-)implicit solver, this method is supposed
+    * to assembly the global linear system in each time step.
+    * You may use supporting mesh dependent data if you need.
+    */
 
-   TNL::SharedPointer< TNL::Functions::MeshFunction< Mesh > > u( mesh, _u );
-   systemAssembler.template assembly< typename Mesh::Cell >( time,
-                                                             tau,
-                                                             mesh,
-                                                             this->differentialOperator,
-                                                             this->boundaryCondition,
-                                                             this->rightHandSide,
-                                                             u,
-                                                             matrixPointer,
-                                                             b );
+   TNL::SharedPointer< TNL::Functions::MeshFunction< Mesh > > uPointer( mesh, _u );
+   this->systemAssembler.setDifferentialOperator( this->differentialOperator );
+   this->systemAssembler.setBoundaryConditions( this->boundaryCondition );
+   this->systemAssembler.setRightHandSide( this->rightHandSide );
+   this->systemAssembler.template assembly< typename Mesh::Cell, typename MatrixPointer::ObjectType >( 
+      time,
+      tau,
+      mesh,
+      uPointer,
+      matrixPointer,
+      b );
 }}

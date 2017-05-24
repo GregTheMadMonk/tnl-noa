@@ -340,7 +340,7 @@ template< typename AdvectionScheme,
    template< typename SolverVectorType >
 void NavierStokesSolver< AdvectionScheme,
                       DiffusionScheme,
-                      BoundaryConditions >::getExplicitRhs( const RealType& time,
+                      BoundaryConditions >::getExplicitUpdate( const RealType& time,
                                                             const RealType& tau,
                                                             SolverVectorType& u,
                                                             SolverVectorType& fu )
@@ -454,7 +454,7 @@ void NavierStokesSolver< AdvectionScheme,
            continue;
         }
 
-        this->advection->getExplicitRhs( c,
+        this->advection->getExplicitUpdate( c,
                                          rho_t[ c ],
                                          rho_u1_t[ c ],
                                          rho_u2_t[ c ],

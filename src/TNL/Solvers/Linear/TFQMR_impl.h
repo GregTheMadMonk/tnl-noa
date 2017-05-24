@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "TFQMR.h"
+
 namespace TNL {
 namespace Solvers {
 namespace Linear {
@@ -74,7 +76,8 @@ template< typename Matrix,
    template< typename Vector, typename ResidueGetter >
 bool TFQMR< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 {
-   if( ! this->setSize( matrix -> getRows() ) ) return false;
+   if( ! this->setSize( matrix -> getRows() ) )
+      return false;
 
    RealType tau, theta, eta, rho, alpha, b_norm, w_norm;
 
@@ -169,18 +172,8 @@ bool TFQMR< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
       this->refreshSolverMonitor();
    }
 
-//   this->matrix->vectorProduct( x, r );
-//   r.addVector( b, 1.0, -1.0 );
-//   this->setResidue( r.lpNorm( 2.0 ) / b_norm );
-
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
-};
-
-template< typename Matrix,
-          typename Preconditioner >
-TFQMR< Matrix, Preconditioner > :: ~TFQMR()
-{
 };
 
 template< typename Matrix,

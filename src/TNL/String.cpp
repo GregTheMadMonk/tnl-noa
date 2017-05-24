@@ -55,6 +55,12 @@ String :: String( int number )
    this->setString( convertToString( number ).getString() );
 }
 
+String :: String( unsigned long int number )
+: string( 0 ), length( 0 )
+{
+   this->setString( convertToString( number ).getString() );
+}
+
 String :: String( long int number )
 : string( 0 ), length( 0 )
 {

@@ -20,11 +20,11 @@ namespace TNL {
 namespace Functions {   
 
 template< typename Mesh,
-          int MeshEntityDimensions = Mesh::meshDimensions,
+          int MeshEntityDimension = Mesh::meshDimension,
           typename Real = typename Mesh::RealType >
 class MeshFunction :
    public Object,
-   public Domain< Mesh::meshDimensions, MeshDomain >
+   public Domain< Mesh::meshDimension, MeshDomain >
 {
    //static_assert( Mesh::DeviceType::DeviceType == Vector::DeviceType::DeviceType,
    //               "Both mesh and vector of a mesh function must reside on the same device.");
@@ -36,9 +36,11 @@ class MeshFunction :
       typedef SharedPointer< MeshType > MeshPointer;      
       typedef Real RealType;
       typedef Containers::Vector< RealType, DeviceType, IndexType > VectorType;
-      typedef Functions::MeshFunction< Mesh, MeshEntityDimensions, Real > ThisType;
+      typedef Functions::MeshFunction< Mesh, MeshEntityDimension, Real > ThisType;
  
-      static constexpr int getEntitiesDimensions() { return MeshEntityDimensions; }
+      static constexpr int getEntitiesDimension() { return MeshEntityDimension; }
+      
+      static constexpr int getMeshDimensions() { return MeshType::getMeshDimension(); }
  
       MeshFunction();
       
@@ -84,7 +86,6 @@ class MeshFunction :
                  const SharedPointer< Vector >& dataPtr,
                  const IndexType& offset = 0 );
       
-      
       void setMesh( const MeshPointer& meshPointer );
       
       template< typename Device = Devices::Host >
@@ -92,6 +93,8 @@ class MeshFunction :
       const MeshType& getMesh() const;
       
       const MeshPointer& getMeshPointer() const;
+      
+      __cuda_callable__ static IndexType getDofs( const MeshPointer& meshPointer );
       
       __cuda_callable__ const VectorType& getData() const;      
       
@@ -144,7 +147,8 @@ class MeshFunction :
       bool boundLoad( File& file );
  
       bool write( const String& fileName,
-                  const String& format = "vtk" ) const;
+                  const String& format = "vtk",
+                  const double& scale = 1.0 ) const;
  
       using Object::save;
  

@@ -312,11 +312,11 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    }
    
    typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
-   typedef typename GridType::VertexType VertexType;
+   typedef typename GridType::PointType PointType;
    typedef SharedPointer< GridType > GridPointer;
    GridPointer gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
-   gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
    Containers::Vector< Real, Devices::Cuda, Index > vecU;
    vecU.bind( cuda_u, gridXSize * gridYSize );
    Functions::MeshFunction< GridType > meshFunction;
@@ -511,18 +511,6 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
          aux[ ( gridYSize - 1 ) * gridXSize + i ] = 0.0; //u[ ( gridYSize - 2 ) * gridXSize + i ];
       }
  
-      /*for( Index j = 1; j < gridYSize - 1; j++ )
-         for( Index i = 1; i < gridXSize - 1; i++ )
-         {
-            const Index c = j * gridXSize + i;
-            aux[ c ] = u[ c ] + currentTau * ( ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ] ) * hx_inv +
-                                               ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
-         }
-      Real* swap = aux;
-      aux = u;
-      u = swap;
-      */
-
       for( Index j = 1; j < gridYSize - 1; j++ )
          for( Index i = 1; i < gridXSize - 1; i++ )
          {
@@ -558,10 +546,10 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
     * Saving the result
     */
    typedef Meshes::Grid< 2, Real, Devices::Host, Index > GridType;
-   typedef typename GridType::VertexType VertexType;
+   typedef typename GridType::PointType PointType;
    SharedPointer< GridType > gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
-   gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
    Containers::Vector< Real, Devices::Host, Index > vecU;
    vecU.bind( u, gridXSize * gridYSize );
    Functions::MeshFunction< GridType > meshFunction;

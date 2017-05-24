@@ -39,7 +39,7 @@ template< typename Real,
 String Grid< 2, Real, Device, Index > :: getType()
 {
    return String( "Meshes::Grid< " ) +
-          String( getMeshDimensions() ) + ", " +
+          String( getMeshDimension() ) + ", " +
           String( TNL::getType< RealType >() ) + ", " +
           String( Device :: getDeviceType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";
@@ -186,8 +186,8 @@ Grid< 2, Real, Device, Index > :: getDimensions() const
 template< typename Real,
           typename Device,
           typename Index >
-void Grid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
-                                                     const VertexType& proportions )
+void Grid< 2, Real, Device, Index > :: setDomain( const PointType& origin,
+                                                     const PointType& proportions )
 {
    this->origin = origin;
    this->proportions = proportions;
@@ -197,7 +197,7 @@ void Grid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
 template< typename Real,
           typename Device,
           typename Index >
-void Grid< 2, Real, Device, Index > :: setOrigin( const VertexType& origin)
+void Grid< 2, Real, Device, Index > :: setOrigin( const PointType& origin)
 {
    this->origin = origin;
 }
@@ -206,7 +206,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 2, Real, Device, Index >::VertexType&
+const typename Grid< 2, Real, Device, Index >::PointType&
 Grid< 2, Real, Device, Index >::getOrigin() const
 {
    return this->origin;
@@ -216,11 +216,36 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 2, Real, Device, Index > :: VertexType&
+const typename Grid< 2, Real, Device, Index > :: PointType&
    Grid< 2, Real, Device, Index > :: getProportions() const
 {
    return this->proportions;
 }
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< int EntityDimensions >
+__cuda_callable__ inline
+Index
+Grid< 2, Real, Device, Index >::
+getEntitiesCount() const
+{
+   static_assert( EntityDimensions <= 2 &&
+                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
+ 
+   switch( EntityDimensions )
+   {
+      case 2:
+         return this->numberOfCells;
+      case 1:
+         return this->numberOfFaces;
+      case 0:
+         return this->numberOfVertices;
+   }
+   return -1;
+}
+
 
 template< typename Real,
           typename Device,
@@ -231,10 +256,10 @@ Index
 Grid< 2, Real, Device, Index >::
 getEntitiesCount() const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
-   switch( EntityType::entityDimensions )
+   switch( EntityType::entityDimension )
    {
       case 2:
          return this->numberOfCells;
@@ -255,8 +280,8 @@ EntityType
 Grid< 2, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
    return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
@@ -270,8 +295,8 @@ Index
 Grid< 2, Real, Device, Index >::
 getEntityIndex( const EntityType& entity ) const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
    return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
@@ -304,7 +329,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 2, Real, Device, Index >::VertexType&
+const typename Grid< 2, Real, Device, Index >::PointType&
 Grid< 2, Real, Device, Index >::
 getSpaceSteps() const
 {
@@ -316,7 +341,7 @@ template< typename Real,
           typename Index >
 inline void 
 Grid< 2, Real, Device, Index >::
-setSpaceSteps(const typename Grid< 2, Real, Device, Index >::VertexType& steps)
+setSpaceSteps(const typename Grid< 2, Real, Device, Index >::PointType& steps)
 {
     this->spaceSteps=steps;
     computeSpaceStepPowers();
@@ -508,7 +533,7 @@ bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
            << std::endl << std::endl;
       MeshEntity< 0 > vertex( *this );
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
-      VertexType v;
+      PointType v;
       for( Index j = 0; j < this->dimensions. y(); j ++ )
       {
          file << "draw( ";
@@ -560,13 +585,13 @@ bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
       for( Index i = 0; i < this->dimensions. x(); i ++ )
          for( Index j = 0; j < this->dimensions. y(); j ++ )
          {
-            VertexType v1, v2, c;
+            PointType v1, v2, c;
 
             /****
              * East edge normal
              */
-            /*v1 = this->getVertex( CoordinatesType( i + 1, j ), v1 );
-            v2 = this->getVertex( CoordinatesType( i + 1, j + 1 ), v2 );
+            /*v1 = this->getPoint( CoordinatesType( i + 1, j ), v1 );
+            v2 = this->getPoint( CoordinatesType( i + 1, j + 1 ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< 1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
@@ -576,8 +601,8 @@ bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
             /****
              * West edge normal
              */
-            /*this->getVertex< -1, -1 >( CoordinatesType( i, j ), v1 );
-            this->getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
+            /*this->getPoint< -1, -1 >( CoordinatesType( i, j ), v1 );
+            this->getPoint< -1, 1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< -1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
@@ -587,8 +612,8 @@ bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
             /****
              * North edge normal
              */
-            /*this->getVertex< 1, 1 >( CoordinatesType( i, j ), v1 );
-            this->getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
+            /*this->getPoint< 1, 1 >( CoordinatesType( i, j ), v1 );
+            this->getPoint< -1, 1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< 0, 1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
@@ -598,8 +623,8 @@ bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
             /****
              * South edge normal
              */
-            /*this->getVertex< 1, -1 >( CoordinatesType( i, j ), v1 );
-            this->getVertex< -1, -1 >( CoordinatesType( i, j ), v2 );
+            /*this->getPoint< 1, -1 >( CoordinatesType( i, j ), v1 );
+            this->getPoint< -1, -1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< 0, -1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
@@ -643,7 +668,7 @@ bool Grid< 2, Real, Device, Index > :: write( const MeshFunction& function,
       {
          for( cellCoordinates.x() = 0; cellCoordinates.x() < getDimensions(). x(); cellCoordinates.x() ++ )
          {
-            VertexType v = cell.getCenter();
+            PointType v = cell.getCenter();
             GnuplotWriter::write( file,  v );
             GnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
             file << std::endl;
@@ -662,7 +687,7 @@ void
 Grid< 2, Real, Device, Index >::
 writeProlog( Logger& logger )
 {
-   logger.writeParameter( "Dimensions:", getMeshDimensions() );
+   logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

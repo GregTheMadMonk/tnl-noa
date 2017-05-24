@@ -58,7 +58,7 @@ template< typename OutMeshFunction,
           typename InFunction >
 class MeshFunctionEvaluator
 {
-   static_assert( OutMeshFunction::getDomainDimensions() == InFunction::getDomainDimensions(),
+   static_assert( OutMeshFunction::getDomainDimension() == InFunction::getDomainDimension(),
                   "Input and output functions must have the same domain dimensions." );
 
    public:

@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Operators/diffusion/OneSidedMeanCurvature.h>
@@ -75,7 +81,7 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
       void bindDofs( const MeshType& mesh,
                      DofVectorType& dofs );
 
-      void getExplicitRHS( const RealType& time,
+      void getExplicitUpdate( const RealType& time,
                            const RealType& tau,
                            const MeshType& mesh,
                            DofVectorType& _u,

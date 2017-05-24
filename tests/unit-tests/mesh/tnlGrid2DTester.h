@@ -21,7 +21,7 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
    typedef Meshes::Grid< 2, RealType, Device, IndexType > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename GridType::VertexType VertexType;
+   typedef typename GridType::PointType PointType;
 
 
    GridTester(){};
@@ -48,7 +48,7 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
    void setDomainTest()
    {
       GridType grid;
-      grid.setDomain( VertexType( 0.0, 0.0 ), VertexType( 1.0, 1.0 ) );
+      grid.setDomain( PointType( 0.0, 0.0 ), PointType( 1.0, 1.0 ) );
       grid.setDimensions( 10, 20 );
 
       CPPUNIT_ASSERT( grid.getSpaceSteps().x() == 0.1 );
@@ -130,9 +130,9 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
       const IndexType ySize( 17 );
       GridType grid;
  
-      typedef typename GridType::template MeshEntity< 0 > VertexType;
-      typedef typename VertexType::EntityBasisType BasisType;
-      VertexType vertex( grid );
+      typedef typename GridType::template MeshEntity< 0 > PointType;
+      typedef typename PointType::EntityBasisType BasisType;
+      PointType vertex( grid );
  
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
       grid.setDimensions( xSize, ySize );
@@ -143,10 +143,10 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
               vertex.getCoordinates().x() < xSize + 1;
               vertex.getCoordinates().x()++ )
          {
-            const IndexType vertexIndex = grid.template getEntityIndex< typename GridType::Vertex >( vertex );
+            const IndexType vertexIndex = grid.template getEntityIndex< typename GridType::Point >( vertex );
             CPPUNIT_ASSERT( vertexIndex >= 0 );
-            CPPUNIT_ASSERT( vertexIndex < grid.template getEntitiesCount< typename GridType::Vertex >() );
-            CPPUNIT_ASSERT( grid.template getEntity< typename GridType::Vertex >( vertexIndex ).getCoordinates() == vertex.getCoordinates() );
+            CPPUNIT_ASSERT( vertexIndex < grid.template getEntitiesCount< typename GridType::Point >() );
+            CPPUNIT_ASSERT( grid.template getEntity< typename GridType::Point >( vertexIndex ).getCoordinates() == vertex.getCoordinates() );
          }
    }
 
@@ -224,7 +224,7 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
          {
             //const IndexType cellIndex = grid.getEntityIndex( cell );
             cell.refresh(); //setIndex( cellIndex );
-            auto neighbourEntities = cell.template getNeighbourEntities< GridType::Face::entityDimensions >();
+            auto neighbourEntities = cell.template getNeighbourEntities< GridType::Face::entityDimension >();
 
             FaceType face1( grid,
                             cell.getCoordinates(),
@@ -281,7 +281,7 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
                face.setOrientation( EntityOrientationType( 1, 0 ) );
                //const IndexType faceIndex = grid.getEntityIndex( face );
                face.refresh(); //setIndex( faceIndex );
-               auto neighbourCells = face.template getNeighbourEntities< GridType::Cell::entityDimensions >();
+               auto neighbourCells = face.template getNeighbourEntities< GridType::Cell::entityDimension >();
 
 
                if( face.getCoordinates().x() > 0 )
@@ -302,7 +302,7 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
                face.setOrientation( EntityOrientationType( 0, 1 ) );
                //const IndexType faceIndex = grid.getEntityIndex( face );
                face.refresh();//setIndex( faceIndex );
-               auto neighbourCells = face.template getNeighbourEntities< GridType::Cell::entityDimensions >();
+               auto neighbourCells = face.template getNeighbourEntities< GridType::Cell::entityDimension >();
  
                if( face.getCoordinates().y() > 0 )
                {

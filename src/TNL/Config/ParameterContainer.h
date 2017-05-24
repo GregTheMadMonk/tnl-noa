@@ -14,6 +14,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/mpi-supp.h>
 #include <TNL/param-types.h>
+//#include <TNL/Debugging/StackBacktrace.h>
 
 namespace TNL {
 namespace Config {   
@@ -62,7 +63,7 @@ class ParameterContainer
 
    template< class T > bool getParameter( const String& name,
                                           T& value,
-                                          bool verbose = false ) const
+                                          bool verbose = true ) const
    {
       int i;
       const int size = parameters. getSize();
@@ -73,7 +74,10 @@ class ParameterContainer
             return true;
          }
       if( verbose )
+      {
          std::cerr << "Missing parameter '" << name << "'." << std::endl;
+         throw(0); //PrintStackBacktrace;
+      }
       return false;
    }
 

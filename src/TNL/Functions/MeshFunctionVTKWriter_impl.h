@@ -19,7 +19,8 @@ template< typename MeshFunction >
 bool
 MeshFunctionVTKWriter< MeshFunction >::
 write( const MeshFunction& function,
-                         std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    std::cerr << "VTK writer for mesh functions defined on mesh type " << MeshFunction::MeshType::getType() << " is not (yet) implemented." << std::endl;
    return false;
@@ -39,8 +40,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -54,7 +55,8 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    writeHeader(function, str);
  
@@ -88,7 +90,7 @@ write( const MeshFunctionType& function,
    {
       typename MeshType::Cell entity = mesh.template getEntity< typename MeshType::Cell >( i );
       entity.refresh();
-      str << function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
  
    return true;
@@ -108,8 +110,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -123,7 +125,8 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    writeHeader(function, str);
  
@@ -157,7 +160,7 @@ write( const MeshFunctionType& function,
    {
       typename MeshType::Vertex entity = mesh.template getEntity< typename MeshType::Vertex >( i );
       entity.refresh();
-      str << function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
  
    return true;
@@ -177,8 +180,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -192,7 +195,8 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    writeHeader(function, str);
  
@@ -237,7 +241,7 @@ write( const MeshFunctionType& function,
    {
       typename MeshType::Cell entity = mesh.template getEntity< typename MeshType::Cell >( i );
       entity.refresh();
-      str << function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;
@@ -257,8 +261,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -272,7 +276,8 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    typedef typename MeshType::template MeshEntity< 0 > Vertex;
    typedef typename MeshType::template MeshEntity< 1 > Face;
@@ -326,7 +331,7 @@ write( const MeshFunctionType& function,
    {
       typename MeshType::Face entity = mesh.template getEntity< typename MeshType::Face >( i );
       entity.refresh();
-      str << function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;
@@ -346,8 +351,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -361,7 +366,8 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    typedef typename MeshType::template MeshEntity< 0 > Vertex;
    writeHeader(function, str);
@@ -405,7 +411,7 @@ write( const MeshFunctionType& function,
    {
       typename MeshType::Vertex entity = mesh.template getEntity< typename MeshType::Vertex >( i );
       entity.refresh();
-      str << function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;
@@ -425,8 +431,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -440,7 +446,8 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    writeHeader(function, str);
  
@@ -501,7 +508,7 @@ write( const MeshFunctionType& function,
    {
       typename MeshType::Cell entity = mesh.template getEntity< typename MeshType::Cell >( i );
       entity.refresh();
-      str << function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;
@@ -521,8 +528,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -536,7 +543,8 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    writeHeader(function, str);
  
@@ -620,7 +628,7 @@ write( const MeshFunctionType& function,
    {
       typename MeshType::Face entity = mesh.template getEntity< typename MeshType::Face >( i );
       entity.refresh();
-      str << function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;
@@ -640,8 +648,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -655,7 +663,8 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    writeHeader(function, str);
  
@@ -733,7 +742,7 @@ write( const MeshFunctionType& function,
    {
       typename MeshType::Edge entity = mesh.template getEntity< typename MeshType::Edge >( i );
       entity.refresh();
-      str << function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;
@@ -753,8 +762,8 @@ writeHeader( const MeshFunctionType& function,
              std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -768,7 +777,8 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    writeHeader(function, str);
  
@@ -820,7 +830,7 @@ write( const MeshFunctionType& function,
    {
       typename MeshType::Vertex entity = mesh.template getEntity< typename MeshType::Vertex >( i );
       entity.refresh();
-      str << function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;

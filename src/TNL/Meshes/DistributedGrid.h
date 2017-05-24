@@ -23,7 +23,7 @@ namespace Meshes {
           typename Real >*/
 
 template<typename GridType,
-        int meshDimensions= GridType::meshDimensions>    
+        int meshDimensions= GridType::meshDimension>    
 class DistributedGrid
 {
 
@@ -181,14 +181,14 @@ class DistributedGrid <GridType,2>
     public:
 
     typedef typename GridType::IndexType IndexType;
-    typedef typename GridType::VertexType VertexType;
+    typedef typename GridType::PointType PointType;
     typedef Containers::StaticVector< 2, IndexType > CoordinatesType;
     
     
     private : 
         
         GridType GlobalGrid;
-        VertexType localorigin;
+        PointType localorigin;
         CoordinatesType localsize;
         CoordinatesType overlap;
         
@@ -217,7 +217,7 @@ class DistributedGrid <GridType,2>
            for (int i=0;i<8;i++)
                 neighbors[i]=-1;
            
-           Dimensions= GridType::meshDimensions;
+           Dimensions= GridType::meshDimension;
            GlobalGrid=globalGrid;
            //Detect MPI and number of process
            mpiInUse=false;

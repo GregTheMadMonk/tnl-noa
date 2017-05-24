@@ -14,46 +14,46 @@ namespace TNL {
 namespace Functions {
 namespace Analytic {   
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
-Constant< Dimensions, Real >::
+Constant< Dimension, Real >::
 Constant()
 : constant( 0.0 )
 {
 }
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
 void
-Constant< Dimensions, Real >::
+Constant< Dimension, Real >::
 setConstant( const RealType& constant )
 {
    this->constant = constant;
 }
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
 const Real&
-Constant< Dimensions, Real >::
+Constant< Dimension, Real >::
 getConstant() const
 {
    return this->constant;
 }
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real >
 void
-Constant< FunctionDimensions, Real >::
+Constant< FunctionDimension, Real >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    config.addEntry     < double >( prefix + "constant", "Value of the constant function.", 0.0 );
 }
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
 bool
-Constant< Dimensions, Real >::
+Constant< Dimension, Real >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -61,14 +61,14 @@ setup( const Config::ParameterContainer& parameters,
    return true;
 }
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder >
 Real
-Constant< Dimensions, Real >::
-getPartialDerivative( const VertexType& v,
+Constant< Dimension, Real >::
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    if( XDiffOrder || YDiffOrder || ZDiffOrder )

@@ -50,7 +50,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
       std::cout << std::endl;
    
    typedef typename MeshPointer::ObjectType Mesh;
-   Functions::MeshFunction< Mesh, Mesh::getMeshDimensions(), Real > v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
+   Functions::MeshFunction< Mesh, Mesh::getMeshDimension(), Real > v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
@@ -416,7 +416,7 @@ bool setElementType( const MeshPointer& meshPointer,
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
    }
-   if( parsedElementType[ 0 ] == "tnlStaticVector" )
+   if( parsedElementType[ 0 ] == "Containers::StaticVector" )
       return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedElementType, parameters );
 
    std::cerr << "Unknown element type " << elementType << "." << std::endl;

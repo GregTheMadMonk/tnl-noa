@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Operators/diffusion/ExactNonlinearDiffusion.h>
@@ -17,21 +23,21 @@
 namespace TNL {
 namespace Operators {   
 
-template< int Dimensions,
-          typename InnerOperator = ExactIdentityOperator< Dimensions > >
+template< int Dimension,
+          typename InnerOperator = ExactIdentityOperator< Dimension > >
 class ExactMeanCurvature
-: public Functions::Domain< Dimensions, Functions::SpaceDomain >
+: public Functions::Domain< Dimension, Functions::SpaceDomain >
 {
    public:
  
-      typedef ExactGradientNorm< Dimensions > ExactGradientNormType;
-      typedef ExactFunctionInverseOperator< Dimensions, ExactGradientNormType > FunctionInverse;
-      typedef ExactNonlinearDiffusion< Dimensions, FunctionInverse > NonlinearDiffusion;
+      typedef ExactGradientNorm< Dimension > ExactGradientNormType;
+      typedef ExactFunctionInverseOperator< Dimension, ExactGradientNormType > FunctionInverse;
+      typedef ExactNonlinearDiffusion< Dimension, FunctionInverse > NonlinearDiffusion;
  
       static String getType()
       {
          return String( "ExactMeanCurvature< " ) +
-                String( Dimensions) + ", " +
+                String( Dimension) + ", " +
                 InnerOperator::getType() + " >";
       }
  
@@ -45,7 +51,7 @@ class ExactMeanCurvature
       __cuda_callable__
       typename Function::RealType
          operator()( const Function& function,
-                     const typename Function::VertexType& v,
+                     const typename Function::PointType& v,
                      const typename Function::RealType& time = 0.0 ) const
       {
          return this->nonlinearDiffusion( function, v, time );
@@ -58,7 +64,7 @@ class ExactMeanCurvature
       __cuda_callable__
       typename Function::RealType
          getPartialDerivative( const Function& function,
-                               const typename Function::VertexType& v,
+                               const typename Function::PointType& v,
                                const typename Function::RealType& time = 0.0 ) const
       {
          static_assert( XDerivative >= 0 && YDerivative >= 0 && ZDerivative >= 0,

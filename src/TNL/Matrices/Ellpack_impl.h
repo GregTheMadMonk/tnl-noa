@@ -69,7 +69,7 @@ bool Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
+bool Ellpack< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
    TNL_ASSERT( this->getRows() > 0, );
    TNL_ASSERT( this->getColumns() > 0, );
@@ -81,7 +81,7 @@ bool Ellpack< Real, Device, Index >::setCompressedRowsLengths( const CompressedR
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::setConstantCompressedRowsLengths( const IndexType& rowLengths )
+bool Ellpack< Real, Device, Index >::setConstantCompressedRowLengths( const IndexType& rowLengths )
 {
    TNL_ASSERT( rowLengths > 0,
               std::cerr << " rowLengths = " << rowLengths );
@@ -158,7 +158,7 @@ bool Ellpack< Real, Device, Index >::operator != ( const Ellpack< Real2, Device2
           typename Index >
    template< typename Matrix >
 bool Ellpack< Real, Device, Index >::copyFrom( const Matrix& matrix,
-                                                        const CompressedRowsLengthsVector& rowLengths )
+                                                        const CompressedRowLengthsVector& rowLengths )
 {
    return Matrix< RealType, DeviceType, IndexType >::copyFrom( matrix, rowLengths );
 }*/
@@ -706,7 +706,7 @@ template<
 __global__ void EllpackVectorProductCudaKernel(
    const Index rows,
    const Index columns,
-   const Index compressedRowsLengths,
+   const Index compressedRowLengths,
    const Index alignedRows,
    const Index paddingIndex,
    const Index* columnIndexes,
@@ -722,7 +722,7 @@ __global__ void EllpackVectorProductCudaKernel(
    Index el( 0 );
    Real result( 0.0 );
    Index columnIndex;
-   while( el++ < compressedRowsLengths &&
+   while( el++ < compressedRowLengths &&
           ( columnIndex = columnIndexes[ i ] ) < columns &&
           columnIndex != paddingIndex )
    {

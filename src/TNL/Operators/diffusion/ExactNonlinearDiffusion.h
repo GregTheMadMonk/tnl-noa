@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Functions/Domain.h>
@@ -17,9 +23,9 @@
 namespace TNL {
 namespace Operators {   
 
-template<  int Dimensions,
+template<  int Dimension,
            typename Nonlinearity,
-           typename InnerOperator = ExactIdentityOperator< Dimensions > >
+           typename InnerOperator = ExactIdentityOperator< Dimension > >
 class ExactNonlinearDiffusion
 {};
 
@@ -60,7 +66,7 @@ class ExactNonlinearDiffusion< 1, Nonlinearity, InnerOperator >
       __cuda_callable__
       typename Function::RealType
       operator()( const Function& function,
-                  const typename Function::VertexType& v,
+                  const typename Function::PointType& v,
                   const typename Function::RealType& time = 0.0 ) const
       {
          typedef typename Function::RealType RealType;
@@ -114,7 +120,7 @@ class ExactNonlinearDiffusion< 2, Nonlinearity, InnerOperator >
       __cuda_callable__
       typename Function::RealType
       operator()( const Function& function,
-                  const typename Function::VertexType& v,
+                  const typename Function::PointType& v,
                   const typename Function::RealType& time = 0.0 ) const
       {
          typedef typename Function::RealType RealType;
@@ -173,7 +179,7 @@ class ExactNonlinearDiffusion< 3, Nonlinearity, InnerOperator >
       __cuda_callable__
       typename Function::RealType
       operator()( const Function& function,
-                  const typename Function::VertexType& v,
+                  const typename Function::PointType& v,
                   const typename Function::RealType& time = 0.0 ) const
       {
          typedef typename Function::RealType RealType;

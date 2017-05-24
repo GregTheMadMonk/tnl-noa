@@ -182,9 +182,9 @@ template< class T >
 __cuda_callable__
 T sign( const T& a )
 {
-   if( a < ( T ) 0 ) return -1;
-   if( a == ( T ) 0 ) return 0;
-   return 1;
+   if( a < ( T ) 0 ) return ( T ) -1;
+   if( a == ( T ) 0 ) return ( T ) 0;
+   return ( T ) 1;
 };
 
 template< typename Real >

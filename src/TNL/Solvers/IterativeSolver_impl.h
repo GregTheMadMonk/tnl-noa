@@ -111,7 +111,7 @@ bool IterativeSolver< Real, Index> :: checkNextIteration()
        this->getIterations() > this->getMaxIterations()  ||
        ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() >= this->getMinIterations() ) ||
        ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() >= this->getMinIterations() ) )
-      return false;
+      return false;   
    return true;
 }
 

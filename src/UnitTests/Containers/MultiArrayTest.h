@@ -51,13 +51,13 @@ __global__ void testSetGetElementKernel( MultiArray< 3, ElementType, Devices::Cu
 TEST( MultiArrayTest, testConstructorDestructor )
 {
    using namespace TNL::Containers;
-   MultiArray< Dimensions, ElementType, Device, IndexType > u;
+   MultiArray< Dimension, ElementType, Device, IndexType > u;
 }
 
 TEST( MultiArrayTest, testSetSize )
 {
    using namespace TNL::Containers;
-   MultiArray< Dimensions, ElementType, Device, IndexType > u, v;
+   MultiArray< Dimension, ElementType, Device, IndexType > u, v;
    u. setDimensions( 10 );
    v. setDimensions( 10 );
 }
@@ -105,7 +105,7 @@ IndexType getDiagonalElement( Containers::MultiArray< 3, ElementType, Device, In
 TEST( MultiArrayTest, testSetGetElement )
 {
    using namespace TNL::Containers;
-   MultiArray< Dimensions, ElementType, Device, IndexType > u;
+   MultiArray< Dimension, ElementType, Device, IndexType > u;
    u. setDimensions( 10 );
    if( std::is_same< Device, Devices::Host >::value )
    {
@@ -115,7 +115,7 @@ TEST( MultiArrayTest, testSetGetElement )
    if( std::is_same< Device, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      MultiArray< Dimensions, ElementType, Device, IndexType >* kernel_u =
+      MultiArray< Dimension, ElementType, Device, IndexType >* kernel_u =
                Devices::Cuda::passToDevice( u );
       testSetGetElementKernel<<< 1, 16 >>>( kernel_u );
       Devices::Cuda::freeFromDevice( kernel_u );
@@ -129,7 +129,7 @@ TEST( MultiArrayTest, testSetGetElement )
 TEST( MultiArrayTest, testComparisonOperator )
 {
    using namespace TNL::Containers;
-   MultiArray< Dimensions, ElementType, Device, IndexType > u, v, w;
+   MultiArray< Dimension, ElementType, Device, IndexType > u, v, w;
    u.setDimensions( 10 );
    v.setDimensions( 10 );
    w.setDimensions( 10 );
@@ -151,8 +151,8 @@ TEST( MultiArrayTest, testComparisonOperator )
 TEST( MultiArrayTest, testEquivalenceOperator )
 {
    using namespace TNL::Containers;
-   MultiArray< Dimensions, ElementType, Device, IndexType > u;
-   MultiArray< Dimensions, ElementType, Device, IndexType > v;
+   MultiArray< Dimension, ElementType, Device, IndexType > u;
+   MultiArray< Dimension, ElementType, Device, IndexType > v;
    u. setDimensions( 10 );
    v. setDimensions( 10 );
    for( int i = 0; i < 10; i ++ )
@@ -165,7 +165,7 @@ TEST( MultiArrayTest, testEquivalenceOperator )
 TEST( MultiArrayTest, testGetSize )
 {
    using namespace TNL::Containers;
-   MultiArray< Dimensions, ElementType, Device, IndexType > u;
+   MultiArray< Dimension, ElementType, Device, IndexType > u;
    const int maxSize = 10;
    for( int i = 1; i < maxSize; i ++ )
       u. setDimensions( i );
@@ -176,7 +176,7 @@ TEST( MultiArrayTest, testGetSize )
 TEST( MultiArrayTest, testReset )
 {
    using namespace TNL::Containers;
-   MultiArray< Dimensions, ElementType, Device, IndexType > u;
+   MultiArray< Dimension, ElementType, Device, IndexType > u;
    u.setDimensions( 100 );
    ASSERT_EQ( u. getDimensions().x(), 100 );
    u.reset();
@@ -193,7 +193,7 @@ TEST( MultiArrayTest, testSetSizeAndDestructor )
    using namespace TNL::Containers;
    for( int i = 1; i < 100; i ++ )
    {
-      MultiArray< Dimensions, ElementType, Device, IndexType > u;
+      MultiArray< Dimension, ElementType, Device, IndexType > u;
       u. setDimensions( i );
    }
 }
@@ -201,7 +201,7 @@ TEST( MultiArrayTest, testSetSizeAndDestructor )
 TEST( MultiArrayTest, testSaveAndLoad )
 {
    using namespace TNL::Containers;
-   MultiArray< Dimensions, ElementType, Device, IndexType > v;
+   MultiArray< Dimension, ElementType, Device, IndexType > v;
    const int size( 10 );
    ASSERT_TRUE( v. setDimensions( size ) );
    for( int i = 0; i < size; i ++ )
@@ -210,7 +210,7 @@ TEST( MultiArrayTest, testSaveAndLoad )
    file. open( "test-file.tnl", tnlWriteMode );
    ASSERT_TRUE( v. save( file ) );
    file. close();
-   MultiArray< Dimensions, ElementType, Device, IndexType > u;
+   MultiArray< Dimension, ElementType, Device, IndexType > u;
    file. open( "test-file.tnl", tnlReadMode );
    ASSERT_TRUE( u. load( file ) );
    file. close();

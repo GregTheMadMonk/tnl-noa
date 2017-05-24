@@ -39,7 +39,7 @@ template< typename Real,
 String Grid< 1, Real, Device, Index >::getType()
 {
    return String( "Meshes::Grid< " ) +
-          String( getMeshDimensions() ) + ", " +
+          String( getMeshDimension() ) + ", " +
           String( TNL::getType< RealType >() ) + ", " +
           String( Device::getDeviceType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";
@@ -107,7 +107,7 @@ void Grid< 1, Real, Device, Index > ::computeProportions()
 template< typename Real,
           typename Device,
           typename Index >
-void Grid< 1, Real, Device, Index > :: setOrigin( const VertexType& origin)
+void Grid< 1, Real, Device, Index > :: setOrigin( const PointType& origin)
 {
    this->origin = origin;
 }
@@ -145,8 +145,8 @@ const typename Grid< 1, Real, Device, Index >::CoordinatesType&
 template< typename Real,
           typename Device,
           typename Index >
-void Grid< 1, Real, Device, Index >::setDomain( const VertexType& origin,
-                                                     const VertexType& proportions )
+void Grid< 1, Real, Device, Index >::setDomain( const PointType& origin,
+                                                     const PointType& proportions )
 {
    this->origin = origin;
    this->proportions = proportions;
@@ -157,7 +157,7 @@ template< typename Real,
           typename Device,
           typename Index  >
 __cuda_callable__ inline
-const typename Grid< 1, Real, Device, Index >::VertexType&
+const typename Grid< 1, Real, Device, Index >::PointType&
   Grid< 1, Real, Device, Index >::getOrigin() const
 {
    return this->origin;
@@ -167,7 +167,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 1, Real, Device, Index >::VertexType&
+const typename Grid< 1, Real, Device, Index >::PointType&
    Grid< 1, Real, Device, Index >::getProportions() const
 {
    return this->proportions;
@@ -182,10 +182,10 @@ Index
 Grid< 1, Real, Device, Index >::
 getEntitiesCount() const
 {
-   static_assert( EntityType::entityDimensions <= 1 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 1 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
-   switch( EntityType::entityDimensions )
+   switch( EntityType::entityDimension )
    {
       case 1:
          return this->numberOfCells;
@@ -198,14 +198,37 @@ getEntitiesCount() const
 template< typename Real,
           typename Device,
           typename Index >
+   template< int EntityDimensions >
+__cuda_callable__  inline
+Index
+Grid< 1, Real, Device, Index >::
+getEntitiesCount() const
+{
+   static_assert( EntityDimensions <= 1 &&
+                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
+ 
+   switch( EntityDimensions )
+   {
+      case 1:
+         return this->numberOfCells;
+      case 0:
+         return this->numberOfVertices;
+   }
+   return -1;
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename EntityType >
  __cuda_callable__ inline
 EntityType
 Grid< 1, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( EntityType::entityDimensions <= 1 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 1 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
    return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
@@ -219,8 +242,8 @@ Index
 Grid< 1, Real, Device, Index >::
 getEntityIndex( const EntityType& entity ) const
 {
-   static_assert( EntityType::entityDimensions <= 1 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 1 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
    return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
@@ -252,7 +275,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 1, Real, Device, Index >::VertexType&
+const typename Grid< 1, Real, Device, Index >::PointType&
 Grid< 1, Real, Device, Index >::
 getSpaceSteps() const
 {
@@ -264,7 +287,7 @@ template< typename Real,
           typename Index >
 inline void 
 Grid< 1, Real, Device, Index >::
-setSpaceSteps(const typename Grid< 1, Real, Device, Index >::VertexType& steps)
+setSpaceSteps(const typename Grid< 1, Real, Device, Index >::PointType& steps)
 {
     this->spaceSteps=steps;
     computeSpaceStepPowers();
@@ -446,12 +469,12 @@ bool Grid< 1, Real, Device, Index >::write( const MeshFunction& function,
    const RealType hx = getSpaceSteps(). x();
    if( format == "gnuplot" )
    {
-      typename ThisType::template MeshEntity< getMeshDimensions() > entity( *this );
+      typename ThisType::template MeshEntity< getMeshDimension() > entity( *this );
       for( entity.getCoordinates().x() = 0;
            entity.getCoordinates().x() < getDimensions(). x();
            entity.getCoordinates().x() ++ )
       {
-         VertexType v = entity.getCenter();
+         PointType v = entity.getCenter();
          GnuplotWriter::write( file,  v );
          GnuplotWriter::write( file,  function[ this->getEntityIndex( entity ) ] );
          file << std::endl;
@@ -468,7 +491,7 @@ void
 Grid< 1, Real, Device, Index >::
 writeProlog( Logger& logger )
 {
-   logger.writeParameter( "Dimensions:", getMeshDimensions() );
+   logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

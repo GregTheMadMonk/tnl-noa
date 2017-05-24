@@ -22,7 +22,7 @@ template< typename Real, typename Device, typename Index >
 String MultiVector< 3, Real, Device, Index > :: getType()
 {
    return String( "Containers::MultiVector< ") +
-          String( Dimensions ) +
+          String( Dimension ) +
           String( ", " ) +
           String( TNL::getType< Real >() ) +
           String( ", " ) +

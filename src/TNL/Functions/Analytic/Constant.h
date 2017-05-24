@@ -25,7 +25,7 @@ class Constant : public Domain< dimensions, NonspaceDomain >
    public:
  
       typedef Real RealType;
-      typedef Containers::StaticVector< dimensions, RealType > VertexType;
+      typedef Containers::StaticVector< dimensions, RealType > PointType;
  
       Constant();
 
@@ -44,16 +44,16 @@ class Constant : public Domain< dimensions, NonspaceDomain >
                 int YDiffOrder,
                 int ZDiffOrder >
    #else
-      template< int XDiffOrder,
+      template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
    #endif
       __cuda_callable__ inline
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
 
       __cuda_callable__ inline
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const
       {
          return constant;

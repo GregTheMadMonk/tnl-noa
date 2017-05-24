@@ -53,6 +53,22 @@ __device__ inline int Cuda::getGlobalThreadIdx( const int gridIdx, const int gri
 {
    return ( gridIdx * gridSize + blockIdx.x ) * blockDim.x + threadIdx.x;
 }
+
+__device__ inline int Cuda::getGlobalThreadIdx_x( const dim3& gridIdx )
+{
+   return ( gridIdx.x * getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+}
+
+__device__ inline int Cuda::getGlobalThreadIdx_y( const dim3& gridIdx )
+{
+   return ( gridIdx.y * getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
+}
+
+__device__ inline int Cuda::getGlobalThreadIdx_z( const dim3& gridIdx )
+{
+   return ( gridIdx.z * getMaxGridSize() + blockIdx.z ) * blockDim.z + threadIdx.z;
+}
+
 #endif
 
 
