@@ -80,6 +80,7 @@ class FunctionToEvaluate<Real,2> : public Functions::Domain< 2, Functions::MeshD
 	  {
 		 //return meshEntity.getCoordinates().y()*10+meshEntity.getCoordinates().x();
 		 return meshEntity.getCenter().y()*100+meshEntity.getCenter().x();
+              
 		 
 	  }
 };
@@ -88,16 +89,18 @@ template <typename Real>
 class ZeroFunction<Real,2> : public Functions::Domain< 2, Functions::MeshDomain >
 {
    public:
-	  typedef Real RealType;
+          typedef Real RealType;
+          
+          Real Number;
 	  ZeroFunction( )
 	  {};
-
+          
 	  template< typename EntityType >
 	  RealType operator()( const EntityType& meshEntity,
 								  const RealType& time = 0.0 ) const
 	  {
 		 //return meshEntity.getCoordinates().y()*10+meshEntity.getCoordinates().x();
-		 return -1.0;
+		 return this->Number;
 		 
 	  }
 };

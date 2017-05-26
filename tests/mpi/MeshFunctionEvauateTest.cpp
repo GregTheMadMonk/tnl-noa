@@ -10,24 +10,15 @@
 
 using namespace std;
 
-unsigned int errors=0;
-unsigned int success=0;
-#define TEST_TEST(a) if((a)){cout << __LINE__ <<":\t OK " <<endl;success++;}else{cout << __LINE__<<":\t FAIL" <<endl;errors++;}
-#define TEST_RESULT cout<<"SUCCES: "<<success<<endl<<"ERRRORS: "<<errors<<endl;
-inline void Test_Say( const char * message)
-{
-#ifdef TEST_VERBOSE
-	cout << message <<endl;
-#endif
-}
-
 #include <TNL/Containers/Array.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/DistributedGrid.h>
 #include <TNL/Meshes/DistributedGridSynchronizer.h>
 #include <TNL/Functions/MeshFunction.h>
 
+#include <TNL/Timer.h>
 
+#define OUTPUT 
 
 #include "Functions.h"
 
@@ -39,14 +30,14 @@ using namespace TNL::Devices;
 
 int main ( int argc, char *argv[])
 {
-  
+	Timer all,setup,eval,sync;
+
+#ifdef OUTPUT
   cout << "MeshFunction Evaluate Test for MPI develop by hanouvit" << endl;
+#endif
+  
 #ifdef HAVE_MPI
   MPI::Init(argc,argv);
-  
-  //cout << "MPI is inicialized: "<<MPI::Is_initialized() << endl;
-  
- // cout << MPI::COMM_WORLD.Get_rank() << "/" << MPI::COMM_WORLD.Get_size() << endl;
   
   //typedef Grid<1,double,Host,int> MeshType;
   typedef Grid<2,double,Host,int> MeshType;
@@ -56,19 +47,30 @@ int main ( int argc, char *argv[])
   typedef typename MeshType::IndexType IndexType; 
   typedef typename MeshType::PointType PointType; 
   
+  int size=10;
+  int cycles=1;
+  if(argc==3)
+  {
+	  size=strtol(argv[1],NULL,10);
+	  cycles=strtol(argv[2],NULL,10);
+	  //cout << "size: "<< size <<"cycles: "<< cycles <<endl;
+  }
+  
+  	all.start();
+	setup.start();
   
  PointType globalOrigin;
  globalOrigin.x()=-0.5;
  globalOrigin.y()=-0.5;
  
  PointType globalProportions;
- globalProportions.x()=8;
- globalProportions.y()=7;
+ globalProportions.x()=size;
+ globalProportions.y()=size;
  
  
  MeshType globalGrid;
  //globalGrid.setDimensions(9);
- globalGrid.setDimensions(8,7);
+ globalGrid.setDimensions(size,size);
  globalGrid.setDomain(globalOrigin,globalProportions);
  
  DistributedGrid<MeshType> distrgrid(globalGrid); 
@@ -76,7 +78,7 @@ int main ( int argc, char *argv[])
  SharedPointer<MeshType> gridptr;
  SharedPointer<MeshFunctionType> meshFunctionptr;
  MeshFunctionEvaluator< MeshFunctionType, FunctionToEvaluate<double,2> > evaluator;
- MeshFunctionEvaluator< MeshFunctionType, ZeroFunction<double,2>> zeroevaluator;
+ MeshFunctionEvaluator< MeshFunctionType, ZeroFunction<double,2> > zeroevaluator;
  
   distrgrid.SetupGrid(*gridptr);
   
@@ -87,29 +89,35 @@ int main ( int argc, char *argv[])
   SharedPointer< FunctionToEvaluate<double,2>, Host > functionToEvaluate;
   SharedPointer< ZeroFunction<double,2>, Host > zero; 
    
-  	//zeroevaluator.evaluateBoundaryEntities( meshFunctionptr , zero );
-	evaluator.evaluateAllEntities( meshFunctionptr , functionToEvaluate );
-    zeroevaluator.evaluateBoundaryEntities( meshFunctionptr , zero );
+  setup.stop();
+  
+  double sum=0.0;
 
+  for(int i=0;i<cycles;i++)
+	{
+	    //zero->Number=MPI::COMM_WORLD.Get_rank();
+	    zero->Number=i;
+	    eval.start();
+		zeroevaluator.evaluateInteriorEntities( meshFunctionptr , zero );
+		//evaluator.evaluateAllEntities( meshFunctionptr , functionToEvaluate );
+		zero->Number=-1;
+		zeroevaluator.evaluateBoundaryEntities( meshFunctionptr , zero );
+		MPI::COMM_WORLD.Barrier();
+		eval.stop();
+
+
+		sync.start();	
+		DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2>::Synchronize(distrgrid,*meshFunctionptr);
+		MPI::COMM_WORLD.Barrier();
+		sync.stop();
+
+		sum+=dof[2*gridptr->getDimensions().y()]; //dummy acces to array	
+	}
+  
+#ifdef OUTPUT	
+  //print local dof
   int maxx=gridptr->getDimensions().x();
   int maxy=gridptr->getDimensions().y();
-  
-/*  distrgrid.printcoords();
-  for(int j=0;j<maxy;j++)
-  {
-	for(int i=0;i<maxx;i++)
-	{
-		cout <<dof[maxx*j+i]<<"  ";
-	}
-	cout << endl;
-  }
-  cout << endl;*/
-  
-  
-  DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2>::Synchronize(distrgrid,*meshFunctionptr);
-  
-  //print local dof
-  
   distrgrid.printcoords();
   for(int j=0;j<maxy;j++)
   {
@@ -119,26 +127,27 @@ int main ( int argc, char *argv[])
 	}
 	cout << endl;
   }
-  cout << endl;
+  cout << endl<<endl;
+#endif
   
- // int maxx=gridptr->getDimensions().x();
- /* distrgrid.printcoords();
-  for(int i=0;i<maxx;i++)
+  all.stop();
+  
+  
+  
+  if(MPI::COMM_WORLD.Get_rank()==0)
   {
-	  cout <<dof[i]<<"   ";
+	cout << sum <<endl<<endl;  
+	  
+	cout<<"setup: "<<setup.getRealTime() <<endl;
+	cout<<"evalpercycle: "<<eval.getRealTime()/cycles<<endl;
+	cout<<"syncpercycle: "<<sync.getRealTime()/cycles<<endl;
+	cout <<"eval: "<<eval.getRealTime()<<endl;
+	cout <<"sync: "<<sync.getRealTime()<<endl;
+	cout<<"all: "<<all.getRealTime()<<endl<<endl;
   }
-  cout << endl;*/
   
 
-  /*distrgrid.printcoords();
-  for(int i=0;i<maxx;i++)
-  {
-	  cout <<dof[i]<<"   ";
-  }
-  cout << endl;*/
-  
   MPI::Finalize();
-
 #else
   std::cout<<"MPI not Supported." << std::endl;
 #endif
