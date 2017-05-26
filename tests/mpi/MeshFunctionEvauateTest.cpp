@@ -41,7 +41,7 @@ int main ( int argc, char *argv[])
 {
   
   cout << "MeshFunction Evaluate Test for MPI develop by hanouvit" << endl;
-  
+#ifdef HAVE_MPI
   MPI::Init(argc,argv);
   
   //cout << "MPI is inicialized: "<<MPI::Is_initialized() << endl;
@@ -138,6 +138,9 @@ int main ( int argc, char *argv[])
   cout << endl;*/
   
   MPI::Finalize();
-  
+
+#else
+  std::cout<<"MPI not Supported." << std::endl;
+#endif
   return 0;
 }

@@ -37,7 +37,7 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,1>
     {
         if(!distributedgrid.isMPIUsed())
                 return;
-
+#ifdef HAVE_MPI
         typedef typename MeshFunctionType::RealType Real;
 
         Real * leftsendbuf;
@@ -129,7 +129,8 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,1>
         delete [] leftrcvbuf;
         delete [] rightrcvbuf;
         delete [] leftsendbuf;
-        delete [] rightsendbuf;    
+        delete [] rightsendbuf;  
+#endif
     };
 };
 
@@ -143,7 +144,7 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,2>
     {
 	if(!distributedgrid.isMPIUsed())
             return;
-        
+#ifdef HAVE_MPI
         typedef typename MeshFunctionType::RealType Real;
         typedef typename DistributedGridType::CoordinatesType CoordinatesType;
 
@@ -235,6 +236,7 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,2>
             delete [] sendbuffs[i];
             delete [] rcvbuffs[i];
         }
+
     };
     
     private:    
@@ -256,6 +258,7 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,2>
                             meshfunction.getData()[entity.getIndex()]=buffer[i*sizex+j];
             }
         }
+#endif
     };
 };
 

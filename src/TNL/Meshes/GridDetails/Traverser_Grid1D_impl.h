@@ -34,7 +34,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
    /****
     * Boundary cells
     */
-   static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
+   static_assert( GridEntity::entityDimension == 1, "The entity has wrong dimensions." );
    
    auto distributedgrid=gridPointer->GetDistGrid();
    if(distributedgrid==nullptr||!distributedgrid->isMPIUsed())
@@ -48,6 +48,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
    else
    {
        //MPI
+#ifdef HAVE_MPI
        if(distributedgrid->getLeft()==-1)
        {
           GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
@@ -65,6 +66,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
               gridPointer->getDimensions() - CoordinatesType( 1 ),
               userDataPointer );
        }
+#endif
    }
    
 }
@@ -97,6 +99,7 @@ processInteriorEntities( const GridPointer& gridPointer,
    else
    {
        //MPI
+#ifdef HAVE_MPI
        CoordinatesType begin( distributedgrid->getOverlap().x() );
        CoordinatesType end( gridPointer->getDimensions() - distributedgrid->getOverlap().x()-1 );
        if(distributedgrid->getLeft()==-1)
@@ -114,6 +117,7 @@ processInteriorEntities( const GridPointer& gridPointer,
           begin,
           end,
           userDataPointer );
+#endif
    }
    
 }
@@ -134,7 +138,7 @@ processAllEntities(
     * All cells
     */
 
-   static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
+   static_assert( GridEntity::entityDimension == 1, "The entity has wrong dimensions." );
    
    auto distributedgrid=gridPointer->GetDistGrid();
    if(distributedgrid==nullptr||!distributedgrid->isMPIUsed())
@@ -148,6 +152,7 @@ processAllEntities(
    else
    {
        //MPI
+       #ifdef HAVE_MPI
        CoordinatesType begin( distributedgrid->getOverlap().x() );
        CoordinatesType end( gridPointer->getDimensions() - distributedgrid->getOverlap().x()-1 );
        if(distributedgrid->getLeft()==-1)
@@ -165,6 +170,7 @@ processAllEntities(
           begin,
           end,
           userDataPointer );
+        #endif
    }
 
 }

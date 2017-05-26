@@ -10,10 +10,10 @@
 
 #pragma once
 
-//#include <mpi.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/mpi-supp.h>
 #include <iostream>
+
 
 namespace TNL {
 namespace Meshes {   
@@ -30,6 +30,28 @@ class DistributedGrid
 };
 
 
+#ifndef HAVE_MPI
+template<typename GridType>    
+class DistributedGrid <GridType,1>
+{
+public:
+    bool isMPIUsed(void)
+    {
+        return false;
+    };
+};
+
+template<typename GridType>    
+class DistributedGrid <GridType,2>
+{
+public:
+    bool isMPIUsed(void)
+    {
+        return false;
+    };
+};
+
+#else
 //=============================================1D==================================
 template<typename GridType>    
 class DistributedGrid <GridType,1>
@@ -38,14 +60,14 @@ class DistributedGrid <GridType,1>
     public:
     
     typedef typename GridType::IndexType IndexType;
-    typedef typename GridType::VertexType VertexType;
+    typedef typename GridType::PointType PointType;
     typedef Containers::StaticVector< 1, IndexType > CoordinatesType;
     
     
     private : 
         
         GridType GlobalGrid;
-        VertexType localorigin;
+        PointType localorigin;
         CoordinatesType localsize;
         CoordinatesType overlap;
         
@@ -148,7 +170,7 @@ class DistributedGrid <GridType,1>
        
        void printcoords(void)
        {
-           std::cout<<rank<<":" <<endl;
+           std::cout<<rank<<":" <<std::endl;
        };
        
        bool isMPIUsed(void)
@@ -335,7 +357,7 @@ class DistributedGrid <GridType,2>
        
        void printcoords(void)
        {
-           std::cout<<"("<<myproccoord[0]<<","<<myproccoord[1]<<"):" <<endl;
+           std::cout<<"("<<myproccoord[0]<<","<<myproccoord[1]<<"):" <<std::endl;
        };
        
        bool isMPIUsed(void)
@@ -361,6 +383,7 @@ class DistributedGrid <GridType,2>
         }
 };   
 
+#endif
 } // namespace Meshes
 } // namespace TNL
 
