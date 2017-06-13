@@ -52,7 +52,7 @@ class Identity : public Functions::Domain< Dimensions, Functions::SpaceDomain >
                                      const PointType& vertex,
                                      const RealType& time = 0 ) const
       {
-         return function.getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+         return function.template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       
 };
