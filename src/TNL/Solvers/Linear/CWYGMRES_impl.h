@@ -186,6 +186,8 @@ solve( const Vector& b, Vector& x )
    while( this->checkNextIteration() )
    {
       // adaptivity of the restarting parameter
+      // reference:  A.H. Baker, E.R. Jessup, Tz.V. Kolev - A simple strategy for varying the restart parameter in GMRES(m)
+      //             http://www.sciencedirect.com/science/article/pii/S0377042709000132
       if( restart_cycles > 0 ) {
          if( beta_ratio > max_beta_ratio )
             // near stagnation -> set maximum
