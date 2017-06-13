@@ -21,6 +21,8 @@
  *
  * The grid-stride loop for CUDA has been inspired by Nvidia's blog post:
  * https://devblogs.nvidia.com/parallelforall/cuda-pro-tip-write-flexible-kernels-grid-stride-loops/
+ *
+ * Implemented by: Jakub Klinkovsky
  */
 
 namespace TNL {
