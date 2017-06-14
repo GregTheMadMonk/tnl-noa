@@ -123,7 +123,10 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    config.addEntry< String >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
    config.addEntryEnum( "none" );
    config.addEntryEnum( "diagonal" );
+// TODO: implement parallel ILU or device-dependent build config tags for preconditioners
+#ifndef HAVE_CUDA
    config.addEntryEnum( "ilu0" );
+#endif
    if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled ||
        ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
    {

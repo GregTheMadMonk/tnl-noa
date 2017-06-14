@@ -287,8 +287,11 @@ class SolverStarterPreconditionerSetter
             return SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Dummy, ConfigTag >::run( problem, parameters );
          if( preconditioner == "diagonal" )
             return SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Diagonal, ConfigTag >::run( problem, parameters );
+// TODO: implement parallel ILU or device-dependent build config tags for preconditioners
+#ifndef HAVE_CUDA
          if( preconditioner == "ilu0" )
             return SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::ILU0, ConfigTag >::run( problem, parameters );
+#endif
 
          std::cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal, ilu0." << std::endl;
          return false;
