@@ -27,6 +27,7 @@ class Constant : public Domain< dimensions, NonspaceDomain >
       typedef Real RealType;
       typedef Containers::StaticVector< dimensions, RealType > PointType;
  
+      __cuda_callable__
       Constant();
 
       static void configSetup( Config::ConfigDescription& config,

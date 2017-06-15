@@ -16,6 +16,7 @@ namespace Analytic {
 
 template< int Dimension,
           typename Real >
+__cuda_callable__
 Constant< Dimension, Real >::
 Constant()
 : constant( 0.0 )
