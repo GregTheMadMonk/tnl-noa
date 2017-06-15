@@ -40,7 +40,7 @@ class MeshFunction :
  
       static constexpr int getEntitiesDimension() { return MeshEntityDimension; }
       
-      static constexpr int getMeshDimensions() { return MeshType::getMeshDimension(); }
+      static constexpr int getMeshDimension() { return MeshType::getMeshDimension(); }
  
       MeshFunction();
       
