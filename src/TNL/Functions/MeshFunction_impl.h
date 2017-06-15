@@ -36,10 +36,10 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const MeshPointer& meshPointer )
 : meshPointer( meshPointer )
 {
-   this->data.setSize( meshPointer->template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimension > >() );
-   TNL_ASSERT( this->data.getSize() == this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
-      std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
-                << "this->mesh->template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );
+   this->data.setSize( getMesh().template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimension > >() );
+   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
+               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
+                         << "this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );
 }
 
 template< typename Mesh,
@@ -62,10 +62,10 @@ MeshFunction( const MeshPointer& meshPointer,
               const IndexType& offset )
 : meshPointer( meshPointer )
 {
-   this->data.bind( data, offset, meshPointer->template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimension > >() );
-   TNL_ASSERT( this->data.getSize() == this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
-      std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
-                << "this->mesh->template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->meshPointer->template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );   
+   this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimension > >() );
+   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
+               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
+                         << "this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );   
 }
 
 
@@ -79,10 +79,10 @@ MeshFunction( const MeshPointer& meshPointer,
               const IndexType& offset )
 : meshPointer( meshPointer )
 {
-   this->data.bind( *data, offset, meshPointer->template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimension > >() );
-   TNL_ASSERT( this->data.getSize() == this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
-      std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
-                << "this->mesh->template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->meshPointer->template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );   
+   this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimension > >() );
+   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
+               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
+                         << "this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );   
 }
 
 template< typename Mesh,
@@ -191,10 +191,10 @@ bind( const MeshPointer& meshPointer,
       const IndexType& offset )
 {
    this->meshPointer = meshPointer;
-   this->data.bind( data, offset, meshPointer->template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimension > >() );
-   TNL_ASSERT( this->data.getSize() == this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
-      std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
-                << "this->mesh->template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->meshPointer->template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );   
+   this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimension > >() );
+   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
+               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
+                         << "this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );   
 }
 
 template< typename Mesh,
@@ -208,10 +208,10 @@ bind( const MeshPointer& meshPointer,
       const IndexType& offset )
 {
    this->meshPointer = meshPointer;
-   this->data.bind( *data, offset, meshPointer->template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimension > >() );
-   TNL_ASSERT( this->data.getSize() == this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
-      std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
-                << "this->mesh->template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->meshPointer->template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );   
+   this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimension > >() );
+   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
+               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
+                         << "this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );   
 }
 
 
@@ -223,10 +223,10 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 setMesh( const MeshPointer& meshPointer )
 {
    this->meshPointer = meshPointer;
-   this->data.setSize( meshPointer->template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimension > >() );
-   TNL_ASSERT( this->data.getSize() == this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
-      std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
-                << "this->mesh->template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );   
+   this->data.setSize( getMesh().template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimension > >() );
+   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
+               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
+                         << "this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );   
 }
 
 template< typename Mesh,
@@ -259,6 +259,9 @@ typename MeshFunction< Mesh, MeshEntityDimension, Real >::IndexType
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 getDofs( const MeshPointer& meshPointer )
 {
+   // FIXME: SharedPointer::operator->() is not __cuda_callable__, but SharedPointer::getData() needs a device parameter
+   // solution: shared pointers should not be passed to any __cuda_callable__ function, pass the wrapped object directly
+   // (i.e. here the getDofs method should take the mesh, not meshPointer)
    return meshPointer->template getEntitiesCount< getEntitiesDimension() >();
 }
 
@@ -448,9 +451,9 @@ bool
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 save( File& file ) const
 {
-   TNL_ASSERT( this->data.getSize() == this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
-      std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
-                << "this->mesh->template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );
+   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >(), 
+               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
+                         << "this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >() );
    if( ! Object::save( file ) )
       return false;
    return this->data.save( file );
@@ -467,7 +470,7 @@ load( File& file )
       return false;
    if( ! this->data.load( file ) )
       return false;
-   const IndexType meshSize = this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >();
+   const IndexType meshSize = this->getMesh().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimension > >();
    if( this->data.getSize() != meshSize )
    {      
       std::cerr << "Size of the data loaded to the mesh function (" << this->data.getSize() << ") does not fit with the mesh size (" << meshSize << ")." << std::endl;
