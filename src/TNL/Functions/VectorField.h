@@ -72,11 +72,11 @@ class VectorField
    
 template< int Size,
           typename Mesh,
-          int MeshEntityDimensions,
+          int MeshEntityDimension,
           typename Real >
-class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
-: public Functions::Domain< MeshFunction< Mesh, MeshEntityDimensions, Real >::getDomainDimension(), 
-                            MeshFunction< Mesh, MeshEntityDimensions, Real >::getDomainType() >,
+class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
+: public Functions::Domain< MeshFunction< Mesh, MeshEntityDimension, Real >::getDomainDimension(), 
+                            MeshFunction< Mesh, MeshEntityDimension, Real >::getDomainType() >,
    public Object
 {
    public:
@@ -84,11 +84,11 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
       typedef Mesh MeshType;
       typedef Real RealType;
       typedef SharedPointer< MeshType > MeshPointer;
-      typedef MeshFunction< MeshType, MeshEntityDimensions, RealType > FunctionType;
+      typedef MeshFunction< MeshType, MeshEntityDimension, RealType > FunctionType;
       typedef SharedPointer< FunctionType > FunctionPointer;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
-      typedef VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, RealType > > ThisType;
+      typedef VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, RealType > > ThisType;
       typedef Containers::StaticVector< Size, RealType > VectorType;
 
       static void configSetup( Config::ConfigDescription& config,
@@ -260,14 +260,14 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
    
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Function >
-std::ostream& operator << ( std::ostream& str, const VectorField< Dimensions, Function >& f )
+std::ostream& operator << ( std::ostream& str, const VectorField< Dimension, Function >& f )
 {
-   for( int i = 0; i < Dimensions; i++ )
+   for( int i = 0; i < Dimension; i++ )
    {
       str << "[ " << f[ i ] << " ]";
-      if( i < Dimensions - 1 )
+      if( i < Dimension - 1 )
          str << ", ";
    }
    return str;
