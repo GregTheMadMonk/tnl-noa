@@ -182,6 +182,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       {
          VectorType v;
          for( int i = 0; i < Size; i++ )
+            // FIXME: the dereferencing operator of FunctionPointer is not __cuda_callable__
             v[ i ] = ( *this->vectorField[ i ] )[ index ];
          return v;
       }
@@ -192,6 +193,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       {
          VectorType v;
          for( int i = 0; i < Size; i++ )
+            // FIXME: the dereferencing operator of FunctionPointer is not __cuda_callable__
             v[ i ] = ( *this->vectorField[ i ] )( meshEntity );
          return v;
       }
