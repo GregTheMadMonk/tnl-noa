@@ -242,19 +242,20 @@ const typename Grid< 3, Real, Device, Index > :: PointType&
 	return this->proportions;
 }
 
+
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename EntityType >
+   template< int EntityDimension >
 __cuda_callable__  inline
 Index
 Grid< 3, Real, Device, Index >::
 getEntitiesCount() const
 {
-   static_assert( EntityType::entityDimension <= 3 &&
-                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
+   static_assert( EntityDimension <= 3 &&
+                  EntityDimension >= 0, "Wrong grid entity dimensions." );
  
-   switch( EntityType::entityDimension )
+   switch( EntityDimension )
    {
       case 3:
          return this->numberOfCells;
@@ -271,27 +272,13 @@ getEntitiesCount() const
 template< typename Real,
           typename Device,
           typename Index >
-   template< int EntityDimensions >
+   template< typename EntityType >
 __cuda_callable__  inline
 Index
 Grid< 3, Real, Device, Index >::
 getEntitiesCount() const
 {
-   static_assert( EntityDimensions <= 3 &&
-                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
- 
-   switch( EntityDimensions )
-   {
-      case 3:
-         return this->numberOfCells;
-      case 2:
-         return this->numberOfFaces;
-      case 1:
-         return this->numberOfEdges;
-      case 0:
-         return this->numberOfVertices;
-   }
-   return -1;
+   return getEntitiesCount< EntityType::getDimension() >();
 }
 
 template< typename Real,
