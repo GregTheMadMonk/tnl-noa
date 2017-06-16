@@ -94,7 +94,7 @@ class MeshFunction :
       
       const MeshPointer& getMeshPointer() const;
       
-      __cuda_callable__ static IndexType getDofs( const MeshPointer& meshPointer );
+      static IndexType getDofs( const MeshPointer& meshPointer );
       
       __cuda_callable__ const VectorType& getData() const;      
       

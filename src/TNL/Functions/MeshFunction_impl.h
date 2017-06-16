@@ -254,14 +254,10 @@ getMeshPointer() const
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
-__cuda_callable__
 typename MeshFunction< Mesh, MeshEntityDimension, Real >::IndexType
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 getDofs( const MeshPointer& meshPointer )
 {
-   // FIXME: SharedPointer::operator->() is not __cuda_callable__, but SharedPointer::getData() needs a device parameter
-   // solution: shared pointers should not be passed to any __cuda_callable__ function, pass the wrapped object directly
-   // (i.e. here the getDofs method should take the mesh, not meshPointer)
    return meshPointer->template getEntitiesCount< getEntitiesDimension() >();
 }
 
