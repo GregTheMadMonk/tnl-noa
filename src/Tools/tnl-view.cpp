@@ -75,7 +75,7 @@ int main( int argc, char* argv[] )
    if( ! parseObjectType( meshType, parsedMeshType ) )
    {
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
-      return false;
+      return EXIT_FAILURE;
    }
    if( parsedMeshType[ 0 ] == "Meshes::Grid" ||
        parsedMeshType[ 0 ] == "tnlGrid" )   //  TODO: remove deprecated type name
