@@ -17,6 +17,7 @@
  * The algorithms should be incorporated into the Matrices::Dense class.
  */
 
+#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Math.h>
@@ -179,7 +180,7 @@ public:
             xDevice.getData(), beta, y );
       checkCudaDevice;
 #else
-      CudaSupportMissingMessage;
+      throw Exceptions::CudaSupportMissing();
 #endif
    }
 };

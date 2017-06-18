@@ -10,6 +10,8 @@
 
 #pragma once 
 
+#include <TNL/Exceptions/CudaSupportMissing.h>
+
 namespace TNL {
 
 template< typename Type, typename Device >
@@ -115,8 +117,7 @@ bool File :: read( Type* buffer,
       free( host_buffer );
       return true;
 #else
-      CudaSupportMissingMessage;;
-      return false;
+      throw Exceptions::CudaSupportMissing();
 #endif
    }
    return true;
@@ -168,52 +169,51 @@ bool File :: write( const Type* buffer,
    if( std::is_same< Device, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-         /*!***
-          * Here we cannot use
-          *
-          * host_buffer = new Type[ host_buffer_size ];
-          *
-          * because it does not work for constant types like
-          * T = const bool.
-          */
-         host_buffer = malloc( sizeof( Type ) * host_buffer_size );
-         if( ! host_buffer )
+      /*!***
+       * Here we cannot use
+       *
+       * host_buffer = new Type[ host_buffer_size ];
+       *
+       * because it does not work for constant types like
+       * T = const bool.
+       */
+      host_buffer = malloc( sizeof( Type ) * host_buffer_size );
+      if( ! host_buffer )
+      {
+         std::cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
+              << this->getFileName() << "." << std::endl;
+         return false;
+      }
+
+      while( this->writtenElements < elements )
+      {
+         size_t transfer = std::min( elements - this->writtenElements, host_buffer_size );
+         cudaMemcpy( host_buffer,
+                    ( void* ) & ( buffer[ this->writtenElements ] ),
+                    transfer * sizeof( Type ),
+                    cudaMemcpyDeviceToHost );
+         if( ! checkCudaDevice )
          {
-            std::cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
-                 << this->getFileName() << "." << std::endl;
+            std::cerr << "Transfer of data from the file " << this->fileName
+                 << " to the CUDA device failed." << std::endl;
+            free( host_buffer );
             return false;
          }
-
-         while( this->writtenElements < elements )
+         if( fwrite( host_buffer,
+                     sizeof( Type ),
+                     transfer,
+                     this->file ) != transfer )
          {
-            size_t transfer = std::min( elements - this->writtenElements, host_buffer_size );
-            cudaMemcpy( host_buffer,
-                       ( void* ) & ( buffer[ this->writtenElements ] ),
-                       transfer * sizeof( Type ),
-                       cudaMemcpyDeviceToHost );
-            if( ! checkCudaDevice )
-            {
-               std::cerr << "Transfer of data from the file " << this->fileName
-                    << " to the CUDA device failed." << std::endl;
-               free( host_buffer );
-               return false;
-            }
-            if( fwrite( host_buffer,
-                        sizeof( Type ),
-                        transfer,
-                        this->file ) != transfer )
-            {
-               std::cerr << "I am not able to write the data to the file " << fileName << "." << std::endl;
-               perror( "Fwrite ended with the error code" );
-               return false;
-            }
-            this->writtenElements += transfer;
+            std::cerr << "I am not able to write the data to the file " << fileName << "." << std::endl;
+            perror( "Fwrite ended with the error code" );
+            return false;
          }
-         free( host_buffer );
-         return true;
+         this->writtenElements += transfer;
+      }
+      free( host_buffer );
+      return true;
 #else
-         CudaSupportMissingMessage;;
-         return false;
+      throw Exceptions::CudaSupportMissing();
 #endif
    }
    return true;

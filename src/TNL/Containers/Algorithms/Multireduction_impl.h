@@ -17,6 +17,7 @@
 //#define CUDA_REDUCTION_PROFILING
 
 #include <TNL/Assert.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/CudaMultireductionKernel.h>
@@ -145,8 +146,7 @@ reduce( Operation& operation,
 
    return checkCudaDevice;
 #else
-   CudaSupportMissingMessage;
-   return false;
+   throw Exceptions::CudaSupportMissing();
 #endif
 };
 

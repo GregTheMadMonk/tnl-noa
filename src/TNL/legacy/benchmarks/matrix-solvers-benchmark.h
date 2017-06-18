@@ -15,6 +15,7 @@
 #include <TNL/File.h>
 #include <TNL/Object.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Matrices/CSR.h>
@@ -309,8 +310,7 @@ bool benchmarkMatrix( const Config::ParameterContainer&  parameters )
          return false;
       x = cudaX;*/
 #else
-      CudaSupportMissingMessage;;
-      return false;
+      throw Exceptions::CudaSupportMissing();
 #endif
    }
 

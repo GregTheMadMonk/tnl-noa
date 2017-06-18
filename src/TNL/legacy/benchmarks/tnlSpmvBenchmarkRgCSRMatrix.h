@@ -13,6 +13,8 @@
 
 #include "tnlSpmvBenchmark.h"
 
+#include <TNL/Exceptions/CudaSupportMissing.h>
+
 template< typename Real, typename Device, typename Index>
 class tnlSpmvBenchmarkRgCSR : public tnlSpmvBenchmark< Real, Device, Index, tnlRgCSR >
 {
@@ -134,7 +136,7 @@ void tnlSpmvBenchmarkRgCSR< Real, Device, Index > :: writeProgress() const
        std::cout << right << std::setw( this->benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this->maxError << ". ";
 #ifndef HAVE_CUDA
    if( Device :: getDevice() == Devices::CudaDevice )
-      CudaSupportMissingMessage;;
+      throw Exceptions::CudaSupportMissing();
 #endif
      std::cout << std::endl;
 }

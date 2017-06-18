@@ -190,9 +190,6 @@ std::ostream& operator << ( std::ostream& str, const dim3& d );
 #define checkCudaDevice ::TNL::Devices::Cuda::checkDevice()
 #endif
 
-#define CudaSupportMissingMessage \
-   std::cerr << "The CUDA support is missing in the source file " << __FILE__ << " at line " << __LINE__ << ". Please set WITH_CUDA=yes in the install script. " << std::endl;
-
 } // namespace Devices
 } // namespace TNL   
    

@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/tnlConfig.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/VectorOperations.h>
 #include <TNL/Containers/Algorithms/cuda-prefix-sum.h>
 #include <TNL/Containers/Algorithms/CublasWrapper.h>
@@ -419,19 +420,19 @@ vectorScalarMultiplication( Vector& v,
 
    TNL_ASSERT( v.getSize() > 0, );
 
-   #ifdef HAVE_CUDA
-      dim3 blockSize( 0 ), gridSize( 0 );
-      const Index& size = v.getSize();
-      blockSize.x = 256;
-      Index blocksNumber = ceil( ( double ) size / ( double ) blockSize.x );
-      gridSize.x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
-      vectorScalarMultiplicationCudaKernel<<< gridSize, blockSize >>>( v.getData(),
-                                                                       size,
-                                                                       alpha );
-      checkCudaDevice;
-   #else
-      CudaSupportMissingMessage;;
-   #endif
+#ifdef HAVE_CUDA
+   dim3 blockSize( 0 ), gridSize( 0 );
+   const Index& size = v.getSize();
+   blockSize.x = 256;
+   Index blocksNumber = ceil( ( double ) size / ( double ) blockSize.x );
+   gridSize.x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
+   vectorScalarMultiplicationCudaKernel<<< gridSize, blockSize >>>( v.getData(),
+                                                                    size,
+                                                                    alpha );
+   checkCudaDevice;
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 
@@ -506,23 +507,23 @@ addVector( Vector1& y,
    TNL_ASSERT( y.getData() != 0, );
    TNL_ASSERT( x.getData() != 0, );
 
-   #ifdef HAVE_CUDA
-      dim3 blockSize( 0 ), gridSize( 0 );
+#ifdef HAVE_CUDA
+   dim3 blockSize( 0 ), gridSize( 0 );
 
-      const Index& size = x.getSize();
-      dim3 cudaBlockSize( 256 );
-      dim3 cudaBlocks;
-      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
+   const Index& size = x.getSize();
+   dim3 cudaBlockSize( 256 );
+   dim3 cudaBlocks;
+   cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
-      vectorAddVectorCudaKernel<<< cudaBlocks, cudaBlockSize >>>( y.getData(),
-                                                                  x.getData(),
-                                                                  size,
-                                                                  alpha,
-                                                                  thisMultiplicator);
-      checkCudaDevice;
-   #else
-      CudaSupportMissingMessage;;
-   #endif
+   vectorAddVectorCudaKernel<<< cudaBlocks, cudaBlockSize >>>( y.getData(),
+                                                               x.getData(),
+                                                               size,
+                                                               alpha,
+                                                               thisMultiplicator);
+   checkCudaDevice;
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 #ifdef HAVE_CUDA
@@ -579,27 +580,25 @@ addVectors( Vector1& v,
    TNL_ASSERT( v1.getData() != 0, );
    TNL_ASSERT( v2.getData() != 0, );
 
-   #ifdef HAVE_CUDA
-      dim3 blockSize( 0 ), gridSize( 0 );
+#ifdef HAVE_CUDA
+   dim3 blockSize( 0 ), gridSize( 0 );
 
-      const Index& size = v.getSize();
-      dim3 cudaBlockSize( 256 );
-      dim3 cudaBlocks;
-      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
+   const Index& size = v.getSize();
+   dim3 cudaBlockSize( 256 );
+   dim3 cudaBlocks;
+   cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
-      vectorAddVectorsCudaKernel<<< cudaBlocks, cudaBlockSize >>>( v.getData(),
-                                                                   v1.getData(),
-                                                                   v2.getData(),
-                                                                   size,
-                                                                   multiplicator1,
-                                                                   multiplicator2,
-                                                                   thisMultiplicator);
-      checkCudaDevice;
-   #else
-      CudaSupportMissingMessage;;
-   #endif
-
-
+   vectorAddVectorsCudaKernel<<< cudaBlocks, cudaBlockSize >>>( v.getData(),
+                                                                v1.getData(),
+                                                                v2.getData(),
+                                                                size,
+                                                                multiplicator1,
+                                                                multiplicator2,
+                                                                thisMultiplicator);
+   checkCudaDevice;
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 template< typename Vector >
@@ -609,7 +608,7 @@ computePrefixSum( Vector& v,
                   typename Vector::IndexType begin,
                   typename Vector::IndexType end )
 {
-   #ifdef HAVE_CUDA
+#ifdef HAVE_CUDA
    typedef Algorithms::tnlParallelReductionSum< typename Vector::RealType, typename Vector::IndexType > OperationType;
 
    OperationType operation;
@@ -622,9 +621,9 @@ computePrefixSum( Vector& v,
                                    &v.getData()[ begin ],
                                    operation,
                                    Algorithms::inclusivePrefixSum );
-   #else
-      CudaSupportMissingMessage;;
-   #endif
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 template< typename Vector >

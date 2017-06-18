@@ -14,6 +14,7 @@
 
 #include <TNL/tnlConfig.h>
 #include <TNL/Math.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
@@ -35,8 +36,7 @@ allocateMemory( Element*& data,
       data = 0;
    return checkCudaDevice;
 #else
-   CudaSupportMissingMessage;
-   return false;
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -47,12 +47,11 @@ freeMemory( Element* data )
 {
    TNL_ASSERT( data, );
 #ifdef HAVE_CUDA
-      checkCudaDevice;
-      cudaFree( data );
-      return checkCudaDevice;
+   checkCudaDevice;
+   cudaFree( data );
+   return checkCudaDevice;
 #else
-      CudaSupportMissingMessage;;
-   return true;
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -129,8 +128,7 @@ setMemory( Element* data,
    setArrayValueCudaKernel<<< gridSize, blockSize >>>( data, size, value );
    return checkCudaDevice;
 #else
-   CudaSupportMissingMessage;;
-   return false;
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -164,28 +162,27 @@ copyMemory( DestinationElement* destination,
 {
    TNL_ASSERT( destination, );
    TNL_ASSERT( source, );
-   #ifdef HAVE_CUDA
-      if( std::is_same< DestinationElement, SourceElement >::value )
-      {
-         if( cudaMemcpy( destination,
-                         source,
-                         size * sizeof( DestinationElement ),
-                         cudaMemcpyDeviceToDevice ) != cudaSuccess )
-         return checkCudaDevice;
-      }
-      else
-      {
-         dim3 blockSize( 0 ), gridSize( 0 );
-         blockSize. x = 256;
-         Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
-         gridSize. x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
-         copyMemoryCudaToCudaKernel<<< gridSize, blockSize >>>( destination, source, size );
-         return checkCudaDevice;
-      }
-   #else
-      CudaSupportMissingMessage;;
-   #endif
-      return false;
+#ifdef HAVE_CUDA
+   if( std::is_same< DestinationElement, SourceElement >::value )
+   {
+      if( cudaMemcpy( destination,
+                      source,
+                      size * sizeof( DestinationElement ),
+                      cudaMemcpyDeviceToDevice ) != cudaSuccess )
+      return checkCudaDevice;
+   }
+   else
+   {
+      dim3 blockSize( 0 ), gridSize( 0 );
+      blockSize. x = 256;
+      Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
+      gridSize. x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
+      copyMemoryCudaToCudaKernel<<< gridSize, blockSize >>>( destination, source, size );
+      return checkCudaDevice;
+   }
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 template< typename Element1,
@@ -221,7 +218,7 @@ copyMemory( DestinationElement* destination,
 {
    TNL_ASSERT( destination, );
    TNL_ASSERT( source, );
-   #ifdef HAVE_CUDA
+#ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
       cudaMemcpy( destination,
@@ -265,11 +262,10 @@ copyMemory( DestinationElement* destination,
       }
       delete[] buffer;
    }
-   #else
-      CudaSupportMissingMessage;;
-      return false;
-   #endif
    return true;
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 
@@ -288,7 +284,7 @@ compareMemory( const Element1* destination,
    TNL_ASSERT( destination, );
    TNL_ASSERT( source, );
    TNL_ASSERT( size >= 0, std::cerr << "size = " << size );
-   #ifdef HAVE_CUDA
+#ifdef HAVE_CUDA
    Element2* host_buffer = new Element2[ Devices::Cuda::getGPUTransferBufferSize() ];
    if( ! host_buffer )
    {
@@ -318,10 +314,9 @@ compareMemory( const Element1* destination,
    }
    delete[] host_buffer;
    return true;
-   #else
-      CudaSupportMissingMessage;;
-      return false;
-   #endif
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 /****
@@ -339,7 +334,7 @@ copyMemory( DestinationElement* destination,
    TNL_ASSERT( destination, );
    TNL_ASSERT( source, );
    TNL_ASSERT( size >= 0, std::cerr << "size = " << size );
-   #ifdef HAVE_CUDA
+#ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
       cudaMemcpy( destination,
@@ -384,10 +379,9 @@ copyMemory( DestinationElement* destination,
       delete[] buffer;
       return true;
    }
-   #else
-      CudaSupportMissingMessage;;
-      return false;
-   #endif
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 template< typename Element1,

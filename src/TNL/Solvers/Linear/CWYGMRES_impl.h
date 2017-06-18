@@ -14,6 +14,7 @@
 
 #include <type_traits>
 
+#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/Multireduction.h>
 #include <TNL/Matrices/MatrixOperations.h>
 
@@ -423,7 +424,7 @@ hauseholder_generate( DeviceVector& Y,
                                                             size );
       checkCudaDevice;
 #else
-      CudaSupportMissingMessage;
+      throw Exceptions::CudaSupportMissing();
 #endif
    }
 
