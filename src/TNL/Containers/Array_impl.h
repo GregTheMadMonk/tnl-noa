@@ -249,8 +249,7 @@ bind( const ArrayT& array,
       }
       else
       {
-         this->referenceCounter = array.referenceCounter = new int;
-         *this->referenceCounter = 2;
+         this->referenceCounter = array.referenceCounter = new int( 2 );
          //std::cerr << "Allocating reference counter " << this->referenceCounter << std::endl;
       }
    }

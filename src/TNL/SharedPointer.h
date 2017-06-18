@@ -544,12 +544,8 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       bool allocate( Args... args )
       {
          this->pd = new PointerData( args... );
-         if( ! this->pd )
-            return false;
          // pass to device
          this->cuda_pointer = Devices::Cuda::passToDevice( this->pd->data );
-         if( ! this->cuda_pointer )
-            return false;
          // set last-sync state
          this->set_last_sync_state();
 #ifdef TNL_DEBUG_SHARED_POINTERS

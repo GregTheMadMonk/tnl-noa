@@ -409,12 +409,8 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       {
          this->pointer = &obj;
          this->pd = new PointerData();
-         if( ! this->pd )
-            return false;
          // pass to device
          this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
-         if( ! this->cuda_pointer )
-            return false;
          // set last-sync state
          this->set_last_sync_state();
          Devices::Cuda::insertSmartPointer( this );

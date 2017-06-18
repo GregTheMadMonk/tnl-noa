@@ -26,8 +26,11 @@ ArrayOperations< Devices::Host >::
 allocateMemory( Element*& data,
                 const Index size )
 {
-   if( ! ( data = new Element[ size ] ) )
-      return false;
+   data = new Element[ size ];
+   // According to the standard, new either throws, or returns non-nullptr.
+   // Some (old) compilers don't comply:
+   // https://stackoverflow.com/questions/550451/will-new-return-null-in-any-case
+   TNL_ASSERT( data, );
    return true;
 }
 

@@ -131,12 +131,10 @@ bool List< T >::Append( const T& data )
    {
       TNL_ASSERT( ! last, );
       first = last = new ListDataElement< T >( data );
-      if( ! first ) return false;
    }
    else
    {
       ListDataElement< T >* new_element =  new ListDataElement< T >( data, last, 0 );
-      if( ! new_element ) return false;
       TNL_ASSERT( last, );
       last = last -> Next() = new_element;
    }
@@ -151,12 +149,10 @@ bool List< T >::Prepend( const T& data )
    {
       TNL_ASSERT( ! last, );
       first = last = new ListDataElement< T >( data );
-      if( ! first ) return false;
    }
    else
    {
       ListDataElement< T >* new_element =  new ListDataElement< T >( data, 0, first );
-      if( ! new_element ) return false;
       first = first -> Previous() = new_element;
    }
    size ++;
@@ -175,7 +171,6 @@ bool List< T >::Insert( const T& data, const int& ind )
       new ListDataElement< T >( data,
                              iterator -> Previous(),
                              iterator );
-   if( ! new_el ) return false;
    iterator -> Previous() -> Next() = new_el;
    iterator -> Previous() = new_el;
    iterator = new_el;

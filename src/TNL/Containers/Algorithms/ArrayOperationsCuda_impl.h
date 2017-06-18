@@ -239,11 +239,6 @@ copyMemory( DestinationElement* destination,
    else
    {
       SourceElement* buffer = new SourceElement[ Devices::Cuda::getGPUTransferBufferSize() ];
-      if( ! buffer )
-      {
-         std::cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << std::endl;
-         return false;
-      }
       Index i( 0 );
       while( i < size )
       {
@@ -290,11 +285,6 @@ compareMemory( const Element1* destination,
    TNL_ASSERT( size >= 0, std::cerr << "size = " << size );
 #ifdef HAVE_CUDA
    Element2* host_buffer = new Element2[ Devices::Cuda::getGPUTransferBufferSize() ];
-   if( ! host_buffer )
-   {
-      std::cerr << "I am sorry but I cannot allocate supporting buffer on the host for comparing data between CUDA GPU and CPU." << std::endl;
-      return false;
-   }
    Index compared( 0 );
    while( compared < size )
    {
@@ -355,11 +345,6 @@ copyMemory( DestinationElement* destination,
    else
    {
       DestinationElement* buffer = new DestinationElement[ Devices::Cuda::getGPUTransferBufferSize() ];
-      if( ! buffer )
-      {
-         std::cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << std::endl;
-         return false;
-      }
       Index i( 0 );
       while( i < size )
       {

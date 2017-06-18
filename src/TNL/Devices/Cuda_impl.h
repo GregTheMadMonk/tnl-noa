@@ -88,6 +88,7 @@ ObjectType* Cuda::passToDevice( const ObjectType& object )
    {
       checkCudaDevice;
       cudaFree( ( void* ) deviceObject );
+      checkCudaDevice;
       return 0;
    }
    return deviceObject;
