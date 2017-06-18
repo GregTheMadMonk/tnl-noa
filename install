@@ -49,7 +49,7 @@ then
        mkdir Release
     fi
     cd Release
-    if ../build --root-dir=.. --build=Release --install=yes ${OPTIONS};
+    if ! ../build --root-dir=.. --build=Release --install=yes ${OPTIONS};
     then
         exit 1
     fi
