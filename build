@@ -2,6 +2,7 @@
 
 TARGET=TNL
 PREFIX=${HOME}/.local
+INSTALL="no"
 ROOT_DIR="."
 DCMTK_DIR="/usr/include/dcmtk"
 BUILD=""
@@ -30,6 +31,7 @@ for option in "$@"
 do
     case $option in
         --prefix=*                       ) PREFIX="${option#*=}" ;;
+        --install=*                      ) INSTALL="${option#*=}" ;;
         --root-dir=*                     ) ROOT_DIR="${option#*=}" ;;
         --dcmtk-dir=*                    ) DCMTK_DIR="${option#*=}" ;;
         --build=*                        ) BUILD="${option#*=}" ;;
@@ -67,9 +69,10 @@ if test ${HELP} = "yes";
 then
     echo "TNL build options:"
     echo ""
-    echo "   --prefix=PATH                         Prefix for the installation directory. ${HOME}/local by default."
     echo "   --build=Debug/Release                 Build type."
     echo "   --build-jobs=NUM                      Number of processes to be used for the build. It is set to the number of available CPU cores by default."
+    echo "   --prefix=PATH                         Prefix for the installation directory. ${HOME}/local by default."
+    echo "   --install=yes/no                      Enables the installation of TNL files."
     echo "   --with-cuda=yes/no                    Enable CUDA. 'yes' by default (CUDA Toolkit is required)."
     echo "   --with-cuda-arch=all/auto/30/35/...   Choose CUDA architecture. 'auto' by default."
     echo "   --with-tests=yes/no                   Enable unit tests. 'yes' by default."
@@ -136,7 +139,14 @@ else
     echo "Building ${BUILD} $TARGET ..."
 fi
 
-make ${VERBOSE}
+if [[ "$INSTALL" == "yes" ]]; then
+   # install implies all
+   make_target="install"
+else
+   make_target="all"
+fi
+
+make ${VERBOSE} $make_target
 if test $? != 0; then
     echo "Error: Build process failed."
     exit 1
