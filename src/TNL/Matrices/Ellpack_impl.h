@@ -570,11 +570,7 @@ template< typename Real,
 bool Ellpack< Real, Device, Index >::save( File& file ) const
 {
    if( ! Sparse< Real, Device, Index >::save( file) ) return false;
-#ifdef HAVE_NOT_CXX11
-   if( ! file.write< IndexType, Devices::Host, IndexType >( &this->rowLengths, 1 ) ) return false;
-#else
    if( ! file.write( &this->rowLengths ) ) return false;
-#endif
    return true;
 }
 
@@ -584,11 +580,7 @@ template< typename Real,
 bool Ellpack< Real, Device, Index >::load( File& file )
 {
    if( ! Sparse< Real, Device, Index >::load( file) ) return false;
-#ifdef HAVE_NOT_CXX11
-   if( ! file.read< IndexType, Devices::Host, IndexType >( &this->rowLengths, 1 ) ) return false;
-#else
    if( ! file.read( &this->rowLengths ) ) return false;
-#endif
    return true;
 }
 

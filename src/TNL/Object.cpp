@@ -46,11 +46,7 @@ String Object :: getSerializationTypeVirtual() const
 
 bool Object :: save( File& file ) const
 {
-#ifdef HAVE_NOT_CXX11
-   if( ! file. write< const char, Devices::Host, int >( magic_number, strlen( magic_number ) ) )
-#else
    if( ! file. write( magic_number, strlen( magic_number ) ) )
-#endif
       return false;
    if( ! this->getSerializationTypeVirtual().save( file ) ) return false;
    return true;
@@ -119,11 +115,7 @@ void Object::setDeprecatedReadMode()
 bool getObjectType( File& file, String& type )
 {
    char mn[ 10 ];
-#ifdef HAVE_NOT_CXX11
-   if( ! file. read< char, Devices::Host, int >( mn, strlen( magic_number ) ) )
-#else
    if( ! file. read( mn, strlen( magic_number ) ) )
-#endif
    {
       std::cerr << "Unable to read file " << file. getFileName() << " ... " << std::endl;
       return false;

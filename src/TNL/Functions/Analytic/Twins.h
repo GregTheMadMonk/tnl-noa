@@ -50,17 +50,10 @@ class Twins< 1, Real > : public TwinsBase< Real, 1 >
 
       Twins();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder,
-                typename Point >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Point = PointType >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;
@@ -84,17 +77,10 @@ class Twins< 2, Real > : public TwinsBase< Real, 2 >
 
       Twins();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder,
-                typename Point >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Point = PointType >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;
@@ -118,17 +104,10 @@ class Twins< 3, Real > : public TwinsBase< Real, 3 >
 
       Twins();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder,
-                typename Point >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Point = PointType >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;

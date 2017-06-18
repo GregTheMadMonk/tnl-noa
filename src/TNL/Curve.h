@@ -35,36 +35,20 @@ class CurveElement
  
    bool save( File& file ) const
    {
-#ifdef HAVE_NOT_CXX11
-      if( ! file. write< const T, Devices::Host >( &position ) )
-         return false;
-      if( ! file. write< const bool, Devices::Host >( &separator ) )
-         return false;
-      return true;
-#else
       if( ! file. write( &position ) )
          return false;
       if( ! file. write( &separator ) )
          return false;
       return true;
-#endif
    };
  
    bool load( File& file )
    {
-#ifdef HAVE_NOT_CXX11
-      if( ! file. read< T, Devices::Host >( &position ) )
-         return false;
-      if( ! file. read< bool, Devices::Host >( &separator ) )
-         return false;
-      return true;
-#else
       if( ! file. read( &position ) )
          return false;
       if( ! file. read( &separator ) )
          return false;
       return true;
-#endif
    };
  
    T position;

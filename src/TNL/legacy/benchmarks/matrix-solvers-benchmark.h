@@ -78,11 +78,7 @@ bool benchmarkSolver( const Config::ParameterContainer&  parameters,
    solver. setSolverMonitor( solverMonitor );
    solver. setRefreshRate( 10 );
    solverMonitor. resetTimers();
-#ifdef HAVE_NOT_CXX11
-   solver. template solve< Vector, LinearResidueGetter< Matrix, Vector > >( b, x );
-#else
    solver. solve( b, x );
-#endif
 
    bool solverConverged( solver. getResidue() < maxResidue );
    const String& logFileName = parameters. getParameter< String >( "log-file" );

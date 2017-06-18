@@ -67,15 +67,9 @@ class Paraboloid< 1, Real > : public ParaboloidBase< 1, Real >
       typedef Real RealType;
       typedef Containers::StaticVector< 1, RealType > PointType;
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
@@ -97,15 +91,9 @@ class Paraboloid< 2, Real > : public ParaboloidBase< 2, Real >
       typedef Real RealType;
       typedef Containers::StaticVector< 2, RealType > PointType;
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
@@ -129,15 +117,9 @@ class Paraboloid< 3, Real > : public ParaboloidBase< 3, Real >
 
 
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const PointType& v,
                          const Real& time = 0.0 ) const;

@@ -350,17 +350,9 @@ bool String :: save( File& file ) const
               std::cerr << "string = " << string );
 
    int len = strlen( string );
-#ifdef HAVE_NOT_CXX11
-   if( ! file. write< int, Devices::Host >( &len ) )
-#else
    if( ! file. write( &len ) )
-#endif
       return false;
-#ifdef HAVE_NOT_CXX11
-   if( ! file. write< char, Devices::Host, int >( string, len ) )
-#else
    if( ! file. write( string, len ) )
-#endif
       return false;
    return true;
 }
@@ -368,11 +360,7 @@ bool String :: save( File& file ) const
 bool String :: load( File& file )
 {
    int _length;
-#ifdef HAVE_NOT_CXX11
-   if( ! file. read< int, Devices::Host >( &_length ) )
-#else
    if( ! file. read( &_length ) )
-#endif
    {
       std::cerr << "I was not able to read String length." << std::endl;
       return false;
@@ -395,11 +383,7 @@ bool String :: load( File& file )
       string = new char[ length ];
    }
 
-#ifdef HAVE_NOT_CXX11
-   if( ! file. read< char, Devices::Host, int >( string, _length ) )
-#else
    if( ! file. read( string, _length ) )
-#endif
    {
       std::cerr << "I was not able to read a String with a length " << length << "." << std::endl;
       return false;

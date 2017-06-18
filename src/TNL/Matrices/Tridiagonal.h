@@ -148,15 +148,9 @@ class Tridiagonal : public Matrix< Real, Device, Index >
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
-#ifdef HAVE_NOT_CXX11
    template< typename Real2, typename Index2 >
    void getTransposition( const Tridiagonal< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
-#else
-   template< typename Real2, typename Index2 >
-   void getTransposition( const Tridiagonal< Real2, Device, Index2 >& matrix,
-                          const RealType& matrixMultiplicator = 1.0 );
-#endif
 
    template< typename Vector >
    __cuda_callable__

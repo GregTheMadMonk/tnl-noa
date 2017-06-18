@@ -79,21 +79,6 @@ class File
 	}
 
 	// TODO: this does not work for constant types
-#ifdef HAVE_NOT_CXX11
-	template< typename Type, typename Device, typename Index >
-	bool read( Type* buffer,
-	           const Index& elements );
-
-	template< typename Type, typename Device >
-	bool read( Type* buffer );
-
-	template< typename Type, typename Device, typename Index >
-	bool write( const Type* buffer,
-	            const Index elements );
-
-	template< typename Type, typename Device >
-	bool write( const Type* buffer );
-#else
    template< typename Type, typename Device = Devices::Host, typename Index = int >
    bool read( Type* buffer,
               const Index& elements );
@@ -107,8 +92,6 @@ class File
 
    template< typename Type, typename Device = Devices::Host >
    bool write( const Type* buffer );
-
-#endif
 
 	bool close();
 

@@ -171,11 +171,7 @@ bool StaticArray< 1, Element >::save( File& file ) const
 template< typename Element >
 bool StaticArray< 1, Element >::load( File& file)
 {
-#ifdef HAVE_NOT_CXX11
-   if( ! file.read< Element, Devices::Host, int >( data, size ) )
-#else
    if( ! file.read( data, size ) )
-#endif
    {
       std::cerr << "Unable to read " << getType() << "." << std::endl;
       return false;

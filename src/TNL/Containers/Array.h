@@ -118,13 +118,8 @@ class Array : public virtual Object
        * Every time one touches this grid touches * size * sizeof( Real ) bytes are added
        * to transfered bytes in tnlStatistics.
        */
-   #ifdef HAVE_NOT_CXX11
-      template< typename IndexType2 >
-      void touch( IndexType2 touches = 1 ) const;
-   #else
       template< typename IndexType2 = Index >
       void touch( IndexType2 touches = 1 ) const;
-   #endif
 
       //! Method for saving the object to a file as a binary data.
       bool save( File& file ) const;

@@ -254,21 +254,12 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
    /****
     * Compute data transfers statistics
     */
-#ifdef HAVE_NOT_CXX11
-   k1->template touch< IndexType >( 4 );
-   k2->template touch< IndexType >( 1 );
-   k3->template touch< IndexType >( 2 );
-   k4->template touch< IndexType >( 1 );
-   kAux->template touch< IndexType >( 4 );
-   u->template touch< IndexType >( 4 );
-#else
    k1->touch( 4 );
    k2->touch( 1 );
    k3->touch( 2 );
    k4->touch( 1 );
    kAux->touch( 4 );
    u->touch( 4 );
-#endif
 
    RealType tau_3 = tau / 3.0;
 
@@ -372,17 +363,10 @@ typename Problem :: RealType Merson< Problem > :: computeError( const RealType t
    /****
     * Compute data transfers statistics
     */
-#ifdef HAVE_NOT_CXX11
-   k1->template touch< IndexType >();
-   k3->template touch< IndexType >();
-   k4->template touch< IndexType >();
-   k5->template touch< IndexType >();
-#else
    k1->touch();
    k3->touch();
    k4->touch();
    k5->touch();
-#endif
 
    RealType eps( 0.0 ), maxEps( 0.0 );
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -453,17 +437,10 @@ void Merson< Problem >::computeNewTimeLevel( DofVectorPointer& u,
    /****
     * Compute data transfers statistics
     */
-#ifdef HAVE_NOT_CXX11
-   u->template touch< IndexType >();
-   k1->template touch< IndexType >();
-   k4->template touch< IndexType >();
-   k5->template touch< IndexType >();
-#else
    u->touch();
    k1->touch();
    k4->touch();
    k5->touch();
-#endif
 
    if( std::is_same< DeviceType, Devices::Host >::value )
    {

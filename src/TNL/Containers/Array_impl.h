@@ -488,13 +488,8 @@ bool Array< Element, Device, Index > :: save( File& file ) const
 {
    if( ! Object :: save( file ) )
       return false;
-#ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, Devices::Host >( &this->size ) )
-      return false;
-#else
    if( ! file. write( &this->size ) )
       return false;
-#endif
    if( this->size != 0 && ! ArrayIO< Element, Device, Index >::save( file, this->data, this->size ) )
    {
       cerr << "I was not able to save " << this->getType()
@@ -514,13 +509,8 @@ load( File& file )
    if( ! Object :: load( file ) )
       return false;
    Index _size;
-#ifdef HAVE_NOT_CXX11
-   if( ! file. read< Index, Devices::Host >( &_size ) )
-      return false;
-#else
    if( ! file. read( &_size ) )
       return false;
-#endif
    if( _size < 0 )
    {
       cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << endl;
@@ -549,13 +539,8 @@ boundLoad( File& file )
    if( ! Object :: load( file ) )
       return false;
    Index _size;
-#ifdef HAVE_NOT_CXX11
-   if( ! file. read< Index, Devices::Host >( &_size ) )
-      return false;
-#else
    if( ! file. read( &_size ) )
       return false;
-#endif
    if( _size < 0 )
    {
       cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << endl;

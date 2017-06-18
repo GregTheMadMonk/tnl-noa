@@ -65,15 +65,9 @@ class TestFunction : public Domain< FunctionDimension, SpaceDomain >
 
       const TestFunction& operator = ( const TestFunction& function );
 
-   #ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-   #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-   #endif
       __cuda_callable__
       Real getPartialDerivative( const PointType& vertex,
                                  const Real& time = 0 ) const;
@@ -86,27 +80,12 @@ class TestFunction : public Domain< FunctionDimension, SpaceDomain >
       }
 
 
-   #ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-   #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-   #endif
       __cuda_callable__
       Real getTimeDerivative( const PointType& vertex,
                               const Real& time = 0 ) const;
-   #ifdef HAVE_NOT_CXX11
-      template< typename Point >
-      __cuda_callable__
-      Real getTimeDerivative( const Point& vertex,
-                              const Real& time = 0 ) const
-      {
-         return this->getTimeDerivative< 0, 0, 0, Point >( vertex, time );
-      }
-   #endif
 
       std::ostream& print( std::ostream& str ) const;
 
