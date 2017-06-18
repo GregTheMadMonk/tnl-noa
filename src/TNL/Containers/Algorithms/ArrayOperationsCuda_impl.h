@@ -169,10 +169,10 @@ copyMemory( DestinationElement* destination,
 #ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
-      if( cudaMemcpy( destination,
-                      source,
-                      size * sizeof( DestinationElement ),
-                      cudaMemcpyDeviceToDevice ) != cudaSuccess )
+      cudaMemcpy( destination,
+                  source,
+                  size * sizeof( DestinationElement ),
+                  cudaMemcpyDeviceToDevice );
       return checkCudaDevice;
    }
    else
@@ -225,16 +225,12 @@ copyMemory( DestinationElement* destination,
 #ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
-      cudaMemcpy( destination,
-                  source,
-                  size * sizeof( DestinationElement ),
-                  cudaMemcpyDeviceToHost );
-      if( ! checkCudaDevice )
-      {
+      if( cudaMemcpy( destination,
+                      source,
+                      size * sizeof( DestinationElement ),
+                      cudaMemcpyDeviceToHost ) != cudaSuccess )
          std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
-         return false;
-      }
-      return true;
+      return checkCudaDevice;
    }
    else
    {
@@ -247,9 +243,9 @@ copyMemory( DestinationElement* destination,
                          min( size - i, Devices::Cuda::getGPUTransferBufferSize() ) * sizeof( SourceElement ),
                          cudaMemcpyDeviceToHost ) != cudaSuccess )
          {
-            checkCudaDevice;
             delete[] buffer;
-            return false;
+            std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
+            return checkCudaDevice;
          }
          Index j( 0 );
          while( j < Devices::Cuda::getGPUTransferBufferSize() && i + j < size )
@@ -294,10 +290,9 @@ compareMemory( const Element1* destination,
                       transfer * sizeof( Element2 ),
                       cudaMemcpyDeviceToHost ) != cudaSuccess )
       {
-         std::cerr << "Transfer of data from the device failed." << std::endl;
-         checkCudaDevice;
          delete[] host_buffer;
-         return false;
+         std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
+         return checkCudaDevice;
       }
       if( ! ArrayOperations< Devices::Host >::compareMemory( &destination[ compared ], host_buffer, transfer ) )
       {
@@ -331,16 +326,12 @@ copyMemory( DestinationElement* destination,
 #ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
-      cudaMemcpy( destination,
-                  source,
-                  size * sizeof( DestinationElement ),
-                  cudaMemcpyHostToDevice );
-      if( ! checkCudaDevice )
-      {
+      if( cudaMemcpy( destination,
+                      source,
+                      size * sizeof( DestinationElement ),
+                      cudaMemcpyHostToDevice ) != cudaSuccess )
          std::cerr << "Transfer of data from host to CUDA device failed." << std::endl;
-         return false;
-      }
-      return true;
+      return checkCudaDevice;
    }
    else
    {
@@ -359,9 +350,9 @@ copyMemory( DestinationElement* destination,
                          j * sizeof( DestinationElement ),
                          cudaMemcpyHostToDevice ) != cudaSuccess )
          {
-            checkCudaDevice;
             delete[] buffer;
-            return false;
+            std::cerr << "Transfer of data from host to CUDA device failed." << std::endl;
+            return checkCudaDevice;
          }
          i += j;
       }
