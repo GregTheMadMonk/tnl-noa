@@ -602,66 +602,66 @@ getTimeDerivative( const PointType& vertex,
       case constant:
       {
          typedef Constant< Dimension, Real > FunctionType;
-         return scale * ( ( FunctionType* ) function )->
+         return scale * ( ( FunctionType* ) function )->template
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       case paraboloid:
       {
          typedef Paraboloid< Dimension, Real > FunctionType;
-         return scale * ( ( FunctionType* ) function )->
+         return scale * ( ( FunctionType* ) function )->template
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       case expBump:
       {
          typedef ExpBump< Dimension, Real > FunctionType;
-         return scale * ( ( FunctionType* ) function )->
+         return scale * ( ( FunctionType* ) function )->template
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       case sinBumps:
       {
          typedef SinBumps< Dimension, Real > FunctionType;
-         return scale * ( ( FunctionType* ) function )->
+         return scale * ( ( FunctionType* ) function )->template
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       case sinWave:
       {
          typedef SinWave< Dimension, Real > FunctionType;
-         return scale * ( ( FunctionType* ) function )->
+         return scale * ( ( FunctionType* ) function )->template
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       }
       case cylinder:
       {
          typedef Cylinder< Dimension, Real > FunctionType;
-         return scale * ( ( FunctionType* ) function )->
+         return scale * ( ( FunctionType* ) function )->template
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       }
       case flowerpot:
       {
          typedef Flowerpot< Dimension, Real > FunctionType;
-         return scale * ( ( FunctionType* ) function )->
+         return scale * ( ( FunctionType* ) function )->template
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       }
       case twins:
       {
          typedef Twins< Dimension, Real > FunctionType;
-         return scale * ( ( FunctionType* ) function )->
+         return scale * ( ( FunctionType* ) function )->template
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       }
       case pseudoSquare:
       {
          typedef PseudoSquare< Dimension, Real > FunctionType;
-         return scale * ( ( FunctionType* ) function )->
+         return scale * ( ( FunctionType* ) function )->template
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       }
       case blob:
       {
          typedef Blob< Dimension, Real > FunctionType;
-         return scale * ( ( FunctionType* ) function )->
+         return scale * ( ( FunctionType* ) function )->template
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       }
@@ -670,19 +670,19 @@ getTimeDerivative( const PointType& vertex,
       case paraboloidSDF:
       {
          typedef ParaboloidSDF< Dimension, Real > FunctionType;
-         return scale * ( ( FunctionType* ) function )->
+         return scale * ( ( FunctionType* ) function )->template
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       case sinBumpsSDF:
       {
          typedef SinBumpsSDF< Dimension, Real > FunctionType;
-         return scale * ( ( FunctionType* ) function )->
+         return scale * ( ( FunctionType* ) function )->template
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       case sinWaveSDF:
       {
          typedef SinWaveSDF< Dimension, Real > FunctionType;
-         return scale * ( ( FunctionType* ) function )->
+         return scale * ( ( FunctionType* ) function )->template
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       }
       default:
