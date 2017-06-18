@@ -26,11 +26,12 @@ class MeshFunctionVTKWriter
 public:
    static bool write( const MeshFunction& function,
                       std::ostream& str,
+                      const double& scale = 1.0,
                       const String& functionName = "cellFunctionValues" )
    {
       const MeshType& mesh = function.getMesh();
       MeshWriter::template writeEntities< MeshFunction::getEntitiesDimension() >( mesh, str );
-      appendFunction( function, str, functionName );
+      appendFunction( function, str, functionName, scale );
       return true;
    }
 
@@ -39,7 +40,8 @@ public:
    // with different function name.
    static void appendFunction( const MeshFunction& function,
                                std::ostream& str,
-                               const String& functionName )
+                               const String& functionName,
+                               const double& scale = 1.0 )
    {
       const MeshType& mesh = function.getMesh();
       const GlobalIndex entitiesCount = mesh.template getEntitiesCount< EntityType >();
@@ -47,7 +49,7 @@ public:
       str << "SCALARS " << functionName << " " << getType< typename MeshFunction::RealType >() << " 1" << std::endl;
       str << "LOOKUP_TABLE default" << std::endl;
       for( GlobalIndex i = 0; i < entitiesCount; i++ ) {
-         str << function.getData().getElement( i ) << "\n";
+         str << scale * function.getData().getElement( i ) << "\n";
       }
    }
 };
