@@ -48,12 +48,6 @@ set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "" )
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG "-rdynamic" )
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE "" )
 
-get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
-if( CXX_COMPILER_NAME MATCHES "icpc" )
-   message( "Intel compiler detected..."    )
-   set( CMAKE_CXX_FLAGS "${CXXFLAGS} -DHAVE_ICPC ")
-endif()
-
 #####
 # Check for CUDA
 #
