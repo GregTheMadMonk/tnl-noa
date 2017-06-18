@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Exceptions/CudaBadAlloc.h>
 
 namespace TNL {
 namespace Devices {   
@@ -79,10 +80,7 @@ ObjectType* Cuda::passToDevice( const ObjectType& object )
    ObjectType* deviceObject;
    if( cudaMalloc( ( void** ) &deviceObject,
                    ( size_t ) sizeof( ObjectType ) ) != cudaSuccess )
-   {
-      checkCudaDevice;
-      return 0;
-   }
+      throw Exceptions::CudaBadAlloc();
    if( cudaMemcpy( ( void* ) deviceObject,
                    ( void* ) &object,
                    sizeof( ObjectType ),

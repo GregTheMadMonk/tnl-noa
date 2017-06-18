@@ -11,7 +11,9 @@
 #pragma once
 
 #include <stdlib.h>
+
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Exceptions/CudaBadAlloc.h>
 
 namespace TNL {
 namespace Containers {
@@ -35,8 +37,8 @@ class CudaReductionBuffer
             this->size = size;
             if( cudaMalloc( ( void** ) &this->data, size ) != cudaSuccess )
             {
-               std::cerr << "I am not able to allocate reduction buffer on the GPU." << std::endl;
                this->data = 0;
+               throw Exceptions::CudaBadAlloc();
             }
             return checkCudaDevice;
          }

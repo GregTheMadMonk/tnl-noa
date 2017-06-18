@@ -15,6 +15,7 @@
 #include <TNL/tnlConfig.h>
 #include <TNL/Math.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
+#include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
@@ -33,7 +34,10 @@ allocateMemory( Element*& data,
    checkCudaDevice;
    if( cudaMalloc( ( void** ) &data,
                    ( size_t ) size * sizeof( Element ) ) != cudaSuccess )
+   {
       data = 0;
+      throw Exceptions::CudaBadAlloc();
+   }
    return checkCudaDevice;
 #else
    throw Exceptions::CudaSupportMissing();

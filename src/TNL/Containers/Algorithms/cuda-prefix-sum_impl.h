@@ -11,7 +11,9 @@
 #pragma once
    
 #include <iostream>
+
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
    
 #ifdef HAVE_CUDA
@@ -194,12 +196,7 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
 
    if( cudaMalloc( ( void** ) &auxArray1, auxArraySize ) != cudaSuccess ||
        cudaMalloc( ( void** ) &auxArray2, auxArraySize ) != cudaSuccess  )
-   {
-      {
-         std::cerr << "Not enough memory on device to allocate auxilliary arrays." << std::endl;
-         return false;
-      }
-   }
+      throw Exceptions::CudaBadAlloc();
 
    /****
     * Setup block and grid size.

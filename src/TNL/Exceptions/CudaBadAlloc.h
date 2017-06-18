@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CudaSupportMissing.h  -  description
+                          CudaBadAlloc.h  -  description
                              -------------------
     begin                : Jun 18, 2017
     copyright            : (C) 2017 by Tomas Oberhuber et al.
@@ -10,20 +10,21 @@
 
 // Implemented by: Jakub Klinkovsky
 
-#include <stdexcept>
+#include <new>
 
 #pragma once
 
 namespace TNL {
 namespace Exceptions {
 
-struct CudaSupportMissing
-   : public std::runtime_error
+struct CudaBadAlloc
+   : public std::bad_alloc
 {
-   CudaSupportMissing()
-   : std::runtime_error( "CUDA support is missing, but the program called a function which needs it. "
-                         "Please recompile the program with CUDA support." )
-   {}
+   const char* what() const throw()
+   {
+      return "Failed to allocate memory on the CUDA device: "
+             "most likely there is not enough space on the device memory.";
+   }
 };
 
 } // namespace Exceptions

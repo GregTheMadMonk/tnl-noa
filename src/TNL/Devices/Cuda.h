@@ -185,9 +185,12 @@ class Cuda
 
 #ifdef HAVE_CUDA
 #define checkCudaDevice ::TNL::Devices::Cuda::checkDevice( __FILE__, __LINE__, cudaGetLastError() )
-std::ostream& operator << ( std::ostream& str, const dim3& d );
 #else
 #define checkCudaDevice ::TNL::Devices::Cuda::checkDevice()
+#endif
+
+#ifdef HAVE_CUDA
+std::ostream& operator << ( std::ostream& str, const dim3& d );
 #endif
 
 } // namespace Devices
