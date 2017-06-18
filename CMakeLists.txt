@@ -348,7 +348,10 @@ LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 add_subdirectory( src )
 add_subdirectory( share )
 add_subdirectory( tests )
-add_subdirectory( examples )
+
+if( WITH_EXAMPLES STREQUAL "yes" )
+   add_subdirectory( examples )
+endif()
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")
 set(CPACK_PACKAGE_VENDOR "MMG")

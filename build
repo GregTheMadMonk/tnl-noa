@@ -2,37 +2,48 @@
 
 TARGET=TNL
 PREFIX=${HOME}/.local
+ROOT_DIR="."
+DCMTK_DIR="/usr/include/dcmtk"
+BUILD=""
+BUILD_JOBS=""
+CMAKE="cmake"
+CMAKE_ONLY="no"
+HELP="no"
+VERBOSE=""
+
 WITH_CLANG="no"
 WITH_CUDA="yes"
+WITH_CUDA_ARCH="auto"
 WITH_TESTS="yes"
 WITH_COVERAGE="no"
+WITH_EXAMPLES="yes"
 
-WITH_CUDA_ARCH="auto"
-WITH_TEMPLATE_INSTANTIATION="yes"
+WITH_TEMPLATE_INSTANTIATION="no"
 INSTANTIATE_LONG_INT="no"
 INSTANTIATE_INT="yes"
 INSTANTIATE_LONG_DOUBLE="no"
 INSTANTIATE_DOUBLE="yes"
 INSTANTIATE_FLOAT="no"
 OPTIMIZED_VECTOR_HOST_OPERATIONS="no"
-CMAKE="cmake"
-CMAKE_ONLY="no"
-HELP="no"
-VERBOSE=""
-ROOT_DIR="."
-DCMTK_DIR="/usr/include/dcmtk"
-BUILD_JOBS=""
 
 for option in "$@"
 do
     case $option in
         --prefix=*                       ) PREFIX="${option#*=}" ;;
+        --root-dir=*                     ) ROOT_DIR="${option#*=}" ;;
+        --dcmtk-dir=*                    ) DCMTK_DIR="${option#*=}" ;;
         --build=*                        ) BUILD="${option#*=}" ;;
+        --build-jobs=*                   ) BUILD_JOBS="${option#*=}" ;;
+        --cmake=*                        ) CMAKE="${option#*=}" ;;
+        --cmake-only=*                   ) CMAKE_ONLY="${option#*=}" ;;
+        --verbose                        ) VERBOSE="VERBOSE=1" ;;
+        --help                           ) HELP="yes" ;;
         --with-clang=*                   ) WITH_CLANG="${option#*=}" ;;
-        --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
-        --with-coverage=*                ) WITH_COVERAGE="${option#*=}" ;;
         --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
         --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;
+        --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
+        --with-coverage=*                ) WITH_COVERAGE="${option#*=}" ;;
+        --with-examples=*                ) WITH_EXAMPLES="${option#*=}" ;;
         --with-templates-instantiation=* ) WITH_TEMPLATE_INSTANTIATION="${option#*=}" ;;
         --instantiate-long-int=*         ) INSTANTIATE_LONG_INT="${option#*=}" ;;
         --instantiate-int=*              ) INSTANTIATE_INT="${option#*=}" ;;
@@ -46,13 +57,6 @@ do
                                            INSTANTIATE_FLOAT="no"
                                            WITH_CUDA_ARCH="auto" ;;
         --optimize-vector-host-operations=* ) OPTIMIZED_VECTOR_HOST_OPERATIONS="yes" ;;
-        --with-cmake=*                   ) CMAKE="${option#*=}" ;;
-        --build-jobs=*                   ) BUILD_JOBS="${option#*=}" ;;
-        --cmake-only=*                   ) CMAKE_ONLY="${option#*=}" ;;
-        --verbose                        ) VERBOSE="VERBOSE=1" ;;
-        --root-dir=*                     ) ROOT_DIR="${option#*=}" ;;
-        --dcmtk-dir=*                    ) DCMTK_DIR="${option#*=}" ;;
-        --help                           ) HELP="yes" ;;
         *                                ) 
            echo "Unknown option ${option}. Use --help for more information."
            exit 1 ;;
@@ -65,14 +69,14 @@ then
     echo ""
     echo "   --prefix=PATH                         Prefix for the installation directory. ${HOME}/local by default."
     echo "   --build=Debug/Release                 Build type."
+    echo "   --build-jobs=NUM                      Number of processes to be used for the build. It is set to the number of available CPU cores by default."
+    echo "   --with-cuda=yes/no                    Enable CUDA. 'yes' by default (CUDA Toolkit is required)."
+    echo "   --with-cuda-arch=all/auto/30/35/...   Choose CUDA architecture. 'auto' by default."
     echo "   --with-tests=yes/no                   Enable unit tests. 'yes' by default."
     echo "   --with-coverage=yes/no                Enable code coverage reports for unit tests. 'no' by default (lcov is required)."
-    echo "   --with-cuda=yes/no                    Enable CUDA. 'yes' by default (CUDA Toolkit is required)."
-    echo "   --with-cuda-arch=all/auto/30/35/...   Choose CUDA architecture."   
-    echo "   --with-templates-instantiation=yes/no Some TNL templates are precompiled during the build. 'yes' by default."
-    echo "   --full-build                          Instantiate all -- long int indexing, float and long double floating point arithmetics."
-    echo "   --with-cmake=CMAKE                    Path to cmake. 'cmake' by default."
-    echo "   --build-jobs=NUM                      Number of processes to be used for the build. It is set to a number of CPU cores by default."
+    echo "   --with-examples=yes/no                Compile the 'examples' directory. 'yes' by default."
+    echo "   --with-templates-instantiation=yes/no Precompiles some TNL templates during the build. 'no' by default."
+    echo "   --cmake=CMAKE                         Path to cmake. 'cmake' by default."
     echo "   --verbose                             It enables verbose build."
     echo "   --root-dir=PATH                       Path to the TNL source code root dir."
     echo "   --dcmtk-dir=PATH                      Path to the DCMTK (Dicom Toolkit) root dir."
@@ -96,7 +100,7 @@ ${CMAKE} ${ROOT_DIR} \
          -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH} \
          -DWITH_TESTS=${WITH_TESTS} \
          -DWITH_COVERAGE=${WITH_COVERAGE} \
-         -DPETSC_DIR=${PETSC_DIR} \
+         -DWITH_EXAMPLES=${WITH_EXAMPLES} \
          -DDCMTK_DIR=${DCMTK_DIR} \
          -DWITH_TEMPLATE_INSTANTIATION=${WITH_TEMPLATE_INSTANTIATION} \
          -DINSTANTIATE_FLOAT=${INSTANTIATE_FLOAT} \
@@ -113,7 +117,7 @@ fi
 
 if test ${CMAKE_ONLY} = "yes";
 then
-    exit 1
+    exit 0
 fi
 
 if [[ -n ${BUILD_JOBS} ]]; then
@@ -139,7 +143,7 @@ if test $? != 0; then
 fi
 
 
-if test WITH_TESTS = "yes";
+if test ${WITH_TESTS} = "yes";
 then
     make test
     if test $? != 0; then
