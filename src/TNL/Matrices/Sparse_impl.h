@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "Sparse.h"
+
 namespace TNL {
 namespace Matrices {   
 
@@ -27,12 +29,10 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool Sparse< Real, Device, Index >::setLike( const Sparse< Real2, Device2, Index2 >& matrix )
+void Sparse< Real, Device, Index >::setLike( const Sparse< Real2, Device2, Index2 >& matrix )
 {
-   if( ! Matrix< Real, Device, Index >::setLike( matrix ) ||
-       ! this->allocateMatrixElements( matrix.getNumberOfMatrixElements() ) )
-      return false;
-   return true;
+   Matrix< Real, Device, Index >::setLike( matrix );
+   this->allocateMatrixElements( matrix.getNumberOfMatrixElements() );
 }
 
 template< typename Real,
@@ -112,18 +112,16 @@ bool Sparse< Real, Device, Index >::load( File& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool Sparse< Real, Device, Index >::allocateMatrixElements( const IndexType& numberOfMatrixElements )
+void Sparse< Real, Device, Index >::allocateMatrixElements( const IndexType& numberOfMatrixElements )
 {
-   if( ! this->values.setSize( numberOfMatrixElements ) ||
-       ! this->columnIndexes.setSize( numberOfMatrixElements ) )
-      return false;
+   this->values.setSize( numberOfMatrixElements );
+   this->columnIndexes.setSize( numberOfMatrixElements );
 
    /****
     * Setting a column index to this->columns means that the
     * index is undefined.
     */
    this->columnIndexes.setValue( this->columns );
-   return true;
 }
 
 template< typename Real,

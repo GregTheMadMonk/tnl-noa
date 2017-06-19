@@ -69,8 +69,7 @@ init( const MeshPointer& mesh )
       std::cerr << "Please check the method 'setupLinearSystem' in your solver." << std::endl;
       return false;
    }
-   if( ! this->rightHandSidePointer->setSize( this->matrix.getData().getRows() ) )
-      return false;
+   this->rightHandSidePointer->setSize( this->matrix.getData().getRows() );
 
    this->preIterateTimer.reset();
    this->linearSystemAssemblerTimer.reset();

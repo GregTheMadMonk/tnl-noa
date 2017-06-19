@@ -34,10 +34,10 @@ class Sparse : public Matrix< Real, Device, Index >
 
    Sparse();
 
-   virtual bool setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths ) = 0;
+   virtual void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths ) = 0;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const Sparse< Real2, Device2, Index2 >& matrix );
+   void setLike( const Sparse< Real2, Device2, Index2 >& matrix );
 
    IndexType getNumberOfMatrixElements() const;
 
@@ -58,7 +58,7 @@ class Sparse : public Matrix< Real, Device, Index >
 
    protected:
 
-   bool allocateMatrixElements( const IndexType& numberOfMatrixElements );
+   void allocateMatrixElements( const IndexType& numberOfMatrixElements );
 
    Containers::Vector< Index, Device, Index > columnIndexes;
 

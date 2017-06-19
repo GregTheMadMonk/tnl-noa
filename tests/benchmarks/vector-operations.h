@@ -42,20 +42,12 @@ benchmarkVectorOperations( Benchmark & benchmark,
 
     HostVector hostVector, hostVector2;
     CudaVector deviceVector, deviceVector2;
-    if( ! hostVector.setSize( size ) ||
-        ! hostVector2.setSize( size )
+    hostVector.setSize( size );
+    hostVector2.setSize( size );
 #ifdef HAVE_CUDA
-        ||
-        ! deviceVector.setSize( size ) ||
-        ! deviceVector2.setSize( size )
+    deviceVector.setSize( size );
+    deviceVector2.setSize( size );
 #endif
-        )
-    {
-        const char* msg = "error: allocation of vectors failed";
-        std::cerr << msg << std::endl;
-        benchmark.addErrorMessage( msg );
-        return false;
-    }
 
     Real resultHost, resultDevice;
 

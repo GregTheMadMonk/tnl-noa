@@ -51,34 +51,33 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpack< Real, Device, Index, SliceSize >::setDimensions( const IndexType rows,
-                                                                              const IndexType columns )
+void SlicedEllpack< Real, Device, Index, SliceSize >::setDimensions( const IndexType rows,
+                                                                     const IndexType columns )
 {
    TNL_ASSERT( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
-   return Sparse< Real, Device, Index >::setDimensions( rows, columns );
+   Sparse< Real, Device, Index >::setDimensions( rows, columns );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpack< Real, Device, Index, SliceSize >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void SlicedEllpack< Real, Device, Index, SliceSize >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
    TNL_ASSERT( this->getRows() > 0, );
    TNL_ASSERT( this->getColumns() > 0, );
    const IndexType slices = roundUpDivision( this->rows, SliceSize );
-   if( ! this->sliceCompressedRowLengths.setSize( slices ) ||
-       ! this->slicePointers.setSize( slices + 1 ) )
-      return false;
+   this->sliceCompressedRowLengths.setSize( slices );
+   this->slicePointers.setSize( slices + 1 );
 
    DeviceDependentCode::computeMaximalRowLengthInSlices( *this, rowLengths );
 
    this->maxRowLength = rowLengths.max();
 
    this->slicePointers.computeExclusivePrefixSum();
-   return this->allocateMatrixElements( this->slicePointers.getElement( slices ) );
+   this->allocateMatrixElements( this->slicePointers.getElement( slices ) );
 }
 
 template< typename Real,
@@ -98,13 +97,11 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool SlicedEllpack< Real, Device, Index, SliceSize >::setLike( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix )
+void SlicedEllpack< Real, Device, Index, SliceSize >::setLike( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix )
 {
-   if( !Sparse< Real, Device, Index >::setLike( matrix ) ||
-       ! this->slicePointers.setLike( matrix.slicePointers ) ||
-       ! this->sliceCompressedRowLengths.setLike( matrix.sliceCompressedRowLengths ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::setLike( matrix );
+   this->slicePointers.setLike( matrix.slicePointers );
+   this->sliceCompressedRowLengths.setLike( matrix.sliceCompressedRowLengths );
 }
 
 template< typename Real,

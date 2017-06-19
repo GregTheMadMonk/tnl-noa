@@ -81,14 +81,7 @@ setup( const Config::ParameterContainer& parameters,
     * Set DOFs (degrees of freedom)
     */
    TNL_ASSERT( problem->getDofs( this->meshPointer ) != 0, );
-   std::cout << "Allocating dofs ... ";
-   if( ! this->dofsPointer->setSize( problem->getDofs( this->meshPointer ) ) )
-   {
-      std::cerr << std::endl;
-      std::cerr << "I am not able to allocate DOFs (degrees of freedom)." << std::endl;
-      return false;
-   }
-   std::cout << " [ OK ]" << std::endl;
+   this->dofsPointer->setSize( problem->getDofs( this->meshPointer ) );
    this->dofsPointer->setValue( 0.0 );
    this->problem->bindDofs( this->meshPointer, this->dofsPointer );
    
@@ -101,11 +94,11 @@ setup( const Config::ParameterContainer& parameters,
    /***
     * Set-up the initial condition
     */
-  std::cout << "Setting up the initial condition ... ";
+   std::cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
    if( ! this->problem->setInitialCondition( parameters, meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
       return false;
-  std::cout << " [ OK ]" << std::endl;
+   std::cout << " [ OK ]" << std::endl;
 
    /****
     * Initialize the time discretisation

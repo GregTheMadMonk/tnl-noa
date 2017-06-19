@@ -50,32 +50,28 @@ String Multidiagonal< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool Multidiagonal< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                                   const IndexType columns )
+void Multidiagonal< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                          const IndexType columns )
 {
    TNL_ASSERT( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
-   if( ! Matrix< Real, Device, Index >::setDimensions( rows, columns ) )
-      return false;
+   Matrix< Real, Device, Index >::setDimensions( rows, columns );
    if( this->diagonalsShift.getSize() != 0 )
    {
-      if( ! this->values.setSize( min( this->rows, this->columns ) * this->diagonalsShift.getSize() ) )
-         return false;
+      this->values.setSize( min( this->rows, this->columns ) * this->diagonalsShift.getSize() );
       this->values.setValue( 0.0 );
    }
-   return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Multidiagonal< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void Multidiagonal< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
    /****
     * TODO: implement some check here similar to the one in the tridiagonal matrix
     */
-   return true;
 }
 
 template< typename Real,
@@ -107,7 +103,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-bool Multidiagonal< Real, Device, Index > :: setDiagonals(  const Vector& diagonals )
+void Multidiagonal< Real, Device, Index > :: setDiagonals(  const Vector& diagonals )
 {
    TNL_ASSERT( diagonals.getSize() > 0,
               std::cerr << "New number of diagonals = " << diagonals.getSize() << std::endl );
@@ -115,11 +111,9 @@ bool Multidiagonal< Real, Device, Index > :: setDiagonals(  const Vector& diagon
    this->diagonalsShift = diagonals;
    if( this->rows != 0 && this->columns != 0 )
    {
-      if( ! this->values.setSize( min( this->rows, this->columns ) * this->diagonalsShift.getSize() ) )
-         return false;
+      this->values.setSize( min( this->rows, this->columns ) * this->diagonalsShift.getSize() );
       this->values.setValue( 0.0 );
    }
-   return true;
 }
 
 template< typename Real,
@@ -136,13 +130,10 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool Multidiagonal< Real, Device, Index > :: setLike( const Multidiagonal< Real2, Device2, Index2 >& matrix )
+void Multidiagonal< Real, Device, Index > :: setLike( const Multidiagonal< Real2, Device2, Index2 >& matrix )
 {
-   if( ! this->setDimensions( matrix.getRows(), matrix.getColumns() ) )
-      return false;
-   if( ! setDiagonals( matrix.getDiagonals() ) )
-      return false;
-   return true;
+   this->setDimensions( matrix.getRows(), matrix.getColumns() );
+   setDiagonals( matrix.getDiagonals() );
 }
 
 template< typename Real,

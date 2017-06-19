@@ -45,9 +45,9 @@ class MultiVector< 1, Real, Device, Index > : public Vector< Real, Device, Index
 
    virtual String getSerializationTypeVirtual() const;
 
-   bool setDimensions( const Index iSize );
+   void setDimensions( const Index iSize );
 
-   bool setDimensions( const StaticVector< Dimension, Index >& dimensions );
+   void setDimensions( const StaticVector< Dimension, Index >& dimensions );
 
    void getDimensions( Index& iSize ) const;
 
@@ -55,7 +55,7 @@ class MultiVector< 1, Real, Device, Index > : public Vector< Real, Device, Index
 
    //! Set dimensions of the Vector using another Vector as a template
    template< typename MultiVector >
-   bool setLike( const MultiVector& v );
+   void setLike( const MultiVector& v );
  
    Index getElementIndex( const Index i ) const;
 
@@ -126,9 +126,9 @@ class MultiVector< 2, Real, Device, Index > : public Vector< Real, Device, Index
 
    virtual String getSerializationTypeVirtual() const;
 
-   bool setDimensions( const Index jSize, const Index iSize );
+   void setDimensions( const Index jSize, const Index iSize );
 
-   bool setDimensions( const StaticVector< 2, Index >& dimensions );
+   void setDimensions( const StaticVector< 2, Index >& dimensions );
 
    void getDimensions( Index& jSize, Index& iSize ) const;
 
@@ -136,7 +136,7 @@ class MultiVector< 2, Real, Device, Index > : public Vector< Real, Device, Index
 
    //! Set dimensions of the Vector using another Vector as a template
    template< typename MultiVector >
-   bool setLike( const MultiVector& v );
+   void setLike( const MultiVector& v );
 
    Index getElementIndex( const Index j, const Index i ) const;
 
@@ -208,9 +208,9 @@ class MultiVector< 3, Real, Device, Index > : public Vector< Real, Device, Index
 
    virtual String getSerializationTypeVirtual() const;
 
-   bool setDimensions( const Index k, const Index j, const Index iSize );
+   void setDimensions( const Index k, const Index j, const Index iSize );
 
-   bool setDimensions( const StaticVector< 3, Index >& dimensions );
+   void setDimensions( const StaticVector< 3, Index >& dimensions );
 
    void getDimensions( Index& k, Index& j, Index& iSize ) const;
 
@@ -218,7 +218,7 @@ class MultiVector< 3, Real, Device, Index > : public Vector< Real, Device, Index
 
    //! Set dimensions of the Vector using another Vector as a template
    template< typename MultiVector >
-   bool setLike( const MultiVector& v );
+   void setLike( const MultiVector& v );
 
    Index getElementIndex( const Index k, const Index j, const Index i ) const;
 
@@ -290,9 +290,9 @@ class MultiVector< 4, Real, Device, Index > : public Vector< Real, Device, Index
 
    virtual String getSerializationTypeVirtual() const;
 
-   bool setDimensions( const Index l, const Index k, const Index j, const Index iSize );
+   void setDimensions( const Index l, const Index k, const Index j, const Index iSize );
 
-   bool setDimensions( const StaticVector< 4, Index >& dimensions );
+   void setDimensions( const StaticVector< 4, Index >& dimensions );
 
    void getDimensions( Index& l, Index& k, Index& j, Index& iSize ) const;
 
@@ -300,7 +300,7 @@ class MultiVector< 4, Real, Device, Index > : public Vector< Real, Device, Index
 
    //! Set dimensions of the Vector using another Vector as a template
    template< typename MultiVector >
-   bool setLike( const MultiVector& v );
+   void setLike( const MultiVector& v );
 
    Index getElementIndex( const Index l, const Index k, const Index j, const Index i ) const;
 

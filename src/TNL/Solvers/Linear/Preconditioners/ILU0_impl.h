@@ -18,18 +18,14 @@ update( const MatrixPointer& matrixPointer )
 
    const IndexType N = matrixPointer->getRows();
 
-   if( L.getRows() != N || L.getColumns() != N )
-      if( ! L.setDimensions( N, N ) )
-         throw 1;
-   if( U.getRows() != N || U.getColumns() != N )
-      if( ! U.setDimensions( N, N ) )
-         throw 1;
+   L.setDimensions( N, N );
+   U.setDimensions( N, N );
 
    // copy row lengths
    typename decltype(L)::CompressedRowLengthsVector L_rowLengths;
    typename decltype(U)::CompressedRowLengthsVector U_rowLengths;
-   if( ! L_rowLengths.setSize( N ) || ! U_rowLengths.setSize( N ) )
-      throw 1;
+   L_rowLengths.setSize( N );
+   U_rowLengths.setSize( N );
    for( IndexType i = 0; i < N; i++ ) {
        const auto row = matrixPointer->getRow( i );
        const auto max_length = matrixPointer->getRowLength( i );
@@ -47,8 +43,8 @@ update( const MatrixPointer& matrixPointer )
       L_rowLengths[ i ] = L_entries;
       U_rowLengths[ N - 1 - i ] = U_entries;
    }
-   if( ! L.setCompressedRowLengths( L_rowLengths ) || ! U.setCompressedRowLengths( U_rowLengths ) )
-      throw 1;
+   L.setCompressedRowLengths( L_rowLengths );
+   U.setCompressedRowLengths( U_rowLengths );
 
    // Incomplete LU factorization
    // The factors L and U are stored separately and the rows of U are reversed.

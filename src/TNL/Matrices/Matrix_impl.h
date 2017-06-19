@@ -28,14 +28,13 @@ Matrix< Real, Device, Index >::Matrix()
 template< typename Real,
           typename Device,
           typename Index >
- bool Matrix< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                       const IndexType columns )
+void Matrix< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                   const IndexType columns )
 {
    TNL_ASSERT( rows > 0 && columns > 0,
-            std::cerr << " rows = " << rows << " columns = " << columns );
+               std::cerr << " rows = " << rows << " columns = " << columns );
    this->rows = rows;
    this->columns = columns;
-   return true;
 }
 
 template< typename Real,
@@ -54,9 +53,9 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool Matrix< Real, Device, Index >::setLike( const Matrix< Real2, Device2, Index2 >& matrix )
+void Matrix< Real, Device, Index >::setLike( const Matrix< Real2, Device2, Index2 >& matrix )
 {
-   return setDimensions( matrix.getRows(), matrix.getColumns() );
+   setDimensions( matrix.getRows(), matrix.getColumns() );
 }
 
 template< typename Real,
@@ -97,13 +96,11 @@ bool Matrix< Real, Device, Index >::copyFrom( const MatrixT& matrix,
    tnlStaticTNL_ASSERT( DeviceType::DeviceType == Matrix:DeviceType::DeviceType, );*/
 
    this->setLike( matrix );
-   if( ! this->setCompressedRowLengths( rowLengths ) )
-      return false;
+   this->setCompressedRowLengths( rowLengths );
    Containers::Vector< RealType, Devices::Host, IndexType > values;
    Containers::Vector< IndexType, Devices::Host, IndexType > columns;
-   if( ! values.setSize( this->getColumns() ) ||
-       ! columns.setSize( this->getColumns() ) )
-      return false;
+   values.setSize( this->getColumns() );
+   columns.setSize( this->getColumns() );
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
       TNL_ASSERT( false, );

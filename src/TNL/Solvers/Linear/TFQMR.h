@@ -62,7 +62,7 @@ class TFQMR : public Object,
 
    protected:
 
-   bool setSize( IndexType size );
+   void setSize( IndexType size );
 
    Containers::Vector< RealType, DeviceType, IndexType > d, r, w, u, v, r_ast, Au, M_tmp;
 

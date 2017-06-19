@@ -74,11 +74,7 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
     * First setup the supporting meshes k1...k5 and k_tmp.
     */
    //timer.start();
-   if( ! k1->setLike( *u ) )
-   {
-      std::cerr << "I do not have enough memory to allocate a supporting grid for the Euler explicit solver." << std::endl;
-      return false;
-   }
+   k1->setLike( *u );
    k1->setValue( 0.0 );
 
 

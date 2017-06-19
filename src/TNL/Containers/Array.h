@@ -61,10 +61,10 @@ class Array : public virtual Object
        * these data are released. If the current data are not shared and the current
        * size is the same as the new one, nothing happens.
        */
-      bool setSize( Index size );
+      void setSize( Index size );
 
       template< typename Array >
-      bool setLike( const Array& array );
+      void setLike( const Array& array );
 
       void bind( Element* _data,
                  const Index _size );

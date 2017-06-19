@@ -437,8 +437,7 @@ tnlFiniteVolumeOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, 
 bind( Vector& u) 
 {
     this->u.bind(u);
-    if(q.setSize(u.getSize()))
-        return 1;
+    q.setSize(u.getSize());
     q.setValue(0);
     return 0;
 }

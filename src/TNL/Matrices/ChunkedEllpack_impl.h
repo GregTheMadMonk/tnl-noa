@@ -62,25 +62,22 @@ String ChunkedEllpack< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool ChunkedEllpack< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                                    const IndexType columns )
+void ChunkedEllpack< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                           const IndexType columns )
 {
    TNL_ASSERT( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
-   if( ! Sparse< Real, Device, Index >::setDimensions( rows, columns ) )
-      return false;
+   Sparse< Real, Device, Index >::setDimensions( rows, columns );
 
    /****
     * Allocate slice info array. Note that there cannot be
     * more slices than rows.
     */
-   if( ! this->slices.setSize( this->rows ) ||
-       ! this->rowToChunkMapping.setSize( this-> rows ) ||
-       ! this->rowToSliceMapping.setSize( this->rows ) ||
-       ! this->rowPointers.setSize( this->rows + 1 ) )
-      return false;
-   return true;
+   this->slices.setSize( this->rows );
+   this->rowToChunkMapping.setSize( this-> rows );
+   this->rowToSliceMapping.setSize( this->rows );
+   this->rowPointers.setSize( this->rows + 1 );
 }
 
 template< typename Real,
@@ -206,7 +203,7 @@ bool ChunkedEllpack< Real, Device, Index >::setSlice( const CompressedRowLengths
 template< typename Real,
           typename Device,
           typename Index >
-bool ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
    TNL_ASSERT( this->getRows() > 0, );
    TNL_ASSERT( this->getColumns() > 0, );
@@ -245,7 +242,7 @@ bool ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( const Compr
       elementsToAllocation = hostMatrix.values.getSize();
    }
    this->maxRowLength = rowLengths.max();
-   return Sparse< Real, Device, Index >::allocateMatrixElements( elementsToAllocation );
+   Sparse< Real, Device, Index >::allocateMatrixElements( elementsToAllocation );
 }
 
 template< typename Real,
@@ -265,16 +262,14 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool ChunkedEllpack< Real, Device, Index >::setLike( const ChunkedEllpack< Real2, Device2, Index2 >& matrix )
+void ChunkedEllpack< Real, Device, Index >::setLike( const ChunkedEllpack< Real2, Device2, Index2 >& matrix )
 {
    this->chunksInSlice = matrix.chunksInSlice;
    this->desiredChunkSize = matrix.desiredChunkSize;
-   if( ! Sparse< Real, Device, Index >::setLike( matrix ) ||
-       ! this->rowToChunkMapping.setLike( matrix.rowToChunkMapping ) ||
-       ! this->rowToSliceMapping.setLike( matrix.rowToSliceMapping ) ||
-       ! this->slices.setLike( matrix.slices ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::setLike( matrix );
+   this->rowToChunkMapping.setLike( matrix.rowToChunkMapping );
+   this->rowToSliceMapping.setLike( matrix.rowToSliceMapping );
+   this->slices.setLike( matrix.slices );
 }
 
 template< typename Real,

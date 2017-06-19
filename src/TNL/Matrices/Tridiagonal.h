@@ -43,17 +43,17 @@ class Tridiagonal : public Matrix< Real, Device, Index >
 
    String getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows,
+   void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
    IndexType getMaxRowLength() const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const Tridiagonal< Real2, Device2, Index2 >& m );
+   void setLike( const Tridiagonal< Real2, Device2, Index2 >& m );
 
    IndexType getNumberOfMatrixElements() const;
 

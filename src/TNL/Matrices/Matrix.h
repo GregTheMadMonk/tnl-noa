@@ -32,17 +32,17 @@ class Matrix : public virtual Object
 
    Matrix();
 
-   virtual bool setDimensions( const IndexType rows,
+   virtual void setDimensions( const IndexType rows,
                                const IndexType columns );
 
-   virtual bool setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths ) = 0;
+   virtual void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths ) = 0;
 
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 
    virtual void getCompressedRowLengths( Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const Matrix< Real2, Device2, Index2 >& matrix );
+   void setLike( const Matrix< Real2, Device2, Index2 >& matrix );
 
    virtual IndexType getNumberOfMatrixElements() const = 0;
 

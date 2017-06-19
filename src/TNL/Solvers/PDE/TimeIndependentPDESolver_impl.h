@@ -59,14 +59,7 @@ setup( const Config::ParameterContainer& parameters,
     * Set DOFs (degrees of freedom)
     */
    TNL_ASSERT( problem->getDofs( this->mesh ) != 0, );
-   cout << "Allocating dofs ... ";
-   if( ! this->dofs.setSize( problem->getDofs( this->mesh ) ) )
-   {
-      cerr << endl;
-      cerr << "I am not able to allocate DOFs (degrees of freedom)." << endl;
-      return false;
-   }
-   cout << " [ OK ]" << endl;
+   this->dofs.setSize( problem->getDofs( this->mesh ) );
    this->dofs.setValue( 0.0 );
    this->problem->bindDofs( this->mesh, this->dofs );   
    
@@ -84,7 +77,6 @@ setup( const Config::ParameterContainer& parameters,
    if( ! this->problem->setInitialData( parameters, this->mesh, this->dofs, this->meshDependentData ) )
       return false;
    cout << " [ OK ]" << endl;
-   
    
    return true;
 }

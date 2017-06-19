@@ -49,14 +49,12 @@ String Dense< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool Dense< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                           const IndexType columns )
+void Dense< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                  const IndexType columns )
 {
-   if( ! Matrix< Real, Device, Index >::setDimensions( rows, columns ) ||
-       ! this->values.setSize( rows * columns ) )
-     return false;
+   Matrix< Real, Device, Index >::setDimensions( rows, columns );
+   this->values.setSize( rows * columns );
    this->values.setValue( 0.0 );
-   return true;
 }
 
 template< typename Real,
@@ -65,17 +63,16 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool Dense< Real, Device, Index >::setLike( const Dense< Real2, Device2, Index2 >& matrix )
+void Dense< Real, Device, Index >::setLike( const Dense< Real2, Device2, Index2 >& matrix )
 {
-   return this->setDimensions( matrix.getRows(), matrix.getColumns() );
+   this->setDimensions( matrix.getRows(), matrix.getColumns() );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Dense< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void Dense< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
-   return true;
 }
 
 template< typename Real,

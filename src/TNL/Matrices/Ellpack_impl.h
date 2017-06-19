@@ -50,8 +50,8 @@ String Ellpack< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                             const IndexType columns )
+void Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                    const IndexType columns )
 {
    TNL_ASSERT( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
@@ -62,33 +62,31 @@ bool Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
       this->alignedRows = roundToMultiple( columns, Devices::Cuda::getWarpSize() );
    else this->alignedRows = rows;
    if( this->rowLengths != 0 )
-      return allocateElements();
-   return true;
+      allocateElements();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void Ellpack< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
    TNL_ASSERT( this->getRows() > 0, );
    TNL_ASSERT( this->getColumns() > 0, );
    TNL_ASSERT( rowLengths.getSize() > 0, );
    this->rowLengths = this->maxRowLength = rowLengths.max();
-   return allocateElements();
+   allocateElements();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::setConstantCompressedRowLengths( const IndexType& rowLengths )
+void Ellpack< Real, Device, Index >::setConstantCompressedRowLengths( const IndexType& rowLengths )
 {
    TNL_ASSERT( rowLengths > 0,
               std::cerr << " rowLengths = " << rowLengths );
    this->rowLengths = rowLengths;
    if( this->rows > 0 )
-      return allocateElements();
-   return true;
+      allocateElements();
 }
 
 template< typename Real,
@@ -105,13 +103,11 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool Ellpack< Real, Device, Index >::setLike( const Ellpack< Real2, Device2, Index2 >& matrix )
+void Ellpack< Real, Device, Index >::setLike( const Ellpack< Real2, Device2, Index2 >& matrix )
 {
-   if( ! Sparse< Real, Device, Index >::setLike( matrix ) )
-      return false;
+   Sparse< Real, Device, Index >::setLike( matrix );
    this->rowLengths = matrix.rowLengths;
    this->alignedRows = matrix.alignedRows;
-   return true;
 }
 
 template< typename Real,
@@ -626,11 +622,9 @@ void Ellpack< Real, Device, Index >::print( std::ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::allocateElements()
+void Ellpack< Real, Device, Index >::allocateElements()
 {
-   if( ! Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths );
 }
 
 template<>

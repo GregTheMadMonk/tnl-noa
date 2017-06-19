@@ -138,11 +138,7 @@ solve( const Vector& b, Vector& x )
                 << ", d_max = " << restarting_step_max << std::endl;
       return false;
    }
-   if( ! setSize( matrix -> getRows(), restarting_max ) )
-   {
-      std::cerr << "I am not able to allocate enough memory for the CWYGMRES solver. You may try to decrease the restarting parameter." << std::endl;
-       return false;
-   }
+   setSize( matrix -> getRows(), restarting_max );
 
    RealType normb( 0.0 ), beta( 0.0 );
    /****
@@ -676,9 +672,10 @@ applyPlaneRotation( RealType& dx,
 
 template< typename Matrix,
           typename Preconditioner >
-bool CWYGMRES< Matrix, Preconditioner > :: setSize( IndexType _size, IndexType m )
+void CWYGMRES< Matrix, Preconditioner > :: setSize( IndexType _size, IndexType m )
 {
-   if( size == _size && restarting_max == m ) return true;
+   if( size == _size && restarting_max == m )
+      return;
    size = _size;
    if( std::is_same< DeviceType, Devices::Cuda >::value )
       // align each column to 256 bytes - optimal for CUDA
@@ -687,23 +684,18 @@ bool CWYGMRES< Matrix, Preconditioner > :: setSize( IndexType _size, IndexType m
        // on the host, we add 1 to disrupt the cache false-sharing pattern
       ldSize = roundToMultiple( size, 256 / sizeof( RealType ) ) + 1;
    restarting_max = m;
-   if( ! r.setSize( size ) ||
-       ! z.setSize( size ) ||
-       ! w.setSize( size ) ||
-       ! V.setSize( ldSize * ( m + 1 ) ) ||
-       ! Y.setSize( ldSize * ( m + 1 ) ) ||
-       ! T.setSize( (m + 1) * (m + 1) ) ||
-       ! YL.setSize( (m + 1) * (m + 1) ) ||
-       ! cs.setSize( m + 1 ) ||
-       ! sn.setSize( m + 1 ) ||
-       ! H.setSize( ( m + 1 ) * m ) ||
-       ! s.setSize( m + 1 ) ||
-       ! _M_tmp.setSize( size ) )
-   {
-      std::cerr << "I could not allocate all supporting arrays for the CWYGMRES solver." << std::endl;
-      return false;
-   }
-   return true;
+   r.setSize( size );
+   z.setSize( size );
+   w.setSize( size );
+   V.setSize( ldSize * ( m + 1 ) );
+   Y.setSize( ldSize * ( m + 1 ) );
+   T.setSize( (m + 1) * (m + 1) );
+   YL.setSize( (m + 1) * (m + 1) );
+   cs.setSize( m + 1 );
+   sn.setSize( m + 1 );
+   H.setSize( ( m + 1 ) * m );
+   s.setSize( m + 1 );
+   _M_tmp.setSize( size );
 }
 
 } // namespace Linear

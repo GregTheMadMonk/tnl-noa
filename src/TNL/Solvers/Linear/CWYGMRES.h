@@ -108,7 +108,7 @@ protected:
                             RealType& sn );
 
 
-   bool setSize( IndexType _size, IndexType m );
+   void setSize( IndexType _size, IndexType m );
 
    // single vectors
    DeviceVector r, z, w, _M_tmp;

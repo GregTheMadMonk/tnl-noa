@@ -118,43 +118,25 @@ benchmarkSpMV( Benchmark & benchmark,
     parseObjectType( HostMatrix::getType(), parsedType );
     benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
 
-    if( ! hostRowLengths.setSize( size ) ||
-        ! hostMatrix.setDimensions( size, size ) ||
-        ! hostVector.setSize( size ) ||
-        ! hostVector2.setSize( size )
+    hostRowLengths.setSize( size );
+    hostMatrix.setDimensions( size, size );
+    hostVector.setSize( size );
+    hostVector2.setSize( size );
 #ifdef HAVE_CUDA
-        ||
-        ! deviceRowLengths.setSize( size ) ||
-        ! deviceMatrix.setDimensions( size, size ) ||
-        ! deviceVector.setSize( size ) ||
-        ! deviceVector2.setSize( size )
+    deviceRowLengths.setSize( size );
+    deviceMatrix.setDimensions( size, size );
+    deviceVector.setSize( size );
+    deviceVector2.setSize( size );
 #endif
-        )
-    {
-        const char* msg = "error: allocation of vectors failed";
-        std::cerr << msg << std::endl;
-        benchmark.addErrorMessage( msg, 2 );
-        return false;
-    }
 
     hostRowLengths.setValue( elementsPerRow );
 #ifdef HAVE_CUDA
     deviceRowLengths.setValue( elementsPerRow );
 #endif
 
-    if( ! hostMatrix.setCompressedRowLengths( hostRowLengths ) ) {
-        const char* msg = "error: allocation of host matrix failed";
-        std::cerr << msg << std::endl;
-        benchmark.addErrorMessage( msg, 2 );
-        return false;
-    }
+    hostMatrix.setCompressedRowLengths( hostRowLengths );
 #ifdef HAVE_CUDA
-    if( ! deviceMatrix.setCompressedRowLengths( deviceRowLengths ) ) {
-        const char* msg = "error: allocation of device matrix failed";
-        std::cerr << msg << std::endl;
-        benchmark.addErrorMessage( msg, 2 );
-        return false;
-    }
+    deviceMatrix.setCompressedRowLengths( deviceRowLengths );
 #endif
 
     const int elements = setHostTestMatrix< HostMatrix >( hostMatrix, elementsPerRow );

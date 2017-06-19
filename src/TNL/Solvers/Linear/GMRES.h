@@ -82,7 +82,7 @@ protected:
                             RealType& sn );
 
 
-   bool setSize( IndexType _size, IndexType m );
+   void setSize( IndexType _size, IndexType m );
 
    Containers::Vector< RealType, DeviceType, IndexType > _r, w, _v, _M_tmp;
    Containers::Vector< RealType, Devices::Host, IndexType > _s, _cs, _sn, _H;

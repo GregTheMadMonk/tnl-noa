@@ -48,38 +48,34 @@ String Tridiagonal< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool Tridiagonal< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                                 const IndexType columns )
+void Tridiagonal< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                        const IndexType columns )
 {
-   if( ! Matrix< Real, Device, Index >::setDimensions( rows, columns ) )
-      return false;
-   if( ! values.setSize( 3*min( rows, columns ) ) )
-      return false;
+   Matrix< Real, Device, Index >::setDimensions( rows, columns );
+   values.setSize( 3*min( rows, columns ) );
    this->values.setValue( 0.0 );
-   return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Tridiagonal< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void Tridiagonal< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
    if( rowLengths[ 0 ] > 2 )
-      return false;
+      throw std::logic_error( "Too many non-zero elements per row in a tri-diagonal matrix." );
    const IndexType diagonalLength = min( this->getRows(), this->getColumns() );
    for( Index i = 1; i < diagonalLength-1; i++ )
       if( rowLengths[ i ] > 3 )
-         return false;
+         throw std::logic_error( "Too many non-zero elements per row in a tri-diagonal matrix." );
    if( this->getRows() > this->getColumns() )
       if( rowLengths[ this->getRows()-1 ] > 1 )
-         return false;
+         throw std::logic_error( "Too many non-zero elements per row in a tri-diagonal matrix." );
    if( this->getRows() == this->getColumns() )
       if( rowLengths[ this->getRows()-1 ] > 2 )
-         return false;
+         throw std::logic_error( "Too many non-zero elements per row in a tri-diagonal matrix." );
    if( this->getRows() < this->getColumns() )
       if( rowLengths[ this->getRows()-1 ] > 3 )
-         return false;
-   return true;
+         throw std::logic_error( "Too many non-zero elements per row in a tri-diagonal matrix." );
 }
 
 template< typename Real,
@@ -111,9 +107,9 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Real2, typename Device2, typename Index2 >
-bool Tridiagonal< Real, Device, Index >::setLike( const Tridiagonal< Real2, Device2, Index2 >& m )
+void Tridiagonal< Real, Device, Index >::setLike( const Tridiagonal< Real2, Device2, Index2 >& m )
 {
-   return this->setDimensions( m.getRows(), m.getColumns() );
+   this->setDimensions( m.getRows(), m.getColumns() );
 }
 
 template< typename Real,

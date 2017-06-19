@@ -61,20 +61,18 @@ String CSR< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool CSR< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                         const IndexType columns )
+void CSR< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                const IndexType columns )
 {
-   if( ! Sparse< Real, Device, Index >::setDimensions( rows, columns ) ||
-       ! this->rowPointers.setSize( this->rows + 1 ) )
-      return false;
+   Sparse< Real, Device, Index >::setDimensions( rows, columns );
+   this->rowPointers.setSize( this->rows + 1 );
    this->rowPointers.setValue( 0 );
-   return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool CSR< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void CSR< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
    /****
     * Compute the rows pointers. The last one is
@@ -94,11 +92,9 @@ bool CSR< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLen
    /****
     * Allocate values and column indexes
     */
-   if( ! this->values.setSize( this->rowPointers.getElement( this->rows ) ) ||
-       ! this->columnIndexes.setSize( this->rowPointers.getElement( this->rows ) ) )
-      return false;
+   this->values.setSize( this->rowPointers.getElement( this->rows ) );
+   this->columnIndexes.setSize( this->rowPointers.getElement( this->rows ) );
    this->columnIndexes.setValue( this->columns );
-   return true;
 }
 
 template< typename Real,
@@ -115,12 +111,10 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool CSR< Real, Device, Index >::setLike( const CSR< Real2, Device2, Index2 >& matrix )
+void CSR< Real, Device, Index >::setLike( const CSR< Real2, Device2, Index2 >& matrix )
 {
-   if( ! Sparse< Real, Device, Index >::setLike( matrix ) ||
-       ! this->rowPointers.setLike( matrix.rowPointers ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::setLike( matrix );
+   this->rowPointers.setLike( matrix.rowPointers );
 }
 
 template< typename Real,

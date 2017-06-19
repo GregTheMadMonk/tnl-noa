@@ -165,41 +165,33 @@ releaseData() const
 template< typename Element,
           typename Device,
           typename Index >
-bool
+void
 Array< Element, Device, Index >::
 setSize( const Index size )
 {
    TNL_ASSERT( size >= 0,
               std::cerr << "You try to set size of Array to negative value."
                         << "New size: " << size << std::endl );
-   if( this->size == size && allocationPointer && ! referenceCounter ) return true;
+   if( this->size == size && allocationPointer && ! referenceCounter )
+      return;
    this->releaseData();
    Algorithms::ArrayOperations< Device >::allocateMemory( this->allocationPointer, size );
    this->data = this->allocationPointer;
    this->size = size;
-   if( size > 0 && ! this->allocationPointer )
-   {
-      cerr << "I am not able to allocate new array with size "
-           << ( double ) this->size * sizeof( ElementType ) / 1.0e9 << " GB." << endl;
-      this -> size = 0;
-      return false;
-   }
-   return true;
-};
+   TNL_ASSERT( this->allocationPointer,
+               std::cerr << "This should never happen - allocator did not throw on an error." << std::endl; );
+}
 
 template< typename Element,
           typename Device,
           typename Index >
    template< typename ArrayT >
-bool
+void
 Array< Element, Device, Index >::
 setLike( const ArrayT& array )
 {
-   TNL_ASSERT( array. getSize() >= 0,
-              std::cerr << "You try to set size of Array to negative value."
-                        << "Array size: " << array. getSize() << std::endl );
-   return setSize( array.getSize() );
-};
+   setSize( array.getSize() );
+}
 
 template< typename Element,
           typename Device,
@@ -280,7 +272,7 @@ swap( Array< Element, Device, Index >& array )
    TNL::swap( this->data, array.data );
    TNL::swap( this->allocationPointer, array.allocationPointer );
    TNL::swap( this->referenceCounter, array.referenceCounter );
-};
+}
 
 template< typename Element,
           typename Device,
@@ -290,7 +282,7 @@ Array< Element, Device, Index >::
 reset()
 {
    this->releaseData();
-};
+}
 
 template< typename Element,
           typename Device,
@@ -315,7 +307,7 @@ setElement( const Index& i, const Element& x )
                         << " index is " << i
                         << " and array size is " << this->getSize() );
    return Algorithms::ArrayOperations< Device > :: setMemoryElement( &( this->data[ i ] ), x );
-};
+}
 
 template< typename Element,
           typename Device,
@@ -329,7 +321,7 @@ getElement( const Index& i ) const
                         << " index is " << i
                         << " and array size is " << this->getSize() );
    return Algorithms::ArrayOperations< Device >::getMemoryElement( & ( this->data[ i ] ) );
-};
+}
 
 template< typename Element,
           typename Device,
@@ -344,7 +336,7 @@ operator[] ( const Index& i )
                         << " index is " << i
                         << " and array size is " << this->getSize() );
    return this->data[ i ];
-};
+}
 
 template< typename Element,
           typename Device,
@@ -359,7 +351,7 @@ operator[] ( const Index& i ) const
                         << " index is " << i
                         << " and array size is " << this->getSize() );
    return this->data[ i ];
-};
+}
 
 template< typename Element,
           typename Device,
@@ -380,7 +372,7 @@ operator = ( const Array< Element, Device, Index >& array )
                                array. getData(),
                                array. getSize() );
    return ( *this );
-};
+}
 
 template< typename Element,
           typename Device,
@@ -402,7 +394,7 @@ operator = ( const ArrayT& array )
                               array. getData(),
                               array. getSize() );
    return ( *this );
-};
+}
 
 template< typename Element,
           typename Device,
@@ -468,7 +460,7 @@ template< typename Element,
 Array< Element, Device, Index > :: operator bool() const
 {
    return data != 0;
-};
+}
 
 
 template< typename Element,
@@ -478,7 +470,7 @@ template< typename Element,
 void Array< Element, Device, Index > :: touch( IndexType2 touches ) const
 {
    //TODO: implement
-};
+}
 
 template< typename Element,
           typename Device,
@@ -496,7 +488,7 @@ bool Array< Element, Device, Index > :: save( File& file ) const
       return false;
    }
    return true;
-};
+}
 
 template< typename Element,
           typename Device,

@@ -45,16 +45,16 @@ class Dense : public Matrix< Real, Device, Index >
 
    String getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows,
+   void setDimensions( const IndexType rows,
                        const IndexType columns );
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const Dense< Real2, Device2, Index2 >& matrix );
+   void setLike( const Dense< Real2, Device2, Index2 >& matrix );
 
    /****
     * This method is only for the compatibility with the sparse matrices.
     */
-   bool setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
    /****
     * Returns maximal number of the nonzero matrix elements that can be stored

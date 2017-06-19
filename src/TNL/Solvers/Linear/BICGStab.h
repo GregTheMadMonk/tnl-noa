@@ -62,7 +62,7 @@ class BICGStab : public Object,
 
    protected:
 
-   bool setSize( IndexType size );
+   void setSize( IndexType size );
 
    bool exact_residue;
 

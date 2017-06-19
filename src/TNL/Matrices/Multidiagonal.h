@@ -42,22 +42,22 @@ class Multidiagonal : public Matrix< Real, Device, Index >
 
    String getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows,
+   void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
    IndexType getMaxRowLength() const;
 
    template< typename Vector >
-   bool setDiagonals( const Vector& diagonals );
+   void setDiagonals( const Vector& diagonals );
 
    const Containers::Vector< Index, Device, Index >& getDiagonals() const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const Multidiagonal< Real2, Device2, Index2 >& matrix );
+   void setLike( const Multidiagonal< Real2, Device2, Index2 >& matrix );
 
    IndexType getNumberOfMatrixElements() const;
 

@@ -129,11 +129,7 @@ solve( const Vector& b, Vector& x )
                 << ", d_max = " << restarting_step_max << std::endl;
       return false;
    }
-   if( ! setSize( matrix -> getRows(), restarting_max ) )
-   {
-       std::cerr << "I am not able to allocate enough memory for the GMRES solver. You may try to decrease the restarting parameter." << std::endl;
-       return false;
-   }
+   setSize( matrix -> getRows(), restarting_max );
 
    IndexType _size = size;
  
@@ -432,26 +428,22 @@ applyPlaneRotation( RealType& dx,
 
 template< typename Matrix,
           typename Preconditioner >
-bool
+void
 GMRES< Matrix, Preconditioner >::
 setSize( IndexType _size, IndexType m )
 {
-   if( size == _size && restarting_max == m ) return true;
+   if( size == _size && restarting_max == m )
+      return;
    size = _size;
    restarting_max = m;
-   if( ! _r.setSize( size ) ||
-       ! w.setSize( size ) ||
-       ! _s.setSize( m + 1 ) ||
-       ! _cs.setSize( m + 1 ) ||
-       ! _sn.setSize( m + 1 ) ||
-       ! _v.setSize( size * ( m + 1 ) ) ||
-       ! _H.setSize( ( m + 1 ) * m ) ||
-       ! _M_tmp.setSize( size ) )
-   {
-      std::cerr << "I could not allocate all supporting arrays for the GMRES solver." << std::endl;
-      return false;
-   }
-   return true;
+   _r.setSize( size );
+   w.setSize( size );
+   _s.setSize( m + 1 );
+   _cs.setSize( m + 1 );
+   _sn.setSize( m + 1 );
+   _v.setSize( size * ( m + 1 ) );
+   _H.setSize( ( m + 1 ) * m );
+   _M_tmp.setSize( size );
 }
 
 } // namespace Linear

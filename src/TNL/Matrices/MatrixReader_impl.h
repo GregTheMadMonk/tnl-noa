@@ -55,18 +55,13 @@ bool MatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
       return false;
 
 
-   if( ! matrix.setDimensions( rows, columns ) ||
-       ! rowLengths.setSize( rows ) )
-   {
-      std::cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << std::endl;
-      return false;
-   }
+   matrix.setDimensions( rows, columns );
+   rowLengths.setSize( rows );
 
    if( ! computeCompressedRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
       return false;
 
-   if( ! matrix.setCompressedRowLengths( rowLengths ) )
-      return false;
+   matrix.setCompressedRowLengths( rowLengths );
 
    if( ! readMatrixElementsFromMtxFile( file, matrix, symmetricMatrix, verbose ) )
       return false;

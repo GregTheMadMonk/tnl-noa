@@ -43,17 +43,17 @@ class Ellpack : public Sparse< Real, Device, Index >
 
    String getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows,
+   void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
-   bool setConstantCompressedRowLengths( const IndexType& rowLengths );
+   void setConstantCompressedRowLengths( const IndexType& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const Ellpack< Real2, Device2, Index2 >& matrix );
+   void setLike( const Ellpack< Real2, Device2, Index2 >& matrix );
 
    void reset();
  
@@ -168,7 +168,7 @@ class Ellpack : public Sparse< Real, Device, Index >
 
    protected:
 
-   bool allocateElements();
+   void allocateElements();
 
    IndexType rowLengths, alignedRows;
 

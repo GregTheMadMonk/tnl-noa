@@ -136,16 +136,12 @@ bool Merson< Problem > :: solve( DofVectorPointer& u )
    /****
     * First setup the supporting meshes k1...k5 and kAux.
     */
-   if( ! k1->setLike( *u ) ||
-       ! k2->setLike( *u ) ||
-       ! k3->setLike( *u ) ||
-       ! k4->setLike( *u ) ||
-       ! k5->setLike( *u ) ||
-       ! kAux->setLike( *u ) )
-   {
-      std::cerr << "I do not have enough memory to allocate supporting grids for the Merson explicit solver." << std::endl;
-      return false;
-   }
+   k1->setLike( *u );
+   k2->setLike( *u );
+   k3->setLike( *u );
+   k4->setLike( *u );
+   k5->setLike( *u );
+   kAux->setLike( *u );
    k1->setValue( 0.0 );
    k2->setValue( 0.0 );
    k3->setValue( 0.0 );
