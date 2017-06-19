@@ -179,11 +179,7 @@ public:
       typedef typename MeshType::MeshTraitsType::template EntityTraits< 0 >::GlobalIndexType VertexIndexType;
       VertexIndexType pointsCount;
       iss >> pointsCount;
-      if( ! meshBuilder.setPointsCount( pointsCount ) )
-      {
-         std::cerr << "I am not able to allocate enough memory for " << pointsCount << " vertices." << std::endl;
-         return false;
-      }
+      meshBuilder.setPointsCount( pointsCount );
 
       for( VertexIndexType i = 0; i < pointsCount; i++ )
       {
@@ -217,11 +213,7 @@ public:
       iss.str( line );
       CellIndexType numberOfCells = atoi( line.data() );
       //iss >> numberOfCells; // TODO: I do not know why this does not work
-      if( ! meshBuilder.setCellsCount( numberOfCells ) )
-      {
-         std::cerr << "I am not able to allocate enough memory for " << numberOfCells << " cells." << std::endl;
-         return false;
-      }
+      meshBuilder.setCellsCount( numberOfCells );
       for( CellIndexType i = 0; i < numberOfCells; i++ )
       {
          getline( inputFile, line );

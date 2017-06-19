@@ -56,7 +56,7 @@ class EllpackIndexMultimapValues
       void bind( const EllpackIndexMultimapValues& other );
 
       __cuda_callable__
-      bool setSize( const LocalIndexType& portsCount );
+      void setSize( const LocalIndexType& portsCount );
 
       __cuda_callable__
       LocalIndexType getSize() const;

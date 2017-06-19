@@ -95,7 +95,7 @@ class MeshInitializer
       {}
 
       // The points and cellSeeds arrays will be reset when not needed to save memory.
-      bool createMesh( PointArrayType& points,
+      void createMesh( PointArrayType& points,
                        CellSeedArrayType& cellSeeds,
                        MeshType& mesh )
       {
@@ -105,7 +105,6 @@ class MeshInitializer
          MeshEntityStorageRebinder< Mesh< MeshConfig > >::exec( mesh );
          // init boundary tags
          BoundaryTagsInitializer< MeshType >::exec( mesh );
-         return true;
       }
 
       template< typename Entity, typename GlobalIndex >
@@ -115,10 +114,10 @@ class MeshInitializer
       }
 
       template< int Dimension >
-      bool setNumberOfEntities( const GlobalIndexType& entitiesCount )
+      void setNumberOfEntities( const GlobalIndexType& entitiesCount )
       {
          //std::cout << "Setting number of entities with " << Dimension << " dimension to " << entitiesCount << std::endl;
-         return mesh->template setNumberOfEntities< Dimension >( entitiesCount );
+         mesh->template setNumberOfEntities< Dimension >( entitiesCount );
       }
 
       template< int Subdimension, typename EntityType, typename LocalIndex, typename GlobalIndex >

@@ -113,12 +113,11 @@ protected:
    }
 
 
-   bool setNumberOfEntities( const GlobalIndexType& entitiesCount )
+   void setNumberOfEntities( const GlobalIndexType& entitiesCount )
    {
-      if( ! BaseType::setNumberOfEntities( entitiesCount ) )
-         return false;
+      BaseType::setNumberOfEntities( entitiesCount );
       this->storageNetwork.setKeysRange( entitiesCount );
-      return this->storageNetwork.allocate();
+      this->storageNetwork.allocate();
    }
 
    bool save( File& file ) const
@@ -221,10 +220,7 @@ protected:
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */
    template< typename GlobalIndexType >
-   bool setNumberOfEntities( const GlobalIndexType& entitiesCount )
-   {
-      return true;
-   }
+   void setNumberOfEntities( const GlobalIndexType& entitiesCount ) {}
 
    void print( std::ostream& str ) const {}
 
@@ -269,10 +265,7 @@ protected:
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */
    template< typename GlobalIndexType >
-   bool setNumberOfEntities( const GlobalIndexType& entitiesCount )
-   {
-      return true;
-   }
+   void setNumberOfEntities( const GlobalIndexType& entitiesCount ) {}
 
    void print( std::ostream& str ) const {}
 

@@ -30,7 +30,7 @@ TEST( MultimapTest, TestSettingValues )
    MultimapType map;
    map.setKeysRange( inputs );
    ASSERT_EQ( map.getKeysRange(), inputs );
-   ASSERT_TRUE( map.allocate() );
+   map.allocate();
 
    for( IndexType i = 0; i < inputs; i++ ) {
       auto values = map.getValues( i );
@@ -68,7 +68,7 @@ TEST( MultimapTest, TestSaveAndLoad )
    MultimapType map, map2;
    map.setKeysRange( inputs );
    ASSERT_EQ( map.getKeysRange(), inputs );
-   ASSERT_TRUE( map.allocate() );
+   map.allocate();
 
    for( IndexType i = 0; i < inputs; i++ ) {
       auto values = map.getValues( i );

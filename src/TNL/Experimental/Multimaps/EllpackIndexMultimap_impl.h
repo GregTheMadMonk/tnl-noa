@@ -97,30 +97,26 @@ template< typename Index,
           typename Device,
           typename LocalIndex,
           int SliceSize >
-bool
+void
 EllpackIndexMultimap< Index, Device, LocalIndex, SliceSize >::
 allocate( const LocalIndexType& maxValuesCount )
 {
    TNL_ASSERT( maxValuesCount >= 0, );
    this->maxValuesCount = maxValuesCount;
    const IndexType ldSize = getAllocationKeysRange( this->getKeysRange() );
-   if( ! this->values.setSize( ldSize * this->maxValuesCount ) )
-      return false;
-   if( ! this->valuesCounts.setSize( this->getKeysRange() ) )
-      return false;
+   this->values.setSize( ldSize * this->maxValuesCount );
+   this->valuesCounts.setSize( this->getKeysRange() );
    this->valuesCounts.setValue( maxValuesCount );
 
    // extra cost at initialization, which allows to have much simpler operator==
    values.setValue( 0 );
-
-   return true;
 }
 
 template< typename Index,
           typename Device,
           typename LocalIndex,
           int SliceSize >
-bool
+void
 EllpackIndexMultimap< Index, Device, LocalIndex, SliceSize >::
 allocate( const ValuesAllocationVectorType& valuesCounts )
 {
@@ -133,16 +129,12 @@ allocate( const ValuesAllocationVectorType& valuesCounts )
    TNL_ASSERT( this->maxValuesCount >= 0,
                std::cerr << "this->maxValuesCount = " << this->maxValuesCount << std::endl; );
    const IndexType ldSize = getAllocationKeysRange( this->getKeysRange() );
-   if( ! this->values.setSize( ldSize * this->maxValuesCount ) )
-      return false;
-   if( ! this->valuesCounts.setSize( this->getKeysRange() ) )
-      return false;
+   this->values.setSize( ldSize * this->maxValuesCount );
+   this->valuesCounts.setSize( this->getKeysRange() );
    this->valuesCounts = valuesCounts;
 
    // extra cost at initialization, which allows to have much simpler operator==
    values.setValue( 0 );
-
-   return true;
 }
 
 template< typename Index,
@@ -150,23 +142,19 @@ template< typename Index,
           typename LocalIndex,
           int SliceSize >
    template< typename Device_, int SliceSize_ >
-bool
+void
 EllpackIndexMultimap< Index, Device, LocalIndex, SliceSize >::
 setLike( const EllpackIndexMultimap< Index, Device_, LocalIndex, SliceSize_ >& other )
 {
    const IndexType ldSize = getAllocationKeysRange( other.getKeysRange() );
-   if( ! values.setSize( ldSize * other.maxValuesCount ) )
-      return false;
-   if( ! valuesCounts.setLike( other.valuesCounts ) )
-      return false;
+   values.setSize( ldSize * other.maxValuesCount );
+   valuesCounts.setLike( other.valuesCounts );
    valuesCounts = other.valuesCounts;
    keysRange = other.keysRange;
    maxValuesCount = other.maxValuesCount;
 
    // extra cost at initialization, which allows to have much simpler operator==
    values.setValue( 0 );
-
-   return true;
 }
 
 template< typename Index,

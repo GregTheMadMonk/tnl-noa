@@ -235,7 +235,7 @@ const std::array< int, 2 > _cellInversePermutation   { { 1, 0 } };
 template< typename TNLVector, typename STDArray >
 void setPermutation( TNLVector& perm, const STDArray& stdperm )
 {
-   ASSERT_TRUE( perm.setSize( stdperm.size() ) );
+   perm.setSize( stdperm.size() );
    for( int i = 0; i < perm.getSize(); i++ )
       perm.setElement( i, stdperm[ i ] );
 }
@@ -261,13 +261,13 @@ TEST( MeshOrderingTest, OrderingOnHost )
    setPermutation( edgeInversePermutation, _edgeInversePermutation );
    setPermutation( cellInversePermutation, _cellInversePermutation );
 
-   ASSERT_TRUE( mesh.template reorderEntities< 0 >( vertexPermutation, vertexInversePermutation ) );
+   mesh.template reorderEntities< 0 >( vertexPermutation, vertexInversePermutation );
    testMesh( mesh, vertexInversePermutation, edgeIdentity, cellIdentity );
 
-   ASSERT_TRUE( mesh.template reorderEntities< 2 >( cellPermutation, cellInversePermutation ) );
+   mesh.template reorderEntities< 2 >( cellPermutation, cellInversePermutation );
    testMesh( mesh, vertexInversePermutation, edgeIdentity, cellInversePermutation );
 
-   ASSERT_TRUE( mesh.template reorderEntities< 1 >( edgePermutation, edgeInversePermutation ) );
+   mesh.template reorderEntities< 1 >( edgePermutation, edgeInversePermutation );
    testMesh( mesh, vertexInversePermutation, edgeInversePermutation, cellInversePermutation );
 };
 
@@ -296,9 +296,9 @@ TEST( MeshOrderingTest, OrderingOnCuda )
    setPermutation( edgeInversePermutation, _edgeInversePermutation );
    setPermutation( cellInversePermutation, _cellInversePermutation );
 
-   ASSERT_TRUE( mesh.template reorderEntities< 0 >( vertexPermutation, vertexInversePermutation ) );
-   ASSERT_TRUE( mesh.template reorderEntities< 1 >( edgePermutation, edgeInversePermutation ) );
-   ASSERT_TRUE( mesh.template reorderEntities< 2 >( cellPermutation, cellInversePermutation ) );
+   mesh.template reorderEntities< 0 >( vertexPermutation, vertexInversePermutation );
+   mesh.template reorderEntities< 1 >( edgePermutation, edgeInversePermutation );
+   mesh.template reorderEntities< 2 >( cellPermutation, cellInversePermutation );
 
    // test is on host
    {

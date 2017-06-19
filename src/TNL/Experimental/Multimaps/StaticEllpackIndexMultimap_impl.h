@@ -102,18 +102,15 @@ template< int ValuesCount,
           typename Device,
           typename LocalIndex,
           int SliceSize >
-bool
+void
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 allocate()
 {
    const IndexType ldSize = getAllocationKeysRange( this->getKeysRange() );
-   if( ! values.setSize( ldSize * ValuesCount ) )
-      return false;
+   values.setSize( ldSize * ValuesCount );
 
    // extra cost at initialization, which allows to have much simpler operator==
    values.setValue( 0 );
-
-   return true;
 }
 
 template< int ValuesCount,
@@ -122,19 +119,17 @@ template< int ValuesCount,
           typename LocalIndex,
           int SliceSize >
    template< typename Device_ >
-bool
+void
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 setLike( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex, SliceSize >& other )
 {
    const IndexType ldSize = getAllocationKeysRange( other.getKeysRange() );
-   if( ! values.setSize( ldSize * ValuesCount ) )
-      return false;
+   values.setSize( ldSize * ValuesCount );
 
    // extra cost at initialization, which allows to have much simpler operator==
    values.setValue( 0 );
 
    keysRange = other.keysRange;
-   return true;
 }
 
 template< int ValuesCount,

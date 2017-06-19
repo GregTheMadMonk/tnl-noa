@@ -71,9 +71,9 @@ public:
    }
 
 
-   bool setNumberOfEntities( const GlobalIndexType& entitiesCount )
+   void setNumberOfEntities( const GlobalIndexType& entitiesCount )
    {
-      return boundaryTags.setSize( entitiesCount );
+      boundaryTags.setSize( entitiesCount );
    }
 
    void resetBoundaryTags( DimensionTag )
@@ -93,7 +93,7 @@ public:
       return boundaryTags[ entityIndex ];
    }
 
-   bool updateBoundaryIndices( DimensionTag )
+   void updateBoundaryIndices( DimensionTag )
    {
       if( std::is_same< Device, Devices::Host >::value ) {
          // we can't just sum an array/vector of bools, because the result would also be bool
@@ -104,9 +104,8 @@ public:
             if( boundaryTags[ i ] )
                boundaryEntities++;
 
-         if( ! boundaryIndices.setSize( boundaryEntities ) ||
-             ! interiorIndices.setSize( boundaryTags.getSize() - boundaryEntities ) )
-            return false;
+         boundaryIndices.setSize( boundaryEntities );
+         interiorIndices.setSize( boundaryTags.getSize() - boundaryEntities );
 
          GlobalIndexType b = 0;
          GlobalIndexType i = 0;
@@ -127,8 +126,7 @@ public:
          OrderingHostArray hostBoundaryIndices;
          OrderingHostArray hostInteriorIndices;
 
-         if( ! hostBoundaryTags.setLike( boundaryTags ) )
-            return false;
+         hostBoundaryTags.setLike( boundaryTags );
          hostBoundaryTags = boundaryTags;
 
          // we can't just sum an array/vector of bools, because the result would also be bool
@@ -139,9 +137,8 @@ public:
             if( hostBoundaryTags[ i ] )
                boundaryEntities++;
 
-         if( ! hostBoundaryIndices.setSize( boundaryEntities ) ||
-             ! hostInteriorIndices.setSize( boundaryTags.getSize() - boundaryEntities ) )
-            return false;
+         hostBoundaryIndices.setSize( boundaryEntities );
+         hostInteriorIndices.setSize( boundaryTags.getSize() - boundaryEntities );
 
          GlobalIndexType b = 0;
          GlobalIndexType i = 0;
@@ -153,14 +150,11 @@ public:
                hostInteriorIndices[ i++ ] = e;
          }
 
-         if( ! boundaryIndices.setLike( hostBoundaryIndices ) ||
-             ! interiorIndices.setLike( hostInteriorIndices ) )
-            return false;
+         boundaryIndices.setLike( hostBoundaryIndices );
+         interiorIndices.setLike( hostInteriorIndices );
          boundaryIndices = hostBoundaryIndices;
          interiorIndices = hostInteriorIndices;
       }
-
-      return true;
    }
 
    __cuda_callable__
@@ -204,11 +198,7 @@ public:
          std::cerr << "Failed to load the boundary tags of the entities with dimension " << DimensionTag::value << "." << std::endl;
          return false;
       }
-      if( ! updateBoundaryIndices( DimensionTag() ) )
-      {
-         std::cerr << "Failed to update the boundary indices of the entities with dimension " << DimensionTag::value << "." << std::endl;
-         return false;
-      }
+      updateBoundaryIndices( DimensionTag() );
       return true;
    }
 
@@ -265,15 +255,12 @@ public:
    template< typename Device_ >
    MeshBoundaryTagsLayer& operator=( const MeshBoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other ) { return *this; }
 
-   bool setNumberOfEntities( const GlobalIndexType& entitiesCount )
-   {
-      return true;
-   }
+   void setNumberOfEntities( const GlobalIndexType& entitiesCount ) {}
 
    void resetBoundaryTags( DimensionTag ) {}
    void setIsBoundaryEntity( DimensionTag, const GlobalIndexType& entityIndex, bool isBoundary ) {}
    void isBoundaryEntity( DimensionTag, const GlobalIndexType& entityIndex ) const {}
-   bool updateBoundaryIndices( DimensionTag ) { return true; }
+   void updateBoundaryIndices( DimensionTag ) {}
    void getBoundaryEntitiesCount( DimensionTag ) const {}
    void getBoundaryEntityIndex( DimensionTag, const GlobalIndexType& i ) const {}
    void getInteriorEntitiesCount( DimensionTag ) const {}

@@ -127,14 +127,15 @@ template< typename Index,
           typename LocalIndex,
           int step >
 __cuda_callable__
-bool
+void
 EllpackIndexMultimapValues< Index, Device, LocalIndex, step >::
 setSize( const LocalIndexType& size )
 {
-   if( ! this->valuesCount || size > this->allocatedSize )
-      return false;
+   TNL_ASSERT( this->valuesCount,
+               std::cerr << "Uninitialized 'valuesCount' pointer in EllpackIndexMultimapValues." << std::endl; );
+   TNL_ASSERT( size >= 0 && size <= this->allocatedSize,
+               std::cerr << "size = " << size << ", allocatedSize = " << this->allocatedSize << std::endl; );
    *valuesCount = size;
-   return true;
 }
 
 template< typename Index,

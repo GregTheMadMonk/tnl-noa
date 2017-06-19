@@ -17,7 +17,7 @@ namespace TNL {
 
 template< typename Multimap,
           typename PermutationVector >
-bool permuteMultimapKeys( Multimap& multimap, const PermutationVector& perm )
+void permuteMultimapKeys( Multimap& multimap, const PermutationVector& perm )
 {
    static_assert( std::is_same< typename Multimap::DeviceType, typename PermutationVector::DeviceType >::value,
                   "The multimap and permutation vector must be stored on the same device." );
@@ -29,8 +29,7 @@ bool permuteMultimapKeys( Multimap& multimap, const PermutationVector& perm )
 
    // create temporary multimap for the permuted data
    Multimap multimapCopy;
-   if( ! multimapCopy.setLike( multimap ) )
-      return false;
+   multimapCopy.setLike( multimap );
 
    // kernel to permute the rows of multimap into multimapCopy
    auto kernel = [] __cuda_callable__
@@ -55,13 +54,11 @@ bool permuteMultimapKeys( Multimap& multimap, const PermutationVector& perm )
 
    // copy the permuted data back into the multimap
    multimap = multimapCopy;
-
-   return true;
 }
 
 template< typename Multimap,
           typename PermutationVector >
-bool permuteMultimapValues( Multimap& multimap, const PermutationVector& iperm )
+void permuteMultimapValues( Multimap& multimap, const PermutationVector& iperm )
 {
    static_assert( std::is_same< typename Multimap::DeviceType, typename PermutationVector::DeviceType >::value,
                   "The multimap and permutation vector must be stored on the same device." );
@@ -84,7 +81,6 @@ bool permuteMultimapValues( Multimap& multimap, const PermutationVector& iperm )
                                     kernel,
                                     &multimapPointer.template modifyData< DeviceType >(),
                                     iperm.getData() );
-   return true;
 }
 
 } // namespace TNL

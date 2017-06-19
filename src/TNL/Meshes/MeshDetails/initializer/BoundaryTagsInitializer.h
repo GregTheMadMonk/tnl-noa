@@ -95,9 +95,9 @@ protected:
    template< int Dimension >
    struct UpdateBoundaryIndices
    {
-      static void exec( Mesh& mesh, bool& result )
+      static void exec( Mesh& mesh )
       {
-         result &= mesh.template updateBoundaryIndices< Dimension >();
+         mesh.template updateBoundaryIndices< Dimension >();
       }
    };
 
@@ -111,7 +111,7 @@ public:
    class Worker
    {
    public:
-      static bool exec( Mesh& mesh )
+      static void exec( Mesh& mesh )
       {
          StaticFor< int, 0, Mesh::getMeshDimension() + 1, ResetBoundaryTags >::exec( mesh );
 
@@ -137,28 +137,20 @@ public:
                                           kernel,
                                           &meshPointer.template modifyData< DeviceType >() );
 
-         // hack due to StaticFor operating only with void return type
-         bool result = true;
-
-         StaticFor< int, 0, Mesh::getMeshDimension() + 1, UpdateBoundaryIndices >::exec( mesh, result );
-
-         return result;
+         StaticFor< int, 0, Mesh::getMeshDimension() + 1, UpdateBoundaryIndices >::exec( mesh );
       }
    };
 
    template< typename _T >
    struct Worker< false, _T >
    {
-      static bool exec( Mesh& mesh )
-      {
-         return true;
-      }
+      static void exec( Mesh& mesh ) {}
    };
 
 public:
-   static bool exec( Mesh& mesh )
+   static void exec( Mesh& mesh )
    {
-      return Worker<>::exec( mesh );
+      Worker<>::exec( mesh );
    }
 };
 

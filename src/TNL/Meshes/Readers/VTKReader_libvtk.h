@@ -86,22 +86,14 @@ public:
       const CellIndexType numberOfCells = this->entityIdMappings.at( this->meshDimension ).size();
 
       MeshBuilder meshBuilder;
-
-      if( ! meshBuilder.setPointsCount( numberOfPoints ) ) {
-         std::cerr << "Failed to allocate memory for " << numberOfPoints << " vertices." << std::endl;
-         return false;
-      }
+      meshBuilder.setPointsCount( numberOfPoints );
+      meshBuilder.setCellsCount( numberOfCells );
 
       for( VertexIndexType i = 0; i < numberOfPoints; i++ ) {
          typename MeshType::PointType p;
          for( int j = 0; j < p.size; j++ )
             p[ j ] = this->pointsData.at( i )[ j ];
          meshBuilder.setPoint( i, p );
-      }
-
-      if( ! meshBuilder.setCellsCount( numberOfCells ) ) {
-         std::cerr << "Failed to allocate memory for " << numberOfCells << " cells." << std::endl;
-         return false;
       }
 
       const auto& cellIdMap = this->entityIdMappings.at( this->meshDimension );

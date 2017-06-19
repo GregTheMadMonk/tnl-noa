@@ -62,11 +62,11 @@ public:
 
    template< int Superdimension >
    __cuda_callable__
-   bool setNumberOfSuperentities( const typename SuperentityTraits< Superdimension >::LocalIndexType size )
+   void setNumberOfSuperentities( const typename SuperentityTraits< Superdimension >::LocalIndexType size )
    {
       static_assert( SuperentityTraits< Superdimension >::storageEnabled, "You try to set number of superentities which are not configured for storage." );
-      return BaseType::setNumberOfSuperentities( Meshes::DimensionTag< Superdimension >(),
-                                                 size );
+      BaseType::setNumberOfSuperentities( Meshes::DimensionTag< Superdimension >(),
+                                          size );
    }
 
    template< int Superdimension >
@@ -170,10 +170,10 @@ public:
    }
 
    __cuda_callable__
-   bool setNumberOfSuperentities( DimensionTag,
+   void setNumberOfSuperentities( DimensionTag,
                                   const LocalIndexType size )
    {
-      return this->superentityIndices.setSize( size );
+      this->superentityIndices.setSize( size );
    }
 
    __cuda_callable__

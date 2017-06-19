@@ -30,17 +30,17 @@ private:
              >
    struct _SubentitiesStorageWorker
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& perm, bool& status )
+      static void exec( Mesh& mesh, const IndexPermutationVector& perm )
       {
          auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< Dimension, Subdimension >();
-         status &= permuteMultimapKeys( subentitiesStorage, perm );
+         permuteMultimapKeys( subentitiesStorage, perm );
       }
    };
 
    template< int Subdimension >
    struct _SubentitiesStorageWorker< Subdimension, false >
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& iperm, bool& status ) {}
+      static void exec( Mesh& mesh, const IndexPermutationVector& iperm ) {}
    };
 
 
@@ -51,17 +51,17 @@ private:
              >
    struct _SuperentitiesStorageWorker
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& perm, bool& status )
+      static void exec( Mesh& mesh, const IndexPermutationVector& perm )
       {
          auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< Dimension, Superdimension >();
-         status &= permuteMultimapKeys( superentitiesStorage, perm );
+         permuteMultimapKeys( superentitiesStorage, perm );
       }
    };
 
    template< int Superdimension >
    struct _SuperentitiesStorageWorker< Superdimension, false >
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& iperm, bool& status ) {}
+      static void exec( Mesh& mesh, const IndexPermutationVector& iperm ) {}
    };
 
 
@@ -72,17 +72,17 @@ private:
              >
    struct IndexPermutationApplierSubentitiesWorker
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& iperm, bool& status )
+      static void exec( Mesh& mesh, const IndexPermutationVector& iperm )
       {
          auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< Subdimension, Dimension >();
-         status &= permuteMultimapValues( superentitiesStorage, iperm );
+         permuteMultimapValues( superentitiesStorage, iperm );
       }
    };
 
    template< int Subdimension >
    struct IndexPermutationApplierSubentitiesWorker< Subdimension, false >
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& iperm, bool& status ) {}
+      static void exec( Mesh& mesh, const IndexPermutationVector& iperm ) {}
    };
 
 
@@ -93,17 +93,17 @@ private:
              >
    struct IndexPermutationApplierSuperentitiesWorker
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& iperm, bool& status )
+      static void exec( Mesh& mesh, const IndexPermutationVector& iperm )
       {
          auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< Superdimension, Dimension >();
-         status &= permuteMultimapValues( subentitiesStorage, iperm );
+         permuteMultimapValues( subentitiesStorage, iperm );
       }
    };
 
    template< int Superdimension >
    struct IndexPermutationApplierSuperentitiesWorker< Superdimension, false >
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& iperm, bool& status ) {}
+      static void exec( Mesh& mesh, const IndexPermutationVector& iperm ) {}
    };
 
 
@@ -121,7 +121,7 @@ private:
    using SuperentitiesWorker = IndexPermutationApplierSuperentitiesWorker< Superdimension >;
 
 public:
-   static bool exec( Mesh& mesh,
+   static void exec( Mesh& mesh,
                      const IndexPermutationVector& perm,
                      const IndexPermutationVector& iperm )
    {
@@ -132,8 +132,7 @@ public:
       const IndexType entitiesCount = mesh.template getEntitiesCount< Dimension >();
 
       StorageArrayType entities;
-      if( ! entities.setSize( entitiesCount ) )
-         return false;
+      entities.setSize( entitiesCount );
 
       // kernel to copy entities to new array, applying the permutation
       auto kernel1 = [] __cuda_callable__
@@ -167,22 +166,17 @@ public:
                                        &meshPointer.template modifyData< DeviceType >(),
                                        entities.getData() );
 
-      // hack due to StaticFor operating only with void return type
-      bool status = true;
-
       // permute superentities storage
-      StaticFor< int, 0, Dimension, SubentitiesStorageWorker >::exec( mesh, perm, status );
+      StaticFor< int, 0, Dimension, SubentitiesStorageWorker >::exec( mesh, perm );
 
       // permute subentities storage
-      StaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesStorageWorker >::exec( mesh, perm, status );
+      StaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesStorageWorker >::exec( mesh, perm );
 
       // update superentity indices from the subentities
-      StaticFor< int, 0, Dimension, SubentitiesWorker >::exec( mesh, iperm, status );
+      StaticFor< int, 0, Dimension, SubentitiesWorker >::exec( mesh, iperm );
 
       // update subentity indices from the superentities
-      StaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesWorker >::exec( mesh, iperm, status );
-
-      return status;
+      StaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesWorker >::exec( mesh, iperm );
    }
 };
 

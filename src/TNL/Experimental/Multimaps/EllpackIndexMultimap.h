@@ -59,12 +59,12 @@ class EllpackIndexMultimap
       __cuda_callable__
       const IndexType getKeysRange() const;
 
-      bool allocate( const LocalIndexType& maxValuesCount );
+      void allocate( const LocalIndexType& maxValuesCount );
 
-      bool allocate( const ValuesAllocationVectorType& valuesCounts );
+      void allocate( const ValuesAllocationVectorType& valuesCounts );
 
       template< typename Device_, int SliceSize_ >
-      bool setLike( const EllpackIndexMultimap< Index, Device_, LocalIndex, SliceSize_ >& other );
+      void setLike( const EllpackIndexMultimap< Index, Device_, LocalIndex, SliceSize_ >& other );
 
       __cuda_callable__
       ValuesAccessorType getValues( const IndexType& inputIndex );

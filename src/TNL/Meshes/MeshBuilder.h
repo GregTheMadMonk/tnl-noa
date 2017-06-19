@@ -34,18 +34,16 @@ public:
    using CellTopology    = typename MeshTraitsType::CellTopology;
    using CellSeedType    = typename MeshTraitsType::CellSeedType;
 
-   bool setPointsCount( const GlobalIndexType& points )
+   void setPointsCount( const GlobalIndexType& points )
    {
-      if( ! this->points.setSize( points ) ||
-          ! this->pointsSet.setSize( points ) )
-         return false;
+      this->points.setSize( points );
+      this->pointsSet.setSize( points );
       pointsSet.setValue( false );
-      return true;
    }
 
-   bool setCellsCount( const GlobalIndexType& cellsCount )
+   void setCellsCount( const GlobalIndexType& cellsCount )
    {
-      return this->cellSeeds.setSize( cellsCount );
+      this->cellSeeds.setSize( cellsCount );
    }
 
    GlobalIndexType getPointsCount() const
@@ -74,8 +72,7 @@ public:
    {
       if( ! this->validate() )
          return false;
-      if( ! mesh.init( this->points, this->cellSeeds ) )
-         return false;
+      mesh.init( this->points, this->cellSeeds );
       return true;
    }
 
@@ -92,8 +89,7 @@ private:
       }
 
       BoolVector assignedPoints;
-      if( ! assignedPoints.setLike( pointsSet ) )
-         return false;
+      assignedPoints.setLike( pointsSet );
       assignedPoints.setValue( false );
 
       for( GlobalIndexType i = 0; i < getCellsCount(); i++ ) {

@@ -196,10 +196,7 @@ public:
       iss >> numberOfVertices;
 
       // allocate vertices
-      if( ! meshBuilder.setPointsCount( numberOfVertices ) ) {
-         std::cerr << "Failed to allocate memory for " << numberOfVertices << " vertices." << std::endl;
-         return false;
-      }
+      meshBuilder.setPointsCount( numberOfVertices );
 
       // read points
       for( IndexType vertexIndex = 0; vertexIndex < numberOfVertices; vertexIndex++ ) {
@@ -257,10 +254,7 @@ public:
             numberOfCells++;
       }
 
-      if( ! meshBuilder.setCellsCount( numberOfCells ) ) {
-         std::cerr << "Failed to allocate memory for " << numberOfCells << " cells." << std::endl;
-         return false;
-      }
+      meshBuilder.setCellsCount( numberOfCells );
 
       // find to the CELLS section
       if( ! findSection( inputFile, "CELLS", positionAfterHeading ) ) {

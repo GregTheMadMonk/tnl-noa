@@ -41,7 +41,7 @@ class MeshInitializableBase
       using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
       // The points and cellSeeds arrays will be reset when not needed to save memory.
-      bool init( typename MeshTraitsType::PointArrayType& points,
+      void init( typename MeshTraitsType::PointArrayType& points,
                  typename MeshTraitsType::CellSeedArrayType& cellSeeds );
 };
 
@@ -153,7 +153,7 @@ class Mesh
        * M is the entity with index iperm[j] in M'.
        */
       template< int Dimension >
-      bool reorderEntities( const IndexPermutationVector& perm,
+      void reorderEntities( const IndexPermutationVector& perm,
                             const IndexPermutationVector& iperm );
 
 

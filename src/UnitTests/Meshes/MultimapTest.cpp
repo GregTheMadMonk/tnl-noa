@@ -33,11 +33,11 @@ TEST( MultimapTest, TestSettingSizes )
    ASSERT_EQ( map.getKeysRange(), inputs );
 
    typename MultimapType::ValuesAllocationVectorType allocationRanges;
-   ASSERT_TRUE( allocationRanges.setSize( inputs ) );
+   allocationRanges.setSize( inputs );
    allocationRanges.setValue( valuesGlobalMax );
    allocationRanges[ 0 ] = 0;
    allocationRanges[ 1 ] = 1;
-   ASSERT_TRUE( map.allocate( allocationRanges ) );
+   map.allocate( allocationRanges );
 
    for( IndexType i = 0; i < inputs; i++ ) {
       auto values = map.getValues( i );
@@ -48,17 +48,12 @@ TEST( MultimapTest, TestSettingSizes )
       ASSERT_EQ( constValues.getSize(), allocationRanges[ i ] );
 
       // setting lower sizes
-      ASSERT_TRUE( values.setSize( valuesLocalMax ) );
+      values.setSize( valuesLocalMax );
       ASSERT_EQ( values.getSize(), valuesLocalMax );
       ASSERT_EQ( constValues.getSize(), valuesLocalMax );
 
-      // setting wrong local sizes should not be allowed
-      ASSERT_FALSE( values.setSize( valuesGlobalMax + 1 ) );
-      ASSERT_EQ( values.getSize(), valuesLocalMax );
-      ASSERT_EQ( constValues.getSize(), valuesLocalMax );
-
-      // setting global max should succeed
-      ASSERT_TRUE( values.setSize( valuesGlobalMax ) );
+      // setting global max
+      values.setSize( valuesGlobalMax );
       ASSERT_EQ( values.getSize(), valuesGlobalMax );
       ASSERT_EQ( constValues.getSize(), valuesGlobalMax );
    }
@@ -76,15 +71,15 @@ TEST( MultimapTest, TestSettingValues )
    ASSERT_EQ( map.getKeysRange(), inputs );
 
    typename MultimapType::ValuesAllocationVectorType allocationRanges;
-   ASSERT_TRUE( allocationRanges.setSize( inputs ) );
+   allocationRanges.setSize( inputs );
    allocationRanges.setValue( allocatedValues );
-   ASSERT_TRUE( map.allocate( allocationRanges ) );
+   map.allocate( allocationRanges );
 
    for( IndexType i = 0; i < inputs; i++ ) {
       auto values = map.getValues( i );
       const auto constValues = ( (const MultimapType) map ).getValues( i );
 
-      ASSERT_TRUE( values.setSize( allocatedValues ) );
+      values.setSize( allocatedValues );
 
       for( LocalIndexType o = 0; o < allocatedValues; o++ )
          values.setValue( o, i + o );
@@ -120,9 +115,9 @@ TEST( MultimapTest, TestSaveAndLoad )
    ASSERT_EQ( map.getKeysRange(), inputs );
 
    typename MultimapType::ValuesAllocationVectorType allocationRanges;
-   ASSERT_TRUE( allocationRanges.setSize( inputs ) );
+   allocationRanges.setSize( inputs );
    allocationRanges.setValue( allocatedValues );
-   ASSERT_TRUE( map.allocate( allocationRanges ) );
+   map.allocate( allocationRanges );
 
    for( IndexType i = 0; i < inputs; i++ ) {
       auto values = map.getValues( i );

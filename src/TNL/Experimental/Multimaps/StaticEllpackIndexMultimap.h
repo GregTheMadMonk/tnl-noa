@@ -59,10 +59,10 @@ class StaticEllpackIndexMultimap
       __cuda_callable__
       const IndexType getKeysRange() const;
 
-      bool allocate();
+      void allocate();
 
       template< typename Device_ >
-      bool setLike( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex, SliceSize >& other );
+      void setLike( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex, SliceSize >& other );
 
       __cuda_callable__
       ValuesAccessorType getValues( const IndexType& inputIndex );

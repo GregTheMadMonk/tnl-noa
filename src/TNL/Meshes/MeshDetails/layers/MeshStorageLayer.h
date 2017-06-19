@@ -49,10 +49,10 @@ public:
 
 protected:
    template< int Dimension >
-   bool setNumberOfEntities( const typename EntityTraits< Dimension >::GlobalIndexType& entitiesCount )
+   void setNumberOfEntities( const typename EntityTraits< Dimension >::GlobalIndexType& entitiesCount )
    {
       static_assert( EntityTraits< Dimension >::storageEnabled, "You try to set number of entities which are not configured for storage." );
-      return BaseType::setNumberOfEntities( DimensionTag< Dimension >(), entitiesCount );
+      BaseType::setNumberOfEntities( DimensionTag< Dimension >(), entitiesCount );
    }
 
    template< int Dimension, int Subdimension >
@@ -130,9 +130,9 @@ protected:
    }
 
    template< int Dimension >
-   bool updateBoundaryIndices()
+   void updateBoundaryIndices()
    {
-      return BaseType::updateBoundaryIndices( DimensionTag< Dimension >() );
+      BaseType::updateBoundaryIndices( DimensionTag< Dimension >() );
    }
 
    template< int Dimension >
@@ -237,17 +237,12 @@ public:
    }
 
 
-   bool setNumberOfEntities( DimensionTag, const GlobalIndexType& entitiesCount )
+   void setNumberOfEntities( DimensionTag, const GlobalIndexType& entitiesCount )
    {
-      if( ! this->entities.setSize( entitiesCount ) )
-         return false;
-      if( ! SubentityStorageBaseType::setNumberOfEntities( entitiesCount ) )
-         return false;
-      if( ! SuperentityStorageBaseType::setNumberOfEntities( entitiesCount ) )
-         return false;
-      if( ! BoundaryTagsBaseType::setNumberOfEntities( entitiesCount ) )
-         return false;
-      return true;
+      this->entities.setSize( entitiesCount );
+      SubentityStorageBaseType::setNumberOfEntities( entitiesCount );
+      SuperentityStorageBaseType::setNumberOfEntities( entitiesCount );
+      BoundaryTagsBaseType::setNumberOfEntities( entitiesCount );
    }
 
    __cuda_callable__
@@ -437,15 +432,11 @@ public:
     * with higher dimensions entities storage layers.
     */
 
-   bool setNumberOfEntities( DimensionTag, const GlobalIndexType& entitiesCount )
+   void setNumberOfEntities( DimensionTag, const GlobalIndexType& entitiesCount )
    {
-      if( ! this->vertices.setSize( entitiesCount ) )
-         return false;
-      if( ! SuperentityStorageBaseType::setNumberOfEntities( entitiesCount ) )
-         return false;
-      if( ! BoundaryTagsBaseType::setNumberOfEntities( entitiesCount ) )
-         return false;
-      return true;
+      this->vertices.setSize( entitiesCount );
+      SuperentityStorageBaseType::setNumberOfEntities( entitiesCount );
+      BoundaryTagsBaseType::setNumberOfEntities( entitiesCount );
    }
 
    __cuda_callable__

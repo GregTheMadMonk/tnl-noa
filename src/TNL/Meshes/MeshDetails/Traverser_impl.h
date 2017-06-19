@@ -12,6 +12,8 @@
 
 #include <TNL/Meshes/Traverser.h>
 
+#include <TNL/Exceptions/CudaSupportMissing.h>
+
 namespace TNL {
 namespace Meshes {   
 
@@ -176,7 +178,7 @@ processBoundaryEntities( const MeshPointer& meshPointer,
    cudaDeviceSynchronize();
    checkCudaDevice;
 #else
-   CudaSupportMissingMessage;
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -208,7 +210,7 @@ processInteriorEntities( const MeshPointer& meshPointer,
    cudaDeviceSynchronize();
    checkCudaDevice;
 #else
-   CudaSupportMissingMessage;
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -240,7 +242,7 @@ processAllEntities( const MeshPointer& meshPointer,
    cudaDeviceSynchronize();
    checkCudaDevice;
 #else
-   CudaSupportMissingMessage;
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
