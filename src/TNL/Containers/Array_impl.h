@@ -175,11 +175,16 @@ setSize( const Index size )
    if( this->size == size && allocationPointer && ! referenceCounter )
       return;
    this->releaseData();
-   Algorithms::ArrayOperations< Device >::allocateMemory( this->allocationPointer, size );
-   this->data = this->allocationPointer;
-   this->size = size;
-   TNL_ASSERT( this->allocationPointer,
-               std::cerr << "This should never happen - allocator did not throw on an error." << std::endl; );
+
+   // Allocating zero bytes is useless. Moreover, the allocators don't behave the same way:
+   // "operator new" returns some non-zero address, the latter returns a null pointer.
+   if( size > 0 ) {
+      Algorithms::ArrayOperations< Device >::allocateMemory( this->allocationPointer, size );
+      this->data = this->allocationPointer;
+      this->size = size;
+      TNL_ASSERT( this->allocationPointer,
+                  std::cerr << "This should never happen - allocator did not throw on an error." << std::endl; );
+   }
 }
 
 template< typename Element,
