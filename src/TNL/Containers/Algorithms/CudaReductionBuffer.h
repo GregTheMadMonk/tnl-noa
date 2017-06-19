@@ -8,12 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+// Implemented by: Jakub Klinkovsky
+
 #pragma once
 
 #include <stdlib.h>
 
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 
 namespace TNL {
 namespace Containers {
@@ -22,35 +25,34 @@ namespace Algorithms {
 class CudaReductionBuffer
 {
    public:
-      inline static CudaReductionBuffer& getInstance( size_t size = 0 )
+      inline static CudaReductionBuffer& getInstance()
       {
-         static CudaReductionBuffer instance( size );
+         static CudaReductionBuffer instance;
          return instance;
       }
 
-      inline bool setSize( size_t size )
+      inline void setSize( size_t size )
       {
 #ifdef HAVE_CUDA
          if( size > this->size )
          {
-            if( data ) cudaFree( data );
-            this->size = size;
-            if( cudaMalloc( ( void** ) &this->data, size ) != cudaSuccess )
-            {
+            this->free();
+            if( cudaMalloc( ( void** ) &this->data, size ) != cudaSuccess ) {
                this->data = 0;
                throw Exceptions::CudaBadAlloc();
             }
-            return checkCudaDevice;
+            this->size = size;
          }
-         else
-            return true;
 #else
-         return false;
+         throw Exceptions::CudaSupportMissing();
 #endif
       }
 
       template< typename Type >
-      Type* getData() { return ( Type* ) this->data; }
+      Type* getData()
+      {
+         return ( Type* ) this->data;
+      }
 
    private:
       // stop the compiler generating methods of copy the object
@@ -58,10 +60,10 @@ class CudaReductionBuffer
       CudaReductionBuffer& operator=( CudaReductionBuffer const& copy ); // Not Implemented
 
       // private constructor of the singleton
-      inline CudaReductionBuffer( size_t size = 0 ): data( 0 ), size( 0 )
+      inline CudaReductionBuffer( size_t size = 0 )
       {
 #ifdef HAVE_CUDA
-         if( size != 0 ) setSize( size );
+         setSize( size );
          atexit( CudaReductionBuffer::free_atexit );
 #endif
       }
@@ -78,17 +80,17 @@ class CudaReductionBuffer
          if( data )
          {
             cudaFree( data );
-            data = 0;
+            data = nullptr;
+            checkCudaDevice;
          }
 #endif
       }
 
-      void* data;
+      void* data = nullptr;
 
-      size_t size;
+      size_t size = 0;
 };
 
 } // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
-

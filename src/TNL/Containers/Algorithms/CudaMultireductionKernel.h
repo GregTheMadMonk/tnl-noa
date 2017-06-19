@@ -230,8 +230,7 @@ CudaMultireductionKernelLauncher( Operation& operation,
    // (make an overestimate to avoid reallocation on every call if n is increased by 1 each time)
    const size_t buf_size = 8 * ( n / 8 + 1 ) * desGridSizeX * sizeof( ResultType );
    CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
-   if( ! cudaReductionBuffer.setSize( buf_size ) )
-      throw 1;
+   cudaReductionBuffer.setSize( buf_size );
    output = cudaReductionBuffer.template getData< ResultType >();
 
    // when there is only one warp per blockSize.x, we need to allocate two warps

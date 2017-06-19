@@ -201,8 +201,7 @@ CudaReductionKernelLauncher( Operation& operation,
    // create reference to the reduction buffer singleton and set size
    const size_t buf_size = desGridSize * sizeof( ResultType );
    CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
-   if( ! cudaReductionBuffer.setSize( buf_size ) )
-      throw 1;
+   cudaReductionBuffer.setSize( buf_size );
    output = cudaReductionBuffer.template getData< ResultType >();
 
    // when there is only one warp per blockSize.x, we need to allocate two warps
