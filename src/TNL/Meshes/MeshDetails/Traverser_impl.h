@@ -176,7 +176,7 @@ processBoundaryEntities( const MeshPointer& meshPointer,
         &userDataPointer.template modifyData< Devices::Cuda >(),
         entitiesCount );
    cudaDeviceSynchronize();
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -208,7 +208,7 @@ processInteriorEntities( const MeshPointer& meshPointer,
         &userDataPointer.template modifyData< Devices::Cuda >(),
         entitiesCount );
    cudaDeviceSynchronize();
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -240,7 +240,7 @@ processAllEntities( const MeshPointer& meshPointer,
         &userDataPointer.template modifyData< Devices::Cuda >(),
         entitiesCount );
    cudaDeviceSynchronize();
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
