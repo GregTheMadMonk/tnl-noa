@@ -26,6 +26,10 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    typedef DummyProblem< double, Devices::Host, int > DummyProblemType;
 
    config.addDelimiter( " === General parameters ==== " );
+   config.addEntry< bool >( "catch-exceptions",
+                            "Catch C++ exceptions. Disabling it allows the program to drop into the debugger "
+                            "and track the origin of the exception.",
+                            true );
    /****
     * Setup real type
     */
@@ -174,4 +178,3 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
 
 } // namespace Solvers
 } // namespace TNL
-

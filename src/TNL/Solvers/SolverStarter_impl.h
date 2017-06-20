@@ -14,6 +14,8 @@
 #include <TNL/Logger.h>
 #include <TNL/String.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Solvers/SolverStarter.h>
+#include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/ODE/Merson.h>
 #include <TNL/Solvers/ODE/Euler.h>
 #include <TNL/Solvers/Linear/SOR.h>
@@ -229,7 +231,7 @@ class SolverStarterTimeDiscretisationSetter< Problem, ImplicitTimeDiscretisation
       static bool run( Problem& problem,
                        const Config::ParameterContainer& parameters )
       {
-         const String& discreteSolver = parameters. getParameter< String>( "discrete-solver" );
+//         const String& discreteSolver = parameters. getParameter< String>( "discrete-solver" );
          return false;
       }
 };
@@ -362,42 +364,58 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    timeStepper.setSolver( discreteSolver );
 
    /****
+    * Open the log file
+    */
+   const String logFileName = parameters.getParameter< String >( "log-file" );
+   std::ofstream logFile( logFileName.getString() );
+   if( ! logFile ) {
+      std::cerr << "Unable to open the log file " << logFileName << "." << std::endl;
+      return false;
+   }
+
+   /****
     * Set-up the PDE solver
     */
    PDE::TimeDependentPDESolver< Problem, TimeStepper > solver;
-   solver.setProblem( problem );
-   solver.setTimeStepper( timeStepper );
-   if( ! solver.setup( parameters ) )
-      return false;
+   // catching exceptions ala gtest:
+   // https://github.com/google/googletest/blob/59c795ce08be0c8b225bc894f8da6c7954ea5c14/googletest/src/gtest.cc#L2409-L2431
+   const int catch_exceptions = parameters.getParameter< bool >( "catch-exceptions" );
+   if( catch_exceptions ) {
+      try {
+         solver.setProblem( problem );
+         solver.setTimeStepper( timeStepper );
+         if( ! solver.setup( parameters ) )
+            return false;
+      }
+      catch ( const std::exception& e ) {
+         std::cerr << "Setting up the solver failed due to a C++ exception with description: " << e.what() << std::endl;
+         logFile   << "Setting up The solver failed due to a C++ exception with description: " << e.what() << std::endl;
+         return false;
+      }
+      catch (...) {
+         std::cerr << "Setting up the solver failed due to an unknown C++ exception." << std::endl;
+         logFile   << "Setting up The solver failed due to an unknown C++ exception." << std::endl;
+         throw;
+      }
+   }
+   else {
+      solver.setProblem( problem );
+      solver.setTimeStepper( timeStepper );
+      if( ! solver.setup( parameters ) )
+         return false;
+   }
 
    /****
     * Write a prolog
     */
-   int verbose = parameters.getParameter< int >( "verbose" );
-   parameters. getParameter< int >( "log-width", logWidth );
-   if( verbose )
-   {
-      Logger logger( logWidth,std::cout );
+   const int verbose = parameters.getParameter< int >( "verbose" );
+   parameters.getParameter< int >( "log-width", logWidth );
+   if( verbose ) {
+      Logger logger( logWidth, std::cout );
       solver.writeProlog( logger, parameters );
    }
-   String logFileName;
-   bool haveLogFile = parameters.getParameter< String >( "log-file", logFileName );
-   if( haveLogFile )
-   {
-      std::fstream logFile;
-      logFile.open( logFileName.getString(), std::ios::out );
-      if( ! logFile )
-      {
-         std::cerr << "Unable to open the log file " << logFileName << "." << std::endl;
-         return false;
-      }
-      else
-      {
-         Logger logger( logWidth, logFile );
-         solver.writeProlog( logger, parameters  );
-         logFile.close();
-      }
-   }
+   Logger logger( logWidth, logFile );
+   solver.writeProlog( logger, parameters  );
 
    /****
     * Set-up solver monitor and launch the main loop.
@@ -424,24 +442,33 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Start the solver
     */
-   bool returnCode = solver.solve();
-   solverMonitorPointer->stopMainLoop();
-   if( ! returnCode )
-   {
-      if( verbose )
-         std::cerr << std::endl << "The solver did not converge. " << std::endl;
-      std::fstream logFile;
-      logFile.open( logFileName.getString(), std::ios::out | std::ios::app );
-      if( ! logFile )
-      {
-         std::cerr << "Unable to open the log file " << logFileName << "." << std::endl;
+   bool returnCode = true;
+   // catching exceptions ala gtest:
+   // https://github.com/google/googletest/blob/59c795ce08be0c8b225bc894f8da6c7954ea5c14/googletest/src/gtest.cc#L2409-L2431
+   if( catch_exceptions ) {
+      try {
+         returnCode = solver.solve();
+      }
+      catch ( const std::exception& e ) {
+         std::cerr << "The solver failed due to a C++ exception with description: " << e.what() << std::endl;
+         logFile   << "The solver failed due to a C++ exception with description: " << e.what() << std::endl;
          return false;
       }
-      else
-      {
-         logFile << "The solver did not converge. " << std::endl;
-         logFile.close();
+      catch (...) {
+         std::cerr << "The solver failed due to an unknown C++ exception." << std::endl;
+         logFile   << "The solver failed due to an unknown C++ exception." << std::endl;
+         throw;
       }
+   }
+   else {
+      returnCode = solver.solve();
+   }
+
+   solverMonitorPointer->stopMainLoop();
+   if( ! returnCode ) {
+      if( verbose )
+         std::cerr << std::endl << "The solver did not converge. " << std::endl;
+      logFile << "The solver did not converge. " << std::endl;
    }
 
    /****
@@ -454,22 +481,10 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
     * Write an epilog
     */
    if( verbose )
-      writeEpilog(std::cout, solver );
-   if( haveLogFile )
-   {
-      std::fstream logFile;
-      logFile.open( logFileName.getString(), std::ios::out | std::ios::app );
-      if( ! logFile )
-      {
-         std::cerr << "Unable to open the log file " << logFileName << "." << std::endl;
-         return false;
-      }
-      else
-      {
-         writeEpilog( logFile, solver );
-         logFile.close();
-      }
-   }
+      writeEpilog( std::cout, solver );
+   writeEpilog( logFile, solver );
+   logFile.close();
+
    return returnCode;
 }
 
