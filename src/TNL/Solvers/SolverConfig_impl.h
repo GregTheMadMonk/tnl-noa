@@ -151,10 +151,13 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
          Linear::CG< MatrixType >::configSetup( config );
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitBICGStabSolverTag >::enabled )
          Linear::BICGStab< MatrixType >::configSetup( config );
+
+      // GMRES and CWYGMRES have the same options
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitCWYGMRESSolverTag >::enabled )
          Linear::CWYGMRES< MatrixType >::configSetup( config );
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitGMRESSolverTag >::enabled )
+      else if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitGMRESSolverTag >::enabled )
          Linear::GMRES< MatrixType >::configSetup( config );
+
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitTFQMRSolverTag >::enabled )
          Linear::TFQMR< MatrixType >::configSetup( config );
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitSORSolverTag >::enabled )
