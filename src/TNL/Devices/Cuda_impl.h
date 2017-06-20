@@ -86,9 +86,9 @@ ObjectType* Cuda::passToDevice( const ObjectType& object )
                    sizeof( ObjectType ),
                    cudaMemcpyHostToDevice ) != cudaSuccess )
    {
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
       cudaFree( ( void* ) deviceObject );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
       return 0;
    }
    return deviceObject;
@@ -107,7 +107,7 @@ ObjectType Cuda::passFromDevice( const ObjectType* object )
                ( void* ) &object,
                sizeof( ObjectType ),
                cudaMemcpyDeviceToHost );
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
    return aux;
 #else
    TNL_ASSERT( false, std::cerr << "CUDA support is missing." );
@@ -124,7 +124,7 @@ void Cuda::passFromDevice( const ObjectType* deviceObject,
                ( void* ) deviceObject,
                sizeof( ObjectType ),
                cudaMemcpyDeviceToHost );
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 #else
    TNL_ASSERT( false, std::cerr << "CUDA support is missing." );
 #endif
@@ -146,7 +146,7 @@ void Cuda::freeFromDevice( ObjectType* deviceObject )
 {
 #ifdef HAVE_CUDA
    cudaFree( ( void* ) deviceObject );
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 #else
    TNL_ASSERT( false, std::cerr << "CUDA support is missing." );
 #endif

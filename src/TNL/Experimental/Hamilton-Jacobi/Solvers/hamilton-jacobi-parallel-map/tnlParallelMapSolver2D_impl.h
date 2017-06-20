@@ -123,7 +123,7 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 		cudaMalloc(&(this->tmp_map), this->map_stretched.getSize()*sizeof(double));
 		cudaMalloc(&(this->runcuda), sizeof(int));
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		int* tmpUC;
 		cudaMalloc(&(tmpUC), this->work_u.getSize()*sizeof(int));
@@ -131,14 +131,14 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 
 		initCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<1,1>>>(this->cudaSolver, (this->tmpw), (this->runcuda),tmpUC, tmp_map);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		double* tmpu = NULL;
 		cudaMemcpy(&tmpu, tmpdev,sizeof(double*), cudaMemcpyDeviceToHost);
 		cudaMemcpy((this->tmpw), this->work_u.getData(), this->work_u.getSize()*sizeof(double), cudaMemcpyHostToDevice);
 		cudaMemcpy((this->tmp_map), this->map_stretched.getData(), this->map_stretched.getSize()*sizeof(double), cudaMemcpyHostToDevice);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 	}
 #endif
@@ -187,14 +187,14 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 	else if(this->device == tnlCudaDevice)
 	{
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		dim3 threadsPerBlock(this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		initRunCUDA2D<SchemeTypeHost,SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 	}
 #endif
@@ -211,10 +211,10 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 
 		synchronizeCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		synchronize2CUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,1>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 	}
 
 #endif
@@ -360,12 +360,12 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run(
 		dim3 threadsPerBlock(this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		bool* tmpb;
 		cudaMemcpy(&(this->run_host),this->runcuda,sizeof(int), cudaMemcpyDeviceToHost);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		int i = 1;
 		time_diff = 0.0;
@@ -377,7 +377,7 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run(
 			else
 				end_cuda = false;
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			start = std::clock();
 			runCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
@@ -386,10 +386,10 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run(
 			//start = std::clock();
 			synchronizeCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			synchronize2CUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,1>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			//time_diff += (std::clock() - start) / (double)(CLOCKS_PER_SEC);
 
 			cudaMemcpy(&run_host, (this->runcuda),sizeof(int), cudaMemcpyDeviceToHost);

@@ -105,7 +105,7 @@ bool File :: read( Type* buffer,
                      host_buffer,
                      transfer * sizeof( Type ),
                      cudaMemcpyHostToDevice );
-         if( ! checkCudaDevice )
+         if( ! TNL_CHECK_CUDA_DEVICE )
          {
             std::cerr << "Transfer of data from the CUDA device to the file " << this->fileName
                  << " failed." << std::endl;
@@ -192,7 +192,7 @@ bool File :: write( const Type* buffer,
                     ( void* ) & ( buffer[ this->writtenElements ] ),
                     transfer * sizeof( Type ),
                     cudaMemcpyDeviceToHost );
-         if( ! checkCudaDevice )
+         if( ! TNL_CHECK_CUDA_DEVICE )
          {
             std::cerr << "Transfer of data from the file " << this->fileName
                  << " to the CUDA device failed." << std::endl;

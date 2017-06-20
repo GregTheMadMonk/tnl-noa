@@ -81,7 +81,7 @@ class CudaReductionBuffer
          {
             cudaFree( data );
             data = nullptr;
-            checkCudaDevice;
+            TNL_CHECK_CUDA_DEVICE;
          }
 #endif
       }

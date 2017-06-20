@@ -418,7 +418,7 @@ hauseholder_generate( DeviceVector& Y,
                                                             z.getData(),
                                                             i,
                                                             size );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
 #else
       throw Exceptions::CudaSupportMissing();
 #endif

@@ -502,7 +502,7 @@ void Tridiagonal< Real, Device, Index >::getTransposition( const Tridiagonal< Re
       }
       Devices::Cuda::freeFromDevice( kernel_this );
       Devices::Cuda::freeFromDevice( kernel_inMatrix );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
 #endif
    }
 }

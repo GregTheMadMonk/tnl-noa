@@ -158,7 +158,7 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 
 
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 #endif
 
 	int n = Mesh.getDimensions().x();
@@ -167,17 +167,17 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 	dim3 numBlocks2(statusGridSize ,statusGridSize);
 	initSetupGridCUDA<<<numBlocks2,threadsPerBlock2>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 	initSetupGrid2CUDA<<<numBlocks2,1>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 
 
 	/*dim3 threadsPerBlock(16, 16);
 	dim3 numBlocks(n/16 + 1 ,n/16 +1);*/
 	initCUDA<<<numBlocks2,threadsPerBlock2>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 
 
 	cout << "Solver initialized." << endl;
@@ -208,7 +208,7 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: r
 	cout << "Hi!" << endl;
 	runCUDA<<<numBlocksFS,threadsPerBlockFS>>>(this->cudaSolver,0,0);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 	cout << "Hi2!" << endl;
 	while(time < finalTime)
 	{
@@ -217,30 +217,30 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: r
 
 		runNarrowBandCUDA<<<numBlocksNB,threadsPerBlockNB>>>(this->cudaSolver,tau);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		time += tau;
 
 
 		cudaMemcpy(&reinit, this->reinitialize, sizeof(int), cudaMemcpyDeviceToHost);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		if(reinit != 0 /*&& time != finalTime */)
 		{
 			cout << time << endl;
 
 			initSetupGridCUDA<<<numBlocksNB,threadsPerBlockNB>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			initSetupGrid2CUDA<<<numBlocksNB,1>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			initCUDA<<<numBlocksNB,threadsPerBlockNB>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			runCUDA<<<numBlocksFS,threadsPerBlockFS>>>(this->cudaSolver,0,0);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 		}
 	}
 

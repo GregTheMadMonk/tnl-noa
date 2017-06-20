@@ -178,7 +178,7 @@ public:
             m, n,
             alpha, A, lda,
             xDevice.getData(), beta, y );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
 #else
       throw Exceptions::CudaSupportMissing();
 #endif

@@ -81,7 +81,7 @@ update( const MatrixPointer& matrix )
             &matrix.template getData< Devices::Cuda >(),
             diagonal.getData(),
             size );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
 #endif
    }
 }
@@ -112,7 +112,7 @@ solve( const Vector1& b, Vector2& x ) const
             x.getData(),
             size );
 
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
 #endif
    }
    return true;

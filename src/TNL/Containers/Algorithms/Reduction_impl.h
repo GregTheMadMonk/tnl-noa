@@ -160,7 +160,7 @@ reductionOnCudaDevice( Operation& operation,
       #endif
    }
  
-   return checkCudaDevice;
+   return TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif

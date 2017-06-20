@@ -31,14 +31,14 @@ allocateMemory( Element*& data,
                 const Index size )
 {
 #ifdef HAVE_CUDA
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
    if( cudaMalloc( ( void** ) &data,
                    ( size_t ) size * sizeof( Element ) ) != cudaSuccess )
    {
       data = 0;
       throw Exceptions::CudaBadAlloc();
    }
-   return checkCudaDevice;
+   return TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -51,9 +51,9 @@ freeMemory( Element* data )
 {
    TNL_ASSERT( data, );
 #ifdef HAVE_CUDA
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
    cudaFree( data );
-   return checkCudaDevice;
+   return TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -130,7 +130,7 @@ setMemory( Element* data,
    Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
    gridSize. x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
    setArrayValueCudaKernel<<< gridSize, blockSize >>>( data, size, value );
-   return checkCudaDevice;
+   return TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -173,7 +173,7 @@ copyMemory( DestinationElement* destination,
                   source,
                   size * sizeof( DestinationElement ),
                   cudaMemcpyDeviceToDevice );
-      return checkCudaDevice;
+      return TNL_CHECK_CUDA_DEVICE;
    }
    else
    {
@@ -182,7 +182,7 @@ copyMemory( DestinationElement* destination,
       Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
       gridSize. x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
       copyMemoryCudaToCudaKernel<<< gridSize, blockSize >>>( destination, source, size );
-      return checkCudaDevice;
+      return TNL_CHECK_CUDA_DEVICE;
    }
 #else
    throw Exceptions::CudaSupportMissing();
@@ -230,7 +230,7 @@ copyMemory( DestinationElement* destination,
                       size * sizeof( DestinationElement ),
                       cudaMemcpyDeviceToHost ) != cudaSuccess )
          std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
-      return checkCudaDevice;
+      return TNL_CHECK_CUDA_DEVICE;
    }
    else
    {
@@ -245,7 +245,7 @@ copyMemory( DestinationElement* destination,
          {
             delete[] buffer;
             std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
-            return checkCudaDevice;
+            return TNL_CHECK_CUDA_DEVICE;
          }
          Index j( 0 );
          while( j < Devices::Cuda::getGPUTransferBufferSize() && i + j < size )
@@ -292,7 +292,7 @@ compareMemory( const Element1* destination,
       {
          delete[] host_buffer;
          std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
-         return checkCudaDevice;
+         return TNL_CHECK_CUDA_DEVICE;
       }
       if( ! ArrayOperations< Devices::Host >::compareMemory( &destination[ compared ], host_buffer, transfer ) )
       {
@@ -331,7 +331,7 @@ copyMemory( DestinationElement* destination,
                       size * sizeof( DestinationElement ),
                       cudaMemcpyHostToDevice ) != cudaSuccess )
          std::cerr << "Transfer of data from host to CUDA device failed." << std::endl;
-      return checkCudaDevice;
+      return TNL_CHECK_CUDA_DEVICE;
    }
    else
    {
@@ -352,7 +352,7 @@ copyMemory( DestinationElement* destination,
          {
             delete[] buffer;
             std::cerr << "Transfer of data from host to CUDA device failed." << std::endl;
-            return checkCudaDevice;
+            return TNL_CHECK_CUDA_DEVICE;
          }
          i += j;
       }

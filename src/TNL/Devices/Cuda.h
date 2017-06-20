@@ -156,7 +156,7 @@ class Cuda
    /****
     * I do not know why, but it is more reliable to pass the error code instead
     * of calling cudaGetLastError() inside the method.
-    * We recommend to use macro 'checkCudaDevice' defined bellow.
+    * We recommend to use macro 'TNL_CHECK_CUDA_DEVICE' defined bellow.
     */
    static bool checkDevice( const char* file_name, int line, cudaError error );
 #else
@@ -184,9 +184,9 @@ class Cuda
 };
 
 #ifdef HAVE_CUDA
-#define checkCudaDevice ::TNL::Devices::Cuda::checkDevice( __FILE__, __LINE__, cudaGetLastError() )
+#define TNL_CHECK_CUDA_DEVICE ::TNL::Devices::Cuda::checkDevice( __FILE__, __LINE__, cudaGetLastError() )
 #else
-#define checkCudaDevice ::TNL::Devices::Cuda::checkDevice()
+#define TNL_CHECK_CUDA_DEVICE ::TNL::Devices::Cuda::checkDevice()
 #endif
 
 #ifdef HAVE_CUDA

@@ -203,7 +203,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          if( this->modified() )
          {
             cudaMemcpy( (void*) this->cuda_pointer, (void*) &this->pd->data, sizeof( Object ), cudaMemcpyHostToDevice );
-            if( ! checkCudaDevice )
+            if( ! TNL_CHECK_CUDA_DEVICE )
                return false;
             this->set_last_sync_state();
             return true;

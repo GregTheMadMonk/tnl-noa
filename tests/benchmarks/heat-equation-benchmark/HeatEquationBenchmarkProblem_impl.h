@@ -494,7 +494,7 @@ getExplicitUpdate( const RealType& time,
                     gridXIdx,
                     gridYIdx );
          cudaThreadSynchronize();
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          
          //std::cerr << "Computing the heat equation ..." << std::endl;
          for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
@@ -514,7 +514,7 @@ getExplicitUpdate( const RealType& time,
                     gridXIdx,
                     gridYIdx );
          cudaThreadSynchronize();         
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
       }
       #endif
       if( this->cudaKernelType == "templated" )

@@ -238,12 +238,12 @@ void MatrixVectorProductCuda( const Matrix& matrix,
                                        kernel_inVector,
                                        kernel_outVector,
                                        gridIdx );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
    }
    Devices::Cuda::freeFromDevice( kernel_this );
    Devices::Cuda::freeFromDevice( kernel_inVector );
    Devices::Cuda::freeFromDevice( kernel_outVector );
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 #endif
 }
 

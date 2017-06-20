@@ -119,7 +119,7 @@ TEST( MultiArrayTest, testSetGetElement )
                Devices::Cuda::passToDevice( u );
       testSetGetElementKernel<<< 1, 16 >>>( kernel_u );
       Devices::Cuda::freeFromDevice( kernel_u );
-      ASSERT_TRUE( checkCudaDevice );
+      ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
 #endif
    }
    for( int i = 0; i < 10; i ++ )

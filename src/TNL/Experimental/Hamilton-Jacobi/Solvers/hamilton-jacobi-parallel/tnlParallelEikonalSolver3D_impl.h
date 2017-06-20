@@ -124,14 +124,14 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	cudaMalloc(&(this->tmpw), this->work_u.getSize()*sizeof(double));
 	cudaMalloc(&(this->runcuda), sizeof(int));
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 	int* tmpUC;
 	cudaMalloc(&(tmpUC), this->work_u.getSize()*sizeof(int));
 	cudaMemcpy(tmpUC, this->unusedCell.getData(), this->unusedCell.getSize()*sizeof(int), cudaMemcpyHostToDevice);
 
 	initCUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<1,1>>>(this->cudaSolver, (this->tmpw), (this->runcuda),tmpUC);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 	//cout << "s " << endl;
 	//cudaMalloc(&(cudaSolver->work_u_cuda), this->work_u.getSize()*sizeof(double));
 	double* tmpu = NULL;
@@ -140,7 +140,7 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	//printf("%p %p \n",tmpu,tmpw);
 	cudaMemcpy((this->tmpw), this->work_u.getData(), this->work_u.getSize()*sizeof(double), cudaMemcpyHostToDevice);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 	//cout << "s "<< endl;
 
 	}
@@ -195,11 +195,11 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	{
 //		cout << "pre 1 kernel" << endl;
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		dim3 threadsPerBlock(this->n, this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows,this->gridLevels);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		initRunCUDA3D<SchemeTypeHost,SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,2*this->n*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
 //		cout << "post 1 kernel" << endl;
@@ -221,17 +221,17 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 		//cudaMemcpy(/*this->work_u.getData()*/ test, (this->tmpw), this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
 		//cout << this->tmpw << "   " <<  test[0] <<"   " << test[1] << "   " <<test[2] << "   " <<test[3] << endl;
 
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		synchronizeCUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 		cout << cudaGetErrorString(cudaDeviceSynchronize()) << endl;
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		synchronize2CUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,1>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		//cout << test[0] << "   " <<test[1] <<"   " << test[2] << "   " <<test[3] << endl;
 		//cudaMemcpy(/*this->work_u.getData()*/ test, (this->tmpw), this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
-		//checkCudaDevice;
+		//TNL_CHECK_CUDA_DEVICE;
 		//cout << this->tmpw << "   " <<  test[0] << "   " <<test[1] << "   " <<test[2] <<"   " << test[3] << endl;
 		//free(test);
 
@@ -381,17 +381,17 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 		dim3 threadsPerBlock(this->n, this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows,this->gridLevels);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		//cudaMalloc(&runcuda,sizeof(bool));
 		//cudaMemcpy(runcuda, &run_host, sizeof(bool), cudaMemcpyHostToDevice);
 		//cout << "fn" << endl;
 		bool* tmpb;
 		//cudaMemcpy(tmpb, &(cudaSolver->runcuda),sizeof(bool*), cudaMemcpyDeviceToHost);
 		//cudaDeviceSynchronize();
-		//checkCudaDevice;
+		//TNL_CHECK_CUDA_DEVICE;
 		cudaMemcpy(&(this->run_host),this->runcuda,sizeof(int), cudaMemcpyDeviceToHost);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		//cout << "fn" << endl;
 		int i = 1;
 		time_diff = 0.0;
@@ -404,7 +404,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 				end_cuda = false;
 			//cout << "a" << endl;
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			start = std::clock();
 			runCUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,2*this->n*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 			//cout << "a" << endl;
@@ -414,10 +414,10 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 			//start = std::clock();
 			synchronizeCUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			synchronize2CUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,1>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			//time_diff += (std::clock() - start) / (double)(CLOCKS_PER_SEC);
 
 

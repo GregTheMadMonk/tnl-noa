@@ -221,7 +221,7 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
                                    input,
                                    output,
                                    auxArray1 );
-   if( ! checkCudaDevice )
+   if( ! TNL_CHECK_CUDA_DEVICE )
    {
       std::cerr << "The CUDA kernel 'cudaFirstPhaseBlockPrefixSum' ended with error." << std::endl;
       cudaFree( auxArray1 );
@@ -249,7 +249,7 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
                                 <<< cudaGridSize, cudaBlockSize >>>
                                  ( operation, size, elementsInBlock, gridShift, auxArray2, output );
 
-   if( ! checkCudaDevice )
+   if( ! TNL_CHECK_CUDA_DEVICE )
    {
       std::cerr << "The CUDA kernel 'cudaSecondPhaseBlockPrefixSum' ended with error." << std::endl;
       cudaFree( auxArray1 );

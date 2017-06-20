@@ -815,7 +815,7 @@ void Dense< Real, Device, Index >::getTransposition( const Matrix& matrix,
                                                          gridIdx_x,
                                                          gridIdx_y );
             }
-            checkCudaDevice;
+            TNL_CHECK_CUDA_DEVICE;
          }
       Devices::Cuda::freeFromDevice( this_device );
       Devices::Cuda::freeFromDevice( matrix_device );

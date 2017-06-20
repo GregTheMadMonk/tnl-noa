@@ -429,7 +429,7 @@ vectorScalarMultiplication( Vector& v,
    vectorScalarMultiplicationCudaKernel<<< gridSize, blockSize >>>( v.getData(),
                                                                     size,
                                                                     alpha );
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -520,7 +520,7 @@ addVector( Vector1& y,
                                                                size,
                                                                alpha,
                                                                thisMultiplicator);
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -595,7 +595,7 @@ addVectors( Vector1& v,
                                                                 multiplicator1,
                                                                 multiplicator2,
                                                                 thisMultiplicator);
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif

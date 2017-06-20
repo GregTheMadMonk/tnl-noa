@@ -84,7 +84,7 @@ void setCudaTestMatrix( Matrix& matrix,
         setCudaTestMatrixKernel< Matrix >
             <<< cudaGridSize, cudaBlockSize >>>
             ( kernel_matrix, elementsPerRow, gridIdx );
-        checkCudaDevice;
+        TNL_CHECK_CUDA_DEVICE;
     }
     Devices::Cuda::freeFromDevice( kernel_matrix );
 #endif

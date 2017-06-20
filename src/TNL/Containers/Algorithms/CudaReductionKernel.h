@@ -272,7 +272,7 @@ CudaReductionKernelLauncher( Operation& operation,
       default:
          TNL_ASSERT( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
    }
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 
    // return the size of the output array on the CUDA device
    return gridSize.x;

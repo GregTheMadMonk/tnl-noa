@@ -104,7 +104,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 	initCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 
 	return true;
 }
@@ -174,21 +174,21 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 		//cudaDeviceSynchronize();
 	}
 //	cudaDeviceSynchronize();
-//	checkCudaDevice;
+//	TNL_CHECK_CUDA_DEVICE;
 //	for(int i = 0; i < 2*m -1; i++)
 //	{
 //		runCUDA<2><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,2,i);
 //		cudaDeviceSynchronize();
 //	}
 //	cudaDeviceSynchronize();
-//	checkCudaDevice;
+//	TNL_CHECK_CUDA_DEVICE;
 //	for(int i = 0; i < 2*m -1; i++)
 //	{
 //		runCUDA<4><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,4,i);
 //		cudaDeviceSynchronize();
 //	}
 //	cudaDeviceSynchronize();
-//	checkCudaDevice;
+//	TNL_CHECK_CUDA_DEVICE;
 //	for(int i = 0; i < 2*m -1; i++)
 //	{
 //		runCUDA<8><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,8,i);
@@ -234,7 +234,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 //		cudaDeviceSynchronize();
 //	}
 cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 
 	cudaMemcpy(this->dofVector.getData(), cudaDofVector, this->dofVector.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
 	cudaDeviceSynchronize();

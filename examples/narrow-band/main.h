@@ -53,7 +53,7 @@ int main( int argc, char* argv[] )
 			cerr << "Solver failed to initialize." << endl;
 			return EXIT_FAILURE;
 	   }
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 	   cout << "-------------------------------------------------------------" << endl;
 	   cout << "Starting solver..." << endl;
 	   solver.run();
@@ -66,7 +66,7 @@ int main( int argc, char* argv[] )
 //			cerr << "Solver failed to initialize." << endl;
 //			return EXIT_FAILURE;
 //	   }
-//		checkCudaDevice;
+//		TNL_CHECK_CUDA_DEVICE;
 //	   cout << "-------------------------------------------------------------" << endl;
 //	   cout << "Starting solver..." << endl;
 //	   solver.run();
