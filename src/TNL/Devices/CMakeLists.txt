@@ -1,5 +1,6 @@
 set (headers Cuda.h
              Cuda_impl.h
+             CudaCallable.h
              CudaDeviceInfo.h
              Host.h )
 

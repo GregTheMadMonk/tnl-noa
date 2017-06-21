@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Devices::Cuda.h  -  description
+                          Cuda.h  -  description
                              -------------------
     begin                : Nov 7, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -16,6 +16,7 @@
 #include <TNL/Assert.h>
 #include <TNL/SmartPointersRegister.h>
 #include <TNL/Timer.h>
+#include <TNL/Devices/CudaCallable.h>
 
 namespace TNL {
 
@@ -25,12 +26,6 @@ namespace Config {
 }
 
 namespace Devices {
-
-#ifdef HAVE_CUDA
-#define __cuda_callable__ __device__ __host__
-#else
-#define __cuda_callable__
-#endif
 
 class Cuda
 {

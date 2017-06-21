@@ -12,6 +12,7 @@
 
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 
 namespace TNL {
 namespace Devices {   
@@ -69,7 +70,6 @@ __device__ inline int Cuda::getGlobalThreadIdx_z( const dim3& gridIdx )
 {
    return ( gridIdx.z * getMaxGridSize() + blockIdx.z ) * blockDim.z + threadIdx.z;
 }
-
 #endif
 
 
@@ -93,8 +93,7 @@ ObjectType* Cuda::passToDevice( const ObjectType& object )
    }
    return deviceObject;
 #else
-   TNL_ASSERT( false, std::cerr << "CUDA support is missing." );
-   return 0;
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -110,14 +109,13 @@ ObjectType Cuda::passFromDevice( const ObjectType* object )
    TNL_CHECK_CUDA_DEVICE;
    return aux;
 #else
-   TNL_ASSERT( false, std::cerr << "CUDA support is missing." );
-   return 0;
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
 template< typename ObjectType >
 void Cuda::passFromDevice( const ObjectType* deviceObject,
-                              ObjectType& hostObject )
+                           ObjectType& hostObject )
 {
 #ifdef HAVE_CUDA
    cudaMemcpy( ( void* ) &hostObject,
@@ -126,7 +124,7 @@ void Cuda::passFromDevice( const ObjectType* deviceObject,
                cudaMemcpyDeviceToHost );
    TNL_CHECK_CUDA_DEVICE;
 #else
-   TNL_ASSERT( false, std::cerr << "CUDA support is missing." );
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -148,7 +146,7 @@ void Cuda::freeFromDevice( ObjectType* deviceObject )
    cudaFree( ( void* ) deviceObject );
    TNL_CHECK_CUDA_DEVICE;
 #else
-   TNL_ASSERT( false, std::cerr << "CUDA support is missing." );
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 

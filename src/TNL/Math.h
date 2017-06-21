@@ -12,8 +12,9 @@
 
 #include <cmath>
 #include <type_traits>
+#include <algorithm>
 
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/CudaCallable.h>
 
 #ifdef HAVE_CUDA
 #include <cuda.h>
