@@ -61,7 +61,8 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
          return *( this->pointer );
       }
       
-      operator bool()
+      __cuda_callable__
+      operator bool() const
       {
          return this->pointer;
       }
@@ -148,7 +149,8 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          return this->pd->data;
       }
       
-      operator bool()
+      __cuda_callable__
+      operator bool() const
       {
          return this->pd;
       }

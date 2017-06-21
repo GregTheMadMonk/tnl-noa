@@ -113,7 +113,8 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
          return *( this->pointer );
       }
 
-      operator bool()
+      __cuda_callable__
+      operator bool() const
       {
          return this->pointer;
       }
@@ -280,7 +281,8 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          return *( this->pointer );
       }
 
-      operator bool()
+      __cuda_callable__
+      operator bool() const
       {
          return this->pd;
       }
