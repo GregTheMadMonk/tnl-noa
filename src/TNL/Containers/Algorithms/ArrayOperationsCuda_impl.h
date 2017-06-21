@@ -49,7 +49,7 @@ bool
 ArrayOperations< Devices::Cuda >::
 freeMemory( Element* data )
 {
-   TNL_ASSERT( data, );
+   TNL_ASSERT_TRUE( data, "Attempted to free a nullptr." );
 #ifdef HAVE_CUDA
    TNL_CHECK_CUDA_DEVICE;
    cudaFree( data );
@@ -65,7 +65,7 @@ ArrayOperations< Devices::Cuda >::
 setMemoryElement( Element* data,
                   const Element& value )
 {
-   TNL_ASSERT( data, );
+   TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
    ArrayOperations< Devices::Cuda >::setMemory( data, value, 1 );
 }
 
@@ -74,7 +74,7 @@ Element
 ArrayOperations< Devices::Cuda >::
 getMemoryElement( const Element* data )
 {
-   TNL_ASSERT( data, );
+   TNL_ASSERT_TRUE( data, "Attempted to get data through a nullptr." );
    Element result;
    ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< Element, Element, int >( &result, data, 1 );
    return result;
@@ -85,7 +85,7 @@ Element&
 ArrayOperations< Devices::Cuda >::
 getArrayElementReference( Element* data, const Index i )
 {
-   TNL_ASSERT( data, );
+   TNL_ASSERT_TRUE( data, "Attempted to access data through a nullptr." );
    return data[ i ];
 }
 
@@ -94,7 +94,7 @@ const
 Element& ArrayOperations< Devices::Cuda >::
 getArrayElementReference( const Element* data, const Index i )
 {
-   TNL_ASSERT( data, );
+   TNL_ASSERT_TRUE( data, "Attempted to access data through a nullptr." );
    return data[ i ];
 }
 
@@ -123,7 +123,7 @@ setMemory( Element* data,
            const Element& value,
            const Index size )
 {
-   TNL_ASSERT( data, );
+   TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
 #ifdef HAVE_CUDA
    dim3 blockSize( 0 ), gridSize( 0 );
    blockSize. x = 256;
@@ -164,8 +164,8 @@ copyMemory( DestinationElement* destination,
             const SourceElement* source,
             const Index size )
 {
-   TNL_ASSERT( destination, );
-   TNL_ASSERT( source, );
+   TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
 #ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
@@ -198,8 +198,8 @@ compareMemory( const Element1* destination,
                const Element2* source,
                const Index size )
 {
-   TNL_ASSERT( destination, );
-   TNL_ASSERT( source, );
+   TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
    //TODO: The parallel reduction on the CUDA device with different element types is needed.
    bool result;
    Algorithms::tnlParallelReductionEqualities< Element1, Index > reductionEqualities;
@@ -220,8 +220,8 @@ copyMemory( DestinationElement* destination,
             const SourceElement* source,
             const Index size )
 {
-   TNL_ASSERT( destination, );
-   TNL_ASSERT( source, );
+   TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
 #ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
@@ -276,9 +276,9 @@ compareMemory( const Element1* destination,
    /***
     * Here, destination is on host and source is on CUDA device.
     */
-   TNL_ASSERT( destination, );
-   TNL_ASSERT( source, );
-   TNL_ASSERT( size >= 0, std::cerr << "size = " << size );
+   TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "Array size must be non-negative." );
 #ifdef HAVE_CUDA
    Element2* host_buffer = new Element2[ Devices::Cuda::getGPUTransferBufferSize() ];
    Index compared( 0 );
@@ -320,9 +320,9 @@ copyMemory( DestinationElement* destination,
             const SourceElement* source,
             const Index size )
 {
-   TNL_ASSERT( destination, );
-   TNL_ASSERT( source, );
-   TNL_ASSERT( size >= 0, std::cerr << "size = " << size );
+   TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
+   TNL_ASSERT_GE( size, 0, "Array size must be non-negative." );
 #ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
@@ -373,9 +373,9 @@ compareMemory( const Element1* hostData,
                const Element2* deviceData,
                const Index size )
 {
-   TNL_ASSERT( hostData, );
-   TNL_ASSERT( deviceData, );
-   TNL_ASSERT( size >= 0, std::cerr << "size = " << size );
+   TNL_ASSERT_TRUE( hostData, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_TRUE( deviceData, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "Array size must be non-negative." );
    return ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory( deviceData, hostData, size );
 }
 

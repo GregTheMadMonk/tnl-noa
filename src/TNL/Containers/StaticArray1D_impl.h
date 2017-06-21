@@ -77,8 +77,8 @@ template< typename Element >
 __cuda_callable__
 inline const Element& StaticArray< 1, Element >::operator[]( int i ) const
 {
-   TNL_ASSERT( i >= 0 && i < size,
-            std::cerr << "i = " << i << " size = " << size << std::endl; );
+   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_LT( i, size, "Element index is out of bounds." );
    return data[ i ];
 }
 
@@ -86,8 +86,8 @@ template< typename Element >
 __cuda_callable__
 inline Element& StaticArray< 1, Element >::operator[]( int i )
 {
-   TNL_ASSERT( i >= 0 && i < size,
-            std::cerr << "i = " << i << " size = " << size << std::endl; );
+   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_LT( i, size, "Element index is out of bounds." );
    return data[ i ];
 }
 

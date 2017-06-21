@@ -147,8 +147,8 @@ void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, Pressur
                                                                                                               RealType& rho_u2_t,
                                                                                                               const RealType& tau ) const
 {
-   TNL_ASSERT( mesh, std::cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
-   TNL_ASSERT( pressureGradient, std::cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
+   TNL_ASSERT_TRUE( mesh, "No mesh has been binded with the Lax-Fridrichs scheme." );
+   TNL_ASSERT_TRUE( pressureGradient, "No pressure gradient was set in the the Lax-Fridrichs scheme." )
 
    const IndexType& c = centralVolume;
    const IndexType e = this->mesh -> getElementNeighbour( centralVolume,  1,  0 );
@@ -398,8 +398,8 @@ void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometr
                                                                                                                           RealType& rho_u2_t,
                                                                                                                           const RealType& tau ) const
 {
-   TNL_ASSERT( mesh, std::cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
-   TNL_ASSERT( pressureGradient, std::cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
+   TNL_ASSERT_TRUE( mesh, "No mesh has been binded with the Lax-Fridrichs scheme." );
+   TNL_ASSERT_TRUE( pressureGradient, "No pressure gradient was set in the the Lax-Fridrichs scheme." )
 
    const IndexType& xSize = this->mesh -> getDimensions(). x();
    const IndexType& ySize = this->mesh -> getDimensions(). y();
@@ -456,8 +456,8 @@ void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometr
                                                                                                                           RealType& e_t,
                                                                                                                           const RealType& tau ) const
 {
-   TNL_ASSERT( mesh, std::cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
-   TNL_ASSERT( pressureGradient, std::cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
+   TNL_ASSERT_TRUE( mesh, "No mesh has been binded with the Lax-Fridrichs scheme." );
+   TNL_ASSERT_TRUE( pressureGradient, "No pressure gradient was set in the the Lax-Fridrichs scheme." )
 
    const IndexType& xSize = this->mesh -> getDimensions(). x();
    const IndexType& ySize = this->mesh -> getDimensions(). y();

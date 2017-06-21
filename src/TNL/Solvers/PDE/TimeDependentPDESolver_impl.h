@@ -80,7 +80,7 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Set DOFs (degrees of freedom)
     */
-   TNL_ASSERT( problem->getDofs( this->meshPointer ) != 0, );
+   TNL_ASSERT_GT( problem->getDofs( this->meshPointer ), 0, "number of DOFs must be positive" );
    this->dofsPointer->setSize( problem->getDofs( this->meshPointer ) );
    this->dofsPointer->setValue( 0.0 );
    this->problem->bindDofs( this->meshPointer, this->dofsPointer );
@@ -316,10 +316,8 @@ bool
 TimeDependentPDESolver< Problem, TimeStepper >::
 solve()
 {
-   TNL_ASSERT( timeStepper != 0,
-              std::cerr << "No time stepper was set in PDESolver." );
-   TNL_ASSERT( problem != 0,
-              std::cerr << "No problem was set in PDESolver." );
+   TNL_ASSERT_TRUE( timeStepper, "No time stepper was set in PDESolver." );
+   TNL_ASSERT_TRUE( problem, "No problem was set in PDESolver." );
 
    if( snapshotPeriod == 0 )
    {

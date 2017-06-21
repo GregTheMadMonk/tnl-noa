@@ -57,7 +57,8 @@ update( const MatrixPointer& matrix )
 {
 //  std::cout << getType() << "->setMatrix()" << std::endl;
 
-   TNL_ASSERT( matrix->getRows() > 0 && matrix->getRows() == matrix->getColumns(), );
+   TNL_ASSERT_GT( matrix->getRows(), 0, "empty matrix" );
+   TNL_ASSERT_EQ( matrix->getRows(), matrix->getColumns(), "matrix must be square" );
 
    if( diagonal.getSize() != matrix->getRows() )
       diagonal.setSize( matrix->getRows() );

@@ -60,8 +60,8 @@ reduce( Operation& operation,
         typename Operation::ResultType* hostResult )
 {
 #ifdef HAVE_CUDA
-   TNL_ASSERT( n > 0, );
-   TNL_ASSERT( size <= ldInput1, );
+   TNL_ASSERT_GT( n, 0, "The number of datasets must be positive." );
+   TNL_ASSERT_LE( size, ldInput1, "The size of the input cannot exceed its leading dimension." );
 
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::RealType RealType;
@@ -171,8 +171,8 @@ reduce( Operation& operation,
         const typename Operation::RealType* input2,
         typename Operation::ResultType* result )
 {
-   TNL_ASSERT( n > 0, );
-   TNL_ASSERT( size <= ldInput1, );
+   TNL_ASSERT_GT( n, 0, "The number of datasets must be positive." );
+   TNL_ASSERT_LE( size, ldInput1, "The size of the input cannot exceed its leading dimension." );
 
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::RealType RealType;

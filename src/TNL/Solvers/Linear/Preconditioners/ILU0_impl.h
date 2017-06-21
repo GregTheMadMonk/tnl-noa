@@ -14,7 +14,8 @@ void
 ILU0< Real, Devices::Host, Index >::
 update( const MatrixPointer& matrixPointer )
 {
-   TNL_ASSERT( matrixPointer->getRows() > 0 && matrixPointer->getRows() == matrixPointer->getColumns(), );
+   TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
+   TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
 
    const IndexType N = matrixPointer->getRows();
 
@@ -95,7 +96,8 @@ bool
 ILU0< Real, Devices::Host, Index >::
 solve( const Vector1& b, Vector2& x ) const
 {
-   TNL_ASSERT( b.getSize() == L.getRows() && x.getSize() == L.getRows(), );
+   TNL_ASSERT_EQ( b.getSize(), L.getRows(), "wrong size of the right hand side" );
+   TNL_ASSERT_EQ( x.getSize(), L.getRows(), "wrong size of the solution vector" );
 
    const IndexType N = x.getSize();
 

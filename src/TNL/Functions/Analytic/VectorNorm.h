@@ -211,7 +211,7 @@ class VectorNorm< 2, Real > : public VectorNormBase< 2, Real >
             return ( std::pow( std::pow( TNL::abs( x ), this->power ) * this->anisotropy.x() + 
                                std::pow( TNL::abs( y ), this->power ) * this->anisotropy.y(), 1.0 / this-> power ) - this->radius ) * this->multiplicator;
          }
-         TNL_ASSERT( false, std::cerr << "Not implemented yet." << std::endl );
+         TNL_ASSERT_TRUE( false, "Not implemented yet." );
          return 0.0;
       }
  
@@ -262,7 +262,7 @@ class VectorNorm< 3, Real > : public VectorNormBase< 3, Real >
                                std::pow( TNL::abs( y ), this->power ) * this->anisotropy.y() +
                                std::pow( TNL::abs( z ), this->power ) * this->anisotropy.z(), 1.0 / this-> power ) - this->radius ) * this->multiplicator;
          }
-         TNL_ASSERT( false, std::cerr << "Not implemented yet." << std::endl );
+         TNL_ASSERT_TRUE( false, "Not implemented yet." );
          return 0.0;
       }
       

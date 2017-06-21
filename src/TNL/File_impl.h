@@ -10,6 +10,7 @@
 
 #pragma once 
 
+#include <TNL/File.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 
 namespace TNL {
@@ -31,8 +32,7 @@ template< typename Type, typename Device, typename Index >
 bool File :: read( Type* buffer,
                    const Index& _elements )
 {
-   TNL_ASSERT( _elements >= 0,
-           std::cerr << " elements = " << _elements << std::endl; );
+   TNL_ASSERT_GE( _elements, 0, "Number of elements to read must be non-negative." );
 
    // convert _elements from Index to size_t, which is *unsigned* type
    // (expected by fread etc)
@@ -127,8 +127,7 @@ template< class Type, typename Device, typename Index >
 bool File :: write( const Type* buffer,
                     const Index _elements )
 {
-   TNL_ASSERT( _elements >= 0,
-           std::cerr << " elements = " << _elements << std::endl; );
+   TNL_ASSERT_GE( _elements, 0, "Number of elements to write must be non-negative." );
 
    // convert _elements from Index to size_t, which is *unsigned* type
    // (expected by fread etc)
@@ -220,5 +219,3 @@ bool File :: write( const Type* buffer,
 };
 
 } // namespace TNL
-
-

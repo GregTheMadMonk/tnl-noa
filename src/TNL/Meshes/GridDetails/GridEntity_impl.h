@@ -139,13 +139,11 @@ getIndex() const
 {
    typedef Meshes::Grid< Dimension, Real, Device, Index > GridType;
    typedef typename GridType::template EntityType< EntityDimension > EntityType;
-   TNL_ASSERT( this->entityIndex >= 0 &&
-              this-> entityIndex < grid.template getEntitiesCount< EntityType >(),
-              std::cerr << "this->entityIndex = " << this->entityIndex
-                   << " grid.template getEntitiesCount< EntityDimension >() = " << grid.template getEntitiesCount< EntityType >() );
-   TNL_ASSERT( this->entityIndex == grid.getEntityIndex( *this ),
-              std::cerr << "this->entityIndex = " << this->entityIndex
-                   << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
+   TNL_ASSERT_GE( this->entityIndex, 0, "Entity index is not non-negative." );
+   TNL_ASSERT_LT( this->entityIndex, grid.template getEntitiesCount< EntityDimension >(),
+                  "Entity index is out of bounds." );
+   TNL_ASSERT_EQ( this->entityIndex, grid.getEntityIndex( *this ),
+                  "Wrong value of stored index." );
    return this->entityIndex;
 }
 
@@ -387,13 +385,11 @@ Index
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >::
 getIndex() const
 {
-   TNL_ASSERT( this->entityIndex >= 0 &&
-              this-> entityIndex < grid.template getEntitiesCount< ThisType >(),
-              std::cerr << "this->entityIndex = " << this->entityIndex
-                   << " grid.template getEntitiesCount< Dimension >() = " << grid.template getEntitiesCount< ThisType >() );
-   TNL_ASSERT( this->entityIndex == grid.getEntityIndex( *this ),
-              std::cerr << "this->index = " << this->entityIndex
-                   << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
+   TNL_ASSERT_GE( this->entityIndex, 0, "Entity index is not non-negative." );
+   TNL_ASSERT_LT( this->entityIndex, grid.template getEntitiesCount< Dimension >(),
+                  "Entity index is out of bounds." );
+   TNL_ASSERT_EQ( this->entityIndex, grid.getEntityIndex( *this ),
+                  "Wrong value of stored index." );
    return this->entityIndex;
 }
 
@@ -605,13 +601,11 @@ getIndex() const
 {
    typedef Meshes::Grid< Dimension, Real, Device, Index > GridType;
    typedef typename GridType::Vertex Vertex;
-   TNL_ASSERT( this->entityIndex >= 0 &&
-              this-> entityIndex < grid.template getEntitiesCount< Vertex >(),
-              std::cerr << "this->entityIndex = " << this->entityIndex
-                   << " grid.template getEntitiesCount< 0 >() = " << grid.template getEntitiesCount< Vertex >() );
-   TNL_ASSERT( this->entityIndex == grid.getEntityIndex( *this ),
-              std::cerr << "this->entityIndex = " << this->entityIndex
-                   << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
+   TNL_ASSERT_GE( this->entityIndex, 0, "Entity index is not non-negative." );
+   TNL_ASSERT_LT( this->entityIndex, grid.template getEntitiesCount< 0 >(),
+                  "Entity index is out of bounds." );
+   TNL_ASSERT_EQ( this->entityIndex, grid.getEntityIndex( *this ),
+                  "Wrong value of stored index." );
    return this->entityIndex;
 }
 

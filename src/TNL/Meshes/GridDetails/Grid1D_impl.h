@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <TNL/String.h>
 #include <TNL/Assert.h>
+#include <TNL/Logger.h>
 #include <TNL/Meshes/GridDetails/GnuplotWriter.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
 #include <TNL/Meshes/GridDetails/NeighbourGridEntityGetter1D_impl.h>
@@ -90,7 +91,7 @@ template< typename Real,
           typename Index  >
 void Grid< 1, Real, Device, Index >::setDimensions( const Index xSize )
 {
-   TNL_ASSERT( xSize > 0, std::cerr << "xSize = " << xSize );
+   TNL_ASSERT_GT( xSize, 0, "Grid size must be positive." );
    this->dimensions.x() = xSize;
    this->numberOfCells = xSize;
    this->numberOfVertices = xSize + 1;
@@ -231,8 +232,7 @@ const Real&
 Grid< 1, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
-   TNL_ASSERT( xPow >= -2 && xPow <= 2,
-              std::cerr << " xPow = " << xPow );
+   static_assert( xPow >= -2 && xPow <= 2, "unsupported value of xPow" );
    return this->spaceStepsProducts[ xPow + 2 ];
 }
 

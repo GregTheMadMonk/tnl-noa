@@ -10,8 +10,12 @@
 
 #pragma once
 
+#include <fstream>
 #include <iomanip>
+#include <TNL/String.h>
 #include <TNL/Assert.h>
+#include <TNL/Logger.h>
+#include <TNL/Meshes/GridDetails/GnuplotWriter.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
 #include <TNL/Meshes/GridDetails/NeighbourGridEntityGetter3D_impl.h>
 #include <TNL/Meshes/GridDetails/Grid3D.h>
@@ -164,9 +168,9 @@ template< typename Real,
           typename Index >
 void Grid< 3, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize, const Index zSize )
 {
-   TNL_ASSERT( xSize > 0, std::cerr << "xSize = " << xSize );
-   TNL_ASSERT( ySize > 0, std::cerr << "ySize = " << ySize );
-   TNL_ASSERT( zSize > 0, std::cerr << "zSize = " << zSize );
+   TNL_ASSERT_GT( xSize, 0, "Grid size must be positive." );
+   TNL_ASSERT_GT( ySize, 0, "Grid size must be positive." );
+   TNL_ASSERT_GT( zSize, 0, "Grid size must be positive." );
 
    this->dimensions.x() = xSize;
    this->dimensions.y() = ySize;
@@ -331,13 +335,9 @@ const Real&
 Grid< 3, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
-   TNL_ASSERT( xPow >= -2 && xPow <= 2,
-              std::cerr << " xPow = " << xPow );
-   TNL_ASSERT( yPow >= -2 && yPow <= 2,
-              std::cerr << " yPow = " << yPow );
-   TNL_ASSERT( zPow >= -2 && zPow <= 2,
-              std::cerr << " zPow = " << zPow );
-
+   static_assert( xPow >= -2 && xPow <= 2, "unsupported value of xPow" );
+   static_assert( yPow >= -2 && yPow <= 2, "unsupported value of yPow" );
+   static_assert( zPow >= -2 && zPow <= 2, "unsupported value of zPow" );
    return this->spaceStepsProducts[ xPow + 2 ][ yPow + 2 ][ zPow + 2 ];
 }
 
@@ -511,7 +511,9 @@ template< typename Real,
 bool Grid< 3, Real, Device, Index >::writeMesh( const String& fileName,
                                                    const String& format ) const
 {
-   TNL_ASSERT( false, std::cerr << "TODO: FIX THIS"); // TODO: FIX THIS
+   /*****
+    * TODO: implement this
+    */
    return true;
 }
 

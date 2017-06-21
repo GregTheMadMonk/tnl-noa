@@ -116,7 +116,7 @@ bool
 GMRES< Matrix, Preconditioner >::
 solve( const Vector& b, Vector& x )
 {
-   TNL_ASSERT( matrix, std::cerr << "No matrix was set in GMRES. Call setMatrix() before solve()." << std::endl );
+   TNL_ASSERT_TRUE( matrix, "No matrix was set in GMRES. Call setMatrix() before solve()." );
    if( restarting_min <= 0 || restarting_max <= 0 || restarting_min > restarting_max )
    {
       std::cerr << "Wrong value for the GMRES restarting parameters: r_min = " << restarting_min

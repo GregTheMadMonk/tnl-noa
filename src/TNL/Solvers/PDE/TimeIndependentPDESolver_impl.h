@@ -58,7 +58,7 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Set DOFs (degrees of freedom)
     */
-   TNL_ASSERT( problem->getDofs( this->mesh ) != 0, );
+   TNL_ASSERT_GT( problem->getDofs( this->mesh ), 0, "number of DOFs must be positive" );
    this->dofs.setSize( problem->getDofs( this->mesh ) );
    this->dofs.setValue( 0.0 );
    this->problem->bindDofs( this->mesh, this->dofs );   
@@ -141,8 +141,7 @@ bool
 tnlTimeIndependentPDESolver< Problem >::
 solve()
 {
-   TNL_ASSERT( problem != 0,
-              cerr << "No problem was set in tnlPDESolver." );
+   TNL_ASSERT_TRUE( problem, "No problem was set in tnlPDESolver." );
 
    this->computeTimer->reset();
    this->computeTimer->start();

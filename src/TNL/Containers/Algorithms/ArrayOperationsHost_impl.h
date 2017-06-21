@@ -30,7 +30,8 @@ allocateMemory( Element*& data,
    // According to the standard, new either throws, or returns non-nullptr.
    // Some (old) compilers don't comply:
    // https://stackoverflow.com/questions/550451/will-new-return-null-in-any-case
-   TNL_ASSERT( data, );
+   TNL_ASSERT_TRUE( data, "Operator 'new' returned a nullptr. This should never happen - there is "
+                          "either a bug or the compiler does not comply to the standard." );
    return true;
 }
 

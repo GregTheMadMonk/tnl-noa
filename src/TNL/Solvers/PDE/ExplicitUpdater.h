@@ -122,12 +122,12 @@ class ExplicitUpdater
                                                  typename MeshFunction::IndexType > >::value != true,
             "Error: I am getting Vector instead of MeshFunction or similar object. You might forget to bind DofVector into MeshFunction in you method getExplicitUpdate."  );
             
-         TNL_ASSERT( this->userDataPointer->differentialOperator, 
-            std::cerr << "The differential operator is not correctly set-up. Use method setDifferentialOperator() to do it." << std::endl );
-         TNL_ASSERT( this->userDataPointer->boundaryConditions, 
-            std::cerr << "The boundary conditions are not correctly set-up. Use method setBoundaryCondtions() to do it." << std::endl );
-         TNL_ASSERT( this->userDataPointer->rightHandSide, 
-            std::cerr << "The right-hand side is not correctly set-up. Use method setRightHandSide() to do it." << std::endl );
+         TNL_ASSERT_TRUE( this->userDataPointer->differentialOperator,
+                          "The differential operator is not correctly set-up. Use method setDifferentialOperator() to do it." );
+         TNL_ASSERT_TRUE( this->userDataPointer->boundaryConditions, 
+                          "The boundary conditions are not correctly set-up. Use method setBoundaryCondtions() to do it." );
+         TNL_ASSERT_TRUE( this->userDataPointer->rightHandSide, 
+                          "The right-hand side is not correctly set-up. Use method setRightHandSide() to do it." );
          
          
          this->userDataPointer->time = time;

@@ -74,10 +74,9 @@ Array( Array< Element, Device, Index >& array,
   allocationPointer( array.allocationPointer ),
   referenceCounter( 0 )
 {
-   TNL_ASSERT( begin < array.getSize(),
-              std::cerr << " begin = " << begin << " array.getSize() = " << array.getSize() );
-   TNL_ASSERT( begin + size  < array.getSize(),
-              std::cerr << " begin = " << begin << " size = " << size <<  " array.getSize() = " << array.getSize() );
+   TNL_ASSERT_LT( begin, array.getSize(), "Begin of array is out of bounds." );
+   TNL_ASSERT_LE( begin + size, array.getSize(), "End of array is out of bounds." );
+
    if( ! this->size )
       this->size = array.getSize() - begin;
    if( array.allocationPointer )
@@ -169,9 +168,8 @@ void
 Array< Element, Device, Index >::
 setSize( const Index size )
 {
-   TNL_ASSERT( size >= 0,
-              std::cerr << "You try to set size of Array to negative value."
-                        << "New size: " << size << std::endl );
+   TNL_ASSERT_GE( size, 0, "Array size must be non-negative." );
+
    if( this->size == size && allocationPointer && ! referenceCounter )
       return;
    this->releaseData();
@@ -182,8 +180,8 @@ setSize( const Index size )
       Algorithms::ArrayOperations< Device >::allocateMemory( this->allocationPointer, size );
       this->data = this->allocationPointer;
       this->size = size;
-      TNL_ASSERT( this->allocationPointer,
-                  std::cerr << "This should never happen - allocator did not throw on an error." << std::endl; );
+      TNL_ASSERT_TRUE( this->allocationPointer,
+                       "This should never happen - allocator did not throw on an error." );
    }
 }
 
@@ -225,10 +223,8 @@ bind( const ArrayT& array,
    static_assert( std::is_same< Element, typename ArrayT::ElementType >::value, "ElementType of both arrays must be the same." );
    static_assert( std::is_same< Device, typename ArrayT::DeviceType >::value, "DeviceType of both arrays must be the same." );
    static_assert( std::is_same< Index, typename ArrayT::IndexType >::value, "IndexType of both arrays must be the same." );
-   TNL_ASSERT( begin <= array.getSize(),
-              std::cerr << " begin = " << begin << " array.getSize() = " << array.getSize() );
-   TNL_ASSERT( begin + size  <= array.getSize(),
-              std::cerr << " begin = " << begin << " size = " << size <<  " array.getSize() = " << array.getSize() );
+   TNL_ASSERT_LT( begin, array.getSize(), "Begin of array is out of bounds." );
+   TNL_ASSERT_LE( begin + size, array.getSize(), "End of array is out of bounds." );
  
    this->releaseData();
    if( size )
@@ -307,10 +303,8 @@ void
 Array< Element, Device, Index >::
 setElement( const Index& i, const Element& x )
 {
-   TNL_ASSERT( 0 <= i && i < this->getSize(),
-              std::cerr << "Wrong index for setElement method in Array "
-                        << " index is " << i
-                        << " and array size is " << this->getSize() );
+   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return Algorithms::ArrayOperations< Device > :: setMemoryElement( &( this->data[ i ] ), x );
 }
 
@@ -321,10 +315,8 @@ Element
 Array< Element, Device, Index >::
 getElement( const Index& i ) const
 {
-   TNL_ASSERT( 0 <= i && i < this->getSize(),
-              std::cerr << "Wrong index for getElement method in Array "
-                        << " index is " << i
-                        << " and array size is " << this->getSize() );
+   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return Algorithms::ArrayOperations< Device >::getMemoryElement( & ( this->data[ i ] ) );
 }
 
@@ -336,10 +328,8 @@ inline Element&
 Array< Element, Device, Index >::
 operator[] ( const Index& i )
 {
-   TNL_ASSERT( 0 <= i && i < this->getSize(),
-              std::cerr << "Wrong index for operator[] in Array "
-                        << " index is " << i
-                        << " and array size is " << this->getSize() );
+   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return this->data[ i ];
 }
 
@@ -351,10 +341,8 @@ inline const Element&
 Array< Element, Device, Index >::
 operator[] ( const Index& i ) const
 {
-   TNL_ASSERT( 0 <= i && i < this->getSize(),
-              std::cerr << "Wrong index for operator[] in Array "
-                        << " index is " << i
-                        << " and array size is " << this->getSize() );
+   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return this->data[ i ];
 }
 
@@ -365,9 +353,7 @@ Array< Element, Device, Index >&
 Array< Element, Device, Index >::
 operator = ( const Array< Element, Device, Index >& array )
 {
-   TNL_ASSERT( array. getSize() == this->getSize(),
-              std::cerr << "Source size: " << array. getSize() << std::endl
-                        << "Target size: " << this->getSize() << std::endl );
+   TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
    if( this->getSize() > 0 )
       Algorithms::ArrayOperations< Device >::
          template copyMemory< Element,
@@ -387,9 +373,7 @@ Array< Element, Device, Index >&
 Array< Element, Device, Index >::
 operator = ( const ArrayT& array )
 {
-   TNL_ASSERT( array. getSize() == this->getSize(),
-              std::cerr << "Source size: " << array. getSize() << std::endl
-                        << "Target size: " << this->getSize() << std::endl );
+   TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
    if( this->getSize() > 0 )
       Algorithms::ArrayOperations< Device, typename ArrayT::DeviceType >::
          template copyMemory< Element,
@@ -409,7 +393,7 @@ bool
 Array< Element, Device, Index >::
 operator == ( const ArrayT& array ) const
 {
-   if( array. getSize() != this -> getSize() )
+   if( array.getSize() != this->getSize() )
       return false;
    if( this->getSize() == 0 )
       return true;
@@ -437,7 +421,7 @@ template< typename Element,
           typename Index >
 void Array< Element, Device, Index > :: setValue( const Element& e )
 {
-   TNL_ASSERT( this->getData(),);
+   TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
    Algorithms::ArrayOperations< Device >::setMemory( this->getData(), e, this->getSize() );
 }
 

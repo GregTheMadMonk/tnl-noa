@@ -153,7 +153,7 @@ solve( const RealType& time,
        DofVectorPointer& dofVector,
        MeshDependentDataPointer& meshDependentData )
 {
-   TNL_ASSERT( this->problem != 0, );
+   TNL_ASSERT_TRUE( this->problem, "problem was not set" );
    RealType t = time;
    this->linearSystemSolver->setMatrix( this->matrix );
    PreconditionerPointer preconditioner;
