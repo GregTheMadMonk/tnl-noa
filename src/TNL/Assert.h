@@ -2,7 +2,7 @@
                           Assert.h  -  description
                              -------------------
     begin                : Jan 12, 2010
-    copyright            : (C) 2013 by Tomas Oberhuber
+    copyright            : (C) 2013 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,21 +10,90 @@
 
 #pragma once
 
-#include <TNL/Devices/CudaCallable.h>
-
 /****
- * Debugging assert
+ * The purpose of this file is to define the TNL_ASSERT_* debugging macros as
+ * shown below.
+ *
+ * If the 'NDEBUG' macro is defined, the build is considered to be optimized
+ * and all assert macros are empty. Otherwise, the conditions are checked and
+ * failures lead to the diagnostics message being printed to std::cerr and
+ * program abortion (via 'throw EXIT_FAILURE' statement).
+ *
+ * For the purpose of providing Python bindings it is possible to change the
+ * reporting behaviour by defining the TNL_THROW_ASSERTION_ERROR macro, which
+ * leads to throwing the ::TNL::Assert::AssertionError holding the error
+ * message (which is not printed in this case). The AssertionError class does
+ * not inherit from std::exception to avoid being caught by normal exception
+ * handlers, but the code for Python bindings can use it to translate it to the
+ * Python's AssertionError exception.
+ *
+ * Implemented by: Jakub Klinkovsky
  */
 
-#ifndef NDEBUG
+#ifdef NDEBUG
+
+// empty macros for optimized build
+#define TNL_ASSERT_TRUE( val, msg )
+#define TNL_ASSERT_FALSE( val, msg )
+#define TNL_ASSERT_EQ( val1, val2, msg )
+#define TNL_ASSERT_NE( val1, val2, msg )
+#define TNL_ASSERT_LE( val1, val2, msg )
+#define TNL_ASSERT_LT( val1, val2, msg )
+#define TNL_ASSERT_GE( val1, val2, msg )
+#define TNL_ASSERT_GT( val1, val2, msg )
+#define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )
+
+#else /* #ifdef NDEBUG */
 
 #include <sstream>
 #include <iostream>
 #include <stdio.h>
 
+#include <TNL/Devices/CudaCallable.h>
+
 namespace TNL {
 namespace Assert {
 
+#ifdef TNL_THROW_ASSERTION_ERROR
+// This will be used by the code for Python bindings to translate assertion
+// failures to the Python's AssertionError exception.
+class AssertionError
+{
+public:
+    AssertionError( const std::string& msg )
+       : msg( msg )
+    {}
+
+    const char* what() const
+    {
+       return msg.c_str();
+    }
+
+private:
+    std::string msg;
+};
+
+inline void
+printDiagnosticsHost( const char* assertion,
+                      const char* message,
+                      const char* file,
+                      const char* function,
+                      int line,
+                      const char* diagnostics )
+{
+   std::stringstream str;
+   str << "Assertion '" << assertion << "' failed !!!\n"
+       << "Message: " << message << "\n"
+       << "File: " << file << "\n"
+       << "Function: " << function << "\n"
+       << "Line: " << line << "\n"
+       << "Diagnostics:\n" << diagnostics << std::endl;
+   throw AssertionError( str.str() );
+}
+
+#else // TNL_THROW_ASSERTION_ERROR
+
+// This will be used in regular C++ code
 inline void
 printDiagnosticsHost( const char* assertion,
                       const char* message,
@@ -40,6 +109,7 @@ printDiagnosticsHost( const char* assertion,
              << "Line: " << line << "\n"
              << "Diagnostics:\n" << diagnostics << std::endl;
 }
+#endif // TNL_THROW_ASSERTION_ERROR
 
 __cuda_callable__
 inline void
@@ -247,46 +317,56 @@ TNL_IMPL_CMP_HELPER_( GT, > );
 
 
 /****
- * Original assert macro with custom command for diagnostic.
+ * Original assert macro with custom command for diagnostics.
  */
 
 // __CUDA_ARCH__ is defined by the compiler only for code executed on GPU
 #ifdef __CUDA_ARCH__
-#define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                     \
-   if( ! ( ___tnl__assert_condition ) )                                                                    \
-   {                                                                                                       \
-   printf( "Assertion '%s' failed !!! \n File: %s \n Line: %d \n Diagnostics: Not supported with CUDA.\n", \
-           __STRING( ___tnl__assert_condition ),                                                           \
-           __FILE__,                                                                                       \
-           __LINE__ );                                                                                     \
-   asm("trap;");                                                                                           \
+#define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                         \
+   if( ! ( ___tnl__assert_condition ) )                                                                        \
+   {                                                                                                           \
+      printf( "Assertion '%s' failed !!! \n File: %s \n Line: %d \n Diagnostics: Not supported with CUDA.\n",  \
+              __STRING( ___tnl__assert_condition ),                                                            \
+              __FILE__,                                                                                        \
+              __LINE__ );                                                                                      \
+      asm("trap;");                                                                                            \
    }
 
-#else // __CUDA_ARCH__
-#define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                  \
-   if( ! ( ___tnl__assert_condition ) )                                                                 \
-   {                                                                                                    \
-   std::cerr << "Assertion '" << __STRING( ___tnl__assert_condition ) << "' failed !!!" << std::endl    \
-             << "File: " << __FILE__ << std::endl                                                       \
-             << "Function: " << __TNL_PRETTY_FUNCTION << std::endl                                      \
-             << "Line: " << __LINE__ << std::endl                                                       \
-             << "Diagnostics: ";                                                                        \
-        ___tnl__assert_command;                                                                         \
-        throw EXIT_FAILURE;                                                                             \
+#else // #ifdef __CUDA_ARCH__
+#ifdef TNL_THROW_ASSERTION_ERROR
+// This will be used by the code for Python bindings to translate assertion
+// failures to the Python's AssertionError exception.
+#define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                   \
+   if( ! ( ___tnl__assert_condition ) )                                                                  \
+   {                                                                                                     \
+      std::stringstream buffer;                                                                          \
+      auto old = std::cerr.rdbuf( buffer.rdbuf() );                                                      \
+                                                                                                         \
+      std::cerr << "Assertion '" << __STRING( ___tnl__assert_condition ) << "' failed !!!" << std::endl  \
+                << "File: " << __FILE__ << std::endl                                                     \
+                << "Function: " << __PRETTY_FUNCTION__ << std::endl                                      \
+                << "Line: " << __LINE__ << std::endl                                                     \
+                << "Diagnostics: ";                                                                      \
+      ___tnl__assert_command;                                                                            \
+                                                                                                         \
+      std::string msg = buffer.str();                                                                    \
+      std::cerr.rdbuf( old );                                                                            \
+      throw ::TNL::Assert::AssertionError( msg );                                                        \
    }
-#endif // __CUDA_ARCH__
+#else // #ifdef TNL_THROW_ASSERTION_ERROR
+// This will be used in regular C++ code
+#define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                   \
+   if( ! ( ___tnl__assert_condition ) )                                                                  \
+   {                                                                                                     \
+      std::cerr << "Assertion '" << __STRING( ___tnl__assert_condition ) << "' failed !!!" << std::endl  \
+                << "File: " << __FILE__ << std::endl                                                     \
+                << "Function: " << __TNL_PRETTY_FUNCTION << std::endl                                    \
+                << "Line: " << __LINE__ << std::endl                                                     \
+                << "Diagnostics: ";                                                                      \
+      ___tnl__assert_command;                                                                            \
+      throw EXIT_FAILURE;                                                                                \
+   }
+#endif // #ifdef TNL_THROW_ASSERTION_ERROR
+#endif // #ifdef __CUDA_ARCH__
 
-#else /* #ifndef NDEBUG */
-
-// empty macros for optimized build
-#define TNL_ASSERT_TRUE( val, msg )
-#define TNL_ASSERT_FALSE( val, msg )
-#define TNL_ASSERT_EQ( val1, val2, msg )
-#define TNL_ASSERT_NE( val1, val2, msg )
-#define TNL_ASSERT_LE( val1, val2, msg )
-#define TNL_ASSERT_LT( val1, val2, msg )
-#define TNL_ASSERT_GE( val1, val2, msg )
-#define TNL_ASSERT_GT( val1, val2, msg )
-#define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )
-
-#endif /* #ifndef NDEBUG */
+#endif // #ifdef NDEBUG
