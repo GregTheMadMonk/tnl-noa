@@ -73,10 +73,13 @@ public:
          return false;
       }
 
-      TNL_ASSERT( this->worldDimension == MeshType::Config::worldDimension, );
-      TNL_ASSERT( this->meshDimension == MeshType::Config::meshDimension, );
+      // GOTCHA: The unary "+" is a workaround due to odr-use of undefined static data member. See:
+      // https://stackoverflow.com/questions/39646958/constexpr-static-member-before-after-c17
+      // https://stackoverflow.com/questions/272900/undefined-reference-to-static-class-member/272996#272996
+      TNL_ASSERT_EQ( this->worldDimension, + MeshType::Config::worldDimension, "world dimensions do not match" );
+      TNL_ASSERT_EQ( this->meshDimension, + MeshType::Config::meshDimension, "mesh dimensions do not match" );
       const int subvertices = MeshSubtopology< typename MeshType::Config::CellTopology, 0 >::count;
-      TNL_ASSERT( this->verticesInEntities.at( this->meshDimension ) == subvertices, );
+      TNL_ASSERT_EQ( this->verticesInEntities.at( this->meshDimension ), subvertices, "numbers of cell subvertices do not match" );
 
       using MeshBuilder = MeshBuilder< MeshType >;
       using VertexIndexType = typename MeshType::MeshTraitsType::template EntityTraits< 0 >::GlobalIndexType;
@@ -101,10 +104,7 @@ public:
          const VTKIndexType vtkCellIndex = cellIdMap.at( i );
          const auto& vtkCellSeeds = this->entitySeeds.at( vtkCellIndex );
          using CellSeedType = typename MeshBuilder::CellSeedType;
-         TNL_ASSERT( CellSeedType::getCornersCount() == vtkCellSeeds.size(),
-                 std::cerr << "CellSeedType::getCornersCount() = " << CellSeedType::getCornersCount()
-                           << ", vtkCellseeds.size() = " << vtkCellSeeds.size()
-                           << std::endl; );
+         TNL_ASSERT_EQ( CellSeedType::getCornersCount(), vtkCellSeeds.size(), "wrong number of subvertices" );
          CellSeedType& seed = meshBuilder.getCellSeed( i );
          for( int v = 0; v < CellSeedType::getCornersCount(); v++ ) {
             seed.setCornerId( v, vtkCellSeeds[ v ] );

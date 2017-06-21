@@ -34,7 +34,7 @@ public:
    __cuda_callable__
    const IDType& getIndex() const
    {
-      TNL_ASSERT( this->id >= 0, );
+      TNL_ASSERT_GE( this->id, 0, "entity index is negative" );
       return this->id;
    }
 

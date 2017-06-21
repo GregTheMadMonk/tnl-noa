@@ -244,7 +244,8 @@ protected:
    __cuda_callable__
    const IdPermutationArrayType& getSubentityOrientation( DimensionTag, LocalIndexType index) const
    {
-      TNL_ASSERT( 0 <= index && index < SubentityTraitsType::count, );
+      TNL_ASSERT_GE( index, 0, "index must be non-negative" );
+      TNL_ASSERT_LT( index, SubentityTraitsType::count, "index is out of bounds" );
       return this->subentityOrientations[ index ].getSubvertexPermutation();
    }
 

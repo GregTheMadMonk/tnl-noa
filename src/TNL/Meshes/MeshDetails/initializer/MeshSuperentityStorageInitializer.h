@@ -57,16 +57,16 @@ public:
 
    void initSuperentities( MeshInitializerType& meshInitializer )
    {
-      TNL_ASSERT( dynamicStorageNetwork.size() > 0,
-                 std::cerr << "No superentity indices were collected. This is a bug in the mesh initializer." << std::endl; );
-      TNL_ASSERT( (size_t) getMaxSuperentityIndex() == dynamicStorageNetwork.size() - 1,
-                  std::cerr << "Superentities for some entities are missing. "
-                            << "This is probably a bug in the mesh initializer." << std::endl; );
+      TNL_ASSERT_GT( dynamicStorageNetwork.size(), 0,
+                     "No superentity indices were collected. This is a bug in the mesh initializer." );
+      TNL_ASSERT_EQ( (size_t) getMaxSuperentityIndex(), dynamicStorageNetwork.size() - 1,
+                     "Superentities for some entities are missing. "
+                     "This is probably a bug in the mesh initializer." );
 
       SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< EntityTopology, SuperdimensionTag::value >();
-      TNL_ASSERT( (size_t) superentityStorageNetwork.getKeysRange() == dynamicStorageNetwork.size(),
-                  std::cerr << "Sizes of the static and dynamic storage networks don't match. "
-                            << "This is probably a bug in the mesh initializer." << std::endl; );
+      TNL_ASSERT_EQ( (size_t) superentityStorageNetwork.getKeysRange(), dynamicStorageNetwork.size(),
+                     "Sizes of the static and dynamic storage networks don't match. "
+                     "This is probably a bug in the mesh initializer." );
 
       typename SuperentityStorageNetwork::ValuesAllocationVectorType storageNetworkAllocationVector;
       storageNetworkAllocationVector.setSize( superentityStorageNetwork.getKeysRange() );

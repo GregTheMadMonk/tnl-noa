@@ -44,8 +44,9 @@ class MeshEntitySeed
 
       void setCornerId( const LocalIndexType& cornerIndex, const GlobalIndexType& pointIndex )
       {
-         TNL_ASSERT( 0 <= cornerIndex && cornerIndex < getCornersCount(), std::cerr << "cornerIndex = " << cornerIndex );
-         TNL_ASSERT( 0 <= pointIndex, std::cerr << "pointIndex = " << pointIndex );
+         TNL_ASSERT_GE( cornerIndex, 0, "corner index must be non-negative" );
+         TNL_ASSERT_LT( cornerIndex, getCornersCount(), "corner index is out of bounds" );
+         TNL_ASSERT_GE( pointIndex, 0, "point index must be non-negative" );
 
          this->cornerIds[ cornerIndex ] = pointIndex;
       }
@@ -84,8 +85,8 @@ class MeshEntitySeed< MeshConfig, MeshVertexTopology >
 
       void setCornerId( const LocalIndexType& cornerIndex, const GlobalIndexType& pointIndex )
       {
-         TNL_ASSERT( cornerIndex == 0, std::cerr << "cornerIndex = " << cornerIndex );
-         TNL_ASSERT( 0 <= pointIndex, std::cerr << "pointIndex = " << pointIndex );
+         TNL_ASSERT_EQ( cornerIndex, 0, "corner index must be 0" );
+         TNL_ASSERT_GE( pointIndex, 0, "point index must be non-negative" );
 
          this->cornerIds[ cornerIndex ] = pointIndex;
       }
