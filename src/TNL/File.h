@@ -25,9 +25,12 @@
 
 namespace TNL {
 
-enum tnlIOMode { tnlUndefinedMode = 0,
-                 tnlReadMode = 1,
-                 tnlWriteMode = 2 };
+enum class IOMode
+{
+   undefined = 0,
+   read = 1,
+   write = 2
+};
 
 /* When we need to transfer data between the GPU and the CPU we use
  * 5 MB buffer. This size should ensure good performance -- see.
@@ -41,7 +44,7 @@ const size_t tnlFileGPUvsCPUTransferBufferSize = 5 * 2<<20;
  */
 class File
 {
-   tnlIOMode mode;
+   IOMode mode;
 
    FILE* file;
 
@@ -60,7 +63,7 @@ class File
    ~File();
 
    bool open( const String& fileName,
-              const tnlIOMode mode );
+              const IOMode mode );
 
 
 	const String& getFileName() const

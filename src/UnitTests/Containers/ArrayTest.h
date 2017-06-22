@@ -223,11 +223,11 @@ TEST( ArrayTest, testSaveAndLoad )
    for( int i = 0; i < 100; i ++ )
       v. setElement( i, 3.14147 );
    File file;
-   file. open( "test-file.tnl", tnlWriteMode );
+   file. open( "test-file.tnl", IOMode::write );
    v. save( file );
    file. close();
    Array< ElementType, Device, IndexType > u;
-   file. open( "test-file.tnl", tnlReadMode );
+   file. open( "test-file.tnl", IOMode::read );
    u. load( file );
    file. close();
    ASSERT_TRUE( u == v );

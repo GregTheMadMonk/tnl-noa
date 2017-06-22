@@ -207,11 +207,11 @@ TEST( MultiArrayTest, testSaveAndLoad )
    for( int i = 0; i < size; i ++ )
       setDiagonalElement( v, i, 3.14147 );
    File file;
-   file. open( "test-file.tnl", tnlWriteMode );
+   file. open( "test-file.tnl", IOMode::write );
    ASSERT_TRUE( v. save( file ) );
    file. close();
    MultiArray< Dimension, ElementType, Device, IndexType > u;
-   file. open( "test-file.tnl", tnlReadMode );
+   file. open( "test-file.tnl", IOMode::read );
    ASSERT_TRUE( u. load( file ) );
    file. close();
    ASSERT_TRUE( u == v );

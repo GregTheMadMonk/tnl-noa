@@ -556,7 +556,7 @@ Array< Element, Device, Index >::
 boundLoad( const String& fileName )
 {
    File file;
-   if( ! file. open( fileName, tnlReadMode ) )
+   if( ! file. open( fileName, IOMode::read ) )
    {
       cerr << "I am not bale to open the file " << fileName << " for reading." << endl;
       return false;

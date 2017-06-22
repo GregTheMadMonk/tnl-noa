@@ -24,7 +24,7 @@ using namespace TNL;
 TEST( FileTest, WriteAndRead )
 {
    File file;
-   ASSERT_TRUE( file.open( String( "test-file.tnl" ), tnlWriteMode ) );
+   ASSERT_TRUE( file.open( String( "test-file.tnl" ), IOMode::write ) );
 
    int intData( 5 );
    double doubleData[ 3 ] = { 1.0, 2.0, 3.0 };
@@ -32,7 +32,7 @@ TEST( FileTest, WriteAndRead )
    ASSERT_TRUE( file.write( doubleData, 3 ) );
    ASSERT_TRUE( file.close() );
 
-   ASSERT_TRUE( file.open( String( "test-file.tnl" ), tnlReadMode ) );
+   ASSERT_TRUE( file.open( String( "test-file.tnl" ), IOMode::read ) );
    int newIntData;
    double newDoubleData[ 3 ];
    ASSERT_TRUE( file.read( &newIntData, 1 ) );
@@ -63,7 +63,7 @@ TEST( FileTest, WriteAndReadCUDA )
                cudaMemcpyHostToDevice );
 
    File file;
-   ASSERT_TRUE( file.open( String( "test-file.tnl" ), tnlWriteMode ) );
+   ASSERT_TRUE( file.open( String( "test-file.tnl" ), IOMode::write ) );
 
    bool status = file.write< int, Devices::Cuda >( cudaIntData );
    ASSERT_TRUE( status );
@@ -71,7 +71,7 @@ TEST( FileTest, WriteAndReadCUDA )
    ASSERT_TRUE( status );
    ASSERT_TRUE( file.close() );
 
-   ASSERT_TRUE( file.open( String( "test-file.tnl" ), tnlReadMode ) );
+   ASSERT_TRUE( file.open( String( "test-file.tnl" ), IOMode::read ) );
    int newIntData;
    float newFloatData[ 3 ];
    int* newCudaIntData;

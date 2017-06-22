@@ -122,10 +122,10 @@ TEST( StringTest, SaveLoad )
 {
    String str1( "testing-string" );
    File file;
-   file.open( "test-file.tnl", tnlWriteMode );
+   file.open( "test-file.tnl", IOMode::write );
    ASSERT_TRUE( str1.save( file ) );
    file.close();
-   file.open( "test-file.tnl", tnlReadMode );
+   file.open( "test-file.tnl", IOMode::read );
    String str2;
    ASSERT_TRUE( str2.load( file ) );
    ASSERT_EQ( str1, str2 );

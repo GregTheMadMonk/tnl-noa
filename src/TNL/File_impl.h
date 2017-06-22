@@ -45,7 +45,7 @@ bool File :: read( Type* buffer,
       std::cerr << "File " << fileName << " was not properly opened. " << std::endl;
       return false;
    }
-   if( mode != tnlReadMode )
+   if( mode != IOMode::read )
    {
       std::cerr << "File " << fileName << " was not opened for reading. " << std::endl;
       return false;
@@ -140,7 +140,7 @@ bool File :: write( const Type* buffer,
       std::cerr << "File " << fileName << " was not properly opened. " << std::endl;
       return false;
    }
-   if( mode != tnlWriteMode )
+   if( mode != IOMode::write )
    {
       std::cerr << "File " << fileName << " was not opened for writing. " << std::endl;
       return false;

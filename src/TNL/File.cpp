@@ -15,7 +15,7 @@ namespace TNL {
 int File :: verbose = 0;
 
 File :: File()
-: mode( tnlUndefinedMode ),
+: mode( IOMode::undefined ),
   file( NULL ),
   fileOK( false ),
   writtenElements( 0 ),
@@ -32,20 +32,20 @@ File :: ~File()
 }
 
 bool File :: open( const String& fileName,
-                      const tnlIOMode mode )
+                   const IOMode mode )
 {
    this->fileName = fileName;
    if( verbose )
    {
       std::cout << "Opening file " << fileName;
-      if( mode == tnlReadMode )
+      if( mode == IOMode::read )
          std::cout << " for reading... " << std::endl;
       else
          std::cout << " for writing ... " << std::endl;
    }
-   if( mode == tnlReadMode )
+   if( mode == IOMode::read )
       file = fopen( fileName. getString(), "r" );
-   if( mode == tnlWriteMode )
+   if( mode == IOMode::write )
       file = fopen( fileName. getString(), "w" );
    if( file ==  NULL )
    {
@@ -69,7 +69,7 @@ bool File :: close()
       return false;
    }
    // reset all attributes
-   mode = tnlUndefinedMode;
+   mode = IOMode::undefined;
    file = NULL;
    fileOK = false;
    fileName = "";

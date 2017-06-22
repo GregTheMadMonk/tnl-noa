@@ -58,7 +58,7 @@ int main( int argc, char* argv[] )
       std::cout << "Processing file " << input_file << " ... " << std::flush;
  
       File file;
-      if( ! file. open( input_files[ i ], tnlReadMode ) )
+      if( ! file. open( input_files[ i ], IOMode::read ) )
       {
          std::cout << " unable to open file " << input_files[ i ] << std::endl;
          continue;

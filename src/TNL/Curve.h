@@ -166,7 +166,7 @@ template< class T > bool Write( const Curve< T >& curve,
    if( strncmp( format, "tnl",3 ) == 0 )
    {
       File file;
-      if( ! file. open( String( file_name ) + String( ".tnl" ), tnlWriteMode ) )
+      if( ! file. open( String( file_name ) + String( ".tnl" ), IOMode::write ) )
       {
          std::cerr << "I am not able to open the file " << file_name << " for drawing curve." << std::endl;
          return false;
@@ -202,7 +202,7 @@ template< class T > bool Read( Curve< T >& crv,
                                const char* input_file )
 {
    File file;
-   if( ! file. open( String( input_file ), tnlReadMode  ) )
+   if( ! file. open( String( input_file ), IOMode::read  ) )
    {
      std::cout << " unable to open file " << input_file << std::endl;
       return false;

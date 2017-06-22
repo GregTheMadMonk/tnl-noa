@@ -76,7 +76,7 @@ bool Object :: boundLoad( File& file )
 bool Object :: save( const String& fileName ) const
 {
    File file;
-   if( ! file. open( fileName, tnlWriteMode ) )
+   if( ! file. open( fileName, IOMode::write ) )
    {
       std::cerr << "I am not bale to open the file " << fileName << " for writing." << std::endl;
       return false;
@@ -87,7 +87,7 @@ bool Object :: save( const String& fileName ) const
 bool Object :: load( const String& fileName )
 {
    File file;
-   if( ! file. open( fileName, tnlReadMode ) )
+   if( ! file. open( fileName, IOMode::read ) )
    {
       std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
       return false;
@@ -98,7 +98,7 @@ bool Object :: load( const String& fileName )
 bool Object :: boundLoad( const String& fileName )
 {
    File file;
-   if( ! file. open( fileName, tnlReadMode ) )
+   if( ! file. open( fileName, IOMode::read ) )
    {
       std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
       return false;
@@ -129,7 +129,7 @@ bool getObjectType( File& file, String& type )
 bool getObjectType( const String& fileName, String& type )
 {
    File binaryFile;
-   if( ! binaryFile. open( fileName, tnlReadMode ) )
+   if( ! binaryFile. open( fileName, IOMode::read ) )
    {
       std::cerr << "I am not able to open the file " << fileName << " for detecting the object inside!" << std::endl;
       return false;

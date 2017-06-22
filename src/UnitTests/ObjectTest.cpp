@@ -24,10 +24,10 @@ TEST( ObjectTest, SaveAndLoadTest )
 {
    Object testObject;
    File file;
-   file.open( "test-file.tnl", tnlWriteMode );
+   file.open( "test-file.tnl", IOMode::write );
    ASSERT_TRUE( testObject.save( file ) );
    file.close();
-   file.open( "test-file.tnl", tnlReadMode );
+   file.open( "test-file.tnl", IOMode::read );
    ASSERT_TRUE( testObject.load( file ) );
 }
 
