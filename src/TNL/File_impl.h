@@ -10,6 +10,8 @@
 
 #pragma once 
 
+#include <type_traits>
+
 #include <TNL/File.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 
@@ -34,9 +36,9 @@ bool File :: read( Type* buffer,
 {
    TNL_ASSERT_GE( _elements, 0, "Number of elements to read must be non-negative." );
 
-   // convert _elements from Index to size_t, which is *unsigned* type
+   // convert _elements from Index to std::size_t, which is *unsigned* type
    // (expected by fread etc)
-   size_t elements = (size_t) _elements;
+   std::size_t elements = (std::size_t) _elements;
 
    if( ! elements )
       return true;
@@ -50,19 +52,17 @@ bool File :: read( Type* buffer,
       std::cerr << "File " << fileName << " was not opened for reading. " << std::endl;
       return false;
    }
+
    this->readElements = 0;
-   const size_t host_buffer_size = std::min( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ),
-                                             elements );
-   void* host_buffer( 0 );
    if( std::is_same< Device, Devices::Host >::value )
    {
-      if( fread( buffer,
-             sizeof( Type ),
-             elements,
-             file ) != elements )
+      if( std::fread( buffer,
+                      sizeof( Type ),
+                      elements,
+                      file ) != elements )
       {
          std::cerr << "I am not able to read the data from the file " << fileName << "." << std::endl;
-         perror( "Fread ended with the error code" );
+         std::perror( "Fread ended with the error code" );
          return false;
       }
       this->readElements = elements;
@@ -71,33 +71,21 @@ bool File :: read( Type* buffer,
    if( std::is_same< Device, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      /*!***
-       * Here we cannot use
-       *
-       * host_buffer = new Type[ host_buffer_size ];
-       *
-       * because it does not work for constant types like
-       * T = const bool.
-       */
-      host_buffer = malloc( sizeof( Type ) * host_buffer_size );
-      readElements = 0;
-      if( ! host_buffer )
-      {
-         std::cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
-              << this->getFileName() << "." << std::endl;
-         return false;
-
-      }
+      const std::size_t host_buffer_size = std::min( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ),
+                                                elements );
+      using BaseType = typename std::remove_cv< Type >::type;
+      BaseType* host_buffer = new BaseType[ host_buffer_size ];
 
       while( readElements < elements )
       {
-         size_t transfer = std::min( elements - readElements, host_buffer_size );
-         size_t transfered = fread( host_buffer, sizeof( Type ), transfer, file );
+         std::size_t transfer = std::min( elements - readElements, host_buffer_size );
+         std::size_t transfered = std::fread( host_buffer, sizeof( Type ), transfer, file );
          if( transfered != transfer )
          {
             std::cerr << "I am not able to read the data from the file " << fileName << "." << std::endl;
             std::cerr << transfered << " bytes were transfered. " << std::endl;
-            perror( "Fread ended with the error code" );
+            std::perror( "Fread ended with the error code" );
+            delete[] host_buffer;
             return false;
          }
 
@@ -109,12 +97,12 @@ bool File :: read( Type* buffer,
          {
             std::cerr << "Transfer of data from the CUDA device to the file " << this->fileName
                  << " failed." << std::endl;
-            free( host_buffer );
+            delete[] host_buffer;
             return false;
          }
-         readElements += transfer;
+         this->readElements += transfer;
       }
-      free( host_buffer );
+      delete[] host_buffer;
       return true;
 #else
       throw Exceptions::CudaSupportMissing();
@@ -129,9 +117,9 @@ bool File :: write( const Type* buffer,
 {
    TNL_ASSERT_GE( _elements, 0, "Number of elements to write must be non-negative." );
 
-   // convert _elements from Index to size_t, which is *unsigned* type
+   // convert _elements from Index to std::size_t, which is *unsigned* type
    // (expected by fread etc)
-   size_t elements = (size_t) _elements;
+   std::size_t elements = (std::size_t) _elements;
 
    if( ! elements )
       return true;
@@ -146,20 +134,16 @@ bool File :: write( const Type* buffer,
       return false;
    }
 
-   Type* buf = const_cast< Type* >( buffer );
-   void* host_buffer( 0 );
    this->writtenElements = 0;
-   const size_t host_buffer_size = std::min( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ),
-                                             elements );
    if( std::is_same< Device, Devices::Host >::value )
    {
-      if( fwrite( buf,
-                  sizeof( Type ),
-                  elements,
-                  this->file ) != elements )
+      if( std::fwrite( buffer,
+                       sizeof( Type ),
+                       elements,
+                       this->file ) != elements )
       {
          std::cerr << "I am not able to write the data to the file " << fileName << "." << std::endl;
-         perror( "Fwrite ended with the error code" );
+         std::perror( "Fwrite ended with the error code" );
          return false;
       }
       this->writtenElements = elements;
@@ -168,48 +152,38 @@ bool File :: write( const Type* buffer,
    if( std::is_same< Device, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      /*!***
-       * Here we cannot use
-       *
-       * host_buffer = new Type[ host_buffer_size ];
-       *
-       * because it does not work for constant types like
-       * T = const bool.
-       */
-      host_buffer = malloc( sizeof( Type ) * host_buffer_size );
-      if( ! host_buffer )
-      {
-         std::cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
-              << this->getFileName() << "." << std::endl;
-         return false;
-      }
+      const std::size_t host_buffer_size = std::min( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ),
+                                                elements );
+      using BaseType = typename std::remove_cv< Type >::type;
+      BaseType* host_buffer = new BaseType[ host_buffer_size ];
 
       while( this->writtenElements < elements )
       {
-         size_t transfer = std::min( elements - this->writtenElements, host_buffer_size );
+         std::size_t transfer = std::min( elements - this->writtenElements, host_buffer_size );
          cudaMemcpy( host_buffer,
-                    ( void* ) & ( buffer[ this->writtenElements ] ),
-                    transfer * sizeof( Type ),
-                    cudaMemcpyDeviceToHost );
+                     ( void* ) & ( buffer[ this->writtenElements ] ),
+                     transfer * sizeof( Type ),
+                     cudaMemcpyDeviceToHost );
          if( ! TNL_CHECK_CUDA_DEVICE )
          {
             std::cerr << "Transfer of data from the file " << this->fileName
                  << " to the CUDA device failed." << std::endl;
-            free( host_buffer );
+            delete[] host_buffer;
             return false;
          }
-         if( fwrite( host_buffer,
-                     sizeof( Type ),
-                     transfer,
-                     this->file ) != transfer )
+         if( std::fwrite( host_buffer,
+                          sizeof( Type ),
+                          transfer,
+                          this->file ) != transfer )
          {
             std::cerr << "I am not able to write the data to the file " << fileName << "." << std::endl;
-            perror( "Fwrite ended with the error code" );
+            std::perror( "Fwrite ended with the error code" );
+            delete[] host_buffer;
             return false;
          }
          this->writtenElements += transfer;
       }
-      free( host_buffer );
+      delete[] host_buffer;
       return true;
 #else
       throw Exceptions::CudaSupportMissing();

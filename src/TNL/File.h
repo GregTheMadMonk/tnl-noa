@@ -12,8 +12,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
 #ifdef HAVE_CUDA
    #include <cuda_runtime.h>
 #endif
@@ -46,15 +45,15 @@ class File
 {
    IOMode mode;
 
-   FILE* file;
+   std::FILE* file;
 
    bool fileOK;
 
    String fileName;
 
-   size_t writtenElements;
+   std::size_t writtenElements;
 
-   size_t readElements;
+   std::size_t readElements;
 
    public:
 
@@ -99,7 +98,6 @@ class File
 	bool close();
 
 	static int verbose;
-
 };
 
 bool fileExists( const String& fileName );

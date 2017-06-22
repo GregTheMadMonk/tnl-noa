@@ -44,13 +44,13 @@ bool File :: open( const String& fileName,
          std::cout << " for writing ... " << std::endl;
    }
    if( mode == IOMode::read )
-      file = fopen( fileName. getString(), "r" );
+      file = std::fopen( fileName.getString(), "r" );
    if( mode == IOMode::write )
-      file = fopen( fileName. getString(), "w" );
+      file = std::fopen( fileName.getString(), "w" );
    if( file ==  NULL )
    {
       std::cerr << "I am not able to open the file " << fileName << ". ";
-      perror( "" );
+      std::perror( "" );
       return false;
    }
    this->fileOK = true;
@@ -63,7 +63,7 @@ bool File :: close()
    if( verbose )
       std::cout << "Closing the file " << getFileName() << " ... " << std::endl;
 
-   if( fclose( file ) != 0 )
+   if( std::fclose( file ) != 0 )
    {
       std::cerr << "I was not able to close the file " << fileName << " properly!" << std::endl;
       return false;
@@ -80,7 +80,7 @@ bool File :: close()
 bool fileExists( const String& fileName )
 {
   std::fstream file;
-  file.open( fileName. getString(), std::ios::in );
+  file.open( fileName.getString(), std::ios::in );
   bool result( true );
   if( ! file )
      result = false;
