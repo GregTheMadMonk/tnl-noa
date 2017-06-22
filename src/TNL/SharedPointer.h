@@ -167,6 +167,12 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
          return this->pd;
       }
 
+      __cuda_callable__
+      bool operator!() const
+      {
+         return ! this->pd;
+      }
+
       template< typename Device = Devices::Host >
       __cuda_callable__
       const Object& getData() const
@@ -400,6 +406,12 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       operator bool() const
       {
          return this->pd;
+      }
+
+      __cuda_callable__
+      bool operator!() const
+      {
+         return ! this->pd;
       }
 
       template< typename Device = Devices::Host >

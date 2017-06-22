@@ -119,6 +119,12 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
          return this->pointer;
       }
 
+      __cuda_callable__
+      bool operator!() const
+      {
+         return ! this->pointer;
+      }
+
       template< typename Device = Devices::Host >
       __cuda_callable__
       const Object& getData() const
@@ -285,6 +291,12 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       operator bool() const
       {
          return this->pd;
+      }
+
+      __cuda_callable__
+      bool operator!() const
+      {
+         return ! this->pd;
       }
 
       template< typename Device = Devices::Host >
