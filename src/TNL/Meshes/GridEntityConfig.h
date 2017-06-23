@@ -73,9 +73,7 @@ class GridEntityCrossStencilStorage
       constexpr static bool neighbourEntityStorage( const int neighbourEntityDimension )
       {
          return ( GridEntity::getEntityDimension() == GridEntity::GridType::getMeshDimension() &&
-                  neighbourEntityDimension == GridEntity::GridType::getMeshDimension() )
-               // FIXME: how is GridEntityCrossStencil cast to int?
-                * GridEntityCrossStencil;
+                  neighbourEntityDimension == GridEntity::GridType::getMeshDimension() );
       }
  
       constexpr static int getStencilSize()
@@ -86,4 +84,3 @@ class GridEntityCrossStencilStorage
 
 } // namespace Meshes
 } // namespace TNL
-
