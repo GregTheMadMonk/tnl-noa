@@ -20,6 +20,15 @@ namespace Exceptions {
 struct CudaBadAlloc
    : public std::bad_alloc
 {
+   CudaBadAlloc()
+   {
+#ifdef HAVE_CUDA
+      // Make sure to clear the CUDA error, otherwise the exception handler
+      // might throw another exception with the same error.
+      cudaGetLastError();
+#endif
+   }
+
    const char* what() const throw()
    {
       return "Failed to allocate memory on the CUDA device: "
