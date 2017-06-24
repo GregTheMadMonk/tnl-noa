@@ -32,7 +32,6 @@
 #include <ctime>
 
 #ifdef HAVE_CUDA
-#include <cuda.h>
 #include <core/tnlCuda.h>
 #endif
 

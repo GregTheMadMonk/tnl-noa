@@ -16,10 +16,6 @@
 
 #include <TNL/Devices/CudaCallable.h>
 
-#ifdef HAVE_CUDA
-#include <cuda.h>
-#endif
-
 namespace TNL {
 
 template< typename T1, typename T2 >

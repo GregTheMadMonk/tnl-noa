@@ -13,9 +13,6 @@
 #include <iostream>
 #include <fstream>
 #include <cstdio>
-#ifdef HAVE_CUDA
-   #include <cuda_runtime.h>
-#endif
 
 #include <TNL/Assert.h>
 #include <TNL/String.h>

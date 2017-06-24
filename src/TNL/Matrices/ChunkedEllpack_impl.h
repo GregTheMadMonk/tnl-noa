@@ -14,10 +14,6 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
 
-#ifdef HAVE_CUDA
-#include <cuda.h>
-#endif
-
 namespace TNL {
 namespace Matrices {   
 

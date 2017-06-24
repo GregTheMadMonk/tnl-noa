@@ -14,10 +14,6 @@
 #include <gtest/gtest.h>
 #endif
 
-#ifdef HAVE_CUDA
-#include <cuda.h>
-#endif
-
 using namespace TNL;
 
 #ifdef HAVE_GTEST
