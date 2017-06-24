@@ -58,6 +58,22 @@ String ChunkedEllpack< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
+String ChunkedEllpack< Real, Device, Index >::getSerializationType()
+{
+   return getType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+String ChunkedEllpack< Real, Device, Index >::getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void ChunkedEllpack< Real, Device, Index >::setDimensions( const IndexType rows,
                                                            const IndexType columns )
 {

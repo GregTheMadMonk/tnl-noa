@@ -50,6 +50,22 @@ String Multidiagonal< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
+String Multidiagonal< Real, Device, Index >::getSerializationType()
+{
+   return getType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+String Multidiagonal< Real, Device, Index >::getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void Multidiagonal< Real, Device, Index >::setDimensions( const IndexType rows,
                                                           const IndexType columns )
 {

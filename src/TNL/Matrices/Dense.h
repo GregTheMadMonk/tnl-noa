@@ -45,6 +45,10 @@ class Dense : public Matrix< Real, Device, Index >
 
    String getTypeVirtual() const;
 
+   static String getSerializationType();
+
+   virtual String getSerializationTypeVirtual() const;
+
    void setDimensions( const IndexType rows,
                        const IndexType columns );
 

@@ -104,7 +104,7 @@ getType()
           TNL::getType< Element >() + ", " +
           Device::getDeviceType() + ", " +
           TNL::getType< Index >() + " >";
-};
+}
 
 template< typename Element,
           typename Device,
@@ -114,7 +114,7 @@ Array< Element, Device, Index >::
 getTypeVirtual() const
 {
    return this->getType();
-};
+}
 
 template< typename Element,
           typename Device,
@@ -124,7 +124,7 @@ Array< Element, Device, Index >::
 getSerializationType()
 {
    return HostType::getType();
-};
+}
 
 template< typename Element,
           typename Device,
@@ -134,7 +134,7 @@ Array< Element, Device, Index >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
-};
+}
 
 template< typename Element,
           typename Device,

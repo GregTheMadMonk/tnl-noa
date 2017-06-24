@@ -61,6 +61,22 @@ String CSR< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
+String CSR< Real, Device, Index >::getSerializationType()
+{
+   return HostType::getType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+String CSR< Real, Device, Index >::getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void CSR< Real, Device, Index >::setDimensions( const IndexType rows,
                                                 const IndexType columns )
 {
