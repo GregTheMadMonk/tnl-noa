@@ -30,7 +30,16 @@ class CSRDeviceDependentCode;
 template< typename Real, typename Device = Devices::Host, typename Index = int >
 class CSR : public Sparse< Real, Device, Index >
 {
-   public:
+private:
+   // convenient template alias for controlling the selection of copy-assignment operator
+   template< typename Device2 >
+   using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
+
+   // friend class will be needed for templated assignment operators
+   template< typename Real2, typename Device2, typename Index2 >
+   friend class CSR;
+
+public:
 
    typedef Real RealType;
    typedef Device DeviceType;
@@ -161,6 +170,14 @@ class CSR : public Sparse< Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
+   // copy assignment
+   CSR& operator=( const CSR& matrix );
+
+   // cross-device copy assignment
+   template< typename Real2, typename Device2, typename Index2,
+             typename = typename Enabler< Device2 >::type >
+   CSR& operator=( const CSR< Real2, Device2, Index2 >& matrix );
+
    bool save( File& file ) const;
 
    bool load( File& file );
@@ -238,7 +255,7 @@ class CSR : public Sparse< Real, Device, Index >
        return this->values.getData();
    }
 
-   protected:
+protected:
 
    Containers::Vector< Index, Device, Index > rowPointers;
 
@@ -255,4 +272,3 @@ class CSR : public Sparse< Real, Device, Index >
 } // namespace TNL
 
 #include <TNL/Matrices/CSR_impl.h>
-

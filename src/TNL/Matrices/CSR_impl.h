@@ -290,7 +290,7 @@ bool CSR< Real, Device, Index > :: setRowFast( const IndexType row,
 
    for( IndexType i = 0; i < elements; i++ )
    {
-      printf( "Setting element row: %d column: %d value: %f \n", row, columnIndexes[ i ], values[ i ] );
+      //printf( "Setting element row: %d column: %d value: %f \n", row, columnIndexes[ i ], values[ i ] );
       this->columnIndexes[ elementPointer ] = columnIndexes[ i ];
       this->values[ elementPointer ] = values[ i ];
       elementPointer++;
@@ -524,6 +524,36 @@ bool CSR< Real, Device, Index >::performSORIteration( const Vector& b,
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
    return true;
+}
+
+
+// copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+CSR< Real, Device, Index >&
+CSR< Real, Device, Index >::operator=( const CSR& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
+   this->rowPointers = matrix.rowPointers;
+   return *this;
+}
+
+// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2, typename Device2, typename Index2, typename >
+CSR< Real, Device, Index >&
+CSR< Real, Device, Index >::operator=( const CSR< Real2, Device2, Index2 >& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
+   this->rowPointers = matrix.rowPointers;
+   return *this;
 }
 
 

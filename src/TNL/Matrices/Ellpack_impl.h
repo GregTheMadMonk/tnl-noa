@@ -174,16 +174,6 @@ bool Ellpack< Real, Device, Index >::operator != ( const Ellpack< Real2, Device2
    return ! ( ( *this ) == matrix );
 }
 
-/*template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Matrix >
-bool Ellpack< Real, Device, Index >::copyFrom( const Matrix& matrix,
-                                                        const CompressedRowLengthsVector& rowLengths )
-{
-   return Matrix< RealType, DeviceType, IndexType >::copyFrom( matrix, rowLengths );
-}*/
-
 template< typename Real,
           typename Device,
           typename Index >
@@ -582,6 +572,88 @@ bool Ellpack< Real, Device, Index > :: performSORIteration( const Vector& b,
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
    return true;
+}
+
+
+// copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+Ellpack< Real, Device, Index >&
+Ellpack< Real, Device, Index >::operator=( const Ellpack& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
+   return *this;
+}
+
+// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2, typename Device2, typename Index2, typename >
+Ellpack< Real, Device, Index >&
+Ellpack< Real, Device, Index >::operator=( const Ellpack< Real2, Device2, Index2 >& matrix )
+{
+   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
+                  "unknown device" );
+   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
+                  "unknown device" );
+
+   // setLike does not work here due to different alignment on Cuda and Host
+   this->rowLengths = matrix.rowLengths;
+   this->setDimensions( matrix.getRows(), matrix.getColumns() );
+
+   const int blockSize = 32;
+   const int blocks = roundUpDivision( this->getRows(), blockSize );
+
+   // host -> cuda
+   if( std::is_same< Device, Devices::Cuda >::value ) {
+      typename ValuesVector::HostType tmpValues;
+      typename ColumnIndexesVector::HostType tmpColumnIndexes;
+      tmpValues.setLike( this->values );
+      tmpColumnIndexes.setLike( this->columnIndexes );
+
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
+#endif
+      for( Index b = 0; b < blocks; b++ ) {
+         const Index offset = b * blockSize;
+         for( Index j = 0; j < rowLengths; j++ )
+            for( Index i = 0; i < blockSize && offset + i < this->getRows(); i++ ) {
+               tmpValues[ offset + j * alignedRows + i ] = matrix.values[ ( offset + i ) * rowLengths + j ];
+               tmpColumnIndexes[ offset + j * alignedRows + i ] = matrix.columnIndexes[ ( offset + i ) * rowLengths + j ];
+            }
+      }
+
+      this->values = tmpValues;
+      this->columnIndexes = tmpColumnIndexes;
+   }
+
+   // cuda -> host
+   if( std::is_same< Device, Devices::Host >::value ) {
+      ValuesVector tmpValues;
+      ColumnIndexesVector tmpColumnIndexes;
+      tmpValues.setLike( matrix.values );
+      tmpColumnIndexes.setLike( matrix.columnIndexes );
+      tmpValues = matrix.values;
+      tmpColumnIndexes = matrix.columnIndexes;
+
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
+#endif
+      for( Index b = 0; b < blocks; b++ ) {
+         const Index offset = b * rowLengths;
+         for( Index i = 0; i < blockSize && b * blockSize + i < this->getRows(); i++ )
+            for( Index j = 0; j < rowLengths; j++ ) {
+               this->values[ offset + i * rowLengths + j ] = tmpValues[ b * blockSize + j * matrix.alignedRows + i ];
+               this->columnIndexes[ offset + i * rowLengths + j ] = tmpColumnIndexes[ b * blockSize + j * matrix.alignedRows + i ];
+            }
+      }
+   }
+
+   return *this;
 }
 
 

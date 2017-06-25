@@ -25,8 +25,16 @@ template< typename Real = double,
           typename Index = int >
 class Tridiagonal : public Matrix< Real, Device, Index >
 {
-   public:
+private:
+   // convenient template alias for controlling the selection of copy-assignment operator
+   template< typename Device2 >
+   using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
 
+   // friend class will be needed for templated assignment operators
+   template< typename Real2, typename Device2, typename Index2 >
+   friend class Tridiagonal;
+
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -166,6 +174,14 @@ class Tridiagonal : public Matrix< Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
+   // copy assignment
+   Tridiagonal& operator=( const Tridiagonal& matrix );
+
+   // cross-device copy assignment
+   template< typename Real2, typename Device2, typename Index2,
+             typename = typename Enabler< Device2 >::type >
+   Tridiagonal& operator=( const Tridiagonal< Real2, Device2, Index2 >& matrix );
+
    bool save( File& file ) const;
 
    bool load( File& file );
@@ -176,7 +192,7 @@ class Tridiagonal : public Matrix< Real, Device, Index >
 
    void print( std::ostream& str ) const;
 
-   protected:
+protected:
 
    __cuda_callable__
    IndexType getElementIndex( const IndexType row,

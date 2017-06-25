@@ -614,6 +614,39 @@ bool Multidiagonal< Real, Device, Index > :: performSORIteration( const Vector& 
 }
 
 
+// copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+Multidiagonal< Real, Device, Index >&
+Multidiagonal< Real, Device, Index >::operator=( const Multidiagonal& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->diagonalsShift = matrix.diagonalsShift;
+   return *this;
+}
+
+// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2, typename Device2, typename Index2, typename >
+Multidiagonal< Real, Device, Index >&
+Multidiagonal< Real, Device, Index >::operator=( const Multidiagonal< Real2, Device2, Index2 >& matrix )
+{
+   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
+                  "unknown device" );
+   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
+                  "unknown device" );
+
+   this->setLike( matrix );
+
+   std::cerr << "Cross-device assignment for the Multidiagonal format is not implemented yet." << std::endl;
+   throw 1;
+}
+
+
 template< typename Real,
           typename Device,
           typename Index >

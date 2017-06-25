@@ -62,8 +62,16 @@ __global__ void ChunkedEllpackVectorProductCudaKernel( const ChunkedEllpack< Rea
 template< typename Real, typename Device, typename Index >
 class ChunkedEllpack : public Sparse< Real, Device, Index >
 {
-   public:
+private:
+   // convenient template alias for controlling the selection of copy-assignment operator
+   template< typename Device2 >
+   using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
 
+   // friend class will be needed for templated assignment operators
+   template< typename Real2, typename Device2, typename Index2 >
+   friend class ChunkedEllpack;
+
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -221,6 +229,14 @@ class ChunkedEllpack : public Sparse< Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
+   // copy assignment
+   ChunkedEllpack& operator=( const ChunkedEllpack& matrix );
+
+   // cross-device copy assignment
+   template< typename Real2, typename Device2, typename Index2,
+             typename = typename Enabler< Device2 >::type >
+   ChunkedEllpack& operator=( const ChunkedEllpack< Real2, Device2, Index2 >& matrix );
+
    bool save( File& file ) const;
 
    bool load( File& file );
@@ -234,8 +250,7 @@ class ChunkedEllpack : public Sparse< Real, Device, Index >
    void printStructure( std::ostream& str,
                         const String& = "" ) const;
 
-   protected:
-
+protected:
 
    void resolveSliceSizes( const Containers::Vector< Index, Devices::Host, Index >& rowLengths );
 

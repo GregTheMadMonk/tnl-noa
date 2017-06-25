@@ -868,6 +868,39 @@ void Dense< Real, Device, Index >::performSORIteration( const Vector& b,
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
 }
 
+
+// copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+Dense< Real, Device, Index >&
+Dense< Real, Device, Index >::operator=( const Dense& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   return *this;
+}
+
+// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2, typename Device2, typename Index2, typename >
+Dense< Real, Device, Index >&
+Dense< Real, Device, Index >::operator=( const Dense< Real2, Device2, Index2 >& matrix )
+{
+   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
+                  "unknown device" );
+   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
+                  "unknown device" );
+
+   this->setLike( matrix );
+
+   std::cerr << "Cross-device assignment for the Dense format is not implemented yet." << std::endl;
+   throw 1;
+}
+
+
 template< typename Real,
           typename Device,
           typename Index >

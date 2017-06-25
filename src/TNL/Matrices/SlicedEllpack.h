@@ -51,17 +51,25 @@ template< typename Real,
           int SliceSize >
 class SlicedEllpack : public Sparse< Real, Device, Index >
 {
-   public:
+private:
+   // convenient template alias for controlling the selection of copy-assignment operator
+   template< typename Device2 >
+   using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
 
+   // friend class will be needed for templated assignment operators
+   template< typename Real2, typename Device2, typename Index2, int SliceSize2 >
+   friend class SlicedEllpack;
+
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-   typedef SlicedEllpack< Real, Device, Index > ThisType;
-   typedef SlicedEllpack< Real, Devices::Host, Index > HostType;
-   typedef SlicedEllpack< Real, Devices::Cuda, Index > CudaType;
+   typedef SlicedEllpack< Real, Device, Index, SliceSize > ThisType;
+   typedef SlicedEllpack< Real, Devices::Host, Index, SliceSize > HostType;
+   typedef SlicedEllpack< Real, Devices::Cuda, Index, SliceSize > CudaType;
    typedef Sparse< Real, Device, Index > BaseType;
    typedef typename BaseType::MatrixRow MatrixRow;
    typedef SparseRow< const RealType, const IndexType > ConstMatrixRow;
@@ -185,6 +193,14 @@ class SlicedEllpack : public Sparse< Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
+   // copy assignment
+   SlicedEllpack& operator=( const SlicedEllpack& matrix );
+
+   // cross-device copy assignment
+   template< typename Real2, typename Device2, typename Index2,
+             typename = typename Enabler< Device2 >::type >
+   SlicedEllpack& operator=( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix );
+
    bool save( File& file ) const;
 
    bool load( File& file );
@@ -195,7 +211,7 @@ class SlicedEllpack : public Sparse< Real, Device, Index >
 
    void print( std::ostream& str ) const;
 
-   protected:
+protected:
 
    Containers::Vector< Index, Device, Index > slicePointers, sliceCompressedRowLengths;
 
@@ -208,12 +224,10 @@ class SlicedEllpack : public Sparse< Real, Device, Index >
     */
    // TODO: The friend declaration above does not work because of __global__ storage specifier. Therefore we declare the following method as public. Fix this, when possible.
 
-   public:
+public:
    __device__ void computeMaximalRowLengthInSlicesCuda( const CompressedRowLengthsVector& rowLengths,
                                                         const IndexType sliceIdx );
-
 #endif
-
 };
 
 } // namespace Matrices

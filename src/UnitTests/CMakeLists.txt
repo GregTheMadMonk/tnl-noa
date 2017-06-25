@@ -1,6 +1,7 @@
 if( WITH_TESTS STREQUAL "yes" )
 
 #ADD_SUBDIRECTORY( Containers )
+ADD_SUBDIRECTORY( Matrices )
 
 ADD_EXECUTABLE( UniquePointerTest${mpiExt}${debugExt} ${headers} UniquePointerTest.cpp )
 SET_TARGET_PROPERTIES( UniquePointerTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS}" )

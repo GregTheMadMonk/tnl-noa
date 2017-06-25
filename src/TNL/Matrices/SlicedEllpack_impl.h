@@ -599,6 +599,91 @@ bool SlicedEllpack< Real, Device, Index, SliceSize >::performSORIteration( const
 }
 
 
+// copy assignment
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+SlicedEllpack< Real, Device, Index, SliceSize >&
+SlicedEllpack< Real, Device, Index, SliceSize >::operator=( const SlicedEllpack& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
+   this->slicePointers = matrix.slicePointers;
+   this->sliceCompressedRowLengths = matrix.sliceCompressedRowLengths;
+   return *this;
+}
+
+// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+   template< typename Real2, typename Device2, typename Index2, typename >
+SlicedEllpack< Real, Device, Index, SliceSize >&
+SlicedEllpack< Real, Device, Index, SliceSize >::operator=( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix )
+{
+   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
+                  "unknown device" );
+   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
+                  "unknown device" );
+
+   this->setLike( matrix );
+   this->slicePointers = matrix.slicePointers;
+   this->sliceCompressedRowLengths = matrix.sliceCompressedRowLengths;
+
+   // host -> cuda
+   if( std::is_same< Device, Devices::Cuda >::value ) {
+      typename ValuesVector::HostType tmpValues;
+      typename ColumnIndexesVector::HostType tmpColumnIndexes;
+      tmpValues.setLike( matrix.values );
+      tmpColumnIndexes.setLike( matrix.columnIndexes );
+
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
+#endif
+      for( Index sliceIdx = 0; sliceIdx < matrix.sliceCompressedRowLengths.getSize(); sliceIdx++ ) {
+         const Index rowLength = matrix.sliceCompressedRowLengths[ sliceIdx ];
+         const Index offset = matrix.slicePointers[ sliceIdx ];
+         for( Index j = 0; j < rowLength; j++ )
+            for( Index i = 0; i < SliceSize; i++ ) {
+               tmpValues[ offset + j * SliceSize + i ] = matrix.values[ offset + i * rowLength + j ];
+               tmpColumnIndexes[ offset + j * SliceSize + i ] = matrix.columnIndexes[ offset + i * rowLength + j ];
+            }
+      }
+
+      this->values = tmpValues;
+      this->columnIndexes = tmpColumnIndexes;
+   }
+
+   // cuda -> host
+   if( std::is_same< Device, Devices::Host >::value ) {
+      ValuesVector tmpValues;
+      ColumnIndexesVector tmpColumnIndexes;
+      tmpValues.setLike( matrix.values );
+      tmpColumnIndexes.setLike( matrix.columnIndexes );
+      tmpValues = matrix.values;
+      tmpColumnIndexes = matrix.columnIndexes;
+
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
+#endif
+      for( Index sliceIdx = 0; sliceIdx < sliceCompressedRowLengths.getSize(); sliceIdx++ ) {
+         const Index rowLength = sliceCompressedRowLengths[ sliceIdx ];
+         const Index offset = slicePointers[ sliceIdx ];
+         for( Index i = 0; i < SliceSize; i++ )
+            for( Index j = 0; j < rowLength; j++ ) {
+               this->values[ offset + i * rowLength + j ] = tmpValues[ offset + j * SliceSize + i ];
+               this->columnIndexes[ offset + i * rowLength + j ] = tmpColumnIndexes[ offset + j * SliceSize + i ];
+            }
+      }
+   }
+
+   return *this;
+}
+
+
 template< typename Real,
           typename Device,
           typename Index,
@@ -649,23 +734,30 @@ template< typename Real,
           int SliceSize >
 void SlicedEllpack< Real, Device, Index, SliceSize >::print( std::ostream& str ) const
 {
-   for( IndexType row = 0; row < this->getRows(); row++ )
-   {
-      str <<"Row: " << row << " -> ";
-      const IndexType sliceIdx = row / SliceSize;
-      const IndexType rowLength = this->sliceCompressedRowLengths.getElement( sliceIdx );
-      IndexType elementPtr = this->slicePointers.getElement( sliceIdx ) +
-                             rowLength * ( row - sliceIdx * SliceSize );
-      const IndexType rowEnd( elementPtr + rowLength );
-      while( elementPtr < rowEnd &&
-             this->columnIndexes.getElement( elementPtr ) < this->columns &&
-             this->columnIndexes.getElement( elementPtr ) != this->getPaddingIndex() )
+   if( std::is_same< Device, Devices::Host >::value ) {
+      for( IndexType row = 0; row < this->getRows(); row++ )
       {
-         const Index column = this->columnIndexes.getElement( elementPtr );
-         str << " Col:" << column << "->" << this->values.getElement( elementPtr ) << "\t";
-         elementPtr++;
+         str <<"Row: " << row << " -> ";
+         const IndexType sliceIdx = row / SliceSize;
+         const IndexType rowLength = this->sliceCompressedRowLengths.getElement( sliceIdx );
+         IndexType elementPtr = this->slicePointers.getElement( sliceIdx ) +
+                                rowLength * ( row - sliceIdx * SliceSize );
+         const IndexType rowEnd( elementPtr + rowLength );
+         while( elementPtr < rowEnd &&
+                this->columnIndexes.getElement( elementPtr ) < this->columns &&
+                this->columnIndexes.getElement( elementPtr ) != this->getPaddingIndex() )
+         {
+            const Index column = this->columnIndexes.getElement( elementPtr );
+            str << " Col:" << column << "->" << this->values.getElement( elementPtr ) << "\t";
+            elementPtr++;
+         }
+         str << std::endl;
       }
-      str << std::endl;
+   }
+   else {
+      HostType hostMatrix;
+      hostMatrix = *this;
+      hostMatrix.print( str );
    }
 }
 
