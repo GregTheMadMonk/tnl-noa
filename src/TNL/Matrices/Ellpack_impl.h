@@ -116,6 +116,15 @@ Index Ellpack< Real, Device, Index >::getRowLength( const IndexType row ) const
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
+Index Ellpack< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
+{
+   return this->rowLengths;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Real2,
              typename Device2,
              typename Index2 >

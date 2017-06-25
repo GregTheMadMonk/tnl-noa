@@ -112,6 +112,17 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
+__cuda_callable__
+Index SlicedEllpack< Real, Device, Index, SliceSize >::getRowLengthFast( const IndexType row ) const
+{
+   const IndexType slice = row / SliceSize;
+   return this->sliceCompressedRowLengths[ slice ];
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
    template< typename Real2,
              typename Device2,
              typename Index2 >

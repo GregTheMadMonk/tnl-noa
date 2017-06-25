@@ -108,6 +108,22 @@ Index Multidiagonal< Real, Device, Index >::getRowLength( const IndexType row ) 
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
+Index Multidiagonal< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
+{
+   IndexType rowLength( 0 );
+   for( IndexType i = 0; i < diagonalsShift.getSize(); i++ )
+   {
+      const IndexType column = row + diagonalsShift[ i ];
+      if( column >= 0 && column < this->getColumns() )
+         rowLength++;
+   }
+   return rowLength;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Index
 Multidiagonal< Real, Device, Index >::
 getMaxRowLength() const

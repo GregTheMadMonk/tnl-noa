@@ -66,6 +66,9 @@ class Dense : public Matrix< Real, Device, Index >
     */
    IndexType getRowLength( const IndexType row ) const;
 
+   __cuda_callable__
+   IndexType getRowLengthFast( const IndexType row ) const;
+
    IndexType getMaxRowLength() const;
 
    IndexType getNumberOfMatrixElements() const;

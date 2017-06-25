@@ -118,6 +118,15 @@ template< typename Real,
           typename Index >
 Index CSR< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
+   return this->rowPointers.getElement( row + 1 ) - this->rowPointers.getElement( row );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Index CSR< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
+{
    return this->rowPointers[ row + 1 ] - this->rowPointers[ row ];
 }
 

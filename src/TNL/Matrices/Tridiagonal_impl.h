@@ -99,6 +99,15 @@ template< typename Real,
           typename Index >
 Index Tridiagonal< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
+   return this->getRowLengthFast( row );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Index Tridiagonal< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
+{
    const IndexType diagonalLength = min( this->getRows(), this->getColumns() );
    if( row == 0 )
       return 2;

@@ -102,6 +102,15 @@ Index Dense< Real, Device, Index >::getRowLength( const IndexType row ) const
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
+Index Dense< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
+{
+   return this->getColumns();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Index Dense< Real, Device, Index >::getMaxRowLength() const
 {
    return this->getColumns();

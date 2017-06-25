@@ -262,9 +262,21 @@ template< typename Real,
           typename Index >
 Index ChunkedEllpack< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
-   const IndexType& sliceIndex = rowToSliceMapping[ row ];
+   const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
    TNL_ASSERT( sliceIndex < this->rows, );
    const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
+   return rowPointers.getElement( row + 1 ) - rowPointers.getElement( row );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Index ChunkedEllpack< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
+{
+   const IndexType& sliceIndex = rowToSliceMapping[ row ];
+   TNL_ASSERT( sliceIndex < this->rows, );
+   const IndexType& chunkSize = slices[ sliceIndex ].chunkSize;
    return rowPointers[ row + 1 ] - rowPointers[ row ];
 }
 

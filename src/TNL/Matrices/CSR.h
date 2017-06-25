@@ -63,6 +63,9 @@ class CSR : public Sparse< Real, Device, Index >
 
    IndexType getRowLength( const IndexType row ) const;
 
+   __cuda_callable__
+   IndexType getRowLengthFast( const IndexType row ) const;
+
    template< typename Real2, typename Device2, typename Index2 >
    void setLike( const CSR< Real2, Device2, Index2 >& matrix );
 

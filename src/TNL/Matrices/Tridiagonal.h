@@ -54,6 +54,9 @@ class Tridiagonal : public Matrix< Real, Device, Index >
 
    IndexType getRowLength( const IndexType row ) const;
 
+   __cuda_callable__
+   IndexType getRowLengthFast( const IndexType row ) const;
+
    IndexType getMaxRowLength() const;
 
    template< typename Real2, typename Device2, typename Index2 >
