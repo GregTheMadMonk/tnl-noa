@@ -86,9 +86,10 @@ template< typename Real,
           typename Index >
 void Ellpack< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
-   TNL_ASSERT( this->getRows() > 0, );
-   TNL_ASSERT( this->getColumns() > 0, );
-   TNL_ASSERT( rowLengths.getSize() > 0, );
+   TNL_ASSERT_GT( this->getRows(), 0, "cannot set row lengths of an empty matrix" );
+   TNL_ASSERT_GT( this->getColumns(), 0, "cannot set row lengths of an empty matrix" );
+   TNL_ASSERT_EQ( this->getRows(), rowLengths.getSize(), "wrong size of the rowLengths vector" );
+
    this->rowLengths = this->maxRowLength = rowLengths.max();
    allocateElements();
 }

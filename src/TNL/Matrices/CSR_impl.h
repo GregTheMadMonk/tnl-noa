@@ -90,14 +90,16 @@ template< typename Real,
           typename Index >
 void CSR< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
+   TNL_ASSERT_GT( this->getRows(), 0, "cannot set row lengths of an empty matrix" );
+   TNL_ASSERT_GT( this->getColumns(), 0, "cannot set row lengths of an empty matrix" );
+   TNL_ASSERT_EQ( this->getRows(), rowLengths.getSize(), "wrong size of the rowLengths vector" );
+
    /****
     * Compute the rows pointers. The last one is
     * the end of the last row and so it says the
     * necessary length of the vectors this->values
     * and this->columnIndexes.
     */
-   TNL_ASSERT( this->getRows() > 0, );
-   TNL_ASSERT( this->getColumns() > 0, );
    Containers::SharedVector< IndexType, DeviceType, IndexType > rowPtrs;
    rowPtrs.bind( this->rowPointers.getData(), this->getRows() );
    rowPtrs = rowLengths;
