@@ -22,8 +22,7 @@ template< typename Real = double,
           typename Index = int >
 class Matrix : public virtual Object
 {
-   public:
-
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -85,17 +84,11 @@ class Matrix : public virtual Object
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
 
-   Matrix< RealType, DeviceType, IndexType >& operator = ( const Matrix< RealType, DeviceType, IndexType >& );
-
    template< typename Matrix >
    bool operator == ( const Matrix& matrix ) const;
 
    template< typename Matrix >
    bool operator != ( const Matrix& matrix ) const;
-
-   template< typename Matrix >
-   bool copyFrom( const Matrix& matrix,
-                  const CompressedRowLengthsVector& rowLengths );
 
    virtual bool save( File& file ) const;
 
@@ -103,11 +96,9 @@ class Matrix : public virtual Object
 
    virtual void print( std::ostream& str ) const;
 
-   protected:
+protected:
 
    IndexType rows, columns;
-
-   public: // TODO: remove this
 
    ValuesVector values;
 };
@@ -123,8 +114,8 @@ template< typename Matrix,
           typename InVector,
           typename OutVector >
 void MatrixVectorProductCuda( const Matrix& matrix,
-                                 const InVector& inVector,
-                                 OutVector& outVector );
+                              const InVector& inVector,
+                              OutVector& outVector );
 
 } // namespace Matrices
 } // namespace TNL

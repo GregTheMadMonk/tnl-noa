@@ -89,61 +89,6 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename MatrixT >
-bool Matrix< Real, Device, Index >::copyFrom( const MatrixT& matrix,
-                                              const CompressedRowLengthsVector& rowLengths )
-{
-   /*tnlStaticTNL_ASSERT( DeviceType::DeviceType == Devices::HostDevice, );
-   tnlStaticTNL_ASSERT( DeviceType::DeviceType == Matrix:DeviceType::DeviceType, );*/
-
-   this->setLike( matrix );
-   this->setCompressedRowLengths( rowLengths );
-   Containers::Vector< RealType, Devices::Host, IndexType > values;
-   Containers::Vector< IndexType, Devices::Host, IndexType > columns;
-   values.setSize( this->getColumns() );
-   columns.setSize( this->getColumns() );
-   for( IndexType row = 0; row < this->getRows(); row++ )
-   {
-      TNL_ASSERT( false, );
-      // TODO: fix this
-      //matrix.getRow( row, columns.getData(), values.getData() );
-      this->setRow( row, columns.getData(), values.getData(), rowLengths.getElement( row ) );
-   }
-   return true;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Matrix< Real, Device, Index >& Matrix< Real, Device, Index >::operator = ( const Matrix< RealType, DeviceType, IndexType >& m )
-{
-   this->setLike( m );
-
-   Containers::Vector< IndexType, DeviceType, IndexType > rowLengths;
-   m.getCompressedRowLengths( rowLengths );
-   this->setCompressedRowLengths( rowLengths );
-
-   Containers::Vector< RealType, DeviceType, IndexType > rowValues;
-   Containers::Vector< IndexType, DeviceType, IndexType > rowColumns;
-   const IndexType maxRowLength = rowLengths.max();
-   rowValues.setSize( maxRowLength );
-   rowColumns.setSize( maxRowLength );
-   for( IndexType row = 0; row < this->getRows(); row++ )
-   {
-      m.getRow( row,
-                rowColumns.getData(),
-                rowValues.getData() );
-      this->setRow( row,
-                    rowColumns.getData(),
-                    rowValues.getData(),
-                    m.getRowLength( row ) );
-   }
-   return *this;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename MatrixT >
 bool Matrix< Real, Device, Index >::operator == ( const MatrixT& matrix ) const
 {
    if( this->getRows() != matrix.getRows() ||
