@@ -15,6 +15,7 @@
 #include <TNL/String.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Timer.h>
+#include <TNL/Matrices/MatrixReader.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -405,11 +406,7 @@ class MatrixReaderDeviceDependentCode< Devices::Cuda >
       if( ! MatrixReader< HostMatrixType >::readMtxFileHostMatrix( file, hostMatrix, rowLengthsVector, verbose ) )
          return false;
 
-      typename Matrix::CompressedRowLengthsVector cudaCompressedRowLengthsVector;
-      cudaCompressedRowLengthsVector.setLike( rowLengthsVector );
-      cudaCompressedRowLengthsVector = rowLengthsVector;
-      if( ! matrix.copyFrom( hostMatrix, cudaCompressedRowLengthsVector ) )
-         return false;
+      matrix = hostMatrix;
       return true;
    }
 };

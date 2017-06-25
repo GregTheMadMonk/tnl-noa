@@ -111,7 +111,7 @@ void checkMatrix( Matrix& m )
 }
 
 template< typename Matrix1, typename Matrix2 >
-void testMatrixCopy()
+void testCopyAssignment()
 {
    Matrix1 m1;
    setupMatrix( m1 );
@@ -122,72 +122,148 @@ void testMatrixCopy()
    checkMatrix( m2 );
 }
 
+template< typename Matrix1, typename Matrix2 >
+void testConversion()
+{
+   Matrix1 m1;
+   setupMatrix( m1 );
+   checkMatrix( m1 );
+
+   Matrix2 m2;
+   TNL::Matrices::copySparseMatrix( m2, m1 );
+   checkMatrix( m2 );
+}
+
 
 TEST( SparseMatrixCopyTest, CSR_HostToHost )
 {
-   testMatrixCopy< CSR_host, CSR_host >();
+   testCopyAssignment< CSR_host, CSR_host >();
 }
 
 #ifdef HAVE_CUDA
 TEST( SparseMatrixCopyTest, CSR_HostToCuda )
 {
-   testMatrixCopy< CSR_host, CSR_cuda >();
+   testCopyAssignment< CSR_host, CSR_cuda >();
 }
 
 TEST( SparseMatrixCopyTest, CSR_CudaToHost )
 {
-   testMatrixCopy< CSR_cuda, CSR_host >();
+   testCopyAssignment< CSR_cuda, CSR_host >();
 }
 
 TEST( SparseMatrixCopyTest, CSR_CudaToCuda )
 {
-   testMatrixCopy< CSR_cuda, CSR_cuda >();
+   testCopyAssignment< CSR_cuda, CSR_cuda >();
 }
 #endif
 
 
 TEST( SparseMatrixCopyTest, Ellpack_HostToHost )
 {
-   testMatrixCopy< E_host, E_host >();
+   testCopyAssignment< E_host, E_host >();
 }
 
 #ifdef HAVE_CUDA
 TEST( SparseMatrixCopyTest, Ellpack_HostToCuda )
 {
-   testMatrixCopy< E_host, E_cuda >();
+   testCopyAssignment< E_host, E_cuda >();
 }
 
 TEST( SparseMatrixCopyTest, Ellpack_CudaToHost )
 {
-   testMatrixCopy< E_cuda, E_host >();
+   testCopyAssignment< E_cuda, E_host >();
 }
 
 TEST( SparseMatrixCopyTest, Ellpack_CudaToCuda )
 {
-   testMatrixCopy< E_cuda, E_cuda >();
+   testCopyAssignment< E_cuda, E_cuda >();
 }
 #endif
 
 
 TEST( SparseMatrixCopyTest, SlicedEllpack_HostToHost )
 {
-   testMatrixCopy< SE_host, SE_host >();
+   testCopyAssignment< SE_host, SE_host >();
 }
 
 #ifdef HAVE_CUDA
 TEST( SparseMatrixCopyTest, SlicedEllpack_HostToCuda )
 {
-   testMatrixCopy< SE_host, SE_cuda >();
+   testCopyAssignment< SE_host, SE_cuda >();
 }
 
 TEST( SparseMatrixCopyTest, SlicedEllpack_CudaToHost )
 {
-   testMatrixCopy< SE_cuda, SE_host >();
+   testCopyAssignment< SE_cuda, SE_host >();
 }
 
 TEST( SparseMatrixCopyTest, SlicedEllpack_CudaToCuda )
 {
-   testMatrixCopy< SE_cuda, SE_cuda >();
+   testCopyAssignment< SE_cuda, SE_cuda >();
+}
+#endif
+
+
+// test conversion between formats
+TEST( SparseMatrixCopyTest, CSR_to_Ellpack_host )
+{
+   testConversion< CSR_host, E_host >();
+}
+
+TEST( SparseMatrixCopyTest, Ellpack_to_CSR_host )
+{
+   testConversion< E_host, CSR_host >();
+}
+
+TEST( SparseMatrixCopyTest, CSR_to_SlicedEllpack_host )
+{
+   testConversion< CSR_host, SE_host >();
+}
+
+TEST( SparseMatrixCopyTest, SlicedEllpack_to_CSR_host )
+{
+   testConversion< SE_host, CSR_host >();
+}
+
+TEST( SparseMatrixCopyTest, Ellpack_to_SlicedEllpack_host )
+{
+   testConversion< E_host, SE_host >();
+}
+
+TEST( SparseMatrixCopyTest, SlicedEllpack_to_Ellpack_host )
+{
+   testConversion< SE_host, E_host >();
+}
+
+#ifdef HAVE_CUDA
+TEST( SparseMatrixCopyTest, CSR_to_Ellpack_cuda )
+{
+   testConversion< CSR_cuda, E_cuda >();
+}
+
+TEST( SparseMatrixCopyTest, Ellpack_to_CSR_cuda )
+{
+   testConversion< E_cuda, CSR_cuda >();
+}
+
+TEST( SparseMatrixCopyTest, CSR_to_SlicedEllpack_cuda )
+{
+   testConversion< CSR_cuda, SE_cuda >();
+}
+
+TEST( SparseMatrixCopyTest, SlicedEllpack_to_CSR_cuda )
+{
+   testConversion< SE_cuda, CSR_cuda >();
+}
+
+TEST( SparseMatrixCopyTest, Ellpack_to_SlicedEllpack_cuda )
+{
+   testConversion< E_cuda, SE_cuda >();
+}
+
+TEST( SparseMatrixCopyTest, SlicedEllpack_to_Ellpack_cuda )
+{
+   testConversion< SE_cuda, E_cuda >();
 }
 #endif
 
