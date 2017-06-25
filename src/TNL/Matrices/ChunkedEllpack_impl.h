@@ -936,7 +936,7 @@ getRow( const IndexType rowIndex )
 {
    const IndexType rowOffset = this->rowPointers[ rowIndex ];
    const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
-   return MatrixRow( &this->columns[ rowOffset ],
+   return MatrixRow( &this->columnIndexes[ rowOffset ],
                      &this->values[ rowOffset ],
                      rowLength,
                      1 );
@@ -946,13 +946,13 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-const typename ChunkedEllpack< Real, Device, Index >::MatrixRow
+typename ChunkedEllpack< Real, Device, Index >::ConstMatrixRow
 ChunkedEllpack< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
    const IndexType rowOffset = this->rowPointers[ rowIndex ];
    const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
-   return MatrixRow( &this->columns[ rowOffset ],
+   return MatrixRow( &this->columnIndexes[ rowOffset ],
                      &this->values[ rowOffset ],
                      rowLength,
                      1 );
