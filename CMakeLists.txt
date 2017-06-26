@@ -12,7 +12,7 @@
 # Vladimir Klement
 # Jakub Klinkovsky
 
-cmake_minimum_required( VERSION 3.4 )
+cmake_minimum_required( VERSION 3.5.1 )
 
 project( tnl )
 
@@ -39,7 +39,7 @@ else()
 endif()
 
 # set Debug/Release options
-set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
+set( CMAKE_CXX_FLAGS "-std=c++11 -pthread -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG" )
 #set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
@@ -105,9 +105,6 @@ if( WITH_CUDA STREQUAL "yes" )
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES )
         # TODO: this is necessary only due to a bug in cmake
         set( CUDA_ADD_LIBRARY_OPTIONS -shared )
-        # TODO: workaround for a bug in cmake 3.5.0 (fixed in 3.5.1)
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -ccbin "${CMAKE_CXX_COMPILER}" )
-        set( CUDA_HOST_COMPILER "" )
 
         ####
         # Check for cuBLAS
