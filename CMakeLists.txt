@@ -58,6 +58,14 @@ if( WITH_CUDA STREQUAL "yes" )
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
         set(BUILD_SHARED_LIBS ON)
         set(CUDA_SEPARABLE_COMPILATION ON)        
+        # Use the CUDA_HOST_COMPILER environment variable if the user specified it.
+        if( NOT $ENV{CUDA_HOST_COMPILER} STREQUAL "" )
+            message( "-- Setting CUDA_HOST_COMPILER to '$ENV{CUDA_HOST_COMPILER}'" )
+            set( CUDA_HOST_COMPILER $ENV{CUDA_HOST_COMPILER} )
+        else()
+            message( "-- Setting CUDA_HOST_COMPILER to '${CMAKE_CXX_COMPILER}'" )
+            set( CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} )
+        endif()
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA)
         # disable false compiler warnings
         #   reference for the -Xcudafe flag: http://stackoverflow.com/questions/14831051/how-to-disable-compiler-warnings-with-nvcc/17095910#17095910
