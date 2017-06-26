@@ -225,34 +225,22 @@ public:
 
    // The following getters allow us to interface TNL with external C-like
    // libraries such as UMFPACK or SuperLU, which need the raw data.
-   Index* getRowPointers()
+   const Containers::Vector< Index, Device, Index >&
+   getRowPointers() const
    {
-       return this->rowPointers.getData();
+      return this->rowPointers;
    }
 
-   const Index* getRowPointers() const
+   const Containers::Vector< Index, Device, Index >&
+   getColumnIndexes() const
    {
-       return this->rowPointers.getData();
+      return this->columnIndexes;
    }
 
-   Index* getColumnIndexes()
+   const Containers::Vector< Real, Device, Index >&
+   getValues() const
    {
-       return this->columnIndexes.getData();
-   }
-
-   const Index* getColumnIndexes() const
-   {
-       return this->columnIndexes.getData();
-   }
-
-   Real* getValues()
-   {
-       return this->values.getData();
-   }
-
-   const Real* getValues() const
-   {
-       return this->values.getData();
+      return this->values;
    }
 
 protected:
