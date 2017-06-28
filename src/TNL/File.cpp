@@ -44,9 +44,9 @@ bool File :: open( const String& fileName,
          std::cout << " for writing ... " << std::endl;
    }
    if( mode == IOMode::read )
-      file = std::fopen( fileName.getString(), "r" );
+      file = std::fopen( fileName.getString(), "rb" );
    if( mode == IOMode::write )
-      file = std::fopen( fileName.getString(), "w" );
+      file = std::fopen( fileName.getString(), "wb" );
    if( file ==  NULL )
    {
       std::cerr << "I am not able to open the file " << fileName << ". ";
