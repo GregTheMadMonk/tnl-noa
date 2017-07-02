@@ -78,7 +78,7 @@ bool Object :: save( const String& fileName ) const
    File file;
    if( ! file. open( fileName, IOMode::write ) )
    {
-      std::cerr << "I am not bale to open the file " << fileName << " for writing." << std::endl;
+      std::cerr << "I am not able to open the file " << fileName << " for writing." << std::endl;
       return false;
    }
    return this->save( file );
@@ -89,7 +89,7 @@ bool Object :: load( const String& fileName )
    File file;
    if( ! file. open( fileName, IOMode::read ) )
    {
-      std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
+      std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
       return false;
    }
    return this->load( file );
@@ -100,7 +100,7 @@ bool Object :: boundLoad( const String& fileName )
    File file;
    if( ! file. open( fileName, IOMode::read ) )
    {
-      std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
+      std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
       return false;
    }
    return this->boundLoad( file );
