@@ -10,9 +10,9 @@
 
 // Implemented by: Jakub Klinkovsky
 
-#include <stdexcept>
-
 #pragma once
+
+#include <stdexcept>
 
 namespace TNL {
 namespace Exceptions {

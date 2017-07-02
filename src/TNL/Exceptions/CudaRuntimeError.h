@@ -10,9 +10,9 @@
 
 // Implemented by: Jakub Klinkovsky
 
-#include "CudaSupportMissing.h"
-
 #pragma once
+
+#include "CudaSupportMissing.h"
 
 namespace TNL {
 namespace Exceptions {

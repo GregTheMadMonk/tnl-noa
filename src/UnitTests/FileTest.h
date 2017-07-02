@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlFileTester.h  -  description
+                          FileTest.h  -  description
                              -------------------
     begin                : Oct 24, 2010
-    copyright            : (C) 2010 by Tomas Oberhuber
+    copyright            : (C) 2010 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -122,12 +122,13 @@ TEST( FileTest, WriteAndReadCUDA )
 #endif
 #endif
 
+#include "GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST
    ::testing::InitGoogleTest( &argc, argv );
    return RUN_ALL_TESTS();
 #else
-   return EXIT_FAILURE;
+   throw GtestMissingError();
 #endif
 }

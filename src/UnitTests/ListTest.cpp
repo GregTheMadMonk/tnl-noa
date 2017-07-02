@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlListTest.cpp  -  description
+                          ListTest.cpp  -  description
                              -------------------
     begin                : Feb 15, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -19,15 +19,13 @@ using namespace TNL;
 #ifdef HAVE_GTEST 
 #endif
 
-
+#include "GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST
    ::testing::InitGoogleTest( &argc, argv );
    return RUN_ALL_TESTS();
 #else
-   return EXIT_FAILURE;
+   throw GtestMissingError();
 #endif
 }
-
-

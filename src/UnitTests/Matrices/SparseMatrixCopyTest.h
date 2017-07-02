@@ -269,12 +269,13 @@ TEST( SparseMatrixCopyTest, SlicedEllpack_to_Ellpack_cuda )
 
 #endif
 
+#include "../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST
    ::testing::InitGoogleTest( &argc, argv );
    return RUN_ALL_TESTS();
 #else
-   return EXIT_FAILURE;
+   throw GtestMissingError();
 #endif
 }
