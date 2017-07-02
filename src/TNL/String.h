@@ -121,8 +121,11 @@ class String
    //! Comparison operator
    bool operator != ( const char* ) const;
  
-   //! Retyping operator
+   //! Cast to bool operator
    operator bool () const;
+
+   //! Cast to bool with negation operator
+   bool operator ! () const;
 
    //! Return length of the string
    int getLength() const;

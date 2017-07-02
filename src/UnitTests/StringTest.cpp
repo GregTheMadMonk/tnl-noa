@@ -106,6 +106,16 @@ TEST( StringTest, AdditionAssignmentOperator )
    ASSERT_EQ( strcmp( string2. getString(), "stringstring2" ), 0 );
 }
 
+TEST( StringTest, CastToBoolOperator )
+{
+   String string;
+   EXPECT_TRUE( ! string );
+   EXPECT_FALSE( string );
+   string.setString( "foo" );
+   EXPECT_TRUE( string );
+   EXPECT_FALSE( ! string );
+}
+
 TEST( StringTest, strip )
 {
    EXPECT_EQ( String( "string" ).strip(), String( "string" ) );

@@ -220,6 +220,11 @@ String :: operator bool () const
    return false;
 }
 
+bool String :: operator ! () const
+{
+   return ! operator bool();
+}
+
 bool String :: operator != ( const char* str ) const
 {
    return ! operator == ( str );
