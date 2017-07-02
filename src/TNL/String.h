@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <stdio.h>
 #include <iostream>
 #include <sstream>
 #include <TNL/mpi-supp.h>
@@ -23,6 +22,9 @@ namespace Containers {
    template< class T > class List;
 }
 
+template< typename T >
+String convertToString( const T& value );
+
 //! Class for managing strings
 class String
 {
@@ -32,8 +34,7 @@ class String
    //! Length of the allocated piece of memory
    int length;
 
-   public:
-
+public:
    //! Basic constructor
    String();
 
@@ -42,37 +43,42 @@ class String
        @param sufix_cut_off says the same about sufix.
     */
    String( const char* c,
-              int prefix_cut_off = 0,
-              int sufix_cut_off = 0 );
+           int prefix_cut_off = 0,
+           int sufix_cut_off = 0 );
 
    static String getType();
 
    //! Copy constructor
    String( const String& str );
 
-   //! Convert number to a string
-   String( unsigned number );
-
-   String( int number );
- 
-   String( unsigned long int number );
-
-   String( long int number );
-
-   String( float number );
-
-   String( double number );
+   //! Convert anything to a string
+   template< typename T >
+   String( T value )
+      : string( nullptr ), length( 0 )
+   {
+      setString( convertToString( value ).getString() );
+   }
 
    //! Destructor
    ~String();
+
+   //! Return length of the string
+   int getLength() const;
+   int getSize() const;
+
+   //! Return currently allocated size
+   int getAllocatedSize() const;
+
+   //! Reserve space for given number of characters
+   void setSize( int size );
 
    //! Set string from given char pointer
    /*! @param prefix_cut_off says length of the prefix that is going to be omitted and
        @param sufix_cut_off says the same about sufix.
     */
    void setString( const char* c,
-                     int prefix_cut_off = 0,
-                     int sufix_cut_off = 0 );
+                   int prefix_cut_off = 0,
+                   int sufix_cut_off = 0 );
 
    //! Return pointer to data
    const char* getString() const;
@@ -87,53 +93,46 @@ class String
    char& operator[]( int i );
 
    /****
-    * TODO: the operators do not work properly
-    * for example String + const char*
+    * Operators for C strings
     */
-
-   //! Operator =
-   String& operator = ( const String& str );
-
-   //! Operator +=
-   String& operator += ( const char* str );
-
-   //! Operator +=
-   String& operator += ( const char str );
-
-   //! Operator +=
-   String& operator += ( const String& str );
+   String& operator=( const char* str );
+   String& operator+=( const char* str );
+   String operator+( const char* str ) const;
+   bool operator==( const char* str ) const;
+   bool operator!=( const char* str ) const;
  
-   //! Operator +
-   String operator + ( const String& str ) const;
+   /****
+    * Operators for Strings
+    */
+   String& operator=( const String& str );
+   String& operator+=( const String& str );
+   String operator+( const String& str ) const;
+   bool operator==( const String& str ) const;
+   bool operator!=( const String& str ) const;
 
-   //! Operator +
-   String operator + ( const char* str ) const;
+   /****
+    * Operators for single characters
+    */
+   String& operator=( char str );
+   String& operator+=( char str );
+   String operator+( char str ) const;
+   bool operator==( char str ) const;
+   bool operator!=( char str ) const;
 
-   //! Comparison operator
-   bool operator == ( const String& str ) const;
-
-   //! Comparison operator
-   bool operator != ( const String& str ) const;
-
-   //! Comparison operator
-   bool operator == ( const char* ) const;
-
-   //! Comparison operator
-   bool operator != ( const char* ) const;
- 
    //! Cast to bool operator
-   operator bool () const;
+   operator bool() const;
 
    //! Cast to bool with negation operator
-   bool operator ! () const;
+   bool operator!() const;
 
-   //! Return length of the string
-   int getLength() const;
-
-   void replace( const String& pattern,
-                 const String& replaceWith );
+   String replace( const String& pattern,
+                   const String& replaceWith,
+                   int count = 0 ) const;
 
    String strip( char strip = ' ' ) const;
+
+   //! Split the string into list of strings w.r.t. given separator.
+   int split( Containers::List< String >& list, const char separator = ' ' ) const;
 
    //! Write to a binary file
    bool save( File& file ) const;
@@ -147,15 +146,14 @@ class String
    //! Read one line from given stream.
    bool getLine( std::istream& stream );
 
-   //! Parse the string into list of strings w.r.t. given separator.
-   int parse( Containers::List< String >& list, const char separator = ' ' ) const;
-
-   friend std::ostream& operator << ( std::ostream& stream, const String& str );
+   friend std::ostream& operator<<( std::ostream& stream, const String& str );
 };
 
-String operator + ( const char* string1, const String& string2 );
+String operator+( char string1, const String& string2 );
 
-std::ostream& operator << ( std::ostream& stream, const String& str );
+String operator+( const char* string1, const String& string2 );
+
+std::ostream& operator<<( std::ostream& stream, const String& str );
 
 template< typename T >
 String convertToString( const T& value )
