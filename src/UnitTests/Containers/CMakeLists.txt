@@ -1,3 +1,8 @@
+ADD_EXECUTABLE( ListTest${mpiExt}${debugExt} ${headers} ListTest.cpp )
+SET_TARGET_PROPERTIES( ListTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS}" )
+TARGET_LINK_LIBRARIES( ListTest${mpiExt}${debugExt} ${GTEST_BOTH_LIBRARIES}
+                                                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( ArrayOperationsTest${mpiExt}${debugExt} ArrayOperationsTest.h ArrayOperationsTest.cu )
    SET_TARGET_PROPERTIES( ArrayOperationsTest${mpiExt}${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_TESTS_FLAGS}" )
@@ -71,6 +76,7 @@ ELSE(  BUILD_CUDA )
 ENDIF( BUILD_CUDA )
 
 
+ADD_TEST( ListTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/ListTest${mpiExt}${debugExt} )
 ADD_TEST( ArrayOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/ArrayOperationsTest${mpiExt}${debugExt} )
 ADD_TEST( ArrayTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/ArrayTest${mpiExt}${debugExt} )
 ADD_TEST( MultiArrayTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MultiArrayTest${mpiExt}${debugExt} )
