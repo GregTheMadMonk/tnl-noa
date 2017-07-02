@@ -132,14 +132,6 @@ class String
 
    String strip( char strip = ' ' ) const;
 
-   // TODO: remove
-   //! Write to a binary file
-   bool save( std::ostream& file ) const;
-
-   // TODO: remove
-   //! Read from binary file
-   bool load( std::istream& file );
-
    //! Write to a binary file
    bool save( File& file ) const;
 

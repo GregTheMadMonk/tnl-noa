@@ -304,46 +304,6 @@ char* String :: getString()
 }
 
 
-bool String :: save( std::ostream& file ) const
-{
-   assert( string );
-
-   int len = strlen( string );
-   file. write( ( char* ) &len, sizeof( int ) );
-   file. write( string, len );
-   if( file. bad() ) return false;
-   return true;
-}
-
-bool String :: load( std::istream& file )
-{
-   int _length;
-   file. read( ( char* ) &_length, sizeof( int ) );
-   if( file. bad() ) return false;
-   if( ! _length )
-   {
-      string[ 0 ] = 0;
-      length = 0;
-      return true;
-   }
-   if( string && length < _length )
-   {
-      delete[] string;
-      string = NULL;
-   }
-   if( ! string )
-   {
-      //dbgCout( "Reallocating string..." );
-      length = STRING_PAGE * ( _length / STRING_PAGE + 1 );
-      string = new char[ length ];
-   }
-
-   file. read( string, _length );
-   if( file. bad() ) return false;
-   string[ _length ] = 0;
-   return true;
-}
-
 bool String :: save( File& file ) const
 {
    TNL_ASSERT( string,
