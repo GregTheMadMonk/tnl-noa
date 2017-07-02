@@ -12,11 +12,15 @@
 
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
-#endif
 
 using namespace TNL;
 
-#ifdef HAVE_GTEST
+TEST( FileTest, CloseEmpty )
+{
+   File file;
+   ASSERT_TRUE( file.close() );
+}
+
 TEST( FileTest, WriteAndRead )
 {
    File file;

@@ -63,7 +63,7 @@ bool File :: close()
    if( verbose )
       std::cout << "Closing the file " << getFileName() << " ... " << std::endl;
 
-   if( std::fclose( file ) != 0 )
+   if( file && std::fclose( file ) != 0 )
    {
       std::cerr << "I was not able to close the file " << fileName << " properly!" << std::endl;
       return false;
