@@ -143,21 +143,27 @@ fatalFailure()
 }
 
 template< typename T >
-std::string
-printToString( const T& value )
+struct Formatter
 {
-   ::std::stringstream ss;
-   ss << value;
-   return ss.str();
-}
+   static std::string
+   printToString( const T& value )
+   {
+      ::std::stringstream ss;
+      ss << value;
+      return ss.str();
+   }
+};
 
 template<>
-inline std::string
-printToString( const bool& value )
+struct Formatter< bool >
 {
-   if( value ) return "true";
-   else return "false";
-}
+   static std::string
+   printToString( const bool& value )
+   {
+      if( value ) return "true";
+      else return "false";
+   }
+};
 
 template< typename T1, typename T2 >
 __cuda_callable__ void
@@ -178,21 +184,23 @@ cmpHelperOpFailure( const char* assertion,
    printDiagnosticsCuda( assertion, message, file, function, line,
                          "Not supported in CUDA kernels." );
 #else
+   const std::string formatted_lhs_value = Formatter< T1 >::printToString( lhs_value );
+   const std::string formatted_rhs_value = Formatter< T2 >::printToString( rhs_value );
    std::stringstream str;
    if( std::string(op) == "==" ) {
       str << "      Expected: " << lhs_expression;
-      if( printToString(lhs_value) != lhs_expression ) {
-         str << "\n      Which is: " << lhs_value;
+      if( formatted_lhs_value != lhs_expression ) {
+         str << "\n      Which is: " << formatted_lhs_value;
       }
       str << "\nTo be equal to: " << rhs_expression;
-      if( printToString(rhs_value) != rhs_expression ) {
-         str << "\n      Which is: " << rhs_value;
+      if( formatted_rhs_value != rhs_expression ) {
+         str << "\n      Which is: " << formatted_rhs_value;
       }
       str << std::endl;
    }
    else {
       str << "Expected: (" << lhs_expression << ") " << op << " (" << rhs_expression << "), "
-          << "actual: " << lhs_value << " vs " << rhs_value << std::endl;
+          << "actual: " << formatted_lhs_value << " vs " << formatted_rhs_value << std::endl;
    }
    printDiagnosticsHost( assertion, message, file, function, line,
                          str.str().c_str() );

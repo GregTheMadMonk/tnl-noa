@@ -472,4 +472,24 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       Object* cuda_pointer;
 };
 
+
+#ifndef NDEBUG
+namespace Assert {
+
+template< typename Object, typename Device >
+struct Formatter< DevicePointer< Object, Device > >
+{
+   static std::string
+   printToString( const DevicePointer< Object, Device >& value )
+   {
+      ::std::stringstream ss;
+      ss << "(DevicePointer< " << Object::getType() << ", " << Device::getDeviceType()
+         << " > object at " << &value << ")";
+      return ss.str();
+   }
+};
+
+} // namespace Assert
+#endif
+
 } // namespace TNL

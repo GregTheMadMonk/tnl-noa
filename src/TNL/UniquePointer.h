@@ -292,5 +292,25 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       Object* cuda_pointer;
 };
 
+
+#ifndef NDEBUG
+namespace Assert {
+
+template< typename Object, typename Device >
+struct Formatter< UniquePointer< Object, Device > >
+{
+   static std::string
+   printToString( const UniquePointer< Object, Device >& value )
+   {
+      ::std::stringstream ss;
+      ss << "(UniquePointer< " << Object::getType() << ", " << Device::getDeviceType()
+         << " > object at " << &value << ")";
+      return ss.str();
+   }
+};
+
+} // namespace Assert
+#endif
+
 } // namespace TNL
 

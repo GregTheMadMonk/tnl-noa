@@ -612,4 +612,24 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       Object* cuda_pointer;
 };
 
+
+#ifndef NDEBUG
+namespace Assert {
+
+template< typename Object, typename Device >
+struct Formatter< SharedPointer< Object, Device > >
+{
+   static std::string
+   printToString( const SharedPointer< Object, Device >& value )
+   {
+      ::std::stringstream ss;
+      ss << "(SharedPointer< " << Object::getType() << ", " << Device::getDeviceType()
+         << " > object at " << &value << ")";
+      return ss.str();
+   }
+};
+
+} // namespace Assert
+#endif
+
 } // namespace TNL
