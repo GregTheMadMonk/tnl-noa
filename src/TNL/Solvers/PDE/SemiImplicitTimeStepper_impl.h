@@ -11,7 +11,8 @@
 #pragma once
 
 #include <TNL/Math.h>
-#include "SemiImplicitTimeStepper.h"
+#include <TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
+#include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 
 namespace TNL {
 namespace Solvers {
@@ -207,7 +208,7 @@ solve( const RealType& time,
       this->preconditionerUpdateTimer.stop();
 
       this->linearSystemSolverTimer.start();
-      if( ! this->linearSystemSolver->template solve< DofVectorType, Linear::LinearResidueGetter< MatrixType, DofVectorType > >( *this->rightHandSidePointer, *dofVector ) )
+      if( ! this->linearSystemSolver->solve( *this->rightHandSidePointer, *dofVector ) )
       {
          std::cerr << std::endl << "The linear system solver did not converge." << std::endl;
          return false;
