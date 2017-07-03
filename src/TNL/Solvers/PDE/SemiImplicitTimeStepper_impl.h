@@ -211,6 +211,8 @@ solve( const RealType& time,
       if( ! this->linearSystemSolver->solve( *this->rightHandSidePointer, *dofVector ) )
       {
          std::cerr << std::endl << "The linear system solver did not converge." << std::endl;
+         // save the linear system for debugging
+         this->problem->saveFailedLinearSystem( *this->matrix, *dofVector, *this->rightHandSidePointer );
          return false;
       }
       this->linearSystemSolverTimer.stop();

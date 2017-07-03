@@ -260,5 +260,18 @@ assemblyLinearSystem( const RealType& time,
    //abort();*/
 }
 
+template< typename Mesh,
+          typename BoundaryCondition,
+          typename RightHandSide,
+          typename DifferentialOperator >
+    template< typename Matrix >
+void
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+saveFailedLinearSystem( const Matrix& matrix,
+                        const DofVectorType& dofs,
+                        const DofVectorType& rightHandSide ) const
+{
+}
+
 } // namespace Problems
 } // namespace TNL

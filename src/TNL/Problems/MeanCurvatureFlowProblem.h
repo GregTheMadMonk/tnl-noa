@@ -97,6 +97,10 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
                                  DofVectorType& rightHandSide,
                                  MeshDependentDataPointer& meshDependentData );
 
+      template< typename Matrix >
+      void saveFailedLinearSystem( const Matrix& matrix,
+                                   const DofVectorType& dofs,
+                                   const DofVectorType& rightHandSide ) const;
 
       protected:
 
