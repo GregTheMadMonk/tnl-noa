@@ -21,6 +21,7 @@
 #include <TNL/Solvers/Linear/SOR.h>
 #include <TNL/Solvers/Linear/CG.h>
 #include <TNL/Solvers/Linear/BICGStab.h>
+#include <TNL/Solvers/Linear/BICGStabL.h>
 #include <TNL/Solvers/Linear/GMRES.h>
 #include <TNL/Solvers/Linear/CWYGMRES.h>
 #include <TNL/Solvers/Linear/TFQMR.h>
@@ -182,23 +183,25 @@ class SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisa
          if( discreteSolver != "sor" &&
              discreteSolver != "cg" &&
              discreteSolver != "bicgstab" &&
+             discreteSolver != "bicgstabl" &&
              discreteSolver != "gmres" &&
              discreteSolver != "cwygmres" &&
              discreteSolver != "tfqmr" )
          {
-            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres, cwygmres or tfqmr." << std::endl;
+            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, bicgstabl, gmres, cwygmres or tfqmr." << std::endl;
             return false;
          }
 #else
          if( discreteSolver != "sor" &&
              discreteSolver != "cg" &&
              discreteSolver != "bicgstab" &&
+             discreteSolver != "bicgstabl" &&
              discreteSolver != "gmres" &&
              discreteSolver != "cwygmres" &&
              discreteSolver != "tfqmr" &&
              discreteSolver != "umfpack" )
          {
-            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres, cwygmres, tfqmr or umfpack." << std::endl;
+            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, bicgstabl, gmres, cwygmres, tfqmr or umfpack." << std::endl;
             return false;
          }
 #endif
@@ -209,6 +212,8 @@ class SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisa
             return SolverStarterPreconditionerSetter< Problem, SemiImplicitCGSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "bicgstab" )
             return SolverStarterPreconditionerSetter< Problem, SemiImplicitBICGStabSolverTag, ConfigTag >::run( problem, parameters );
+         if( discreteSolver == "bicgstabl" )
+            return SolverStarterPreconditionerSetter< Problem, SemiImplicitBICGStabLSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "gmres" )
             return SolverStarterPreconditionerSetter< Problem, SemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "cwygmres" )

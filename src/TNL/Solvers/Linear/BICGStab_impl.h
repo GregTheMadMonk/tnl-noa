@@ -55,7 +55,7 @@ BICGStab< Matrix, Preconditioner >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   exact_residue = parameters.getParameter< int >( "bicgstab-exact-residue" );
+   exact_residue = parameters.getParameter< bool >( "bicgstab-exact-residue" );
    return IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }
 
