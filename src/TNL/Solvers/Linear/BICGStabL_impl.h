@@ -14,6 +14,8 @@
 
 #include "BICGStabL.h"
 
+#include <TNL/Matrices/MatrixOperations.h>
+
 namespace TNL {
 namespace Solvers {
 namespace Linear {
@@ -195,6 +197,8 @@ BICGStabL< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
        */
       for( int j = 1; j <= ell; j++ ) {
          r_j.bind( &R.getData()[ j * ldSize ], size );
+
+         // MGS without reorthogonalization
          for( int i = 1; i < j; i++ ) {
             r_i.bind( &R.getData()[ i * ldSize ], size );
             /****
@@ -205,6 +209,25 @@ BICGStabL< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
             T[ ij ] = r_i.scalarProduct( r_j ) / sigma[ i ];
             r_j.addVector( r_i, -T[ ij ] );
          }
+
+         // MGS with reorthogonalization
+//         for( int i = 1; i < j; i++ ) {
+//            const int ij = (i-1) + (j-1) * ell;
+//            T[ ij ] = 0.0;
+//         }
+//         for( int l = 0; l < 2; l++ )
+//            for( int i = 1; i < j; i++ ) {
+//               r_i.bind( &R.getData()[ i * ldSize ], size );
+//               /****
+//                * T_{i,j} = (r_i, r_j) / sigma_i
+//                * r_j := r_j - T_{i,j} * r_i
+//                */
+//               const int ij = (i-1) + (j-1) * ell;
+//               const RealType T_ij = r_i.scalarProduct( r_j ) / sigma[ i ];
+//               T[ ij ] += T_ij;
+//               r_j.addVector( r_i, -T_ij );
+//            }
+
          sigma[ j ] = r_j.scalarProduct( r_j );
          g_1[ j ] = r_0.scalarProduct( r_j ) / sigma[ j ];
       }
@@ -231,21 +254,21 @@ BICGStabL< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
       }
 
       /****
-       * Final update
+       * Final updates
        */
-      x.addVector( r_0, g_0[ 1 ] );
-      u.bind( &U.getData()[ ell * ldSize ], size );
-      r_i.bind( &R.getData()[ ell * ldSize ], size );
-      u_0.addVector( u, -g_0[ ell ] );
-      r_0.addVector( r_i, -g_1[ ell ] );
-      // TODO: pro u_0 a r_0 lze rozšířit cyklus až do ell
-      for( int j = 1; j < ell; j++ ) {
-         u.bind( &U.getData()[ j * ldSize ], size );
-         r_j.bind( &R.getData()[ j * ldSize ], size );
-         u_0.addVector( u, -g_0[ j ] );
-         r_0.addVector( r_j, -g_1[ j ] );
-         x.addVector( r_j, g_2[ j ] );
-      }
+      // x := x + R_[0:ell-1] * g_2
+      g_2[ 0 ] = g_0[ 1 ];
+      MatrixOperations< DeviceType >::gemv( size, ell,
+                                            1.0, R.getData(), ldSize, g_2.getData(),
+                                            1.0, x.getData() );
+      // r_0 := r_0 - R_[1:ell] * g_1_[1:ell]
+      MatrixOperations< DeviceType >::gemv( size, ell,
+                                            -1.0, R.getData() + ldSize, ldSize, &g_1[ 1 ],
+                                            1.0, r_0.getData() );
+      // u_0 := u_0 - U_[1:ell] * g_0_[1:ell]
+      MatrixOperations< DeviceType >::gemv( size, ell,
+                                            -1.0, U.getData() + ldSize, ldSize, &g_0[ 1 ],
+                                            1.0, u_0.getData() );
 
       if( exact_residue ) {
          /****
