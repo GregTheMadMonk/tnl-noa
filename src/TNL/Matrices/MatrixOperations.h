@@ -37,6 +37,8 @@ public:
     *    lda >= m is the leading dimension of two-dimensional array used to store matrix A,
     *    x is a vector of n elements,
     *    y is a vector of m elements.
+    *
+    * It is assumed that n is much smaller than m.
     */
    template< typename RealType,
              typename IndexType >
@@ -50,31 +52,99 @@ public:
          const RealType& beta,
          RealType* y )
    {
-      TNL_ASSERT( m <= lda, );
+      TNL_ASSERT_GT( m, 0, "m must be positive" );
+      TNL_ASSERT_GT( n, 0, "n must be positive" );
+      TNL_ASSERT_GE( lda, m, "lda must be at least m" );
 
-      if( beta != 0.0 ) {
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )
-#endif
-         for( IndexType j = 0; j < m; j++ ) {
-            RealType tmp = 0.0;
-            for( int k = 0; k < n; k++ )
-               tmp += A[ j + k * lda ] * x[ k ];
-            y[ j ] = alpha * tmp + beta * y[ j ];
+      RealType alphax[ n ];
+      for( IndexType k = 0; k < n; k++ )
+         alphax[ k ] = alpha * x[ k ];
+
+      if( n == 1 ) {
+         if( beta != 0.0 ) {
+            #ifdef HAVE_OPENMP
+            #pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )
+            #endif
+            for( IndexType j = 0; j < m; j++ )
+               y[ j ] = A[ j ] * alphax[ 0 ] + beta * y[ j ];
+         }
+         else {
+            // the vector y might be uninitialized, and 0.0 * NaN = NaN
+            #ifdef HAVE_OPENMP
+            #pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )
+            #endif
+            for( IndexType j = 0; j < m; j++ )
+               y[ j ] = A[ j ] * alphax[ 0 ];
          }
       }
       else {
-         // the vector y might be uninitialized, and 0.0 * NaN = NaN
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )
-#endif
-         for( IndexType j = 0; j < m; j++ ) {
-            RealType tmp = 0.0;
-            for( int k = 0; k < n; k++ )
-               tmp += A[ j + k * lda ] * x[ k ];
-            y[ j ] = alpha * tmp;
+         // the matrix A should be accessed column-wise so we split the work into small
+         // blocks and each block process by columns, either parallelly or serially
+         constexpr int block_size = 128;
+         const int blocks = m / block_size;
+
+         #ifdef HAVE_OPENMP
+         #pragma omp parallel if( TNL::Devices::Host::isOMPEnabled() && blocks >= 2 )
+         #endif
+         {
+            RealType aux[ block_size ];
+
+            #ifdef HAVE_OPENMP
+            #pragma omp for nowait
+            #endif
+            for( int b = 0; b < blocks; b++ ) {
+               const int block_offset = b * block_size;
+
+               // initialize array for thread-local results
+               for( int j = 0; j < block_size; j++ )
+                  aux[ j ] = 0.0;
+
+               // compute aux = A * alphax
+               for( int k = 0; k < n; k++ ) {
+                  const int offset = block_offset + k * lda;
+                  for( int j = 0; j < block_size; j++ )
+                     aux[ j ] += A[ offset + j ] * alphax[ k ];
+               }
+
+               // write result: y = aux + beta * y
+               if( beta != 0.0 ) {
+                  for( int j = 0; j < block_size; j++ )
+                     y[ block_offset + j ] = aux[ j ] + beta * y[ block_offset + j ];
+               }
+               else {
+                  // the vector y might be uninitialized, and 0.0 * NaN = NaN
+                  for( IndexType j = 0; j < block_size; j++ )
+                     y[ block_offset + j ] = aux[ j ];
+               }
+            }
+
+            // the first thread that reaches here processes the last, incomplete block
+            #ifdef HAVE_OPENMP
+            #pragma omp single nowait
+            #endif
+            {
+               // TODO: unlike the complete blocks, the tail is traversed row-wise
+               if( beta != 0.0 ) {
+                  for( IndexType j = blocks * block_size; j < m; j++ ) {
+                     RealType tmp = 0.0;
+                     for( int k = 0; k < n; k++ )
+                        tmp += A[ j + k * lda ] * alphax[ k ];
+                     y[ j ] = tmp + beta * y[ j ];
+                  }
+               }
+               else {
+                  // the vector y might be uninitialized, and 0.0 * NaN = NaN
+                  for( IndexType j = blocks * block_size; j < m; j++ ) {
+                     RealType tmp = 0.0;
+                     for( int k = 0; k < n; k++ )
+                        tmp += A[ j + k * lda ] * alphax[ k ];
+                     y[ j ] = tmp;
+                  }
+               }
+            }
          }
       }
+
    }
 };
 
@@ -106,7 +176,7 @@ GemvCudaKernel( const IndexType m,
    RealType* shx = Devices::Cuda::getSharedMemory< RealType >();
 
    if( threadIdx.x < n )
-      shx[ threadIdx.x ] = x[ threadIdx.x ];
+      shx[ threadIdx.x ] = alpha * x[ threadIdx.x ];
    __syncthreads();
 
    if( beta != 0.0 ) {
@@ -114,7 +184,7 @@ GemvCudaKernel( const IndexType m,
          RealType tmp = 0.0;
          for( IndexType k = 0; k < n; k++ )
             tmp += A[ elementIdx + k * lda ] * shx[ k ];
-         y[ elementIdx ] = alpha * tmp + beta * y[ elementIdx ];
+         y[ elementIdx ] = tmp + beta * y[ elementIdx ];
          elementIdx += gridSize;
       }
    }
@@ -124,7 +194,7 @@ GemvCudaKernel( const IndexType m,
          RealType tmp = 0.0;
          for( IndexType k = 0; k < n; k++ )
             tmp += A[ elementIdx + k * lda ] * shx[ k ];
-         y[ elementIdx ] = alpha * tmp;
+         y[ elementIdx ] = tmp;
          elementIdx += gridSize;
       }
    }
@@ -145,6 +215,8 @@ public:
     *    lda >= m is the leading dimension of two-dimensional array used to store matrix A,
     *    x is a vector of n elements, stored on Devices::Host,
     *    y is a vector of m elements, stored on Devices::Cuda.
+    *
+    * It is assumed that n is much smaller than m.
     */
    template< typename RealType,
              typename IndexType >
