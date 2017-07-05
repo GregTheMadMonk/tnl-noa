@@ -128,7 +128,7 @@ setParameter( const String& name,
    {
       if( parameters[ i ] -> name == name )
       {
-         if( parameters[ i ] -> type == getType( value ) )
+         if( parameters[ i ] -> type == TNL::getType< T >() )
          {
             ( ( tnlParameter< T > * ) parameters[ i ] ) -> value = value;
             return true;
@@ -137,7 +137,7 @@ setParameter( const String& name,
          {
             std::cerr << "Parameter " << name << " already exists with different type "
                  << parameters[ i ] -> type << " not "
-                 << getType( value ) << std::endl;
+                 << TNL::getType< T >() << std::endl;
             abort( );
             return false;
          }
