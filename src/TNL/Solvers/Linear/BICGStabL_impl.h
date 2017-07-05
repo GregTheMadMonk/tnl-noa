@@ -151,14 +151,14 @@ BICGStabL< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
          beta = alpha * rho_1 / rho_0;
          rho_0 = rho_1;
 
-         for( int i = 0; i <= j; i++ ) {
-            u.bind( &U.getData()[ i * ldSize ], size );
-            r_i.bind( &R.getData()[ i * ldSize ], size );
-            /****
-             * u_i := r_i - beta * u_i
-             */
-            u.addVector( r_i, 1.0, -beta );
-         }
+         /****
+          * U_[0:j] := R_[0:j] - beta * U_[0:j]
+          */
+         MatrixOperations< DeviceType >::
+            geam( size, j + 1,
+                  1.0, R.getData(), ldSize,
+                  -beta, U.getData(), ldSize,
+                  U.getData(), ldSize );
 
          /****
           * u_{j+1} = A u_j
@@ -170,14 +170,14 @@ BICGStabL< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
          gamma = r_ast.scalarProduct( Au );
          alpha = rho_0 / gamma;
 
-         for( int i = 0; i <= j; i++ ) {
-            r_i.bind( &R.getData()[ i * ldSize ], size );
-            u.bind( &U.getData()[ (i + 1) * ldSize ], size );
-            /****
-             * r_i := r_i - alpha * u_{i+1}
-             */
-            r_i.addVector( u, -alpha );
-         }
+         /****
+          * R_[0:j] := R_[0:j] - alpha * U_[1:j+1]
+          */
+         MatrixOperations< DeviceType >::
+            geam( size, j + 1,
+                  1.0, R.getData(), ldSize,
+                  -alpha, U.getData() + ldSize, ldSize,
+                  R.getData(), ldSize );
 
          /****
           * r_{j+1} = A r_j

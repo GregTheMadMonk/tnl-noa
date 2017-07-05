@@ -146,6 +146,86 @@ public:
       }
 
    }
+
+   /*
+    * This function performs the matrix-matrix addition
+    *    C = alpha * A + beta * B
+    * where:
+    *    alpha and beta are scalars,
+    *    A, B, C are (m by n) matrices stored in column-major format on Devices::Cuda,
+    *    lda, ldb, ldc (all >= m) are the leading dimensions of matrices A, B, C,
+    *    respectively.
+    *
+    * It is assumed that n is much smaller than m.
+    */
+   template< typename RealType,
+             typename IndexType >
+   static void
+   geam( const IndexType& m,
+         const IndexType& n,
+         const RealType& alpha,
+         const RealType* A,
+         const IndexType& lda,
+         const RealType& beta,
+         const RealType* B,
+         const IndexType& ldb,
+         RealType* C,
+         const IndexType& ldc )
+   {
+      TNL_ASSERT_GT( m, 0, "m must be positive" );
+      TNL_ASSERT_GT( n, 0, "n must be positive" );
+      TNL_ASSERT_GE( lda, m, "lda must be at least m" );
+      TNL_ASSERT_GE( ldb, m, "lda must be at least m" );
+      TNL_ASSERT_GE( ldc, m, "lda must be at least m" );
+
+      if( n == 1 ) {
+         #ifdef HAVE_OPENMP
+         #pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )
+         #endif
+         for( IndexType j = 0; j < m; j++ )
+            C[ j ] = alpha * A[ j ] + beta * B[ j ];
+      }
+      else {
+         // all matrices should be accessed column-wise so we split the work into small
+         // blocks and each block process by columns, either parallelly or serially
+         constexpr int block_size = 128;
+         const int blocks = m / block_size;
+
+         #ifdef HAVE_OPENMP
+         #pragma omp parallel if( TNL::Devices::Host::isOMPEnabled() && blocks >= 2 )
+         #endif
+         {
+            #ifdef HAVE_OPENMP
+            #pragma omp for nowait
+            #endif
+            for( int b = 0; b < blocks; b++ ) {
+               const int block_offset = b * block_size;
+               for( IndexType j = 0; j < n; j++ ) {
+                  const IndexType offset_A = j * lda + block_offset;
+                  const IndexType offset_B = j * ldb + block_offset;
+                  const IndexType offset_C = j * ldc + block_offset;
+                  for( int i = 0; i < block_size; i++ )
+                     C[ offset_C + i ] = alpha * A[ offset_A + i ] + beta * B[ offset_B + i ];
+               }
+            }
+
+            // the first thread that reaches here processes the last, incomplete block
+            #ifdef HAVE_OPENMP
+            #pragma omp single nowait
+            #endif
+            {
+               for( IndexType j = 0; j < n; j++ ) {
+                  const IndexType offset_A = j * lda;
+                  const IndexType offset_B = j * ldb;
+                  const IndexType offset_C = j * ldc;
+                  for( IndexType i = blocks * block_size; i < m; i++ )
+                     C[ offset_C + i ] = alpha * A[ offset_A + i ] + beta * B[ offset_B + i ];
+               }
+            }
+         }
+      }
+
+   }
 };
 
 
@@ -199,6 +279,34 @@ GemvCudaKernel( const IndexType m,
       }
    }
 }
+
+template< typename RealType,
+          typename IndexType >
+__global__ void
+GeamCudaKernel( const IndexType m,
+                const IndexType n,
+                const RealType alpha,
+                const RealType* A,
+                const IndexType lda,
+                const RealType beta,
+                const RealType* B,
+                const IndexType ldb,
+                RealType* C,
+                const IndexType ldc )
+{
+   IndexType x = blockIdx.x * blockDim.x + threadIdx.x;
+   const IndexType gridSizeX = blockDim.x * gridDim.x;
+   const IndexType y = blockIdx.y * blockDim.y + threadIdx.y;
+   const IndexType offset_A = y * lda;
+   const IndexType offset_B = y * ldb;
+   const IndexType offset_C = y * ldc;
+
+   if( y < n )
+      while( x < m ) {
+         C[ x + offset_C ] = alpha * A[ x + offset_A ] + beta * B[ x + offset_B ];
+         x += gridSizeX;
+      }
+}
 #endif
 
 // specialization for CUDA
@@ -250,6 +358,63 @@ public:
             m, n,
             alpha, A, lda,
             xDevice.getData(), beta, y );
+      TNL_CHECK_CUDA_DEVICE;
+#else
+      throw Exceptions::CudaSupportMissing();
+#endif
+   }
+
+   /*
+    * This function performs the matrix-matrix addition
+    *    C = alpha * A + beta * B
+    * where:
+    *    alpha and beta are scalars,
+    *    A, B, C are (m by n) matrices stored in column-major format on Devices::Cuda,
+    *    lda, ldb, ldc (all >= m) are the leading dimensions of matrices A, B, C,
+    *    respectively.
+    *
+    * It is assumed that n is much smaller than m.
+    */
+   template< typename RealType,
+             typename IndexType >
+   static void
+   geam( const IndexType& m,
+         const IndexType& n,
+         const RealType& alpha,
+         const RealType* A,
+         const IndexType& lda,
+         const RealType& beta,
+         const RealType* B,
+         const IndexType& ldb,
+         RealType* C,
+         const IndexType& ldc )
+   {
+      TNL_ASSERT_GT( m, 0, "m must be positive" );
+      TNL_ASSERT_GT( n, 0, "n must be positive" );
+      TNL_ASSERT_GE( lda, m, "lda must be at least m" );
+      TNL_ASSERT_GE( ldb, m, "lda must be at least m" );
+      TNL_ASSERT_GE( ldc, m, "lda must be at least m" );
+
+#ifdef HAVE_CUDA
+      dim3 blockSize, gridSize;
+
+      // max 16 columns of threads
+      blockSize.y = min( n, 16 );
+      // max 256 threads per block, power of 2
+      blockSize.x = 256;
+      while( blockSize.x * blockSize.y > 256 )
+         blockSize.x /= 2;
+
+      const IndexType desGridSize = Gemv_minBlocksPerMultiprocessor
+                                  * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
+      gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( m, blockSize.x ) );
+      gridSize.y = Devices::Cuda::getNumberOfBlocks( n, blockSize.y );
+
+      GeamCudaKernel<<< gridSize, blockSize >>>(
+            m, n,
+            alpha, A, lda,
+            beta, B, ldb,
+            C, ldc );
       TNL_CHECK_CUDA_DEVICE;
 #else
       throw Exceptions::CudaSupportMissing();
