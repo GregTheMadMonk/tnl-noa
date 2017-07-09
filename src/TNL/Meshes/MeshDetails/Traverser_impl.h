@@ -142,12 +142,6 @@ MeshTraverserAllEntitiesKernel( const Mesh* mesh,
       EntitiesProcessor::processEntity( *mesh, *userData, entity );
    }
 }
-
-#if (__CUDA_ARCH__ >= 300 )
-   static constexpr int Traverser_minBlocksPerMultiprocessor = 8;
-#else
-   static constexpr int Traverser_minBlocksPerMultiprocessor = 4;
-#endif
 #endif
 
 template< typename MeshConfig,
@@ -165,8 +159,7 @@ processBoundaryEntities( const MeshPointer& meshPointer,
 
    dim3 blockSize( 256 );
    dim3 gridSize;
-   const int desGridSize = 4 * Traverser_minBlocksPerMultiprocessor
-                             * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
+   const int desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
    gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
 
    Devices::Cuda::synchronizeDevice();
@@ -197,8 +190,7 @@ processInteriorEntities( const MeshPointer& meshPointer,
 
    dim3 blockSize( 256 );
    dim3 gridSize;
-   const int desGridSize = 4 * Traverser_minBlocksPerMultiprocessor
-                             * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
+   const int desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
    gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
 
    Devices::Cuda::synchronizeDevice();
@@ -229,8 +221,7 @@ processAllEntities( const MeshPointer& meshPointer,
 
    dim3 blockSize( 256 );
    dim3 gridSize;
-   const int desGridSize = 4 * Traverser_minBlocksPerMultiprocessor
-                             * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
+   const int desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
    gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
 
    Devices::Cuda::synchronizeDevice();
