@@ -32,6 +32,9 @@ namespace Algorithms {
  * architecture so that there are no local memory spills.
  */
 static constexpr int Multireduction_maxThreadsPerBlock = 256;  // must be a power of 2
+static constexpr int Multireduction_registersPerThread = 38;   // empirically determined optimal value
+
+// __CUDA_ARCH__ is defined only in device code!
 #if (__CUDA_ARCH__ >= 300 )
    static constexpr int Multireduction_minBlocksPerMultiprocessor = 6;
 #else
@@ -187,12 +190,14 @@ CudaMultireductionKernelLauncher( Operation& operation,
    // we run the kernel with a fixed number of blocks, so the amount of work per
    // block increases with enlarging the problem, so even small imbalance can
    // cost us dearly.
-   // On Tesla K40c, desGridSizeX = 4 * 6 * 15 = 360.
-//   const IndexType desGridSizeX = 4 * Multireduction_minBlocksPerMultiprocessor
-//                                    * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-   // On Tesla K40c, desGridSizeX = 6 * 15 = 90.
-   const IndexType desGridSizeX = Multireduction_minBlocksPerMultiprocessor
-                                * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
+   // Therefore,  desGridSize = blocksPerMultiprocessor * numberOfMultiprocessors
+   // where blocksPerMultiprocessor is determined according to the number of
+   // available registers on the multiprocessor.
+   // On Tesla K40c, desGridSize = 8 * 15 = 120.
+   const int activeDevice = Devices::CudaDeviceInfo::getActiveDevice();
+   const int blocksdPerMultiprocessor = Devices::CudaDeviceInfo::getRegistersPerMultiprocessor( activeDevice )
+                                      / ( Multireduction_maxThreadsPerBlock * Multireduction_registersPerThread );
+   const int desGridSizeX = blocksdPerMultiprocessor * Devices::CudaDeviceInfo::getCudaMultiprocessors( activeDevice );
    dim3 blockSize, gridSize;
    
    // version A: max 16 rows of threads

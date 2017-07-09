@@ -168,6 +168,21 @@ getCudaCores( int deviceNum )
            CudaDeviceInfo::getCudaCoresPerMultiprocessors( deviceNum );
 }
 
+int
+CudaDeviceInfo::
+getRegistersPerMultiprocessor( int deviceNum )
+{
+    // results are cached because they are used for configuration of some kernels
+    static std::unordered_map< int, int > results;
+    if( results.count( deviceNum ) == 0 ) {
+        cudaDeviceProp properties;
+        cudaGetDeviceProperties( &properties, deviceNum );
+        results.emplace( deviceNum, properties.regsPerMultiprocessor );
+        return properties.regsPerMultiprocessor;
+    }
+    return results[ deviceNum ];
+}
+
 void
 CudaDeviceInfo::
 writeDeviceInfo( Logger& logger )

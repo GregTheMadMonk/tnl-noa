@@ -232,12 +232,6 @@ public:
 // CUDA kernels
 #ifdef HAVE_CUDA
 
-#if (__CUDA_ARCH__ >= 300 )
-   static constexpr int Gemv_minBlocksPerMultiprocessor = 8;
-#else
-   static constexpr int Gemv_minBlocksPerMultiprocessor = 4;
-#endif
-
 template< typename RealType,
           typename IndexType >
 __global__ void
@@ -348,10 +342,10 @@ public:
       if( ! Containers::Algorithms::ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< RealType, RealType, IndexType >( xDevice.getData(), x, n ) )
          throw 1;
 
-      dim3 blockSize( 256 );
-      dim3 gridSize;
-      const IndexType desGridSize = 4 * Gemv_minBlocksPerMultiprocessor
-                                      * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
+      // desGridSize = blocksPerMultiprocessor * numberOfMultiprocessors
+      const int desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
+      dim3 blockSize, gridSize;
+      blockSize.x = 256;
       gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( m, blockSize.x ) );
 
       GemvCudaKernel<<< gridSize, blockSize, n * sizeof( RealType ) >>>(
@@ -405,8 +399,8 @@ public:
       while( blockSize.x * blockSize.y > 256 )
          blockSize.x /= 2;
 
-      const IndexType desGridSize = Gemv_minBlocksPerMultiprocessor
-                                  * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
+      // desGridSize = blocksPerMultiprocessor * numberOfMultiprocessors
+      const int desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
       gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( m, blockSize.x ) );
       gridSize.y = Devices::Cuda::getNumberOfBlocks( n, blockSize.y );
 

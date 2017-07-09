@@ -107,6 +107,13 @@ getCudaCores( int deviceNum )
    return 0;
 }
 
+int
+CudaDeviceInfo::
+getRegistersPerMultiprocessor( int deviceNum )
+{
+   return 0;
+}
+
 void
 CudaDeviceInfo::
 writeDeviceInfo( Logger& logger )
