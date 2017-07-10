@@ -231,14 +231,32 @@ public:
       return this->rowPointers;
    }
 
+   Containers::Vector< Index, Device, Index >&
+   getRowPointers()
+   {
+      return this->rowPointers;
+   }
+
    const Containers::Vector< Index, Device, Index >&
    getColumnIndexes() const
    {
       return this->columnIndexes;
    }
 
+   Containers::Vector< Index, Device, Index >&
+   getColumnIndexes()
+   {
+      return this->columnIndexes;
+   }
+
    const Containers::Vector< Real, Device, Index >&
    getValues() const
+   {
+      return this->values;
+   }
+
+   Containers::Vector< Real, Device, Index >&
+   getValues()
    {
       return this->values;
    }

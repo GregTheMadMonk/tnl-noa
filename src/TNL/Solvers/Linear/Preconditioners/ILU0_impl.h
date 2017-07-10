@@ -153,6 +153,147 @@ solve( const Vector1& b, Vector2& x ) const
    return true;
 }
 
+
+   template< typename MatrixPointer >
+void
+ILU0< double, Devices::Cuda, int >::
+update( const MatrixPointer& matrixPointer )
+{
+#ifdef HAVE_CUDA
+   // TODO: only numerical factorization has to be done every time, split the rest into separate "setup" method which is called less often
+   resetMatrices();
+
+   // Note: the decomposition will be in-place, matrices L and U will have the
+   // storage of A
+   copyMatrix( *matrixPointer );
+
+   const int m = A.getRows();
+   const int nnz = A.getValues().getSize();
+
+   y.setSize( m );
+
+   // create matrix descriptors
+   cusparseCreateMatDescr( &descr_A );
+   cusparseSetMatIndexBase( descr_A, CUSPARSE_INDEX_BASE_ZERO );
+   cusparseSetMatType( descr_A, CUSPARSE_MATRIX_TYPE_GENERAL );
+
+   cusparseCreateMatDescr( &descr_L );
+   cusparseSetMatIndexBase( descr_L, CUSPARSE_INDEX_BASE_ZERO );
+   cusparseSetMatType( descr_L, CUSPARSE_MATRIX_TYPE_GENERAL );
+   cusparseSetMatFillMode( descr_L, CUSPARSE_FILL_MODE_LOWER );
+   cusparseSetMatDiagType( descr_L, CUSPARSE_DIAG_TYPE_UNIT );
+
+   cusparseCreateMatDescr( &descr_U);
+   cusparseSetMatIndexBase( descr_U, CUSPARSE_INDEX_BASE_ZERO );
+   cusparseSetMatType( descr_U, CUSPARSE_MATRIX_TYPE_GENERAL );
+   cusparseSetMatFillMode( descr_U, CUSPARSE_FILL_MODE_UPPER );
+   cusparseSetMatDiagType( descr_U, CUSPARSE_DIAG_TYPE_NON_UNIT );
+
+   // create info structures
+   cusparseCreateCsrilu02Info( &info_A );
+   cusparseCreateCsrsv2Info( &info_L );
+   cusparseCreateCsrsv2Info( &info_U );
+
+   // query how much memory will be needed in csrilu02 and csrsv2, and allocate the buffer
+   int pBufferSize_A, pBufferSize_L, pBufferSize_U;
+   cusparseDcsrilu02_bufferSize( handle, m, nnz, descr_A,
+                                 A.getValues().getData(),
+                                 A.getRowPointers().getData(),
+                                 A.getColumnIndexes().getData(),
+                                 info_A, &pBufferSize_A );
+   cusparseDcsrsv2_bufferSize( handle, trans_L, m, nnz, descr_L,
+                               A.getValues().getData(),
+                               A.getRowPointers().getData(),
+                               A.getColumnIndexes().getData(),
+                               info_L, &pBufferSize_L );
+   cusparseDcsrsv2_bufferSize( handle, trans_U, m, nnz, descr_U,
+                               A.getValues().getData(),
+                               A.getRowPointers().getData(),
+                               A.getColumnIndexes().getData(),
+                               info_U, &pBufferSize_U );
+   const int pBufferSize = max( pBufferSize_A, max( pBufferSize_L, pBufferSize_U ) );
+   pBuffer.setSize( pBufferSize );
+
+   // Symbolic analysis of the incomplete LU decomposition
+   cusparseDcsrilu02_analysis( handle, m, nnz, descr_A,
+                               A.getValues().getData(),
+                               A.getRowPointers().getData(),
+                               A.getColumnIndexes().getData(),
+                               info_A, policy_A, pBuffer.getData() );
+   int structural_zero;
+   cusparseStatus_t
+   status = cusparseXcsrilu02_zeroPivot( handle, info_A, &structural_zero );
+   if( CUSPARSE_STATUS_ZERO_PIVOT == status ) {
+      std::cerr << "A(" << structural_zero << ", " << structural_zero << ") is missing." << std::endl;
+      throw 1;
+   }
+
+   // Analysis for the triangular solves for L and U
+   // Trick: the lower (upper) triangular part of A has the same sparsity
+   // pattern as L (U), so we can do the analysis for csrsv2 on the matrix A.
+   cusparseDcsrsv2_analysis( handle, trans_L, m, nnz, descr_L,
+                             A.getValues().getData(),
+                             A.getRowPointers().getData(),
+                             A.getColumnIndexes().getData(),
+                             info_L, policy_L, pBuffer.getData() );
+   cusparseDcsrsv2_analysis( handle, trans_U, m, nnz, descr_U,
+                             A.getValues().getData(),
+                             A.getRowPointers().getData(),
+                             A.getColumnIndexes().getData(),
+                             info_U, policy_U, pBuffer.getData() );
+
+   // Numerical incomplete LU decomposition
+   cusparseDcsrilu02( handle, m, nnz, descr_A,
+                      A.getValues().getData(),
+                      A.getRowPointers().getData(),
+                      A.getColumnIndexes().getData(),
+                      info_A, policy_A, pBuffer.getData() );
+   int numerical_zero;
+   status = cusparseXcsrilu02_zeroPivot( handle, info_A, &numerical_zero );
+   if( CUSPARSE_STATUS_ZERO_PIVOT == status ) {
+      std::cerr << "A(" << numerical_zero << ", " << numerical_zero << ") is zero." << std::endl;
+      throw 1;
+   }
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
+}
+
+   template< typename Vector1, typename Vector2 >
+bool
+ILU0< double, Devices::Cuda, int >::
+solve( const Vector1& b, Vector2& x ) const
+{
+#ifdef HAVE_CUDA
+   const int m = A.getRows();
+   const int nnz = A.getValues().getSize();
+
+   // Step 1: solve y from Ly = b
+   cusparseDcsrsv2_solve( handle, trans_L, m, nnz, &alpha, descr_L,
+                          A.getValues().getData(),
+                          A.getRowPointers().getData(),
+                          A.getColumnIndexes().getData(),
+                          info_L,
+                          b.getData(),
+                          (RealType*) y.getData(),
+                          policy_L, (void*) pBuffer.getData() );
+
+   // Step 2: solve x from Ux = y
+   cusparseDcsrsv2_solve( handle, trans_U, m, nnz, &alpha, descr_U,
+                          A.getValues().getData(),
+                          A.getRowPointers().getData(),
+                          A.getColumnIndexes().getData(),
+                          info_U,
+                          y.getData(),
+                          x.getData(),
+                          policy_U, (void*) pBuffer.getData() );
+
+   return true;
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
+}
+
 } // namespace Preconditioners
 } // namespace Linear
 } // namespace Solvers
