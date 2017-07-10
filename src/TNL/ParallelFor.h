@@ -1,5 +1,5 @@
 /***************************************************************************
-                          IndexPermutationApplier.h  -  description
+                          ParallelFor.h  -  description
                              -------------------
     begin                : Mar 10, 2017
     copyright            : (C) 2017 by Tomas Oberhuber et al.
