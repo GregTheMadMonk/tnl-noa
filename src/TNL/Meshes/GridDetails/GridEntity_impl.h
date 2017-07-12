@@ -44,7 +44,7 @@ GridEntity( const Meshes::Grid< Dimension, Real, Device, Index >& grid )
   coordinates( 0 ),
   orientation( 0 ),
   basis( 0 ),
-  neighbourEntitiesStorage( *this )
+  neighborEntitiesStorage( *this )
 {
 }
 
@@ -65,7 +65,7 @@ GridEntity( const Meshes::Grid< Dimension, Real, Device, Index >& grid,
   coordinates( coordinates ),
   orientation( orientation ),
   basis( basis ),
-  neighbourEntitiesStorage( *this )
+  neighborEntitiesStorage( *this )
 {
 }
 
@@ -123,7 +123,7 @@ GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimension, Con
 refresh()
 {
    this->entityIndex = this->grid.getEntityIndex( *this );
-   this->neighbourEntitiesStorage.refresh( this->grid, this->entityIndex );
+   this->neighborEntitiesStorage.refresh( this->grid, this->entityIndex );
 }
 
 template< int Dimension,
@@ -213,13 +213,13 @@ template< int Dimension,
           typename Index,
           int EntityDimension,
           typename Config >
-   template< int NeighbourEntityDimension >
+   template< int NeighborEntityDimension >
 __cuda_callable__ inline
-const typename GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimension, Config >::template NeighbourEntities< NeighbourEntityDimension >&
+const typename GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimension, Config >::template NeighborEntities< NeighborEntityDimension >&
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimension, Config >::
-getNeighbourEntities() const
+getNeighborEntities() const
 {
-   return neighbourEntitiesStorage.template getNeighbourEntities< NeighbourEntityDimension >();
+   return neighborEntitiesStorage.template getNeighborEntities< NeighborEntityDimension >();
 }
 
 template< int Dimension,
@@ -301,7 +301,7 @@ GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >:
 GridEntity( const GridType& grid )
 : grid( grid ),
   entityIndex( -1 ),
-  neighbourEntitiesStorage( *this )
+  neighborEntitiesStorage( *this )
 {
    this->coordinates = CoordinatesType( ( Index ) 0 );
 }
@@ -320,7 +320,7 @@ GridEntity( const GridType& grid,
 : grid( grid ),
   entityIndex( -1 ),
   coordinates( coordinates ),
-  neighbourEntitiesStorage( *this )
+  neighborEntitiesStorage( *this )
 {
 }
 
@@ -374,7 +374,7 @@ GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >:
 refresh()
 {
    this->entityIndex = this->grid.getEntityIndex( *this );
-   this->neighbourEntitiesStorage.refresh( this->grid, this->entityIndex );
+   this->neighborEntitiesStorage.refresh( this->grid, this->entityIndex );
 }
 
 template< int Dimension,
@@ -428,13 +428,13 @@ template< int Dimension,
           typename Device,
           typename Index,
           typename Config >
-   template< int NeighbourEntityDimension >
+   template< int NeighborEntityDimension >
 __cuda_callable__ inline
-const typename GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >::template NeighbourEntities< NeighbourEntityDimension >&
+const typename GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >::template NeighborEntities< NeighborEntityDimension >&
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >::
-getNeighbourEntities() const
+getNeighborEntities() const
 {
-   return neighbourEntitiesStorage.template getNeighbourEntities< NeighbourEntityDimension >();
+   return neighborEntitiesStorage.template getNeighborEntities< NeighborEntityDimension >();
 }
 
 template< int Dimension,
@@ -518,7 +518,7 @@ GridEntity( const GridType& grid )
  : grid( grid ),
    entityIndex( -1 ),
    coordinates( 0 ),
-   neighbourEntitiesStorage( *this )
+   neighborEntitiesStorage( *this )
 {
 }
 
@@ -536,7 +536,7 @@ GridEntity( const GridType& grid,
 : grid( grid ),
   entityIndex( -1 ),
   coordinates( coordinates ),
-  neighbourEntitiesStorage( *this )
+  neighborEntitiesStorage( *this )
 {
 }
 
@@ -590,7 +590,7 @@ GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::
 refresh()
 {
    this->entityIndex = this->grid.getEntityIndex( *this );
-   this->neighbourEntitiesStorage.refresh( this->grid, this->entityIndex );
+   this->neighborEntitiesStorage.refresh( this->grid, this->entityIndex );
 }
 
 template< int Dimension,
@@ -646,13 +646,13 @@ template< int Dimension,
           typename Device,
           typename Index,
           typename Config >
-   template< int NeighbourEntityDimension >
+   template< int NeighborEntityDimension >
 __cuda_callable__ inline
-const typename GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::template NeighbourEntities< NeighbourEntityDimension >&
+const typename GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::template NeighborEntities< NeighborEntityDimension >&
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::
-getNeighbourEntities() const
+getNeighborEntities() const
 {
-   return neighbourEntitiesStorage.template getNeighbourEntities< NeighbourEntityDimension >();
+   return neighborEntitiesStorage.template getNeighborEntities< NeighborEntityDimension >();
 }
 
 template< int Dimension,

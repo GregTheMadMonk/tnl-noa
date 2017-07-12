@@ -15,11 +15,11 @@ SET( headers BoundaryGridEntityChecker.h
              GridEntityTopology.h
              GridTraverser.h
              GridTraverser_impl.h
-             NeighbourGridEntitiesStorage.h
-             NeighbourGridEntityGetter1D_impl.h
-             NeighbourGridEntityGetter2D_impl.h
-             NeighbourGridEntityGetter3D_impl.h
-             NeighbourGridEntityGetter.h
+             NeighborGridEntitiesStorage.h
+             NeighborGridEntityGetter1D_impl.h
+             NeighborGridEntityGetter2D_impl.h
+             NeighborGridEntityGetter3D_impl.h
+             NeighborGridEntityGetter.h
              Traverser_Grid1D.h
              Traverser_Grid1D_impl.h
              Traverser_Grid2D.h

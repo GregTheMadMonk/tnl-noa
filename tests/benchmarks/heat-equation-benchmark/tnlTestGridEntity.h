@@ -56,22 +56,22 @@ class tnlTestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimensi
       typedef tnlStaticVector< meshDimension, IndexType > EntityOrientationType;
       typedef tnlStaticVector< meshDimension, IndexType > EntityBasisType;
       typedef tnlTestGridEntity< GridType, entityDimension, Config > ThisType;
-      //typedef tnlTestNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
+      //typedef tnlTestNeighborGridEntitiesStorage< ThisType > NeighborGridEntitiesStorageType;
       
-      /*template< int NeighbourEntityDimension = entityDimension >
-      using NeighbourEntities = 
-         tnlTestNeighbourGridEntityGetter<
+      /*template< int NeighborEntityDimension = entityDimension >
+      using NeighborEntities = 
+         tnlTestNeighborGridEntityGetter<
             tnlTestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >,
                            entityDimension,
                            Config >,
-            NeighbourEntityDimension >;*/
+            NeighborEntityDimension >;*/
 
 
       __cuda_callable__ inline
       tnlTestGridEntity( const GridType& grid )
       : grid( grid ),
         entityIndex( -1 )/*,
-        neighbourEntitiesStorage( *this )*/
+        neighborEntitiesStorage( *this )*/
       {
          this->coordinates = CoordinatesType( ( Index ) 0 );
          this->orientation = EntityOrientationType( ( Index ) 0 );
@@ -87,7 +87,7 @@ class tnlTestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimensi
       : grid( grid ),
         entityIndex( -1 ),
         coordinates( coordinates )/*,
-        neighbourEntitiesStorage( *this )*/
+        neighborEntitiesStorage( *this )*/
       {
          this->orientation = EntityOrientationType( ( Index ) 0 );
          this->basis = EntityBasisType( ( Index ) 1 );
@@ -107,7 +107,7 @@ class tnlTestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimensi
       
       EntityBasisType basis;
       
-      //NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
+      //NeighborGridEntitiesStorageType neighborEntitiesStorage;
       
 };
 

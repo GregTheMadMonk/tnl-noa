@@ -69,12 +69,12 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 1,MeshReal, Device, MeshIndex >,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities();
          const typename MeshEntity::MeshType& mesh = entity.getMesh();
          const RealType& hx_div = entity.getMesh().template getSpaceStepsProducts< -2 >();
          const IndexType& center = entity.getIndex();
-         const IndexType& east = neighbourEntities.template getEntityIndex<  1 >();
-         const IndexType& west = neighbourEntities.template getEntityIndex< -1 >();
+         const IndexType& east = neighborEntities.template getEntityIndex<  1 >();
+         const IndexType& west = neighborEntities.template getEntityIndex< -1 >();
          const RealType& u_c = u[ center ];
          const RealType u_x_f = ( u[ east ] - u_c );
          const RealType u_x_b = ( u_c - u[ west ] );
@@ -105,10 +105,10 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 1,MeshReal, Device, MeshIndex >,
                                      Vector& b ) const
       {
          typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities();
          const IndexType& center = entity.getIndex();
-         const IndexType& east = neighbourEntities.template getEntityIndex<  1 >();
-         const IndexType& west = neighbourEntities.template getEntityIndex< -1 >();
+         const IndexType& east = neighborEntities.template getEntityIndex<  1 >();
+         const IndexType& west = neighborEntities.template getEntityIndex< -1 >();
          const RealType lambda_x = tau * entity.getMesh().template getSpaceStepsProducts< -2 >();
          const RealType& nonlinearity_center = this->nonlinearity[ center ];
          const RealType& nonlinearity_west = this->nonlinearity[ west ];
@@ -163,15 +163,15 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const typename MeshEntity::MeshType& mesh = entity.getMesh();
          const RealType& hx_div = entity.getMesh().template getSpaceStepsProducts< -2,  0 >();
          const RealType& hy_div = entity.getMesh().template getSpaceStepsProducts<  0, -2 >();
          const IndexType& center = entity.getIndex();
-         const IndexType& east = neighbourEntities.template getEntityIndex<  1, 0 >();
-         const IndexType& west = neighbourEntities.template getEntityIndex< -1, 0 >();
-         const IndexType& north = neighbourEntities.template getEntityIndex< 0,  1 >();
-         const IndexType& south = neighbourEntities.template getEntityIndex< 0, -1 >();
+         const IndexType& east = neighborEntities.template getEntityIndex<  1, 0 >();
+         const IndexType& west = neighborEntities.template getEntityIndex< -1, 0 >();
+         const IndexType& north = neighborEntities.template getEntityIndex< 0,  1 >();
+         const IndexType& south = neighborEntities.template getEntityIndex< 0, -1 >();
          const RealType& u_c = u[ center ];
          const RealType u_x_f = ( u[ east ] - u_c );
          const RealType u_x_b = ( u_c - u[ west ] );
@@ -205,12 +205,12 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >
                                      Vector& b ) const
       {
          typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const IndexType& center = entity.getIndex();
-         const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0 >();
-         const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0 >();
-         const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >();
-         const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >();
+         const IndexType& east  = neighborEntities.template getEntityIndex<  1,  0 >();
+         const IndexType& west  = neighborEntities.template getEntityIndex< -1,  0 >();
+         const IndexType& north = neighborEntities.template getEntityIndex<  0,  1 >();
+         const IndexType& south = neighborEntities.template getEntityIndex<  0, -1 >();
          const RealType lambda_x = tau * entity.getMesh().template getSpaceStepsProducts< -2,  0 >();
          const RealType lambda_y = tau * entity.getMesh().template getSpaceStepsProducts<  0, -2 >();
          const RealType& nonlinearity_center = this->nonlinearity[ center ];
@@ -272,18 +272,18 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities();
          const typename MeshEntity::MeshType& mesh = entity.getMesh();
          const RealType& hx_div = entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >();
          const RealType& hy_div = entity.getMesh().template getSpaceStepsProducts<  0, -2,  0 >();
          const RealType& hz_div = entity.getMesh().template getSpaceStepsProducts<  0,  0, -2 >();
          const IndexType& center = entity.getIndex();
-         const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0,  0 >();
-         const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0,  0 >();
-         const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1,  0 >();
-         const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1,  0 >();
-         const IndexType& up    = neighbourEntities.template getEntityIndex<  0,  0,  1 >();
-         const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >();
+         const IndexType& east  = neighborEntities.template getEntityIndex<  1,  0,  0 >();
+         const IndexType& west  = neighborEntities.template getEntityIndex< -1,  0,  0 >();
+         const IndexType& north = neighborEntities.template getEntityIndex<  0,  1,  0 >();
+         const IndexType& south = neighborEntities.template getEntityIndex<  0, -1,  0 >();
+         const IndexType& up    = neighborEntities.template getEntityIndex<  0,  0,  1 >();
+         const IndexType& down  = neighborEntities.template getEntityIndex<  0,  0, -1 >();
  
          const RealType& u_c = u[ center ];
          const RealType u_x_f = ( u[ east ] - u_c );
@@ -322,14 +322,14 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >
                                      Vector& b ) const
       {
          typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-         const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities();
          const IndexType& center = entity.getIndex();
-         const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0,  0 >();
-         const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0,  0 >();
-         const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1,  0 >();
-         const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1,  0 >();
-         const IndexType& up    = neighbourEntities.template getEntityIndex<  0,  0,  1 >();
-         const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >();
+         const IndexType& east  = neighborEntities.template getEntityIndex<  1,  0,  0 >();
+         const IndexType& west  = neighborEntities.template getEntityIndex< -1,  0,  0 >();
+         const IndexType& north = neighborEntities.template getEntityIndex<  0,  1,  0 >();
+         const IndexType& south = neighborEntities.template getEntityIndex<  0, -1,  0 >();
+         const IndexType& up    = neighborEntities.template getEntityIndex<  0,  0,  1 >();
+         const IndexType& down  = neighborEntities.template getEntityIndex<  0,  0, -1 >();
  
  
          const RealType lambda_x = tau * entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >();

@@ -32,12 +32,12 @@ class Grid : public tnlObject
 #include <mesh/grids/GridEntityTopology.h>
 #include <mesh/grids/GridEntityGetter.h>
 #include <mesh/grids/GridEntityConfig.h>
-#include <mesh/grids/NeighbourGridEntityGetter.h>
+#include <mesh/grids/NeighborGridEntityGetter.h>
 #include <core/tnlLogger.h>
 
 // TODO: remove this
 //#include <../tests/benchmarks/heat-equation-benchmark/tnlTestGridEntity.h>
-//#include <../tests/benchmarks/heat-equation-benchmark/tnlTestNeighbourGridEntityGetter2D_impl.h>
+//#include <../tests/benchmarks/heat-equation-benchmark/tnlTestNeighborGridEntityGetter2D_impl.h>
 /////
 
 template< typename Real,
@@ -192,7 +192,7 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
 #include <core/tnlTNL_ASSERT.h>
 #include <mesh/GnuplotWriter.h>
 #include <mesh/grids/GridEntityGetter_impl.h>
-#include <mesh/grids/NeighbourGridEntityGetter2D_impl.h>
+#include <mesh/grids/NeighborGridEntityGetter2D_impl.h>
 #include <mesh/grids/GridEntityMeasureGetter.h>
 
 using namespace std;

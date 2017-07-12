@@ -36,13 +36,13 @@ operator()( const MeshFunction& u,
 {
     static_assert( MeshEntity::entityDimension == 1, "Wrong mesh entity dimension." ); 
     static_assert( MeshFunction::getEntitiesDimension() == 1, "Wrong preimage function" ); 
-    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
+    const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities(); 
 
     //rho
     const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1 >(); 
     const IndexType& center = entity.getIndex(); 
-    const IndexType& east = neighbourEntities.template getEntityIndex< 1 >(); 
-    const IndexType& west = neighbourEntities.template getEntityIndex< -1 >();
+    const IndexType& east = neighborEntities.template getEntityIndex< 1 >(); 
+    const IndexType& west = neighborEntities.template getEntityIndex< -1 >();
     return (0.5 * this->tau) * ( u[ west ] - 2.0 * u[ center ]  + u[ east ] ) 
           - 0.5 * hxInverse * ( u[ west ] * this->velocity[ west ] - u[ east ] * this->velocity[ east ] );
 }
@@ -94,11 +94,11 @@ updateLinearSystem( const RealType& time,
     * by the Finite difference method.
     */
 
-    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
+    const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities(); 
    const RealType& lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2 >(); 
    const IndexType& center = entity.getIndex(); 
-   const IndexType& east = neighbourEntities.template getEntityIndex< 1 >(); 
-   const IndexType& west = neighbourEntities.template getEntityIndex< -1 >(); 
+   const IndexType& east = neighborEntities.template getEntityIndex< 1 >(); 
+   const IndexType& west = neighborEntities.template getEntityIndex< -1 >(); 
    matrixRow.setElement( 0, west,   - lambdaX );
    matrixRow.setElement( 1, center, 2.0 * lambdaX );
    matrixRow.setElement( 2, east,   - lambdaX );
@@ -142,15 +142,15 @@ operator()( const MeshFunction& u,
     */
     static_assert( MeshEntity::entityDimension == 2, "Wrong mesh entity dimension." ); 
     static_assert( MeshFunction::getEntitiesDimension() == 2, "Wrong preimage function" ); 
-    const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
+    const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities(); 
 
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >(); 
    const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >(); 
    const IndexType& center = entity.getIndex(); 
-   const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0 >(); 
-   const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0 >(); 
-   const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >(); 
-   const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >(); 
+   const IndexType& east  = neighborEntities.template getEntityIndex<  1,  0 >(); 
+   const IndexType& west  = neighborEntities.template getEntityIndex< -1,  0 >(); 
+   const IndexType& north = neighborEntities.template getEntityIndex<  0,  1 >(); 
+   const IndexType& south = neighborEntities.template getEntityIndex<  0, -1 >(); 
    return ( u[ west ] - 2.0 * u[ center ] + u[ east ]  ) * hxSquareInverse +
           ( u[ south ] - 2.0 * u[ center ] + u[ north ] ) * hySquareInverse;
 }
@@ -202,14 +202,14 @@ updateLinearSystem( const RealType& time,
     * by the Finite difference method.
     */
 
-    const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
+    const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities(); 
    const RealType& lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2, 0 >(); 
    const RealType& lambdaY = tau * entity.getMesh().template getSpaceStepsProducts< 0, -2 >(); 
    const IndexType& center = entity.getIndex(); 
-   const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0 >(); 
-   const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0 >(); 
-   const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >(); 
-   const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >(); 
+   const IndexType& east  = neighborEntities.template getEntityIndex<  1,  0 >(); 
+   const IndexType& west  = neighborEntities.template getEntityIndex< -1,  0 >(); 
+   const IndexType& north = neighborEntities.template getEntityIndex<  0,  1 >(); 
+   const IndexType& south = neighborEntities.template getEntityIndex<  0, -1 >(); 
    matrixRow.setElement( 0, south,  -lambdaY );
    matrixRow.setElement( 1, west,   -lambdaX );
    matrixRow.setElement( 2, center, 2.0 * ( lambdaX + lambdaY ) );
@@ -255,18 +255,18 @@ operator()( const MeshFunction& u,
     */
     static_assert( MeshEntity::entityDimension == 3, "Wrong mesh entity dimension." ); 
     static_assert( MeshFunction::getEntitiesDimension() == 3, "Wrong preimage function" ); 
-    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
+    const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities(); 
 
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >(); 
    const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts<  0, -2,  0 >(); 
    const RealType& hzSquareInverse = entity.getMesh().template getSpaceStepsProducts<  0,  0, -2 >(); 
    const IndexType& center = entity.getIndex(); 
-   const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0,  0 >(); 
-   const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0,  0 >(); 
-   const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1,  0 >(); 
-   const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1,  0 >(); 
-   const IndexType& up    = neighbourEntities.template getEntityIndex<  0,  0,  1 >(); 
-   const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >(); 
+   const IndexType& east  = neighborEntities.template getEntityIndex<  1,  0,  0 >(); 
+   const IndexType& west  = neighborEntities.template getEntityIndex< -1,  0,  0 >(); 
+   const IndexType& north = neighborEntities.template getEntityIndex<  0,  1,  0 >(); 
+   const IndexType& south = neighborEntities.template getEntityIndex<  0, -1,  0 >(); 
+   const IndexType& up    = neighborEntities.template getEntityIndex<  0,  0,  1 >(); 
+   const IndexType& down  = neighborEntities.template getEntityIndex<  0,  0, -1 >(); 
    return ( u[ west ] - 2.0 * u[ center ] + u[ east ]  ) * hxSquareInverse +
           ( u[ south ] - 2.0 * u[ center ] + u[ north ] ) * hySquareInverse +
           ( u[ up ] - 2.0 * u[ center ] + u[ down ] ) * hzSquareInverse;
@@ -319,17 +319,17 @@ updateLinearSystem( const RealType& time,
     * by the Finite difference method.
     */
 
-    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
+    const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities(); 
    const RealType& lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >(); 
    const RealType& lambdaY = tau * entity.getMesh().template getSpaceStepsProducts<  0, -2,  0 >(); 
    const RealType& lambdaZ = tau * entity.getMesh().template getSpaceStepsProducts<  0,  0, -2 >(); 
    const IndexType& center = entity.getIndex(); 
-   const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0,  0 >(); 
-   const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0,  0 >(); 
-   const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1,  0 >(); 
-   const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1,  0 >(); 
-   const IndexType& up    = neighbourEntities.template getEntityIndex<  0,  0,  1 >(); 
-   const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >(); 
+   const IndexType& east  = neighborEntities.template getEntityIndex<  1,  0,  0 >(); 
+   const IndexType& west  = neighborEntities.template getEntityIndex< -1,  0,  0 >(); 
+   const IndexType& north = neighborEntities.template getEntityIndex<  0,  1,  0 >(); 
+   const IndexType& south = neighborEntities.template getEntityIndex<  0, -1,  0 >(); 
+   const IndexType& up    = neighborEntities.template getEntityIndex<  0,  0,  1 >(); 
+   const IndexType& down  = neighborEntities.template getEntityIndex<  0,  0, -1 >(); 
    matrixRow.setElement( 0, down,   -lambdaZ );
    matrixRow.setElement( 1, south,  -lambdaY );
    matrixRow.setElement( 2, west,   -lambdaX );

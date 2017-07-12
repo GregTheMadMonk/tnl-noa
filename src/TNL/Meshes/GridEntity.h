@@ -10,15 +10,15 @@
 
 #pragma once
 
-#include <TNL/Meshes/GridDetails/NeighbourGridEntitiesStorage.h>
+#include <TNL/Meshes/GridDetails/NeighborGridEntitiesStorage.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename GridEntity,
-          int NeighbourEntityDimension,
+          int NeighborEntityDimension,
           typename StencilStorage >
-class NeighbourGridEntityGetter;
+class NeighborGridEntityGetter;
 
 template< typename GridEntityType >
 class BoundaryGridEntityChecker;
@@ -64,15 +64,15 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimensio
       typedef GridEntity< GridType, entityDimension, Config > ThisType;
       typedef typename GridType::PointType PointType;
  
-      typedef NeighbourGridEntitiesStorage< ThisType, Config > NeighbourGridEntitiesStorageType;
+      typedef NeighborGridEntitiesStorage< ThisType, Config > NeighborGridEntitiesStorageType;
  
-      template< int NeighbourEntityDimension = entityDimension >
-      using NeighbourEntities =
-         NeighbourGridEntityGetter<
+      template< int NeighborEntityDimension = entityDimension >
+      using NeighborEntities =
+         NeighborGridEntityGetter<
             GridEntity< Meshes::Grid< Dimension, Real, Device, Index >,
                            EntityDimension,
                            Config >,
-            NeighbourEntityDimension >;
+            NeighborEntityDimension >;
  
       __cuda_callable__ inline
       GridEntity( const GridType& grid );
@@ -116,10 +116,10 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimensio
       __cuda_callable__ inline
       void setBasis( const EntityBasisType& basis );
  
-      template< int NeighbourEntityDimension = entityDimension >
+      template< int NeighborEntityDimension = entityDimension >
       __cuda_callable__ inline
-      const NeighbourEntities< NeighbourEntityDimension >&
-      getNeighbourEntities() const;
+      const NeighborEntities< NeighborEntityDimension >&
+      getNeighborEntities() const;
  
       __cuda_callable__ inline
       bool isBoundaryEntity() const;
@@ -145,7 +145,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimensio
  
       EntityBasisType basis;
  
-      NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
+      NeighborGridEntitiesStorageType neighborEntitiesStorage;
  
       //__cuda_callable__ inline
       //GridEntity();
@@ -187,15 +187,15 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Con
       typedef Containers::StaticVector< meshDimension, IndexType > EntityOrientationType;
       typedef Containers::StaticVector< meshDimension, IndexType > EntityBasisType;
       typedef GridEntity< GridType, entityDimension, Config > ThisType;
-      typedef NeighbourGridEntitiesStorage< ThisType, Config > NeighbourGridEntitiesStorageType;
+      typedef NeighborGridEntitiesStorage< ThisType, Config > NeighborGridEntitiesStorageType;
  
-      template< int NeighbourEntityDimension = entityDimension >
-      using NeighbourEntities =
-         NeighbourGridEntityGetter<
+      template< int NeighborEntityDimension = entityDimension >
+      using NeighborEntities =
+         NeighborGridEntityGetter<
             GridEntity< Meshes::Grid< Dimension, Real, Device, Index >,
                            entityDimension,
                            Config >,
-            NeighbourEntityDimension >;
+            NeighborEntityDimension >;
 
 
       __cuda_callable__ inline
@@ -240,10 +240,10 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Con
       __cuda_callable__ inline
       void setBasis( const EntityBasisType& basis ){};
  
-      template< int NeighbourEntityDimension = Dimension >
+      template< int NeighborEntityDimension = Dimension >
       __cuda_callable__ inline
-      const NeighbourEntities< NeighbourEntityDimension >&
-      getNeighbourEntities() const;
+      const NeighborEntities< NeighborEntityDimension >&
+      getNeighborEntities() const;
  
       __cuda_callable__ inline
       bool isBoundaryEntity() const;
@@ -268,7 +268,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Con
  
       CoordinatesType coordinates;
  
-      NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
+      NeighborGridEntitiesStorageType neighborEntitiesStorage;
  
       //__cuda_callable__ inline
       //GridEntity();
@@ -309,15 +309,15 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >
       typedef Containers::StaticVector< meshDimension, IndexType > EntityOrientationType;
       typedef Containers::StaticVector< meshDimension, IndexType > EntityBasisType;
       typedef GridEntity< GridType, entityDimension, Config > ThisType;
-      typedef NeighbourGridEntitiesStorage< ThisType, Config > NeighbourGridEntitiesStorageType;
+      typedef NeighborGridEntitiesStorage< ThisType, Config > NeighborGridEntitiesStorageType;
  
-      template< int NeighbourEntityDimension = entityDimension >
-      using NeighbourEntities =
-         NeighbourGridEntityGetter<
+      template< int NeighborEntityDimension = entityDimension >
+      using NeighborEntities =
+         NeighborGridEntityGetter<
             GridEntity< Meshes::Grid< Dimension, Real, Device, Index >,
                            entityDimension,
                            Config >,
-            NeighbourEntityDimension >;
+            NeighborEntityDimension >;
 
 
       __cuda_callable__ inline
@@ -363,10 +363,10 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >
       void setBasis( const EntityBasisType& basis ){};
 
  
-      template< int NeighbourEntityDimension = entityDimension >
+      template< int NeighborEntityDimension = entityDimension >
       __cuda_callable__ inline
-      const NeighbourEntities< NeighbourEntityDimension >&
-      getNeighbourEntities() const;
+      const NeighborEntities< NeighborEntityDimension >&
+      getNeighborEntities() const;
  
       __cuda_callable__ inline
       bool isBoundaryEntity() const;
@@ -391,7 +391,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >
  
       CoordinatesType coordinates;
  
-      NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
+      NeighborGridEntitiesStorageType neighborEntitiesStorage;
  
       friend class BoundaryGridEntityChecker< ThisType >;
  

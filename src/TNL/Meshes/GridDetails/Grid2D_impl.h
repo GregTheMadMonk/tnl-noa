@@ -15,7 +15,7 @@
 #include <TNL/Assert.h>
 #include <TNL/Meshes/GridDetails/GnuplotWriter.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
-#include <TNL/Meshes/GridDetails/NeighbourGridEntityGetter2D_impl.h>
+#include <TNL/Meshes/GridDetails/NeighborGridEntityGetter2D_impl.h>
 #include <TNL/Meshes/GridDetails/GridEntityMeasureGetter.h>
 
 namespace TNL {

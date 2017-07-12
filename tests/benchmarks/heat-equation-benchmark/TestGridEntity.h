@@ -18,12 +18,12 @@
 #pragma once 
  
 template< typename GridEntity >
-class TestNeighbourGridEntitiesStorage
+class TestNeighborGridEntitiesStorage
 {  
    public:
       
       __cuda_callable__
-      TestNeighbourGridEntitiesStorage( const GridEntity& entity )
+      TestNeighborGridEntitiesStorage( const GridEntity& entity )
       : entity( entity )
       {}
       
@@ -79,13 +79,13 @@ class TestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension 
       typedef Containers::StaticVector< meshDimension, IndexType > EntityOrientationType;
       typedef Containers::StaticVector< meshDimension, IndexType > EntityBasisType;
       typedef TestGridEntity< GridType, entityDimension > ThisType;
-      typedef TestNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
+      typedef TestNeighborGridEntitiesStorage< ThisType > NeighborGridEntitiesStorageType;
       
       __cuda_callable__ inline
       TestGridEntity( const GridType& grid )
       : grid( grid ),
         /*entityIndex( -1 ),*/
-        neighbourEntitiesStorage( *this )
+        neighborEntitiesStorage( *this )
       {
       }
       
@@ -98,7 +98,7 @@ class TestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension 
       : grid( grid ),
         /*entityIndex( -1 ),
         coordinates( coordinates ),*/
-        neighbourEntitiesStorage( *this )
+        neighborEntitiesStorage( *this )
         {
         }
 
@@ -116,7 +116,7 @@ class TestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension 
       
       EntityBasisType basis;
       
-      NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
+      NeighborGridEntitiesStorageType neighborEntitiesStorage;
       
 };
 

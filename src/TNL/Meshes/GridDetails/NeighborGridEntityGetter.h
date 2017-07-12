@@ -1,5 +1,5 @@
 /***************************************************************************
-                          NeighbourGridEntityGetter.h  -  description
+                          NeighborGridEntityGetter.h  -  description
                              -------------------
     begin                : Nov 23, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -17,17 +17,17 @@ namespace TNL {
 namespace Meshes {
 
 template< typename GridEntity,
-          int NeighbourEntityDimension,
+          int NeighborEntityDimension,
           typename EntityStencilTag =
-            GridEntityStencilStorageTag< GridEntity::ConfigType::template neighbourEntityStorage< GridEntity >( NeighbourEntityDimension ) > >
-class NeighbourGridEntityGetter
+            GridEntityStencilStorageTag< GridEntity::ConfigType::template neighborEntityStorage< GridEntity >( NeighborEntityDimension ) > >
+class NeighborGridEntityGetter
 {
    public:
 
       // TODO: not all specializations are implemented yet
  
       __cuda_callable__
-      NeighbourGridEntityGetter( const GridEntity& entity )
+      NeighborGridEntityGetter( const GridEntity& entity )
       {
          //TNL_ASSERT( false, );
       }
