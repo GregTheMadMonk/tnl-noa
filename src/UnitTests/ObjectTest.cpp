@@ -29,6 +29,8 @@ TEST( ObjectTest, SaveAndLoadTest )
    file.close();
    file.open( "test-file.tnl", IOMode::read );
    ASSERT_TRUE( testObject.load( file ) );
+
+   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 }
 
 TEST( ObjectTest, parseObjectTypeTest )

@@ -72,6 +72,7 @@ Array( Array< Element, Device, Index >& array,
   allocationPointer( array.allocationPointer ),
   referenceCounter( 0 )
 {
+   TNL_ASSERT_TRUE( array.getData(), "Empty arrays cannot be bound." );
    TNL_ASSERT_LT( begin, array.getSize(), "Begin of array is out of bounds." );
    TNL_ASSERT_LE( begin + size, array.getSize(), "End of array is out of bounds." );
 
@@ -213,6 +214,7 @@ Array< Element, Device, Index >::
 bind( Element* data,
       const Index size )
 {
+   TNL_ASSERT_TRUE( data, "Null pointer cannot be bound." );
    this->releaseData();
    this->data = data;
    this->size = size;
@@ -232,6 +234,7 @@ bind( const ArrayT& array,
    static_assert( std::is_same< Element, typename ArrayT::ElementType >::value, "ElementType of both arrays must be the same." );
    static_assert( std::is_same< Device, typename ArrayT::DeviceType >::value, "DeviceType of both arrays must be the same." );
    static_assert( std::is_same< Index, typename ArrayT::IndexType >::value, "IndexType of both arrays must be the same." );
+   TNL_ASSERT_TRUE( array.getData(), "Empty array cannot be bound." );
    TNL_ASSERT_LT( begin, array.getSize(), "Begin of array is out of bounds." );
    TNL_ASSERT_LE( begin + size, array.getSize(), "End of array is out of bounds." );
 

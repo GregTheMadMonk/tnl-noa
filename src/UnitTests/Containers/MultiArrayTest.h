@@ -215,6 +215,8 @@ TEST( MultiArrayTest, testSaveAndLoad )
    ASSERT_TRUE( u. load( file ) );
    file. close();
    ASSERT_TRUE( u == v );
+
+   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 }
 #endif /* HAVE_GTEST */
 
