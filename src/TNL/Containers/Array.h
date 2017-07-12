@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
 #include <TNL/Object.h>
 #include <TNL/File.h>
@@ -35,18 +35,17 @@ class Array : public virtual Object
       typedef Index IndexType;
       typedef Containers::Array< Element, Devices::Host, Index > HostType;
       typedef Containers::Array< Element, Devices::Cuda, Index > CudaType;
-      typedef Containers::Array< Element, Device, Index > ThisType;
- 
-      Array();
- 
-      Array( const IndexType& size );
- 
-      Array( Element* data,
-                const IndexType& size );
 
-      Array( Array< Element, Device, Index >& array,
-                const IndexType& begin = 0,
-                const IndexType& size = 0 );
+      Array();
+
+      Array( const IndexType& size );
+
+      Array( Element* data,
+             const IndexType& size );
+
+      Array( Array& array,
+             const IndexType& begin = 0,
+             const IndexType& size = 0 );
 
       static String getType();
 
@@ -63,25 +62,25 @@ class Array : public virtual Object
        */
       void setSize( Index size );
 
-      template< typename Array >
-      void setLike( const Array& array );
+      __cuda_callable__ Index getSize() const;
+
+      template< typename ArrayT >
+      void setLike( const ArrayT& array );
 
       void bind( Element* _data,
                  const Index _size );
 
-      template< typename Array >      
-      void bind( const Array& array,
+      template< typename ArrayT >
+      void bind( const ArrayT& array,
                  const IndexType& begin = 0,
                  const IndexType& size = 0 );
 
       template< int Size >
       void bind( StaticArray< Size, Element >& array );
 
-      void swap( Array< Element, Device, Index >& array );
+      void swap( Array& array );
 
       void reset();
-
-      __cuda_callable__ Index getSize() const;
 
       void setElement( const Index& i, const Element& x );
 
@@ -91,10 +90,10 @@ class Array : public virtual Object
 
       __cuda_callable__ inline const Element& operator[] ( const Index& i ) const;
 
-      Array< Element, Device, Index >& operator = ( const Array< Element, Device, Index >& array );
+      Array& operator = ( const Array& array );
 
       template< typename ArrayT >
-      Array< Element, Device, Index >& operator = ( const ArrayT& array );
+      Array& operator = ( const ArrayT& array );
 
       template< typename ArrayT >
       bool operator == ( const ArrayT& array ) const;
@@ -126,7 +125,7 @@ class Array : public virtual Object
 
       //! Method for loading the object from a file as a binary data.
       bool load( File& file );
- 
+
       //! This method loads data without reallocation.
       /****
        * This is useful for loading data into shared arrays.
@@ -135,9 +134,9 @@ class Array : public virtual Object
        * the size of array being loaded.
        */
       bool boundLoad( File& file );
- 
+
       bool boundLoad( const String& fileName );
- 
+
       using Object::load;
 
       using Object::save;
@@ -145,7 +144,7 @@ class Array : public virtual Object
       ~Array();
 
    protected:
- 
+
       void releaseData() const;
 
       //!Number of elements in array

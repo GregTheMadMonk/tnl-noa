@@ -20,9 +20,7 @@
 #include <TNL/Containers/Array.h>
 
 namespace TNL {
-namespace Containers {   
-
-using namespace std;
+namespace Containers {
 
 template< typename Element,
           typename Device,
@@ -34,7 +32,7 @@ Array()
   allocationPointer( 0 ),
   referenceCounter( 0 )
 {
-};
+}
 
 template< typename Element,
           typename Device,
@@ -188,6 +186,17 @@ setSize( const Index size )
 template< typename Element,
           typename Device,
           typename Index >
+__cuda_callable__
+Index
+Array< Element, Device, Index >::
+getSize() const
+{
+   return this -> size;
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
    template< typename ArrayT >
 void
 Array< Element, Device, Index >::
@@ -225,7 +234,7 @@ bind( const ArrayT& array,
    static_assert( std::is_same< Index, typename ArrayT::IndexType >::value, "IndexType of both arrays must be the same." );
    TNL_ASSERT_LT( begin, array.getSize(), "Begin of array is out of bounds." );
    TNL_ASSERT_LE( begin + size, array.getSize(), "End of array is out of bounds." );
- 
+
    this->releaseData();
    if( size )
       this->size = size;
@@ -283,17 +292,6 @@ Array< Element, Device, Index >::
 reset()
 {
    this->releaseData();
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
-__cuda_callable__
-Index
-Array< Element, Device, Index >::
-getSize() const
-{
-   return this -> size;
 }
 
 template< typename Element,
@@ -472,8 +470,8 @@ bool Array< Element, Device, Index > :: save( File& file ) const
       return false;
    if( this->size != 0 && ! ArrayIO< Element, Device, Index >::save( file, this->data, this->size ) )
    {
-      cerr << "I was not able to save " << this->getType()
-           << " with size " << this -> getSize() << endl;
+      std::cerr << "I was not able to save " << this->getType()
+           << " with size " << this -> getSize() << std::endl;
       return false;
    }
    return true;
@@ -493,7 +491,7 @@ load( File& file )
       return false;
    if( _size < 0 )
    {
-      cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << endl;
+      std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
       return false;
    }
    setSize( _size );
@@ -501,8 +499,8 @@ load( File& file )
    {
       if( ! ArrayIO< Element, Device, Index >::load( file, this->data, this->size ) )
       {
-         cerr << "I was not able to load " << this->getType()
-                    << " with size " << this -> getSize() << endl;
+         std::cerr << "I was not able to load " << this->getType()
+                    << " with size " << this -> getSize() << std::endl;
          return false;
       }
    }
@@ -523,7 +521,7 @@ boundLoad( File& file )
       return false;
    if( _size < 0 )
    {
-      cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << endl;
+      std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
       return false;
    }
    if( this->getSize() != 0 )
@@ -540,8 +538,8 @@ boundLoad( File& file )
    {
       if( ! ArrayIO< Element, Device, Index >::load( file, this->data, this->size ) )
       {
-         cerr << "I was not able to load " << this->getType()
-                    << " with size " << this -> getSize() << endl;
+         std::cerr << "I was not able to load " << this->getType()
+                    << " with size " << this -> getSize() << std::endl;
          return false;
       }
    }
@@ -558,14 +556,14 @@ boundLoad( const String& fileName )
    File file;
    if( ! file. open( fileName, IOMode::read ) )
    {
-      cerr << "I am not bale to open the file " << fileName << " for reading." << endl;
+      std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
       return false;
    }
    if( ! this->boundLoad( file ) )
       return false;
    if( ! file. close() )
    {
-      cerr << "An error occurred when I was closing the file " << fileName << "." << endl;
+      std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
       return false;
    }
    return true;
