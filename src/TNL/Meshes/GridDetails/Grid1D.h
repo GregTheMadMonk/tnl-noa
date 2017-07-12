@@ -30,25 +30,26 @@ class Grid< 1, Real, Device, Index > : public Object
 
    typedef Real RealType;
    typedef Device DeviceType;
-   typedef Index IndexType;
+   typedef Index GlobalIndexType;
    typedef Containers::StaticVector< 1, Real > PointType;
    typedef Containers::StaticVector< 1, Index > CoordinatesType;
    typedef Grid< 1, Real, Devices::Host, Index > HostType;
    typedef Grid< 1, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 1, Real, Device, Index > ThisType;
+
+   // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
+   typedef Index IndexType;
  
-   static const int meshDimension = 1;
+   static constexpr int getMeshDimension() { return 1; };
  
    template< int EntityDimension,
              typename Config = GridEntityCrossStencilStorage< 1 > >
-   using MeshEntity = GridEntity< ThisType, EntityDimension, Config >;
+   using EntityType = GridEntity< ThisType, EntityDimension, Config >;
  
-   typedef MeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
-   typedef MeshEntity< 0 > Face;
-   typedef MeshEntity< 0 > Vertex;
+   typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
+   typedef EntityType< 0 > Face;
+   typedef EntityType< 0 > Vertex;
 
-   static constexpr int getMeshDimension() { return meshDimension; };
- 
    Grid();
 
    static String getType();
@@ -63,7 +64,7 @@ class Grid< 1, Real, Device, Index > : public Object
 
    void setDimensions( const CoordinatesType& dimensions );
 
-   __cuda_callable__ inline
+   __cuda_callable__
    const CoordinatesType& getDimensions() const;
 
    void setDomain( const PointType& origin,
@@ -75,31 +76,32 @@ class Grid< 1, Real, Device, Index > : public Object
    __cuda_callable__
    inline const PointType& getProportions() const;
  
-   template< typename EntityType >
+
+   template< int EntiytDimension >
    __cuda_callable__
-   inline IndexType getEntitiesCount() const;
+   IndexType getEntitiesCount() const;
+
+   template< typename Entity >
+   __cuda_callable__
+   IndexType getEntitiesCount() const;
+   
+   template< typename Entity >
+   __cuda_callable__
+   inline Entity getEntity( const IndexType& entityIndex ) const;
  
-   template< typename EntityType >
+   template< typename Entity >
    __cuda_callable__
-   inline EntityType getEntity( const IndexType& entityIndex ) const;
- 
-   template< typename EntityType >
-   __cuda_callable__
-   inline Index getEntityIndex( const EntityType& entity ) const;
- 
-   template< typename EntityType >
-   __cuda_callable__
-   RealType getEntityMeasure( const EntityType& entity ) const;
- 
-   __cuda_callable__
-   inline const RealType& getCellMeasure() const;
+   inline Index getEntityIndex( const Entity& entity ) const;
  
    __cuda_callable__
    inline const PointType& getSpaceSteps() const;
 
    template< int xPow >
    __cuda_callable__
-   inline const RealType& getSpaceStepsProducts() const;
+   const RealType& getSpaceStepsProducts() const;
+   
+   __cuda_callable__
+   inline const RealType& getCellMeasure() const;
  
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;

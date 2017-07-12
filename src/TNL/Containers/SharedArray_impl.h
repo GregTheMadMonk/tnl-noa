@@ -352,11 +352,7 @@ bool SharedArray< Element, Device, Index > :: save( File& file ) const
               std::cerr << "You try to save empty array." << std::endl );
    if( ! Object :: save( file ) )
       return false;
-#ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, Devices::Host >( &this->size ) )
-#else
    if( ! file. write( &this->size ) )
-#endif
       return false;
    if( ! file. write< Element, Device, Index >( this->data, this->size ) )
    {
@@ -382,13 +378,8 @@ bool SharedArray< Element, Device, Index > :: load( File& file )
    if( ! Object :: load( file ) )
       return false;
    Index _size;
-#ifdef HAVE_NOT_CXX11
-   if( ! file. read< Index, Devices::Host >( &_size ) )
-      return false;
-#else
    if( ! file. read( &_size, 1 ) )
       return false;
-#endif
    if( _size != this->size )
    {
       std::cerr << "Error: The size " << _size << " of the data to be load is different from the " <<

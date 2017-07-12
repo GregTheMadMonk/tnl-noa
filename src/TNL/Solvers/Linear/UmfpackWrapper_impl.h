@@ -63,8 +63,9 @@ bool UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner
 solve( const Vector& b,
        Vector& x )
 {
-    TNL_ASSERT( matrix->getRows() == matrix->getColumns(), );
-    TNL_ASSERT( matrix->getColumns() == x.getSize() && matrix->getColumns() == b.getSize(), );
+    TNL_ASSERT_EQ( matrix->getRows(), matrix->getColumns(), "matrix must be square" );
+    TNL_ASSERT_EQ( matrix->getColumns(), x.getSize(), "wrong size of the solution vector" );
+    TNL_ASSERT_EQ( matrix->getColumns(), b.getSize(), "wrong size of the right hand side" );
 
     const IndexType size = matrix -> getRows();
 
@@ -87,9 +88,9 @@ solve( const Vector& b,
 
     // symbolic reordering of the sparse matrix
     status = umfpack_di_symbolic( size, size,
-                                  matrix->getRowPointers(),
-                                  matrix->getColumnIndexes(),
-                                  matrix->getValues(),
+                                  matrix->getRowPointers().getData(),
+                                  matrix->getColumnIndexes().getData(),
+                                  matrix->getValues().getData(),
                                   &Symbolic, Control, Info );
     if( status != UMFPACK_OK ) {
         std::cerr << "error: symbolic reordering failed" << std::endl;
@@ -97,9 +98,9 @@ solve( const Vector& b,
     }
 
     // numeric factorization
-    status = umfpack_di_numeric( matrix->getRowPointers(),
-                                 matrix->getColumnIndexes(),
-                                 matrix->getValues(),
+    status = umfpack_di_numeric( matrix->getRowPointers().getData(),
+                                 matrix->getColumnIndexes().getData(),
+                                 matrix->getValues().getData(),
                                  Symbolic, &Numeric, Control, Info );
     if( status != UMFPACK_OK ) {
         std::cerr << "error: numeric factorization failed" << std::endl;
@@ -108,9 +109,9 @@ solve( const Vector& b,
 
     // solve with specified right-hand-side
     status = umfpack_di_solve( system_type,
-                               matrix->getRowPointers(),
-                               matrix->getColumnIndexes(),
-                               matrix->getValues(),
+                               matrix->getRowPointers().getData(),
+                               matrix->getColumnIndexes().getData(),
+                               matrix->getValues().getData(),
                                x.getData(),
                                b.getData(),
                                Numeric, Control, Info );

@@ -25,7 +25,7 @@ template< typename Mesh,
           typename NonlinearDiffusionOperator,
 	  typename OperatorQ,
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType >
+          typename Index = typename Mesh::GlobalIndexType >
 class FiniteVolumeNonlinearOperator
 {
  

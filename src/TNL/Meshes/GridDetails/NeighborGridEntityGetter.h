@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Assert.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/Meshes/GridEntityConfig.h>
 
 namespace TNL {

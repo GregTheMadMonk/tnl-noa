@@ -25,10 +25,7 @@ class DummyMesh
    typedef Index IndexType;
    typedef DummyMesh< Real, Device, Index > ThisType;
  
-   static const int meshDimension = 1;
- 
-   constexpr static int getMeshDimension() { return meshDimension; }
- 
+   constexpr static int getMeshDimension() { return 1; }
  
    const Real& getParametricStep(){ return 0.0; }
  

@@ -34,9 +34,9 @@ template< typename Mesh,
           typename DifferentialOperator = Operators::LinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
 class HeatEquationProblem : public PDEProblem< Mesh,
-                                                     typename DifferentialOperator::RealType,
-                                                     typename Mesh::DeviceType,
-                                                     typename DifferentialOperator::IndexType  >
+                                               typename DifferentialOperator::RealType,
+                                               typename Mesh::DeviceType,
+                                               typename DifferentialOperator::IndexType  >
 {
    public:
 
@@ -108,6 +108,10 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                                  DofVectorPointer& rightHandSidePointer,
                                  MeshDependentDataPointer& meshDependentData );
 
+      template< typename Matrix >
+      void saveFailedLinearSystem( const Matrix& matrix,
+                                   const DofVectorType& dofs,
+                                   const DofVectorType& rightHandSide ) const;
 
       protected:
          

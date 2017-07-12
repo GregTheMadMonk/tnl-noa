@@ -23,6 +23,8 @@ class StaticVector : public Containers::StaticArray< Size, Real >
    typedef StaticVector< Size, Real > ThisType;
    enum { size = Size };
 
+   using Containers::StaticArray< Size, Real >::operator=;
+   
    __cuda_callable__
    StaticVector();
 
@@ -36,6 +38,9 @@ class StaticVector : public Containers::StaticArray< Size, Real >
    //! Copy constructor
    __cuda_callable__
    StaticVector( const StaticVector< Size, Real >& v );
+   
+   bool setup( const Config::ParameterContainer& parameters,
+               const String& prefix = "" );      
 
    static String getType();
 
@@ -85,6 +90,9 @@ class StaticVector : public Containers::StaticArray< Size, Real >
  
    __cuda_callable__
    ThisType abs() const;
+   
+   __cuda_callable__
+   Real lpNorm( const Real& p ) const;
 };
 
 template< typename Real >
@@ -94,7 +102,7 @@ class StaticVector< 1, Real > : public Containers::StaticArray< 1, Real >
    typedef Real RealType;
    typedef StaticVector< 1, Real > ThisType;
    enum { size = 1 };
-
+   
    __cuda_callable__
    StaticVector();
 
@@ -105,6 +113,9 @@ class StaticVector< 1, Real > : public Containers::StaticArray< 1, Real >
    //! Copy constructor
    __cuda_callable__
    StaticVector( const StaticVector< 1, Real >& v );
+   
+   bool setup( const Config::ParameterContainer& parameters,
+               const String& prefix = "" );      
 
    static String getType();
 
@@ -154,6 +165,9 @@ class StaticVector< 1, Real > : public Containers::StaticArray< 1, Real >
  
    __cuda_callable__
    ThisType abs() const;
+   
+   __cuda_callable__
+   Real lpNorm( const Real& p ) const;   
 };
 
 template< typename Real >
@@ -163,7 +177,7 @@ class StaticVector< 2, Real > : public Containers::StaticArray< 2, Real >
    typedef Real RealType;
    typedef StaticVector< 2, Real > ThisType;
    enum { size = 2 };
-
+   
    __cuda_callable__
    StaticVector();
 
@@ -180,6 +194,9 @@ class StaticVector< 2, Real > : public Containers::StaticArray< 2, Real >
    //! Copy constructor
    __cuda_callable__
    StaticVector( const StaticVector< 2, Real >& v );
+   
+   bool setup( const Config::ParameterContainer& parameters,
+               const String& prefix = "" );      
 
    static String getType();
 
@@ -229,6 +246,9 @@ class StaticVector< 2, Real > : public Containers::StaticArray< 2, Real >
  
    __cuda_callable__
    ThisType abs() const;
+   
+   __cuda_callable__
+   Real lpNorm( const Real& p ) const;   
 };
 
 template< typename Real >
@@ -238,7 +258,7 @@ class StaticVector< 3, Real > : public Containers::StaticArray< 3, Real >
    typedef Real RealType;
    typedef StaticVector< 3, Real > ThisType;
    enum { size = 3 };
-
+   
    __cuda_callable__
    StaticVector();
 
@@ -255,6 +275,9 @@ class StaticVector< 3, Real > : public Containers::StaticArray< 3, Real >
    //! Copy constructor
    __cuda_callable__
    StaticVector( const StaticVector< 3, Real >& v );
+   
+   bool setup( const Config::ParameterContainer& parameters,
+               const String& prefix = "" );      
 
    static String getType();
 
@@ -304,6 +327,9 @@ class StaticVector< 3, Real > : public Containers::StaticArray< 3, Real >
  
    __cuda_callable__
    ThisType abs() const;
+   
+   __cuda_callable__
+   Real lpNorm( const Real& p ) const;   
 };
 
 template< int Size, typename Real, typename Scalar >

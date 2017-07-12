@@ -11,7 +11,9 @@
 #pragma once
    
 #include <iostream>
+
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
    
 #ifdef HAVE_CUDA
@@ -194,12 +196,7 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
 
    if( cudaMalloc( ( void** ) &auxArray1, auxArraySize ) != cudaSuccess ||
        cudaMalloc( ( void** ) &auxArray2, auxArraySize ) != cudaSuccess  )
-   {
-      {
-         std::cerr << "Not enough memory on device to allocate auxilliary arrays." << std::endl;
-         return false;
-      }
-   }
+      throw Exceptions::CudaBadAlloc();
 
    /****
     * Setup block and grid size.
@@ -224,7 +221,7 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
                                    input,
                                    output,
                                    auxArray1 );
-   if( ! checkCudaDevice )
+   if( ! TNL_CHECK_CUDA_DEVICE )
    {
       std::cerr << "The CUDA kernel 'cudaFirstPhaseBlockPrefixSum' ended with error." << std::endl;
       cudaFree( auxArray1 );
@@ -252,7 +249,7 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
                                 <<< cudaGridSize, cudaBlockSize >>>
                                  ( operation, size, elementsInBlock, gridShift, auxArray2, output );
 
-   if( ! checkCudaDevice )
+   if( ! TNL_CHECK_CUDA_DEVICE )
    {
       std::cerr << "The CUDA kernel 'cudaSecondPhaseBlockPrefixSum' ended with error." << std::endl;
       cudaFree( auxArray1 );

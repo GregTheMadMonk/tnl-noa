@@ -14,6 +14,8 @@
 
 #include <TNL/tnlConfig.h>
 #include <TNL/Math.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
+#include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
@@ -29,14 +31,16 @@ allocateMemory( Element*& data,
                 const Index size )
 {
 #ifdef HAVE_CUDA
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
    if( cudaMalloc( ( void** ) &data,
                    ( size_t ) size * sizeof( Element ) ) != cudaSuccess )
+   {
       data = 0;
-   return checkCudaDevice;
+      throw Exceptions::CudaBadAlloc();
+   }
+   return TNL_CHECK_CUDA_DEVICE;
 #else
-   CudaSupportMissingMessage;
-   return false;
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -45,14 +49,13 @@ bool
 ArrayOperations< Devices::Cuda >::
 freeMemory( Element* data )
 {
-   TNL_ASSERT( data, );
+   TNL_ASSERT_TRUE( data, "Attempted to free a nullptr." );
 #ifdef HAVE_CUDA
-      checkCudaDevice;
-      cudaFree( data );
-      return checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
+   cudaFree( data );
+   return TNL_CHECK_CUDA_DEVICE;
 #else
-      CudaSupportMissingMessage;;
-   return true;
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -62,7 +65,7 @@ ArrayOperations< Devices::Cuda >::
 setMemoryElement( Element* data,
                   const Element& value )
 {
-   TNL_ASSERT( data, );
+   TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
    ArrayOperations< Devices::Cuda >::setMemory( data, value, 1 );
 }
 
@@ -71,7 +74,7 @@ Element
 ArrayOperations< Devices::Cuda >::
 getMemoryElement( const Element* data )
 {
-   TNL_ASSERT( data, );
+   TNL_ASSERT_TRUE( data, "Attempted to get data through a nullptr." );
    Element result;
    ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< Element, Element, int >( &result, data, 1 );
    return result;
@@ -82,7 +85,7 @@ Element&
 ArrayOperations< Devices::Cuda >::
 getArrayElementReference( Element* data, const Index i )
 {
-   TNL_ASSERT( data, );
+   TNL_ASSERT_TRUE( data, "Attempted to access data through a nullptr." );
    return data[ i ];
 }
 
@@ -91,7 +94,7 @@ const
 Element& ArrayOperations< Devices::Cuda >::
 getArrayElementReference( const Element* data, const Index i )
 {
-   TNL_ASSERT( data, );
+   TNL_ASSERT_TRUE( data, "Attempted to access data through a nullptr." );
    return data[ i ];
 }
 
@@ -120,17 +123,16 @@ setMemory( Element* data,
            const Element& value,
            const Index size )
 {
-   TNL_ASSERT( data, );
+   TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
 #ifdef HAVE_CUDA
    dim3 blockSize( 0 ), gridSize( 0 );
    blockSize. x = 256;
    Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
    gridSize. x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
    setArrayValueCudaKernel<<< gridSize, blockSize >>>( data, size, value );
-   return checkCudaDevice;
+   return TNL_CHECK_CUDA_DEVICE;
 #else
-   CudaSupportMissingMessage;;
-   return false;
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -162,30 +164,29 @@ copyMemory( DestinationElement* destination,
             const SourceElement* source,
             const Index size )
 {
-   TNL_ASSERT( destination, );
-   TNL_ASSERT( source, );
-   #ifdef HAVE_CUDA
-      if( std::is_same< DestinationElement, SourceElement >::value )
-      {
-         if( cudaMemcpy( destination,
-                         source,
-                         size * sizeof( DestinationElement ),
-                         cudaMemcpyDeviceToDevice ) != cudaSuccess )
-         return checkCudaDevice;
-      }
-      else
-      {
-         dim3 blockSize( 0 ), gridSize( 0 );
-         blockSize. x = 256;
-         Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
-         gridSize. x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
-         copyMemoryCudaToCudaKernel<<< gridSize, blockSize >>>( destination, source, size );
-         return checkCudaDevice;
-      }
-   #else
-      CudaSupportMissingMessage;;
-   #endif
-      return false;
+   TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
+#ifdef HAVE_CUDA
+   if( std::is_same< DestinationElement, SourceElement >::value )
+   {
+      cudaMemcpy( destination,
+                  source,
+                  size * sizeof( DestinationElement ),
+                  cudaMemcpyDeviceToDevice );
+      return TNL_CHECK_CUDA_DEVICE;
+   }
+   else
+   {
+      dim3 blockSize( 0 ), gridSize( 0 );
+      blockSize. x = 256;
+      Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
+      gridSize. x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
+      copyMemoryCudaToCudaKernel<<< gridSize, blockSize >>>( destination, source, size );
+      return TNL_CHECK_CUDA_DEVICE;
+   }
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 template< typename Element1,
@@ -197,8 +198,8 @@ compareMemory( const Element1* destination,
                const Element2* source,
                const Index size )
 {
-   TNL_ASSERT( destination, );
-   TNL_ASSERT( source, );
+   TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
    //TODO: The parallel reduction on the CUDA device with different element types is needed.
    bool result;
    Algorithms::tnlParallelReductionEqualities< Element1, Index > reductionEqualities;
@@ -219,30 +220,21 @@ copyMemory( DestinationElement* destination,
             const SourceElement* source,
             const Index size )
 {
-   TNL_ASSERT( destination, );
-   TNL_ASSERT( source, );
-   #ifdef HAVE_CUDA
+   TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
+#ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
-      cudaMemcpy( destination,
-                  source,
-                  size * sizeof( DestinationElement ),
-                  cudaMemcpyDeviceToHost );
-      if( ! checkCudaDevice )
-      {
+      if( cudaMemcpy( destination,
+                      source,
+                      size * sizeof( DestinationElement ),
+                      cudaMemcpyDeviceToHost ) != cudaSuccess )
          std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
-         return false;
-      }
-      return true;
+      return TNL_CHECK_CUDA_DEVICE;
    }
    else
    {
       SourceElement* buffer = new SourceElement[ Devices::Cuda::getGPUTransferBufferSize() ];
-      if( ! buffer )
-      {
-         std::cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << std::endl;
-         return false;
-      }
       Index i( 0 );
       while( i < size )
       {
@@ -251,9 +243,9 @@ copyMemory( DestinationElement* destination,
                          min( size - i, Devices::Cuda::getGPUTransferBufferSize() ) * sizeof( SourceElement ),
                          cudaMemcpyDeviceToHost ) != cudaSuccess )
          {
-            checkCudaDevice;
             delete[] buffer;
-            return false;
+            std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
+            return TNL_CHECK_CUDA_DEVICE;
          }
          Index j( 0 );
          while( j < Devices::Cuda::getGPUTransferBufferSize() && i + j < size )
@@ -265,11 +257,10 @@ copyMemory( DestinationElement* destination,
       }
       delete[] buffer;
    }
-   #else
-      CudaSupportMissingMessage;;
-      return false;
-   #endif
    return true;
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 
@@ -285,16 +276,11 @@ compareMemory( const Element1* destination,
    /***
     * Here, destination is on host and source is on CUDA device.
     */
-   TNL_ASSERT( destination, );
-   TNL_ASSERT( source, );
-   TNL_ASSERT( size >= 0, std::cerr << "size = " << size );
-   #ifdef HAVE_CUDA
+   TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "Array size must be non-negative." );
+#ifdef HAVE_CUDA
    Element2* host_buffer = new Element2[ Devices::Cuda::getGPUTransferBufferSize() ];
-   if( ! host_buffer )
-   {
-      std::cerr << "I am sorry but I cannot allocate supporting buffer on the host for comparing data between CUDA GPU and CPU." << std::endl;
-      return false;
-   }
    Index compared( 0 );
    while( compared < size )
    {
@@ -304,10 +290,9 @@ compareMemory( const Element1* destination,
                       transfer * sizeof( Element2 ),
                       cudaMemcpyDeviceToHost ) != cudaSuccess )
       {
-         std::cerr << "Transfer of data from the device failed." << std::endl;
-         checkCudaDevice;
          delete[] host_buffer;
-         return false;
+         std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
+         return TNL_CHECK_CUDA_DEVICE;
       }
       if( ! ArrayOperations< Devices::Host >::compareMemory( &destination[ compared ], host_buffer, transfer ) )
       {
@@ -318,10 +303,9 @@ compareMemory( const Element1* destination,
    }
    delete[] host_buffer;
    return true;
-   #else
-      CudaSupportMissingMessage;;
-      return false;
-   #endif
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 /****
@@ -336,31 +320,22 @@ copyMemory( DestinationElement* destination,
             const SourceElement* source,
             const Index size )
 {
-   TNL_ASSERT( destination, );
-   TNL_ASSERT( source, );
-   TNL_ASSERT( size >= 0, std::cerr << "size = " << size );
-   #ifdef HAVE_CUDA
+   TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
+   TNL_ASSERT_GE( size, 0, "Array size must be non-negative." );
+#ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
-      cudaMemcpy( destination,
-                  source,
-                  size * sizeof( DestinationElement ),
-                  cudaMemcpyHostToDevice );
-      if( ! checkCudaDevice )
-      {
+      if( cudaMemcpy( destination,
+                      source,
+                      size * sizeof( DestinationElement ),
+                      cudaMemcpyHostToDevice ) != cudaSuccess )
          std::cerr << "Transfer of data from host to CUDA device failed." << std::endl;
-         return false;
-      }
-      return true;
+      return TNL_CHECK_CUDA_DEVICE;
    }
    else
    {
       DestinationElement* buffer = new DestinationElement[ Devices::Cuda::getGPUTransferBufferSize() ];
-      if( ! buffer )
-      {
-         std::cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << std::endl;
-         return false;
-      }
       Index i( 0 );
       while( i < size )
       {
@@ -375,19 +350,18 @@ copyMemory( DestinationElement* destination,
                          j * sizeof( DestinationElement ),
                          cudaMemcpyHostToDevice ) != cudaSuccess )
          {
-            checkCudaDevice;
             delete[] buffer;
-            return false;
+            std::cerr << "Transfer of data from host to CUDA device failed." << std::endl;
+            return TNL_CHECK_CUDA_DEVICE;
          }
          i += j;
       }
       delete[] buffer;
       return true;
    }
-   #else
-      CudaSupportMissingMessage;;
-      return false;
-   #endif
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 template< typename Element1,
@@ -399,9 +373,9 @@ compareMemory( const Element1* hostData,
                const Element2* deviceData,
                const Index size )
 {
-   TNL_ASSERT( hostData, );
-   TNL_ASSERT( deviceData, );
-   TNL_ASSERT( size >= 0, std::cerr << "size = " << size );
+   TNL_ASSERT_TRUE( hostData, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_TRUE( deviceData, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "Array size must be non-negative." );
    return ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory( deviceData, hostData, size );
 }
 

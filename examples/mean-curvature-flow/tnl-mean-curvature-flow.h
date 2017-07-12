@@ -71,7 +71,7 @@ class meanCurvatureFlowSetter
    typedef Index IndexType;
 
    typedef typename MeshType::PointType Point;
-   enum { Dimension = MeshType::meshDimension };
+   enum { Dimension = MeshType::getMeshDimension() };
 
    static bool run( const Config::ParameterContainer& parameters )
    {
@@ -102,7 +102,7 @@ class meanCurvatureFlowSetter
    {
       typedef OneSidedNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
       typedef Constant< Dimension, Real > RightHandSide;
-      typedef StaticVector< MeshType::meshDimension, Real > Point;
+      typedef StaticVector< MeshType::getMeshDimension(), Real > Point;
 
       String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
       if( parameters.checkParameter( "boundary-conditions-constant" ) )

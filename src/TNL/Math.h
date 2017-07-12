@@ -12,12 +12,9 @@
 
 #include <cmath>
 #include <type_traits>
+#include <algorithm>
 
-#include <TNL/Devices/Cuda.h>
-
-#ifdef HAVE_CUDA
-#include <cuda.h>
-#endif
+#include <TNL/Devices/CudaCallable.h>
 
 namespace TNL {
 
@@ -182,9 +179,9 @@ template< class T >
 __cuda_callable__
 T sign( const T& a )
 {
-   if( a < ( T ) 0 ) return -1;
-   if( a == ( T ) 0 ) return 0;
-   return 1;
+   if( a < ( T ) 0 ) return ( T ) -1;
+   if( a == ( T ) 0 ) return ( T ) 0;
+   return ( T ) 1;
 };
 
 template< typename Real >

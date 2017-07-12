@@ -108,7 +108,7 @@ protected:
                             RealType& sn );
 
 
-   bool setSize( IndexType _size, IndexType m );
+   void setSize( IndexType _size, IndexType m );
 
    // single vectors
    DeviceVector r, z, w, _M_tmp;
@@ -119,7 +119,7 @@ protected:
    // host-only storage for Givens rotations and the least squares problem
    HostVector cs, sn, H, s;
 
-   IndexType size, ldSize, restarting;
+   IndexType size, ldSize, restarting_min, restarting_max, restarting_step_min, restarting_step_max;
 
    MatrixPointer matrix;
    PreconditionerPointer preconditioner;

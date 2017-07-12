@@ -22,7 +22,7 @@ namespace Operators {
 template< typename Mesh,
           int MeshEntityDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType >
+          typename Index = typename Mesh::GlobalIndexType >
 class CoFVMGradientNorm
 {
 };

@@ -134,10 +134,10 @@ TEST( StaticArrayTest, testLoadAndSave )
 {
    StaticArray< Size, ElementType > u1( 7 ), u2( 0 );
    File file;
-   file.open( "tnl-static-array-test.tnl", tnlWriteMode );
+   file.open( "tnl-static-array-test.tnl", IOMode::write );
    u1.save( file );
    file.close();
-   file.open( "tnl-static-array-test.tnl", tnlReadMode );
+   file.open( "tnl-static-array-test.tnl", IOMode::read );
    u2.load( file );
    file.close();
 

@@ -186,16 +186,15 @@ write( const Meshes::Grid< 2, Real, Device, Index >& grid,
 
          unsigned char color = 255 * vector.getElement( cell.getIndex() );
          if ( ! this->binary )
-	 {
-	     int color_aux = (int)color;
-	     this->file << color_aux;
-             this->file << ' ';
-	 }
-	 else this->file << color;
-      }
- 
+         {
+             int color_aux = (int)color;
+             this->file << color_aux;
+                  this->file << ' ';
+         }
+         else this->file << color;
+      }      
       if ( ! this->binary )
-        this->file << '\n';
+         this->file << '\n';
    }
    return true;
 }

@@ -135,17 +135,26 @@ getCudaCoresPerMultiprocessors( int deviceNum )
         case 1:   // Tesla generation, G80, G8x, G9x classes
             return 8;
         case 2:   // Fermi generation
-        switch( minor )
-        {
-            case 0:  // GF100 class
-                return 32;
-            case 1:  // GF10x class
-                return 48;
-        }
+            switch( minor )
+            {
+                case 0:  // GF100 class
+                    return 32;
+                case 1:  // GF10x class
+                    return 48;
+            }
         case 3: // Kepler generation -- GK10x, GK11x classes
             return 192;
         case 5: // Maxwell generation -- GM10x, GM20x classes
             return 128;
+        case 6: // Pascal generation
+            switch( minor )
+            {
+                case 0:  // GP100 class
+                    return 64;
+                case 1:  // GP10x classes
+                case 2:
+                    return 128;
+            }
         default:
             return -1;
     }
@@ -157,6 +166,21 @@ getCudaCores( int deviceNum )
 {
     return CudaDeviceInfo::getCudaMultiprocessors( deviceNum ) *
            CudaDeviceInfo::getCudaCoresPerMultiprocessors( deviceNum );
+}
+
+int
+CudaDeviceInfo::
+getRegistersPerMultiprocessor( int deviceNum )
+{
+    // results are cached because they are used for configuration of some kernels
+    static std::unordered_map< int, int > results;
+    if( results.count( deviceNum ) == 0 ) {
+        cudaDeviceProp properties;
+        cudaGetDeviceProperties( &properties, deviceNum );
+        results.emplace( deviceNum, properties.regsPerMultiprocessor );
+        return properties.regsPerMultiprocessor;
+    }
+    return results[ deviceNum ];
 }
 
 void

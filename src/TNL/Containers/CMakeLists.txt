@@ -4,6 +4,8 @@ set( headers Array.h
              Array_impl.h
              ArrayIO.h
              DynamicTypeTag.h
+             IndexedMap.h
+             IndexedMap_impl.h
              IndexedSet.h
              IndexedSet_impl.h
              List.h

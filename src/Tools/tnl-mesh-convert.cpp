@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef HAVE_ICPC
+#ifndef __INTEL_COMPILER
 #include "tnl-mesh-convert.h"
 #endif
 #include <TNL/Config/ParameterContainer.h>
@@ -35,7 +35,7 @@ int main( int argc, char* argv[] )
       conf_desc.printUsage( argv[ 0 ] );
       return EXIT_FAILURE;
    }
-#ifndef HAVE_ICPC
+#ifndef __INTEL_COMPILER
    if( ! convertMesh( parameters ) )
       return EXIT_FAILURE;
 #endif

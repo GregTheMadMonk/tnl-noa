@@ -10,6 +10,10 @@
 
 #pragma once
 
+#include "GridTraverser.h"
+
+#include <TNL/Exceptions/CudaSupportMissing.h>
+
 namespace TNL {
 namespace Meshes {
 
@@ -193,8 +197,10 @@ processEntities(
    if( stream == 0 )
    {
       cudaStreamSynchronize( s );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
    }
+#else
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -499,7 +505,7 @@ processEntities(
       cudaStreamSynchronize( s2 );
       cudaStreamSynchronize( s3 );
       cudaStreamSynchronize( s4 );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
    }
    else
    {
@@ -533,9 +539,11 @@ processEntities(
       if( stream == 0 )
       {
          cudaStreamSynchronize( s );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
       }
    }
+#else
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -940,7 +948,7 @@ processEntities(
       cudaStreamSynchronize( s4 );
       cudaStreamSynchronize( s5 );
       cudaStreamSynchronize( s6 );      
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
    }
    else
    {
@@ -976,9 +984,11 @@ processEntities(
       if( stream == 0 )
       {
          cudaStreamSynchronize( s );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
       }
    }
+#else
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 

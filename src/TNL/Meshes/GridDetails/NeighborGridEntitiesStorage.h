@@ -144,9 +144,9 @@ class NeighborGridEntityLayer< GridEntity, 0, GridEntityConfig, false >
 template< typename GridEntity,
           typename GridEntityConfig >
 class NeighborGridEntitiesStorage
-: public NeighborGridEntityLayer< GridEntity, GridEntity::meshDimension, GridEntityConfig >
+: public NeighborGridEntityLayer< GridEntity, GridEntity::getMeshDimension(), GridEntityConfig >
 {
-   typedef NeighborGridEntityLayer< GridEntity, GridEntity::meshDimension, GridEntityConfig > BaseType;
+   typedef NeighborGridEntityLayer< GridEntity, GridEntity::getMeshDimension(), GridEntityConfig > BaseType;
  
    public:
  

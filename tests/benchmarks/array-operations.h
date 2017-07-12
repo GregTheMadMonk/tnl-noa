@@ -36,21 +36,12 @@ benchmarkArrayOperations( Benchmark & benchmark,
 
     HostArray hostArray, hostArray2;
     CudaArray deviceArray, deviceArray2;
-    if( ! hostArray.setSize( size ) ||
-        ! hostArray2.setSize( size )
+    hostArray.setSize( size );
+    hostArray2.setSize( size );
 #ifdef HAVE_CUDA
-        ||
-        ! deviceArray.setSize( size ) ||
-        ! deviceArray2.setSize( size )
+    deviceArray.setSize( size );
+    deviceArray2.setSize( size );
 #endif
-    )
-
-    {
-        const char* msg = "error: allocation of arrays failed";
-        std::cerr << msg << std::endl;
-        benchmark.addErrorMessage( msg );
-        return false;
-    }
 
     Real resultHost, resultDevice;
 

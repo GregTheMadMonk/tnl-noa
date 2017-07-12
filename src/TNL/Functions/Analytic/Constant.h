@@ -27,6 +27,7 @@ class Constant : public Domain< dimensions, NonspaceDomain >
       typedef Real RealType;
       typedef Containers::StaticVector< dimensions, RealType > PointType;
  
+      __cuda_callable__
       Constant();
 
       static void configSetup( Config::ConfigDescription& config,
@@ -39,15 +40,9 @@ class Constant : public Domain< dimensions, NonspaceDomain >
 
       const RealType& getConstant() const;
 
-   #ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-   #else
-      template< int XDiffOrder,
+      template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-   #endif
       __cuda_callable__ inline
       RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;

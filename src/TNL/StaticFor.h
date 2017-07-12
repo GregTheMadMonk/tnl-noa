@@ -123,7 +123,7 @@ class StaticFor
    __cuda_callable__
    static void exec()
    {
-#ifndef HAVE_ICPC
+#ifndef __INTEL_COMPILER
       StaticForExecutor< IndexType,
                          StaticForIndexTag< IndexType, begin >,
                          StaticForIndexTag< IndexType, end - begin >,
@@ -137,7 +137,7 @@ class StaticFor
    __cuda_callable__
    static void exec( T &p )
    {
-#ifndef HAVE_ICPC
+#ifndef __INTEL_COMPILER
       StaticForExecutor< IndexType,
                          StaticForIndexTag< IndexType, begin >,
                          StaticForIndexTag< IndexType, end - begin >,
@@ -152,7 +152,7 @@ class StaticFor
    __cuda_callable__
    static void exec( T0& p0, T1& p1 )
    {
-#ifndef HAVE_ICPC
+#ifndef __INTEL_COMPILER
       StaticForExecutor< IndexType,
                          StaticForIndexTag< IndexType, begin >,
                          StaticForIndexTag< IndexType, end - begin >,
@@ -168,7 +168,7 @@ class StaticFor
    __cuda_callable__
    static void exec( T0& p0, T1& p1, T2& p2 )
    {
-#ifndef HAVE_ICPC
+#ifndef __INTEL_COMPILER
       StaticForExecutor< IndexType,
                          StaticForIndexTag< IndexType, begin >,
                          StaticForIndexTag< IndexType, end - begin >,
@@ -185,7 +185,7 @@ class StaticFor
    __cuda_callable__
    static void exec( T0& p0, T1& p1, T2& p2, T3& p3 )
    {
-#ifndef HAVE_ICPC
+#ifndef __INTEL_COMPILER
       StaticForExecutor< IndexType,
                          StaticForIndexTag< IndexType, begin >,
                          StaticForIndexTag< IndexType, end - begin >,

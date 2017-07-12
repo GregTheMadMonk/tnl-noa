@@ -2,7 +2,7 @@
 #define HeatEquationBenchmarkRHS_H_
 #include <TNL/Functions/Domain.h>
 template< typename Mesh, typename Real >class HeatEquationBenchmarkRhs
-  : public Functions::Domain< Mesh::meshDimension, Functions::MeshDomain > 
+  : public Functions::Domain< Mesh::getMeshDimension(), Functions::MeshDomain > 
  {
    public:
 
