@@ -1,6 +1,13 @@
-/**
- *  Experimentalní test pro získání zkušeností s TNL a (a strarým dobrým MIC, intel offloadingem a podobně) 
- */
+/***************************************************************************
+                          tnlMICArrayTest.cpp  -  
+                application testing Array implemntation on MIC KNC
+                              by hanouvit 
+                             -------------------
+    copyright            : (C) 2004 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
  
 #include <iostream>
 #include <TNL/Devices/MIC.h>

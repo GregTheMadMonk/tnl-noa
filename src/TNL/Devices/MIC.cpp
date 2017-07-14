@@ -1,6 +1,7 @@
 /***************************************************************************
                           MIC.cpp  -  description
                              -------------------
+                                 by hanouvit
     begin                : Feb 10, 2017
     copyright            : (C) 2017 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz

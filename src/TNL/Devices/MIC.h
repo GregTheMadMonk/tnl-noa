@@ -1,15 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/***************************************************************************
+                          MIC.h  -  description
+                                by hanouvit
+                          -------------------
+    begin                : Nov 7, 2012
+    copyright            : (C) 2012 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 
-/* 
- * File:   tnlMIC.h
- * Author: hanouvit
- *
- * Created on 18. dubna 2016, 12:38
- */
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMIC_H
 #define TNLMIC_H
@@ -29,23 +27,27 @@ namespace TNL {
 
 namespace Devices {
     
-    
+//makra oblíbená v příkladech v přednáškách Intelu    
 #define ALLOC alloc_if(1) //naalokuj promenou na zacatku offload  bloku -- default
 #define FREE free_if(1) // smaz promenou na konci offload bloku -- default
 #define RETAIN free_if(0) //nesmaz promenou na konci bloku
 #define REUSE alloc_if(0) //nealokuj proměnnou na zacatku
 
-//useful if you have an adress to MIC memory
+//struktura která dovoluje kopírovat raw pointer z paměti MICu do RAM a zpět -- obcházení mapování proměnných
 template< typename Type >
 struct MICHider{
     Type *pointer;
 };
 
+//nafukovací struktura -- struktury kopítrovat lze, objekty nikoliv 
+//objekt se dá nakopírovat do takovéto strukury a poslat na MIC
 template <unsigned int VELIKOST>
 struct MICStruct{
 	uint8_t data[VELIKOST];
 };
 
+//Makra zpřehledňující pozdější kód
+//verze kdy se objekt nakopíruje do nově alokované nafukovací struktury
 #define TNLMICSTRUCT(bb,typ) Devices::MICStruct<sizeof(typ)> s ## bb; \
                              memcpy((void*)& s ## bb,(void*)& bb,sizeof(typ));
 #define TNLMICSTRUCTOFF(bb,typ) s ## bb
@@ -53,7 +55,7 @@ struct MICStruct{
 #define TNLMICSTRUCTALLOC(bb,typ) typ * kernel ## bb = (typ*) malloc (sizeof(typ)); \
                                 memcpy((void*)kernel ## bb,(void*) & s ## bb, sizeof(typ));
 
-
+//verze kdy se ukazatel na objekt reprezentuje jako ukazatel na pole uint_8
 #define TNLMICHIDE(bb,typ) uint8_t * u ## bb=(uint8_t *)&bb; \
                            MICHider<typ> kernel ## bb;
 #define TNLMICHIDEALLOCOFF(bb,typ) in(u ## bb:length(sizeof(typ))) out(kernel ## bb)
@@ -68,19 +70,12 @@ struct MICStruct{
 class MIC
 {
    public:
-       
-        /*enum { DeviceType = tnlMICDevice };*/
-     
+   
         static String getDeviceType()
         {
             return String( "MIC" );
         }
-
-         /*__cuda_callable__ static inline tnlDeviceEnum getDevice()
-         {
-             return tnlMICDevice;
-         }*/
-         
+        
 #ifdef HAVE_MIC  
         
        //useful debuging -- but produce warning
@@ -93,6 +88,8 @@ class MIC
             #endif
         }
         
+       
+        //původní funkce kopírující na MIC  -- nepoužíváse
         template <typename TYP>
         static
         TYP * passToDevice(TYP &objektCPU)
@@ -110,6 +107,7 @@ class MIC
                 std::cout << "Někdo mně volá :-D" <<std::endl;
         }
         
+        //původní funkce mazající z MIC -- nepoužíváse
         template <typename TYP>
         static
         void freeFromDevice(TYP *objektMIC)

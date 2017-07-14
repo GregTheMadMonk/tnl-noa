@@ -1,15 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/***************************************************************************
+                          VectorOperationsMIC_impl.h  -  description
+                                by hanouvit
+                          -------------------
+    begin                : Nov 7, 2012
+    copyright            : (C) 2012 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 
-/* 
- * File:   VectorOperationsMIC_impl.h
- * Author: hanouvit
- *
- * Created on 2. května 2016, 12:57
- */
+/* See Copyright Notice in tnl/Copyright */
+
 
 #pragma once
 

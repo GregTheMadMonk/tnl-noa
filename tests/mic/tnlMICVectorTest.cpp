@@ -1,7 +1,13 @@
-/**
- *  Test develop by hanouvit for implementation of Vector on MIC
-*/
+/***************************************************************************
+                          tnlMICVectorTest.cpp  -  
+                application testing Vector implemntation on MIC KNC
+                              by hanouvit 
+                             -------------------
+    copyright            : (C) 2004 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 
+/* See Copyright Notice in tnl/Copyright */
 
 #include <iostream>
 #include <omp.h>
