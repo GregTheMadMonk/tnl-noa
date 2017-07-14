@@ -970,8 +970,8 @@ class SlicedEllpackDeviceDependentCode< Devices::MIC >
       template< typename Real,
                 typename Index,
                 int SliceSize >
-      static bool computeMaximalRowLengthInSlices( SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
-                                                   const typename SlicedEllpack< Real, Device, Index >::CompressedRowsLengthsVector& rowLengths )
+            static bool computeMaximalRowLengthInSlices( SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                                   const typename SlicedEllpack< Real, Device, Index >::CompressedRowLengthsVector& rowLengths )
       {
             std::cout << "Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::computeMaximalRowLengthInSlices" << std::endl;
          return true;
