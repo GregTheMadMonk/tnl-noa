@@ -21,7 +21,7 @@
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/Containers/Vector.h>
 #include <core/vectors/tnlSharedVector.h>
 #include <core/mfilename.h>
 #include <mesh/tnlGrid.h>
@@ -52,7 +52,7 @@ public:
 	typedef Device DeviceType;
 	typedef Index IndexType;
 	typedef tnlGrid< 1, Real, Device, Index > MeshType;
-	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+	typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
@@ -121,7 +121,7 @@ public:
 	typedef Device DeviceType;
 	typedef Index IndexType;
 	typedef tnlGrid< 2, Real, Device, Index > MeshType;
-	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+	typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -199,7 +199,7 @@ public:
 	typedef Device DeviceType;
 	typedef Index IndexType;
 	typedef tnlGrid< 3, Real, Device, Index > MeshType;
-	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+	typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
 #ifdef HAVE_CUDA

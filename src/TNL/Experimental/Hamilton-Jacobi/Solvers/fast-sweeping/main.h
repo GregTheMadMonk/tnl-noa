@@ -47,7 +47,7 @@ int main( int argc, char* argv[] )
 
    if(dim == 2)
    {
-		tnlFastSweeping<tnlGrid<2,double,tnlHost, int>, double, int> solver;
+		tnlFastSweeping<tnlGrid<2,double,TNL::Devices::Host, int>, double, int> solver;
 		if(!solver.init(parameters))
 	   {
 			cerr << "Solver failed to initialize." << endl;
@@ -60,7 +60,7 @@ int main( int argc, char* argv[] )
    }
    else if(dim == 3)
    {
-		tnlFastSweeping<tnlGrid<3,double,tnlHost, int>, double, int> solver;
+		tnlFastSweeping<tnlGrid<3,double,TNL::Devices::Host, int>, double, int> solver;
 		if(!solver.init(parameters))
 	   {
 			cerr << "Solver failed to initialize." << endl;

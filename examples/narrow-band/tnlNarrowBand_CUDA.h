@@ -17,9 +17,9 @@
 #define TNLNARROWBAND_H_
 
 #include <TNL/Config/ParameterContainer.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Containers/StaticVector.h>
-#include <core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <mesh/tnlGrid.h>
 #include <mesh/grids/tnlGridEntity.h>
 
@@ -54,7 +54,7 @@ public:
 	typedef Device DeviceType;
 	typedef Index IndexType;
 	typedef tnlGrid< 2, Real, Device, Index > MeshType;
-	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+	typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
 	tnlNarrowBand();
@@ -138,7 +138,7 @@ public:
 	typedef Device DeviceType;
 	typedef Index IndexType;
 	typedef tnlGrid< 3, Real, Device, Index > MeshType;
-	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+	typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
@@ -183,16 +183,16 @@ protected:
 
 #ifdef HAVE_CUDA
 //template<int sweep_t>
-__global__ void runCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int i);
-//__global__ void runCUDA(tnlNarrowBand< tnlGrid< 3,double, tnlHost, int >, double, int >* solver, int sweep, int i);
+__global__ void runCUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int i);
+//__global__ void runCUDA(tnlNarrowBand< tnlGrid< 3,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int i);
 
-__global__ void initCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
+__global__ void initCUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver);
 
-__global__ void initSetupGridCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
-__global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
-__global__ void initSetupGrid1_2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
-__global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, double tau);
-//__global__ void initCUDA(tnlNarrowBand< tnlGrid< 3,double, tnlHost, int >, double, int >* solver);
+__global__ void initSetupGridCUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver);
+__global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver);
+__global__ void initSetupGrid1_2CUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver);
+__global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, double tau);
+//__global__ void initCUDA(tnlNarrowBand< tnlGrid< 3,double, TNL::Devices::Host, int >, double, int >* solver);
 #endif
 
 

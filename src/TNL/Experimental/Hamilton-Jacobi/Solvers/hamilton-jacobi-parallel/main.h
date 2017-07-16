@@ -42,24 +42,24 @@ int main( int argc, char* argv[] )
    //if (parameters.GetParameter <String>("scheme") == "godunov")
    //{
    tnlDeviceEnum device;
-   device = tnlHostDevice;
+   device = TNL::Devices::HostDevice;
 
    const int& dim = parameters.getParameter< int >( "dim" );
 
   if(dim == 2)
   {
 
-	   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,tnlHost, int>, double, int > SchemeTypeHost;
+	   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,TNL::Devices::Host, int>, double, int > SchemeTypeHost;
 		/*#ifdef HAVE_CUDA
 		   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,tnlCuda, int>, double, int > SchemeTypeDevice;
 		#endif
 		#ifndef HAVE_CUDA*/
-	   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,tnlHost, int>, double, int > SchemeTypeDevice;
+	   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,TNL::Devices::Host, int>, double, int > SchemeTypeDevice;
 		/*#endif*/
 
-	   if(device==tnlHostDevice)
+	   if(device==TNL::Devices::HostDevice)
 	   {
-		   typedef tnlHost Device;
+		   typedef TNL::Devices::Host Device;
 
 
 		   tnlParallelEikonalSolver<2,SchemeTypeHost,SchemeTypeDevice, Device> solver;
@@ -92,17 +92,17 @@ int main( int argc, char* argv[] )
   else if(dim == 3)
   {
 
-	   typedef parallelGodunovEikonalScheme< tnlGrid<3,double,tnlHost, int>, double, int > SchemeTypeHost;
+	   typedef parallelGodunovEikonalScheme< tnlGrid<3,double,TNL::Devices::Host, int>, double, int > SchemeTypeHost;
 		/*#ifdef HAVE_CUDA
 		   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,tnlCuda, int>, double, int > SchemeTypeDevice;
 		#endif
 		#ifndef HAVE_CUDA*/
-	   typedef parallelGodunovEikonalScheme< tnlGrid<3,double,tnlHost, int>, double, int > SchemeTypeDevice;
+	   typedef parallelGodunovEikonalScheme< tnlGrid<3,double,TNL::Devices::Host, int>, double, int > SchemeTypeDevice;
 		/*#endif*/
 
-	   if(device==tnlHostDevice)
+	   if(device==TNL::Devices::HostDevice)
 	   {
-		   typedef tnlHost Device;
+		   typedef TNL::Devices::Host Device;
 
 
 		   tnlParallelEikonalSolver<3,SchemeTypeHost,SchemeTypeDevice, Device> solver;

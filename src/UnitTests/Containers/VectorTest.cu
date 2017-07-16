@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "tnlVectorTest.h"
+#include "TNL::Containers::VectorTest.h"

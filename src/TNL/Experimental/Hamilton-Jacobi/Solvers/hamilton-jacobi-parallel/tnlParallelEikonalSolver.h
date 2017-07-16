@@ -18,10 +18,10 @@
 #define TNLPARALLELEIKONALSOLVER_H_
 
 #include <TNL/Config/ParameterContainer.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Containers/StaticVector.h>
 #include <functions/tnlMeshFunction.h>
-#include <core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <mesh/tnlGrid.h>
 #include <mesh/grids/tnlGridEntity.h>
 #include <limits.h>
@@ -53,13 +53,13 @@ public:
 	typedef SchemeDevice SchemeTypeDevice;
 	typedef SchemeHost SchemeTypeHost;
 	typedef Device DeviceType;
-	typedef tnlVector< double, tnlHost, int > VectorType;
-	typedef tnlVector< int, tnlHost, int > IntVectorType;
-	typedef tnlGrid< 2, double, tnlHost, int > MeshType;
+	typedef TNL::Containers::Vector< double, TNL::Devices::Host, int > VectorType;
+	typedef TNL::Containers::Vector< int, TNL::Devices::Host, int > IntVectorType;
+	typedef tnlGrid< 2, double, TNL::Devices::Host, int > MeshType;
 #ifdef HAVE_CUDA
-	typedef tnlVector< double, tnlHost, int > VectorTypeCUDA;
-	typedef tnlVector< int, tnlHost, int > IntVectorTypeCUDA;
-	typedef tnlGrid< 2, double, tnlHost, int > MeshTypeCUDA;
+	typedef TNL::Containers::Vector< double, TNL::Devices::Host, int > VectorTypeCUDA;
+	typedef TNL::Containers::Vector< int, TNL::Devices::Host, int > IntVectorTypeCUDA;
+	typedef tnlGrid< 2, double, TNL::Devices::Host, int > MeshTypeCUDA;
 #endif
 	tnlParallelEikonalSolver();
 	bool init( const Config::ParameterContainer& parameters );
@@ -160,7 +160,7 @@ public:
 
 	//__device__ bool initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
 
-	/*__global__ void initRunCUDA(tnlParallelEikonalSolver<Scheme, double, tnlHost, int >* caller);*/
+	/*__global__ void initRunCUDA(tnlParallelEikonalSolver<Scheme, double, TNL::Devices::Host, int >* caller);*/
 
 #endif
 
@@ -180,13 +180,13 @@ public:
 		typedef SchemeDevice SchemeTypeDevice;
 		typedef SchemeHost SchemeTypeHost;
 		typedef Device DeviceType;
-		typedef tnlVector< double, tnlHost, int > VectorType;
-		typedef tnlVector< int, tnlHost, int > IntVectorType;
-		typedef tnlGrid< 3, double, tnlHost, int > MeshType;
+		typedef TNL::Containers::Vector< double, TNL::Devices::Host, int > VectorType;
+		typedef TNL::Containers::Vector< int, TNL::Devices::Host, int > IntVectorType;
+		typedef tnlGrid< 3, double, TNL::Devices::Host, int > MeshType;
 	#ifdef HAVE_CUDA
-		typedef tnlVector< double, tnlHost, int > VectorTypeCUDA;
-		typedef tnlVector< int, tnlHost, int > IntVectorTypeCUDA;
-		typedef tnlGrid< 3, double, tnlHost, int > MeshTypeCUDA;
+		typedef TNL::Containers::Vector< double, TNL::Devices::Host, int > VectorTypeCUDA;
+		typedef TNL::Containers::Vector< int, TNL::Devices::Host, int > IntVectorTypeCUDA;
+		typedef tnlGrid< 3, double, TNL::Devices::Host, int > MeshTypeCUDA;
 	#endif
 		tnlParallelEikonalSolver();
 		bool init( const Config::ParameterContainer& parameters );
@@ -284,7 +284,7 @@ public:
 
 	//__device__ bool initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
 
-	/*__global__ void initRunCUDA(tnlParallelEikonalSolver<Scheme, double, tnlHost, int >* caller);*/
+	/*__global__ void initRunCUDA(tnlParallelEikonalSolver<Scheme, double, TNL::Devices::Host, int >* caller);*/
 
 #endif
 

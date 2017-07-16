@@ -277,7 +277,7 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: u
 	int subgridID = i/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * statusGridSize;
 	if(cudaStatusVector[subgridID] != 0 && i<Mesh.getDimensions().x() && j < Mesh.getDimensions().y())
 	{
-		tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+		tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 		Entity.setCoordinates(CoordinatesType(i,j));
 		Entity.refresh();
 		tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -317,7 +317,7 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: u
 }
 
 
-__global__ void initCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
+__global__ void initCUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver)
 {
 
 
@@ -346,7 +346,7 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 	int i = threadIdx.x + blockDim.x*blockIdx.x;
 	int j = blockDim.y*blockIdx.y + threadIdx.y;
 
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
@@ -497,7 +497,7 @@ Real tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: f
 
 
 
-__global__ void runCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int i)
+__global__ void runCUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int i)
 {
 
 
@@ -603,7 +603,7 @@ __global__ void runCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double
 
 
 
-__global__ void initSetupGridCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
+__global__ void initSetupGridCUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver)
 {
 	__shared__ double u0;
 	int gx = threadIdx.x + blockDim.x*blockIdx.x;
@@ -641,7 +641,7 @@ __global__ void initSetupGridCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 
 
 // run this with one thread per block
-__global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
+__global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver)
 {
 //	printf("Hello\n");
 	if(solver->cudaStatusVector[blockIdx.x + gridDim.x*blockIdx.y] == 1)
@@ -670,7 +670,7 @@ __global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, in
 
 
 
-__global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, double tau)
+__global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, double tau)
 {
 	int gid = (blockDim.y*blockIdx.y + threadIdx.y)*solver->Mesh.getDimensions().x()+ threadIdx.x;
 	int i = threadIdx.x + blockIdx.x*blockDim.x;
@@ -688,10 +688,10 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 
 		if(status != 0)
 		{
-			tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(solver->Mesh);
+			tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(solver->Mesh);
 			Entity.setCoordinates(Containers::StaticVector<2,double>(i,j));
 			Entity.refresh();
-			tnlNeighborGridEntityGetter<tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
+			tnlNeighborGridEntityGetter<tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 			double value = solver->cudaDofVector2[Entity.getIndex()];
 			double xf,xb,yf,yb, grad, fu, a,b;
 			a = b = 0.0;
@@ -837,7 +837,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1111( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -856,7 +856,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0000( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -875,7 +875,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1110( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -908,7 +908,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1101( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -941,7 +941,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1011( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -974,7 +974,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0111( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -1008,7 +1008,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0001( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -1041,7 +1041,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0010( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -1074,7 +1074,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0100( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -1107,7 +1107,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1000( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -1144,7 +1144,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1100( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -1177,7 +1177,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1010( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -1210,7 +1210,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1001( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -1234,7 +1234,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0011( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -1267,7 +1267,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0101( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -1300,7 +1300,7 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0110( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);

@@ -30,13 +30,13 @@ template< typename Real,
 class tnlFastSweepingMethod< tnlGrid< 1, Real, Device, Index >, Anisotropy >
    : public tnlDirectEikonalMethodsBase< tnlGrid< 1, Real, Device, Index > >
 {
-   static_assert(  std::is_same< Device, tnlHost >::value, "The fast sweeping method works only on CPU." );
+   static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
    
    public:
       
       typedef tnlGrid< 1, Real, Device, Index > MeshType;
       typedef Real RealType;
-      typedef tnlHost DeviceType;
+      typedef TNL::Devices::Host DeviceType;
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
       typedef tnlDirectEikonalMethodsBase< tnlGrid< 1, Real, Device, Index > > BaseType;
@@ -67,13 +67,13 @@ template< typename Real,
 class tnlFastSweepingMethod< tnlGrid< 2, Real, Device, Index >, Anisotropy >
    : public tnlDirectEikonalMethodsBase< tnlGrid< 2, Real, Device, Index > >
 {
-   static_assert(  std::is_same< Device, tnlHost >::value, "The fast sweeping method works only on CPU." );
+   static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
    
    public:
       
       typedef tnlGrid< 2, Real, Device, Index > MeshType;
       typedef Real RealType;
-      typedef tnlHost DeviceType;
+      typedef TNL::Devices::Host DeviceType;
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
       typedef tnlDirectEikonalMethodsBase< tnlGrid< 2, Real, Device, Index > > BaseType;
@@ -104,13 +104,13 @@ template< typename Real,
 class tnlFastSweepingMethod< tnlGrid< 3, Real, Device, Index >, Anisotropy >
    : public tnlDirectEikonalMethodsBase< tnlGrid< 3, Real, Device, Index > >
 {
-   static_assert(  std::is_same< Device, tnlHost >::value, "The fast sweeping method works only on CPU." );
+   static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
    
    public:
       
       typedef tnlGrid< 3, Real, Device, Index > MeshType;
       typedef Real RealType;
-      typedef tnlHost DeviceType;
+      typedef TNL::Devices::Host DeviceType;
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
       typedef tnlDirectEikonalMethodsBase< tnlGrid< 3, Real, Device, Index > > BaseType;

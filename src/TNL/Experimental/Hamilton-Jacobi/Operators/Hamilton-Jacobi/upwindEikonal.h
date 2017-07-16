@@ -41,7 +41,7 @@ class upwindEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef tnlGrid< 1, Real, Device, Index > MeshType;
-      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
@@ -94,7 +94,7 @@ class upwindEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef tnlGrid< 2, Real, Device, Index > MeshType;
-      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
 
       static String getType();
@@ -151,7 +151,7 @@ class upwindEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef tnlGrid< 3, Real, Device, Index > MeshType;
-      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
 
 

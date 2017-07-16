@@ -53,8 +53,8 @@ class tnlTestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimensi
       constexpr static int getDimension() { return meshDimension; };
       
       
-      typedef tnlStaticVector< meshDimension, IndexType > EntityOrientationType;
-      typedef tnlStaticVector< meshDimension, IndexType > EntityBasisType;
+      typedef TNL::Containers::StaticVector< meshDimension, IndexType > EntityOrientationType;
+      typedef TNL::Containers::StaticVector< meshDimension, IndexType > EntityBasisType;
       typedef tnlTestGridEntity< GridType, entityDimension, Config > ThisType;
       //typedef tnlTestNeighborGridEntitiesStorage< ThisType > NeighborGridEntitiesStorageType;
       

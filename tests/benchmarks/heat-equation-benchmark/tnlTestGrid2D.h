@@ -15,7 +15,7 @@
 #include <core/tnlObject.h>
 #include <core/Devices::Host.h>
 #include <TNL/Containers/StaticVector.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/Containers/Vector.h>
 
 template< int Dimension,
           typename Real = double,
@@ -214,11 +214,11 @@ template< typename Real,
           typename Index >
 String Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
-   return tnlString( "Meshes::Grid< " ) +
-          tnlString( getMeshDimension() ) + ", " +
-          tnlString( ::getType< RealType >() ) + ", " +
-          tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( ::getType< IndexType >() ) + " >";
+   return TNL::String( "Meshes::Grid< " ) +
+          TNL::String( getMeshDimension() ) + ", " +
+          TNL::String( ::getType< RealType >() ) + ", " +
+          TNL::String( Device :: getDeviceType() ) + ", " +
+          TNL::String( ::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -979,11 +979,11 @@ template< typename Real,
           typename Index >
 String Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
-   return tnlString( "Meshes::Grid< " ) +
-          tnlString( getMeshDimension() ) + ", " +
-          tnlString( ::getType< RealType >() ) + ", " +
-          tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( ::getType< IndexType >() ) + " >";
+   return TNL::String( "Meshes::Grid< " ) +
+          TNL::String( getMeshDimension() ) + ", " +
+          TNL::String( ::getType< RealType >() ) + ", " +
+          TNL::String( Device :: getDeviceType() ) + ", " +
+          TNL::String( ::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,

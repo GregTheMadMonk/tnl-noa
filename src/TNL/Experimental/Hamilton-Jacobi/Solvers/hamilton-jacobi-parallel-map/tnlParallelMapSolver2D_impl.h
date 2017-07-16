@@ -31,7 +31,7 @@
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::tnlParallelMapSolver()
 {
-	this->device = tnlHostDevice;  /////////////// tnlCuda Device --- vypocet na GPU, tnlHostDevice   ---    vypocet na CPU
+	this->device = TNL::Devices::HostDevice;  /////////////// tnlCuda Device --- vypocet na GPU, TNL::Devices::HostDevice   ---    vypocet na CPU
 
 #ifdef HAVE_CUDA
 	if(this->device == tnlCudaDevice)
@@ -143,7 +143,7 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 	}
 #endif
 
-	if(this->device == tnlHostDevice)
+	if(this->device == TNL::Devices::HostDevice)
 	{
 		VectorType tmp_map;
 		tmp_map.setSize(this->n * this->n);
@@ -201,7 +201,7 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 
 
 	this->currentStep = 1;
-	if(this->device == tnlHostDevice)
+	if(this->device == TNL::Devices::HostDevice)
 		synchronize();
 #ifdef HAVE_CUDA
 	else if(this->device == tnlCudaDevice)
@@ -226,7 +226,7 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run()
 {
-	if(this->device == tnlHostDevice)
+	if(this->device == TNL::Devices::HostDevice)
 	{
 		while ((this->boundaryConditions.max() > 0 )/* || !end*/)
 		{

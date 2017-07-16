@@ -41,24 +41,24 @@ int main( int argc, char* argv[] )
 
 
 	tnlDeviceEnum device;
-	device = tnlHostDevice;
+	device = TNL::Devices::HostDevice;
 
 	const int& dim = parameters.getParameter< int >( "dim" );
 
 	if(dim == 2)
 	{
 
-	   typedef parallelGodunovMapScheme< tnlGrid<2,double,tnlHost, int>, double, int > SchemeTypeHost;
+	   typedef parallelGodunovMapScheme< tnlGrid<2,double,TNL::Devices::Host, int>, double, int > SchemeTypeHost;
 /*#ifdef HAVE_CUDA
 		   typedef parallelGodunovMapScheme< tnlGrid<2,double,tnlCuda, int>, double, int > SchemeTypeDevice;
 #endif
 #ifndef HAVE_CUDA*/
-	   typedef parallelGodunovMapScheme< tnlGrid<2,double,tnlHost, int>, double, int > SchemeTypeDevice;
+	   typedef parallelGodunovMapScheme< tnlGrid<2,double,TNL::Devices::Host, int>, double, int > SchemeTypeDevice;
 /*#endif*/
 
-	   if(device==tnlHostDevice)
+	   if(device==TNL::Devices::HostDevice)
 	   {
-		   typedef tnlHost Device;
+		   typedef TNL::Devices::Host Device;
 
 
 		   tnlParallelMapSolver<2,SchemeTypeHost,SchemeTypeDevice, Device> solver;
