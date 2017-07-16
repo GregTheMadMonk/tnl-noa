@@ -12,6 +12,7 @@
 
 #include <TNL/param-types.h>
 #include <TNL/Math.h>
+#include <TNL/Containers/StaticArray.h>
 
 namespace TNL {
 namespace Containers {   

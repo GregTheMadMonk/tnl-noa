@@ -10,16 +10,16 @@
 
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
-#endif
 
 #include <TNL/Containers/List.h>
 
 using namespace TNL;
 
-#ifdef HAVE_GTEST 
+// TODO
 #endif
 
-#include "GtestMissingError.h"
+
+#include "../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST

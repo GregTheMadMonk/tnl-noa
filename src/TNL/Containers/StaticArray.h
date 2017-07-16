@@ -16,10 +16,6 @@
 namespace TNL {
 namespace Containers {   
 
-//! Aliases for the coordinates
-// TODO: Remove this - it is here only because of some legact code
-enum { tnlX = 0, tnlY, tnlZ };
-
 template< int Size, typename Element >
 class StaticArray
 {
@@ -91,7 +87,6 @@ class StaticArray
 
    protected:
    Element data[ Size ];
-
 };
 
 template< typename Element >
@@ -365,7 +360,6 @@ class StaticArray< 3, Element >
 
    protected:
    Element data[ size ];
-
 };
 
 template< int Size, typename Element >
@@ -378,4 +372,3 @@ std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Element 
 #include <TNL/Containers/StaticArray1D_impl.h>
 #include <TNL/Containers/StaticArray2D_impl.h>
 #include <TNL/Containers/StaticArray3D_impl.h>
-

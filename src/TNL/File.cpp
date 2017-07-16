@@ -34,6 +34,9 @@ File :: ~File()
 bool File :: open( const String& fileName,
                    const IOMode mode )
 {
+   // close the existing file to avoid memory leaks
+   this->close();
+
    this->fileName = fileName;
    if( verbose )
    {
@@ -75,17 +78,13 @@ bool File :: close()
    fileName = "";
    readElements = writtenElements = 0;
    return true;
-};
+}
 
 bool fileExists( const String& fileName )
 {
   std::fstream file;
   file.open( fileName.getString(), std::ios::in );
-  bool result( true );
-  if( ! file )
-     result = false;
-  file.close();
-  return result;
-};
+  return ! file.fail();
+}
 
 } // namespace TNL

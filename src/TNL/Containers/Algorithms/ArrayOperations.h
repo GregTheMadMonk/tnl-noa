@@ -86,6 +86,7 @@ class ArrayOperations< Devices::Cuda >
    template< typename Element >
    static Element getMemoryElement( const Element* data );
 
+   // TODO: does not make sense for CUDA - remove?
    template< typename Element, typename Index >
    static Element& getArrayElementReference( Element* data, const Index i );
 
