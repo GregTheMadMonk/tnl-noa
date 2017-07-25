@@ -20,8 +20,8 @@
 #include <TNL/SmartPointersRegister.h>
 #include <TNL/Timer.h>
 
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Debugging/StackBacktrace.h>
+#include <TNL/Devices/CudaCallable.h>
+
 
 namespace TNL {
 
@@ -74,7 +74,7 @@ class MIC
         static String getDeviceType()
         {
             return String( "MIC" );
-        }
+        };
         
 #ifdef HAVE_MIC  
         
@@ -86,7 +86,7 @@ class MIC
             #else
                     std::cout<<"ON CPU" <<std::endl;
             #endif
-        }
+        };
         
        
         //původní funkce kopírující na MIC  -- nepoužíváse
@@ -105,7 +105,7 @@ class MIC
                 return ret.pointer;
                 
                 std::cout << "Někdo mně volá :-D" <<std::endl;
-        }
+        };
         
         //původní funkce mazající z MIC -- nepoužíváse
         template <typename TYP>
@@ -118,7 +118,7 @@ class MIC
             {
                 free((void*)ptr.pointer);
             }
-        }
+        };
         
         static inline
         void CopyToMIC(void* mic_ptr,void* ptr,size_t size)
@@ -131,18 +131,18 @@ class MIC
             {
                 std::memcpy((void*)hide_ptr.pointer,(void*)&image,size);
             }
-        }
+        };
 
         static inline
         void* AllocMIC(size_t size)
         {
-                Devices::MICHider<void> hide_ptr;
-                #pragma offload target(mic) out(hide_ptr) in(size)
+            Devices::MICHider<void> hide_ptr;
+            #pragma offload target(mic) out(hide_ptr) in(size)
             {
                 hide_ptr.pointer=malloc(size);
             }
                 return hide_ptr.pointer;
-        }
+        };
 
         static inline
         void FreeMIC(void* ptr)
@@ -153,7 +153,7 @@ class MIC
                 {
                         free(hide_ptr.pointer);
                 }
-        }
+        };
        
         
 #endif

@@ -167,11 +167,11 @@ for(int i=0;i<5;i++)
 }
 
 File soubor;
-soubor.open("/tmp/tnlArrayExperimentSave_cc.bin",tnlWriteMode);
+soubor.open("/tmp/tnlArrayExperimentSave_cc.bin",IOMode::write);
 cc.save(soubor);
 soubor.close();
 
-soubor.open("/tmp/tnlArrayExperimentSave_aa.bin",tnlWriteMode);
+soubor.open("/tmp/tnlArrayExperimentSave_aa.bin",IOMode::write);
 aa.save(soubor);
 soubor.close();
 
@@ -188,7 +188,7 @@ for(int i=5;i<10;i++)
 	TEST_TEST(aa.getElement(i)==i+5)
 }
 
-soubor.open("/tmp/tnlArrayExperimentSave_aa.bin",tnlReadMode);
+soubor.open("/tmp/tnlArrayExperimentSave_aa.bin",IOMode::read);
 cc.load(soubor);
 soubor.close();
 

@@ -15,7 +15,7 @@ namespace Meshes {
 
 template< typename Grid,
           typename GridEntity,
-          int EntityDimension = GridEntity::entityDimension >
+          int EntityDimension = GridEntity::getEntityDimension() >
 class GridEntityGetter
 {
    //static_assert( false, "Wrong mesh type or entity topology." );

@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 #include <ostream>
@@ -44,7 +50,7 @@ class Mesh : public Object/*,
  
       virtual String getTypeVirtual() const;
  
-      static constexpr int getDimension();
+      static constexpr int getMeshDimension();
 
       template< int Dimension >
       bool entitiesAvalable() const;

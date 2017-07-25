@@ -60,11 +60,9 @@ class CG : public Object,
              typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
    bool solve( const Vector& b, Vector& x );
 
-   ~CG();
-
    protected:
 
-   bool setSize( IndexType size );
+   void setSize( IndexType size );
 
    Containers::Vector< RealType, DeviceType, IndexType >  r, new_r, p, Ap;
 

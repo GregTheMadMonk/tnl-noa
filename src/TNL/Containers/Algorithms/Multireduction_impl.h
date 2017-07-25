@@ -17,6 +17,7 @@
 //#define CUDA_REDUCTION_PROFILING
 
 #include <TNL/Assert.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/CudaMultireductionKernel.h>
@@ -59,8 +60,8 @@ reduce( Operation& operation,
         typename Operation::ResultType* hostResult )
 {
 #ifdef HAVE_CUDA
-   TNL_ASSERT( n > 0, );
-   TNL_ASSERT( size <= ldInput1, );
+   TNL_ASSERT_GT( n, 0, "The number of datasets must be positive." );
+   TNL_ASSERT_LE( size, ldInput1, "The size of the input cannot exceed its leading dimension." );
 
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::RealType RealType;
@@ -143,10 +144,9 @@ reduce( Operation& operation,
       std::cout << "   Multireduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
    #endif
 
-   return checkCudaDevice;
+   return TNL_CHECK_CUDA_DEVICE;
 #else
-   CudaSupportMissingMessage;
-   return false;
+   throw Exceptions::CudaSupportMissing();
 #endif
 };
 
@@ -171,8 +171,8 @@ reduce( Operation& operation,
         const typename Operation::RealType* input2,
         typename Operation::ResultType* result )
 {
-   TNL_ASSERT( n > 0, );
-   TNL_ASSERT( size <= ldInput1, );
+   TNL_ASSERT_GT( n, 0, "The number of datasets must be positive." );
+   TNL_ASSERT_LE( size, ldInput1, "The size of the input cannot exceed its leading dimension." );
 
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::RealType RealType;

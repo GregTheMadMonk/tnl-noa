@@ -7,6 +7,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #pragma once
 
 #include "FiniteVolumeNonlinearOperator.h"
@@ -124,14 +130,14 @@ operator()( const MeshEntity& entity,
             const Vector& u,
             const Real& time ) const
 {
-   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();      
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const IndexType& cellIndex = entity.getIndex();
    return operatorQ( entity, u, time ) * 
-      ( (  u[ neighbourEntities.template getEntityIndex<  1, 0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -2, 0 >() / operatorQ.operator()( entity, u, time, 1 )
-      + (  u[ neighbourEntities.template getEntityIndex<  0, 1 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, -2 >() / operatorQ.operator()( entity, u, time, 0, 1 ) 
-      - ( -u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] + u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -2, 0 >() / operatorQ.operator()( entity, u, time, -1)
-      - ( -u[ neighbourEntities.template getEntityIndex<  0,-1 >() ] + u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, -2 >() / operatorQ.operator()( entity, u, time, 0, -1) );
+      ( (  u[ neighborEntities.template getEntityIndex<  1, 0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -2, 0 >() / operatorQ.operator()( entity, u, time, 1 )
+      + (  u[ neighborEntities.template getEntityIndex<  0, 1 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, -2 >() / operatorQ.operator()( entity, u, time, 0, 1 ) 
+      - ( -u[ neighborEntities.template getEntityIndex< -1, 0 >() ] + u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -2, 0 >() / operatorQ.operator()( entity, u, time, -1)
+      - ( -u[ neighborEntities.template getEntityIndex<  0,-1 >() ] + u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, -2 >() / operatorQ.operator()( entity, u, time, 0, -1) );
 }
 
 template< typename MeshReal,
@@ -174,7 +180,7 @@ setMatrixElements( const RealType& time,
                     Matrix& matrix ) const
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+   const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
    const RealType aCoef = - tau * operatorQ.operator()( entity, u, time ) * mesh.template getSpaceStepsProducts< 0, -2 >() / 
                        operatorQ.operator()( entity, u, time, 0, -1 );
    const RealType bCoef = - tau * operatorQ.operator()( entity, u, time ) * mesh.template getSpaceStepsProducts< -2, 0 >() / 
@@ -188,11 +194,11 @@ setMatrixElements( const RealType& time,
                        operatorQ.operator()( entity, u, time, 1 );
    const RealType eCoef = - tau * operatorQ.operator()( entity, u, time ) * mesh.template getSpaceStepsProducts< 0, -2 >() / 
                        operatorQ.operator()(  entity, u, time, 0, 1 );
-   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex<  0, -1 >(), aCoef );
-   matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< -1,  0 >(), bCoef );
+   matrixRow.setElement( 0, neighborEntities.template getEntityIndex<  0, -1 >(), aCoef );
+   matrixRow.setElement( 1, neighborEntities.template getEntityIndex< -1,  0 >(), bCoef );
    matrixRow.setElement( 2, entity.getIndex(),                                     cCoef );
-   matrixRow.setElement( 3, neighbourEntities.template getEntityIndex<  1,  0 >(), dCoef );
-   matrixRow.setElement( 4, neighbourEntities.template getEntityIndex<  0,  1 >(), eCoef );
+   matrixRow.setElement( 3, neighborEntities.template getEntityIndex<  1,  0 >(), dCoef );
+   matrixRow.setElement( 4, neighborEntities.template getEntityIndex<  0,  1 >(), eCoef );
 }
 
 template< typename MeshReal,
@@ -227,21 +233,21 @@ operator()( const MeshEntity& entity,
             const Vector& u,
             const Real& time ) const
 {
-   const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+   const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities();
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const IndexType& cellIndex = entity.getIndex();
    return operatorQ( entity, u, time ) * 
-      ( (u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ]) 
+      ( (u[ neighborEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ]) 
           * mesh.template getSpaceStepsProducts< -2, 0, 0 >() / operatorQ( entity, u, time, 1 )
-          + ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ]) * mesh.template getSpaceStepsProducts< 0, -2, 0 >()/
+          + ( u[ neighborEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ]) * mesh.template getSpaceStepsProducts< 0, -2, 0 >()/
           operatorQ( entity, u, time, 0, 1 ) 
-          + ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ]) * mesh.template getSpaceStepsProducts< 0, 0, -2 >()/
+          + ( u[ neighborEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ]) * mesh.template getSpaceStepsProducts< 0, 0, -2 >()/
           operatorQ( entity, u, time, 0, 0, 1 ) 
-          - ( - u[ neighbourEntities.template getEntityIndex< -1,0,0 >() ]  + u[ cellIndex ]) 
+          - ( - u[ neighborEntities.template getEntityIndex< -1,0,0 >() ]  + u[ cellIndex ]) 
           * mesh.template getSpaceStepsProducts< -2, 0, 0 >() / operatorQ( entity, u, time, -1)
-          -( - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >() ] + u[ cellIndex ]) * mesh.template getSpaceStepsProducts< 0, -2, 0 >()
+          -( - u[ neighborEntities.template getEntityIndex< 0,-1,0 >() ] + u[ cellIndex ]) * mesh.template getSpaceStepsProducts< 0, -2, 0 >()
           /operatorQ( entity, u, time, 0, -1) 
-          -( - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >() ] + u[ cellIndex ]) * mesh.template getSpaceStepsProducts< 0, 0, -2 >()
+          -( - u[ neighborEntities.template getEntityIndex< 0,0,-1 >() ] + u[ cellIndex ]) * mesh.template getSpaceStepsProducts< 0, 0, -2 >()
           /operatorQ( entity, u, time, 0, 0, -1) );
 }
 
@@ -287,7 +293,7 @@ setMatrixElements( const RealType& time,
                     Matrix& matrix ) const
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+   const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities();
    const RealType aCoef = - tau * operatorQ( entity, u, time ) *
                        mesh.template getSpaceStepsProducts< 0, 0, -2 >() / operatorQ.operator()( entity, u, time, 0, 0, -1 );
    const RealType bCoef = - tau * operatorQ( entity, u, time ) * 
@@ -307,13 +313,13 @@ setMatrixElements( const RealType& time,
                        mesh.template getSpaceStepsProducts< 0, -2, 0 >() / operatorQ.operator()( entity, u, time, 0, 1, 0 );
    const RealType gCoef = - tau * operatorQ.operator()( entity, u, time ) * 
                        mesh.template getSpaceStepsProducts< 0, 0, -2 >() / operatorQ.operator()( entity, u, time, 0, 0, 1 );
-   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0,0,-1 >(), aCoef );
-   matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0,-1,0 >(), bCoef );
-   matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< -1,0,0 >(), cCoef );
+   matrixRow.setElement( 0, neighborEntities.template getEntityIndex< 0,0,-1 >(), aCoef );
+   matrixRow.setElement( 1, neighborEntities.template getEntityIndex< 0,-1,0 >(), bCoef );
+   matrixRow.setElement( 2, neighborEntities.template getEntityIndex< -1,0,0 >(), cCoef );
    matrixRow.setElement( 3, entity.getIndex(),                                     dCoef );
-   matrixRow.setElement( 4, neighbourEntities.template getEntityIndex< 1,0,0 >(),  eCoef );
-   matrixRow.setElement( 5, neighbourEntities.template getEntityIndex< 0,1,0 >(),  fCoef );
-   matrixRow.setElement( 6, neighbourEntities.template getEntityIndex< 0,0,1 >(),  gCoef );
+   matrixRow.setElement( 4, neighborEntities.template getEntityIndex< 1,0,0 >(),  eCoef );
+   matrixRow.setElement( 5, neighborEntities.template getEntityIndex< 0,1,0 >(),  fCoef );
+   matrixRow.setElement( 6, neighborEntities.template getEntityIndex< 0,0,1 >(),  gCoef );
 }
 
 } // namespace Operators

@@ -25,8 +25,8 @@ class GridEntityTopology
       typedef Grid GridType;
  
       // TODO: restore when CUDA allows it
-      //static const int meshDimension = GridType::Dimension;
-      enum { meshDimension = GridType::Dimension };
+      //static const int meshDimension = GridType::getMeshDimension();
+      enum { meshDimension = GridType::getMeshDimension() };
  
       static const int entityDimension = EntityDimension;
  

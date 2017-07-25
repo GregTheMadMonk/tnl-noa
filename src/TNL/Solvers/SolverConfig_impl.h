@@ -14,7 +14,7 @@
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
-#include <TNL/Solvers/PDE/PDESolver.h>
+#include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 
 namespace TNL {
 namespace Solvers {
@@ -26,6 +26,10 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    typedef DummyProblem< double, Devices::Host, int > DummyProblemType;
 
    config.addDelimiter( " === General parameters ==== " );
+   config.addEntry< bool >( "catch-exceptions",
+                            "Catch C++ exceptions. Disabling it allows the program to drop into the debugger "
+                            "and track the origin of the exception.",
+                            true );
    /****
     * Setup real type
     */
@@ -85,7 +89,7 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
     */
    config.addDelimiter( " === Time discretisation parameters ==== " );
    typedef PDE::ExplicitTimeStepper< DummyProblemType, ODE::Euler > ExplicitTimeStepper;
-   PDE::PDESolver< DummyProblemType, ExplicitTimeStepper >::configSetup( config );
+   PDE::TimeDependentPDESolver< DummyProblemType, ExplicitTimeStepper >::configSetup( config );
    ExplicitTimeStepper::configSetup( config );
    if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled ||
        ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled ||
@@ -113,6 +117,8 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
          config.addEntryEnum( "cg" );
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitBICGStabSolverTag >::enabled )
          config.addEntryEnum( "bicgstab" );
+      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitBICGStabLSolverTag >::enabled )
+         config.addEntryEnum( "bicgstabl" );
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitCWYGMRESSolverTag >::enabled )
          config.addEntryEnum( "cwygmres" );
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitGMRESSolverTag >::enabled )
@@ -129,6 +135,10 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    config.addEntry< String >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
    config.addEntryEnum( "none" );
    config.addEntryEnum( "diagonal" );
+// TODO: implement parallel ILU or device-dependent build config tags for preconditioners
+#ifndef HAVE_CUDA
+   config.addEntryEnum( "ilu0" );
+#endif
    if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled ||
        ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
    {
@@ -153,10 +163,15 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
          Linear::CG< MatrixType >::configSetup( config );
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitBICGStabSolverTag >::enabled )
          Linear::BICGStab< MatrixType >::configSetup( config );
+      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitBICGStabLSolverTag >::enabled )
+         Linear::BICGStabL< MatrixType >::configSetup( config );
+
+      // GMRES and CWYGMRES have the same options
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitCWYGMRESSolverTag >::enabled )
          Linear::CWYGMRES< MatrixType >::configSetup( config );
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitGMRESSolverTag >::enabled )
+      else if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitGMRESSolverTag >::enabled )
          Linear::GMRES< MatrixType >::configSetup( config );
+
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitTFQMRSolverTag >::enabled )
          Linear::TFQMR< MatrixType >::configSetup( config );
       if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitSORSolverTag >::enabled )
@@ -173,4 +188,3 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
 
 } // namespace Solvers
 } // namespace TNL
-

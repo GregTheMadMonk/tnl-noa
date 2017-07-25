@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/CudaCallable.h>
 #include <TNL/String.h>
 #include <TNL/File.h>
 #include <TNL/Containers/List.h>
@@ -35,8 +35,8 @@ class Object
       //! Basic constructor
 #ifndef HAVE_MIC
       __cuda_callable__
-#endif
       Object() : deprecatedReadMode( false ) {};
+#endif
 
       /****
        * Type getter. This returns the type in C++ style - for example the returned value
@@ -77,8 +77,9 @@ class Object
       // FIXME: __cuda_callable__ would have to be added to every overriding destructor,
       // even if the object's constructor is not __cuda_callable__
       //   __cuda_callable__
+#ifndef HAVE_MIC
       virtual ~Object(){};
-   
+#endif
    
    protected:
       

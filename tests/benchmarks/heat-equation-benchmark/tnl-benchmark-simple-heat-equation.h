@@ -511,18 +511,6 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
          aux[ ( gridYSize - 1 ) * gridXSize + i ] = 0.0; //u[ ( gridYSize - 2 ) * gridXSize + i ];
       }
  
-      /*for( Index j = 1; j < gridYSize - 1; j++ )
-         for( Index i = 1; i < gridXSize - 1; i++ )
-         {
-            const Index c = j * gridXSize + i;
-            aux[ c ] = u[ c ] + currentTau * ( ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ] ) * hx_inv +
-                                               ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
-         }
-      Real* swap = aux;
-      aux = u;
-      u = swap;
-      */
-
       for( Index j = 1; j < gridYSize - 1; j++ )
          for( Index i = 1; i < gridXSize - 1; i++ )
          {

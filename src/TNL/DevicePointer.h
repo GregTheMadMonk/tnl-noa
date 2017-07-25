@@ -115,9 +115,16 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
          return *( this->pointer );
       }
 
-      operator bool()
+      __cuda_callable__
+      operator bool() const
       {
          return this->pointer;
+      }
+
+      __cuda_callable__
+      bool operator!() const
+      {
+         return ! this->pointer;
       }
 
       template< typename Device = Devices::Host >
@@ -282,9 +289,16 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          return *( this->pointer );
       }
 
-      operator bool()
+      __cuda_callable__
+      operator bool() const
       {
          return this->pd;
+      }
+
+      __cuda_callable__
+      bool operator!() const
+      {
+         return ! this->pd;
       }
 
       template< typename Device = Devices::Host >
@@ -380,7 +394,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
             TNL_ASSERT( this->pointer, );
             TNL_ASSERT( this->cuda_pointer, );
             cudaMemcpy( (void*) this->cuda_pointer, (void*) this->pointer, sizeof( ObjectType ), cudaMemcpyHostToDevice );
-            if( ! checkCudaDevice ) {
+            if( ! TNL_CHECK_CUDA_DEVICE ) {
                return false;
             }
             this->set_last_sync_state();
@@ -411,12 +425,8 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       {
          this->pointer = &obj;
          this->pd = new PointerData();
-         if( ! this->pd )
-            return false;
          // pass to device
          this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
-         if( ! this->cuda_pointer )
-            return false;
          // set last-sync state
          this->set_last_sync_state();
          Devices::Cuda::insertSmartPointer( this );
@@ -742,7 +752,26 @@ class DevicePointer< Object, Devices::MIC > : public SmartPointer
       // unable to dereference this-pd on the device
       Object* mic_pointer;
 };
+#endif
 
+
+#if  (!defined(NDEBUG)) && (!defined(HAVE_MIC)) 
+namespace Assert {
+
+template< typename Object, typename Device >
+struct Formatter< DevicePointer< Object, Device > >
+{
+   static std::string
+   printToString( const DevicePointer< Object, Device >& value )
+   {
+      ::std::stringstream ss;
+      ss << "(DevicePointer< " << Object::getType() << ", " << Device::getDeviceType()
+         << " > object at " << &value << ")";
+      return ss.str();
+   }
+};
+
+} // namespace Assert
 #endif
 
 } // namespace TNL

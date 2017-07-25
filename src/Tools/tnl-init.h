@@ -34,14 +34,14 @@ bool renderFunction( const Config::ParameterContainer& parameters )
    if( ! meshPointer->load( meshFile ) )
       return false;
 
-   typedef Functions::TestFunction< MeshType::meshDimension, RealType > FunctionType;
+   typedef Functions::TestFunction< MeshType::getMeshDimension(), RealType > FunctionType;
    typedef SharedPointer< FunctionType, typename MeshType::DeviceType > FunctionPointer;
    FunctionPointer function;
    std::cout << "Setting up the function ... " << std::endl;
    if( ! function->setup( parameters, "" ) )
       return false;
    std::cout << "done." << std::endl;
-   typedef Functions::MeshFunction< MeshType, MeshType::meshDimension > MeshFunctionType;
+   typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimension() > MeshFunctionType;
    typedef SharedPointer< MeshFunctionType, typename MeshType::DeviceType > MeshFunctionPointer;
    MeshFunctionPointer meshFunction( meshPointer );
    //if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )

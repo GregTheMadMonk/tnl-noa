@@ -163,9 +163,16 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
          return this->pd->data;
       }
 
-      operator bool()
+      __cuda_callable__
+      operator bool() const
       {
          return this->pd;
+      }
+
+      __cuda_callable__
+      bool operator!() const
+      {
+         return ! this->pd;
       }
 
       template< typename Device = Devices::Host >
@@ -397,9 +404,16 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
          return this->pd->data;
       }
 
-      operator bool()
+      __cuda_callable__
+      operator bool() const
       {
          return this->pd;
+      }
+
+      __cuda_callable__
+      bool operator!() const
+      {
+         return ! this->pd;
       }
 
       template< typename Device = Devices::Host >
@@ -502,7 +516,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 #endif
             TNL_ASSERT( this->cuda_pointer, );
             cudaMemcpy( (void*) this->cuda_pointer, (void*) &this->pd->data, sizeof( Object ), cudaMemcpyHostToDevice );
-            if( ! checkCudaDevice ) {
+            if( ! TNL_CHECK_CUDA_DEVICE ) {
                return false;
             }
             this->set_last_sync_state();
@@ -546,12 +560,8 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       bool allocate( Args... args )
       {
          this->pd = new PointerData( args... );
-         if( ! this->pd )
-            return false;
          // pass to device
          this->cuda_pointer = Devices::Cuda::passToDevice( this->pd->data );
-         if( ! this->cuda_pointer )
-            return false;
          // set last-sync state
          this->set_last_sync_state();
 #ifdef TNL_DEBUG_SHARED_POINTERS
@@ -933,7 +943,26 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       // unable to dereference this-pd on the device -- Nevím zda to platí pro MIC, asi jo
       Object* mic_pointer;
 };
+#endif
 
+
+#if  (!defined(NDEBUG)) && (!defined(HAVE_MIC)) 
+namespace Assert {
+
+template< typename Object, typename Device >
+struct Formatter< SharedPointer< Object, Device > >
+{
+   static std::string
+   printToString( const SharedPointer< Object, Device >& value )
+   {
+      ::std::stringstream ss;
+      ss << "(SharedPointer< " << Object::getType() << ", " << Device::getDeviceType()
+         << " > object at " << &value << ")";
+      return ss.str();
+   }
+};
+
+} // namespace Assert
 #endif
 
 } // namespace TNL

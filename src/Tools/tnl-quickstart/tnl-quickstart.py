@@ -65,19 +65,19 @@ with open( definitions['problemBaseName'] + "Problem_impl.h", 'w') as file:
 # Operator
 #
 dimensions = [ '1', '2', '3' ]
-for meshDimensions in dimensions:
-   definitions[ 'meshDimensions' ] = meshDimensions
-   key = 'operatorGridSpecializationHeader_' + meshDimensions + 'D'
+for meshDimension in dimensions:
+   definitions[ 'meshDimension' ] = meshDimension
+   key = 'operatorGridSpecializationHeader_' + meshDimension + 'D'
    with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/operator-grid-specialization.h.in", 'r') as ftemp:
        templateString = ftemp.read()
    definitions[ key ] = templateString.format( **definitions )
 
-   with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/explicit-laplace-grid-" + meshDimensions + "d_impl.h.in", 'r') as ftemp:
+   with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/explicit-laplace-grid-" + meshDimension + "d_impl.h.in", 'r') as ftemp:
       definitions[ 'explicitScheme' ] = ftemp.read();
-   with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/implicit-laplace-grid-" + meshDimensions + "d_impl.h.in", 'r') as ftemp:
+   with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/implicit-laplace-grid-" + meshDimension + "d_impl.h.in", 'r') as ftemp:
       definitions[ 'semiimplicitScheme' ] = ftemp.read();
 
-   key = 'operatorGridSpecializationImplementation_' + meshDimensions + 'D'
+   key = 'operatorGridSpecializationImplementation_' + meshDimension + 'D'
    with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/operator-grid-specialization_impl.h.in", 'r') as ftemp:
        templateString = ftemp.read()
    definitions[ key ] = templateString.format( **definitions )

@@ -25,8 +25,16 @@ template< typename Real = double,
           typename Index = int >
 class Tridiagonal : public Matrix< Real, Device, Index >
 {
-   public:
+private:
+   // convenient template alias for controlling the selection of copy-assignment operator
+   template< typename Device2 >
+   using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
 
+   // friend class will be needed for templated assignment operators
+   template< typename Real2, typename Device2, typename Index2 >
+   friend class Tridiagonal;
+
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -43,17 +51,24 @@ class Tridiagonal : public Matrix< Real, Device, Index >
 
    String getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows,
+   static String getSerializationType();
+
+   virtual String getSerializationTypeVirtual() const;
+
+   void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
+
+   __cuda_callable__
+   IndexType getRowLengthFast( const IndexType row ) const;
 
    IndexType getMaxRowLength() const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const Tridiagonal< Real2, Device2, Index2 >& m );
+   void setLike( const Tridiagonal< Real2, Device2, Index2 >& m );
 
    IndexType getNumberOfMatrixElements() const;
 
@@ -148,15 +163,9 @@ class Tridiagonal : public Matrix< Real, Device, Index >
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
-#ifdef HAVE_NOT_CXX11
    template< typename Real2, typename Index2 >
    void getTransposition( const Tridiagonal< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
-#else
-   template< typename Real2, typename Index2 >
-   void getTransposition( const Tridiagonal< Real2, Device, Index2 >& matrix,
-                          const RealType& matrixMultiplicator = 1.0 );
-#endif
 
    template< typename Vector >
    __cuda_callable__
@@ -164,6 +173,14 @@ class Tridiagonal : public Matrix< Real, Device, Index >
                              const IndexType row,
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
+
+   // copy assignment
+   Tridiagonal& operator=( const Tridiagonal& matrix );
+
+   // cross-device copy assignment
+   template< typename Real2, typename Device2, typename Index2,
+             typename = typename Enabler< Device2 >::type >
+   Tridiagonal& operator=( const Tridiagonal< Real2, Device2, Index2 >& matrix );
 
    bool save( File& file ) const;
 
@@ -175,7 +192,7 @@ class Tridiagonal : public Matrix< Real, Device, Index >
 
    void print( std::ostream& str ) const;
 
-   protected:
+protected:
 
    __cuda_callable__
    IndexType getElementIndex( const IndexType row,

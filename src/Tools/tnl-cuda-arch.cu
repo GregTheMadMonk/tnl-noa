@@ -1,6 +1,8 @@
 #include <stdio.h> 
+#include <string.h>
 
-int main() {
+int main( int argc, char** argv )
+{
     int num_devices = 0;
     cudaError_t error_id = cudaGetDeviceCount( &num_devices );
 
@@ -21,8 +23,15 @@ int main() {
 
             if( i > 0 )
                 printf(" ");
-            printf( "-gencode arch=compute_%d%d,code=sm_%d%d",
-                    prop.major, compute_minor, prop.major, prop.minor );
+
+            if( argc == 2 && strcmp( argv[1], "--clang" ) == 0 ) {
+                printf( "--cuda-gpu-arch=sm_%d%d",
+                        prop.major, prop.minor );
+            }
+            else {
+                printf( "-gencode arch=compute_%d%d,code=sm_%d%d",
+                        prop.major, compute_minor, prop.major, prop.minor );
+            }
     }
     printf("\n");
 }

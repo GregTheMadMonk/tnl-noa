@@ -53,16 +53,16 @@ class heatEquationSetter
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef Containers::StaticVector< MeshType::meshDimension, Real > Point;
+   typedef Containers::StaticVector< MeshType::getMeshDimension(), Real > Point;
 
    static bool run( const Config::ParameterContainer& parameters )
    {
-      enum { Dimension = MeshType::meshDimension };
+      enum { Dimension = MeshType::getMeshDimension() };
       typedef Operators::LinearDiffusion< MeshType, Real, Index > ApproximateOperator;
       typedef Operators::ExactLinearDiffusion< Dimension > ExactOperator;
-      typedef Functions::TestFunction< MeshType::meshDimension, Real, Device > TestFunction;
+      typedef Functions::TestFunction< MeshType::getMeshDimension(), Real, Device > TestFunction;
       typedef HeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
-      typedef Containers::StaticVector < MeshType::meshDimension, Real > Point;
+      typedef Containers::StaticVector < MeshType::getMeshDimension(), Real > Point;
       typedef Operators::DirichletBoundaryConditions< MeshType, TestFunction, Dimension, Real, Index > BoundaryConditions;
       typedef HeatEquationEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;

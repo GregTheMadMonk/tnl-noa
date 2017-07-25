@@ -41,11 +41,11 @@ class OperatorCompositionTest
    typedef typename OperatorType::IndexType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::PointType PointType;
-   typedef Functions::Analytic::ExpBump< MeshType::getDimension(), typename MeshType::RealType > TestFunctionType;
-   typedef Functions::Analytic::Constant< MeshType::getDimension(), typename MeshType::RealType > Constant;
+   typedef Functions::Analytic::ExpBump< MeshType::getMeshDimension(), typename MeshType::RealType > TestFunctionType;
+   typedef Functions::Analytic::Constant< MeshType::getMeshDimension(), typename MeshType::RealType > Constant;
    typedef Operators::NeumannBoundaryConditions< MeshType, Constant > BoundaryConditions;
    typedef Operators::OperatorComposition< OperatorType, OperatorType, BoundaryConditions > OperatorComposition;
-   typedef Functions::MeshFunction< MeshType, MeshType::getDimension() > MeshFunctionType;
+   typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimension() > MeshFunctionType;
    typedef Functions::OperatorFunction< OperatorType, MeshFunctionType, BoundaryConditions > OperatorFunction;
    typedef Functions::OperatorFunction< OperatorType, OperatorFunction, BoundaryConditions > OperatorFunction2;
 

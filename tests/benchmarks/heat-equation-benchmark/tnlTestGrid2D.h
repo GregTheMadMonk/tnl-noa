@@ -14,7 +14,7 @@
 
 #include <core/tnlObject.h>
 #include <core/Devices::Host.h>
-#include <core/vectors/tnlStaticVector.h>
+#include <TNL/Containers/StaticVector.h>
 #include <core/vectors/tnlVector.h>
 
 template< int Dimension,
@@ -32,12 +32,12 @@ class Grid : public tnlObject
 #include <mesh/grids/GridEntityTopology.h>
 #include <mesh/grids/GridEntityGetter.h>
 #include <mesh/grids/GridEntityConfig.h>
-#include <mesh/grids/NeighbourGridEntityGetter.h>
+#include <mesh/grids/NeighborGridEntityGetter.h>
 #include <core/tnlLogger.h>
 
 // TODO: remove this
 //#include <../tests/benchmarks/heat-equation-benchmark/tnlTestGridEntity.h>
-//#include <../tests/benchmarks/heat-equation-benchmark/tnlTestNeighbourGridEntityGetter2D_impl.h>
+//#include <../tests/benchmarks/heat-equation-benchmark/tnlTestNeighborGridEntityGetter2D_impl.h>
 /////
 
 template< typename Real,
@@ -50,8 +50,8 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlStaticVector< 2, Real > PointType;
-   typedef tnlStaticVector< 2, Index > CoordinatesType;
+   typedef Containers::StaticVector< 2, Real > PointType;
+   typedef Containers::StaticVector< 2, Index > CoordinatesType;
    typedef Meshes::Grid< 2, Real, Devices::Host, Index > HostType;
    typedef Meshes::Grid< 2, Real, tnlCuda, Index > CudaType;   
    typedef Meshes::Grid< 2, Real, Device, Index > ThisType;
@@ -74,17 +74,17 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef TestMeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > TestCell;
    /////
    
-   static constexpr int getDimension() { return meshDimension; };
+   static constexpr int getMeshDimension() { return meshDimension; };
 
    Grid();
 
-   static tnlString getType();
+   static String getType();
 
-   tnlString getTypeVirtual() const;
+   String getTypeVirtual() const;
 
-   static tnlString getSerializationType();
+   static String getSerializationType();
 
-   virtual tnlString getSerializationTypeVirtual() const;
+   virtual String getSerializationTypeVirtual() const;
 
    void setDimensions( const Index xSize, const Index ySize );
 
@@ -153,17 +153,17 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    //! Method for restoring the object from a file
    bool load( tnlFile& file );
 
-   bool save( const tnlString& fileName ) const;
+   bool save( const String& fileName ) const;
 
-   bool load( const tnlString& fileName );
+   bool load( const String& fileName );
 
-   bool writeMesh( const tnlString& fileName,
-                   const tnlString& format ) const;
+   bool writeMesh( const String& fileName,
+                   const String& format ) const;
 
    template< typename MeshFunction >
    bool write( const MeshFunction& function,
-               const tnlString& fileName,
-               const tnlString& format ) const;
+               const String& fileName,
+               const String& format ) const;
 
    void writeProlog( tnlLogger& logger );
 
@@ -192,7 +192,7 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
 #include <core/tnlTNL_ASSERT.h>
 #include <mesh/GnuplotWriter.h>
 #include <mesh/grids/GridEntityGetter_impl.h>
-#include <mesh/grids/NeighbourGridEntityGetter2D_impl.h>
+#include <mesh/grids/NeighborGridEntityGetter2D_impl.h>
 #include <mesh/grids/GridEntityMeasureGetter.h>
 
 using namespace std;
@@ -212,10 +212,10 @@ Meshes::Grid< 2, Real, Device, Index > :: Grid()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString Meshes::Grid< 2, Real, Device, Index > :: getType()
+String Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
    return tnlString( "Meshes::Grid< " ) +
-          tnlString( getDimension() ) + ", " +
+          tnlString( getMeshDimension() ) + ", " +
           tnlString( ::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
           tnlString( ::getType< IndexType >() ) + " >";
@@ -224,7 +224,7 @@ tnlString Meshes::Grid< 2, Real, Device, Index > :: getType()
 template< typename Real,
            typename Device,
            typename Index >
-tnlString Meshes::Grid< 2, Real, Device, Index > :: getTypeVirtual() const
+String Meshes::Grid< 2, Real, Device, Index > :: getTypeVirtual() const
 {
    return this->getType();
 }
@@ -232,7 +232,7 @@ tnlString Meshes::Grid< 2, Real, Device, Index > :: getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-tnlString Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
+String Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
 {
    return HostType::getType();
 };
@@ -240,7 +240,7 @@ tnlString Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString Meshes::Grid< 2, Real, Device, Index > :: getSerializationTypeVirtual() const
+String Meshes::Grid< 2, Real, Device, Index > :: getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 };
@@ -596,7 +596,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: save( const tnlString& fileName ) const
+bool Meshes::Grid< 2, Real, Device, Index > :: save( const String& fileName ) const
 {
    return tnlObject :: save( fileName );
 };
@@ -604,7 +604,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: save( const tnlString& fileName )
 template< typename Real,
            typename Device,
            typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: load( const tnlString& fileName )
+bool Meshes::Grid< 2, Real, Device, Index > :: load( const String& fileName )
 {
    return tnlObject :: load( fileName );
 };
@@ -612,8 +612,8 @@ bool Meshes::Grid< 2, Real, Device, Index > :: load( const tnlString& fileName )
 template< typename Real,
           typename Device,
           typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
-                                                     const tnlString& format ) const
+bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
+                                                     const String& format ) const
 {
    fstream file;
    file. open( fileName. getString(), ios :: out );
@@ -739,8 +739,8 @@ template< typename Real,
            typename Index >
    template< typename MeshFunction >
 bool Meshes::Grid< 2, Real, Device, Index > :: write( const MeshFunction& function,
-                                                 const tnlString& fileName,
-                                                 const tnlString& format ) const
+                                                 const String& fileName,
+                                                 const String& format ) const
 {
    if( this->template getEntitiesCount< Cell >() != function. getSize() )
    {
@@ -784,7 +784,7 @@ void
 Meshes::Grid< 2, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
-   logger.writeParameter( "Dimension:", getDimension() );
+   logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );
@@ -826,8 +826,8 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlStaticVector< 2, Real > PointType;
-   typedef tnlStaticVector< 2, Index > CoordinatesType;
+   typedef Containers::StaticVector< 2, Real > PointType;
+   typedef Containers::StaticVector< 2, Index > CoordinatesType;
    typedef Meshes::Grid< 2, Real, Devices::Host, Index > HostType;
    typedef Meshes::Grid< 2, Real, tnlCuda, Index > CudaType;   
    typedef Meshes::Grid< 2, Real, Device, Index > ThisType;
@@ -850,17 +850,17 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef TestMeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
    /////
    
-   static constexpr int getDimension() { return meshDimension; };
+   static constexpr int getMeshDimension() { return meshDimension; };
 
    Grid();
 
-   static tnlString getType();
+   static String getType();
 
-   tnlString getTypeVirtual() const;
+   String getTypeVirtual() const;
 
-   static tnlString getSerializationType();
+   static String getSerializationType();
 
-   virtual tnlString getSerializationTypeVirtual() const;
+   virtual String getSerializationTypeVirtual() const;
 
    void setDimensions( const Index xSize, const Index ySize );
 
@@ -929,17 +929,17 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    //! Method for restoring the object from a file
    bool load( tnlFile& file );
 
-   bool save( const tnlString& fileName ) const;
+   bool save( const String& fileName ) const;
 
-   bool load( const tnlString& fileName );
+   bool load( const String& fileName );
 
-   bool writeMesh( const tnlString& fileName,
-                   const tnlString& format ) const;
+   bool writeMesh( const String& fileName,
+                   const String& format ) const;
 
    template< typename MeshFunction >
    bool write( const MeshFunction& function,
-               const tnlString& fileName,
-               const tnlString& format ) const;
+               const String& fileName,
+               const String& format ) const;
 
    void writeProlog( tnlLogger& logger );
 
@@ -977,10 +977,10 @@ Meshes::Grid< 2, Real, Device, Index > :: Grid()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString Meshes::Grid< 2, Real, Device, Index > :: getType()
+String Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
    return tnlString( "Meshes::Grid< " ) +
-          tnlString( getDimension() ) + ", " +
+          tnlString( getMeshDimension() ) + ", " +
           tnlString( ::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
           tnlString( ::getType< IndexType >() ) + " >";
@@ -989,7 +989,7 @@ tnlString Meshes::Grid< 2, Real, Device, Index > :: getType()
 template< typename Real,
            typename Device,
            typename Index >
-tnlString Meshes::Grid< 2, Real, Device, Index > :: getTypeVirtual() const
+String Meshes::Grid< 2, Real, Device, Index > :: getTypeVirtual() const
 {
    return this->getType();
 }
@@ -997,7 +997,7 @@ tnlString Meshes::Grid< 2, Real, Device, Index > :: getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-tnlString Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
+String Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
 {
    return HostType::getType();
 };
@@ -1005,7 +1005,7 @@ tnlString Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString Meshes::Grid< 2, Real, Device, Index > :: getSerializationTypeVirtual() const
+String Meshes::Grid< 2, Real, Device, Index > :: getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 };
@@ -1361,7 +1361,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: save( const tnlString& fileName ) const
+bool Meshes::Grid< 2, Real, Device, Index > :: save( const String& fileName ) const
 {
    return tnlObject :: save( fileName );
 };
@@ -1369,7 +1369,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: save( const tnlString& fileName )
 template< typename Real,
            typename Device,
            typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: load( const tnlString& fileName )
+bool Meshes::Grid< 2, Real, Device, Index > :: load( const String& fileName )
 {
    return tnlObject :: load( fileName );
 };
@@ -1377,8 +1377,8 @@ bool Meshes::Grid< 2, Real, Device, Index > :: load( const tnlString& fileName )
 template< typename Real,
           typename Device,
           typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
-                                                     const tnlString& format ) const
+bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
+                                                     const String& format ) const
 {
    fstream file;
    file. open( fileName. getString(), ios :: out );
@@ -1504,8 +1504,8 @@ template< typename Real,
            typename Index >
    template< typename MeshFunction >
 bool Meshes::Grid< 2, Real, Device, Index > :: write( const MeshFunction& function,
-                                                 const tnlString& fileName,
-                                                 const tnlString& format ) const
+                                                 const String& fileName,
+                                                 const String& format ) const
 {
    if( this->template getEntitiesCount< Cell >() != function. getSize() )
    {
@@ -1549,7 +1549,7 @@ void
 Meshes::Grid< 2, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
-   logger.writeParameter( "Dimension:", getDimension() );
+   logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

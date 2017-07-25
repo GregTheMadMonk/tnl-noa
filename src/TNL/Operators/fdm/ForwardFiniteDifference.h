@@ -23,7 +23,7 @@ template< typename Mesh,
           int YDifference = 0,
           int ZDifference = 0,
           typename RealType = typename Mesh::RealType,
-          typename IndexType = typename Mesh::IndexType >
+          typename IndexType = typename Mesh::GlobalIndexType >
 class ForwardFiniteDifference
 {
 };

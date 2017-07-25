@@ -24,7 +24,7 @@ SET( headers IterativeSolver.h
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Solvers )
 set( common_SOURCES ${CURRENT_DIR}/IterativeSolver_impl.cpp 
-                    ${CURRENT_DIR}/SolverMonitor.cpp )
+                    )
 
 if( BUILD_CUDA)
       set( tnl_solvers_CUDA__SOURCES

@@ -206,7 +206,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          SparseTester__setElementFastTestCudaKernel< MatrixType >
                                                             <<< cudaGridSize, cudaBlockSize >>>
@@ -215,7 +215,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -269,7 +269,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          SparseTester__setElementFast_DiagonalMatrixTestCudaKernel< MatrixType >
                                                                            <<< cudaGridSize, cudaBlockSize >>>
@@ -278,7 +278,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -353,7 +353,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          SparseTester__setElementFast_DenseTestCudaKernel1< MatrixType >
                                                                          <<< cudaGridSize, cudaBlockSize >>>
@@ -362,7 +362,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -388,7 +388,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          SparseTester__setElementFast_DenseTestCudaKernel2< MatrixType >
                                                                          <<< cudaGridSize, cudaBlockSize >>>
@@ -397,7 +397,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -467,7 +467,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          SparseTester__setElementFast_LowerTriangularMatrixTestCudaKernel1< MatrixType >
                                                                                    <<< cudaGridSize, cudaBlockSize >>>
@@ -476,7 +476,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -502,7 +502,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          SparseTester__setElementFast_LowerTriangularMatrixTestCudaKernel2< MatrixType >
                                                                                    <<< cudaGridSize, cudaBlockSize >>>
@@ -511,7 +511,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -613,7 +613,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
          SparseTester__setRowFast_DiagonalMatrixTestCudaKernel< MatrixType >
@@ -623,7 +623,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -720,7 +720,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
          SparseTester__setRowFast_DenseTestCudaKernel1< MatrixType >
@@ -730,7 +730,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -760,7 +760,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
          SparseTester__setRowFast_DenseTestCudaKernel2< MatrixType >
@@ -770,7 +770,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -861,7 +861,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
          SparseTester__setRowFast_LowerTriangularMatrixTestCudaKernel< MatrixType >
@@ -871,7 +871,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -901,7 +901,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
          SparseTester__setRowFast_LowerTriangularMatrixTestCudaKernel< MatrixType >
@@ -911,7 +911,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 

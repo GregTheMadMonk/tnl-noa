@@ -63,9 +63,16 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
          return *( this->pointer );
       }
       
-      operator bool()
+      __cuda_callable__
+      operator bool() const
       {
          return this->pointer;
+      }
+
+      __cuda_callable__
+      bool operator!() const
+      {
+         return ! this->pointer;
       }
 
       template< typename Device = Devices::Host >
@@ -150,9 +157,16 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          return this->pd->data;
       }
       
-      operator bool()
+      __cuda_callable__
+      operator bool() const
       {
          return this->pd;
+      }
+
+      __cuda_callable__
+      bool operator!() const
+      {
+         return ! this->pd;
       }
 
       template< typename Device = Devices::Host >      
@@ -205,7 +219,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          if( this->modified() )
          {
             cudaMemcpy( (void*) this->cuda_pointer, (void*) &this->pd->data, sizeof( Object ), cudaMemcpyHostToDevice );
-            if( ! checkCudaDevice )
+            if( ! TNL_CHECK_CUDA_DEVICE )
                return false;
             this->set_last_sync_state();
             return true;
@@ -241,12 +255,8 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       bool allocate( Args... args )
       {
          this->pd = new PointerData( args... );
-         if( ! this->pd )
-            return false;
          // pass to device
          this->cuda_pointer = Devices::Cuda::passToDevice( this->pd->data );
-         if( ! this->cuda_pointer )
-            return false;
          // set last-sync state
          this->set_last_sync_state();
          Devices::Cuda::insertSmartPointer( this );
@@ -452,7 +462,25 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
       // unable to dereference this-pd on the device
       Object* mic_pointer;
 };
+#endif
 
+#if  (!defined(NDEBUG)) && (!defined(HAVE_MIC)) 
+namespace Assert {
+
+template< typename Object, typename Device >
+struct Formatter< UniquePointer< Object, Device > >
+{
+   static std::string
+   printToString( const UniquePointer< Object, Device >& value )
+   {
+      ::std::stringstream ss;
+      ss << "(UniquePointer< " << Object::getType() << ", " << Device::getDeviceType()
+         << " > object at " << &value << ")";
+      return ss.str();
+   }
+};
+
+} // namespace Assert
 #endif
 
 } // namespace TNL

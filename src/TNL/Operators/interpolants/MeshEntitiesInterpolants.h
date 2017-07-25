@@ -48,10 +48,10 @@ class MeshEntitiesInterpolants< Meshes::Grid< 1, Real, Device, Index >, 1, 0 >
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities();
  
-         return 0.5 * ( u[ neighbourEntities.template getEntityIndex< -1 >() ] +
-                        u[ neighbourEntities.template getEntityIndex<  1 >() ] );
+         return 0.5 * ( u[ neighborEntities.template getEntityIndex< -1 >() ] +
+                        u[ neighborEntities.template getEntityIndex<  1 >() ] );
       }
 };
 
@@ -80,10 +80,10 @@ class MeshEntitiesInterpolants< Meshes::Grid< 1, Real, Device, Index >, 0, 1 >
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 0 >& neighbourEntities = entity.template getNeighbourEntities< 0 >();
+         const typename MeshEntity::template NeighborEntities< 0 >& neighborEntities = entity.template getNeighborEntities< 0 >();
  
-         return 0.5 * ( u[ neighbourEntities.template getEntityIndex< -1 >() ] +
-                        u[ neighbourEntities.template getEntityIndex<  1 >() ] );
+         return 0.5 * ( u[ neighborEntities.template getEntityIndex< -1 >() ] +
+                        u[ neighborEntities.template getEntityIndex<  1 >() ] );
       }
 };
 
@@ -112,14 +112,14 @@ class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 2, 1 >
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
  
          if( entity.getOrientation().x() == 1.0 )
-            return 0.5 * ( u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] +
-                           u[ neighbourEntities.template getEntityIndex<  1, 0 >() ] );
+            return 0.5 * ( u[ neighborEntities.template getEntityIndex< -1, 0 >() ] +
+                           u[ neighborEntities.template getEntityIndex<  1, 0 >() ] );
          else
-            return 0.5 * ( u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] +
-                           u[ neighbourEntities.template getEntityIndex< 0,  1 >() ] );
+            return 0.5 * ( u[ neighborEntities.template getEntityIndex< 0, -1 >() ] +
+                           u[ neighborEntities.template getEntityIndex< 0,  1 >() ] );
       }
 };
 
@@ -148,12 +148,12 @@ class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 2, 0 >
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
  
-         return 0.25 * ( u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex< -1, -1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] );
+         return 0.25 * ( u[ neighborEntities.template getEntityIndex< -1,  1 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  1,  1 >() ] +
+                         u[ neighborEntities.template getEntityIndex< -1, -1 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  1, -1 >() ] );
       }
 };
 
@@ -182,12 +182,12 @@ class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 1, 2 >
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.template getNeighbourEntities< 1 >();
+         const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.template getNeighborEntities< 1 >();
  
-         return 0.25 * ( u[ neighbourEntities.template getEntityIndex< -1,  0 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  0,  1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  0, -1 >() ] );
+         return 0.25 * ( u[ neighborEntities.template getEntityIndex< -1,  0 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  1,  0 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  0,  1 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  0, -1 >() ] );
       }
 };
 
@@ -216,12 +216,12 @@ class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 0, 2 >
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 0 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 0 >& neighborEntities = entity.getNeighborEntities();
  
-         return 0.25 * ( u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex< -1, -1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] );
+         return 0.25 * ( u[ neighborEntities.template getEntityIndex< -1,  1 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  1,  1 >() ] +
+                         u[ neighborEntities.template getEntityIndex< -1, -1 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  1, -1 >() ] );
       }
 };
 
@@ -250,17 +250,17 @@ class MeshEntitiesInterpolants< Meshes::Grid< 3, Real, Device, Index >, 3, 2 >
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities();
  
          if( entity.getOrientation().x() == 1.0 )
-            return 0.5 * ( u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] +
-                           u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] );
+            return 0.5 * ( u[ neighborEntities.template getEntityIndex< -1,  0,  0 >() ] +
+                           u[ neighborEntities.template getEntityIndex<  1,  0,  0 >() ] );
          if( entity.getOrientation().y() == 1.0 )
-            return 0.5 * ( u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] +
-                           u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] );
+            return 0.5 * ( u[ neighborEntities.template getEntityIndex<  0, -1,  0 >() ] +
+                           u[ neighborEntities.template getEntityIndex<  0,  1,  0 >() ] );
          else
-            return 0.5 * ( u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] +
-                           u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] );
+            return 0.5 * ( u[ neighborEntities.template getEntityIndex<  0,  0, -1 >() ] +
+                           u[ neighborEntities.template getEntityIndex<  0,  0,  1 >() ] );
       }
 };
 
@@ -289,14 +289,14 @@ class MeshEntitiesInterpolants< Meshes::Grid< 3, Real, Device, Index >, 2, 3 >
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.template getNeighbourEntities< 2 >();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.template getNeighborEntities< 2 >();
  
-         return 1.0 / 6.0 * ( u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] +
-                              u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] +
-                              u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] +
-                              u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] +
-                              u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] +
-                              u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] );
+         return 1.0 / 6.0 * ( u[ neighborEntities.template getEntityIndex< -1,  0,  0 >() ] +
+                              u[ neighborEntities.template getEntityIndex<  1,  0,  0 >() ] +
+                              u[ neighborEntities.template getEntityIndex<  0, -1,  0 >() ] +
+                              u[ neighborEntities.template getEntityIndex<  0,  1,  0 >() ] +
+                              u[ neighborEntities.template getEntityIndex<  0,  0, -1 >() ] +
+                              u[ neighborEntities.template getEntityIndex<  0,  0,  1 >() ] );
       }
 };
 

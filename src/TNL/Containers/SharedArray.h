@@ -44,17 +44,25 @@ class SharedArray : public Object
    typedef SharedArray< Element, Devices::Host, Index > HostType;
    typedef SharedArray< Element, Devices::Cuda, Index > CudaType;
 
+   #ifndef HAVE_MIC
    __cuda_callable__
+   #endif
    SharedArray();
 
+   #ifndef HAVE_MIC
    __cuda_callable__
+   #endif
    SharedArray( Element* _data,
                    const Index _size );
 
+   #ifndef HAVE_MIC
    __cuda_callable__
+   #endif
    SharedArray( Array< Element, Device, Index >& array );
 
+   #ifndef HAVE_MIC
    __cuda_callable__
+   #endif
    SharedArray( SharedArray< Element, Device, Index >& array );
 
    static String getType();
@@ -124,14 +132,8 @@ class SharedArray : public Object
     * Every time one touches this grid touches * size * sizeof( Real ) bytes are added
     * to transfered bytes in tnlStatistics.
     */
-   
-#ifdef HAVE_NOT_CXX11
-   template< typename IndexType2 >
-   void touch( IndexType2 touches = 1 ) const;
-#else
    template< typename IndexType2 = Index >
    void touch( IndexType2 touches = 1 ) const;
-#endif
 
    //! Method for saving the object to a file as a binary data.
    bool save( File& file ) const;
@@ -150,6 +152,7 @@ class SharedArray : public Object
    //! Pointer to allocated data
    Element* data;
 };
+
 
 template< typename Element, typename Device, typename Index >
 std::ostream& operator << ( std::ostream& str, const SharedArray< Element, Device, Index >& v );

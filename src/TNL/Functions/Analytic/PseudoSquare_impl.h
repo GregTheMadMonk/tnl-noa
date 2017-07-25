@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExpBump_impl.h  -  description
+                          PseudoSquare_impl.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber

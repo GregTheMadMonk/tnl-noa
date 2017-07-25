@@ -29,8 +29,6 @@ template< typename Problem >
 Euler< Problem > :: Euler()
 : cflCondition( 0.0 )
 {
-   //timer.reset();
-   //updateTimer.reset();
 };
 
 template< typename Problem >
@@ -62,13 +60,13 @@ bool Euler< Problem > :: setup( const Config::ParameterContainer& parameters,
 template< typename Problem >
 void Euler< Problem > :: setCFLCondition( const RealType& cfl )
 {
-   this->cflCondition = cfl;
+   this -> cflCondition = cfl;
 }
 
 template< typename Problem >
 const typename Problem :: RealType& Euler< Problem > :: getCFLCondition() const
 {
-   return this->cflCondition;
+   return this -> cflCondition;
 }
 
 template< typename Problem >
@@ -78,11 +76,7 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
     * First setup the supporting meshes k1...k5 and k_tmp.
     */
    //timer.start();
-   if( ! k1->setLike( *u ) )
-   {
-      std::cerr << "I do not have enough memory to allocate a supporting grid for the Euler explicit solver." << std::endl;
-      return false;
-   }
+   k1->setLike( *u );
    k1->setValue( 0.0 );
 
 
@@ -96,7 +90,7 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
 
-   this->refreshSolverMonitor();
+   this -> refreshSolverMonitor();
 
    /****
     * Start the main loop
@@ -112,7 +106,7 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
 
       RealType lastResidue = this->getResidue();
       RealType maxResidue( 0.0 );
-      if( this->cflCondition != 0.0 )
+      if( this -> cflCondition != 0.0 )
       {
          maxResidue = k1->absMax();
          if( currentTau * maxResidue > this->cflCondition )
@@ -122,16 +116,14 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
          }
       }
       RealType newResidue( 0.0 );
-      //updateTimer.start();
       computeNewTimeLevel( u, currentTau, newResidue );
-      //updateTimer.stop();
       this->setResidue( newResidue );
 
       /****
        * When time is close to stopTime the new residue
        * may be inaccurate significantly.
        */
-      if( currentTau + time == this->stopTime ) this->setResidue( lastResidue );
+      if( currentTau + time == this -> stopTime ) this->setResidue( lastResidue );
       time += currentTau;
 
       if( ! this->nextIteration() )
@@ -140,25 +132,23 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
       /****
        * Compute the new time step.
        */
-      if( time + currentTau > this->getStopTime() )
-         currentTau = this->getStopTime() - time; //we don't want to keep such tau
-      else this->tau = currentTau;
+      if( time + currentTau > this -> getStopTime() )
+         currentTau = this -> getStopTime() - time; //we don't want to keep such tau
+      else this -> tau = currentTau;
 
-      this->refreshSolverMonitor();
+      this -> refreshSolverMonitor();
 
       /****
        * Check stop conditions.
        */
       if( time >= this->getStopTime() ||
-          ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() ) )
+          ( this -> getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
       {
-         this->refreshSolverMonitor();
-         //std::cerr << std::endl << "RHS Timer = " << timer.getRealTime() << std::endl;
-         //std::cerr << std::endl << "Update Timer = " << updateTimer.getRealTime() << std::endl;
+         this -> refreshSolverMonitor();
          return true;
       }
 
-      if( this->cflCondition != 0.0 )
+      if( this -> cflCondition != 0.0 )
       {
          currentTau /= 0.95;
          currentTau = min( currentTau, this->getMaxTau() );
@@ -211,7 +201,7 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
                                                                       this->cudaBlockResidue.getData() );
          localResidue += this->cudaBlockResidue.sum();
          cudaThreadSynchronize();
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
       }
 #endif
    }

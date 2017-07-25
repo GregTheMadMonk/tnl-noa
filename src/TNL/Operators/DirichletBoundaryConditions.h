@@ -19,10 +19,10 @@ namespace TNL {
 namespace Operators {
 
 template< typename Mesh,
-          typename Function = Functions::Analytic::Constant< Mesh::getDimension(), typename Mesh::RealType >,
-          int MeshEntitiesDimension = Mesh::getDimension(),
+          typename Function = Functions::Analytic::Constant< Mesh::getMeshDimension(), typename Mesh::RealType >,
+          int MeshEntitiesDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType >
+          typename Index = typename Mesh::GlobalIndexType >
 class DirichletBoundaryConditions
 : public Operator< Mesh,
                    Functions::MeshBoundaryDomain,
@@ -43,7 +43,7 @@ class DirichletBoundaryConditions
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::PointType PointType;
 
-      static constexpr int getDimension() { return MeshType::meshDimension; }
+      static constexpr int getMeshDimension() { return MeshType::getMeshDimension(); }
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )

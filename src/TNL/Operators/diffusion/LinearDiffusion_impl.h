@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Operators/diffusion/LinearDiffusion.h>
@@ -46,13 +52,13 @@ operator()( const PreimageFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
 {
-   static_assert( MeshEntity::entityDimension == 1, "Wrong mesh entity dimension." );
+   static_assert( MeshEntity::getEntityDimension() == 1, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == 1, "Wrong preimage function" );
-   const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+   const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities();
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< - 2 >();
-   return ( u[ neighbourEntities.template getEntityIndex< -1 >() ]
+   return ( u[ neighborEntities.template getEntityIndex< -1 >() ]
             - 2.0 * u[ entity.getIndex() ]
-            + u[ neighbourEntities.template getEntityIndex< 1 >() ] ) * hxSquareInverse;
+            + u[ neighborEntities.template getEntityIndex< 1 >() ] ) * hxSquareInverse;
 }
 
 template< typename MeshReal,
@@ -92,15 +98,15 @@ setMatrixElements( const PreimageFunction& u,
                    Matrix& matrix,
                    Vector& b ) const
 {
-   static_assert( MeshEntity::entityDimension == 1, "Wrong mesh entity dimension." );
+   static_assert( MeshEntity::getEntityDimension() == 1, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == 1, "Wrong preimage function" );
-   const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+   const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities();
    const IndexType& index = entity.getIndex();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2 >();
-   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1 >(),      - lambdaX );
+   matrixRow.setElement( 0, neighborEntities.template getEntityIndex< -1 >(),      - lambdaX );
    matrixRow.setElement( 1, index,                                              2.0 * lambdaX );
-   matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< 1 >(),       - lambdaX );
+   matrixRow.setElement( 2, neighborEntities.template getEntityIndex< 1 >(),       - lambdaX );
 }
 
 template< typename MeshReal,
@@ -151,16 +157,15 @@ operator()( const PreimageFunction& u,
             const EntityType& entity,
             const Real& time ) const
 {
-   static_assert( EntityType::entityDimension == 2, "Wrong mesh entity dimension." );
+   static_assert( EntityType::getEntityDimension() == 2, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == 2, "Wrong preimage function" );
-   const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+   const typename EntityType::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >();
    const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >();
-
-   return ( u[ neighbourEntities.template getEntityIndex< -1,  0 >() ]
-          + u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] ) * hxSquareInverse +
-          ( u[ neighbourEntities.template getEntityIndex<  0, -1 >() ]
-          + u[ neighbourEntities.template getEntityIndex<  0,  1 >() ] ) * hySquareInverse
+   return ( u[ neighborEntities.template getEntityIndex< -1,  0 >() ]
+          + u[ neighborEntities.template getEntityIndex<  1,  0 >() ] ) * hxSquareInverse +
+          ( u[ neighborEntities.template getEntityIndex<  0, -1 >() ]
+          + u[ neighborEntities.template getEntityIndex<  0,  1 >() ] ) * hySquareInverse
           - 2.0 * u[ entity.getIndex() ] * ( hxSquareInverse + hySquareInverse );
 }
 
@@ -184,18 +189,18 @@ setMatrixElements( const PreimageFunction& u,
                    Matrix& matrix,
                    Vector& b ) const
 {
-   static_assert( MeshEntity::entityDimension == 2, "Wrong mesh entity dimension." );
+   static_assert( MeshEntity::getEntityDimension() == 2, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == 2, "Wrong preimage function" );
    const IndexType& index = entity.getIndex();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2, 0 >();
    const RealType lambdaY = tau * entity.getMesh().template getSpaceStepsProducts< 0, -2 >();
-   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
-   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, -1 >(), -lambdaY );
-   matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< -1, 0 >(), -lambdaX );
+   const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
+   matrixRow.setElement( 0, neighborEntities.template getEntityIndex< 0, -1 >(), -lambdaY );
+   matrixRow.setElement( 1, neighborEntities.template getEntityIndex< -1, 0 >(), -lambdaX );
    matrixRow.setElement( 2, index,                                                        2.0 * ( lambdaX + lambdaY ) );
-   matrixRow.setElement( 3, neighbourEntities.template getEntityIndex< 1, 0 >(),   -lambdaX );
-   matrixRow.setElement( 4, neighbourEntities.template getEntityIndex< 0, 1 >(),   -lambdaY );
+   matrixRow.setElement( 3, neighborEntities.template getEntityIndex< 1, 0 >(),   -lambdaX );
+   matrixRow.setElement( 4, neighborEntities.template getEntityIndex< 0, 1 >(),   -lambdaY );
 }
 
 
@@ -229,18 +234,18 @@ operator()( const PreimageFunction& u,
             const EntityType& entity,
             const Real& time ) const
 {
-   static_assert( EntityType::entityDimension == 3, "Wrong mesh entity dimension." );
+   static_assert( EntityType::getEntityDimension() == 3, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == 3, "Wrong preimage function" );
-   const typename EntityType::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+   const typename EntityType::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities();
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >();
    const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts<  0, -2,  0 >();
    const RealType& hzSquareInverse = entity.getMesh().template getSpaceStepsProducts<  0,  0, -2 >();
-   return (   u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ]
-            + u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] ) * hxSquareInverse +
-          (   u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ]
-            + u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] ) * hySquareInverse +
-          (   u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ]
-            + u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] ) * hzSquareInverse
+   return (   u[ neighborEntities.template getEntityIndex< -1,  0,  0 >() ]
+            + u[ neighborEntities.template getEntityIndex<  1,  0,  0 >() ] ) * hxSquareInverse +
+          (   u[ neighborEntities.template getEntityIndex<  0, -1,  0 >() ]
+            + u[ neighborEntities.template getEntityIndex<  0,  1,  0 >() ] ) * hySquareInverse +
+          (   u[ neighborEntities.template getEntityIndex<  0,  0, -1 >() ]
+            + u[ neighborEntities.template getEntityIndex<  0,  0,  1 >() ] ) * hzSquareInverse
          - 2.0 * u[ entity.getIndex() ] * ( hxSquareInverse + hySquareInverse + hzSquareInverse );
 }
 
@@ -281,21 +286,21 @@ setMatrixElements( const PreimageFunction& u,
                    Matrix& matrix,
                    Vector& b ) const
 {
-   static_assert( MeshEntity::entityDimension == 3, "Wrong mesh entity dimension." );
+   static_assert( MeshEntity::getEntityDimension() == 3, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == 3, "Wrong preimage function" );
-   const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+   const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities();
    const IndexType& index = entity.getIndex();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2, 0, 0 >();
    const RealType lambdaY = tau * entity.getMesh().template getSpaceStepsProducts< 0, -2, 0 >();
    const RealType lambdaZ = tau * entity.getMesh().template getSpaceStepsProducts< 0, 0, -2 >();
-   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, 0, -1 >(), -lambdaZ );
-   matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, -1, 0 >(), -lambdaY );
-   matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< -1, 0, 0 >(), -lambdaX );
+   matrixRow.setElement( 0, neighborEntities.template getEntityIndex< 0, 0, -1 >(), -lambdaZ );
+   matrixRow.setElement( 1, neighborEntities.template getEntityIndex< 0, -1, 0 >(), -lambdaY );
+   matrixRow.setElement( 2, neighborEntities.template getEntityIndex< -1, 0, 0 >(), -lambdaX );
    matrixRow.setElement( 3, index,                             2.0 * ( lambdaX + lambdaY + lambdaZ ) );
-   matrixRow.setElement( 4, neighbourEntities.template getEntityIndex< 1, 0, 0 >(),   -lambdaX );
-   matrixRow.setElement( 5, neighbourEntities.template getEntityIndex< 0, 1, 0 >(),   -lambdaY );
-   matrixRow.setElement( 6, neighbourEntities.template getEntityIndex< 0, 0, 1 >(),   -lambdaZ );
+   matrixRow.setElement( 4, neighborEntities.template getEntityIndex< 1, 0, 0 >(),   -lambdaX );
+   matrixRow.setElement( 5, neighborEntities.template getEntityIndex< 0, 1, 0 >(),   -lambdaY );
+   matrixRow.setElement( 6, neighborEntities.template getEntityIndex< 0, 0, 1 >(),   -lambdaZ );
 }
 
 } // namespace Operators

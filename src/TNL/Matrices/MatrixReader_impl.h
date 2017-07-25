@@ -15,6 +15,7 @@
 #include <TNL/String.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Timer.h>
+#include <TNL/Matrices/MatrixReader.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -55,18 +56,13 @@ bool MatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
       return false;
 
 
-   if( ! matrix.setDimensions( rows, columns ) ||
-       ! rowLengths.setSize( rows ) )
-   {
-      std::cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << std::endl;
-      return false;
-   }
+   matrix.setDimensions( rows, columns );
+   rowLengths.setSize( rows );
 
    if( ! computeCompressedRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
       return false;
 
-   if( ! matrix.setCompressedRowLengths( rowLengths ) )
-      return false;
+   matrix.setCompressedRowLengths( rowLengths );
 
    if( ! readMatrixElementsFromMtxFile( file, matrix, symmetricMatrix, verbose ) )
       return false;
@@ -163,7 +159,7 @@ bool MatrixReader< Matrix >::checkMtxHeader( const String& header,
                                                 bool& symmetric )
 {
    Containers::List< String > parsedLine;
-   header.parse( parsedLine );
+   header.split( parsedLine );
    if( parsedLine.getSize() < 5 )
       return false;
    if( parsedLine[ 0 ] != "%%MatrixMarket" )
@@ -230,7 +226,7 @@ bool MatrixReader< Matrix >::readMtxHeader( std::istream& file,
       }
 
       parsedLine.reset();
-      line. parse( parsedLine );
+      line.split( parsedLine );
       if( parsedLine. getSize() != 3 )
       {
          std::cerr << "Wrong number of parameters in the matrix header." << std::endl;
@@ -365,7 +361,7 @@ bool MatrixReader< Matrix >::parseMtxLineWithElement( const String& line,
                                                          RealType& value )
 {
    Containers::List< String > parsedLine;
-   line.parse( parsedLine );
+   line.split( parsedLine );
    if( parsedLine.getSize() != 3 )
    {
       std::cerr << "Wrong number of parameters in the matrix row at line:" << line << std::endl;
@@ -410,11 +406,7 @@ class MatrixReaderDeviceDependentCode< Devices::Cuda >
       if( ! MatrixReader< HostMatrixType >::readMtxFileHostMatrix( file, hostMatrix, rowLengthsVector, verbose ) )
          return false;
 
-      typename Matrix::CompressedRowLengthsVector cudaCompressedRowLengthsVector;
-      cudaCompressedRowLengthsVector.setLike( rowLengthsVector );
-      cudaCompressedRowLengthsVector = rowLengthsVector;
-      if( ! matrix.copyFrom( hostMatrix, cudaCompressedRowLengthsVector ) )
-         return false;
+      matrix = hostMatrix;
       return true;
    }
 };

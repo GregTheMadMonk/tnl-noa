@@ -114,10 +114,10 @@ TEST( ArrayOperationsTest, allocationTest )
 {
    int* data;
    ArrayOperations< Devices::Cuda >::allocateMemory( data, getTestSize() );
-   ASSERT_TRUE( checkCudaDevice );
+   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
 
    ArrayOperations< Devices::Cuda >::freeMemory( data );
-   ASSERT_TRUE( checkCudaDevice );
+   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
 }
 
 TEST( ArrayOperationsTest, setMemoryElementTest )
@@ -125,7 +125,7 @@ TEST( ArrayOperationsTest, setMemoryElementTest )
    const int size( 1024 );
    int* data;
    ArrayOperations< Devices::Cuda >::allocateMemory( data, size );
-   ASSERT_TRUE( checkCudaDevice );
+   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
 
    for( int i = 0; i < getTestSize(); i++ )
       ArrayOperations< Devices::Cuda >::setMemoryElement( &data[ i ], i );
@@ -138,7 +138,7 @@ TEST( ArrayOperationsTest, setMemoryElementTest )
    }
 
    ArrayOperations< Devices::Cuda >::freeMemory( data );
-   ASSERT_TRUE( checkCudaDevice );
+   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
 }
 
 TEST( ArrayOperationsTest, getMemoryElementTest )
@@ -146,7 +146,7 @@ TEST( ArrayOperationsTest, getMemoryElementTest )
    const int size( 1024 );
    int* data;
    ArrayOperations< Devices::Cuda >::allocateMemory( data, size );
-   ASSERT_TRUE( checkCudaDevice );
+   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
 
    for( int i = 0; i < getTestSize(); i++ )
       ArrayOperations< Devices::Cuda >::setMemoryElement( &data[ i ], i );
@@ -155,7 +155,7 @@ TEST( ArrayOperationsTest, getMemoryElementTest )
       ASSERT_EQ( ( ArrayOperations< Devices::Cuda >::getMemoryElement( &data[ i ] ), i ) );
 
    ArrayOperations< Devices::Cuda >::freeMemory( data );
-   ASSERT_TRUE( checkCudaDevice );
+   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
 }
 
 
@@ -167,9 +167,9 @@ TEST( ArrayOperationsTest, smallMemorySetTest )
    ArrayOperations< Devices::Cuda >::allocateMemory( deviceData, size );
    ArrayOperations< Devices::Host >::setMemory( hostData, 0, size );
    ArrayOperations< Devices::Cuda >::setMemory( deviceData, 13, size );
-   ASSERT_TRUE( checkCudaDevice );
+   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
    ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< int, int >( hostData, deviceData, size );
-   ASSERT_TRUE( checkCudaDevice );
+   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
    for( int i = 0; i < size; i ++ )
       ASSERT_EQ( hostData[ i ], 13 );
    ArrayOperations< Devices::Cuda >::freeMemory( hostData );
@@ -184,9 +184,9 @@ TEST( ArrayOperationsTest, bigMemorySetTest )
    ArrayOperations< Devices::Cuda >::allocateMemory( deviceData, size );
    ArrayOperations< Devices::Host >::setMemory( hostData, 0, size );
    ArrayOperations< Devices::Cuda >::setMemory( deviceData, 13, size );
-   ASSERT_TRUE( checkCudaDevice );
+   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
    ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< int, int >( hostData, deviceData, size );
-   ASSERT_TRUE( checkCudaDevice );
+   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
    for( int i = 0; i < size; i += 100 )
    {
       if( hostData[ i ] != 13 )

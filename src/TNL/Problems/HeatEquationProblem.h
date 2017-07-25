@@ -22,6 +22,8 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Timer.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 namespace TNL {
 namespace Problems {
@@ -32,9 +34,9 @@ template< typename Mesh,
           typename DifferentialOperator = Operators::LinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
 class HeatEquationProblem : public PDEProblem< Mesh,
-                                                     typename DifferentialOperator::RealType,
-                                                     typename Mesh::DeviceType,
-                                                     typename DifferentialOperator::IndexType  >
+                                               typename DifferentialOperator::RealType,
+                                               typename Mesh::DeviceType,
+                                               typename DifferentialOperator::IndexType  >
 {
    public:
 
@@ -106,6 +108,10 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                                  DofVectorPointer& rightHandSidePointer,
                                  MeshDependentDataPointer& meshDependentData );
 
+      template< typename Matrix >
+      void saveFailedLinearSystem( const Matrix& matrix,
+                                   const DofVectorType& dofs,
+                                   const DofVectorType& rightHandSide ) const;
 
       protected:
          
@@ -121,6 +127,14 @@ class HeatEquationProblem : public PDEProblem< Mesh,
          Timer gpuTransferTimer;
          
          Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+         
+         Solvers::PDE::LinearSystemAssembler< Mesh, 
+                                              MeshFunctionType,
+                                              DifferentialOperator,
+                                              BoundaryCondition,
+                                              RightHandSide,
+                                              Solvers::PDE::BackwardTimeDiscretisation,
+                                              DofVectorType > systemAssembler;
 };
 
 } // namespace Problems

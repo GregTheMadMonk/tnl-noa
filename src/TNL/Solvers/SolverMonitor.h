@@ -20,28 +20,77 @@ namespace Solvers {
 
 class SolverMonitor
 {
-   public:
+public:
+   SolverMonitor()
+      : timeout_milliseconds( 500 ),
+        started( false ),
+        stopped( false ),
+        timer( nullptr )
+   {}
 
-   SolverMonitor();
-
-   ~SolverMonitor();
- 
    virtual void refresh( bool force = false ) = 0;
 
-   void setRefreshRate( const int& refreshRate );
+   void setRefreshRate( const int& refreshRate )
+   {
+      timeout_milliseconds = refreshRate;
+   }
 
-   void setTimer( Timer& timer );
+   void setTimer( Timer& timer )
+   {
+      this->timer = &timer;
+   }
 
-   void runMainLoop();
+   void runMainLoop()
+   {
+      // We need to use both 'started' and 'stopped' to avoid a deadlock
+      // when the loop thread runs this method delayed after the
+      // SolverMonitorThread's destructor has already called stopMainLoop()
+      // from the main thread.
+      started = true;
 
-   void stopMainLoop();
+      const int timeout_base = 100;
+      const std::chrono::milliseconds timeout( timeout_base );
 
-   protected:
+      while( ! stopped ) {
+         refresh( true );
 
-   double getElapsedTime();
+         // make sure to detect changes to refresh rate
+         int steps = timeout_milliseconds / timeout_base;
+         if( steps <= 0 )
+            steps = 1;
+
+         int i = 0;
+         while( ! stopped && i++ < steps ) {
+            std::this_thread::sleep_for( timeout );
+         }
+      }
+
+      // reset to initial state
+      started = false;
+      stopped = false;
+   }
+
+   void stopMainLoop()
+   {
+      stopped = true;
+   }
+
+   bool isStopped() const
+   {
+      return stopped;
+   }
+
+protected:
+   double getElapsedTime()
+   {
+      if( ! timer )
+         return 0.0;
+      return timer->getRealTime();
+   }
 
    std::atomic_int timeout_milliseconds;
 
+   std::atomic_bool started;
    std::atomic_bool stopped;
 
    Timer* timer;
@@ -52,9 +101,18 @@ class SolverMonitorThread
 {
    public:
 
-   SolverMonitorThread( SolverMonitor& solverMonitor );
-   ~SolverMonitorThread();
-   
+   SolverMonitorThread( SolverMonitor& solverMonitor )
+      : solverMonitor( solverMonitor ),
+        t( &SolverMonitor::runMainLoop, &solverMonitor )
+   {}
+
+   ~SolverMonitorThread()
+   {
+      solverMonitor.stopMainLoop();
+      if( t.joinable() )
+         t.join();
+   }
+
    private:
 
    SolverMonitor& solverMonitor;
@@ -64,4 +122,3 @@ class SolverMonitorThread
 
 } // namespace Solvers
 } // namespace TNL
-
