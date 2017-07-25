@@ -135,11 +135,11 @@ class Array : public virtual Object
        */
       bool boundLoad( File& file );
 
-      bool boundLoad( const String& fileName );
+      using Object::save;
 
       using Object::load;
 
-      using Object::save;
+      using Object::boundLoad;
 
       ~Array();
 

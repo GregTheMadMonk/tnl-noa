@@ -46,6 +46,8 @@ TEST( FileTest, WriteAndRead )
    for( int i = 0; i < 3; i ++ )
       EXPECT_EQ( newDoubleData[ i ], doubleData[ i ] );
    EXPECT_EQ( newConstDoubleData, constDoubleData );
+
+   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 };
 
 #ifdef HAVE_CUDA
@@ -118,6 +120,8 @@ TEST( FileTest, WriteAndReadCUDA )
    for( int i = 0; i < 3; i ++ )
       EXPECT_EQ( newFloatData[ i ], floatData[ i ] );
    EXPECT_EQ( newDoubleData, constDoubleData );
+
+   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 };
 #endif
 #endif

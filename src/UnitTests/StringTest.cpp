@@ -281,6 +281,8 @@ TEST( StringTest, SaveLoad )
    String str2;
    ASSERT_TRUE( str2.load( file ) );
    EXPECT_EQ( str1, str2 );
+
+   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 };
 #endif
 

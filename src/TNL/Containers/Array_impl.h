@@ -72,6 +72,7 @@ Array( Array< Element, Device, Index >& array,
   allocationPointer( array.allocationPointer ),
   referenceCounter( 0 )
 {
+   TNL_ASSERT_TRUE( array.getData(), "Empty arrays cannot be bound." );
    TNL_ASSERT_LT( begin, array.getSize(), "Begin of array is out of bounds." );
    TNL_ASSERT_LE( begin + size, array.getSize(), "End of array is out of bounds." );
 
@@ -213,6 +214,7 @@ Array< Element, Device, Index >::
 bind( Element* data,
       const Index size )
 {
+   TNL_ASSERT_TRUE( data, "Null pointer cannot be bound." );
    this->releaseData();
    this->data = data;
    this->size = size;
@@ -232,6 +234,7 @@ bind( const ArrayT& array,
    static_assert( std::is_same< Element, typename ArrayT::ElementType >::value, "ElementType of both arrays must be the same." );
    static_assert( std::is_same< Device, typename ArrayT::DeviceType >::value, "DeviceType of both arrays must be the same." );
    static_assert( std::is_same< Index, typename ArrayT::IndexType >::value, "IndexType of both arrays must be the same." );
+   TNL_ASSERT_TRUE( array.getData(), "Empty array cannot be bound." );
    TNL_ASSERT_LT( begin, array.getSize(), "Begin of array is out of bounds." );
    TNL_ASSERT_LE( begin + size, array.getSize(), "End of array is out of bounds." );
 
@@ -303,7 +306,7 @@ setElement( const Index& i, const Element& x )
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
-   return Algorithms::ArrayOperations< Device > :: setMemoryElement( &( this->data[ i ] ), x );
+   return Algorithms::ArrayOperations< Device >::setMemoryElement( &( this->data[ i ] ), x );
 }
 
 template< typename Element,
@@ -358,8 +361,8 @@ operator = ( const Array< Element, Device, Index >& array )
                               Element,
                               Index >
                              ( this->getData(),
-                               array. getData(),
-                               array. getSize() );
+                               array.getData(),
+                               array.getSize() );
    return ( *this );
 }
 
@@ -378,8 +381,8 @@ operator = ( const ArrayT& array )
                               typename ArrayT::ElementType,
                               typename ArrayT::IndexType >
                             ( this->getData(),
-                              array. getData(),
-                              array. getSize() );
+                              array.getData(),
+                              array.getSize() );
    return ( *this );
 }
 
@@ -408,7 +411,7 @@ template< typename Element,
           typename Device,
           typename Index >
    template< typename ArrayT >
-bool Array< Element, Device, Index > :: operator != ( const ArrayT& array ) const
+bool Array< Element, Device, Index >::operator != ( const ArrayT& array ) const
 {
    return ! ( ( *this ) == array );
 }
@@ -417,7 +420,7 @@ bool Array< Element, Device, Index > :: operator != ( const ArrayT& array ) cons
 template< typename Element,
           typename Device,
           typename Index >
-void Array< Element, Device, Index > :: setValue( const Element& e )
+void Array< Element, Device, Index >::setValue( const Element& e )
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
    Algorithms::ArrayOperations< Device >::setMemory( this->getData(), e, this->getSize() );
@@ -427,7 +430,7 @@ template< typename Element,
           typename Device,
           typename Index >
 __cuda_callable__
-const Element* Array< Element, Device, Index > :: getData() const
+const Element* Array< Element, Device, Index >::getData() const
 {
    return this -> data;
 }
@@ -436,7 +439,7 @@ template< typename Element,
           typename Device,
           typename Index >
 __cuda_callable__
-Element* Array< Element, Device, Index > :: getData()
+Element* Array< Element, Device, Index >::getData()
 {
    return this -> data;
 }
@@ -444,7 +447,7 @@ Element* Array< Element, Device, Index > :: getData()
 template< typename Element,
           typename Device,
           typename Index >
-Array< Element, Device, Index > :: operator bool() const
+Array< Element, Device, Index >::operator bool() const
 {
    return data != 0;
 }
@@ -454,7 +457,7 @@ template< typename Element,
           typename Device,
           typename Index >
    template< typename IndexType2 >
-void Array< Element, Device, Index > :: touch( IndexType2 touches ) const
+void Array< Element, Device, Index >::touch( IndexType2 touches ) const
 {
    //TODO: implement
 }
@@ -462,11 +465,11 @@ void Array< Element, Device, Index > :: touch( IndexType2 touches ) const
 template< typename Element,
           typename Device,
           typename Index >
-bool Array< Element, Device, Index > :: save( File& file ) const
+bool Array< Element, Device, Index >::save( File& file ) const
 {
-   if( ! Object :: save( file ) )
+   if( ! Object::save( file ) )
       return false;
-   if( ! file. write( &this->size ) )
+   if( ! file.write( &this->size ) )
       return false;
    if( this->size != 0 && ! ArrayIO< Element, Device, Index >::save( file, this->data, this->size ) )
    {
@@ -484,10 +487,10 @@ bool
 Array< Element, Device, Index >::
 load( File& file )
 {
-   if( ! Object :: load( file ) )
+   if( ! Object::load( file ) )
       return false;
    Index _size;
-   if( ! file. read( &_size ) )
+   if( ! file.read( &_size ) )
       return false;
    if( _size < 0 )
    {
@@ -514,10 +517,10 @@ bool
 Array< Element, Device, Index >::
 boundLoad( File& file )
 {
-   if( ! Object :: load( file ) )
+   if( ! Object::load( file ) )
       return false;
    Index _size;
-   if( ! file. read( &_size ) )
+   if( ! file.read( &_size ) )
       return false;
    if( _size < 0 )
    {
@@ -549,29 +552,6 @@ boundLoad( File& file )
 template< typename Element,
           typename Device,
           typename Index >
-bool
-Array< Element, Device, Index >::
-boundLoad( const String& fileName )
-{
-   File file;
-   if( ! file. open( fileName, IOMode::read ) )
-   {
-      std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
-      return false;
-   }
-   if( ! this->boundLoad( file ) )
-      return false;
-   if( ! file. close() )
-   {
-      std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
-      return false;
-   }
-   return true;
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
 Array< Element, Device, Index >::
 ~Array()
 {
@@ -586,7 +566,7 @@ std::ostream& operator << ( std::ostream& str, const Array< Element, Device, Ind
    {
       str << v.getElement( 0 );
       for( Index i = 1; i < v.getSize(); i++ )
-         str << ", " << v. getElement( i );
+         str << ", " << v.getElement( i );
    }
    str << " ]";
    return str;
