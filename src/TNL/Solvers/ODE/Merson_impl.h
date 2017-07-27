@@ -133,6 +133,11 @@ bool Merson< Problem > :: solve( DofVectorPointer& u )
       std::cerr << "No problem was set for the Merson ODE solver." << std::endl;
       return false;
    }
+   if( this->getTau() == 0.0 )
+   {
+      std::cerr << "The time step for the Merson ODE solver is zero." << std::endl;
+      return false;
+   }
    /****
     * First setup the supporting meshes k1...k5 and kAux.
     */

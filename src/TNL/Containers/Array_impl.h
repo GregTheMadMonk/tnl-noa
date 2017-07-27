@@ -354,7 +354,9 @@ Array< Element, Device, Index >&
 Array< Element, Device, Index >::
 operator = ( const Array< Element, Device, Index >& array )
 {
-   TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
+   //TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
+   if( this->getSize() != array.getSize() )
+      this->setLike( array );
    if( this->getSize() > 0 )
       Algorithms::ArrayOperations< Device >::
          template copyMemory< Element,
@@ -374,7 +376,9 @@ Array< Element, Device, Index >&
 Array< Element, Device, Index >::
 operator = ( const ArrayT& array )
 {
-   TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
+   //TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
+   if( this->getSize() != array.getSize() )
+      this->setLike( array );   
    if( this->getSize() > 0 )
       Algorithms::ArrayOperations< Device, typename ArrayT::DeviceType >::
          template copyMemory< Element,
@@ -491,7 +495,10 @@ load( File& file )
       return false;
    Index _size;
    if( ! file.read( &_size ) )
+   {
+      std::cerr << "Unable to read the array size." << std::endl;
       return false;
+   }
    if( _size < 0 )
    {
       std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
