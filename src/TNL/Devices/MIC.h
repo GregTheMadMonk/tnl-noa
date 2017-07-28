@@ -27,27 +27,27 @@ namespace TNL {
 
 namespace Devices {
     
-//makra oblíbená v příkladech v přednáškách Intelu    
-#define ALLOC alloc_if(1) //naalokuj promenou na zacatku offload  bloku -- default
-#define FREE free_if(1) // smaz promenou na konci offload bloku -- default
-#define RETAIN free_if(0) //nesmaz promenou na konci bloku
-#define REUSE alloc_if(0) //nealokuj proměnnou na zacatku
+//useful macros from Intel's tutorials -- but we do not use it, becaouse it is tricky (system of maping variables CPU-MIC)
+#define ALLOC alloc_if(1) //alloac variable at begining of offloaded block -- default
+#define FREE free_if(1) // delete variable at the end of offloaded block -- default
+#define RETAIN free_if(0) //do not delete variable at the end of offladed block  
+#define REUSE alloc_if(0) //do not alloc variable at begin of offloaded block, reuse variable on MIC which was not deleted befeore
 
-//struktura která dovoluje kopírovat raw pointer z paměti MICu do RAM a zpět -- obcházení mapování proměnných
+//structure which hides pointer - bypass mapping of variables and addresses of arrays and allow get RAW addres of MIC memory to RAM
 template< typename Type >
 struct MICHider{
     Type *pointer;
 };
 
-//nafukovací struktura -- struktury kopítrovat lze, objekty nikoliv 
-//objekt se dá nakopírovat do takovéto strukury a poslat na MIC
+//inflatable structure -- structures can be copied to MIC - classes not (viz paper published after CSJP 2016 in Krakow)
+//object can be copied in side this structure and then copied into MIC memory
 template <unsigned int VELIKOST>
 struct MICStruct{
 	uint8_t data[VELIKOST];
 };
 
-//Makra zpřehledňující pozdější kód
-//verze kdy se objekt nakopíruje do nově alokované nafukovací struktury
+//Macros which can make code better readeble --but they are tricky, creating variables with specific names...
+//version using inflatable structure
 #define TNLMICSTRUCT(bb,typ) Devices::MICStruct<sizeof(typ)> s ## bb; \
                              memcpy((void*)& s ## bb,(void*)& bb,sizeof(typ));
 #define TNLMICSTRUCTOFF(bb,typ) s ## bb
@@ -56,6 +56,8 @@ struct MICStruct{
                                 memcpy((void*)kernel ## bb,(void*) & s ## bb, sizeof(typ));
 
 //verze kdy se ukazatel na objekt reprezentuje jako ukazatel na pole uint_8
+//version which retypes pointer of object to pointer to array of uint8_t, 
+//object can be copied using uint8_t pointer as array with same length as object size
 #define TNLMICHIDE(bb,typ) uint8_t * u ## bb=(uint8_t *)&bb; \
                            MICHider<typ> kernel ## bb;
 #define TNLMICHIDEALLOCOFF(bb,typ) in(u ## bb:length(sizeof(typ))) out(kernel ## bb)
@@ -89,7 +91,7 @@ class MIC
         };
         
        
-        //původní funkce kopírující na MIC  -- nepoužíváse
+        //old copying funciton  -- deprecated
         template <typename TYP>
         static
         TYP * passToDevice(TYP &objektCPU)
@@ -107,7 +109,7 @@ class MIC
                 std::cout << "Někdo mně volá :-D" <<std::endl;
         };
         
-        //původní funkce mazající z MIC -- nepoužíváse
+        //old cleaning function -- deprecated
         template <typename TYP>
         static
         void freeFromDevice(TYP *objektMIC)
