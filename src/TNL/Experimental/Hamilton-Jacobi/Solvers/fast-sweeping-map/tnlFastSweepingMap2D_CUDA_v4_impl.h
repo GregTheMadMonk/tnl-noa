@@ -207,7 +207,7 @@ template< typename MeshReal,
 __device__
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: updateValue( Index i, Index j, Index* something_changed)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 
@@ -269,7 +269,7 @@ bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 	int i = threadIdx.x + blockDim.x*blockIdx.x;
 	int j = blockDim.y*blockIdx.y + threadIdx.y;
 
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
@@ -397,7 +397,7 @@ Real tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 
 
 
-__global__ void runCUDA(tnlFastSweepingMap< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int i, int* changed)
+__global__ void runCUDA(tnlFastSweepingMap< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int i, int* changed)
 {
 
 	__shared__ int something_changed;
@@ -512,7 +512,7 @@ __global__ void runCUDA(tnlFastSweepingMap< tnlGrid< 2,double, tnlHost, int >, d
 }
 
 
-__global__ void initCUDA(tnlFastSweepingMap< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
+__global__ void initCUDA(tnlFastSweepingMap< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver)
 {
 
 
@@ -571,7 +571,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1111( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -590,7 +590,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0000( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -609,7 +609,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1110( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -642,7 +642,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1101( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -675,7 +675,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1011( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -708,7 +708,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0111( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -742,7 +742,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0001( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -775,7 +775,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0010( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -808,7 +808,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0100( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -841,7 +841,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1000( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -878,7 +878,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1100( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -911,7 +911,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1010( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -944,7 +944,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1001( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -968,7 +968,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0011( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -1001,7 +1001,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0101( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
@@ -1034,7 +1034,7 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0110( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
 	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);

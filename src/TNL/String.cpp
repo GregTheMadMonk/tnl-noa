@@ -70,6 +70,7 @@ void String::setSize( int size )
 {
    TNL_ASSERT_GE( size, 0, "string size must be non-negative" );
    const int _length = STRING_PAGE * ( size / STRING_PAGE + 1 );
+   TNL_ASSERT_GE( _length, 0, "_length size must be non-negative" );
    if( length != _length ) {
       if( string ) {
          delete[] string;

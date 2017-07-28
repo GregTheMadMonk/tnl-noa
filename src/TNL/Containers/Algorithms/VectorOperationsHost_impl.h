@@ -444,7 +444,6 @@ VectorOperations< Devices::Host >::
 vectorScalarMultiplication( Vector& v,
                             const typename Vector::RealType& alpha )
 {
-   typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
@@ -528,7 +527,6 @@ addVector( Vector1& y,
            const typename Vector2::RealType& alpha,
            const typename Vector1::RealType& thisMultiplicator )
 {
-   typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
    TNL_ASSERT_GT( x.getSize(), 0, "Vector size must be positive." );
@@ -540,6 +538,7 @@ addVector( Vector1& y,
 #ifdef __GNUC__
    // We need to get the address of the first element to avoid
    // bounds checking in TNL::Array::operator[]
+   typedef typename Vector1::RealType Real;   
          Real* Y = y.getData();
    const Real* X = x.getData();
 #endif
@@ -598,7 +597,6 @@ addVectors( Vector1& v,
             const typename Vector3::RealType& multiplicator2,
             const typename Vector1::RealType& thisMultiplicator )
 {
-   typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );

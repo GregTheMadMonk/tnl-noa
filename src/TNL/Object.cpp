@@ -121,8 +121,16 @@ bool getObjectType( File& file, String& type )
       return false;
    }
    if( strncmp( mn, magic_number, 5 ) != 0 &&
-       strncmp( mn, "SIM33", 5 ) != 0 ) return false;
-   if( ! type. load( file ) ) return false;
+       strncmp( mn, "SIM33", 5 ) != 0 )
+   {
+       std::cout << "Not a TNL file (wrong magic number)." << std::endl;
+       return false;
+   }
+   if( ! type. load( file ) )
+   {
+       std::cerr << "Cannot load the object type." << std::endl;
+       return false;
+   }
    return true;
 }
 

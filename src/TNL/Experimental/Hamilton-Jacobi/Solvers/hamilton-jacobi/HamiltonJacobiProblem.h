@@ -20,7 +20,7 @@
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/Containers/Vector.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
 #include <functions/tnlMeshFunction.h>

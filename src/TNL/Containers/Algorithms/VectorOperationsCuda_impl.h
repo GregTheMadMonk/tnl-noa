@@ -413,12 +413,10 @@ VectorOperations< Devices::Cuda >::
 vectorScalarMultiplication( Vector& v,
                             const typename Vector::RealType& alpha )
 {
-   typedef typename Vector::RealType Real;
-   typedef typename Vector::IndexType Index;
-
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
 #ifdef HAVE_CUDA
+   typedef typename Vector::IndexType Index;   
    dim3 blockSize( 0 ), gridSize( 0 );
    const Index& size = v.getSize();
    blockSize.x = 256;
@@ -497,13 +495,12 @@ addVector( Vector1& y,
            const typename Vector2::RealType& alpha,
            const typename Vector1::RealType& thisMultiplicator )
 {
-   typedef typename Vector1::RealType Real;
-   typedef typename Vector1::IndexType Index;
-
    TNL_ASSERT_GT( x.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( x.getSize(), y.getSize(), "The vector sizes must be the same." );
 
 #ifdef HAVE_CUDA
+   typedef typename Vector1::IndexType Index;
+   
    dim3 blockSize( 0 ), gridSize( 0 );
 
    const Index& size = x.getSize();
@@ -566,14 +563,12 @@ addVectors( Vector1& v,
             const typename Vector3::RealType& multiplicator2,
             const typename Vector1::RealType& thisMultiplicator )
 {
-   typedef typename Vector1::RealType Real;
-   typedef typename Vector1::IndexType Index;
-
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v.getSize(), v1.getSize(), "The vector sizes must be the same." );
    TNL_ASSERT_EQ( v.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
 #ifdef HAVE_CUDA
+   typedef typename Vector1::IndexType Index;   
    dim3 blockSize( 0 ), gridSize( 0 );
 
    const Index& size = v.getSize();

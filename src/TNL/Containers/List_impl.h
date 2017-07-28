@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlList_impl.h  -  description
+                          TNL::Containers::List_impl.h  -  description
                              -------------------
     begin                : Mar, 5 Apr 2016 12:46 PM
     copyright            : (C) 2016 by Tomas Oberhuber

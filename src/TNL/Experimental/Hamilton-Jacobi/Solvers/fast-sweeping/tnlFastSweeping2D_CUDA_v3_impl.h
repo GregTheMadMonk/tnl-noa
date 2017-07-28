@@ -492,7 +492,7 @@ Real tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 
 template<>
-__global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+__global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 {
 
 	if(blockIdx.x+blockIdx.y == k)
@@ -516,7 +516,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 			/*---------------------------------------------------------------------------------------------------------------------------*/
 }
 	template<>
-	__global__ void runCUDA<2>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+	__global__ void runCUDA<2>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 	{
 	if((gridDim.x - blockIdx.x - 1)+blockIdx.y == k)
 	{
@@ -538,7 +538,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 	}
 	}			/*---------------------------------------------------------------------------------------------------------------------------*/
 	template<>
-	__global__ void runCUDA<4>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+	__global__ void runCUDA<4>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 	{
 	if(blockIdx.x+blockIdx.y == gridDim.x+gridDim.y-k-2)
 		{
@@ -564,7 +564,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 	}
 
 	template<>
-	__global__ void runCUDA<8>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+	__global__ void runCUDA<8>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 	{
 	if((gridDim.x - blockIdx.x - 1)+blockIdx.y == gridDim.x+gridDim.y-k-2)
 		{
@@ -595,7 +595,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 
 
 	template<>
-		__global__ void runCUDA<5>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+		__global__ void runCUDA<5>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 		{
 
 			if(blockIdx.x+blockIdx.y == k)
@@ -640,7 +640,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 
 
 	template<>
-		__global__ void runCUDA<10>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+		__global__ void runCUDA<10>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 		{
 			if((gridDim.x - blockIdx.x - 1)+blockIdx.y == k)
 			{
@@ -687,7 +687,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 
 
 	template<>
-	__global__ void runCUDA<15>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+	__global__ void runCUDA<15>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 	{
 
 		if(blockIdx.x+blockIdx.y == k)
@@ -806,7 +806,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 
 
 
-__global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
+__global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver)
 {
 	int gx = threadIdx.x + blockDim.x*blockIdx.x;
 	int gy = blockDim.y*blockIdx.y + threadIdx.y;
@@ -825,7 +825,7 @@ __global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, dou
 
 
 
-//__global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+//__global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 //{
 //
 //	if(sweep==1 && blockIdx.x+blockIdx.y == k)
