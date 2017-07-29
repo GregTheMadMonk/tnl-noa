@@ -279,7 +279,7 @@ bool convertObject( const MeshPointer& meshPointer,
 
    if( parsedObjectType[ 0 ] == "Containers::Vector" ||
        parsedObjectType[ 0 ] == "tnlSharedVector" ||   // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "TNL::Containers::Vector" )          //
+       parsedObjectType[ 0 ] == "tnlVector" )          //
    {
       using MeshType = typename MeshPointer::ObjectType;
       // FIXME: why is MeshType::GlobalIndexType not the same as Index?
@@ -294,7 +294,7 @@ bool convertObject( const MeshPointer& meshPointer,
    }
 
    if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "TNL::Containers::MultiVector" ||      // TODO: remove deprecated type names  
+       parsedObjectType[ 0 ] == "tnlMultiVector" ||      // TODO: remove deprecated type names  
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" ) //
    {
       Containers::MultiVector< Dimension, Element, Devices::Host, Index > multiVector;
@@ -321,11 +321,11 @@ bool setDimensions( const MeshPointer& meshPointer,
 {
    int dimensions( 0 );
    if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "TNL::Containers::MultiVector" ||                     // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlMultiVector" ||                     // TODO: remove deprecated type names
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )                //
       dimensions = atoi( parsedObjectType[ 1 ]. getString() );
    if( parsedObjectType[ 0 ] == "Containers::Vector" ||
-       parsedObjectType[ 0 ] == "TNL::Containers::Vector" ||                          // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlVector" ||                          // TODO: remove deprecated type names
        parsedObjectType[ 0 ] == "tnlSharedVector" )                     //
       dimensions = 1;
    switch( dimensions )
@@ -349,12 +349,12 @@ bool setIndexType( const MeshPointer& meshPointer,
 {
    String indexType;
    if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "TNL::Containers::MultiVector" ||                        // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlMultiVector" ||                        // TODO: remove deprecated type names
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )                   //
       indexType = parsedObjectType[ 4 ];
    if( parsedObjectType[ 0 ] == "Containers::Vector" || 
        parsedObjectType[ 0 ] == "tnlSharedVector" ||                       // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "TNL::Containers::Vector" )                              //
+       parsedObjectType[ 0 ] == "tnlVector" )                              //
       indexType = parsedObjectType[ 3 ];
 
    if( indexType == "int" )
@@ -426,12 +426,12 @@ bool setElementType( const MeshPointer& meshPointer,
 
    // TODO: Fix this even for arrays
    if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "TNL::Containers::MultiVector" ||                            // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlMultiVector" ||                            // TODO: remove deprecated type names
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )                       //
       elementType = parsedObjectType[ 2 ];
    if( parsedObjectType[ 0 ] == "Containers::Vector" ||
        parsedObjectType[ 0 ] == "tnlSharedVector" ||                           // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "TNL::Containers::Vector" )                                  //
+       parsedObjectType[ 0 ] == "tnlVector" )                                  //
       elementType = parsedObjectType[ 1 ];
 
 
@@ -516,10 +516,10 @@ bool processFiles( const Config::ParameterContainer& parameters )
          }
          if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
              parsedObjectType[ 0 ] == "Containers::Vector" ||
-             parsedObjectType[ 0 ] == "TNL::Containers::MultiVector" ||                     // TODO: remove deprecated type names
+             parsedObjectType[ 0 ] == "tnlMultiVector" ||                     // TODO: remove deprecated type names
              parsedObjectType[ 0 ] == "tnlSharedMultiVector" ||               // 
              parsedObjectType[ 0 ] == "tnlSharedVector" ||                    //
-             parsedObjectType[ 0 ] == "TNL::Containers::Vector" )                           //
+             parsedObjectType[ 0 ] == "tnlVector" )                           //
             setElementType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
          if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
              parsedObjectType[ 0 ] == "tnlMeshFunction" )                     // TODO: remove deprecated type names

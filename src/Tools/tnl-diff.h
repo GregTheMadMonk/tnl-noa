@@ -298,7 +298,7 @@ bool computeDifference( const MeshPointer& meshPointer, const String& objectType
        objectType == "tnlMeshFunction" )  // TODO: remove deprecated type name
       return computeDifferenceOfMeshFunctions< MeshPointer, Element, Real, Index >( meshPointer, parameters );
    if( objectType == "Containers::Vector" ||
-       objectType == "TNL::Containers::Vector" || objectType == "tnlSharedVector" )   // TODO: remove deprecated type name
+       objectType == "tnlVector" || objectType == "tnlSharedVector" )   // TODO: remove deprecated type name
       return computeDifferenceOfVectors< MeshPointer, Element, Real, Index >( meshPointer, parameters );
    return false;
 }
@@ -312,12 +312,12 @@ bool setIndexType( const MeshPointer& meshPointer,
 {
    String indexType;
    if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "TNL::Containers::MultiVector" ||                       // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlMultiVector" ||                       // TODO: remove deprecated type names
        parsedObjectType[ 0 ] == "tnlSharedMultiVector"   )                //
       indexType = parsedObjectType[ 4 ];
    if( parsedObjectType[ 0 ] == "Containers::Vector" ||
        parsedObjectType[ 0 ] == "tnlSharedVector" ||                     // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "TNL::Containers::Vector" )                            //
+       parsedObjectType[ 0 ] == "tnlVector" )                            //
       indexType = parsedObjectType[ 3 ];
 
    if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
@@ -392,7 +392,7 @@ bool setElementType( const MeshPointer& meshPointer,
    String elementType;
 
    if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "TNL::Containers::MultiVector" ||                         // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlMultiVector" ||                         // TODO: remove deprecated type names
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )                    //
       elementType = parsedObjectType[ 2 ];
    if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
@@ -400,7 +400,7 @@ bool setElementType( const MeshPointer& meshPointer,
       elementType = parsedObjectType[ 3 ];
    if( parsedObjectType[ 0 ] == "Containers::Vector" ||
        parsedObjectType[ 0 ] == "tnlSharedVector" ||                        // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "TNL::Containers::Vector" )                               //
+       parsedObjectType[ 0 ] == "tnlVector" )                               //
       elementType = parsedObjectType[ 1 ];
 
 
