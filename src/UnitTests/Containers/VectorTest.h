@@ -183,9 +183,9 @@ TYPED_TEST( VectorTest, lpNorm )
    v.setSize( size );
    setConstantSequence( v, 1 );
 
-   typename VectorType::RealType expectedL1norm = size;
-   typename VectorType::RealType expectedL2norm = std::sqrt( size );
-   typename VectorType::RealType expectedL3norm = std::cbrt( size );
+   const RealType expectedL1norm = size;
+   const RealType expectedL2norm = std::sqrt( size );
+   const RealType expectedL3norm = std::cbrt( size );
    EXPECT_EQ( v.lpNorm( 1.0 ), expectedL1norm );
    EXPECT_EQ( v.lpNorm( 2.0 ), expectedL2norm );
    EXPECT_NEAR( v.lpNorm( 3.0 ), expectedL3norm, epsilon );
@@ -304,9 +304,9 @@ TYPED_TEST( VectorTest, differenceLpNorm )
    u.setValue( 3.0 );
    v.setValue( 1.0 );
 
-   typename VectorType::RealType expectedL1norm = 2.0 * size;
-   typename VectorType::RealType expectedL2norm = std::sqrt( 4.0 * size );
-   typename VectorType::RealType expectedL3norm = std::cbrt( 8.0 * size );
+   const RealType expectedL1norm = 2.0 * size;
+   const RealType expectedL2norm = std::sqrt( 4.0 * size );
+   const RealType expectedL3norm = std::cbrt( 8.0 * size );
    EXPECT_EQ( u.differenceLpNorm( v, 1.0 ), expectedL1norm );
    EXPECT_EQ( u.differenceLpNorm( v, 2.0 ), expectedL2norm );
    EXPECT_NEAR( u.differenceLpNorm( v, 3.0 ), expectedL3norm, epsilon );

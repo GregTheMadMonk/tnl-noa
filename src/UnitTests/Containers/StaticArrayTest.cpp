@@ -83,11 +83,11 @@ TYPED_TEST( StaticArrayTest, constructors )
    for( int i = 0; i < Size; i++ )
       EXPECT_EQ( u3[ i ], u1[ i ] );
 
-   // FIXME: this is an ambiguous constructor if ElementType is not int
-   // Note that the initialization above with 7 instead of 0 works, WTF?
-//   ArrayType v( 0 );
-//   for( int i = 0; i < Size; i++ )
-//      EXPECT_EQ( v[ i ], 0 );
+   // initialization with 0 requires special treatment to avoid ambiguity,
+   // see https://stackoverflow.com/q/4610503
+   ArrayType v( 0 );
+   for( int i = 0; i < Size; i++ )
+      EXPECT_EQ( v[ i ], 0 );
 }
 
 TYPED_TEST( StaticArrayTest, getSize )

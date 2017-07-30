@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Containers/StaticArray.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
 namespace Containers {   
@@ -28,6 +29,9 @@ class StaticVector : public Containers::StaticArray< Size, Real >
    __cuda_callable__
    StaticVector();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    StaticVector( const Real v[ Size ] );
 
@@ -106,6 +110,12 @@ class StaticVector< 1, Real > : public Containers::StaticArray< 1, Real >
    __cuda_callable__
    StaticVector();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
+   __cuda_callable__
+   StaticVector( const Real v[ 1 ] );
+
    //! This sets all vector components to v
    __cuda_callable__
    StaticVector( const Real& v );
@@ -181,6 +191,9 @@ class StaticVector< 2, Real > : public Containers::StaticArray< 2, Real >
    __cuda_callable__
    StaticVector();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    StaticVector( const Real v[ 2 ] );
 
@@ -262,6 +275,9 @@ class StaticVector< 3, Real > : public Containers::StaticArray< 3, Real >
    __cuda_callable__
    StaticVector();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    StaticVector( const Real v[ 3 ] );
 

@@ -10,7 +10,7 @@
 
 #pragma once 
 
-#include <TNL/Math.h>
+#include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
 namespace Containers {   
@@ -22,6 +22,7 @@ StaticVector< 2, Real >::StaticVector()
 }
 
 template< typename Real >
+   template< typename _unused >
 __cuda_callable__
 StaticVector< 2, Real >::StaticVector( const Real v[ 2 ] )
 : Containers::StaticArray< 2, Real >( v )

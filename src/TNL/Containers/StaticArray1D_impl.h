@@ -23,6 +23,7 @@ inline StaticArray< 1, Element >::StaticArray()
 }
 
 template< typename Element >
+   template< typename _unused >
 __cuda_callable__
 inline StaticArray< 1, Element >::StaticArray( const Element v[ size ] )
 {

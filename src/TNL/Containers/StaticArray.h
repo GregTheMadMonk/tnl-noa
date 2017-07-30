@@ -27,6 +27,9 @@ class StaticArray
    __cuda_callable__
    inline StaticArray();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    inline StaticArray( const Element v[ Size ] );
 
@@ -100,6 +103,9 @@ class StaticArray< 1, Element >
    __cuda_callable__
    inline StaticArray();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    inline StaticArray( const Element v[ size ] );
 
@@ -181,6 +187,9 @@ class StaticArray< 2, Element >
    __cuda_callable__
    inline StaticArray();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    inline StaticArray( const Element v[ size ] );
 
@@ -273,6 +282,9 @@ class StaticArray< 3, Element >
    __cuda_callable__
    inline StaticArray();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    inline StaticArray( const Element v[ size ] );
 
