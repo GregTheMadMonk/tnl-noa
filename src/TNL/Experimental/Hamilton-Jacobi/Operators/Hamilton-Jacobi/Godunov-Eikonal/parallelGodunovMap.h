@@ -22,7 +22,6 @@
 #include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>
 #include <TNL/Containers/Vector.h>
-#include <core/vectors/tnlSharedVector.h>
 #include <core/mfilename.h>
 #include <mesh/tnlGrid.h>
 #include <core/tnlCuda.h>

@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/Containers/Vector.h>
-#include <TNL/Containers/SharedVector.h>
 #include <TNL/Meshes/Grid.h>
 
 namespace TNL {

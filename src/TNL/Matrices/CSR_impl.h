@@ -12,7 +12,6 @@
 
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/SharedVector.h>
 #include <TNL/Math.h>
 
 #ifdef HAVE_CUSPARSE
@@ -100,7 +99,7 @@ void CSR< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLen
     * necessary length of the vectors this->values
     * and this->columnIndexes.
     */
-   Containers::SharedVector< IndexType, DeviceType, IndexType > rowPtrs;
+   Containers::Vector< IndexType, DeviceType, IndexType > rowPtrs;
    rowPtrs.bind( this->rowPointers.getData(), this->getRows() );
    rowPtrs = rowLengths;
    this->rowPointers.setElement( this->rows, 0 );
