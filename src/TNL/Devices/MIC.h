@@ -65,9 +65,6 @@ struct MICStruct{
 #define TNLMICHIDEFREEOFF(bb,typ) in(kernel ## bb)
 #define TNLMICHIDEFREE(bb,typ) free((void*)kernel ## bb.pointer
 
-#define MICSupportMissingMessage \
-   std::cerr << "The MIC support is missing in the source file " << __FILE__ << " at line " << __LINE__ << "..." << std::endl;
-
 class MIC
 {
    public:
@@ -142,7 +139,7 @@ class MIC
             {
                 hide_ptr.pointer=malloc(size);
             }
-                return hide_ptr.pointer;
+            return hide_ptr.pointer;
         };
 
         static inline

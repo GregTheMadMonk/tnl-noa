@@ -28,11 +28,11 @@ class ArrayOperations< Devices::Host >
    public:
 
    template< typename Element, typename Index >
-   static bool allocateMemory( Element*& data,
+   static void allocateMemory( Element*& data,
                                const Index size );
 
    template< typename Element >
-   static bool freeMemory( Element* data );
+   static void freeMemory( Element* data );
 
    template< typename Element >
    static void setMemoryElement( Element* data,
@@ -74,11 +74,11 @@ class ArrayOperations< Devices::Cuda >
    public:
 
    template< typename Element, typename Index >
-   static bool allocateMemory( Element*& data,
+   static void allocateMemory( Element*& data,
                                const Index size );
 
    template< typename Element >
-   static bool freeMemory( Element* data );
+   static void freeMemory( Element* data );
 
    template< typename Element >
    static void setMemoryElement( Element* data,
@@ -161,11 +161,11 @@ class ArrayOperations< Devices::MIC >
    public:
 
    template< typename Element, typename Index >
-   static bool allocateMemory( Element*& data,
+   static void allocateMemory( Element*& data,
                                const Index size );
 
    template< typename Element >
-   static bool freeMemory( Element* data );
+   static void freeMemory( Element* data );
 
    template< typename Element >
    static void setMemoryElement( Element* data,
@@ -239,7 +239,6 @@ class ArrayOperations< Devices::Host, Devices::MIC >
                               const SourceElement* source,
                               const Index size );
 };
-
 
 } // namespace Algorithms
 } // namespace Containers

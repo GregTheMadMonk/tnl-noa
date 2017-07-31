@@ -21,7 +21,7 @@ namespace Containers {
 namespace Algorithms {
 
 template< typename Element, typename Index >
-bool
+void
 ArrayOperations< Devices::Host >::
 allocateMemory( Element*& data,
                 const Index size )
@@ -32,16 +32,14 @@ allocateMemory( Element*& data,
    // https://stackoverflow.com/questions/550451/will-new-return-null-in-any-case
    TNL_ASSERT_TRUE( data, "Operator 'new' returned a nullptr. This should never happen - there is "
                           "either a bug or the compiler does not comply to the standard." );
-   return true;
 }
 
 template< typename Element >
-bool
+void
 ArrayOperations< Devices::Host >::
 freeMemory( Element* data )
 {
    delete[] data;
-   return true;
 }
 
 template< typename Element >

@@ -25,7 +25,7 @@ namespace Containers {
 namespace Algorithms {
 
 template< typename Element, typename Index >
-bool
+void
 ArrayOperations< Devices::Cuda >::
 allocateMemory( Element*& data,
                 const Index size )
@@ -38,14 +38,14 @@ allocateMemory( Element*& data,
       data = 0;
       throw Exceptions::CudaBadAlloc();
    }
-   return TNL_CHECK_CUDA_DEVICE;
+   TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
 }
 
 template< typename Element >
-bool
+void
 ArrayOperations< Devices::Cuda >::
 freeMemory( Element* data )
 {
@@ -53,7 +53,7 @@ freeMemory( Element* data )
 #ifdef HAVE_CUDA
    TNL_CHECK_CUDA_DEVICE;
    cudaFree( data );
-   return TNL_CHECK_CUDA_DEVICE;
+   TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
