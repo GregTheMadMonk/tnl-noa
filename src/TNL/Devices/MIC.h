@@ -1,16 +1,16 @@
 /***************************************************************************
                           MIC.h  -  description
-                                by hanouvit
                           -------------------
-    begin                : Nov 7, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
+    begin                : Nov 7, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMIC_H
-#define TNLMIC_H
+// Implemented by: Vit Hanousek
+
+#pragma once
 
 #include <iostream>
 #include <cstring>
@@ -55,7 +55,6 @@ struct MICStruct{
 #define TNLMICSTRUCTALLOC(bb,typ) typ * kernel ## bb = (typ*) malloc (sizeof(typ)); \
                                 memcpy((void*)kernel ## bb,(void*) & s ## bb, sizeof(typ));
 
-//verze kdy se ukazatel na objekt reprezentuje jako ukazatel na pole uint_8
 //version which retypes pointer of object to pointer to array of uint8_t, 
 //object can be copied using uint8_t pointer as array with same length as object size
 #define TNLMICHIDE(bb,typ) uint8_t * u ## bb=(uint8_t *)&bb; \
@@ -180,9 +179,4 @@ class MIC
 
 }//namespace TNL
 
-
-
-
-
-#endif /* TNLMIC_H */
 

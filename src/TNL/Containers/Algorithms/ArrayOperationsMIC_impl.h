@@ -1,12 +1,14 @@
 /***************************************************************************
                           ArrayOperationsMIC_impl.h  -  description
                              -------------------
-    begin                : Mar 4, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Mar 4, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Vit Hanousek
 
 #pragma once 
 
