@@ -627,6 +627,7 @@ computePrefixSum( Vector& v,
 {
    typedef typename Vector::IndexType Index;
 
+   // TODO: parallelize with OpenMP
    for( Index i = begin + 1; i < end; i++ )
       v[ i ] += v[ i - 1 ];
 }
@@ -641,6 +642,7 @@ computeExclusivePrefixSum( Vector& v,
    typedef typename Vector::IndexType Index;
    typedef typename Vector::RealType Real;
 
+   // TODO: parallelize with OpenMP
    Real aux( v[ begin ] );
    v[ begin ] = 0.0;
    for( Index i = begin + 1; i < end; i++ )
