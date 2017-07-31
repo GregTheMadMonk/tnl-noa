@@ -203,9 +203,7 @@ template< typename T >
    template< typename Array >
 void List< T >::toArray( Array& array )
 {
-   TNL_ASSERT( this->getSize() <= array.getSize(),
-              std::cerr << "this->getSize() = " << this->getSize()
-                   << " array.getSize() = " << array.getSize() << std::endl; );
+   array.setSize( this->getSize() );
    for( int i = 0; i < this->getSize(); i++ )
       array[ i ] = ( *this )[ i ];
 }
