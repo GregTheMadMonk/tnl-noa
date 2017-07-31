@@ -17,6 +17,7 @@
 
 namespace TNL {
 
+
 template< typename Type, typename Device >
 bool File :: read( Type* buffer )
 {
@@ -28,7 +29,6 @@ bool File :: write( const Type* buffer )
 {
    return write< Type, Device, int >( buffer, 1 );
 };
-
 
 template< typename Type, typename Device, typename Index >
 bool File :: read( Type* buffer,
@@ -108,6 +108,51 @@ bool File :: read( Type* buffer,
       throw Exceptions::CudaSupportMissing();
 #endif
    }
+   
+   //MIC
+   if( std::is_same< Device, Devices::MIC >::value )
+   {
+#ifdef HAVE_MIC
+        const std::size_t host_buffer_size = std::min( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ),
+                                                elements );
+        Type * host_buffer = (Type *)malloc( sizeof( Type ) * host_buffer_size );
+        readElements = 0;
+        if( ! host_buffer )
+        {
+            std::cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
+              << this->getFileName() << "." << std::endl;
+         return false;
+        }
+
+        while( readElements < elements )
+        {
+           int transfer = std::min(  elements - readElements , host_buffer_size );
+           size_t transfered = fread( host_buffer, sizeof( Type ), transfer, file );
+           if( transfered != transfer )
+           {
+             std::cerr << "I am not able to read the data from the file " << fileName << "." << std::endl;
+              std::cerr << transfered << " bytes were transfered. " << std::endl;
+              perror( "Fread ended with the error code" );
+              return false;
+            }
+           Devices::MICHider<Type> device_buff;
+           device_buff.pointer=buffer;
+           #pragma offload target(mic) in(device_buff,readElements) in(host_buffer:length(transfer))
+           {
+               /*
+               for(int i=0;i<transfer;i++)
+                    device_buff.pointer[readElements+i]=host_buffer[i];
+                */                
+               memcpy(&(device_buff.pointer[readElements]),host_buffer, transfer*sizeof(Type) );
+           }
+           
+         readElements += transfer;
+      }
+      free( host_buffer );
+      return true;
+#endif
+   }
+   
    return true;
 };
 
@@ -189,6 +234,51 @@ bool File :: write( const Type* buffer,
       throw Exceptions::CudaSupportMissing();
 #endif
    }
+   //MIC
+   if( std::is_same< Device, Devices::MIC >::value )
+   {
+#ifdef HAVE_MIC
+         const std::size_t host_buffer_size = std::min( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ),
+                                                        elements );
+         Type * host_buffer = (Type *)malloc( sizeof( Type ) * host_buffer_size );
+         if( ! host_buffer )
+         {
+            std::cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
+                 << this->getFileName() << "." << std::endl;
+            return false;
+         }
+
+         while( this->writtenElements < elements )
+         {
+            Index transfer = std::min( elements - this->writtenElements, host_buffer_size );
+            
+           Devices::MICHider<const Type> device_buff;
+           device_buff.pointer=buffer;
+           #pragma offload target(mic) in(device_buff,writtenElements) out(host_buffer:length(transfer))
+           {
+               //THIS SHOULD WORK... BUT NOT WHY?
+               /*for(int i=0;i<transfer;i++)
+                    host_buffer[i]=device_buff.pointer[writtenElements+i];
+                */              
+               
+               memcpy(host_buffer,&(device_buff.pointer[writtenElements]), transfer*sizeof(Type) );
+            }
+            
+           if( fwrite( host_buffer,
+                        sizeof( Type ),
+                        transfer,
+                        this->file ) != transfer )
+            {
+               std::cerr << "I am not able to write the data to the file " << fileName << "." << std::endl;
+               perror( "Fwrite ended with the error code" );
+               return false;
+            }
+            this->writtenElements += transfer;
+         }
+         free( host_buffer );
+         return true;
+#endif
+   } 
    return true;
 };
 

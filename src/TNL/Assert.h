@@ -30,7 +30,7 @@
  * Implemented by: Jakub Klinkovsky
  */
 
-#ifdef NDEBUG
+#if defined(NDEBUG) || defined(HAVE_MIC)
 
 // empty macros for optimized build
 #define TNL_ASSERT_TRUE( val, msg )

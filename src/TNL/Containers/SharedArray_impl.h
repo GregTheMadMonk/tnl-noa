@@ -21,10 +21,13 @@
 namespace TNL {
 namespace Containers {   
 
+
 template< typename Element,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedArray< Element, Device, Index >::SharedArray()
 : size( 0 ), data( 0 )
 {
@@ -33,7 +36,9 @@ SharedArray< Element, Device, Index >::SharedArray()
 template< typename Element,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedArray< Element, Device, Index >::SharedArray( Element* _data,
                                                           const Index _size )
 {
@@ -43,7 +48,9 @@ SharedArray< Element, Device, Index >::SharedArray( Element* _data,
 template< typename Element,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedArray< Element, Device, Index >::SharedArray( Array< Element, Device, Index >& array )
 {
    this->bind( array );
@@ -52,7 +59,9 @@ SharedArray< Element, Device, Index >::SharedArray( Array< Element, Device, Inde
 template< typename Element,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedArray< Element, Device, Index >::SharedArray( SharedArray< Element, Device, Index >& array )
 {
    this->bind( array );

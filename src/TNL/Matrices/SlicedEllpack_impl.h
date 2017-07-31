@@ -626,9 +626,9 @@ template< typename Real,
 SlicedEllpack< Real, Device, Index, SliceSize >&
 SlicedEllpack< Real, Device, Index, SliceSize >::operator=( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix )
 {
-   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
+   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value || std::is_same< Device, Devices::MIC >::value,
                   "unknown device" );
-   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
+   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value || std::is_same< Device2, Devices::MIC >::value,
                   "unknown device" );
 
    this->setLike( matrix );
@@ -680,6 +680,10 @@ SlicedEllpack< Real, Device, Index, SliceSize >::operator=( const SlicedEllpack<
                this->columnIndexes[ offset + i * rowLength + j ] = tmpColumnIndexes[ offset + j * SliceSize + i ];
             }
       }
+   }
+   
+   if( std::is_same< Device, Devices::MIC >::value ) {
+       std::cout << "Not Implemented yet" << std::endl;
    }
 
    return *this;
@@ -1052,6 +1056,63 @@ class SlicedEllpackDeviceDependentCode< Devices::Cuda >
             cudaThreadSynchronize();
          #endif
       }
+
+};
+
+template<>
+class SlicedEllpackDeviceDependentCode< Devices::MIC >
+{
+   public:
+
+      typedef Devices::MIC Device;
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+      static void initRowTraverse( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                   const Index row,
+                                   Index& rowBegin,
+                                   Index& rowEnd,
+                                   Index& step )
+      {
+          std::cout << "Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverse" << std::endl;
+      }
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+      __cuda_callable__
+      static void initRowTraverseFast( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                       const Index row,
+                                       Index& rowBegin,
+                                       Index& rowEnd,
+                                       Index& step )
+      {
+         std::cout << "Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverseFast" << std::endl;
+      }
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+            static bool computeMaximalRowLengthInSlices( SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                                   const typename SlicedEllpack< Real, Device, Index >::CompressedRowLengthsVector& rowLengths )
+      {
+            std::cout << "Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::computeMaximalRowLengthInSlices" << std::endl;
+         return true;
+      }
+
+      template< typename Real,
+                typename Index,
+                typename InVector,
+                typename OutVector,
+                int SliceSize >
+      static void vectorProduct( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+      {
+        std::cout << "Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::vectorProduct" << std::endl;
+      }
+
 
 };
 

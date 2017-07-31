@@ -44,17 +44,25 @@ class SharedArray : public Object
    typedef SharedArray< Element, Devices::Host, Index > HostType;
    typedef SharedArray< Element, Devices::Cuda, Index > CudaType;
 
+   #ifndef HAVE_MIC
    __cuda_callable__
+   #endif
    SharedArray();
 
+   #ifndef HAVE_MIC
    __cuda_callable__
+   #endif
    SharedArray( Element* _data,
                    const Index _size );
 
+   #ifndef HAVE_MIC
    __cuda_callable__
+   #endif
    SharedArray( Array< Element, Device, Index >& array );
 
+   #ifndef HAVE_MIC
    __cuda_callable__
+   #endif
    SharedArray( SharedArray< Element, Device, Index >& array );
 
    static String getType();
@@ -113,6 +121,7 @@ class SharedArray : public Object
 
    __cuda_callable__ Element* getData();
 
+
    /*!
     * Returns true if non-zero size is set.
     */
@@ -143,6 +152,7 @@ class SharedArray : public Object
    //! Pointer to allocated data
    Element* data;
 };
+
 
 template< typename Element, typename Device, typename Index >
 std::ostream& operator << ( std::ostream& str, const SharedArray< Element, Device, Index >& v );

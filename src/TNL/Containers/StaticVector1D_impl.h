@@ -148,6 +148,25 @@ bool StaticVector< 1, Real >::operator >= ( const StaticVector& v ) const
    return ( this->data[ 0 ] >= v[ 0 ] );
 }
 
+#ifdef HAVE_MIC
+template<typename Real >
+__cuda_callable__
+inline StaticVector< 1, Real >& StaticVector< 1, Real >::operator = ( const StaticVector< 1, Real >& vct )
+{
+    StaticArray<1,Real>::operator =(vct);
+    return *this;
+}
+
+template<typename Real >
+template< typename Vct >
+__cuda_callable__
+inline StaticVector< 1, Real >& StaticVector< 1, Real >::operator = ( const Vct& vct )
+{
+    StaticArray<1,Real>::operator =(vct);
+    return *this;
+}
+#endif
+
 template< typename Real >
    template< typename OtherReal >
 __cuda_callable__

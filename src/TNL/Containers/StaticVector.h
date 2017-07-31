@@ -42,7 +42,7 @@ class StaticVector : public Containers::StaticArray< Size, Real >
    //! Copy constructor
    __cuda_callable__
    StaticVector( const StaticVector< Size, Real >& v );
-   
+
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );      
 
@@ -91,10 +91,21 @@ class StaticVector : public Containers::StaticArray< Size, Real >
    template< typename OtherReal >
    __cuda_callable__
    operator StaticVector< Size, OtherReal >() const;
+   
  
    __cuda_callable__
    ThisType abs() const;
    
+#ifdef HAVE_MIC
+      __cuda_callable__
+   inline StaticVector< Size, Real >& operator = ( const StaticVector< Size, Real >& vct );
+
+
+   template< typename Vct >
+   __cuda_callable__
+   inline StaticVector< Size, Real >& operator = ( const Vct& Real );
+   
+#endif
    __cuda_callable__
    Real lpNorm( const Real& p ) const;
 };
@@ -175,6 +186,15 @@ class StaticVector< 1, Real > : public Containers::StaticArray< 1, Real >
  
    __cuda_callable__
    ThisType abs() const;
+   
+#ifdef HAVE_MIC
+   __cuda_callable__
+   inline StaticVector< 1, Real >& operator = ( const StaticVector< 1, Real >& vct );
+
+   template< typename Vct >
+   __cuda_callable__
+   inline StaticVector< 1, Real >& operator = ( const Vct& Real ); 
+#endif
    
    __cuda_callable__
    Real lpNorm( const Real& p ) const;   
@@ -260,6 +280,16 @@ class StaticVector< 2, Real > : public Containers::StaticArray< 2, Real >
    __cuda_callable__
    ThisType abs() const;
    
+#ifdef HAVE_MIC
+   __cuda_callable__
+   inline StaticVector< 2, Real >& operator = ( const StaticVector< 2, Real >& vct );
+
+   template< typename Vct >
+   __cuda_callable__
+   inline StaticVector< 2, Real >& operator = ( const Vct& Real ); 
+#endif
+   
+   
    __cuda_callable__
    Real lpNorm( const Real& p ) const;   
 };
@@ -343,6 +373,15 @@ class StaticVector< 3, Real > : public Containers::StaticArray< 3, Real >
  
    __cuda_callable__
    ThisType abs() const;
+   
+   #ifdef HAVE_MIC
+   __cuda_callable__
+   inline StaticVector< 3, Real >& operator = ( const StaticVector< 3, Real >& vct );
+
+   template< typename Vct >
+   __cuda_callable__
+   inline StaticVector< 3, Real >& operator = ( const Vct& Real ); 
+#endif
    
    __cuda_callable__
    Real lpNorm( const Real& p ) const;   

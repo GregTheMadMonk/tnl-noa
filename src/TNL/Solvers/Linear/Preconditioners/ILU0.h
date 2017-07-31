@@ -17,6 +17,7 @@
 #include <TNL/Object.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/CSR.h>
+#include <iostream>
 
 #ifdef HAVE_CUDA
 #include <cusparse.h>
@@ -163,6 +164,41 @@ protected:
    }
 #endif
 };
+
+#ifdef HAVE_MIC
+template< typename Real, typename Index >
+class ILU0< Real, Devices::MIC, Index >
+{
+public:
+   typedef Real RealType;
+   typedef Devices::MIC DeviceType;
+   typedef Index IndexType;
+
+   template< typename MatrixPointer >
+   void update( const MatrixPointer& matrixPointer )
+   {
+       std::cerr << "Not Iplemented yet" <<std::endl;
+   };
+
+   template< typename Vector1, typename Vector2 >
+   bool solve( const Vector1& b, Vector2& x ) const
+   {
+       std::cerr << "Not Iplemented yet" <<std::endl;
+       return false;
+   };
+
+   String getType() const
+   {
+      return String( "ILU0" );
+   }
+
+protected:
+//   Matrices::CSR< RealType, DeviceType, IndexType > A;
+   Matrices::CSR< RealType, DeviceType, IndexType > L;
+   Matrices::CSR< RealType, DeviceType, IndexType > U;
+};
+
+#endif
 
 } // namespace Preconditioners
 } // namespace Linear

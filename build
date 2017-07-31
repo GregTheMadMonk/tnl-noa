@@ -41,6 +41,7 @@ do
         --verbose                        ) VERBOSE="VERBOSE=1" ;;
         --help                           ) HELP="yes" ;;
         --with-clang=*                   ) WITH_CLANG="${option#*=}" ;;
+        --with-mic=*                     ) WITH_MIC="${option#*=}" ;;
         --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
         --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;
         --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
@@ -73,6 +74,7 @@ then
     echo "   --build-jobs=NUM                      Number of processes to be used for the build. It is set to the number of available CPU cores by default."
     echo "   --prefix=PATH                         Prefix for the installation directory. ${HOME}/local by default."
     echo "   --install=yes/no                      Enables the installation of TNL files."
+    echo "   --with-mic=yes/no                     Enable MIC (Intel Xeon Phi). 'no' by default (Intel Compiler required)."
     echo "   --with-cuda=yes/no                    Enable CUDA. 'yes' by default (CUDA Toolkit is required)."
     echo "   --with-cuda-arch=all/auto/30/35/...   Choose CUDA architecture. 'auto' by default."
     echo "   --with-tests=yes/no                   Enable unit tests. 'yes' by default."
@@ -99,6 +101,7 @@ echo "Configuring ${BUILD} $TARGET ..."
 ${CMAKE} ${ROOT_DIR} \
          -DCMAKE_BUILD_TYPE=${BUILD} \
          -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+         -DWITH_MIC=${WITH_MIC} \
          -DWITH_CUDA=${WITH_CUDA} \
          -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH} \
          -DWITH_TESTS=${WITH_TESTS} \

@@ -48,6 +48,22 @@ set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "" )
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG "-rdynamic" )
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE "" )
 
+get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
+if( CXX_COMPILER_NAME MATCHES "icpc" )
+   message( "Intel compiler detected..."    )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_ICPC -wd2568 -wd2571 -wd2570")
+   #####
+   #  Ckeck for MIC 
+   #
+   if( WITH_MIC STREQUAL "yes" )
+       message( "Compile MIC support..."    )
+       set( MIC_CXX_FLAGS "-DHAVE_MIC")
+       set( WITH_CUDA "no")
+   else()
+       set( MIC_CXX_FLAGS "")
+   endif( )	
+endif()
+
 #####
 # Check for CUDA
 #

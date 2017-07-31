@@ -178,3 +178,4 @@ std::ostream& operator << ( std::ostream& str, const Array< Element, Device, Ind
 
 #include <TNL/Containers/Array_impl.h>
 
+

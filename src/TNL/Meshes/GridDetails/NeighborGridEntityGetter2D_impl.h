@@ -518,4 +518,3 @@ class NeighborGridEntityGetter<
 
 } // namespace Meshes
 } // namespace TNL
-

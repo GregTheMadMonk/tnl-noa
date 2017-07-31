@@ -18,6 +18,8 @@
 #include <TNL/String.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/MIC.h>
+
 
 namespace TNL {
 
@@ -70,7 +72,7 @@ class File
 	long int getReadElements() const
 	{
 	   return this->readElements;
-	}
+    	}
 
 	long int getWrittenElements() const
 	{

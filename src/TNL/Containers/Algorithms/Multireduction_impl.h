@@ -250,6 +250,30 @@ reduce( Operation& operation,
    return true;
 }
 
+template< typename Operation >
+bool
+Multireduction< Devices::MIC >::
+reduce( Operation& operation,
+        int n,
+        const typename Operation::IndexType size,
+        const typename Operation::RealType* input1,
+        const typename Operation::IndexType ldInput1,
+        const typename Operation::RealType* input2,
+        typename Operation::ResultType* result )
+{
+   TNL_ASSERT( n > 0, );
+   TNL_ASSERT( size <= ldInput1, );
+
+   typedef typename Operation::IndexType IndexType;
+   typedef typename Operation::RealType RealType;
+   typedef typename Operation::ResultType ResultType;
+
+
+   std::cout << "Not Implemented yet Multireduction< Devices::MIC >::reduce" << std::endl;
+   return true;
+}
+
+
 } // namespace Algorithms
 } // namespace Containers
 } // namespace TNL

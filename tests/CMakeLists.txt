@@ -4,5 +4,6 @@ ADD_SUBDIRECTORY( data )
 ADD_SUBDIRECTORY( benchmarks )
 #ADD_SUBDIRECTORY( unit-tests )
 ADD_SUBDIRECTORY( long-time-unit-tests )
+ADD_SUBDIRECTORY( mic )
 
 unset( ENABLE_CODECOVERAGE )

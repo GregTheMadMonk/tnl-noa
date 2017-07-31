@@ -10,6 +10,8 @@
 
 #pragma once
 
+#undef __INTEL_COMPILER
+
 namespace TNL {
 
 template< typename IndexType, IndexType val >
