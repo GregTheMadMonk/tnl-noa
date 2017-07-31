@@ -1,6 +1,5 @@
 /***************************************************************************
-                          
- *   -  description
+                          CudaCallable.h  -  description
                              -------------------
     begin                : Jun 20, 2017
     copyright            : (C) 2017 by Tomas Oberhuber et al.
@@ -18,9 +17,9 @@
 // macros, which need __cuda_callable__ functions.
 
 #ifdef HAVE_MIC 
-    #define __cuda_callable__ __attribute__((target(mic)))
+   #define __cuda_callable__ __attribute__((target(mic)))
 #elif HAVE_CUDA
-    #define __cuda_callable__ __device__ __host__
+   #define __cuda_callable__ __device__ __host__
 #else
-    #define __cuda_callable__
+   #define __cuda_callable__
 #endif

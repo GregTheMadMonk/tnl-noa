@@ -14,8 +14,6 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Devices/MIC.h>
 
-#include <iostream>
-
 namespace TNL {
 namespace Containers {   
 namespace Algorithms {

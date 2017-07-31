@@ -177,5 +177,3 @@ std::ostream& operator << ( std::ostream& str, const Array< Element, Device, Ind
 } // namespace TNL
 
 #include <TNL/Containers/Array_impl.h>
-
-

@@ -36,9 +36,9 @@ allocateMemory( Element*& data,
 #ifdef HAVE_MIC
    data=(Element*) Devices::MIC::AllocMIC(size*sizeof(Element));
    if(data)
-       return true;
+      return true;
    else
-       return false;
+      return false;
 #else
    MICSupportMissingMessage;
    return false;
@@ -52,11 +52,11 @@ freeMemory( Element* data )
 {
    TNL_ASSERT( data, );
 #ifdef HAVE_MIC
-    Devices::MIC::FreeMIC( data );
-    return true;
+   Devices::MIC::FreeMIC( data );
+   return true;
 #else
-    MICSupportMissingMessage;;
-     true;
+   MICSupportMissingMessage;;
+   return false;
 #endif
 }
 
