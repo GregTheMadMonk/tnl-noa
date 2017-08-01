@@ -18,7 +18,7 @@ print( "----------------------------------")
 
 definitions = {}
 
-definitions['problemName'] = input( "Problam name:" )
+definitions['problemName'] = input( "Problem name:" )
 definitions['problemBaseName'] = input( "Problem class base name (base name acceptable in C++ code):" )
 definitions['operatorName'] = input( "Operator name:")
 
