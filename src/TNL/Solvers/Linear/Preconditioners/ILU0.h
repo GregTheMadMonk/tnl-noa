@@ -17,7 +17,6 @@
 #include <TNL/Object.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/CSR.h>
-#include <iostream>
 
 #ifdef HAVE_CUDA
 #include <cusparse.h>
@@ -177,15 +176,14 @@ public:
    template< typename MatrixPointer >
    void update( const MatrixPointer& matrixPointer )
    {
-       std::cerr << "Not Iplemented yet" <<std::endl;
-   };
+      throw std::runtime_error("Not Iplemented yet for MIC");
+   }
 
    template< typename Vector1, typename Vector2 >
    bool solve( const Vector1& b, Vector2& x ) const
    {
-       std::cerr << "Not Iplemented yet" <<std::endl;
-       return false;
-   };
+      throw std::runtime_error("Not Iplemented yet for MIC");
+   }
 
    String getType() const
    {

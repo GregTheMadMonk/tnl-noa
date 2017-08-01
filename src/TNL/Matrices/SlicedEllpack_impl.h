@@ -683,7 +683,7 @@ SlicedEllpack< Real, Device, Index, SliceSize >::operator=( const SlicedEllpack<
    }
    
    if( std::is_same< Device, Devices::MIC >::value ) {
-       std::cout << "Not Implemented yet" << std::endl;
+      throw std::runtime_error("Not Implemented yet for MIC");
    }
 
    return *this;
@@ -1075,7 +1075,7 @@ class SlicedEllpackDeviceDependentCode< Devices::MIC >
                                    Index& rowEnd,
                                    Index& step )
       {
-          std::cout << "Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverse" << std::endl;
+         throw std::runtime_error("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverse");
       }
 
       template< typename Real,
@@ -1088,7 +1088,7 @@ class SlicedEllpackDeviceDependentCode< Devices::MIC >
                                        Index& rowEnd,
                                        Index& step )
       {
-         std::cout << "Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverseFast" << std::endl;
+         throw std::runtime_error("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverseFast");
       }
 
       template< typename Real,
@@ -1097,8 +1097,7 @@ class SlicedEllpackDeviceDependentCode< Devices::MIC >
             static bool computeMaximalRowLengthInSlices( SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
                                                    const typename SlicedEllpack< Real, Device, Index >::CompressedRowLengthsVector& rowLengths )
       {
-            std::cout << "Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::computeMaximalRowLengthInSlices" << std::endl;
-         return true;
+         throw std::runtime_error("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::computeMaximalRowLengthInSlices");
       }
 
       template< typename Real,
@@ -1110,10 +1109,8 @@ class SlicedEllpackDeviceDependentCode< Devices::MIC >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
-        std::cout << "Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::vectorProduct" << std::endl;
+         throw std::runtime_error("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::vectorProduct");
       }
-
-
 };
 
 } // namespace Matrices

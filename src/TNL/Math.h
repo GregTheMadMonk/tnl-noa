@@ -39,11 +39,10 @@ __cuda_callable__ inline
 typename enable_if_same_base< T, int >::type
 min( const T& a, const T& b )
 {
-#ifdef __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::min( a, b );
 #else
-   //return std::min( a, b );
-   return !(b<a)?a:b;
+   return std::min( a, b );
 #endif
 }
 
@@ -92,14 +91,10 @@ __cuda_callable__ inline
 typename enable_if_same_base< T, int >::type
 max( const T& a, const T& b )
 {
-#ifdef __CUDA_ARCH__
-   
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::max( a, b );
 #else
-    #ifdef __MIC__
-       return ::max( a, b );
-    #else
-       return std::max( a, b );
-    #endif
+   return std::max( a, b );
 #endif
 }
 
@@ -151,14 +146,10 @@ __cuda_callable__ inline
 typename std::enable_if< std::is_arithmetic< T >::value, T >::type
 abs( const T& n )
 {
-#ifdef __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::abs( n );
 #else
-   /*return std::abs( n );*/
-   if(n>=0)
-       return n;
-   else
-       return -n;
+   return std::abs( n );
 #endif
 }
 

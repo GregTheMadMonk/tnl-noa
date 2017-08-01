@@ -608,7 +608,7 @@ computePrefixSum( Vector& v,
                                    &v.getData()[ begin ],
                                    &v.getData()[ begin ],
                                    operation,
-                                   Algorithms::inclusivePrefixSum );
+                                   Algorithms::PrefixSumType::inclusive );
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -633,7 +633,7 @@ computeExclusivePrefixSum( Vector& v,
                                    &v.getData()[ begin ],
                                    &v.getData()[ begin ],
                                    operation,
-                                   Algorithms::exclusivePrefixSum );
+                                   Algorithms::PrefixSumType::exclusive );
 #endif
 }
 
