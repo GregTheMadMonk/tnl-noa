@@ -2,7 +2,8 @@ set (headers Cuda.h
              Cuda_impl.h
              CudaCallable.h
              CudaDeviceInfo.h
-             Host.h )
+             Host.h
+             MIC.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Devices )
 set( common_SOURCES
