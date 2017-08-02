@@ -65,19 +65,15 @@ To implement your own solver:
     on lines:
         34, 141 and 265 for 1D, 2D and 3D problem respectively with explicit time discretization
         101, 211 and 332 for 1D, 2D and 3D problem respectively with (semi-)implicit time discretization
-    If you have CUDA on your system, edit Makefile
-
-    vim Makefile
-
-    and change the second line to
-
-    WITH_CUDA = yes
-
     Compile the program by executing
 
     make
 
-    Run it on your favourite HW architecture by executing
+    for CPU version only or 
+   
+    make WITH_CUDA=yes
+
+    for a solver running on both CPU and GPU. Run it on your favourite HW architecture by executing
 
     ./MyProblem
 
