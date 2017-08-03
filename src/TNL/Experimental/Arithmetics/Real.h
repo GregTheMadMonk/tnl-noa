@@ -11,7 +11,7 @@
 #pragma once
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include <TNL/Experimental/Arithmetics/FlopsCounter.h>
 
 namespace TNL {
@@ -313,105 +313,105 @@ template< class T > const Real< T > fabs( const Real< T >& v )
 template< class T > const Real< T > sqrt( const Real< T >& v )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( ::sqrt( v. Data() ) );
+   return Real< T >( std::sqrt( v. Data() ) );
 };
 
 template< class T > const Real< T > pow( const Real< T >& x, const Real< T >& exp )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( ::pow( x. Data(), exp. Data() ) );
+   return Real< T >( std::pow( x. Data(), exp. Data() ) );
 };
 
 template< class T > const Real< T > pow( const Real< T >& x, const T& exp )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( ::pow( x. Data(), exp ) );
+   return Real< T >( std::pow( x. Data(), exp ) );
 };
 
 template< class T > const Real< T > cos( const Real< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( ::cos( x. Data() ) );
+   return Real< T >( std::cos( x. Data() ) );
 };
 
 template< class T > const Real< T > sin( const Real< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( ::sin( x. Data() ) );
+   return Real< T >( std::sin( x. Data() ) );
 };
 
 template< class T > const Real< T > tan( const Real< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( tan( x. Data() ) );
+   return Real< T >( std::tan( x. Data() ) );
 };
 
 template< class T > const Real< T > acos( const Real< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( acos( x. Data() ) );
+   return Real< T >( std::acos( x. Data() ) );
 };
 
 template< class T > const Real< T > asin( const Real< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( asin( x. Data() ) );
+   return Real< T >( std::asin( x. Data() ) );
 };
 
 template< class T > const Real< T > atan( const Real< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( atan( x. Data() ) );
+   return Real< T >( std::atan( x. Data() ) );
 };
 
 template< class T > const Real< T > atan2( const Real< T >& x, const Real< T >& exp )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( atan2( x. Data(), exp. Data() ) );
+   return Real< T >( std::atan2( x. Data(), exp. Data() ) );
 };
 
 template< class T > const Real< T > atan2( const Real< T >& x, const T& exp )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( atan2( x. Data(), exp ) );
+   return Real< T >( std::atan2( x. Data(), exp ) );
 };
 
 
 template< class T > const Real< T > cosh( const Real< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( cosh( x. Data() ) );
+   return Real< T >( std::cosh( x. Data() ) );
 };
 
 template< class T > const Real< T > sinh( const Real< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( sinh( x. Data() ) );
+   return Real< T >( std::sinh( x. Data() ) );
 };
 
 template< class T > const Real< T > tanh( const Real< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( ::tanh( x. Data() ) );
+   return Real< T >( std::tanh( x. Data() ) );
 };
 
 
 template< class T > const Real< T > exp( const Real< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( exp( x. Data() ) );
+   return Real< T >( std::exp( x. Data() ) );
 };
 
 template< class T > const Real< T > log( const Real< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( log( x. Data() ) );
+   return Real< T >( std::log( x. Data() ) );
 };
 
 template< class T > const Real< T > log10( const Real< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return Real< T >( log10( x. Data() ) );
+   return Real< T >( std::log10( x. Data() ) );
 };
 
 template< class T >
