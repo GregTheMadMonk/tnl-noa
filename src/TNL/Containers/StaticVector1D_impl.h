@@ -25,21 +25,21 @@ template< typename Real >
    template< typename _unused >
 __cuda_callable__
 StaticVector< 1, Real >::StaticVector( const Real v[ 1 ] )
-: Containers::StaticArray< 1, Real >( v )
+: StaticArray< 1, Real >( v )
 {
 }
 
 template< typename Real >
 __cuda_callable__
 StaticVector< 1, Real >::StaticVector( const Real& v )
-: Containers::StaticArray< 1, Real >( v )
+: StaticArray< 1, Real >( v )
 {
 }
 
 template< typename Real >
 __cuda_callable__
 StaticVector< 1, Real >::StaticVector( const StaticVector< 1, Real >& v )
-: Containers::StaticArray< 1, Real >( v )
+: StaticArray< 1, Real >( v )
 {
 }
 
@@ -147,25 +147,6 @@ bool StaticVector< 1, Real >::operator >= ( const StaticVector& v ) const
 {
    return ( this->data[ 0 ] >= v[ 0 ] );
 }
-
-#ifdef HAVE_MIC
-template<typename Real >
-__cuda_callable__
-inline StaticVector< 1, Real >& StaticVector< 1, Real >::operator = ( const StaticVector< 1, Real >& vct )
-{
-    StaticArray<1,Real>::operator =(vct);
-    return *this;
-}
-
-template<typename Real >
-template< typename Vct >
-__cuda_callable__
-inline StaticVector< 1, Real >& StaticVector< 1, Real >::operator = ( const Vct& vct )
-{
-    StaticArray<1,Real>::operator =(vct);
-    return *this;
-}
-#endif
 
 template< typename Real >
    template< typename OtherReal >

@@ -25,21 +25,21 @@ template< int Size, typename Real >
    template< typename _unused >
 __cuda_callable__
 StaticVector< Size, Real >::StaticVector( const Real v[ Size ] )
-: Containers::StaticArray< Size, Real >( v )
+: StaticArray< Size, Real >( v )
 {
 }
 
 template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >::StaticVector( const Real& v )
-: Containers::StaticArray< Size, Real >( v )
+: StaticArray< Size, Real >( v )
 {
 }
 
 template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >::StaticVector( const StaticVector< Size, Real >& v )
-: Containers::StaticArray< Size, Real >( v )
+: StaticArray< Size, Real >( v )
 {
 }
 
@@ -211,12 +211,12 @@ StaticVector< Size, Real >::lpNorm( const Real& p ) const
       Real aux = this->data[ 0 ] * this->data[ 0 ];
       for( int i = 1; i < Size; i++ )
          aux += this->data[ i ] * this->data[ i ];
-      return std::sqrt( aux );
+      return TNL::sqrt( aux );
    }
-   Real aux = std::pow( TNL::abs( this->data[ 0 ] ), p );
+   Real aux = TNL::pow( TNL::abs( this->data[ 0 ] ), p );
    for( int i = 1; i < Size; i++ )
-      aux += std::pow( TNL::abs( this->data[ i ] ), p );
-   return std::pow( aux, 1.0 / p );
+      aux += TNL::pow( TNL::abs( this->data[ i ] ), p );
+   return TNL::pow( aux, 1.0 / p );
 }
 
 template< int Size, typename Real, typename Scalar >
@@ -225,23 +225,6 @@ StaticVector< Size, Real > operator * ( const Scalar& c, const StaticVector< Siz
 {
    return u * c;
 }
-
-#ifdef HAVE_MIC
-template< int Size, typename Real >
-__cuda_callable__
-inline StaticVector< Size, Real >& StaticVector< Size, Real >::operator = ( const StaticVector< Size, Real >& vct )
-{
-    StaticArray<Size,Real>::operator =(vct);
-}
-
-template< int Size, typename Real >
-template< typename Vct >
-__cuda_callable__
-inline StaticVector< Size, Real >& StaticVector< Size, Real >::operator = ( const Vct& vct )
-{
-    StaticArray<Size,Real>::operator =(vct);
-}
-#endif
 
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 

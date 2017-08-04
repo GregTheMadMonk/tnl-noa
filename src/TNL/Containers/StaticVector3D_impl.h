@@ -25,28 +25,28 @@ template< typename Real >
    template< typename _unused >
 __cuda_callable__
 StaticVector< 3, Real >::StaticVector( const Real v[ 3 ] )
-: Containers::StaticArray< 3, Real >( v )
+: StaticArray< 3, Real >( v )
 {
 }
 
 template< typename Real >
 __cuda_callable__
 StaticVector< 3, Real >::StaticVector( const Real& v )
-: Containers::StaticArray< 3, Real >( v )
+: StaticArray< 3, Real >( v )
 {
 }
 
 template< typename Real >
 __cuda_callable__
 StaticVector< 3, Real >::StaticVector( const Real& v1, const Real& v2, const Real& v3 )
-: Containers::StaticArray< 3, Real >( v1, v2, v3 )
+: StaticArray< 3, Real >( v1, v2, v3 )
 {
 }
 
 template< typename Real >
 __cuda_callable__
 StaticVector< 3, Real >::StaticVector( const StaticVector< 3, Real >& v )
-: Containers::StaticArray< 3, Real >( v )
+: StaticArray< 3, Real >( v )
 {
 }
 
@@ -179,23 +179,6 @@ bool StaticVector< 3, Real >::operator >= ( const StaticVector& v ) const
             this->data[ 2 ] >= v[ 2 ] );
 }
 
-#ifdef HAVE_MIC
-template<typename Real >
-__cuda_callable__
-inline StaticVector< 3, Real >& StaticVector< 3, Real >::operator = ( const StaticVector< 3, Real >& vct )
-{
-    StaticArray<1,Real>::operator =(vct);
-}
-
-template<typename Real >
-template< typename Vct >
-__cuda_callable__
-inline StaticVector< 3, Real >& StaticVector< 3, Real >::operator = ( const Vct& vct )
-{
-    StaticArray<3,Real>::operator =(vct);
-}
-#endif
-
 template< typename Real >
    template< typename OtherReal >
 __cuda_callable__
@@ -214,9 +197,9 @@ __cuda_callable__
 StaticVector< 3, Real >
 StaticVector< 3, Real >::abs() const
 {
-   return StaticVector< 3, Real >( ::abs( this->data[ 0 ] ),
-                                      ::abs( this->data[ 1 ] ),
-                                      ::abs( this->data[ 2 ] ) );
+   return StaticVector< 3, Real >( TNL::abs( this->data[ 0 ] ),
+                                   TNL::abs( this->data[ 1 ] ),
+                                   TNL::abs( this->data[ 2 ] ) );
 }
 
 template< typename Real >
@@ -229,12 +212,12 @@ StaticVector< 3, Real >::lpNorm( const Real& p ) const
              TNL::abs( this->data[ 1 ] ) + 
              TNL::abs( this->data[ 2 ] );
    if( p == 2.0 )
-      return std::sqrt( this->data[ 0 ] * this->data[ 0 ] + 
+      return TNL::sqrt( this->data[ 0 ] * this->data[ 0 ] + 
                         this->data[ 1 ] * this->data[ 1 ] +
                         this->data[ 2 ] * this->data[ 2 ] );
-   return std::pow( std::pow( TNL::abs( this->data[ 0 ] ), p ) +
-                    std::pow( TNL::abs( this->data[ 1 ] ), p ) +
-                    std::pow( TNL::abs( this->data[ 2 ] ), p ), 1.0 / p ); 
+   return TNL::pow( TNL::pow( TNL::abs( this->data[ 0 ] ), p ) +
+                    TNL::pow( TNL::abs( this->data[ 1 ] ), p ) +
+                    TNL::pow( TNL::abs( this->data[ 2 ] ), p ), 1.0 / p ); 
 }
 
 
