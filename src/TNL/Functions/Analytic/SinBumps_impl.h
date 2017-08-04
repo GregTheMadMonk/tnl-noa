@@ -101,7 +101,7 @@ getPartialDerivative( const PointType& v,
       return 0.0;
    
    const RealType& x = v.x();
-   const RealType xp = ::fabs( x ) + sign( x ) * this->phase.x() * this->waveLength.x() / (2.0*M_PI);
+   const RealType xp = abs( x ) + sign( x ) * this->phase.x() * this->waveLength.x() / (2.0*M_PI);
    if( this->wavesNumber.x() != 0.0 && xp > this->waveLength.x() * this->wavesNumber.x() )
       return 0.0;
   
@@ -162,8 +162,8 @@ getPartialDerivative( const PointType& v,
 
    const RealType& x = v.x();
    const RealType& y = v.y();
-   const RealType xp = ::fabs( x ) + sign( x ) * this->phase.x() * this->waveLength.x() / (2.0*M_PI);
-   const RealType yp = ::fabs( y ) + sign( y ) * this->phase.y() * this->waveLength.y() / (2.0*M_PI);
+   const RealType xp = abs( x ) + sign( x ) * this->phase.x() * this->waveLength.x() / (2.0*M_PI);
+   const RealType yp = abs( y ) + sign( y ) * this->phase.y() * this->waveLength.y() / (2.0*M_PI);
    //std::cerr << "this->wavesNumber.x() = " << this->wavesNumber.x() << "fabs( x ) = " << fabs( x ) << " 2.0*M_PI * this->waveLength.x() * this->wavesNumber.x() = " << 2.0*M_PI * this->waveLength.x() * this->wavesNumber.x() << std::endl;
    if( ( this->wavesNumber.x() != 0.0 && xp > this->waveLength.x() * this->wavesNumber.x() ) ||
        ( this->wavesNumber.y() != 0.0 && yp > this->waveLength.y() * this->wavesNumber.y() ) )
@@ -235,9 +235,9 @@ getPartialDerivative( const PointType& v,
    const RealType& y = v.y();
    const RealType& z = v.z();
    
-   const RealType xp = ::fabs( x ) + sign( x ) * this->phase.x() * this->waveLength.x() / (2.0*M_PI);
-   const RealType yp = ::fabs( y ) + sign( y ) * this->phase.y() * this->waveLength.y() / (2.0*M_PI);
-   const RealType zp = ::fabs( z ) + sign( z ) * this->phase.z() * this->waveLength.z() / (2.0*M_PI);
+   const RealType xp = abs( x ) + sign( x ) * this->phase.x() * this->waveLength.x() / (2.0*M_PI);
+   const RealType yp = abs( y ) + sign( y ) * this->phase.y() * this->waveLength.y() / (2.0*M_PI);
+   const RealType zp = abs( z ) + sign( z ) * this->phase.z() * this->waveLength.z() / (2.0*M_PI);
 
    if( ( this->wavesNumber.x() != 0.0 && xp > this->waveLength.x() * this->wavesNumber.x() ) ||
        ( this->wavesNumber.y() != 0.0 && yp > this->waveLength.y() * this->wavesNumber.y() ) ||

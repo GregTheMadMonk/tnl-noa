@@ -86,7 +86,7 @@ getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();
-   RealType xp = ::fabs( x ) + sign( x ) * this->phase.x() * this->waveLength.x() / ( 2.0*M_PI );
+   RealType xp = abs( x ) + sign( x ) * this->phase.x() * this->waveLength.x() / ( 2.0*M_PI );
    if( this->wavesNumber.x() != 0.0 && xp > this->wavesNumber.x() * this->waveLength.x() )
       return 0.0;
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
