@@ -14,7 +14,6 @@
 #include <type_traits>
 
 #include <TNL/Containers/Array.h>
-#include <TNL/Devices/Host.h>
 
 #include "gtest/gtest.h"
 
@@ -101,6 +100,30 @@ using ArrayTypes = ::testing::Types<
    Array< float,  Devices::Cuda, long >,
    Array< double, Devices::Cuda, long >,
    Array< MyData, Devices::Cuda, long >
+#endif
+#ifdef HAVE_MIC
+   ,
+   Array< short,  Devices::MIC, short >,
+   Array< int,    Devices::MIC, short >,
+   Array< long,   Devices::MIC, short >,
+   Array< float,  Devices::MIC, short >,
+   Array< double, Devices::MIC, short >,
+   // TODO: MyData does not work on MIC
+//   Array< MyData, Devices::MIC, short >,
+   Array< short,  Devices::MIC, int >,
+   Array< int,    Devices::MIC, int >,
+   Array< long,   Devices::MIC, int >,
+   Array< float,  Devices::MIC, int >,
+   Array< double, Devices::MIC, int >,
+   // TODO: MyData does not work on MIC
+//   Array< MyData, Devices::MIC, int >,
+   Array< short,  Devices::MIC, long >,
+   Array< int,    Devices::MIC, long >,
+   Array< long,   Devices::MIC, long >,
+   Array< float,  Devices::MIC, long >,
+   Array< double, Devices::MIC, long >
+   // TODO: MyData does not work on MIC
+//   Array< MyData, Devices::MIC, long >
 #endif
 >;
 
@@ -284,6 +307,14 @@ void testArrayElementwiseAccess( Array< Element, Devices::Cuda, Index >&& u )
    for( int i = 0; i < 10; i++ ) {
       EXPECT_EQ( u.getElement( i ), i );
    }
+#endif
+}
+
+template< typename Element, typename Index >
+void testArrayElementwiseAccess( Array< Element, Devices::MIC, Index >&& u )
+{
+#ifdef HAVE_MIC
+   // TODO
 #endif
 }
 

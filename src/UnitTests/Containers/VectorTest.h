@@ -110,6 +110,21 @@ using VectorTypes = ::testing::Types<
    Vector< float,  Devices::Cuda, long >,
    Vector< double, Devices::Cuda, long >
 #endif
+#ifdef HAVE_MIC
+   ,
+   Vector< int,    Devices::MIC, short >,
+   Vector< long,   Devices::MIC, short >,
+   Vector< float,  Devices::MIC, short >,
+   Vector< double, Devices::MIC, short >,
+   Vector< int,    Devices::MIC, int >,
+   Vector< long,   Devices::MIC, int >,
+   Vector< float,  Devices::MIC, int >,
+   Vector< double, Devices::MIC, int >,
+   Vector< int,    Devices::MIC, long >,
+   Vector< long,   Devices::MIC, long >,
+   Vector< float,  Devices::MIC, long >,
+   Vector< double, Devices::MIC, long >
+#endif
 >;
 
 TYPED_TEST_CASE( VectorTest, VectorTypes );
