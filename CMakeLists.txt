@@ -59,7 +59,7 @@ if( CXX_COMPILER_NAME MATCHES "icpc" )
        message( "Compile MIC support..."    )
        set( MIC_CXX_FLAGS "-DHAVE_MIC")
        # build all tests with MIC support
-       set( CXX_TESTS_FLAGS "${CXX_TESTS_FLAGS} -DHAVE_MIC" )
+       set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} -DHAVE_MIC )
        set( WITH_CUDA "no")
    else()
        set( MIC_CXX_FLAGS "")
