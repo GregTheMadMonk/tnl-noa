@@ -22,12 +22,11 @@
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
 
-#define MIC_STACK_VAR_LIM 5*1024*1024
-
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
+static constexpr std::size_t MIC_STACK_VAR_LIM = 5*1024*1024;
 
 template< typename Element, typename Index >
 void
@@ -318,7 +317,7 @@ compareMemory( const Element1* destination,
 #ifdef HAVE_MIC
    Index compared( 0 );
    Index transfer( 0 );
-   Index max_transfer=MIC_STACK_VAR_LIM/sizeof(Element2);
+   std::size_t max_transfer=MIC_STACK_VAR_LIM/sizeof(Element2);
    uint8_t host_buffer[max_transfer*sizeof(Element2)];
 
    Devices::MICHider<const Element2> src_ptr;
