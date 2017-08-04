@@ -18,8 +18,7 @@ namespace Solvers {
 template< typename Real, typename Index>
 class IterativeSolverMonitor : public SolverMonitor
 {
-   public:
-
+public:
    typedef Index IndexType;
    typedef Real RealType;
 
@@ -39,8 +38,7 @@ class IterativeSolverMonitor : public SolverMonitor
  
    virtual void refresh( bool force = false );
 
-   protected:
-
+protected:
    int getLineWidth();
 
    RealType time;

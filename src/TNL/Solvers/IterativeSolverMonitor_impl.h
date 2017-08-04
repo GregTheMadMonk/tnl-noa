@@ -13,10 +13,14 @@
 #include <iomanip>
 #include <limits>
 
+// make sure to include the config before the check
+#include <TNL/tnlConfig.h>
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #include <unistd.h>
 #endif
+
+#include <TNL/Solvers/IterativeSolver.h>
 
 namespace TNL {
 namespace Solvers {   
@@ -81,14 +85,32 @@ void IterativeSolverMonitor< Real, Index > :: refresh( bool force )
       const int line_width = this->getLineWidth();
       int free = line_width ? line_width : std::numeric_limits<int>::max();
 
-      // FIXME: std::setw sets only minimum width, so free should be adjusted dynamically if more chars are actually written
-      std::cout << std::setprecision( 5 );
-      std::cout << "\33[2K\r ELA:" << std::setw( 8 ) << this->getElapsedTime()
-                << " T:"   << std::setw( 8 ) << this->time;
-      free -= 24;
+      auto real_to_string = []( Real value, int precision = 6 ) {
+         std::stringstream stream;
+         stream << std::setprecision( precision ) << value;
+         return stream.str();
+      };
+
+      auto print_item = [&free]( const std::string& item, int width = 0 ) {
+         width = min( free, (width) ? width : item.length() );
+         std::cout << std::setw( width ) << item.substr( 0, width );
+         free -= width;
+      };
+
+      // \33[2K erases the current line, see https://stackoverflow.com/a/35190285
+      std::cout << "\33[2K\r";
+
+      // FIXME: nvcc 8.0 ignores default parameter values for lambda functions in template functions, so we have to pass the defaults
+//      print_item( " ELA:" );
+      print_item( " ELA:", 0 );
+      print_item( real_to_string( this->getElapsedTime(), 5 ), 8 );
+//      print_item( " T:" );
+      print_item( " T:", 0 );
+      print_item( real_to_string( this->time, 5 ), 8 );
       if( this->timeStep > 0 ) {
-         std::cout << " TAU:" << std::setw( 8 ) << this->timeStep;
-         free -= 13;
+//         print_item( " TAU:" );
+         print_item( " TAU:", 0 );
+         print_item( real_to_string( this->timeStep, 5 ), 8 );
       }
 
       if( this->stage.length() && free > 5 ) {
@@ -103,17 +125,17 @@ void IterativeSolverMonitor< Real, Index > :: refresh( bool force )
       }
 
       if( this->iterations > 0 && free >= 14 ) {
-         std::cout << " ITER:" << std::setw( 8 ) << this->iterations;
-         free -= 14;
+//         print_item( " ITER:" );
+         print_item( " ITER:", 0 );
+         print_item( std::to_string( this->iterations ), 8 );
       }
       if( this->residue && free >= 17 ) {
-         std::cout << " RES:" << std::setprecision( 5 ) << std::setw( 12 ) << this->residue;
-         free -= 17;
+//         print_item( " RES:" );
+         print_item( " RES:", 0 );
+         print_item( real_to_string( this->residue, 5 ), 12 );
       }
 
-      // fill the rest of the line with spaces to clear previous content
-      //while( line_width && free-- > 8 )
-      //   std::cout << " ";
+      // return to the beginning of the line
       std::cout << "\r" << std::flush;
    }
 }
