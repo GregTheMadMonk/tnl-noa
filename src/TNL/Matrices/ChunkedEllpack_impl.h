@@ -14,10 +14,6 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
 
-#ifdef HAVE_CUDA
-#include <cuda.h>
-#endif
-
 namespace TNL {
 namespace Matrices {   
 
@@ -62,25 +58,38 @@ String ChunkedEllpack< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool ChunkedEllpack< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                                    const IndexType columns )
+String ChunkedEllpack< Real, Device, Index >::getSerializationType()
+{
+   return getType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+String ChunkedEllpack< Real, Device, Index >::getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void ChunkedEllpack< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                           const IndexType columns )
 {
    TNL_ASSERT( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
-   if( ! Sparse< Real, Device, Index >::setDimensions( rows, columns ) )
-      return false;
+   Sparse< Real, Device, Index >::setDimensions( rows, columns );
 
    /****
     * Allocate slice info array. Note that there cannot be
     * more slices than rows.
     */
-   if( ! this->slices.setSize( this->rows ) ||
-       ! this->rowToChunkMapping.setSize( this-> rows ) ||
-       ! this->rowToSliceMapping.setSize( this->rows ) ||
-       ! this->rowPointers.setSize( this->rows + 1 ) )
-      return false;
-   return true;
+   this->slices.setSize( this->rows );
+   this->rowToChunkMapping.setSize( this-> rows );
+   this->rowToSliceMapping.setSize( this->rows );
+   this->rowPointers.setSize( this->rows + 1 );
 }
 
 template< typename Real,
@@ -206,10 +215,11 @@ bool ChunkedEllpack< Real, Device, Index >::setSlice( const CompressedRowLengths
 template< typename Real,
           typename Device,
           typename Index >
-bool ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
-   TNL_ASSERT( this->getRows() > 0, );
-   TNL_ASSERT( this->getColumns() > 0, );
+   TNL_ASSERT_GT( this->getRows(), 0, "cannot set row lengths of an empty matrix" );
+   TNL_ASSERT_GT( this->getColumns(), 0, "cannot set row lengths of an empty matrix" );
+   TNL_ASSERT_EQ( this->getRows(), rowLengths.getSize(), "wrong size of the rowLengths vector" );
 
    IndexType elementsToAllocation( 0 );
 
@@ -245,7 +255,7 @@ bool ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( const Compr
       elementsToAllocation = hostMatrix.values.getSize();
    }
    this->maxRowLength = rowLengths.max();
-   return Sparse< Real, Device, Index >::allocateMatrixElements( elementsToAllocation );
+   Sparse< Real, Device, Index >::allocateMatrixElements( elementsToAllocation );
 }
 
 template< typename Real,
@@ -253,9 +263,21 @@ template< typename Real,
           typename Index >
 Index ChunkedEllpack< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
-   const IndexType& sliceIndex = rowToSliceMapping[ row ];
+   const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
    TNL_ASSERT( sliceIndex < this->rows, );
    const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
+   return rowPointers.getElement( row + 1 ) - rowPointers.getElement( row );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Index ChunkedEllpack< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
+{
+   const IndexType& sliceIndex = rowToSliceMapping[ row ];
+   TNL_ASSERT( sliceIndex < this->rows, );
+   const IndexType& chunkSize = slices[ sliceIndex ].chunkSize;
    return rowPointers[ row + 1 ] - rowPointers[ row ];
 }
 
@@ -265,16 +287,14 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool ChunkedEllpack< Real, Device, Index >::setLike( const ChunkedEllpack< Real2, Device2, Index2 >& matrix )
+void ChunkedEllpack< Real, Device, Index >::setLike( const ChunkedEllpack< Real2, Device2, Index2 >& matrix )
 {
    this->chunksInSlice = matrix.chunksInSlice;
    this->desiredChunkSize = matrix.desiredChunkSize;
-   if( ! Sparse< Real, Device, Index >::setLike( matrix ) ||
-       ! this->rowToChunkMapping.setLike( matrix.rowToChunkMapping ) ||
-       ! this->rowToSliceMapping.setLike( matrix.rowToSliceMapping ) ||
-       ! this->slices.setLike( matrix.slices ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::setLike( matrix );
+   this->rowToChunkMapping.setLike( matrix.rowToChunkMapping );
+   this->rowToSliceMapping.setLike( matrix.rowToSliceMapping );
+   this->slices.setLike( matrix.slices );
 }
 
 template< typename Real,
@@ -916,7 +936,7 @@ getRow( const IndexType rowIndex )
 {
    const IndexType rowOffset = this->rowPointers[ rowIndex ];
    const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
-   return MatrixRow( &this->columns[ rowOffset ],
+   return MatrixRow( &this->columnIndexes[ rowOffset ],
                      &this->values[ rowOffset ],
                      rowLength,
                      1 );
@@ -926,13 +946,13 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-const typename ChunkedEllpack< Real, Device, Index >::MatrixRow
+typename ChunkedEllpack< Real, Device, Index >::ConstMatrixRow
 ChunkedEllpack< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
    const IndexType rowOffset = this->rowPointers[ rowIndex ];
    const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
-   return MatrixRow( &this->columns[ rowOffset ],
+   return MatrixRow( &this->columnIndexes[ rowOffset ],
                      &this->values[ rowOffset ],
                      rowLength,
                      1 );
@@ -1171,6 +1191,46 @@ bool ChunkedEllpack< Real, Device, Index >::performSORIteration( const Vector& b
 }
 
 
+// copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+ChunkedEllpack< Real, Device, Index >&
+ChunkedEllpack< Real, Device, Index >::operator=( const ChunkedEllpack& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
+   this->chunksInSlice = matrix.chunksInSlice;
+   this->desiredChunkSize = matrix.desiredChunkSize;
+   this->rowToChunkMapping = matrix.rowToChunkMapping;
+   this->rowToSliceMapping = matrix.rowToSliceMapping;
+   this->rowPointers = matrix.rowPointers;
+   this->slices = matrix.slices;
+   this->numberOfSlices = matrix.numberOfSlices;
+   return *this;
+}
+
+// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2, typename Device2, typename Index2, typename >
+ChunkedEllpack< Real, Device, Index >&
+ChunkedEllpack< Real, Device, Index >::operator=( const ChunkedEllpack< Real2, Device2, Index2 >& matrix )
+{
+   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
+                  "unknown device" );
+   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
+                  "unknown device" );
+
+   this->setLike( matrix );
+
+   std::cerr << "Cross-device assignment for the ChunkedEllpack format is not implemented yet." << std::endl;
+   throw 1;
+}
+
+
 template< typename Real,
           typename Device,
           typename Index >
@@ -1395,7 +1455,7 @@ class ChunkedEllpackDeviceDependentCode< Devices::Cuda >
             Devices::Cuda::freeFromDevice( kernel_this );
             Devices::Cuda::freeFromDevice( kernel_inVector );
             Devices::Cuda::freeFromDevice( kernel_outVector );
-            checkCudaDevice;
+            TNL_CHECK_CUDA_DEVICE;
          #endif
       }
 

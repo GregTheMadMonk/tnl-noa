@@ -11,23 +11,27 @@
 #pragma once
 
 #include <TNL/Containers/StaticArray.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
 namespace Containers {   
 
 template< int Size, typename Real = double >
-class StaticVector : public Containers::StaticArray< Size, Real >
+class StaticVector : public StaticArray< Size, Real >
 {
    public:
    typedef Real RealType;
    typedef StaticVector< Size, Real > ThisType;
    enum { size = Size };
 
-   using Containers::StaticArray< Size, Real >::operator=;
-   
+   using StaticArray< Size, Real >::operator=;
+
    __cuda_callable__
    StaticVector();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    StaticVector( const Real v[ Size ] );
 
@@ -38,7 +42,7 @@ class StaticVector : public Containers::StaticArray< Size, Real >
    //! Copy constructor
    __cuda_callable__
    StaticVector( const StaticVector< Size, Real >& v );
-   
+
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );      
 
@@ -87,24 +91,32 @@ class StaticVector : public Containers::StaticArray< Size, Real >
    template< typename OtherReal >
    __cuda_callable__
    operator StaticVector< Size, OtherReal >() const;
- 
+
    __cuda_callable__
    ThisType abs() const;
-   
+
    __cuda_callable__
    Real lpNorm( const Real& p ) const;
 };
 
 template< typename Real >
-class StaticVector< 1, Real > : public Containers::StaticArray< 1, Real >
+class StaticVector< 1, Real > : public StaticArray< 1, Real >
 {
    public:
    typedef Real RealType;
    typedef StaticVector< 1, Real > ThisType;
    enum { size = 1 };
-   
+
+   using StaticArray< 1, Real >::operator=;
+
    __cuda_callable__
    StaticVector();
+
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
+   __cuda_callable__
+   StaticVector( const Real v[ 1 ] );
 
    //! This sets all vector components to v
    __cuda_callable__
@@ -165,22 +177,27 @@ class StaticVector< 1, Real > : public Containers::StaticArray< 1, Real >
  
    __cuda_callable__
    ThisType abs() const;
-   
+
    __cuda_callable__
    Real lpNorm( const Real& p ) const;   
 };
 
 template< typename Real >
-class StaticVector< 2, Real > : public Containers::StaticArray< 2, Real >
+class StaticVector< 2, Real > : public StaticArray< 2, Real >
 {
    public:
    typedef Real RealType;
    typedef StaticVector< 2, Real > ThisType;
    enum { size = 2 };
-   
+
+   using StaticArray< 2, Real >::operator=;
+
    __cuda_callable__
    StaticVector();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    StaticVector( const Real v[ 2 ] );
 
@@ -246,22 +263,27 @@ class StaticVector< 2, Real > : public Containers::StaticArray< 2, Real >
  
    __cuda_callable__
    ThisType abs() const;
-   
+
    __cuda_callable__
    Real lpNorm( const Real& p ) const;   
 };
 
 template< typename Real >
-class StaticVector< 3, Real > : public Containers::StaticArray< 3, Real >
+class StaticVector< 3, Real > : public StaticArray< 3, Real >
 {
    public:
    typedef Real RealType;
    typedef StaticVector< 3, Real > ThisType;
    enum { size = 3 };
-   
+
+   using StaticArray< 3, Real >::operator=;
+
    __cuda_callable__
    StaticVector();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    StaticVector( const Real v[ 3 ] );
 
@@ -327,7 +349,7 @@ class StaticVector< 3, Real > : public Containers::StaticArray< 3, Real >
  
    __cuda_callable__
    ThisType abs() const;
-   
+
    __cuda_callable__
    Real lpNorm( const Real& p ) const;   
 };
@@ -362,21 +384,21 @@ StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
    p[ 1 ] = u[ 2 ] * v[ 0 ] - u[ 0 ] * v[ 2 ];
    p[ 2 ] = u[ 0 ] * v[ 1 ] - u[ 1 ] * v[ 0 ];
    return p;
-};
+}
 
 template< typename Real >
 Real tnlScalarProduct( const StaticVector< 2, Real >& u,
                        const StaticVector< 2, Real >& v )
 {
    return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ];
-};
+}
 
 template< typename Real >
 Real tnlScalarProduct( const StaticVector< 3, Real >& u,
                        const StaticVector< 3, Real >& v )
 {
    return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ] + u[ 2 ] * v[ 2 ];
-};
+}
 
 template< typename Real >
 Real tnlTriangleArea( const StaticVector< 2, Real >& a,
@@ -392,8 +414,8 @@ Real tnlTriangleArea( const StaticVector< 2, Real >& a,
    u2. z() = 0;
 
    const StaticVector< 3, Real > v = VectorProduct( u1, u2 );
-   return 0.5 * ::sqrt( tnlScalarProduct( v, v ) );
-};
+   return 0.5 * TNL::sqrt( tnlScalarProduct( v, v ) );
+}
 
 template< typename Real >
 Real tnlTriangleArea( const StaticVector< 3, Real >& a,
@@ -409,8 +431,8 @@ Real tnlTriangleArea( const StaticVector< 3, Real >& a,
    u2. z() = c. z() - a. z();
 
    const StaticVector< 3, Real > v = VectorProduct( u1, u2 );
-   return 0.5 * ::sqrt( tnlScalarProduct( v, v ) );
-};
+   return 0.5 * TNL::sqrt( tnlScalarProduct( v, v ) );
+}
 
 } // namespace Containers
 } // namespace TNL

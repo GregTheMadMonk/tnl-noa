@@ -12,7 +12,7 @@
 # Vladimir Klement
 # Jakub Klinkovsky
 
-cmake_minimum_required( VERSION 3.4 )
+cmake_minimum_required( VERSION 3.5.1 )
 
 project( tnl )
 
@@ -21,28 +21,25 @@ set( tnlVersion "0.1" )
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 include( OptimizeForArchitecture )
-include( UseCodeCoverage )
 
 ####
 # Settings for debug/release version
 #
 if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Debug/src/TNL )
-    set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Debug/src/Tests )
+    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Debug/src )
     set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( debugExt -dbg )
 else()
-    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src/TNL )
-    set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Release/src/Tests )
+    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
     set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Release/bin )
-    set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
-    set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
+    set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib )
+    set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin )
 endif()
 
 # set Debug/Release options
-set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
+set( CMAKE_CXX_FLAGS "-std=c++11 -pthread -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG" )
 #set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
@@ -54,7 +51,19 @@ set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE "" )
 get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
 if( CXX_COMPILER_NAME MATCHES "icpc" )
    message( "Intel compiler detected..."    )
-   set( CMAKE_CXX_FLAGS "${CXXFLAGS} -DHAVE_ICPC ")
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_ICPC -wd2568 -wd2571 -wd2570")
+   #####
+   #  Ckeck for MIC 
+   #
+   if( WITH_MIC STREQUAL "yes" )
+       message( "Compile MIC support..."    )
+       set( MIC_CXX_FLAGS "-DHAVE_MIC")
+       # build all tests with MIC support
+       set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} -DHAVE_MIC )
+       set( WITH_CUDA "no")
+   else()
+       set( MIC_CXX_FLAGS "")
+   endif( )	
 endif()
 
 #####
@@ -67,12 +76,19 @@ if( WITH_CUDA STREQUAL "yes" )
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
         set(BUILD_SHARED_LIBS ON)
         set(CUDA_SEPARABLE_COMPILATION ON)        
+        # Use the CUDA_HOST_COMPILER environment variable if the user specified it.
+        if( NOT $ENV{CUDA_HOST_COMPILER} STREQUAL "" )
+            message( "-- Setting CUDA_HOST_COMPILER to '$ENV{CUDA_HOST_COMPILER}'" )
+            set( CUDA_HOST_COMPILER $ENV{CUDA_HOST_COMPILER} )
+        else()
+            message( "-- Setting CUDA_HOST_COMPILER to '${CMAKE_CXX_COMPILER}'" )
+            set( CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} )
+        endif()
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA)
         # disable false compiler warnings
         #   reference for the -Xcudafe flag: http://stackoverflow.com/questions/14831051/how-to-disable-compiler-warnings-with-nvcc/17095910#17095910
         #   list of possible tokens: http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Wno-deprecated-gpu-targets --expt-relaxed-constexpr -Xcudafe "\"--diag_suppress=code_is_unreachable --diag_suppress=implicit_return_from_non_void_function\"")
-        #AddCompilerFlag( "-DHAVE_NOT_CXX11" ) # -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Wno-deprecated-gpu-targets --expt-relaxed-constexpr --expt-extended-lambda -Xcudafe "\"--diag_suppress=code_is_unreachable --diag_suppress=implicit_return_from_non_void_function\"")
         set( ALL_CUDA_ARCHS -gencode arch=compute_20,code=sm_20
                             -gencode arch=compute_30,code=sm_30
                             -gencode arch=compute_32,code=sm_32 
@@ -115,9 +131,6 @@ if( WITH_CUDA STREQUAL "yes" )
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES )
         # TODO: this is necessary only due to a bug in cmake
         set( CUDA_ADD_LIBRARY_OPTIONS -shared )
-        # TODO: workaround for a bug in cmake 3.5.0 (fixed in 3.5.1)
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -ccbin "${CMAKE_CXX_COMPILER}" )
-        set( CUDA_HOST_COMPILER "" )
 
         ####
         # Check for cuBLAS
@@ -234,7 +247,7 @@ if( ${SYS_TIME_INCLUDE_DIR} STREQUAL "SYS_TIME_INCLUDE_DIR-NOTFOUND" )
     message(  "Missing header file sys/time.h" )
     set( HAVE_SYS_TIME_H "//#define HAVE_SYS_TIME_H 1" )
 else()
-    include_directories( ${SYS_TIME_INCLUDE_DIR}/tnl-${tnlVersion} )
+    #include_directories( ${SYS_TIME_INCLUDE_DIR} )
     set( HAVE_SYS_TIME_H "#define HAVE_SYS_TIME_H 1" )
 endif()
 
@@ -246,7 +259,7 @@ if( ${SYS_RESOURCE_INCLUDE_DIR} STREQUAL "SYS_RESOURCE_INCLUDE_DIR-NOTFOUND" )
     message( "Missing header file sys/time.h" )
     set( HAVE_SYS_RESOURCE_H "//#define HAVE_SYS_RESOURCE_H 1" )
 else()
-    include_directories( ${SYS_RESOURCE_INCLUDE_DIR}/tnl-${tnlVersion} )
+    #include_directories( ${SYS_RESOURCE_INCLUDE_DIR} )
     set( HAVE_SYS_RESOURCE_H "#define HAVE_SYS_RESOURCE_H 1" )
 endif()
 
@@ -258,15 +271,20 @@ if( ${SYS_IOCTL_INCLUDE_DIR} STREQUAL "SYS_IOCTL_INCLUDE_DIR-NOTFOUND" )
     message( "Missing header file sys/time.h" )
     set( HAVE_SYS_IOCTL_H "//#define HAVE_SYS_IOCTL_H 1" )
 else()
-    include_directories( ${SYS_IOCTL_INCLUDE_DIR}/tnl-${tnlVersion} )
+    #include_directories( ${SYS_IOCTL_INCLUDE_DIR} )
     set( HAVE_SYS_IOCTL_H "#define HAVE_SYS_IOCTL_H 1" )
 endif()
 
 if( WITH_TESTS STREQUAL "yes" )
-   find_package( GTest )
-   if( GTEST_FOUND )
-      set( CXX_TESTS_FLAGS "-DHAVE_GTEST" )
-   endif( GTEST_FOUND )
+   enable_testing()
+
+   # build gtest libs
+   include( BuildGtest )
+
+   if( WITH_COVERAGE STREQUAL "yes" AND CMAKE_BUILD_TYPE STREQUAL "Debug" )
+      # enable code coverage reports
+      include( UseCodeCoverage )
+   endif()
 endif( WITH_TESTS STREQUAL "yes" )
 
 find_package( PythonInterp 3 )
@@ -327,9 +345,6 @@ if( OPTIMIZED_VECTOR_HOST_OPERATIONS STREQUAL "yes" )
    AddCompilerFlag( "-DOPTIMIZED_VECTOR_HOST_OPERATIONS " )
 endif()
 
-set( CXX_TEST_FLAGS "-fprofile-arcs -ftest-coverage" )
-set( LD_TEST_FLAGS "-lgcov -coverage" )
-
 set( configDirectory \"${CMAKE_INSTALL_PREFIX}/share/tnl-${tnlVersion}/\")
 set( sourceDirectory \"${PROJECT_SOURCE_DIR}/\" )
 set( testsDirectory \"${PROJECT_TESTS_PATH}/\" )
@@ -342,7 +357,6 @@ endif( PYTHONINTERP_FOUND )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )
-INCLUDE_DIRECTORIES( tests )
 INCLUDE_DIRECTORIES( ${PROJECT_BUILD_PATH} )
 LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
@@ -350,7 +364,10 @@ LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 add_subdirectory( src )
 add_subdirectory( share )
 add_subdirectory( tests )
-add_subdirectory( examples )
+
+if( WITH_EXAMPLES STREQUAL "yes" )
+   add_subdirectory( examples )
+endif()
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")
 set(CPACK_PACKAGE_VENDOR "MMG")

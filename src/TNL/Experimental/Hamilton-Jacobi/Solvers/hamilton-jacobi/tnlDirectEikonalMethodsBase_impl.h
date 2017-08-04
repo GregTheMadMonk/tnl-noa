@@ -30,10 +30,10 @@ initInterface( const MeshFunctionType& input,
       const RealType& c = input( cell );      
       if( ! cell.isBoundaryEntity()  )
       {
-         const auto& neighbours = cell.getNeighbourEntities();
+         const auto& neighbors = cell.getNeighborEntities();
          //const IndexType& c = cell.getIndex();
-         const IndexType e = neighbours.template getEntityIndex<  1 >();
-         const IndexType w = neighbours.template getEntityIndex< -1 >();
+         const IndexType e = neighbors.template getEntityIndex<  1 >();
+         const IndexType w = neighbors.template getEntityIndex< -1 >();
 
          if( c * input[ e ] <= 0 || c * input[ w ] <= 0 )
          {
@@ -84,11 +84,11 @@ initInterface( const MeshFunctionType& input,
          const RealType& c = input( cell );
          if( ! cell.isBoundaryEntity()  )
          {
-            auto neighbours = cell.getNeighbourEntities();
-            const IndexType e = neighbours.template getEntityIndex<  1,  0 >();
-            const IndexType w = neighbours.template getEntityIndex< -1,  0 >();
-            const IndexType n = neighbours.template getEntityIndex<  0,  1 >();
-            const IndexType s = neighbours.template getEntityIndex<  0, -1 >();            
+            auto neighbors = cell.getNeighborEntities();
+            const IndexType e = neighbors.template getEntityIndex<  1,  0 >();
+            const IndexType w = neighbors.template getEntityIndex< -1,  0 >();
+            const IndexType n = neighbors.template getEntityIndex<  0,  1 >();
+            const IndexType s = neighbors.template getEntityIndex<  0, -1 >();            
             if( c * input[ e ] <= 0 || c * input[ w ] <= 0 ||
                 c * input[ n ] <= 0 || c * input[ s ] <= 0 )
             {
@@ -113,7 +113,7 @@ tnlDirectEikonalMethodsBase< tnlGrid< 2, Real, Device, Index > >::
 updateCell( MeshFunctionType& u,
             const MeshEntity& cell )
 {
-   const auto& neighbourEntities = cell.template getNeighbourEntities< 2 >();
+   const auto& neighborEntities = cell.template getNeighborEntities< 2 >();
    const MeshType& mesh = cell.getMesh();
   
    const RealType& h = mesh.getSpaceSteps().x(); 
@@ -121,23 +121,23 @@ updateCell( MeshFunctionType& u,
    Real a, b, tmp;
 
    if( cell.getCoordinates().x() == 0 )
-      a = u[ neighbourEntities.template getEntityIndex< 1,  0 >() ];
+      a = u[ neighborEntities.template getEntityIndex< 1,  0 >() ];
    else if( cell.getCoordinates().x() == mesh.getDimensions().x() - 1 )
-      a = u[ neighbourEntities.template getEntityIndex< -1,  0 >() ];
+      a = u[ neighborEntities.template getEntityIndex< -1,  0 >() ];
    else
    {
-      a = ArgAbsMin( u[ neighbourEntities.template getEntityIndex< -1,  0 >() ],
-                     u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] );
+      a = ArgAbsMin( u[ neighborEntities.template getEntityIndex< -1,  0 >() ],
+                     u[ neighborEntities.template getEntityIndex<  1,  0 >() ] );
    }
 
    if( cell.getCoordinates().y() == 0 )
-      b = u[ neighbourEntities.template getEntityIndex< 0,  1 >()];
+      b = u[ neighborEntities.template getEntityIndex< 0,  1 >()];
    else if( cell.getCoordinates().y() == mesh.getDimensions().y() - 1 )
-      b = u[ neighbourEntities.template getEntityIndex< 0,  -1 >() ];
+      b = u[ neighborEntities.template getEntityIndex< 0,  -1 >() ];
    else
    {
-      b = ArgAbsMin( u[ neighbourEntities.template getEntityIndex< 0,  -1 >() ],
-                     u[ neighbourEntities.template getEntityIndex< 0,   1 >() ] );
+      b = ArgAbsMin( u[ neighborEntities.template getEntityIndex< 0,  -1 >() ],
+                     u[ neighborEntities.template getEntityIndex< 0,   1 >() ] );
    }
 
    if( fabs( a ) == tnlTypeInfo< Real >::getMaxValue() && 
@@ -195,14 +195,14 @@ initInterface( const MeshFunctionType& input,
             const RealType& c = input( cell );
             if( ! cell.isBoundaryEntity() )
             {
-               auto neighbours = cell.getNeighbourEntities();
+               auto neighbors = cell.getNeighborEntities();
                //const IndexType& c = cell.getIndex();
-               const IndexType e = neighbours.template getEntityIndex<  1,  0,  0 >();
-               const IndexType w = neighbours.template getEntityIndex< -1,  0,  0 >();
-               const IndexType n = neighbours.template getEntityIndex<  0,  1,  0 >();
-               const IndexType s = neighbours.template getEntityIndex<  0, -1,  0 >();
-               const IndexType t = neighbours.template getEntityIndex<  0,  0,  1 >();
-               const IndexType b = neighbours.template getEntityIndex<  0,  0, -1 >();
+               const IndexType e = neighbors.template getEntityIndex<  1,  0,  0 >();
+               const IndexType w = neighbors.template getEntityIndex< -1,  0,  0 >();
+               const IndexType n = neighbors.template getEntityIndex<  0,  1,  0 >();
+               const IndexType s = neighbors.template getEntityIndex<  0, -1,  0 >();
+               const IndexType t = neighbors.template getEntityIndex<  0,  0,  1 >();
+               const IndexType b = neighbors.template getEntityIndex<  0,  0, -1 >();
 
                if( c * input[ e ] <= 0 || c * input[ w ] <= 0 ||
                    c * input[ n ] <= 0 || c * input[ s ] <= 0 ||

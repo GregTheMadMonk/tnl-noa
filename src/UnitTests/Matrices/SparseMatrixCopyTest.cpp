@@ -1,12 +1,11 @@
 /***************************************************************************
-                          StaticArrayTest.cu  -  description
+                          SparseMatrixCopyTest.cpp  -  description
                              -------------------
-    begin                : Feb 10, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    begin                : Jun 25, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "StaticArrayTest.h"
-
+#include "SparseMatrixCopyTest.h"

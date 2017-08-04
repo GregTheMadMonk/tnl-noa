@@ -93,7 +93,7 @@ template< typename MeshReal,
 bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: initGrid()
 {
 
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	for(int i=0; i< Mesh.getDimensions().x()*Mesh.getDimensions().x();i++)
 	{
 		dofVector2[i]=INT_MAX*sign(dofVector[i]);
@@ -105,22 +105,22 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 			{
 			this->Entity.setCoordinates(CoordinatesType(i,j));
 			this->Entity.refresh();
-			neighbourEntities.refresh(Mesh,Entity.getIndex());
+			neighborEntities.refresh(Mesh,Entity.getIndex());
 
 				if(dofVector[this->Entity.getIndex()] > 0)
 				{
-					if(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
+					if(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()] > 0)
 					{
-						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+						if(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()] > 0)
 						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+							if(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare1111(i,j);
 							else
 								setupSquare1110(i,j);
 						}
 						else
 						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+							if(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare1101(i,j);
 							else
 								setupSquare1100(i,j);
@@ -128,16 +128,16 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 					}
 					else
 					{
-						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+						if(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()] > 0)
 						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+							if(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare1011(i,j);
 							else
 								setupSquare1010(i,j);
 						}
 						else
 						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+							if(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare1001(i,j);
 							else
 								setupSquare1000(i,j);
@@ -146,18 +146,18 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 				}
 				else
 				{
-					if(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
+					if(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()] > 0)
 					{
-						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+						if(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()] > 0)
 						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+							if(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare0111(i,j);
 							else
 								setupSquare0110(i,j);
 						}
 						else
 						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+							if(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare0101(i,j);
 							else
 								setupSquare0100(i,j);
@@ -165,16 +165,16 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 					}
 					else
 					{
-						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+						if(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()] > 0)
 						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+							if(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare0011(i,j);
 							else
 								setupSquare0010(i,j);
 						}
 						else
 						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+							if(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare0001(i,j);
 							else
 								setupSquare0000(i,j);
@@ -397,29 +397,29 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: u
 
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 
 	Real value = dofVector2[Entity.getIndex()];
 	Real a,b, tmp;
 
 	if( i == 0 )
-		a = dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()];
+		a = dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()];
 	else if( i == Mesh.getDimensions().x() - 1 )
-		a = dofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
+		a = dofVector2[neighborEntities.template getEntityIndex< -1,  0 >()];
 	else
 	{
-		a = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()],
-				 dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()] );
+		a = fabsMin( dofVector2[neighborEntities.template getEntityIndex< -1,  0 >()],
+				 dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()] );
 	}
 
 	if( j == 0 )
-		b = dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()];
+		b = dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()];
 	else if( j == Mesh.getDimensions().y() - 1 )
-		b = dofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()];
+		b = dofVector2[neighborEntities.template getEntityIndex< 0,  -1 >()];
 	else
 	{
-		b = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()],
-				 dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()] );
+		b = fabsMin( dofVector2[neighborEntities.template getEntityIndex< 0,  -1 >()],
+				 dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()] );
 	}
 
 
@@ -466,11 +466,11 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 //	this->Entity.setCoordinates(CoordinatesType(i,j));
 //	this->Entity.refresh();
-//	auto neighbourEntities =  Entity.getNeighbourEntities();
+//	auto neighborEntities =  Entity.getNeighborEntities();
 //	dofVector2[Entity.getIndex()]=fabsMin(INT_MAX,dofVector2[Entity.getIndex()]);
-//	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-//	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-//	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+//	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(INT_MAX,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+//	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(INT_MAX,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+//	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(INT_MAX,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -484,11 +484,11 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 //	this->Entity.setCoordinates(CoordinatesType(i,j));
 //	this->Entity.refresh();
-//	auto neighbourEntities =  Entity.getNeighbourEntities();
+//	auto neighborEntities =  Entity.getNeighborEntities();
 //	dofVector2[Entity.getIndex()]=fabsMin(-INT_MAX,dofVector2[(Entity.getIndex())]);
-//	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-//	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-//	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+//	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-INT_MAX,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+//	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-INT_MAX,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+//	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-INT_MAX,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -502,15 +502,15 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]));
+	al=abs(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]/
+			(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]-
+			 dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]));
 
-	be=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]));
+	be=abs(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]/
+			(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]-
+			 dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -519,9 +519,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	dofVector2[Entity.getIndex()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -534,15 +534,15 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
+	al=abs(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]/
+			(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]));
 
-	be=abs(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
+	be=abs(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]/
 			(dofVector[Entity.getIndex()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
+			 dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -551,9 +551,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	dofVector2[Entity.getIndex()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -566,15 +566,15 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
+	al=abs(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]/
 			(dofVector[Entity.getIndex()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
+			 dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]));
 
-	be=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
+	be=abs(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]/
+			(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -583,9 +583,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	dofVector2[Entity.getIndex()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -598,14 +598,14 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	Real al,be, a,b,c,s;
 	al=abs(dofVector[Entity.getIndex()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]-
 			 dofVector[Entity.getIndex()]));
 
 	be=abs(dofVector[Entity.getIndex()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]-
 			 dofVector[Entity.getIndex()]));
 
 	a = be/al;
@@ -615,9 +615,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	dofVector2[Entity.getIndex()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -631,15 +631,15 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]));
+	al=abs(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]/
+			(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]-
+			 dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]));
 
-	be=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]));
+	be=abs(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]/
+			(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]-
+			 dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -648,9 +648,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	dofVector2[Entity.getIndex()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -663,15 +663,15 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
+	al=abs(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]/
+			(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]));
 
-	be=abs(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
+	be=abs(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]/
 			(dofVector[Entity.getIndex()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
+			 dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -680,9 +680,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	dofVector2[Entity.getIndex()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -695,15 +695,15 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
+	al=abs(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]/
 			(dofVector[Entity.getIndex()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
+			 dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]));
 
-	be=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
+	be=abs(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]/
+			(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -712,9 +712,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	dofVector2[Entity.getIndex()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -727,14 +727,14 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	Real al,be, a,b,c,s;
 	al=abs(dofVector[Entity.getIndex()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]-
 			 dofVector[Entity.getIndex()]));
 
 	be=abs(dofVector[Entity.getIndex()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]-
 			 dofVector[Entity.getIndex()]));
 
 	a = be/al;
@@ -744,9 +744,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	dofVector2[Entity.getIndex()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -763,15 +763,15 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	Real al,be, a,b,c,s;
 	al=abs(dofVector[Entity.getIndex()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]-
 			 dofVector[Entity.getIndex()]));
 
-	be=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
+	be=abs(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]/
+			(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]));
 
 	a = al-be;
 	b=1.0;
@@ -780,9 +780,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	dofVector2[Entity.getIndex()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -795,15 +795,15 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	Real al,be, a,b,c,s;
 	al=abs(dofVector[Entity.getIndex()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]-
 			 dofVector[Entity.getIndex()]));
 
-	be=abs(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
+	be=abs(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]/
+			(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]));
 
 	a = al-be;
 	b=1.0;
@@ -812,9 +812,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	dofVector2[Entity.getIndex()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -827,11 +827,11 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	dofVector2[Entity.getIndex()]=fabsMin(dofVector[Entity.getIndex()],dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()],dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()],dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()],dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()],dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()],dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()],dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -850,15 +850,15 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	Real al,be, a,b,c,s;
 	al=abs(dofVector[Entity.getIndex()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]-
 			 dofVector[Entity.getIndex()]));
 
-	be=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
+	be=abs(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]/
+			(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]));
 
 	a = al-be;
 	b=1.0;
@@ -867,9 +867,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	dofVector2[Entity.getIndex()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -882,15 +882,15 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	Real al,be, a,b,c,s;
 	al=abs(dofVector[Entity.getIndex()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()]-
 			 dofVector[Entity.getIndex()]));
 
-	be=abs(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
-			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
+	be=abs(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]/
+			(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighborEntities.template getEntityIndex< 0,  1 >()]));
 
 	a = al-be;
 	b=1.0;
@@ -899,9 +899,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	dofVector2[Entity.getIndex()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -914,11 +914,11 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+	auto neighborEntities =  Entity.getNeighborEntities();
 	dofVector2[Entity.getIndex()]=fabsMin(dofVector[Entity.getIndex()],dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()],dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()],dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()],dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(dofVector[neighborEntities.template getEntityIndex< 0,  1 >()],dofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(dofVector[neighborEntities.template getEntityIndex< 1,  1 >()],dofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(dofVector[neighborEntities.template getEntityIndex< 1,  0 >()],dofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 }
 
 

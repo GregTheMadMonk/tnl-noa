@@ -58,17 +58,10 @@ class Cylinder< 1, Real > : public CylinderBase< Real, 1 >
 
       Cylinder();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder,
-                typename Point >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Point = PointType >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;
@@ -92,17 +85,10 @@ class Cylinder< 2, Real > : public CylinderBase< Real, 2 >
 
       Cylinder();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder,
-                typename Point >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Point = PointType >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;
@@ -126,17 +112,10 @@ class Cylinder< 3, Real > : public CylinderBase< Real, 3 >
 
       Cylinder();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder,
-                typename Point >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Point = PointType >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;

@@ -55,7 +55,7 @@ BICGStab< Matrix, Preconditioner >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   exact_residue = parameters.getParameter< int >( "bicgstab-exact-residue" );
+   exact_residue = parameters.getParameter< bool >( "bicgstab-exact-residue" );
    return IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }
 
@@ -78,8 +78,7 @@ template< typename Matrix,
    template< typename Vector, typename ResidueGetter >
 bool BICGStab< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 {
-   if( ! this->setSize( matrix->getRows() ) )
-      return false;
+   this->setSize( matrix->getRows() );
 
    RealType alpha, beta, omega, aux, rho, rho_old, b_norm;
 
@@ -193,21 +192,15 @@ bool BICGStab< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 
 template< typename Matrix,
           typename Preconditioner >
-bool BICGStab< Matrix, Preconditioner > :: setSize( IndexType size )
+void BICGStab< Matrix, Preconditioner > :: setSize( IndexType size )
 {
-   if( ! r.setSize( size ) ||
-       ! r_ast.setSize( size ) ||
-       ! p.setSize( size ) ||
-       ! s.setSize( size ) ||
-       ! Ap.setSize( size ) ||
-       ! As.setSize( size ) ||
-       ! M_tmp.setSize( size ) )
-   {
-      std::cerr << "I am not able to allocate all supporting arrays for the BICGStab solver." << std::endl;
-      return false;
-   }
-   return true;
-
+   r.setSize( size );
+   r_ast.setSize( size );
+   p.setSize( size );
+   s.setSize( size );
+   Ap.setSize( size );
+   As.setSize( size );
+   M_tmp.setSize( size );
 }
 
 } // namespace Linear

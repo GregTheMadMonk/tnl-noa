@@ -18,7 +18,7 @@ using namespace std;
 
 #include <TNL/Timer.h>
 
-#define OUTPUT 
+//#define OUTPUT 
 
 #include "Functions.h"
 

@@ -22,7 +22,7 @@ namespace Operators {
 template< typename Mesh,
           int MeshEntityDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType >
+          typename Index = typename Mesh::GlobalIndexType >
 class CoFVMGradientNorm
 {
 };
@@ -118,11 +118,11 @@ class CoFVMGradientNorm< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, 0, Real,
          "The mesh function u must be stored on mesh cells.." );
       static_assert( MeshEntity::getMeshDimension() == 0,
          "The complementary finite volume gradient norm may be evaluated only on faces." );
-      const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.template getNeighbourEntities< 1 >();
+      const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.template getNeighborEntities< 1 >();
  
       const RealType& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1 >();
-      const RealType& u_x = ( u[ neighbourEntities.template getEntityIndex<  1 >() ] -
-                              u[ neighbourEntities.template getEntityIndex< -1 >() ] ) * hxDiv;
+      const RealType& u_x = ( u[ neighborEntities.template getEntityIndex<  1 >() ] -
+                              u[ neighborEntities.template getEntityIndex< -1 >() ] ) * hxDiv;
       return ::sqrt( this->epsSquare + ( u_x * u_x ) );
    }
  
@@ -180,37 +180,37 @@ class CoFVMGradientNorm< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real
          "The mesh function u must be stored on mesh cells.." );
       static_assert( MeshEntity::getMeshDimension() == 1,
          "The complementary finite volume gradient norm may be evaluated only on faces." );
-      const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.template getNeighbourEntities< 2 >();
+      const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.template getNeighborEntities< 2 >();
       const RealType& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1,  0 >();
       const RealType& hyDiv = entity.getMesh().template getSpaceStepsProducts<  0, -1 >();
       if( entity.getOrientation().x() != 0.0 )
       {
          const RealType u_x =
-            ( u[ neighbourEntities.template getEntityIndex<  1, 0 >()] -
-              u[ neighbourEntities.template getEntityIndex< -1, 0 >()] ) * hxDiv;
+            ( u[ neighborEntities.template getEntityIndex<  1, 0 >()] -
+              u[ neighborEntities.template getEntityIndex< -1, 0 >()] ) * hxDiv;
          RealType u_y;
          if( entity.getCoordinates().y() > 0 )
          {
             if( entity.getCoordinates().y() < entity.getMesh().getDimensions().y() - 1 )
                u_y = 0.25 *
-                  ( u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] +
-                    u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] -
-                    u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] -
-                    u[ neighbourEntities.template getEntityIndex< -1, -1 >() ] ) * hyDiv;
+                  ( u[ neighborEntities.template getEntityIndex<  1,  1 >() ] +
+                    u[ neighborEntities.template getEntityIndex< -1,  1 >() ] -
+                    u[ neighborEntities.template getEntityIndex<  1, -1 >() ] -
+                    u[ neighborEntities.template getEntityIndex< -1, -1 >() ] ) * hyDiv;
             else // if( entity.getCoordinates().y() < entity.getMesh().getDimensions().y() - 1 )
                u_y = 0.5 *
-                  ( u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] +
-                    u[ neighbourEntities.template getEntityIndex< -1,  0 >() ] -
-                    u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] -
-                    u[ neighbourEntities.template getEntityIndex< -1, -1 >() ] ) * hyDiv;
+                  ( u[ neighborEntities.template getEntityIndex<  1,  0 >() ] +
+                    u[ neighborEntities.template getEntityIndex< -1,  0 >() ] -
+                    u[ neighborEntities.template getEntityIndex<  1, -1 >() ] -
+                    u[ neighborEntities.template getEntityIndex< -1, -1 >() ] ) * hyDiv;
          }
          else // if( entity.getCoordinates().y() > 0 )
          {
             u_y = 0.5 *
-               ( u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] +
-                 u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] -
-                 u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] -
-                 u[ neighbourEntities.template getEntityIndex< -1,  0 >() ] ) * hyDiv;
+               ( u[ neighborEntities.template getEntityIndex<  1,  1 >() ] +
+                 u[ neighborEntities.template getEntityIndex< -1,  1 >() ] -
+                 u[ neighborEntities.template getEntityIndex<  1,  0 >() ] -
+                 u[ neighborEntities.template getEntityIndex< -1,  0 >() ] ) * hyDiv;
          }
          return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y );
       }
@@ -219,28 +219,28 @@ class CoFVMGradientNorm< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real
       {
          if( entity.getCoordinates().x() < entity.getMesh().getDimensions().x() - 1 )
             u_x = 0.25 *
-            ( u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] +
-              u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] -
-              u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] -
-              u[ neighbourEntities.template getEntityIndex< -1, -1 >() ] ) * hxDiv;
+            ( u[ neighborEntities.template getEntityIndex<  1,  1 >() ] +
+              u[ neighborEntities.template getEntityIndex<  1, -1 >() ] -
+              u[ neighborEntities.template getEntityIndex< -1,  1 >() ] -
+              u[ neighborEntities.template getEntityIndex< -1, -1 >() ] ) * hxDiv;
          else // if( entity.getCoordinates().x() < entity.getMesh().getDimensions().x() - 1 )
             u_x = 0.5 *
-            ( u[ neighbourEntities.template getEntityIndex<  0,  1 >() ] +
-              u[ neighbourEntities.template getEntityIndex<  0, -1 >() ] -
-              u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] -
-              u[ neighbourEntities.template getEntityIndex< -1, -1 >() ] ) * hxDiv;
+            ( u[ neighborEntities.template getEntityIndex<  0,  1 >() ] +
+              u[ neighborEntities.template getEntityIndex<  0, -1 >() ] -
+              u[ neighborEntities.template getEntityIndex< -1,  1 >() ] -
+              u[ neighborEntities.template getEntityIndex< -1, -1 >() ] ) * hxDiv;
       }
       else // if( entity.getCoordinates().x() > 0 )
       {
          u_x = 0.5 *
-            ( u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] +
-              u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] -
-              u[ neighbourEntities.template getEntityIndex<  0,  1 >() ] -
-              u[ neighbourEntities.template getEntityIndex<  0, -1 >() ] ) * hxDiv;
+            ( u[ neighborEntities.template getEntityIndex<  1,  1 >() ] +
+              u[ neighborEntities.template getEntityIndex<  1, -1 >() ] -
+              u[ neighborEntities.template getEntityIndex<  0,  1 >() ] -
+              u[ neighborEntities.template getEntityIndex<  0, -1 >() ] ) * hxDiv;
       }
       const RealType u_y =
-         ( u[ neighbourEntities.template getEntityIndex< 0,  1 >()] -
-           u[ neighbourEntities.template getEntityIndex< 0, -1 >()] ) * hyDiv;
+         ( u[ neighborEntities.template getEntityIndex< 0,  1 >()] -
+           u[ neighborEntities.template getEntityIndex< 0, -1 >()] ) * hyDiv;
       return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y );
    }
  
@@ -296,43 +296,43 @@ class CoFVMGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real
          "The mesh function u must be stored on mesh cells.." );
       static_assert( MeshEntity::getMeshDimension() == 2,
          "The complementary finite volume gradient norm may be evaluated only on faces." );
-      const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.template getNeighbourEntities< 3 >();
+      const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.template getNeighborEntities< 3 >();
       const RealType& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1,  0,  0 >();
       const RealType& hyDiv = entity.getMesh().template getSpaceStepsProducts<  0, -1,  0 >();
       const RealType& hzDiv = entity.getMesh().template getSpaceStepsProducts<  0,  0, -1 >();
       if( entity.getOrientation().x() != 0.0 )
       {
          const RealType u_x =
-            ( u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >()] -
-              u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >()] ) * hxDiv;
+            ( u[ neighborEntities.template getEntityIndex<  1,  0,  0 >()] -
+              u[ neighborEntities.template getEntityIndex< -1,  0,  0 >()] ) * hxDiv;
          RealType u_y;
          if( entity.getCoordinates().y() > 0 )
          {
             if( entity.getCoordinates().y() < entity.getMesh().getDimensions().y() - 1 )
             {
                u_y = 0.25 *
-               ( u[ neighbourEntities.template getEntityIndex<  1,  1,  0 >() ] +
-                 u[ neighbourEntities.template getEntityIndex< -1,  1,  0 >() ] -
-                 u[ neighbourEntities.template getEntityIndex<  1, -1,  0 >() ] -
-                 u[ neighbourEntities.template getEntityIndex< -1, -1,  0 >() ] ) * hyDiv;
+               ( u[ neighborEntities.template getEntityIndex<  1,  1,  0 >() ] +
+                 u[ neighborEntities.template getEntityIndex< -1,  1,  0 >() ] -
+                 u[ neighborEntities.template getEntityIndex<  1, -1,  0 >() ] -
+                 u[ neighborEntities.template getEntityIndex< -1, -1,  0 >() ] ) * hyDiv;
             }
             else // if( entity.getCoordinates().y() < entity.getMesh().getDimensions().y() - 1 )
             {
                u_y = 0.5 *
-               ( u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] +
-                 u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] -
-                 u[ neighbourEntities.template getEntityIndex<  1, -1,  0 >() ] -
-                 u[ neighbourEntities.template getEntityIndex< -1, -1,  0 >() ] ) * hyDiv;
+               ( u[ neighborEntities.template getEntityIndex<  1,  0,  0 >() ] +
+                 u[ neighborEntities.template getEntityIndex< -1,  0,  0 >() ] -
+                 u[ neighborEntities.template getEntityIndex<  1, -1,  0 >() ] -
+                 u[ neighborEntities.template getEntityIndex< -1, -1,  0 >() ] ) * hyDiv;
 
             }
          }
          else // if( entity.getCoordinates().y() > 0 )
          {
             u_y = 0.5 *
-            ( u[ neighbourEntities.template getEntityIndex<  1,  1,  0 >() ] +
-              u[ neighbourEntities.template getEntityIndex< -1,  1,  0 >() ] -
-              u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] -
-              u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] ) * hyDiv;
+            ( u[ neighborEntities.template getEntityIndex<  1,  1,  0 >() ] +
+              u[ neighborEntities.template getEntityIndex< -1,  1,  0 >() ] -
+              u[ neighborEntities.template getEntityIndex<  1,  0,  0 >() ] -
+              u[ neighborEntities.template getEntityIndex< -1,  0,  0 >() ] ) * hyDiv;
 
          }
          RealType u_z;
@@ -341,27 +341,27 @@ class CoFVMGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real
             if( entity.getCoordinates().z() < entity.getMesh().getDimensions().z() - 1 )
             {
                u_z = 0.25 *
-               ( u[ neighbourEntities.template getEntityIndex<  1,  0,  1 >() ] +
-                 u[ neighbourEntities.template getEntityIndex< -1,  0,  1 >() ] -
-                 u[ neighbourEntities.template getEntityIndex<  1,  0, -1 >() ] -
-                 u[ neighbourEntities.template getEntityIndex< -1,  0, -1 >() ] ) * hzDiv;
+               ( u[ neighborEntities.template getEntityIndex<  1,  0,  1 >() ] +
+                 u[ neighborEntities.template getEntityIndex< -1,  0,  1 >() ] -
+                 u[ neighborEntities.template getEntityIndex<  1,  0, -1 >() ] -
+                 u[ neighborEntities.template getEntityIndex< -1,  0, -1 >() ] ) * hzDiv;
             }
             else //if( entity.getCoordinates().z() < entity.getMesh().getDimensions().z() - 1 )
             {
                u_z = 0.5 *
-               ( u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] +
-                 u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] -
-                 u[ neighbourEntities.template getEntityIndex<  1,  0, -1 >() ] -
-                 u[ neighbourEntities.template getEntityIndex< -1,  0, -1 >() ] ) * hzDiv;
+               ( u[ neighborEntities.template getEntityIndex<  1,  0,  0 >() ] +
+                 u[ neighborEntities.template getEntityIndex< -1,  0,  0 >() ] -
+                 u[ neighborEntities.template getEntityIndex<  1,  0, -1 >() ] -
+                 u[ neighborEntities.template getEntityIndex< -1,  0, -1 >() ] ) * hzDiv;
             }
          }
          else //if( entity.getCoordinates().z() > 0 )
          {
             u_z = 0.5 *
-            ( u[ neighbourEntities.template getEntityIndex<  1,  0,  1 >() ] +
-              u[ neighbourEntities.template getEntityIndex< -1,  0,  1 >() ] -
-              u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] -
-              u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] ) * hzDiv;
+            ( u[ neighborEntities.template getEntityIndex<  1,  0,  1 >() ] +
+              u[ neighborEntities.template getEntityIndex< -1,  0,  1 >() ] -
+              u[ neighborEntities.template getEntityIndex<  1,  0,  0 >() ] -
+              u[ neighborEntities.template getEntityIndex< -1,  0,  0 >() ] ) * hzDiv;
          }
          return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );
       }
@@ -373,58 +373,58 @@ class CoFVMGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real
             if( entity.getCoordinates().x() < entity.getMesh().getDimensions().x() - 1 )
             {
                u_x = 0.25 *
-               ( u[ neighbourEntities.template getEntityIndex<  1,  1,  0 >() ] +
-                 u[ neighbourEntities.template getEntityIndex<  1, -1,  0 >() ] -
-                 u[ neighbourEntities.template getEntityIndex< -1,  1,  0 >() ] -
-                 u[ neighbourEntities.template getEntityIndex< -1, -1,  0 >() ] ) * hxDiv;
+               ( u[ neighborEntities.template getEntityIndex<  1,  1,  0 >() ] +
+                 u[ neighborEntities.template getEntityIndex<  1, -1,  0 >() ] -
+                 u[ neighborEntities.template getEntityIndex< -1,  1,  0 >() ] -
+                 u[ neighborEntities.template getEntityIndex< -1, -1,  0 >() ] ) * hxDiv;
             }
             else // if( entity.getCoordinates().x() < entity.getMesh().getDimensions().x() - 1 )
             {
                u_x = 0.5 *
-               ( u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] +
-                 u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] -
-                 u[ neighbourEntities.template getEntityIndex< -1,  1,  0 >() ] -
-                 u[ neighbourEntities.template getEntityIndex< -1, -1,  0 >() ] ) * hxDiv;
+               ( u[ neighborEntities.template getEntityIndex<  0,  1,  0 >() ] +
+                 u[ neighborEntities.template getEntityIndex<  0, -1,  0 >() ] -
+                 u[ neighborEntities.template getEntityIndex< -1,  1,  0 >() ] -
+                 u[ neighborEntities.template getEntityIndex< -1, -1,  0 >() ] ) * hxDiv;
             }
          }
          else // if( entity.getCoordinates().x() > 0 )
          {
             u_x = 0.5 *
-            ( u[ neighbourEntities.template getEntityIndex<  1,  1,  0 >() ] +
-              u[ neighbourEntities.template getEntityIndex<  1, -1,  0 >() ] -
-              u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] -
-              u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] ) * hxDiv;
+            ( u[ neighborEntities.template getEntityIndex<  1,  1,  0 >() ] +
+              u[ neighborEntities.template getEntityIndex<  1, -1,  0 >() ] -
+              u[ neighborEntities.template getEntityIndex<  0,  1,  0 >() ] -
+              u[ neighborEntities.template getEntityIndex<  0, -1,  0 >() ] ) * hxDiv;
          }
          const RealType u_y =
-            ( u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >()] -
-              u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >()] ) * hyDiv;
+            ( u[ neighborEntities.template getEntityIndex<  0,  1,  0 >()] -
+              u[ neighborEntities.template getEntityIndex<  0, -1,  0 >()] ) * hyDiv;
          RealType u_z;
          if( entity.getCoordinates().z() > 0 )
          {
             if( entity.getCoordinates().z() < entity.getMesh().getDimensions().z() - 1 )
             {
                u_z = 0.25 *
-               ( u[ neighbourEntities.template getEntityIndex<  0,  1,  1 >() ] +
-                 u[ neighbourEntities.template getEntityIndex<  0, -1,  1 >() ] -
-                 u[ neighbourEntities.template getEntityIndex<  0,  1, -1 >() ] -
-                 u[ neighbourEntities.template getEntityIndex<  0, -1, -1 >() ] ) * hzDiv;
+               ( u[ neighborEntities.template getEntityIndex<  0,  1,  1 >() ] +
+                 u[ neighborEntities.template getEntityIndex<  0, -1,  1 >() ] -
+                 u[ neighborEntities.template getEntityIndex<  0,  1, -1 >() ] -
+                 u[ neighborEntities.template getEntityIndex<  0, -1, -1 >() ] ) * hzDiv;
             }
             else // if( entity.getCoordinates().z() < entity.getMesh().getDimensions().z() - 1 )
             {
                u_z = 0.5 *
-               ( u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] +
-                 u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] -
-                 u[ neighbourEntities.template getEntityIndex<  0,  1, -1 >() ] -
-                 u[ neighbourEntities.template getEntityIndex<  0, -1, -1 >() ] ) * hzDiv;
+               ( u[ neighborEntities.template getEntityIndex<  0,  1,  0 >() ] +
+                 u[ neighborEntities.template getEntityIndex<  0, -1,  0 >() ] -
+                 u[ neighborEntities.template getEntityIndex<  0,  1, -1 >() ] -
+                 u[ neighborEntities.template getEntityIndex<  0, -1, -1 >() ] ) * hzDiv;
             }
          }
          else // if( entity.getCoordinates().z() > 0 )
          {
             u_z = 0.5 *
-            ( u[ neighbourEntities.template getEntityIndex<  0,  1,  1 >() ] +
-              u[ neighbourEntities.template getEntityIndex<  0, -1,  1 >() ] -
-              u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] -
-              u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] ) * hzDiv;
+            ( u[ neighborEntities.template getEntityIndex<  0,  1,  1 >() ] +
+              u[ neighborEntities.template getEntityIndex<  0, -1,  1 >() ] -
+              u[ neighborEntities.template getEntityIndex<  0,  1,  0 >() ] -
+              u[ neighborEntities.template getEntityIndex<  0, -1,  0 >() ] ) * hzDiv;
          }
          return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );
       }
@@ -434,28 +434,28 @@ class CoFVMGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real
          if( entity.getCoordinates().x() < entity.getMesh().getDimensions().x() - 1 )
          {
             u_x = 0.25 *
-            ( u[ neighbourEntities.template getEntityIndex<  1,  0,  1 >() ] +
-              u[ neighbourEntities.template getEntityIndex<  1,  0, -1 >() ] -
-              u[ neighbourEntities.template getEntityIndex< -1,  0,  1 >() ] -
-              u[ neighbourEntities.template getEntityIndex< -1,  0, -1 >() ] ) * hxDiv;
+            ( u[ neighborEntities.template getEntityIndex<  1,  0,  1 >() ] +
+              u[ neighborEntities.template getEntityIndex<  1,  0, -1 >() ] -
+              u[ neighborEntities.template getEntityIndex< -1,  0,  1 >() ] -
+              u[ neighborEntities.template getEntityIndex< -1,  0, -1 >() ] ) * hxDiv;
          }
          else // if( entity.getCoordinates().x() < entity.getMesh().getDimensions().x() - 1 )
          {
             u_x = 0.5 *
-            ( u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] +
-              u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] -
-              u[ neighbourEntities.template getEntityIndex< -1,  0,  1 >() ] -
-              u[ neighbourEntities.template getEntityIndex< -1,  0, -1 >() ] ) * hxDiv;
+            ( u[ neighborEntities.template getEntityIndex<  0,  0,  1 >() ] +
+              u[ neighborEntities.template getEntityIndex<  0,  0, -1 >() ] -
+              u[ neighborEntities.template getEntityIndex< -1,  0,  1 >() ] -
+              u[ neighborEntities.template getEntityIndex< -1,  0, -1 >() ] ) * hxDiv;
 
          }
       }
       else // if( entity.getCoordinates().x() > 0 )
       {
          u_x = 0.5 *
-         ( u[ neighbourEntities.template getEntityIndex<  1,  0,  1 >() ] +
-           u[ neighbourEntities.template getEntityIndex<  1,  0, -1 >() ] -
-           u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] -
-           u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] ) * hxDiv;
+         ( u[ neighborEntities.template getEntityIndex<  1,  0,  1 >() ] +
+           u[ neighborEntities.template getEntityIndex<  1,  0, -1 >() ] -
+           u[ neighborEntities.template getEntityIndex<  0,  0,  1 >() ] -
+           u[ neighborEntities.template getEntityIndex<  0,  0, -1 >() ] ) * hxDiv;
       }
       RealType u_y;
       if( entity.getCoordinates().y() > 0 )
@@ -463,31 +463,31 @@ class CoFVMGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real
          if( entity.getCoordinates().y() < entity.getMesh().getDimensions().y() - 1 )
          {
             u_y = 0.25 *
-            ( u[ neighbourEntities.template getEntityIndex<  0,  1,  1 >() ] +
-              u[ neighbourEntities.template getEntityIndex<  0,  1, -1 >() ] -
-              u[ neighbourEntities.template getEntityIndex<  0, -1,  1 >() ] -
-              u[ neighbourEntities.template getEntityIndex<  0, -1, -1 >() ] ) * hyDiv;
+            ( u[ neighborEntities.template getEntityIndex<  0,  1,  1 >() ] +
+              u[ neighborEntities.template getEntityIndex<  0,  1, -1 >() ] -
+              u[ neighborEntities.template getEntityIndex<  0, -1,  1 >() ] -
+              u[ neighborEntities.template getEntityIndex<  0, -1, -1 >() ] ) * hyDiv;
          }
          else //if( entity.getCoordinates().y() < entity.getMesh().getDimensions().y() - 1 )
          {
             u_y = 0.5 *
-            ( u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] +
-              u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] -
-              u[ neighbourEntities.template getEntityIndex<  0, -1,  1 >() ] -
-              u[ neighbourEntities.template getEntityIndex<  0, -1, -1 >() ] ) * hyDiv;
+            ( u[ neighborEntities.template getEntityIndex<  0,  0,  1 >() ] +
+              u[ neighborEntities.template getEntityIndex<  0,  0, -1 >() ] -
+              u[ neighborEntities.template getEntityIndex<  0, -1,  1 >() ] -
+              u[ neighborEntities.template getEntityIndex<  0, -1, -1 >() ] ) * hyDiv;
          }
       }
       else //if( entity.getCoordinates().y() > 0 )
       {
          u_y = 0.5 *
-         ( u[ neighbourEntities.template getEntityIndex<  0,  1,  1 >() ] +
-           u[ neighbourEntities.template getEntityIndex<  0,  1, -1 >() ] -
-           u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] -
-           u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] ) * hyDiv;
+         ( u[ neighborEntities.template getEntityIndex<  0,  1,  1 >() ] +
+           u[ neighborEntities.template getEntityIndex<  0,  1, -1 >() ] -
+           u[ neighborEntities.template getEntityIndex<  0,  0,  1 >() ] -
+           u[ neighborEntities.template getEntityIndex<  0,  0, -1 >() ] ) * hyDiv;
       }
       const RealType u_z =
-         ( u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >()] -
-           u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >()] ) * hzDiv;
+         ( u[ neighborEntities.template getEntityIndex<  0,  0,  1 >()] -
+           u[ neighborEntities.template getEntityIndex<  0,  0, -1 >()] ) * hzDiv;
       return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );
    }
  

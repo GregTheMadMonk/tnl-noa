@@ -15,7 +15,7 @@ namespace TNL {
 int File :: verbose = 0;
 
 File :: File()
-: mode( tnlUndefinedMode ),
+: mode( IOMode::undefined ),
   file( NULL ),
   fileOK( false ),
   writtenElements( 0 ),
@@ -23,26 +23,37 @@ File :: File()
 {
 }
 
-bool File :: open( const String& fileName,
-                      const tnlIOMode mode )
+File :: ~File()
 {
+   // destroying a file without closing is a memory leak
+   // (an open file descriptor is left behind, on Linux there is typically
+   // only a limited number of descriptors available to each process)
+   close();
+}
+
+bool File :: open( const String& fileName,
+                   const IOMode mode )
+{
+   // close the existing file to avoid memory leaks
+   this->close();
+
    this->fileName = fileName;
    if( verbose )
    {
       std::cout << "Opening file " << fileName;
-      if( mode == tnlReadMode )
+      if( mode == IOMode::read )
          std::cout << " for reading... " << std::endl;
       else
          std::cout << " for writing ... " << std::endl;
    }
-   if( mode == tnlReadMode )
-      file = fopen( fileName. getString(), "r" );
-   if( mode == tnlWriteMode )
-      file = fopen( fileName. getString(), "w" );
+   if( mode == IOMode::read )
+      file = std::fopen( fileName.getString(), "rb" );
+   if( mode == IOMode::write )
+      file = std::fopen( fileName.getString(), "wb" );
    if( file ==  NULL )
    {
       std::cerr << "I am not able to open the file " << fileName << ". ";
-      perror( "" );
+      std::perror( "" );
       return false;
    }
    this->fileOK = true;
@@ -55,24 +66,25 @@ bool File :: close()
    if( verbose )
       std::cout << "Closing the file " << getFileName() << " ... " << std::endl;
 
-   if( fclose( file ) != 0 )
+   if( file && std::fclose( file ) != 0 )
    {
       std::cerr << "I was not able to close the file " << fileName << " properly!" << std::endl;
       return false;
    }
+   // reset all attributes
+   mode = IOMode::undefined;
+   file = NULL;
+   fileOK = false;
+   fileName = "";
    readElements = writtenElements = 0;
    return true;
-};
+}
 
 bool fileExists( const String& fileName )
 {
   std::fstream file;
-  file.open( fileName. getString(), std::ios::in );
-  bool result( true );
-  if( ! file )
-     result = false;
-  file.close();
-  return result;
-};
+  file.open( fileName.getString(), std::ios::in );
+  return ! file.fail();
+}
 
 } // namespace TNL

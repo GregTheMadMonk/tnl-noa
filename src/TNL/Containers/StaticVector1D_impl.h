@@ -10,6 +10,8 @@
 
 #pragma once 
 
+#include <TNL/Containers/StaticVector.h>
+
 namespace TNL {
 namespace Containers {   
 
@@ -20,16 +22,24 @@ StaticVector< 1, Real >::StaticVector()
 }
 
 template< typename Real >
+   template< typename _unused >
+__cuda_callable__
+StaticVector< 1, Real >::StaticVector( const Real v[ 1 ] )
+: StaticArray< 1, Real >( v )
+{
+}
+
+template< typename Real >
 __cuda_callable__
 StaticVector< 1, Real >::StaticVector( const Real& v )
-: Containers::StaticArray< 1, Real >( v )
+: StaticArray< 1, Real >( v )
 {
 }
 
 template< typename Real >
 __cuda_callable__
 StaticVector< 1, Real >::StaticVector( const StaticVector< 1, Real >& v )
-: Containers::StaticArray< 1, Real >( v )
+: StaticArray< 1, Real >( v )
 {
 }
 

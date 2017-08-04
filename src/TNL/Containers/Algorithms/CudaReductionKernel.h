@@ -30,6 +30,9 @@ namespace Algorithms {
  * architecture so that there are no local memory spills.
  */
 static constexpr int Reduction_maxThreadsPerBlock = 256;  // must be a power of 2
+static constexpr int Reduction_registersPerThread = 32;   // empirically determined optimal value
+
+// __CUDA_ARCH__ is defined only in device code!
 #if (__CUDA_ARCH__ >= 300 )
    static constexpr int Reduction_minBlocksPerMultiprocessor = 8;
 #else
@@ -189,20 +192,22 @@ CudaReductionKernelLauncher( Operation& operation,
    // we run the kernel with a fixed number of blocks, so the amount of work per
    // block increases with enlarging the problem, so even small imbalance can
    // cost us dearly.
-   // On Tesla K40c, desGridSize = 4 * 6 * 15 = 360.
-//   const IndexType desGridSize = 4 * Reduction_minBlocksPerMultiprocessor
-//                                   * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-   // On Tesla K40c, desGridSize = 6 * 15 = 90.
-   const IndexType desGridSize = Reduction_minBlocksPerMultiprocessor
-                               * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-   dim3 blockSize( 256 ), gridSize( 0 );
+   // Therefore,  desGridSize = blocksPerMultiprocessor * numberOfMultiprocessors
+   // where blocksPerMultiprocessor is determined according to the number of
+   // available registers on the multiprocessor.
+   // On Tesla K40c, desGridSize = 8 * 15 = 120.
+   const int activeDevice = Devices::CudaDeviceInfo::getActiveDevice();
+   const int blocksdPerMultiprocessor = Devices::CudaDeviceInfo::getRegistersPerMultiprocessor( activeDevice )
+                                      / ( Reduction_maxThreadsPerBlock * Reduction_registersPerThread );
+   const int desGridSize = blocksdPerMultiprocessor * Devices::CudaDeviceInfo::getCudaMultiprocessors( activeDevice );
+   dim3 blockSize, gridSize;
+   blockSize.x = Reduction_maxThreadsPerBlock;
    gridSize.x = min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
 
    // create reference to the reduction buffer singleton and set size
    const size_t buf_size = desGridSize * sizeof( ResultType );
    CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
-   if( ! cudaReductionBuffer.setSize( buf_size ) )
-      throw 1;
+   cudaReductionBuffer.setSize( buf_size );
    output = cudaReductionBuffer.template getData< ResultType >();
 
    // when there is only one warp per blockSize.x, we need to allocate two warps
@@ -273,7 +278,7 @@ CudaReductionKernelLauncher( Operation& operation,
       default:
          TNL_ASSERT( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
    }
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 
    // return the size of the output array on the CUDA device
    return gridSize.x;

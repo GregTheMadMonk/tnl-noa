@@ -232,11 +232,7 @@ bool tnlConstSharedArray< Element, Device, Index > :: save( File& file ) const
               std::cerr << "You try to save empty array." );
    if( ! Object :: save( file ) )
       return false;
-#ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, Device >( &this->size ) )
-#else
    if( ! file. write( &this->size ) )
-#endif
       return false;
    if( ! file. write< Element, Device, Index >( this->data, this->size ) )
    {

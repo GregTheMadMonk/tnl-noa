@@ -89,14 +89,14 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         static_assert( MeshEntity::entityDimension == 1, "Wrong mesh entity dimensions." ); 
+         static_assert( MeshEntity::getEntityDimension() == 1, "Wrong mesh entity dimensions." ); 
          static_assert( MeshFunction::getEntitiesDimension() == 1, "Wrong preimage function" ); 
-         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
+         const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities(); 
 
          const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1 >(); 
          const IndexType& center = entity.getIndex(); 
-         const IndexType& east = neighbourEntities.template getEntityIndex< 1 >(); 
-         const IndexType& west = neighbourEntities.template getEntityIndex< -1 >(); 
+         const IndexType& east = neighborEntities.template getEntityIndex< 1 >(); 
+         const IndexType& west = neighborEntities.template getEntityIndex< -1 >(); 
          typedef Functions::FunctionAdapter< MeshType, VelocityFunctionType > FunctionAdapter;
          return ( 0.5 / this->tau ) * this->artificialViscosity * ( u[ west ]- 2.0 * u[ center ] + u[ east ] ) -
                 FunctionAdapter::getValue( this->velocityField.template getData< DeviceType >()[ 0 ], entity, time ) * ( u[ east ] - u[ west ] ) * hxInverse * 0.5;
@@ -181,18 +181,18 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         static_assert( MeshEntity::entityDimension == 2, "Wrong mesh entity dimensions." ); 
+         static_assert( MeshEntity::getEntityDimension() == 2, "Wrong mesh entity dimensions." ); 
          static_assert( MeshFunction::getEntitiesDimension() == 2, "Wrong preimage function" ); 
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities(); 
 
          const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1, 0 >(); 
          const RealType& hyInverse = entity.getMesh().template getSpaceStepsProducts< 0, -1 >(); 
          
          const IndexType& center = entity.getIndex();
-         const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0 >(); 
-         const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0 >(); 
-         const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >(); 
-         const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >(); 
+         const IndexType& east  = neighborEntities.template getEntityIndex<  1,  0 >(); 
+         const IndexType& west  = neighborEntities.template getEntityIndex< -1,  0 >(); 
+         const IndexType& north = neighborEntities.template getEntityIndex<  0,  1 >(); 
+         const IndexType& south = neighborEntities.template getEntityIndex<  0, -1 >(); 
          
          typedef Functions::FunctionAdapter< MeshType, VelocityFunctionType > FunctionAdapter;
          return ( 0.25 / this->tau ) * this->artificialViscosity * ( u[ west ] + u[ east ] + u[ north ] + u[ south ] - 4.0 * u[ center ] ) -
@@ -279,20 +279,20 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         static_assert( MeshEntity::entityDimension == 3, "Wrong mesh entity dimensions." ); 
+         static_assert( MeshEntity::getEntityDimension() == 3, "Wrong mesh entity dimensions." ); 
          static_assert( MeshFunction::getEntitiesDimension() == 3, "Wrong preimage function" ); 
-         const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
+         const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities(); 
 
          const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1,  0,  0 >(); 
          const RealType& hyInverse = entity.getMesh().template getSpaceStepsProducts<  0, -1,  0 >(); 
          const RealType& hzInverse = entity.getMesh().template getSpaceStepsProducts<  0,  0, -1 >(); 
          const IndexType& center = entity.getIndex();
-         const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0,  0 >(); 
-         const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0,  0 >(); 
-         const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1,  0 >(); 
-         const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1,  0 >(); 
-         const IndexType& up    = neighbourEntities.template getEntityIndex<  0,  0,  1 >(); 
-         const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >(); 
+         const IndexType& east  = neighborEntities.template getEntityIndex<  1,  0,  0 >(); 
+         const IndexType& west  = neighborEntities.template getEntityIndex< -1,  0,  0 >(); 
+         const IndexType& north = neighborEntities.template getEntityIndex<  0,  1,  0 >(); 
+         const IndexType& south = neighborEntities.template getEntityIndex<  0, -1,  0 >(); 
+         const IndexType& up    = neighborEntities.template getEntityIndex<  0,  0,  1 >(); 
+         const IndexType& down  = neighborEntities.template getEntityIndex<  0,  0, -1 >(); 
          
          typedef Functions::FunctionAdapter< MeshType, VelocityFunctionType > FunctionAdapter;
          return ( 0.25 / this->tau ) * this->artificialViscosity * ( u[ west ] + u[ east ] + u[ north ] + u[ south ] + u[ up ] + u[ down ] - 6.0 * u[ center ] ) -

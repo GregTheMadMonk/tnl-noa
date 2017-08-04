@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
 
 	String inputFile = parameters.getParameter <String> ("input-file");
 	File binaryFile;
-	if(! binaryFile.open(inputFile, tnlReadMode)) {
+	if(! binaryFile.open(inputFile, IOMode::read)) {
 		cerr << "I am not able to open the file " << inputFile << "." << std::endl;
 		return 1;
 	}

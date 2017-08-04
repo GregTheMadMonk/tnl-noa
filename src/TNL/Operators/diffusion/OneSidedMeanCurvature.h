@@ -30,7 +30,7 @@ namespace Operators {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType,
+          typename Index = typename Mesh::GlobalIndexType,
           bool EvaluateNonlinearityOnFly = false >
 class OneSidedMeanCurvature
    : public Operator< Mesh, Functions::MeshInteriorDomain, Mesh::getMeshDimension(), Mesh::getMeshDimension(), Real, Index >

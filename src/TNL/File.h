@@ -12,22 +12,22 @@
 
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
-#include <stdlib.h>
-#ifdef HAVE_CUDA
-   #include <cuda_runtime.h>
-#endif
+#include <cstdio>
 
 #include <TNL/Assert.h>
 #include <TNL/String.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/MIC.h>
 
 namespace TNL {
 
-enum tnlIOMode { tnlUndefinedMode = 0,
-                 tnlReadMode = 1,
-                 tnlWriteMode = 2 };
+enum class IOMode
+{
+   undefined = 0,
+   read = 1,
+   write = 2
+};
 
 /* When we need to transfer data between the GPU and the CPU we use
  * 5 MB buffer. This size should ensure good performance -- see.
@@ -41,57 +41,43 @@ const size_t tnlFileGPUvsCPUTransferBufferSize = 5 * 2<<20;
  */
 class File
 {
-   tnlIOMode mode;
+   IOMode mode;
 
-   FILE* file;
+   std::FILE* file;
 
    bool fileOK;
 
    String fileName;
 
-   size_t writtenElements;
+   std::size_t writtenElements;
 
-   size_t readElements;
+   std::size_t readElements;
 
    public:
 
    File();
 
+   ~File();
+
    bool open( const String& fileName,
-              const tnlIOMode mode );
+              const IOMode mode );
 
 
-	const String& getFileName() const
+   const String& getFileName() const
    {
-	   return this->fileName;
+      return this->fileName;
    }
 
-	long int getReadElements() const
-	{
-	   return this->readElements;
-	}
+   long int getReadElements() const
+   {
+      return this->readElements;
+   }
 
-	long int getWrittenElements() const
-	{
-	   return this->writtenElements;
-	}
+   long int getWrittenElements() const
+   {
+      return this->writtenElements;
+   }
 
-	// TODO: this does not work for constant types
-#ifdef HAVE_NOT_CXX11
-	template< typename Type, typename Device, typename Index >
-	bool read( Type* buffer,
-	           const Index& elements );
-
-	template< typename Type, typename Device >
-	bool read( Type* buffer );
-
-	template< typename Type, typename Device, typename Index >
-	bool write( const Type* buffer,
-	            const Index elements );
-
-	template< typename Type, typename Device >
-	bool write( const Type* buffer );
-#else
    template< typename Type, typename Device = Devices::Host, typename Index = int >
    bool read( Type* buffer,
               const Index& elements );
@@ -106,12 +92,52 @@ class File
    template< typename Type, typename Device = Devices::Host >
    bool write( const Type* buffer );
 
-#endif
+   bool close();
 
-	bool close();
+   static int verbose;
 
-	static int verbose;
+protected:
+   template< typename Type,
+             typename Device,
+             typename = typename std::enable_if< std::is_same< Device, Devices::Host >::value >::type >
+   bool read_impl( Type* buffer,
+                   const std::size_t& elements );
 
+   template< typename Type,
+             typename Device,
+             typename = typename std::enable_if< std::is_same< Device, Devices::Cuda >::value >::type,
+             typename = void >
+   bool read_impl( Type* buffer,
+                   const std::size_t& elements );
+
+   template< typename Type,
+             typename Device,
+             typename = typename std::enable_if< std::is_same< Device, Devices::MIC >::value >::type,
+             typename = void,
+             typename = void >
+   bool read_impl( Type* buffer,
+                   const std::size_t& elements );
+
+   template< typename Type,
+             typename Device,
+             typename = typename std::enable_if< std::is_same< Device, Devices::Host >::value >::type >
+   bool write_impl( const Type* buffer,
+                    const std::size_t& elements );
+
+   template< typename Type,
+             typename Device,
+             typename = typename std::enable_if< std::is_same< Device, Devices::Cuda >::value >::type,
+             typename = void >
+   bool write_impl( const Type* buffer,
+                    const std::size_t& elements );
+
+   template< typename Type,
+             typename Device,
+             typename = typename std::enable_if< std::is_same< Device, Devices::MIC >::value >::type,
+             typename = void,
+             typename = void >
+   bool write_impl( const Type* buffer,
+                    const std::size_t& elements );
 };
 
 bool fileExists( const String& fileName );

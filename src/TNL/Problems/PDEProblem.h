@@ -20,7 +20,7 @@ namespace Problems {
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Device = typename Mesh::DeviceType,
-          typename Index = typename Mesh::IndexType >
+          typename Index = typename Mesh::GlobalIndexType >
 class PDEProblem : public Problem< Real, Device, Index >
 {
    public:

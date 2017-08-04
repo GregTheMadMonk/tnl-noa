@@ -47,26 +47,26 @@ int main( int argc, char* argv[] )
 
    if(dim == 2)
    {
-		tnlNarrowBand<tnlGrid<2,double,tnlHost, int>, double, int> solver;
+		tnlNarrowBand<tnlGrid<2,double,TNL::Devices::Host, int>, double, int> solver;
 		if(!solver.init(parameters))
 	   {
 			cerr << "Solver failed to initialize." << endl;
 			return EXIT_FAILURE;
 	   }
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 	   cout << "-------------------------------------------------------------" << endl;
 	   cout << "Starting solver..." << endl;
 	   solver.run();
    }
 //   else if(dim == 3)
 //   {
-//		tnlNarrowBand<tnlGrid<3,double,tnlHost, int>, double, int> solver;
+//		tnlNarrowBand<tnlGrid<3,double,TNL::Devices::Host, int>, double, int> solver;
 //		if(!solver.init(parameters))
 //	   {
 //			cerr << "Solver failed to initialize." << endl;
 //			return EXIT_FAILURE;
 //	   }
-//		checkCudaDevice;
+//		TNL_CHECK_CUDA_DEVICE;
 //	   cout << "-------------------------------------------------------------" << endl;
 //	   cout << "Starting solver..." << endl;
 //	   solver.run();

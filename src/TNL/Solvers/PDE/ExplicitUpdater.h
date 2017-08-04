@@ -122,12 +122,12 @@ class ExplicitUpdater
                                                  typename MeshFunction::IndexType > >::value != true,
             "Error: I am getting Vector instead of MeshFunction or similar object. You might forget to bind DofVector into MeshFunction in you method getExplicitUpdate."  );
             
-         TNL_ASSERT( this->userDataPointer->differentialOperator, 
-            std::cerr << "The differential operator is not correctly set-up. Use method setDifferentialOperator() to do it." << std::endl );
-         TNL_ASSERT( this->userDataPointer->boundaryConditions, 
-            std::cerr << "The boundary conditions are not correctly set-up. Use method setBoundaryCondtions() to do it." << std::endl );
-         TNL_ASSERT( this->userDataPointer->rightHandSide, 
-            std::cerr << "The right-hand side is not correctly set-up. Use method setRightHandSide() to do it." << std::endl );
+         TNL_ASSERT_TRUE( this->userDataPointer->differentialOperator,
+                          "The differential operator is not correctly set-up. Use method setDifferentialOperator() to do it." );
+         TNL_ASSERT_TRUE( this->userDataPointer->boundaryConditions, 
+                          "The boundary conditions are not correctly set-up. Use method setBoundaryCondtions() to do it." );
+         TNL_ASSERT_TRUE( this->userDataPointer->rightHandSide, 
+                          "The right-hand side is not correctly set-up. Use method setRightHandSide() to do it." );
          
          
          this->userDataPointer->time = time;
@@ -175,12 +175,23 @@ class ExplicitUpdater
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
+           /*    std::cerr<<"===========================================================" << std::endl; 
+               std::cerr<<"fu:" << userData.fu << std::endl; 
+               std::cerr<< "diffOp:" << userData.differentialOperator << std::endl; 
+               std::cerr<<"===========================================================" << std::endl; 
+               
+               std::cerr<<std::flush;*/
+               
+            //   int blabla;
+             //  std::cin >> blabla; 
+               
                ( *userData.fu )( entity ) = 
-                  ( *userData.differentialOperator )( *userData.u, entity, userData.time );
-
+                       ( *userData.differentialOperator )( *userData.u, entity, userData.time );
+            
                typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
                (  *userData.fu )( entity ) += 
                   FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
+               
             }
       }; 
 

@@ -111,14 +111,14 @@ class LaxFridrichsEnergy< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, 
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         static_assert( MeshEntity::entityDimension == 1, "Wrong mesh entity dimensions." ); 
+         static_assert( MeshEntity::getEntityDimension() == 1, "Wrong mesh entity dimensions." ); 
          static_assert( MeshFunction::getEntitiesDimension() == 1, "Wrong preimage function" ); 
-         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
+         const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities(); 
 
          const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1 >(); 
          const IndexType& center = entity.getIndex(); 
-         const IndexType& east = neighbourEntities.template getEntityIndex< 1 >(); 
-         const IndexType& west = neighbourEntities.template getEntityIndex< -1 >();
+         const IndexType& east = neighborEntities.template getEntityIndex< 1 >(); 
+         const IndexType& west = neighborEntities.template getEntityIndex< -1 >();
          const RealType& pressure_west = this->pressure.template getData< DeviceType >()[ west ];
          const RealType& pressure_east = this->pressure.template getData< DeviceType >()[ east ];
          const RealType& velocity_x_east = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ east ];
@@ -176,17 +176,17 @@ class LaxFridrichsEnergy< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, 
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         static_assert( MeshEntity::entityDimension == 2, "Wrong mesh entity dimensions." ); 
+         static_assert( MeshEntity::getEntityDimension() == 2, "Wrong mesh entity dimensions." ); 
          static_assert( MeshFunction::getEntitiesDimension() == 2, "Wrong preimage function" ); 
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities(); 
  
          const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1, 0 >(); 
          const RealType& hyInverse = entity.getMesh().template getSpaceStepsProducts< 0, -1 >(); 
          const IndexType& center = entity.getIndex(); 
-         const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0 >(); 
-         const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0 >(); 
-         const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >(); 
-         const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >();
+         const IndexType& east  = neighborEntities.template getEntityIndex<  1,  0 >(); 
+         const IndexType& west  = neighborEntities.template getEntityIndex< -1,  0 >(); 
+         const IndexType& north = neighborEntities.template getEntityIndex<  0,  1 >(); 
+         const IndexType& south = neighborEntities.template getEntityIndex<  0, -1 >();
          const RealType& pressure_west = this->pressure.template getData< DeviceType >()[ west ];
          const RealType& pressure_east = this->pressure.template getData< DeviceType >()[ east ];
          const RealType& pressure_north = this->pressure.template getData< DeviceType >()[ north ];
@@ -249,20 +249,20 @@ class LaxFridrichsEnergy< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, 
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         static_assert( MeshEntity::entityDimension == 3, "Wrong mesh entity dimensions." ); 
+         static_assert( MeshEntity::getEntityDimension() == 3, "Wrong mesh entity dimensions." ); 
          static_assert( MeshFunction::getEntitiesDimension() == 3, "Wrong preimage function" ); 
-         const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
+         const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities(); 
  
          const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1, 0,  0 >(); 
          const RealType& hyInverse = entity.getMesh().template getSpaceStepsProducts< 0, -1,  0 >(); 
          const RealType& hzInverse = entity.getMesh().template getSpaceStepsProducts< 0,  0, -1 >(); 
          const IndexType& center = entity.getIndex(); 
-         const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0,  0 >(); 
-         const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0,  0 >(); 
-         const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1,  0 >(); 
-         const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1,  0 >();
-         const IndexType& up    = neighbourEntities.template getEntityIndex<  0,  0,  1 >(); 
-         const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >();
+         const IndexType& east  = neighborEntities.template getEntityIndex<  1,  0,  0 >(); 
+         const IndexType& west  = neighborEntities.template getEntityIndex< -1,  0,  0 >(); 
+         const IndexType& north = neighborEntities.template getEntityIndex<  0,  1,  0 >(); 
+         const IndexType& south = neighborEntities.template getEntityIndex<  0, -1,  0 >();
+         const IndexType& up    = neighborEntities.template getEntityIndex<  0,  0,  1 >(); 
+         const IndexType& down  = neighborEntities.template getEntityIndex<  0,  0, -1 >();
          
          const RealType& pressure_west  = this->pressure.template getData< DeviceType >()[ west ];
          const RealType& pressure_east  = this->pressure.template getData< DeviceType >()[ east ];

@@ -48,44 +48,65 @@ String Tridiagonal< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool Tridiagonal< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                                 const IndexType columns )
+String Tridiagonal< Real, Device, Index >::getSerializationType()
 {
-   if( ! Matrix< Real, Device, Index >::setDimensions( rows, columns ) )
-      return false;
-   if( ! values.setSize( 3*min( rows, columns ) ) )
-      return false;
-   this->values.setValue( 0.0 );
-   return true;
+   return getType();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Tridiagonal< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+String Tridiagonal< Real, Device, Index >::getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Tridiagonal< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                        const IndexType columns )
+{
+   Matrix< Real, Device, Index >::setDimensions( rows, columns );
+   values.setSize( 3*min( rows, columns ) );
+   this->values.setValue( 0.0 );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Tridiagonal< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
    if( rowLengths[ 0 ] > 2 )
-      return false;
+      throw std::logic_error( "Too many non-zero elements per row in a tri-diagonal matrix." );
    const IndexType diagonalLength = min( this->getRows(), this->getColumns() );
    for( Index i = 1; i < diagonalLength-1; i++ )
       if( rowLengths[ i ] > 3 )
-         return false;
+         throw std::logic_error( "Too many non-zero elements per row in a tri-diagonal matrix." );
    if( this->getRows() > this->getColumns() )
       if( rowLengths[ this->getRows()-1 ] > 1 )
-         return false;
+         throw std::logic_error( "Too many non-zero elements per row in a tri-diagonal matrix." );
    if( this->getRows() == this->getColumns() )
       if( rowLengths[ this->getRows()-1 ] > 2 )
-         return false;
+         throw std::logic_error( "Too many non-zero elements per row in a tri-diagonal matrix." );
    if( this->getRows() < this->getColumns() )
       if( rowLengths[ this->getRows()-1 ] > 3 )
-         return false;
-   return true;
+         throw std::logic_error( "Too many non-zero elements per row in a tri-diagonal matrix." );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
 Index Tridiagonal< Real, Device, Index >::getRowLength( const IndexType row ) const
+{
+   return this->getRowLengthFast( row );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Index Tridiagonal< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
 {
    const IndexType diagonalLength = min( this->getRows(), this->getColumns() );
    if( row == 0 )
@@ -111,9 +132,9 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Real2, typename Device2, typename Index2 >
-bool Tridiagonal< Real, Device, Index >::setLike( const Tridiagonal< Real2, Device2, Index2 >& m )
+void Tridiagonal< Real, Device, Index >::setLike( const Tridiagonal< Real2, Device2, Index2 >& m )
 {
-   return this->setDimensions( m.getRows(), m.getColumns() );
+   this->setDimensions( m.getRows(), m.getColumns() );
 }
 
 template< typename Real,
@@ -506,7 +527,7 @@ void Tridiagonal< Real, Device, Index >::getTransposition( const Tridiagonal< Re
       }
       Devices::Cuda::freeFromDevice( kernel_this );
       Devices::Cuda::freeFromDevice( kernel_inMatrix );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
 #endif
    }
 }
@@ -528,6 +549,39 @@ void Tridiagonal< Real, Device, Index >::performSORIteration( const Vector& b,
       sum += this->getElementFast( row, row + 1 ) * x[ row + 1 ];
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / this->getElementFast( row, row ) * ( b[ row ] - sum );
 }
+
+
+// copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+Tridiagonal< Real, Device, Index >&
+Tridiagonal< Real, Device, Index >::operator=( const Tridiagonal& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   return *this;
+}
+
+// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2, typename Device2, typename Index2, typename >
+Tridiagonal< Real, Device, Index >&
+Tridiagonal< Real, Device, Index >::operator=( const Tridiagonal< Real2, Device2, Index2 >& matrix )
+{
+   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
+                  "unknown device" );
+   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
+                  "unknown device" );
+
+   this->setLike( matrix );
+
+   std::cerr << "Cross-device assignment for the Tridiagonal format is not implemented yet." << std::endl;
+   throw 1;
+}
+
 
 template< typename Real,
           typename Device,

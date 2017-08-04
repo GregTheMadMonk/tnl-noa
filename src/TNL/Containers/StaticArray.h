@@ -16,10 +16,6 @@
 namespace TNL {
 namespace Containers {   
 
-//! Aliases for the coordinates
-// TODO: Remove this - it is here only because of some legact code
-enum { tnlX = 0, tnlY, tnlZ };
-
 template< int Size, typename Element >
 class StaticArray
 {
@@ -31,6 +27,9 @@ class StaticArray
    __cuda_callable__
    inline StaticArray();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    inline StaticArray( const Element v[ Size ] );
 
@@ -91,7 +90,6 @@ class StaticArray
 
    protected:
    Element data[ Size ];
-
 };
 
 template< typename Element >
@@ -105,6 +103,9 @@ class StaticArray< 1, Element >
    __cuda_callable__
    inline StaticArray();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    inline StaticArray( const Element v[ size ] );
 
@@ -186,6 +187,9 @@ class StaticArray< 2, Element >
    __cuda_callable__
    inline StaticArray();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    inline StaticArray( const Element v[ size ] );
 
@@ -278,6 +282,9 @@ class StaticArray< 3, Element >
    __cuda_callable__
    inline StaticArray();
 
+   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
+   // reference: https://stackoverflow.com/q/4610503
+   template< typename _unused = void >
    __cuda_callable__
    inline StaticArray( const Element v[ size ] );
 
@@ -365,7 +372,6 @@ class StaticArray< 3, Element >
 
    protected:
    Element data[ size ];
-
 };
 
 template< int Size, typename Element >
@@ -378,4 +384,3 @@ std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Element 
 #include <TNL/Containers/StaticArray1D_impl.h>
 #include <TNL/Containers/StaticArray2D_impl.h>
 #include <TNL/Containers/StaticArray3D_impl.h>
-

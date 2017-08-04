@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Solvers/Linear/SOR.h>
+
 namespace TNL {
 namespace Solvers {
 namespace Linear {   
@@ -106,6 +108,7 @@ bool SOR< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
                                       row,
                                       x,
                                       this->getOmega() );
+      // FIXME: the LinearResidueGetter works only on the host
       this->setResidue( ResidueGetter::getResidue( *matrix, x, b, bNorm ) );
       this->refreshSolverMonitor();
    }
@@ -114,14 +117,12 @@ bool SOR< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
    return this->checkConvergence();
 };
 
-template< typename Matrix, typename Preconditioner >
-SOR< Matrix, Preconditioner > :: ~SOR()
-{
-}
-
 } // namespace Linear
 } // namespace Solvers
 } // namespace TNL
+
+
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Matrices/Ellpack.h>
@@ -175,3 +176,5 @@ extern template class SOR< tnlMutliDiagonalMatrix< double, Devices::Cuda, long i
 } // namespace Linear
 } // namespace Solvers
 } // namespace TNL
+
+#endif // #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

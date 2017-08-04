@@ -77,7 +77,7 @@ bool
 CG< Matrix, Preconditioner >::
 solve( const Vector& b, Vector& x )
 {
-   if( ! this->setSize( matrix->getRows() ) ) return false;
+   this->setSize( matrix->getRows() );
 
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
@@ -147,28 +147,17 @@ solve( const Vector& b, Vector& x )
    this->setResidue( ResidueGetter::getResidue( *matrix, x, b, bNorm ) );
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
-};
+}
 
 template< typename Matrix,
           typename Preconditioner >
-CG< Matrix, Preconditioner > :: ~CG()
+void CG< Matrix, Preconditioner > :: setSize( IndexType size )
 {
-};
-
-template< typename Matrix,
-          typename Preconditioner >
-bool CG< Matrix, Preconditioner > :: setSize( IndexType size )
-{
-   if( ! r. setSize( size ) ||
-       ! new_r. setSize( size ) ||
-       ! p. setSize( size ) ||
-       ! Ap. setSize( size ) )
-   {
-      std::cerr << "I am not able to allocated all supporting arrays for the CG solver." << std::endl;
-      return false;
-   }
-   return true;
-};
+   r.setSize( size );
+   new_r.setSize( size );
+   p.setSize( size );
+   Ap.setSize( size );
+}
 
 } // namespace Linear
 } // namespace Solvers

@@ -30,7 +30,16 @@ class CSRDeviceDependentCode;
 template< typename Real, typename Device = Devices::Host, typename Index = int >
 class CSR : public Sparse< Real, Device, Index >
 {
-   public:
+private:
+   // convenient template alias for controlling the selection of copy-assignment operator
+   template< typename Device2 >
+   using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
+
+   // friend class will be needed for templated assignment operators
+   template< typename Real2, typename Device2, typename Index2 >
+   friend class CSR;
+
+public:
 
    typedef Real RealType;
    typedef Device DeviceType;
@@ -52,15 +61,22 @@ class CSR : public Sparse< Real, Device, Index >
 
    String getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows,
+   static String getSerializationType();
+
+   virtual String getSerializationTypeVirtual() const;
+
+   void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
+   __cuda_callable__
+   IndexType getRowLengthFast( const IndexType row ) const;
+
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const CSR< Real2, Device2, Index2 >& matrix );
+   void setLike( const CSR< Real2, Device2, Index2 >& matrix );
 
    void reset();
 
@@ -154,6 +170,14 @@ class CSR : public Sparse< Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
+   // copy assignment
+   CSR& operator=( const CSR& matrix );
+
+   // cross-device copy assignment
+   template< typename Real2, typename Device2, typename Index2,
+             typename = typename Enabler< Device2 >::type >
+   CSR& operator=( const CSR< Real2, Device2, Index2 >& matrix );
+
    bool save( File& file ) const;
 
    bool load( File& file );
@@ -201,37 +225,43 @@ class CSR : public Sparse< Real, Device, Index >
 
    // The following getters allow us to interface TNL with external C-like
    // libraries such as UMFPACK or SuperLU, which need the raw data.
-   Index* getRowPointers()
+   const Containers::Vector< Index, Device, Index >&
+   getRowPointers() const
    {
-       return this->rowPointers.getData();
+      return this->rowPointers;
    }
 
-   const Index* getRowPointers() const
+   Containers::Vector< Index, Device, Index >&
+   getRowPointers()
    {
-       return this->rowPointers.getData();
+      return this->rowPointers;
    }
 
-   Index* getColumnIndexes()
+   const Containers::Vector< Index, Device, Index >&
+   getColumnIndexes() const
    {
-       return this->columnIndexes.getData();
+      return this->columnIndexes;
    }
 
-   const Index* getColumnIndexes() const
+   Containers::Vector< Index, Device, Index >&
+   getColumnIndexes()
    {
-       return this->columnIndexes.getData();
+      return this->columnIndexes;
    }
 
-   Real* getValues()
+   const Containers::Vector< Real, Device, Index >&
+   getValues() const
    {
-       return this->values.getData();
+      return this->values;
    }
 
-   const Real* getValues() const
+   Containers::Vector< Real, Device, Index >&
+   getValues()
    {
-       return this->values.getData();
+      return this->values;
    }
 
-   protected:
+protected:
 
    Containers::Vector< Index, Device, Index > rowPointers;
 
@@ -248,4 +278,3 @@ class CSR : public Sparse< Real, Device, Index >
 } // namespace TNL
 
 #include <TNL/Matrices/CSR_impl.h>
-

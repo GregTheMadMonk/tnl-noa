@@ -304,14 +304,22 @@ void Host::configSetup( Config::ConfigDescription& config, const String& prefix 
 bool Host::setup( const Config::ParameterContainer& parameters,
                   const String& prefix )
 {
-   if( parameters.getParameter< bool >( prefix + "openmp-enabled" ) )
+   if( parameters.getParameter< bool >( prefix + "openmp-enabled" ) ) {
+#ifdef HAVE_OPENMP
       enableOMP();
+#else
+      std::cerr << "OpenMP is not supported - please recompile the TNL library with OpenMP." << std::endl;
+      return false;
+#endif
+   }
    else
       disableOMP();
-   setMaxThreadsCount( parameters.getParameter< int >( prefix + "openmp-max-threads" ) );
+   const int threadsCount = parameters.getParameter< int >( prefix + "openmp-max-threads" );
+   if( threadsCount > 1 && ! isOMPEnabled() )
+      std::cerr << "Warning: openmp-max-threads was set to " << threadsCount << ", but OpenMP is disabled." << std::endl;
+   setMaxThreadsCount( threadsCount );
    return true;
 }
 
 } // namespace Devices
 } // namespace TNL
-

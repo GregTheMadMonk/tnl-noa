@@ -111,10 +111,10 @@ bool tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > ::
 	dim3 numBlocks(n/8 + 1, n/8 +1, n/8 +1);
 
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 	initCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 
 	return true;
 }
@@ -139,7 +139,7 @@ bool tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > ::
 	runCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver,0,0);
 
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 
 	cudaMemcpy(this->dofVector.getData().getData(), cudaDofVector2, this->dofVector.getData().getSize()*sizeof(double), cudaMemcpyDeviceToHost);
 	cudaDeviceSynchronize();
@@ -165,41 +165,41 @@ template< typename MeshReal,
 __device__
 void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: updateValue( Index i, Index j, Index k)
 {
-	tnlGridEntity< tnlGrid< 3,double, tnlHost, int >, 3, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 3,double, TNL::Devices::Host, int >, 3, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j,k));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighborEntities(Entity);
 	Real value = cudaDofVector2[Entity.getIndex()];
 	Real a,b,c, tmp;
 
 	if( i == 0 )
-		a = cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0,  0 >()];
+		a = cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0,  0 >()];
 	else if( i == Mesh.getDimensions().x() - 1 )
-		a = cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
+		a = cudaDofVector2[neighborEntities.template getEntityIndex< -1,  0,  0 >()];
 	else
 	{
-		a = fabsMin( cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0,  0 >()],
-				 cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0,  0 >()] );
+		a = fabsMin( cudaDofVector2[neighborEntities.template getEntityIndex< -1,  0,  0 >()],
+				 cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0,  0 >()] );
 	}
 
 	if( j == 0 )
-		b = cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1,  0 >()];
+		b = cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1,  0 >()];
 	else if( j == Mesh.getDimensions().y() - 1 )
-		b = cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()];
+		b = cudaDofVector2[neighborEntities.template getEntityIndex< 0,  -1,  0 >()];
 	else
 	{
-		b = fabsMin( cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()],
-				 cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1,  0 >()] );
+		b = fabsMin( cudaDofVector2[neighborEntities.template getEntityIndex< 0,  -1,  0 >()],
+				 cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1,  0 >()] );
 	}
 
 	if( k == 0 )
-		c = cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  0,  1 >()];
+		c = cudaDofVector2[neighborEntities.template getEntityIndex< 0,  0,  1 >()];
 	else if( k == Mesh.getDimensions().z() - 1 )
-		c = cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()];
+		c = cudaDofVector2[neighborEntities.template getEntityIndex< 0,  0,  -1 >()];
 	else
 	{
-		c = fabsMin( cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()],
-				 cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  0,  1 >()] );
+		c = fabsMin( cudaDofVector2[neighborEntities.template getEntityIndex< 0,  0,  -1 >()],
+				 cudaDofVector2[neighborEntities.template getEntityIndex< 0,  0,  1 >()] );
 	}
 
 	Real hD = 3.0*h*h - 2.0*(a*a + b*b + c*c - a*b - a*c - b*c);
@@ -222,7 +222,7 @@ template< typename MeshReal,
 __device__
 bool tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: initGrid(int i, int j, int k)
 {
-	tnlGridEntity< tnlGrid< 3,double, tnlHost, int >, 3, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 3,double, TNL::Devices::Host, int >, 3, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j,k));
 	Entity.refresh();
 	int gid = Entity.getIndex();
@@ -255,7 +255,7 @@ Real tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 
 
-__global__ void runCUDA(tnlFastSweeping< tnlGrid< 3,double, tnlHost, int >, double, int >* solver, int sweep, int i)
+__global__ void runCUDA(tnlFastSweeping< tnlGrid< 3,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int i)
 {
 
 	int gx = 0;
@@ -474,7 +474,7 @@ __global__ void runCUDA(tnlFastSweeping< tnlGrid< 3,double, tnlHost, int >, doub
 }
 
 
-__global__ void initCUDA(tnlFastSweeping< tnlGrid< 3,double, tnlHost, int >, double, int >* solver)
+__global__ void initCUDA(tnlFastSweeping< tnlGrid< 3,double, TNL::Devices::Host, int >, double, int >* solver)
 {
 	int gx = threadIdx.x + blockDim.x*blockIdx.x;
 	int gy = blockDim.y*blockIdx.y + threadIdx.y;

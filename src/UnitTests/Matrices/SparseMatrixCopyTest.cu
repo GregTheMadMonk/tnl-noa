@@ -1,11 +1,11 @@
 /***************************************************************************
-                          Devices::CudaVectorOperationsTest.cu  -  description
+                          SparseMatrixCopyTest.cu  -  description
                              -------------------
-    begin                : Mar 31, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Jun 25, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
- 
-#include "VectorOperationsTest.h"
+
+#include "SparseMatrixCopyTest.h"

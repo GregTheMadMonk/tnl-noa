@@ -127,7 +127,7 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Vector& u,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition,
-          	  	          	  	  	  	  	  	  	  	  	  	                     const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities  ) const
+          	  	          	  	  	  	  	  	  	  	  	  	                     const tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighborEntities  ) const
 {
 	if ( ((coordinates.x() == 0 && (boundaryCondition & 4)) or
 		 (coordinates.x() == mesh.getDimensions().x() - 1 && (boundaryCondition & 2)) or
@@ -158,35 +158,35 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 
 
 	   if(coordinates.x() == mesh.getDimensions().x() - 1)
-		   xf += u[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
+		   xf += u[neighborEntities.template getEntityIndex< -1,  0,  0 >()];
 	   else
-		   xf += u[neighbourEntities.template getEntityIndex< 1,  0,  0 >()];
+		   xf += u[neighborEntities.template getEntityIndex< 1,  0,  0 >()];
 
 	   if(coordinates.x() == 0)
-		   xb -= u[neighbourEntities.template getEntityIndex< 1,  0,  0 >()];
+		   xb -= u[neighborEntities.template getEntityIndex< 1,  0,  0 >()];
 	   else
-		   xb -= u[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
+		   xb -= u[neighborEntities.template getEntityIndex< -1,  0,  0 >()];
 
 	   if(coordinates.y() == mesh.getDimensions().y() - 1)
-		   yf += u[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()];
+		   yf += u[neighborEntities.template getEntityIndex< 0,  -1,  0 >()];
 	   else
-		   yf += u[neighbourEntities.template getEntityIndex< 0,  1,  0 >()];
+		   yf += u[neighborEntities.template getEntityIndex< 0,  1,  0 >()];
 
 	   if(coordinates.y() == 0)
-		   yb -= u[neighbourEntities.template getEntityIndex< 0,  1,  0 >()];
+		   yb -= u[neighborEntities.template getEntityIndex< 0,  1,  0 >()];
 	   else
-		   yb -= u[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()];
+		   yb -= u[neighborEntities.template getEntityIndex< 0,  -1,  0 >()];
 
 
 	   if(coordinates.z() == mesh.getDimensions().z() - 1)
-		   zf += u[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()];
+		   zf += u[neighborEntities.template getEntityIndex< 0,  0,  -1 >()];
 	   else
-		   zf += u[neighbourEntities.template getEntityIndex< 0,  0,  1 >()];
+		   zf += u[neighborEntities.template getEntityIndex< 0,  0,  1 >()];
 
 	   if(coordinates.z() == 0)
-		   zb -= u[neighbourEntities.template getEntityIndex< 0,  0,  1 >()];
+		   zb -= u[neighborEntities.template getEntityIndex< 0,  0,  1 >()];
 	   else
-		   zb -= u[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()];
+		   zb -= u[neighborEntities.template getEntityIndex< 0,  0,  -1 >()];
 
 	   if(signui > 0.0)
 	   {
@@ -262,7 +262,7 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real* u,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition,
-          	  	          	  	  	  	  	  	  	  	  	  	                     const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities
+          	  	          	  	  	  	  	  	  	  	  	  	                     const tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighborEntities
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 ) const
 {
 	RealType signui;
@@ -279,35 +279,35 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 
 
 		   if(coordinates.x() == mesh.getDimensions().x() - 1)
-			   xf += u[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
+			   xf += u[neighborEntities.template getEntityIndex< -1,  0,  0 >()];
 		   else
-			   xf += u[neighbourEntities.template getEntityIndex< 1,  0,  0 >()];
+			   xf += u[neighborEntities.template getEntityIndex< 1,  0,  0 >()];
 
 		   if(coordinates.x() == 0)
-			   xb -= u[neighbourEntities.template getEntityIndex< 1,  0,  0 >()];
+			   xb -= u[neighborEntities.template getEntityIndex< 1,  0,  0 >()];
 		   else
-			   xb -= u[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
+			   xb -= u[neighborEntities.template getEntityIndex< -1,  0,  0 >()];
 
 		   if(coordinates.y() == mesh.getDimensions().y() - 1)
-			   yf += u[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()];
+			   yf += u[neighborEntities.template getEntityIndex< 0,  -1,  0 >()];
 		   else
-			   yf += u[neighbourEntities.template getEntityIndex< 0,  1,  0 >()];
+			   yf += u[neighborEntities.template getEntityIndex< 0,  1,  0 >()];
 
 		   if(coordinates.y() == 0)
-			   yb -= u[neighbourEntities.template getEntityIndex< 0,  1,  0 >()];
+			   yb -= u[neighborEntities.template getEntityIndex< 0,  1,  0 >()];
 		   else
-			   yb -= u[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()];
+			   yb -= u[neighborEntities.template getEntityIndex< 0,  -1,  0 >()];
 
 
 		   if(coordinates.z() == mesh.getDimensions().z() - 1)
-			   zf += u[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()];
+			   zf += u[neighborEntities.template getEntityIndex< 0,  0,  -1 >()];
 		   else
-			   zf += u[neighbourEntities.template getEntityIndex< 0,  0,  1 >()];
+			   zf += u[neighborEntities.template getEntityIndex< 0,  0,  1 >()];
 
 		   if(coordinates.z() == 0)
-			   zb -= u[neighbourEntities.template getEntityIndex< 0,  0,  1 >()];
+			   zb -= u[neighborEntities.template getEntityIndex< 0,  0,  1 >()];
 		   else
-			   zb -= u[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()];
+			   zb -= u[neighborEntities.template getEntityIndex< 0,  0,  -1 >()];
 
 		   if(signui > 0.0)
 		   {

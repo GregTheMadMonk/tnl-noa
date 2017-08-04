@@ -21,8 +21,7 @@
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>
-#include <core/vectors/tnlVector.h>
-#include <core/vectors/tnlSharedVector.h>
+#include <TNL/Containers/Vector.h>
 #include <core/mfilename.h>
 #include <mesh/tnlGrid.h>
 #include <core/tnlCuda.h>
@@ -52,7 +51,7 @@ public:
 	typedef Device DeviceType;
 	typedef Index IndexType;
 	typedef tnlGrid< 1, Real, Device, Index > MeshType;
-	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+	typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
@@ -121,7 +120,7 @@ public:
 	typedef Device DeviceType;
 	typedef Index IndexType;
 	typedef tnlGrid< 2, Real, Device, Index > MeshType;
-	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+	typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -150,7 +149,7 @@ public:
                    const Vector& u,
                    const RealType& time,
                    const IndexType boundaryCondition,
-                   const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities) const;
+                   const tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities) const;
 
  #ifdef HAVE_CUDA
     __device__
@@ -161,7 +160,7 @@ public:
                    const RealType* u,
                    const RealType& time,
                    const IndexType boundaryCondition,
-                   const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities) const;
+                   const tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities) const;
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -197,7 +196,7 @@ public:
 	typedef Device DeviceType;
 	typedef Index IndexType;
 	typedef tnlGrid< 3, Real, Device, Index > MeshType;
-	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+	typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
 #ifdef HAVE_CUDA
@@ -227,7 +226,7 @@ public:
                    const Vector& u,
                    const RealType& time,
                    const IndexType boundaryCondition,
-  	  	  	       const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities  ) const;
+  	  	  	       const tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighborEntities  ) const;
 
 #ifdef HAVE_CUDA
    __device__
@@ -238,7 +237,7 @@ public:
                   const RealType* u,
                   const RealType& time,
                   const IndexType boundaryCondition,
- 	  	  	      const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities ) const;
+ 	  	  	      const tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighborEntities ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__

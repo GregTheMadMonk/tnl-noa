@@ -57,7 +57,7 @@ String MultiArray< 2, Element, Device, Index > :: getSerializationTypeVirtual() 
 };
 
 template< typename Element, typename Device, typename Index >
-bool MultiArray< 2, Element, Device, Index > :: setDimensions( const Index jSize,
+void MultiArray< 2, Element, Device, Index > :: setDimensions( const Index jSize,
                                                                   const Index iSize )
 {
    TNL_ASSERT( iSize > 0 && jSize > 0,
@@ -66,11 +66,11 @@ bool MultiArray< 2, Element, Device, Index > :: setDimensions( const Index jSize
 
    dimensions[ 0 ] = iSize;
    dimensions[ 1 ] = jSize;
-   return Array< Element, Device, Index > :: setSize( iSize * jSize );
+   Array< Element, Device, Index > :: setSize( iSize * jSize );
 }
 
 template< typename Element, typename Device, typename Index >
-bool MultiArray< 2, Element, Device, Index > :: setDimensions( const Containers::StaticVector< 2, Index >& dimensions )
+void MultiArray< 2, Element, Device, Index > :: setDimensions( const Containers::StaticVector< 2, Index >& dimensions )
 {
    TNL_ASSERT( dimensions[ 0 ] > 0 && dimensions[ 1 ] > 0,
               std::cerr << "dimensions = " << dimensions );
@@ -79,14 +79,14 @@ bool MultiArray< 2, Element, Device, Index > :: setDimensions( const Containers:
     */
    this->dimensions. x() = dimensions. y();
    this->dimensions. y() = dimensions. x();
-   return Array< Element, Device, Index > :: setSize( this->dimensions[ 1 ] * this->dimensions[ 0 ] );
+   Array< Element, Device, Index > :: setSize( this->dimensions[ 1 ] * this->dimensions[ 0 ] );
 }
 
 template< typename Element, typename Device, typename Index >
    template< typename MultiArrayT >
-bool MultiArray< 2, Element, Device, Index > :: setLike( const MultiArrayT& multiArray )
+void MultiArray< 2, Element, Device, Index > :: setLike( const MultiArrayT& multiArray )
 {
-   return setDimensions( multiArray. getDimensions() );
+   setDimensions( multiArray. getDimensions() );
 }
 
 template< typename Element, typename Device, typename Index >

@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/tnlConfig.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/VectorOperations.h>
 #include <TNL/Containers/Algorithms/cuda-prefix-sum.h>
 #include <TNL/Containers/Algorithms/CublasWrapper.h>
@@ -48,7 +49,7 @@ getVectorMax( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionMax< Real, Index > operation;
@@ -68,7 +69,7 @@ getVectorMin( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionMin< Real, Index > operation;
@@ -88,7 +89,7 @@ getVectorAbsMax( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionAbsMax< Real, Index > operation;
@@ -108,7 +109,7 @@ getVectorAbsMin( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionAbsMin< Real, Index > operation;
@@ -128,7 +129,7 @@ getVectorL1Norm( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionAbsSum< Real, Index > operation;
@@ -148,7 +149,7 @@ getVectorL2Norm( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionL2Norm< Real, Index > operation;
@@ -170,9 +171,8 @@ getVectorLpNorm( const Vector& v,
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
-   TNL_ASSERT( p > 0.0,
-              std::cerr << " p = " << p );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_GE( p, 1.0, "Parameter of the L^p norm must be at least 1.0." );
  
    if( p == 1 )
       return getVectorL1Norm( v );
@@ -197,7 +197,7 @@ getVectorSum( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionSum< Real, Index > operation;
@@ -218,8 +218,8 @@ getVectorDifferenceMax( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffMax< Real, Index > operation;
@@ -240,8 +240,8 @@ getVectorDifferenceMin( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffMin< Real, Index > operation;
@@ -263,8 +263,8 @@ getVectorDifferenceAbsMax( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffAbsMax< Real, Index > operation;
@@ -285,8 +285,8 @@ getVectorDifferenceAbsMin( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffAbsMin< Real, Index > operation;
@@ -307,8 +307,8 @@ getVectorDifferenceL1Norm( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffAbsSum< Real, Index > operation;
@@ -329,8 +329,8 @@ getVectorDifferenceL2Norm( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffL2Norm< Real, Index > operation;
@@ -353,10 +353,9 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( p > 0.0,
-              std::cerr << " p = " << p );
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
+   TNL_ASSERT_GE( p, 1.0, "Parameter of the L^p norm must be at least 1.0." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffLpNorm< Real, Index > operation;
@@ -378,8 +377,8 @@ getVectorDifferenceSum( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result( 0 );
    Algorithms::tnlParallelReductionDiffSum< Real, Index > operation;
@@ -414,24 +413,22 @@ VectorOperations< Devices::Cuda >::
 vectorScalarMultiplication( Vector& v,
                             const typename Vector::RealType& alpha )
 {
-   typedef typename Vector::RealType Real;
-   typedef typename Vector::IndexType Index;
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   TNL_ASSERT( v.getSize() > 0, );
-
-   #ifdef HAVE_CUDA
-      dim3 blockSize( 0 ), gridSize( 0 );
-      const Index& size = v.getSize();
-      blockSize.x = 256;
-      Index blocksNumber = ceil( ( double ) size / ( double ) blockSize.x );
-      gridSize.x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
-      vectorScalarMultiplicationCudaKernel<<< gridSize, blockSize >>>( v.getData(),
-                                                                       size,
-                                                                       alpha );
-      checkCudaDevice;
-   #else
-      CudaSupportMissingMessage;;
-   #endif
+#ifdef HAVE_CUDA
+   typedef typename Vector::IndexType Index;   
+   dim3 blockSize( 0 ), gridSize( 0 );
+   const Index& size = v.getSize();
+   blockSize.x = 256;
+   Index blocksNumber = ceil( ( double ) size / ( double ) blockSize.x );
+   gridSize.x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
+   vectorScalarMultiplicationCudaKernel<<< gridSize, blockSize >>>( v.getData(),
+                                                                    size,
+                                                                    alpha );
+   TNL_CHECK_CUDA_DEVICE;
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 
@@ -444,8 +441,8 @@ getScalarProduct( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result( 0 );
 /*#if defined HAVE_CUBLAS && defined HAVE_CUDA
@@ -498,31 +495,28 @@ addVector( Vector1& y,
            const typename Vector2::RealType& alpha,
            const typename Vector1::RealType& thisMultiplicator )
 {
-   typedef typename Vector1::RealType Real;
+   TNL_ASSERT_GT( x.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( x.getSize(), y.getSize(), "The vector sizes must be the same." );
+
+#ifdef HAVE_CUDA
    typedef typename Vector1::IndexType Index;
+   
+   dim3 blockSize( 0 ), gridSize( 0 );
 
-   TNL_ASSERT( y.getSize() > 0, );
-   TNL_ASSERT( y.getSize() == x.getSize(), );
-   TNL_ASSERT( y.getData() != 0, );
-   TNL_ASSERT( x.getData() != 0, );
+   const Index& size = x.getSize();
+   dim3 cudaBlockSize( 256 );
+   dim3 cudaBlocks;
+   cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
-   #ifdef HAVE_CUDA
-      dim3 blockSize( 0 ), gridSize( 0 );
-
-      const Index& size = x.getSize();
-      dim3 cudaBlockSize( 256 );
-      dim3 cudaBlocks;
-      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
-
-      vectorAddVectorCudaKernel<<< cudaBlocks, cudaBlockSize >>>( y.getData(),
-                                                                  x.getData(),
-                                                                  size,
-                                                                  alpha,
-                                                                  thisMultiplicator);
-      checkCudaDevice;
-   #else
-      CudaSupportMissingMessage;;
-   #endif
+   vectorAddVectorCudaKernel<<< cudaBlocks, cudaBlockSize >>>( y.getData(),
+                                                               x.getData(),
+                                                               size,
+                                                               alpha,
+                                                               thisMultiplicator);
+   TNL_CHECK_CUDA_DEVICE;
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 #ifdef HAVE_CUDA
@@ -569,37 +563,30 @@ addVectors( Vector1& v,
             const typename Vector3::RealType& multiplicator2,
             const typename Vector1::RealType& thisMultiplicator )
 {
-   typedef typename Vector1::RealType Real;
-   typedef typename Vector1::IndexType Index;
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v.getSize(), v1.getSize(), "The vector sizes must be the same." );
+   TNL_ASSERT_EQ( v.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   TNL_ASSERT( v.getSize() > 0, );
-   TNL_ASSERT( v.getSize() == v1.getSize(), );
-   TNL_ASSERT( v.getSize() == v2.getSize(), );
-   TNL_ASSERT( v.getData() != 0, );
-   TNL_ASSERT( v1.getData() != 0, );
-   TNL_ASSERT( v2.getData() != 0, );
+#ifdef HAVE_CUDA
+   typedef typename Vector1::IndexType Index;   
+   dim3 blockSize( 0 ), gridSize( 0 );
 
-   #ifdef HAVE_CUDA
-      dim3 blockSize( 0 ), gridSize( 0 );
+   const Index& size = v.getSize();
+   dim3 cudaBlockSize( 256 );
+   dim3 cudaBlocks;
+   cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
-      const Index& size = v.getSize();
-      dim3 cudaBlockSize( 256 );
-      dim3 cudaBlocks;
-      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
-
-      vectorAddVectorsCudaKernel<<< cudaBlocks, cudaBlockSize >>>( v.getData(),
-                                                                   v1.getData(),
-                                                                   v2.getData(),
-                                                                   size,
-                                                                   multiplicator1,
-                                                                   multiplicator2,
-                                                                   thisMultiplicator);
-      checkCudaDevice;
-   #else
-      CudaSupportMissingMessage;;
-   #endif
-
-
+   vectorAddVectorsCudaKernel<<< cudaBlocks, cudaBlockSize >>>( v.getData(),
+                                                                v1.getData(),
+                                                                v2.getData(),
+                                                                size,
+                                                                multiplicator1,
+                                                                multiplicator2,
+                                                                thisMultiplicator);
+   TNL_CHECK_CUDA_DEVICE;
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 template< typename Vector >
@@ -609,7 +596,7 @@ computePrefixSum( Vector& v,
                   typename Vector::IndexType begin,
                   typename Vector::IndexType end )
 {
-   #ifdef HAVE_CUDA
+#ifdef HAVE_CUDA
    typedef Algorithms::tnlParallelReductionSum< typename Vector::RealType, typename Vector::IndexType > OperationType;
 
    OperationType operation;
@@ -621,10 +608,10 @@ computePrefixSum( Vector& v,
                                    &v.getData()[ begin ],
                                    &v.getData()[ begin ],
                                    operation,
-                                   Algorithms::inclusivePrefixSum );
-   #else
-      CudaSupportMissingMessage;;
-   #endif
+                                   Algorithms::PrefixSumType::inclusive );
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
 }
 
 template< typename Vector >
@@ -646,7 +633,7 @@ computeExclusivePrefixSum( Vector& v,
                                    &v.getData()[ begin ],
                                    &v.getData()[ begin ],
                                    operation,
-                                   Algorithms::exclusivePrefixSum );
+                                   Algorithms::PrefixSumType::exclusive );
 #endif
 }
 

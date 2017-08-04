@@ -282,12 +282,12 @@ bool convertObject( const MeshPointer& meshPointer,
        parsedObjectType[ 0 ] == "tnlVector" )          //
    {
       using MeshType = typename MeshPointer::ObjectType;
-      // FIXME: why is MeshType::IndexType not the same as Index?
+      // FIXME: why is MeshType::GlobalIndexType not the same as Index?
 //      Containers::Vector< Element, Devices::Host, Index > vector;
-      Containers::Vector< Element, Devices::Host, typename MeshType::IndexType > vector;
+      Containers::Vector< Element, Devices::Host, typename MeshType::GlobalIndexType > vector;
       if( ! vector.load( inputFileName ) )
          return false;
-      Functions::MeshFunction< MeshType, MeshType::meshDimension, Element > mf;
+      Functions::MeshFunction< MeshType, MeshType::getMeshDimension(), Element > mf;
       mf.bind( meshPointer, vector );
       if( ! mf.write( outputFileName, outputFormat ) )
          return false;

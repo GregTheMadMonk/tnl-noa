@@ -21,7 +21,7 @@
 #include <TNL/Containers/StaticArray.h>
 
 #ifdef HAVE_GTEST 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #endif
 
 using namespace TNL;
@@ -47,12 +47,13 @@ TEST( UniquePointerTest, ConstructorTest )
 };
 #endif
 
+#include "GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST
    ::testing::InitGoogleTest( &argc, argv );
    return RUN_ALL_TESTS();
 #else
-   return EXIT_FAILURE;
+   throw GtestMissingError();
 #endif
 }

@@ -39,17 +39,25 @@ class SharedVector : public Containers::SharedArray< Real, Device, Index >
    typedef SharedVector< Real, Devices::Cuda, Index > CudaType;
 
 
+   #ifndef HAVE_MIC
    __cuda_callable__
+   #endif
    SharedVector();
 
+   #ifndef HAVE_MIC
    __cuda_callable__
+   #endif
    SharedVector( Real* data,
                     const Index size );
 
+   #ifndef HAVE_MIC
    __cuda_callable__
+   #endif
    SharedVector( Vector< Real, Device, Index >& vector );
 
+   #ifndef HAVE_MIC
    __cuda_callable__
+   #endif
    SharedVector( SharedVector< Real, Device, Index >& vector );
 
    static String getType();

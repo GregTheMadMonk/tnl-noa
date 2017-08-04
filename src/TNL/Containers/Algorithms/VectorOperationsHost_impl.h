@@ -48,7 +48,7 @@ getVectorMax( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    Real result = v.getElement( 0 );
    const Index n = v.getSize();
@@ -68,7 +68,7 @@ getVectorMin( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    Real result = v.getElement( 0 );
    const Index n = v.getSize();
@@ -88,7 +88,7 @@ getVectorAbsMax( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    Real result = std::fabs( v.getElement( 0 ) );
    const Index n = v.getSize();
@@ -109,7 +109,7 @@ getVectorAbsMin( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    Real result = std::fabs( v.getElement( 0 ) );
    const Index n = v.getSize();
@@ -129,7 +129,7 @@ getVectorL1Norm( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    Real result( 0.0 );
    const Index n = v.getSize();
@@ -149,7 +149,7 @@ getVectorL2Norm( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    const Index n = v.getSize();
 
@@ -212,9 +212,8 @@ getVectorLpNorm( const Vector& v,
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
-   TNL_ASSERT( p > 0.0,
-              std::cerr << " p = " << p );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_GE( p, 1.0, "Parameter of the L^p norm must be at least 1.0." );
 
    if( p == 1.0 )
       return getVectorL1Norm( v );
@@ -239,7 +238,7 @@ getVectorSum( const Vector& v )
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    Real result( 0.0 );
    const Index n = v.getSize();
@@ -260,8 +259,8 @@ getVectorDifferenceMax( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result = v1.getElement( 0 ) - v2.getElement( 0 );
    const Index n = v1.getSize();
@@ -282,8 +281,8 @@ getVectorDifferenceMin( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result = v1.getElement( 0 ) - v2.getElement( 0 );
    const Index n = v1.getSize();
@@ -304,8 +303,8 @@ getVectorDifferenceAbsMax( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result = std::fabs( v1.getElement( 0 ) - v2.getElement( 0 ) );
    const Index n = v1.getSize();
@@ -326,8 +325,8 @@ getVectorDifferenceAbsMin( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result = std::fabs( v1[ 0 ] - v2[ 0 ] );
    const Index n = v1.getSize();
@@ -348,8 +347,8 @@ getVectorDifferenceL1Norm( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result( 0.0 );
    const Index n = v1.getSize();
@@ -370,8 +369,8 @@ getVectorDifferenceL2Norm( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result( 0.0 );
    const Index n = v1.getSize();
@@ -397,10 +396,9 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( p > 0.0,
-              std::cerr << " p = " << p );
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
+   TNL_ASSERT_GE( p, 1.0, "Parameter of the L^p norm must be at least 1.0." );
 
    if( p == 1.0 )
       return getVectorDifferenceL1Norm( v1, v2 );
@@ -426,8 +424,8 @@ getVectorDifferenceSum( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result( 0.0 );
    const Index n = v1.getSize();
@@ -446,10 +444,9 @@ VectorOperations< Devices::Host >::
 vectorScalarMultiplication( Vector& v,
                             const typename Vector::RealType& alpha )
 {
-   typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
    const Index n = v.getSize();
 #ifdef HAVE_OPENMP
@@ -469,8 +466,8 @@ getScalarProduct( const Vector1& v1,
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v1.getSize() > 0, );
-   TNL_ASSERT( v1.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
    const Index n = v1.getSize();
 
 #ifdef OPTIMIZED_VECTOR_HOST_OPERATIONS
@@ -530,11 +527,10 @@ addVector( Vector1& y,
            const typename Vector2::RealType& alpha,
            const typename Vector1::RealType& thisMultiplicator )
 {
-   typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( x.getSize() > 0, );
-   TNL_ASSERT( x.getSize() == y.getSize(), );
+   TNL_ASSERT_GT( x.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( x.getSize(), y.getSize(), "The vector sizes must be the same." );
 
    const Index n = y.getSize();
 
@@ -542,6 +538,7 @@ addVector( Vector1& y,
 #ifdef __GNUC__
    // We need to get the address of the first element to avoid
    // bounds checking in TNL::Array::operator[]
+   typedef typename Vector1::RealType Real;   
          Real* Y = y.getData();
    const Real* X = x.getData();
 #endif
@@ -600,12 +597,11 @@ addVectors( Vector1& v,
             const typename Vector3::RealType& multiplicator2,
             const typename Vector1::RealType& thisMultiplicator )
 {
-   typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
-   TNL_ASSERT( v.getSize() > 0, );
-   TNL_ASSERT( v.getSize() == v1.getSize(), );
-   TNL_ASSERT( v.getSize() == v2.getSize(), );
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( v.getSize(), v1.getSize(), "The vector sizes must be the same." );
+   TNL_ASSERT_EQ( v.getSize(), v2.getSize(), "The vector sizes must be the same." );
  
    const Index n = v.getSize();
    if( thisMultiplicator == 1.0 )
@@ -631,6 +627,7 @@ computePrefixSum( Vector& v,
 {
    typedef typename Vector::IndexType Index;
 
+   // TODO: parallelize with OpenMP
    for( Index i = begin + 1; i < end; i++ )
       v[ i ] += v[ i - 1 ];
 }
@@ -645,6 +642,7 @@ computeExclusivePrefixSum( Vector& v,
    typedef typename Vector::IndexType Index;
    typedef typename Vector::RealType Real;
 
+   // TODO: parallelize with OpenMP
    Real aux( v[ begin ] );
    v[ begin ] = 0.0;
    for( Index i = begin + 1; i < end; i++ )

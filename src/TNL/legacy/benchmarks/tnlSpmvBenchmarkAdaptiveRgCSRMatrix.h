@@ -12,7 +12,9 @@
 #define TNLSPMVBENCHMARKADAPTIVERGCSRMATRIX_H_
 
 #include "tnlSpmvBenchmark.h"
+
 #include <TNL/Assert.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 
 template< typename Real, typename Device, typename Index>
 class tnlSpmvBenchmarkAdaptiveRgCSR : public tnlSpmvBenchmark< Real, Device, Index, tnlAdaptiveRgCSR >
@@ -131,7 +133,7 @@ void tnlSpmvBenchmarkAdaptiveRgCSR< Real, Device, Index > :: writeProgress() con
        std::cout << right << std::setw( this->benchmarkStatusColumnWidth ) << "  FAILED";
 #ifndef HAVE_CUDA
    if( Device :: getDevice() == Devices::CudaDevice )
-      CudaSupportMissingMessage;;
+      throw Exceptions::CudaSupportMissing();
 #endif
      std::cout << std::endl;
 }

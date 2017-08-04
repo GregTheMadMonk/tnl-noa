@@ -14,4 +14,4 @@ set( tnl_implementation_operators_godunov_SOURCES
      ${common_SOURCES}
      PARENT_SCOPE )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/implementation/operators/godunov )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Operators/Godunov/ )

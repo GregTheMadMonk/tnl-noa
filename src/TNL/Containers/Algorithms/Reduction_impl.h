@@ -15,6 +15,7 @@
 //#define CUDA_REDUCTION_PROFILING
 
 #include <TNL/Assert.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/CudaReductionKernel.h>
@@ -52,10 +53,18 @@ reductionOnCudaDevice( Operation& operation,
    typedef typename Operation::LaterReductionOperation LaterReductionOperation;
  
    /***
+    * Only fundamental and pointer types can be safely reduced on host. Complex
+    * objects stored on the device might contain pointers into the device memory,
+    * in which case reduction on host might fail.
+    */
+   constexpr bool can_reduce_all_on_host = std::is_fundamental< RealType >::value || std::is_pointer< RealType >::value;
+   constexpr bool can_reduce_later_on_host = std::is_fundamental< ResultType >::value || std::is_pointer< ResultType >::value;
+
+   /***
     * First check if the input array(s) is/are large enough for the reduction on GPU.
     * Otherwise copy it/them to host and reduce on CPU.
     */
-   if( size <= minGPUReductionDataSize )
+   if( can_reduce_all_on_host && size <= minGPUReductionDataSize )
    {
       RealType hostArray1[ minGPUReductionDataSize ];
       RealType hostArray2[ minGPUReductionDataSize ];
@@ -92,40 +101,68 @@ reductionOnCudaDevice( Operation& operation,
       timer.start();
    #endif
 
-   /***
-    * Transfer the reduced data from device to host.
-    */
-   ResultType resultArray[ reducedSize ];
-   if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
-      return false;
- 
-   #ifdef CUDA_REDUCTION_PROFILING
-      timer.stop();
-      std::cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << std::endl;
-   #endif
+   if( can_reduce_later_on_host ) {
+      /***
+       * Transfer the reduced data from device to host.
+       */
+      ResultType resultArray[ reducedSize ];
+      if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
+         return false;
+    
+      #ifdef CUDA_REDUCTION_PROFILING
+         timer.stop();
+         std::cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << std::endl;
+         timer.reset();
+         timer.start();
+      #endif
+    
+      /***
+       * Reduce the data on the host system.
+       */
+      LaterReductionOperation laterReductionOperation;
+      result = laterReductionOperation. initialValue();
+      for( IndexType i = 0; i < reducedSize; i ++ )
+         result = laterReductionOperation.reduceOnHost( i, result, resultArray, ( ResultType*) 0 );
+    
+      #ifdef CUDA_REDUCTION_PROFILING
+         timer.stop();
+         std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
+      #endif
+   }
+   else {
+      /***
+       * Data can't be safely reduced on host, so continue with the reduction on the CUDA device.
+       */
+      LaterReductionOperation laterReductionOperation;
+      while( reducedSize > 1 ) {
+         reducedSize = CudaReductionKernelLauncher( laterReductionOperation,
+                                                    reducedSize,
+                                                    deviceAux1,
+                                                    (ResultType*) 0,
+                                                    deviceAux1 );
+      }
 
-   #ifdef CUDA_REDUCTION_PROFILING
-      timer.reset();
-      timer.start();
-   #endif
+      #ifdef CUDA_REDUCTION_PROFILING
+         timer.stop();
+         std::cout << "   Reduction of small data set on GPU took " << timer.getRealTime() << " sec. " << std::endl;
+         timer.reset();
+         timer.start();
+      #endif
+
+      ResultType resultArray[ 1 ];
+      if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
+         return false;
+      result = resultArray[ 0 ];
+
+      #ifdef CUDA_REDUCTION_PROFILING
+         timer.stop();
+         std::cout << "   Transferring the result to CPU took " << timer.getRealTime() << " sec. " << std::endl;
+      #endif
+   }
  
-   /***
-    * Reduce the data on the host system.
-    */
-   LaterReductionOperation laterReductionOperation;
-   result = laterReductionOperation. initialValue();
-   for( IndexType i = 0; i < reducedSize; i ++ )
-      result = laterReductionOperation.reduceOnHost( i, result, resultArray, ( ResultType*) 0 );
- 
-   #ifdef CUDA_REDUCTION_PROFILING
-      timer.stop();
-      std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
-   #endif
- 
-   return checkCudaDevice;
+   return TNL_CHECK_CUDA_DEVICE;
 #else
-   CudaSupportMissingMessage;;
-   return false;
+   throw Exceptions::CudaSupportMissing();
 #endif
 };
 

@@ -80,15 +80,8 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Set DOFs (degrees of freedom)
     */
-   TNL_ASSERT( problem->getDofs( this->meshPointer ) != 0, );
-   std::cout << "Allocating dofs ... ";
-   if( ! this->dofsPointer->setSize( problem->getDofs( this->meshPointer ) ) )
-   {
-      std::cerr << std::endl;
-      std::cerr << "I am not able to allocate DOFs (degrees of freedom)." << std::endl;
-      return false;
-   }
-   std::cout << " [ OK ]" << std::endl;
+   TNL_ASSERT_GT( problem->getDofs( this->meshPointer ), 0, "number of DOFs must be positive" );
+   this->dofsPointer->setSize( problem->getDofs( this->meshPointer ) );
    this->dofsPointer->setValue( 0.0 );
    this->problem->bindDofs( this->meshPointer, this->dofsPointer );
    
@@ -101,11 +94,11 @@ setup( const Config::ParameterContainer& parameters,
    /***
     * Set-up the initial condition
     */
-  std::cout << "Setting up the initial condition ... ";
+   std::cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
    if( ! this->problem->setInitialCondition( parameters, meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
       return false;
-  std::cout << " [ OK ]" << std::endl;
+   std::cout << " [ OK ]" << std::endl;
 
    /****
     * Initialize the time discretisation
@@ -141,8 +134,12 @@ writeProlog( Logger& logger,
       logger.writeParameter< double >( "Adaptivity:", "merson-adaptivity", parameters, 1 );
    if( solverName == "sor" )
       logger.writeParameter< double >( "Omega:", "sor-omega", parameters, 1 );
-   if( solverName == "gmres" )
-      logger.writeParameter< int >( "Restarting:", "gmres-restarting", parameters, 1 );
+   if( solverName == "gmres" || solverName == "cwygmres" ) {
+      logger.writeParameter< int >( "Restarting min:", "gmres-restarting-min", parameters, 1 );
+      logger.writeParameter< int >( "Restarting max:", "gmres-restarting-max", parameters, 1 );
+      logger.writeParameter< int >( "Restarting step min:", "gmres-restarting-step-min", parameters, 1 );
+      logger.writeParameter< int >( "Restarting step max:", "gmres-restarting-step-max", parameters, 1 );
+   }
    logger.writeParameter< double >( "Convergence residue:", "convergence-residue", parameters );
    logger.writeParameter< double >( "Divergence residue:", "divergence-residue", parameters );
    logger.writeParameter< int >( "Maximal number of iterations:", "max-iterations", parameters );
@@ -319,10 +316,8 @@ bool
 TimeDependentPDESolver< Problem, TimeStepper >::
 solve()
 {
-   TNL_ASSERT( timeStepper != 0,
-              std::cerr << "No time stepper was set in PDESolver." );
-   TNL_ASSERT( problem != 0,
-              std::cerr << "No problem was set in PDESolver." );
+   TNL_ASSERT_TRUE( timeStepper, "No time stepper was set in PDESolver." );
+   TNL_ASSERT_TRUE( problem, "No problem was set in PDESolver." );
 
    if( snapshotPeriod == 0 )
    {

@@ -119,7 +119,7 @@ TEST( MultiArrayTest, testSetGetElement )
                Devices::Cuda::passToDevice( u );
       testSetGetElementKernel<<< 1, 16 >>>( kernel_u );
       Devices::Cuda::freeFromDevice( kernel_u );
-      ASSERT_TRUE( checkCudaDevice );
+      ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
 #endif
    }
    for( int i = 0; i < 10; i ++ )
@@ -207,14 +207,16 @@ TEST( MultiArrayTest, testSaveAndLoad )
    for( int i = 0; i < size; i ++ )
       setDiagonalElement( v, i, 3.14147 );
    File file;
-   file. open( "test-file.tnl", tnlWriteMode );
+   file. open( "test-file.tnl", IOMode::write );
    ASSERT_TRUE( v. save( file ) );
    file. close();
    MultiArray< Dimension, ElementType, Device, IndexType > u;
-   file. open( "test-file.tnl", tnlReadMode );
+   file. open( "test-file.tnl", IOMode::read );
    ASSERT_TRUE( u. load( file ) );
    file. close();
    ASSERT_TRUE( u == v );
+
+   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 }
 #endif /* HAVE_GTEST */
 

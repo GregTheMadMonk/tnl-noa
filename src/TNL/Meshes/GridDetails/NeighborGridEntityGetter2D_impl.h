@@ -1,5 +1,5 @@
 /***************************************************************************
-                          NeighbourGridEntityGetter2D_impl.h  -  description
+                          NeighborGridEntityGetter2D_impl.h  -  description
                              -------------------
     begin                : Nov 23, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Meshes/GridDetails/NeighbourGridEntityGetter.h>
+#include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
 #include <TNL/Meshes/GridDetails/Grid1D.h>
 #include <TNL/Meshes/GridDetails/Grid2D.h>
 #include <TNL/Meshes/GridDetails/Grid3D.h>
@@ -20,7 +20,7 @@ namespace Meshes {
 
 /****
  * +-----------------+---------------------------+-------------------+
- * | EntityDimenions | NeighbourEntityDimension |  Stencil Storage  |
+ * | EntityDimenions | NeighborEntityDimension |  Stencil Storage  |
  * +-----------------+---------------------------+-------------------+
  * |       2         |              2            | No specialization |
  * +-----------------+---------------------------+-------------------+
@@ -30,7 +30,7 @@ template< typename Real,
           typename Index,
           typename Config,
           typename StencilStorage >
-class NeighbourGridEntityGetter<
+class NeighborGridEntityGetter<
    GridEntity< Meshes::Grid< 2, Real, Device, Index >, 2, Config >,
    2,
    StencilStorage >
@@ -38,35 +38,32 @@ class NeighbourGridEntityGetter<
    public:
  
       static const int EntityDimension = 2;
-      static const int NeighbourEntityDimension = 2;
+      static const int NeighborEntityDimension = 2;
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-      typedef GridEntity< GridType, NeighbourEntityDimension, Config > NeighbourGridEntityType;
+      typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetterType;
+      typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
 
       __cuda_callable__ inline
-      NeighbourGridEntityGetter( const GridEntityType& entity )
+      NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
  
       template< int stepX, int stepY >
       __cuda_callable__ inline
-      NeighbourGridEntityType getEntity() const
+      NeighborGridEntityType getEntity() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0 ) &&
                     entity.getCoordinates() + CoordinatesType( stepX, stepY ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-         return NeighbourGridEntityType( this->grid,
+         return NeighborGridEntityType( this->grid,
                                          CoordinatesType( entity.getCoordinates().x() + stepX,
                                                           entity.getCoordinates().y() + stepY ) );
       }
@@ -75,11 +72,8 @@ class NeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0 ) &&
                     entity.getCoordinates() + CoordinatesType( stepX, stepY ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
@@ -95,12 +89,12 @@ class NeighbourGridEntityGetter<
 
       const GridEntityType& entity;
  
-      //NeighbourGridEntityGetter(){};
+      //NeighborGridEntityGetter(){};
 };
 
 /****
  * +-----------------+---------------------------+-------------------+
- * | EntityDimenions | NeighbourEntityDimension |  Stencil Storage  |
+ * | EntityDimenions | NeighborEntityDimension |  Stencil Storage  |
  * +-----------------+---------------------------+-------------------+
  * |       2         |              2            |       Cross       |
  * +-----------------+---------------------------+-------------------+
@@ -109,7 +103,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Config >
-class NeighbourGridEntityGetter<
+class NeighborGridEntityGetter<
    GridEntity< Meshes::Grid< 2, Real, Device, Index >, 2, Config >,
    2,
    GridEntityStencilStorageTag< GridEntityCrossStencil > >
@@ -117,40 +111,37 @@ class NeighbourGridEntityGetter<
    public:
  
       static const int EntityDimension = 2;
-      static const int NeighbourEntityDimension = 2;
+      static const int NeighborEntityDimension = 2;
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-      typedef GridEntity< GridType, NeighbourEntityDimension, Config > NeighbourGridEntityType;
+      typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetterType;
+      typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
       typedef GridEntityStencilStorageTag< GridEntityCrossStencil > StencilStorage;
-      typedef NeighbourGridEntityGetter< GridEntityType, 2, StencilStorage > ThisType;
+      typedef NeighborGridEntityGetter< GridEntityType, 2, StencilStorage > ThisType;
  
  
       static const int stencilSize = Config::getStencilSize();
 
       __cuda_callable__ inline
-      NeighbourGridEntityGetter( const GridEntityType& entity )
+      NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
  
       template< int stepX, int stepY >
       __cuda_callable__ inline
-      NeighbourGridEntityType getEntity() const
+      NeighborGridEntityType getEntity() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0 ) &&
                     entity.getCoordinates() + CoordinatesType( stepX, stepY ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-            return NeighbourGridEntityType( this->entity.getMesh(),
+            return NeighborGridEntityType( this->entity.getMesh(),
                                             CoordinatesType( entity.getCoordinates().x() + stepX,
                                                              entity.getCoordinates().y() + stepY ) );
       }
@@ -159,11 +150,8 @@ class NeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0 ) &&
                     entity.getCoordinates() + CoordinatesType( stepX, stepY ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
@@ -189,9 +177,9 @@ class NeighbourGridEntityGetter<
          public:
  
             __cuda_callable__
-            static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
+            static void exec( ThisType& neighborEntityGetter, const IndexType& entityIndex )
             {
-               neighbourEntityGetter.stencilX[ index + stencilSize ] = entityIndex + index;
+               neighborEntityGetter.stencilX[ index + stencilSize ] = entityIndex + index;
             }
       };
 
@@ -201,10 +189,10 @@ class NeighbourGridEntityGetter<
          public:
  
             __cuda_callable__
-            static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
+            static void exec( ThisType& neighborEntityGetter, const IndexType& entityIndex )
             {
-               neighbourEntityGetter.stencilY[ index + stencilSize ] =
-                  entityIndex + index * neighbourEntityGetter.entity.getMesh().getDimensions().x();
+               neighborEntityGetter.stencilY[ index + stencilSize ] =
+                  entityIndex + index * neighborEntityGetter.entity.getMesh().getDimensions().x();
             }
       };
 
@@ -226,12 +214,12 @@ class NeighbourGridEntityGetter<
       IndexType stencilX[ 2 * stencilSize + 1 ];
       IndexType stencilY[ 2 * stencilSize + 1 ];
  
-      //NeighbourGridEntityGetter(){};
+      //NeighborGridEntityGetter(){};
 };
 
 /****
  * +-----------------+---------------------------+-------------------+
- * | EntityDimenions | NeighbourEntityDimension |  Stencil Storage  |
+ * | EntityDimenions | NeighborEntityDimension |  Stencil Storage  |
  * +-----------------+---------------------------+-------------------+
  * |       2         |              1            |       None        |
  * +-----------------+---------------------------+-------------------+
@@ -241,7 +229,7 @@ template< typename Real,
           typename Index,
           typename Config,
           typename StencilStorage >
-class NeighbourGridEntityGetter<
+class NeighborGridEntityGetter<
    GridEntity< Meshes::Grid< 2, Real, Device, Index >, 2, Config >,
    1,
    StencilStorage >
@@ -249,33 +237,29 @@ class NeighbourGridEntityGetter<
    public:
  
       static const int EntityDimension = 2;
-      static const int NeighbourEntityDimension = 1;
+      static const int NeighborEntityDimension = 1;
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-      typedef GridEntity< GridType, NeighbourEntityDimension, Config > NeighbourGridEntityType;
+      typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetterType;
+      typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
       typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
       typedef typename GridEntityType::EntityBasisType EntityBasisType;
 
       __cuda_callable__ inline
-      NeighbourGridEntityGetter( const GridEntityType& entity )
+      NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
  
       template< int stepX, int stepY >
       __cuda_callable__ inline
-      NeighbourGridEntityType getEntity() const
+      NeighborGridEntityType getEntity() const
       {
-         TNL_ASSERT( ! stepX + ! stepY == 1,
-                    std::cerr << "Only one of the steps can be non-zero: stepX = " << stepX << " stepY = " << stepY );
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         static_assert( ! stepX + ! stepY == 1, "Only one of the steps can be non-zero." );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() +
                        CoordinatesType( stepX + ( stepX < 0 ),
                                         stepY + ( stepY < 0 ) ) >= CoordinatesType( 0, 0 ) &&
@@ -287,7 +271,7 @@ class NeighbourGridEntityGetter<
                    << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-         return NeighbourGridEntityType( this->entity.getMesh(),
+         return NeighborGridEntityType( this->entity.getMesh(),
                                          CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
                                                           entity.getCoordinates().y() + stepY + ( stepY < 0 ) ),
                                          EntityOrientationType( stepX ? (stepX > 0 ? 1 : -1) : 0,
@@ -312,7 +296,7 @@ class NeighbourGridEntityGetter<
 
 /****
  * +-----------------+---------------------------+-------------------+
- * | EntityDimenions | NeighbourEntityDimension |  Stencil Storage  |
+ * | EntityDimenions | NeighborEntityDimension |  Stencil Storage  |
  * +-----------------+---------------------------+-------------------+
  * |       2         |            0              |       None        |
  * +-----------------+---------------------------+-------------------+
@@ -322,7 +306,7 @@ template< typename Real,
           typename Index,
           typename Config,
           typename StencilStorage >
-class NeighbourGridEntityGetter<
+class NeighborGridEntityGetter<
    GridEntity< Meshes::Grid< 2, Real, Device, Index >, 2, Config >,
    0,
    StencilStorage >
@@ -330,31 +314,28 @@ class NeighbourGridEntityGetter<
    public:
  
       static const int EntityDimension = 2;
-      static const int NeighbourEntityDimension = 0;
+      static const int NeighborEntityDimension = 0;
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-      typedef GridEntity< GridType, NeighbourEntityDimension, Config > NeighbourGridEntityType;
+      typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetterType;
+      typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
 
       __cuda_callable__ inline
-      NeighbourGridEntityGetter( const GridEntityType& entity )
+      NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
  
       template< int stepX, int stepY >
       __cuda_callable__ inline
-      NeighbourGridEntityType getEntity() const
+      NeighborGridEntityType getEntity() const
       {
          TNL_ASSERT( stepX != 0 && stepY != 0,
                     std::cerr << " stepX = " << stepX << " stepY = " << stepY );
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() +
                        CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) ) >= CoordinatesType( 0, 0 ) &&
                     entity.getCoordinates() +
@@ -365,7 +346,7 @@ class NeighbourGridEntityGetter<
                    << " entity.getMesh().getDimensions() + CoordinatesType( sign( stepX ), sign( stepY ) ) = "
                    << entity.getMesh().getDimensions()  + CoordinatesType( sign( stepX ), sign( stepY ) )
                    << " EntityDimension = " << EntityDimension );
-         return NeighbourGridEntityType( this->grid,
+         return NeighborGridEntityType( this->grid,
                                          CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
                                                           entity.getCoordinates().y() + stepY + ( stepY < 0 ) ) );
       }
@@ -384,12 +365,12 @@ class NeighbourGridEntityGetter<
 
       const GridEntityType& entity;
  
-      //NeighbourGridEntityGetter(){};
+      //NeighborGridEntityGetter(){};
 };
 
 /****
  * +-----------------+---------------------------+-------------------+
- * | EntityDimenions | NeighbourEntityDimension |  Stencil Storage  |
+ * | EntityDimenions | NeighborEntityDimension |  Stencil Storage  |
  * +-----------------+---------------------------+-------------------+
  * |       1         |              2            |       None        |
  * +-----------------+---------------------------+-------------------+
@@ -399,7 +380,7 @@ template< typename Real,
           typename Index,
           typename Config,
           typename StencilStorage >
-class NeighbourGridEntityGetter<
+class NeighborGridEntityGetter<
    GridEntity< Meshes::Grid< 2, Real, Device, Index >, 1, Config >,
    2,
    StencilStorage >
@@ -407,33 +388,30 @@ class NeighbourGridEntityGetter<
    public:
  
       static const int EntityDimension = 1;
-      static const int NeighbourEntityDimension = 2;
+      static const int NeighborEntityDimension = 2;
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-      typedef GridEntity< GridType, NeighbourEntityDimension, Config > NeighbourGridEntityType;
+      typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetterType;
+      typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
 
       __cuda_callable__ inline
-      NeighbourGridEntityGetter( const GridEntityType& entity )
+      NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
  
       template< int stepX, int stepY >
       __cuda_callable__ inline
-      NeighbourGridEntityType getEntity() const
+      NeighborGridEntityType getEntity() const
       {
          /*TNL_ASSERT( ( ( !! stepX ) == ( !! entity.getOrientation().x() ) ) &&
                     ( ( !! stepY ) == ( !! entity.getOrientation().y() ) ),
                     std::cerr << "( stepX, stepY ) cannot be perpendicular to entity coordinates: stepX = " << stepX << " stepY = " << stepY
                          << " entity.getOrientation() = " << entity.getOrientation() );*/
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions() + entity.getOrientation(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() + entity.getOrientation() = " << entity.getMesh().getDimensions() + entity.getOrientation()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() +
                        CoordinatesType( stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
                                         stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ) ) >= CoordinatesType( 0, 0 ) &&
@@ -444,7 +422,7 @@ class NeighbourGridEntityGetter<
                    << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-         return NeighbourGridEntityType( this->entity.getMesh(),
+         return NeighborGridEntityType( this->entity.getMesh(),
                      CoordinatesType( entity.getCoordinates().x() + stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
                                       entity.getCoordinates().y() + stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ) ) );
       }
@@ -466,7 +444,7 @@ class NeighbourGridEntityGetter<
 
 /****
  * +-----------------+---------------------------+-------------------+
- * | EntityDimenions | NeighbourEntityDimension |  Stencil Storage  |
+ * | EntityDimenions | NeighborEntityDimension |  Stencil Storage  |
  * +-----------------+---------------------------+-------------------+
  * |       0         |              0            |       None        |
  * +-----------------+---------------------------+-------------------+
@@ -476,7 +454,7 @@ template< typename Real,
           typename Index,
           typename Config,
           typename StencilStorage >
-class NeighbourGridEntityGetter<
+class NeighborGridEntityGetter<
    GridEntity< Meshes::Grid< 2, Real, Device, Index >, 0, Config >,
    0,
    StencilStorage >
@@ -484,35 +462,32 @@ class NeighbourGridEntityGetter<
    public:
  
       static const int EntityDimension = 0;
-      static const int NeighbourEntityDimension = 0;
+      static const int NeighborEntityDimension = 0;
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-      typedef GridEntity< GridType, NeighbourEntityDimension, Config > NeighbourGridEntityType;
+      typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetterType;
+      typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
 
       __cuda_callable__ inline
-      NeighbourGridEntityGetter( const GridEntityType& entity )
+      NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
  
       template< int stepX, int stepY >
       __cuda_callable__ inline
-      NeighbourGridEntityType getEntity() const
+      NeighborGridEntityType getEntity() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LE( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0 ) &&
                     entity.getCoordinates() + CoordinatesType( stepX, stepY ) <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-         return NeighbourGridEntityType( this->grid,
+         return NeighborGridEntityType( this->grid,
                                          CoordinatesType( entity.getCoordinates().x() + stepX,
                                                           entity.getCoordinates().y() + stepY ) );
       }
@@ -521,11 +496,8 @@ class NeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LE( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0 ) &&
                     entity.getCoordinates() + CoordinatesType( stepX, stepY ) <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
@@ -541,9 +513,8 @@ class NeighbourGridEntityGetter<
 
       const GridEntityType& entity;
  
-      //NeighbourGridEntityGetter(){};
+      //NeighborGridEntityGetter(){};
 };
 
 } // namespace Meshes
 } // namespace TNL
-

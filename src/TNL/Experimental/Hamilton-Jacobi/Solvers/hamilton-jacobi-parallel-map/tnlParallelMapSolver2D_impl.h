@@ -31,7 +31,7 @@
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::tnlParallelMapSolver()
 {
-	this->device = tnlHostDevice;  /////////////// tnlCuda Device --- vypocet na GPU, tnlHostDevice   ---    vypocet na CPU
+	this->device = TNL::Devices::HostDevice;  /////////////// tnlCuda Device --- vypocet na GPU, TNL::Devices::HostDevice   ---    vypocet na CPU
 
 #ifdef HAVE_CUDA
 	if(this->device == tnlCudaDevice)
@@ -123,7 +123,7 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 		cudaMalloc(&(this->tmp_map), this->map_stretched.getSize()*sizeof(double));
 		cudaMalloc(&(this->runcuda), sizeof(int));
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		int* tmpUC;
 		cudaMalloc(&(tmpUC), this->work_u.getSize()*sizeof(int));
@@ -131,19 +131,19 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 
 		initCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<1,1>>>(this->cudaSolver, (this->tmpw), (this->runcuda),tmpUC, tmp_map);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		double* tmpu = NULL;
 		cudaMemcpy(&tmpu, tmpdev,sizeof(double*), cudaMemcpyDeviceToHost);
 		cudaMemcpy((this->tmpw), this->work_u.getData(), this->work_u.getSize()*sizeof(double), cudaMemcpyHostToDevice);
 		cudaMemcpy((this->tmp_map), this->map_stretched.getData(), this->map_stretched.getSize()*sizeof(double), cudaMemcpyHostToDevice);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 	}
 #endif
 
-	if(this->device == tnlHostDevice)
+	if(this->device == TNL::Devices::HostDevice)
 	{
 		VectorType tmp_map;
 		tmp_map.setSize(this->n * this->n);
@@ -187,21 +187,21 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 	else if(this->device == tnlCudaDevice)
 	{
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		dim3 threadsPerBlock(this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		initRunCUDA2D<SchemeTypeHost,SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 	}
 #endif
 
 
 	this->currentStep = 1;
-	if(this->device == tnlHostDevice)
+	if(this->device == TNL::Devices::HostDevice)
 		synchronize();
 #ifdef HAVE_CUDA
 	else if(this->device == tnlCudaDevice)
@@ -211,10 +211,10 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 
 		synchronizeCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		synchronize2CUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,1>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 	}
 
 #endif
@@ -226,7 +226,7 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run()
 {
-	if(this->device == tnlHostDevice)
+	if(this->device == TNL::Devices::HostDevice)
 	{
 		while ((this->boundaryConditions.max() > 0 )/* || !end*/)
 		{
@@ -360,12 +360,12 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run(
 		dim3 threadsPerBlock(this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		bool* tmpb;
 		cudaMemcpy(&(this->run_host),this->runcuda,sizeof(int), cudaMemcpyDeviceToHost);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		int i = 1;
 		time_diff = 0.0;
@@ -377,7 +377,7 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run(
 			else
 				end_cuda = false;
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			start = std::clock();
 			runCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
@@ -386,10 +386,10 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run(
 			//start = std::clock();
 			synchronizeCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			synchronize2CUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,1>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			//time_diff += (std::clock() - start) / (double)(CLOCKS_PER_SEC);
 
 			cudaMemcpy(&run_host, (this->runcuda),sizeof(int), cudaMemcpyDeviceToHost);
@@ -738,7 +738,7 @@ tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSubgri
 
    double maxResidue( 1.0 );
    tnlGridEntity<MeshType, 2, tnlGridEntityNoStencilStorage > Entity(subMesh);
-   tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+   tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 
    for( int i = 0; i < u.getSize(); i ++ )
    {
@@ -758,9 +758,9 @@ tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSubgri
       {
 			Entity.setCoordinates(Containers::StaticVector<2,int>(i % subMesh.getDimensions().x(),i / subMesh.getDimensions().x()));
 			Entity.refresh();
-			neighbourEntities.refresh(subMesh,Entity.getIndex());
+			neighborEntities.refresh(subMesh,Entity.getIndex());
 			if(map[i] != 0.0)
-				fu[ i ] = schemeHost.getValue( this->subMesh, i, Containers::StaticVector<2,int>(i % subMesh.getDimensions().x(),i / subMesh.getDimensions().x()), u, time, boundaryCondition,neighbourEntities,map);
+				fu[ i ] = schemeHost.getValue( this->subMesh, i, Containers::StaticVector<2,int>(i % subMesh.getDimensions().x(),i / subMesh.getDimensions().x()), u, time, boundaryCondition,neighborEntities,map);
       }
       maxResidue = fu. absMax();
 
@@ -909,10 +909,10 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runS
    __syncthreads();
 
    tnlGridEntity<MeshType, 2, tnlGridEntityNoStencilStorage > Entity(subMesh);
-   tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+   tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
    Entity.setCoordinates(Containers::StaticVector<2,int>(i,j));
    Entity.refresh();
-   neighbourEntities.refresh(subMesh,Entity.getIndex());
+   neighborEntities.refresh(subMesh,Entity.getIndex());
 
 
 	if(map_local[l] == 0.0)
@@ -929,7 +929,7 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runS
 
 	  if(computeFU)
 	  {
-		  fu = schemeHost.getValueDev( this->subMesh, l, Containers::StaticVector<2,int>(i,j), u, time, boundaryCondition, neighbourEntities, map_local);
+		  fu = schemeHost.getValueDev( this->subMesh, l, Containers::StaticVector<2,int>(i,j), u, time, boundaryCondition, neighborEntities, map_local);
 	  	  sharedTau[l]=abs(cfl/fu);
 	  }
 

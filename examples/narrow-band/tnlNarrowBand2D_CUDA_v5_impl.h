@@ -158,7 +158,7 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 
 
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 #endif
 
 	int n = Mesh.getDimensions().x();
@@ -167,17 +167,17 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 	dim3 numBlocks2(statusGridSize ,statusGridSize);
 	initSetupGridCUDA<<<numBlocks2,threadsPerBlock2>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 	initSetupGrid2CUDA<<<numBlocks2,1>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 
 
 	/*dim3 threadsPerBlock(16, 16);
 	dim3 numBlocks(n/16 + 1 ,n/16 +1);*/
 	initCUDA<<<numBlocks2,threadsPerBlock2>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 
 
 	cout << "Solver initialized." << endl;
@@ -208,7 +208,7 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: r
 	cout << "Hi!" << endl;
 	runCUDA<<<numBlocksFS,threadsPerBlockFS>>>(this->cudaSolver,0,0);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 	cout << "Hi2!" << endl;
 	while(time < finalTime)
 	{
@@ -217,30 +217,30 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: r
 
 		runNarrowBandCUDA<<<numBlocksNB,threadsPerBlockNB>>>(this->cudaSolver,tau);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		time += tau;
 
 
 		cudaMemcpy(&reinit, this->reinitialize, sizeof(int), cudaMemcpyDeviceToHost);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		if(reinit != 0 /*&& time != finalTime */)
 		{
 			cout << time << endl;
 
 			initSetupGridCUDA<<<numBlocksNB,threadsPerBlockNB>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			initSetupGrid2CUDA<<<numBlocksNB,1>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			initCUDA<<<numBlocksNB,threadsPerBlockNB>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			runCUDA<<<numBlocksFS,threadsPerBlockFS>>>(this->cudaSolver,0,0);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 		}
 	}
 
@@ -276,31 +276,31 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: u
 	int subgridID = i/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE);
 	if(/*cudaStatusVector[subgridID] != 0 &&*/ i<Mesh.getDimensions().x() && Mesh.getDimensions().y())
 	{
-		tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+		tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 		Entity.setCoordinates(CoordinatesType(i,j));
 		Entity.refresh();
-		tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+		tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 		Real value = cudaDofVector2[Entity.getIndex()];
 		Real a,b, tmp;
 
 		if( i == 0 /*|| (i/NARROWBAND_SUBGRID_SIZE == 0 && !(cudaStatusVector[subgridID] & 9)) */)
-			a = cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()];
+			a = cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()];
 		else if( i == Mesh.getDimensions().x() - 1 /*|| (i/NARROWBAND_SUBGRID_SIZE == NARROWBAND_SUBGRID_SIZE - 1 && !(cudaStatusVector[subgridID] & 17)) */)
-			a = cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
+			a = cudaDofVector2[neighborEntities.template getEntityIndex< -1,  0 >()];
 		else
 		{
-			a = fabsMin( cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()],
-					 cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()] );
+			a = fabsMin( cudaDofVector2[neighborEntities.template getEntityIndex< -1,  0 >()],
+					 cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()] );
 		}
 
 		if( j == 0/* || (j/NARROWBAND_SUBGRID_SIZE == 0 && !(cudaStatusVector[subgridID] & 3)) */)
-			b = cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()];
+			b = cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()];
 		else if( j == Mesh.getDimensions().y() - 1 /* || (j/NARROWBAND_SUBGRID_SIZE == NARROWBAND_SUBGRID_SIZE - 1 && !(cudaStatusVector[subgridID] & 5))*/ )
-			b = cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()];
+			b = cudaDofVector2[neighborEntities.template getEntityIndex< 0,  -1 >()];
 		else
 		{
-			b = fabsMin( cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()],
-					 cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()] );
+			b = fabsMin( cudaDofVector2[neighborEntities.template getEntityIndex< 0,  -1 >()],
+					 cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()] );
 		}
 
 
@@ -316,7 +316,7 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: u
 }
 
 
-__global__ void initCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
+__global__ void initCUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver)
 {
 
 
@@ -345,11 +345,11 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 	int i = threadIdx.x + blockDim.x*blockIdx.x;
 	int j = blockDim.y*blockIdx.y + threadIdx.y;
 
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 
 	int gid = Entity.getIndex();
 
@@ -392,18 +392,18 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 //	{
 //		if(cudaDofVector[Entity.getIndex()] > 0)
 //		{
-//			if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
+//			if(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()] > 0)
 //			{
-//				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//				if(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()] > 0)
 //				{
-//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//					if(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 //						setupSquare1111(i,j);
 //					else
 //						setupSquare1110(i,j);
 //				}
 //				else
 //				{
-//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//					if(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 //						setupSquare1101(i,j);
 //					else
 //						setupSquare1100(i,j);
@@ -411,16 +411,16 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 //			}
 //			else
 //			{
-//				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//				if(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()] > 0)
 //				{
-//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//					if(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 //						setupSquare1011(i,j);
 //					else
 //						setupSquare1010(i,j);
 //				}
 //				else
 //				{
-//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//					if(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 //						setupSquare1001(i,j);
 //					else
 //						setupSquare1000(i,j);
@@ -429,18 +429,18 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 //		}
 //		else
 //		{
-//			if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
+//			if(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()] > 0)
 //			{
-//				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//				if(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()] > 0)
 //				{
-//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//					if(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 //						setupSquare0111(i,j);
 //					else
 //						setupSquare0110(i,j);
 //				}
 //				else
 //				{
-//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//					if(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 //						setupSquare0101(i,j);
 //					else
 //						setupSquare0100(i,j);
@@ -448,16 +448,16 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 //			}
 //			else
 //			{
-//				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//				if(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()] > 0)
 //				{
-//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//					if(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 //						setupSquare0011(i,j);
 //					else
 //						setupSquare0010(i,j);
 //				}
 //				else
 //				{
-//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//					if(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()] > 0)
 //						setupSquare0001(i,j);
 //					else
 //						setupSquare0000(i,j);
@@ -495,7 +495,7 @@ Real tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: f
 
 
 
-__global__ void runCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int i)
+__global__ void runCUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int i)
 {
 
 
@@ -601,7 +601,7 @@ __global__ void runCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double
 
 
 
-__global__ void initSetupGridCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
+__global__ void initSetupGridCUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver)
 {
 	__shared__ double u0;
 	int gx = threadIdx.x + blockDim.x*blockIdx.x;
@@ -639,7 +639,7 @@ __global__ void initSetupGridCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 
 
 // run this with one thread per block
-__global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
+__global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver)
 {
 //	printf("Hello\n");
 	if(solver->cudaStatusVector[blockIdx.x + gridDim.x*blockIdx.y] == 1)
@@ -666,7 +666,7 @@ __global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, in
 
 
 
-__global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, double tau)
+__global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, double tau)
 {
 	int gid = (blockDim.y*blockIdx.y + threadIdx.y)*solver->Mesh.getDimensions().x()+ threadIdx.x;
 	int i = threadIdx.x + blockIdx.x*blockDim.x;
@@ -684,44 +684,44 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 
 //		if(status != 0)
 		{
-			tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(solver->Mesh);
+			tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(solver->Mesh);
 			Entity.setCoordinates(Containers::StaticVector<2,double>(i,j));
 			Entity.refresh();
-			tnlNeighbourGridEntityGetter<tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+			tnlNeighborGridEntityGetter<tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 			double value = solver->cudaDofVector2[Entity.getIndex()];
 			double xf,xb,yf,yb, grad, fu, a,b;
 			a = b = 0.0;
 
 			if( i == 0 /*|| (threadIdx.x == 0 && !(status & 9)) */)
 			{
-				xb = value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()];
-				xf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()] - value;
+				xb = value - solver->cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()];
+				xf = solver->cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()] - value;
 			}
 			else if( i == solver->Mesh.getDimensions().x() - 1 /*|| (threadIdx.x == blockDim.x - 1 && !(status & 17)) */)
 			{
-				xb = value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
-				xf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()] - value;
+				xb = value - solver->cudaDofVector2[neighborEntities.template getEntityIndex< -1,  0 >()];
+				xf = solver->cudaDofVector2[neighborEntities.template getEntityIndex< -1,  0 >()] - value;
 			}
 			else
 			{
-				xb =  value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
-				xf = solver-> cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()] - value;
+				xb =  value - solver->cudaDofVector2[neighborEntities.template getEntityIndex< -1,  0 >()];
+				xf = solver-> cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()] - value;
 			}
 
 			if( j == 0/* || (threadIdx.y == 0 && !(status & 3))*/ )
 			{
-				yb = value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()] ;
-				yf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()] - value;
+				yb = value - solver->cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()] ;
+				yf = solver->cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()] - value;
 			}
 			else if( j == solver->Mesh.getDimensions().y() - 1  /*|| (threadIdx.y == blockDim.y - 1 && !(status & 5)) */)
 			{
-				yb = value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()];
-				yf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()] - value;
+				yb = value - solver->cudaDofVector2[neighborEntities.template getEntityIndex< 0,  -1 >()];
+				yf = solver->cudaDofVector2[neighborEntities.template getEntityIndex< 0,  -1 >()] - value;
 			}
 			else
 			{
-				yb = value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0, -1 >()];
-				yf = solver-> cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()] - value;
+				yb = value - solver->cudaDofVector2[neighborEntities.template getEntityIndex< 0, -1 >()];
+				yf = solver-> cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()] - value;
 			}
 			__syncthreads();
 
@@ -833,14 +833,14 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1111( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	cudaDofVector2[Entity.getIndex()]=fabsMin(INT_MAX,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(INT_MAX,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(INT_MAX,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(INT_MAX,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(INT_MAX,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(INT_MAX,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(INT_MAX,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -852,14 +852,14 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0000( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	cudaDofVector2[Entity.getIndex()]=fabsMin(-INT_MAX,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-INT_MAX,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-INT_MAX,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-INT_MAX,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-INT_MAX,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-INT_MAX,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-INT_MAX,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -871,18 +871,18 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1110( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	Real al,be, a,b,c,s;
-	al=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]));
+	al=abs(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]/
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]-
+			 cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]));
 
-	be=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]));
+	be=abs(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]/
+			(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]-
+			 cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -891,9 +891,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	cudaDofVector2[Entity.getIndex()]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -904,18 +904,18 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1101( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	Real al,be, a,b,c,s;
-	al=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
+	al=abs(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]/
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]));
 
-	be=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
+	be=abs(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]/
 			(cudaDofVector[Entity.getIndex()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
+			 cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -924,9 +924,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	cudaDofVector2[Entity.getIndex()]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -937,18 +937,18 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1011( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	Real al,be, a,b,c,s;
-	al=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
+	al=abs(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]/
 			(cudaDofVector[Entity.getIndex()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
+			 cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]));
 
-	be=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
+	be=abs(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]/
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -957,9 +957,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	cudaDofVector2[Entity.getIndex()]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -970,17 +970,17 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0111( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	Real al,be, a,b,c,s;
 	al=abs(cudaDofVector[Entity.getIndex()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]-
 			 cudaDofVector[Entity.getIndex()]));
 
 	be=abs(cudaDofVector[Entity.getIndex()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]-
 			 cudaDofVector[Entity.getIndex()]));
 
 	a = be/al;
@@ -990,9 +990,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	cudaDofVector2[Entity.getIndex()]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -1004,18 +1004,18 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0001( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	Real al,be, a,b,c,s;
-	al=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]));
+	al=abs(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]/
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]-
+			 cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]));
 
-	be=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]));
+	be=abs(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]/
+			(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]-
+			 cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -1024,9 +1024,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	cudaDofVector2[Entity.getIndex()]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -1037,18 +1037,18 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0010( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	Real al,be, a,b,c,s;
-	al=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
+	al=abs(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]/
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]));
 
-	be=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
+	be=abs(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]/
 			(cudaDofVector[Entity.getIndex()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
+			 cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -1057,9 +1057,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	cudaDofVector2[Entity.getIndex()]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -1070,18 +1070,18 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0100( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	Real al,be, a,b,c,s;
-	al=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
+	al=abs(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]/
 			(cudaDofVector[Entity.getIndex()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
+			 cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]));
 
-	be=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
+	be=abs(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]/
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -1090,9 +1090,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	cudaDofVector2[Entity.getIndex()]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -1103,17 +1103,17 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1000( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	Real al,be, a,b,c,s;
 	al=abs(cudaDofVector[Entity.getIndex()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]-
 			 cudaDofVector[Entity.getIndex()]));
 
 	be=abs(cudaDofVector[Entity.getIndex()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]-
 			 cudaDofVector[Entity.getIndex()]));
 
 	a = be/al;
@@ -1123,9 +1123,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	cudaDofVector2[Entity.getIndex()]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -1140,18 +1140,18 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1100( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	Real al,be, a,b,c,s;
 	al=abs(cudaDofVector[Entity.getIndex()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]-
 			 cudaDofVector[Entity.getIndex()]));
 
-	be=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
+	be=abs(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]/
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]));
 
 	a = al-be;
 	b=1.0;
@@ -1160,9 +1160,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	cudaDofVector2[Entity.getIndex()]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -1173,18 +1173,18 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1010( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	Real al,be, a,b,c,s;
 	al=abs(cudaDofVector[Entity.getIndex()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]-
 			 cudaDofVector[Entity.getIndex()]));
 
-	be=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
+	be=abs(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]/
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]));
 
 	a = al-be;
 	b=1.0;
@@ -1193,9 +1193,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	cudaDofVector2[Entity.getIndex()]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -1206,14 +1206,14 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1001( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	cudaDofVector2[Entity.getIndex()]=fabsMin(cudaDofVector[Entity.getIndex()],cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()],cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()],cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()],cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()],cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()],cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()],cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -1230,18 +1230,18 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0011( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	Real al,be, a,b,c,s;
 	al=abs(cudaDofVector[Entity.getIndex()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]-
 			 cudaDofVector[Entity.getIndex()]));
 
-	be=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
+	be=abs(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]/
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]));
 
 	a = al-be;
 	b=1.0;
@@ -1250,9 +1250,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	cudaDofVector2[Entity.getIndex()]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -1263,18 +1263,18 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0101( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	Real al,be, a,b,c,s;
 	al=abs(cudaDofVector[Entity.getIndex()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()]-
 			 cudaDofVector[Entity.getIndex()]));
 
-	be=abs(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
-			(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
-			 cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
+	be=abs(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]/
+			(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()]-
+			 cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()]));
 
 	a = al-be;
 	b=1.0;
@@ -1283,9 +1283,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: s
 
 
 	cudaDofVector2[Entity.getIndex()]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -1296,14 +1296,14 @@ template< typename MeshReal,
           typename Index >
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0110( Index i, Index j)
 {
-	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
+	tnlGridEntity< tnlGrid< 2,double, TNL::Devices::Host, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 	cudaDofVector2[Entity.getIndex()]=fabsMin(cudaDofVector[Entity.getIndex()],cudaDofVector2[Entity.getIndex()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()],cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()],cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()],cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]=fabsMin(cudaDofVector[neighborEntities.template getEntityIndex< 0,  1 >()],cudaDofVector2[neighborEntities.template getEntityIndex< 0,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]=fabsMin(cudaDofVector[neighborEntities.template getEntityIndex< 1,  1 >()],cudaDofVector2[neighborEntities.template getEntityIndex< 1,  1 >()]);
+	cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]=fabsMin(cudaDofVector[neighborEntities.template getEntityIndex< 1,  0 >()],cudaDofVector2[neighborEntities.template getEntityIndex< 1,  0 >()]);
 }
 #endif
 

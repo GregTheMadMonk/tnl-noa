@@ -80,8 +80,6 @@ class FunctionToEvaluate<Real,2> : public Functions::Domain< 2, Functions::MeshD
 	  {
 		 //return meshEntity.getCoordinates().y()*10+meshEntity.getCoordinates().x();
 		 return meshEntity.getCenter().y()*100+meshEntity.getCenter().x();
-              
-		 
 	  }
 };
 

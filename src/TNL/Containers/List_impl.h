@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlList_impl.h  -  description
+                          List_impl.h  -  description
                              -------------------
     begin                : Mar, 5 Apr 2016 12:46 PM
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -131,12 +131,10 @@ bool List< T >::Append( const T& data )
    {
       TNL_ASSERT( ! last, );
       first = last = new ListDataElement< T >( data );
-      if( ! first ) return false;
    }
    else
    {
       ListDataElement< T >* new_element =  new ListDataElement< T >( data, last, 0 );
-      if( ! new_element ) return false;
       TNL_ASSERT( last, );
       last = last -> Next() = new_element;
    }
@@ -151,12 +149,10 @@ bool List< T >::Prepend( const T& data )
    {
       TNL_ASSERT( ! last, );
       first = last = new ListDataElement< T >( data );
-      if( ! first ) return false;
    }
    else
    {
       ListDataElement< T >* new_element =  new ListDataElement< T >( data, 0, first );
-      if( ! new_element ) return false;
       first = first -> Previous() = new_element;
    }
    size ++;
@@ -175,7 +171,6 @@ bool List< T >::Insert( const T& data, const int& ind )
       new ListDataElement< T >( data,
                              iterator -> Previous(),
                              iterator );
-   if( ! new_el ) return false;
    iterator -> Previous() -> Next() = new_el;
    iterator -> Previous() = new_el;
    iterator = new_el;
@@ -208,9 +203,7 @@ template< typename T >
    template< typename Array >
 void List< T >::toArray( Array& array )
 {
-   TNL_ASSERT( this->getSize() <= array.getSize(),
-              std::cerr << "this->getSize() = " << this->getSize()
-                   << " array.getSize() = " << array.getSize() << std::endl; );
+   array.setSize( this->getSize() );
    for( int i = 0; i < this->getSize(); i++ )
       array[ i ] = ( *this )[ i ];
 }
@@ -281,59 +274,25 @@ void List< T >::DeepEraseAll()
 template< typename T >
 bool List< T >::Save( File& file ) const
 {
-#ifdef HAVE_NOT_CXX11
-   file.write< const int, Devices::Host >( &size );
-   for( int i = 0; i < size; i ++ )
-      if( ! file. write< int, Devices::Host, int >( &operator[]( i ), 1 ) )
-         return false;
-   return true;
-#else
    file.write( &size );
    for( int i = 0; i < size; i ++ )
       if( ! file. write( &operator[]( i ), 1 ) )
          return false;
    return true;
-
-#endif
 }
 
 template< typename T >
 bool List< T >::DeepSave( File& file ) const
 {
-#ifdef HAVE_NOT_CXX11
-   file. write< const int, Devices::Host >( &size );
-   for( int i = 0; i < size; i ++ )
-      if( ! operator[]( i ). save( file ) ) return false;
-   return true;
-#else
    file. write( &size );
    for( int i = 0; i < size; i ++ )
       if( ! operator[]( i ). save( file ) ) return false;
    return true;
-#endif
 }
 
 template< typename T >
 bool List< T >::Load( File& file )
 {
-#ifdef HAVE_NOT_CXX11
-   reset();
-   int _size;
-   file. read< int, Devices::Host >( &_size );
-   if( _size < 0 )
-   {
-      std::cerr << "The curve size is negative." << std::endl;
-      return false;
-   }
-   T t;
-   for( int i = 0; i < _size; i ++ )
-   {
-      if( ! file. read< T, Devices::Host >( &t ) )
-         return false;
-      Append( t );
-   }
-   return true;
-#else
    reset();
    int _size;
    file. read( &_size, 1 );
@@ -350,29 +309,11 @@ bool List< T >::Load( File& file )
       Append( t );
    }
    return true;
-#endif
 };
 
 template< typename T >
 bool List< T >::DeepLoad( File& file )
 {
-#ifdef HAVE_NOT_CXX11
-   reset();
-   int _size;
-   file. read< int, Devices::Host >( &_size );
-   if( _size < 0 )
-   {
-      std::cerr << "The list size is negative." << std::endl;
-      return false;
-   }
-   for( int i = 0; i < _size; i ++ )
-   {
-      T t;
-      if( ! t. load( file ) ) return false;
-      Append( t );
-   }
-   return true;
-#else
    reset();
    int _size;
    file. read( &_size );
@@ -388,7 +329,6 @@ bool List< T >::DeepLoad( File& file )
       Append( t );
    }
    return true;
-#endif
 };
  
 template< typename T >

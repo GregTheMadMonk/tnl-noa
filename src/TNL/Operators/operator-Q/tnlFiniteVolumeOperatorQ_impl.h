@@ -270,37 +270,37 @@ boundaryDerivative(
    const IndexType& dy,
    const IndexType& dz ) const
 {
-   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();      
    const IndexType& cellIndex = entity.getIndex();
     if ( ( AxeX == 1 ) && ( AxeY == 0 ) && ( AxeZ == 0 ) )
     {
         if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< -1, 0 >() * ( u[ neighbourEntities.template getEntityIndex< 1,0 >() ] - u[ cellIndex ] );
+            return mesh.template getSpaceStepsProducts< -1, 0 >() * ( u[ neighborEntities.template getEntityIndex< 1,0 >() ] - u[ cellIndex ] );
         if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< -1, 0 >() * ( u[ cellIndex ] - u[ neighbourEntities.template getEntityIndex< -1,0 >() ] );
+            return mesh.template getSpaceStepsProducts< -1, 0 >() * ( u[ cellIndex ] - u[ neighborEntities.template getEntityIndex< -1,0 >() ] );
         if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< -1, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 1,0 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< 1,1 >() ] - u[ neighbourEntities.template getEntityIndex< -1,0 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< -1,1 >() ] );
+            return mesh.template getSpaceStepsProducts< -1, 0 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 1,0 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< 1,1 >() ] - u[ neighborEntities.template getEntityIndex< -1,0 >() ] -
+                   u[ neighborEntities.template getEntityIndex< -1,1 >() ] );
         if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< -1, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 1,0 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< 1,-1 >() ] - u[ neighbourEntities.template getEntityIndex< -1,0 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< -1,-1 >() ] );
+            return mesh.template getSpaceStepsProducts< -1, 0 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 1,0 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< 1,-1 >() ] - u[ neighborEntities.template getEntityIndex< -1,0 >() ] -
+                   u[ neighborEntities.template getEntityIndex< -1,-1 >() ] );
     }
     if ( ( AxeX == 0 ) && ( AxeY == 1 ) && ( AxeZ == 0 ) )
     {
         if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< 0, -1 >() * ( u[ neighbourEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] );
+            return mesh.template getSpaceStepsProducts< 0, -1 >() * ( u[ neighborEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] );
         if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< 0, -1 >() * ( u[ cellIndex ] - u[ neighbourEntities.template getEntityIndex< 0,-1 >() ] );
+            return mesh.template getSpaceStepsProducts< 0, -1 >() * ( u[ cellIndex ] - u[ neighborEntities.template getEntityIndex< 0,-1 >() ] );
         if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< 0, -1 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,1 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< 1,1 >() ] - u[ neighbourEntities.template getEntityIndex< 0,-1 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< 1,-1 >() ] );
+            return mesh.template getSpaceStepsProducts< 0, -1 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 0,1 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< 1,1 >() ] - u[ neighborEntities.template getEntityIndex< 0,-1 >() ] -
+                   u[ neighborEntities.template getEntityIndex< 1,-1 >() ] );
         if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< 0, -1 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,1 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< -1,1 >() ] - u[ neighbourEntities.template getEntityIndex< 0,-1 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< -1,-1 >() ] );
+            return mesh.template getSpaceStepsProducts< 0, -1 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 0,1 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< -1,1 >() ] - u[ neighborEntities.template getEntityIndex< 0,-1 >() ] -
+                   u[ neighborEntities.template getEntityIndex< -1,-1 >() ] );
     }
     return 0.0;
 }
@@ -321,14 +321,14 @@ operator()( const MeshEntity& entity,
           const IndexType& dy,
           const IndexType& dz ) const
 {
-   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+   const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const IndexType& cellIndex = entity.getIndex();
     if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 0 ) )
-        return ::sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] ) * 
-                ( u[ neighbourEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] )
-                * mesh.template getSpaceStepsProducts< 0, -1 >() * mesh.template getSpaceStepsProducts< 0, -1 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0 >() ] - u[ cellIndex ] ) 
-                * ( u[ neighbourEntities.template getEntityIndex< 1,0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0 >() * mesh.template getSpaceStepsProducts< -1, 0 >() );
+        return ::sqrt( this->eps + ( u[ neighborEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] ) * 
+                ( u[ neighborEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] )
+                * mesh.template getSpaceStepsProducts< 0, -1 >() * mesh.template getSpaceStepsProducts< 0, -1 >() + ( u[ neighborEntities.template getEntityIndex< 1,0 >() ] - u[ cellIndex ] ) 
+                * ( u[ neighborEntities.template getEntityIndex< 1,0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0 >() * mesh.template getSpaceStepsProducts< -1, 0 >() );
     if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
         return ::sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, 1, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, 1, 0 ) + 
@@ -437,8 +437,7 @@ tnlFiniteVolumeOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, 
 bind( Vector& u) 
 {
     this->u.bind(u);
-    if(q.setSize(u.getSize()))
-        return 1;
+    q.setSize(u.getSize());
     q.setValue(0);
     return 0;
 }
@@ -480,76 +479,76 @@ boundaryDerivative(
    const IndexType& dy,
    const IndexType& dz ) const
 {
-   const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+   const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities();
    const IndexType& cellIndex = entity.getIndex();    
     if ( ( AxeX == 1 ) && ( AxeY == 0 ) && ( AxeZ == 0 ) )
     {
         if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * ( u[ neighborEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] );
         if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * ( u[ cellIndex ] - u[ neighbourEntities.template getEntityIndex< -1,0,0 >() ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * ( u[ cellIndex ] - u[ neighborEntities.template getEntityIndex< -1,0,0 >() ] );
         if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< 1,1,0 >() ] - u[ neighbourEntities.template getEntityIndex< -1,0,0 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< -1,1,0 >() ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 1,0,0 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< 1,1,0 >() ] - u[ neighborEntities.template getEntityIndex< -1,0,0 >() ] -
+                   u[ neighborEntities.template getEntityIndex< -1,1,0 >() ] );
         if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< 1,-1,0 >() ] - u[ neighbourEntities.template getEntityIndex< -1,0,0 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< -1,-1,0 >() ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 1,0,0 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< 1,-1,0 >() ] - u[ neighborEntities.template getEntityIndex< -1,0,0 >() ] -
+                   u[ neighborEntities.template getEntityIndex< -1,-1,0 >() ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 1 ) )
-            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< 1,0,1 >() ] - u[ neighbourEntities.template getEntityIndex< -1,0,0 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< -1,0,1 >() ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 1,0,0 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< 1,0,1 >() ] - u[ neighborEntities.template getEntityIndex< -1,0,0 >() ] -
+                   u[ neighborEntities.template getEntityIndex< -1,0,1 >() ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == -1 ) )
-            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< 1,0,-1 >() ] - u[ neighbourEntities.template getEntityIndex< -1,0,0 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< -1,0,-1 >() ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 1,0,0 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< 1,0,-1 >() ] - u[ neighborEntities.template getEntityIndex< -1,0,0 >() ] -
+                   u[ neighborEntities.template getEntityIndex< -1,0,-1 >() ] );
     }
     if ( ( AxeX == 0 ) && ( AxeY == 1 ) && ( AxeZ == 0 ) )
     {
         if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * ( u[ neighborEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] );
         if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * ( u[ cellIndex ] - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >() ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * ( u[ cellIndex ] - u[ neighborEntities.template getEntityIndex< 0,-1,0 >() ] );
         if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< 1,1,0 >() ] - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< 1,-1,0 >() ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 0,1,0 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< 1,1,0 >() ] - u[ neighborEntities.template getEntityIndex< 0,-1,0 >() ] -
+                   u[ neighborEntities.template getEntityIndex< 1,-1,0 >() ] );
         if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< -1,1,0 >() ] - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< -1,-1,0 >() ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 0,1,0 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< -1,1,0 >() ] - u[ neighborEntities.template getEntityIndex< 0,-1,0 >() ] -
+                   u[ neighborEntities.template getEntityIndex< -1,-1,0 >() ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 1 ) )
-            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< 0,1,1 >() ] - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< 0,-1,1 >() ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 0,1,0 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< 0,1,1 >() ] - u[ neighborEntities.template getEntityIndex< 0,-1,0 >() ] -
+                   u[ neighborEntities.template getEntityIndex< 0,-1,1 >() ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == -1 ) )
-            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< 0,1,-1 >() ] - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< 0,-1,-1 >() ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 0,1,0 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< 0,1,-1 >() ] - u[ neighborEntities.template getEntityIndex< 0,-1,0 >() ] -
+                   u[ neighborEntities.template getEntityIndex< 0,-1,-1 >() ] );
     }
     if ( ( AxeX == 0 ) && ( AxeY == 0 ) && ( AxeZ == 1 ) )
     {
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 1 ) )
-            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ] );
+            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * ( u[ neighborEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == -1 ) )
-            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * ( u[ cellIndex ] - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >() ] );
+            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * ( u[ cellIndex ] - u[ neighborEntities.template getEntityIndex< 0,0,-1 >() ] );
         if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< 1,0,1 >() ] - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< 1,0,-1 >() ] );
+            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 0,0,1 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< 1,0,1 >() ] - u[ neighborEntities.template getEntityIndex< 0,0,-1 >() ] -
+                   u[ neighborEntities.template getEntityIndex< 1,0,-1 >() ] );
         if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< -1,0,1 >() ] - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< -1,0,-1 >() ] );
+            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 0,0,1 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< -1,0,1 >() ] - u[ neighborEntities.template getEntityIndex< 0,0,-1 >() ] -
+                   u[ neighborEntities.template getEntityIndex< -1,0,-1 >() ] );
         if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< 0,1,1 >() ] - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< 0,1,-1 >() ] );
+            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 0,0,1 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< 0,1,1 >() ] - u[ neighborEntities.template getEntityIndex< 0,0,-1 >() ] -
+                   u[ neighborEntities.template getEntityIndex< 0,1,-1 >() ] );
         if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] + 
-                   u[ neighbourEntities.template getEntityIndex< 0,-1,1 >() ] - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >() ] -
-                   u[ neighbourEntities.template getEntityIndex< 0,-1,-1 >() ] );
+            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * 0.25 * ( u[ neighborEntities.template getEntityIndex< 0,0,1 >() ] + 
+                   u[ neighborEntities.template getEntityIndex< 0,-1,1 >() ] - u[ neighborEntities.template getEntityIndex< 0,0,-1 >() ] -
+                   u[ neighborEntities.template getEntityIndex< 0,-1,-1 >() ] );
     }
     return 0.0;
 }
@@ -571,16 +570,16 @@ operator()(
    const IndexType& dy,
    const IndexType& dz ) const
 {
-   const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
+   const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities(); 
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const IndexType& cellIndex = entity.getIndex();     
     if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 0 ) )
-        return ::sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] ) * 
-                ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] )
-                * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] ) 
-                * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >()
-                + ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ] ) 
-                * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, 0, -1 >() * mesh.template getSpaceStepsProducts< 0, 0, -1 >() );
+        return ::sqrt( this->eps + ( u[ neighborEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] ) * 
+                ( u[ neighborEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] )
+                * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() + ( u[ neighborEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] ) 
+                * ( u[ neighborEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >()
+                + ( u[ neighborEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ] ) 
+                * ( u[ neighborEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, 0, -1 >() * mesh.template getSpaceStepsProducts< 0, 0, -1 >() );
     if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
         return ::sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 1, 0, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 1, 0, 0 ) + 

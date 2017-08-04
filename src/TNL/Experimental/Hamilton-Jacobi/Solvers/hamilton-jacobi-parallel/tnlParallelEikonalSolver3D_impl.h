@@ -25,7 +25,7 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::tnlParallelEikonalSolver()
 {
 	cout << "a" << endl;
-	this->device = tnlHostDevice;  /////////////// tnlCuda Device --- vypocet na GPU, tnlHostDevice   ---    vypocet na CPU
+	this->device = TNL::Devices::HostDevice;  /////////////// tnlCuda Device --- vypocet na GPU, TNL::Devices::HostDevice   ---    vypocet na CPU
 
 #ifdef HAVE_CUDA
 	if(this->device == tnlCudaDevice)
@@ -124,14 +124,14 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	cudaMalloc(&(this->tmpw), this->work_u.getSize()*sizeof(double));
 	cudaMalloc(&(this->runcuda), sizeof(int));
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 	int* tmpUC;
 	cudaMalloc(&(tmpUC), this->work_u.getSize()*sizeof(int));
 	cudaMemcpy(tmpUC, this->unusedCell.getData(), this->unusedCell.getSize()*sizeof(int), cudaMemcpyHostToDevice);
 
 	initCUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<1,1>>>(this->cudaSolver, (this->tmpw), (this->runcuda),tmpUC);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 	//cout << "s " << endl;
 	//cudaMalloc(&(cudaSolver->work_u_cuda), this->work_u.getSize()*sizeof(double));
 	double* tmpu = NULL;
@@ -140,13 +140,13 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	//printf("%p %p \n",tmpu,tmpw);
 	cudaMemcpy((this->tmpw), this->work_u.getData(), this->work_u.getSize()*sizeof(double), cudaMemcpyHostToDevice);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 	//cout << "s "<< endl;
 
 	}
 #endif
 
-	if(this->device == tnlHostDevice)
+	if(this->device == TNL::Devices::HostDevice)
 	{
 #ifdef HAVE_OPENMP
 #pragma omp parallel for num_threads(4) schedule(dynamic)
@@ -195,11 +195,11 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	{
 //		cout << "pre 1 kernel" << endl;
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		dim3 threadsPerBlock(this->n, this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows,this->gridLevels);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		initRunCUDA3D<SchemeTypeHost,SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,2*this->n*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
 //		cout << "post 1 kernel" << endl;
@@ -209,7 +209,7 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 
 
 	this->currentStep = 1;
-	if(this->device == tnlHostDevice)
+	if(this->device == TNL::Devices::HostDevice)
 		synchronize();
 #ifdef HAVE_CUDA
 	else if(this->device == tnlCudaDevice)
@@ -221,17 +221,17 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 		//cudaMemcpy(/*this->work_u.getData()*/ test, (this->tmpw), this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
 		//cout << this->tmpw << "   " <<  test[0] <<"   " << test[1] << "   " <<test[2] << "   " <<test[3] << endl;
 
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		synchronizeCUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 		cout << cudaGetErrorString(cudaDeviceSynchronize()) << endl;
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		synchronize2CUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,1>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		//cout << test[0] << "   " <<test[1] <<"   " << test[2] << "   " <<test[3] << endl;
 		//cudaMemcpy(/*this->work_u.getData()*/ test, (this->tmpw), this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
-		//checkCudaDevice;
+		//TNL_CHECK_CUDA_DEVICE;
 		//cout << this->tmpw << "   " <<  test[0] << "   " <<test[1] << "   " <<test[2] <<"   " << test[3] << endl;
 		//free(test);
 
@@ -246,7 +246,7 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::run()
 {
-	if(this->device == tnlHostDevice)
+	if(this->device == TNL::Devices::HostDevice)
 	{
 
 	bool end = false;
@@ -381,17 +381,17 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 		dim3 threadsPerBlock(this->n, this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows,this->gridLevels);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		//cudaMalloc(&runcuda,sizeof(bool));
 		//cudaMemcpy(runcuda, &run_host, sizeof(bool), cudaMemcpyHostToDevice);
 		//cout << "fn" << endl;
 		bool* tmpb;
 		//cudaMemcpy(tmpb, &(cudaSolver->runcuda),sizeof(bool*), cudaMemcpyDeviceToHost);
 		//cudaDeviceSynchronize();
-		//checkCudaDevice;
+		//TNL_CHECK_CUDA_DEVICE;
 		cudaMemcpy(&(this->run_host),this->runcuda,sizeof(int), cudaMemcpyDeviceToHost);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		//cout << "fn" << endl;
 		int i = 1;
 		time_diff = 0.0;
@@ -404,7 +404,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 				end_cuda = false;
 			//cout << "a" << endl;
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			start = std::clock();
 			runCUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,2*this->n*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 			//cout << "a" << endl;
@@ -414,10 +414,10 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 			//start = std::clock();
 			synchronizeCUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			synchronize2CUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,1>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			//time_diff += (std::clock() - start) / (double)(CLOCKS_PER_SEC);
 
 
@@ -934,7 +934,7 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
    double maxResidue( 1.0 );
    //double lastResidue( 10000.0 );
    tnlGridEntity<MeshType, 3, tnlGridEntityNoStencilStorage > Entity(subMesh);
-   tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities(Entity);
+   tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighborEntities(Entity);
    while( time < finalTime /*|| maxResidue > subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*/)
    {
       /****
@@ -952,9 +952,9 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
 //			cout <<"c" << coords << endl;
 			Entity.refresh();
 //			cout << "d" <<endl;
-			neighbourEntities.refresh(subMesh,Entity.getIndex());
+			neighborEntities.refresh(subMesh,Entity.getIndex());
 //			cout << "e" <<endl;
-    	  fu[ i ] = schemeHost.getValue( this->subMesh, i, coords,u, time, boundaryCondition, neighbourEntities );
+    	  fu[ i ] = schemeHost.getValue( this->subMesh, i, coords,u, time, boundaryCondition, neighborEntities );
 //    	  cout << "f" <<endl;
       }
       maxResidue = fu. absMax();
@@ -1202,10 +1202,10 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
    if( boundaryCondition == 0 ) finalTime *= 2.0;
 
    tnlGridEntity<MeshType, 3, tnlGridEntityNoStencilStorage > Entity(subMesh);
-   tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities(Entity);
+   tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighborEntities(Entity);
    Entity.setCoordinates(Containers::StaticVector<3,int>(i,j,k));
    Entity.refresh();
-   neighbourEntities.refresh(subMesh,Entity.getIndex());
+   neighborEntities.refresh(subMesh,Entity.getIndex());
 
 
    while( time < finalTime )
@@ -1214,7 +1214,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 
 	  if(computeFU)
 	  {
-		  fu = schemeHost.getValueDev( this->subMesh, l, Containers::StaticVector<3,int>(i,j,k), u, time, boundaryCondition, neighbourEntities);
+		  fu = schemeHost.getValueDev( this->subMesh, l, Containers::StaticVector<3,int>(i,j,k), u, time, boundaryCondition, neighborEntities);
 		  if(abs(fu) > 0.0)
 			  sharedTau[l]=abs(cfl/fu);
 	  }

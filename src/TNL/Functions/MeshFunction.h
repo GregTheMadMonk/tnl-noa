@@ -20,11 +20,11 @@ namespace TNL {
 namespace Functions {   
 
 template< typename Mesh,
-          int MeshEntityDimension = Mesh::meshDimension,
+          int MeshEntityDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType >
 class MeshFunction :
    public Object,
-   public Domain< Mesh::meshDimension, MeshDomain >
+   public Domain< Mesh::getMeshDimension(), MeshDomain >
 {
    //static_assert( Mesh::DeviceType::DeviceType == Vector::DeviceType::DeviceType,
    //               "Both mesh and vector of a mesh function must reside on the same device.");
@@ -32,7 +32,7 @@ class MeshFunction :
       
       typedef Mesh MeshType;
       typedef typename MeshType::DeviceType DeviceType;
-      typedef typename MeshType::IndexType IndexType;
+      typedef typename MeshType::GlobalIndexType IndexType;
       typedef SharedPointer< MeshType > MeshPointer;      
       typedef Real RealType;
       typedef Containers::Vector< RealType, DeviceType, IndexType > VectorType;
@@ -40,7 +40,7 @@ class MeshFunction :
  
       static constexpr int getEntitiesDimension() { return MeshEntityDimension; }
       
-      static constexpr int getMeshDimensions() { return MeshType::getMeshDimension(); }
+      static constexpr int getMeshDimension() { return MeshType::getMeshDimension(); }
  
       MeshFunction();
       
@@ -94,7 +94,7 @@ class MeshFunction :
       
       const MeshPointer& getMeshPointer() const;
       
-      __cuda_callable__ static IndexType getDofs( const MeshPointer& meshPointer );
+      static IndexType getDofs( const MeshPointer& meshPointer );
       
       __cuda_callable__ const VectorType& getData() const;      
       

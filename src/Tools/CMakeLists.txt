@@ -56,12 +56,7 @@ ADD_EXECUTABLE(tnl-curve2gnuplot${debugExt} ${tnlcurve2gnuplotsources})
 target_link_libraries (tnl-curve2gnuplot${debugExt} tnl${debugExt}-${tnlVersion} )
 
 IF( BUILD_CUDA )
-    CUDA_ADD_EXECUTABLE( tnl-cuda-arch${debugExt} tnl-cuda-arch.cu
-                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
-    SET_TARGET_PROPERTIES( tnl-cuda-arch${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
-ENDIF()
-         
-IF( BUILD_CUDA )
+   CUDA_ADD_EXECUTABLE( tnl-cuda-arch${debugExt} tnl-cuda-arch.cu )
    INSTALL( TARGETS tnl-cuda-arch${debugExt}
             RUNTIME DESTINATION bin
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )

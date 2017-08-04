@@ -29,8 +29,7 @@ class Dummy
    template< typename Vector1, typename Vector2 >
    bool solve( const Vector1& b, Vector2& x ) const
    {
-      TNL_ASSERT( false,
-              std::cerr << "The solve() method of a dummy preconditioner should not be called." << std::endl; );
+      TNL_ASSERT_TRUE( false, "The solve() method of a dummy preconditioner should not be called." );
       return true;
    }
 

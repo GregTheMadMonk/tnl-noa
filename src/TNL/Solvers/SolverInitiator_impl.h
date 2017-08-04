@@ -17,6 +17,7 @@
 #include <TNL/Solvers/Linear/GMRES.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/MIC.h>
 
 namespace TNL {
 namespace Solvers {   
@@ -75,6 +76,8 @@ class SolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
             return SolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Host, ConfigTag >::run( parameters );
          if( device == "cuda" )
             return SolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Cuda, ConfigTag >::run( parameters );
+         if(device == "mic")
+             return SolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::MIC, ConfigTag >::run( parameters );
          std::cerr << "The device '" << device << "' is not defined. " << std::endl;
          return false;
       }

@@ -89,7 +89,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 	initCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 
 	return true;
 }
@@ -158,21 +158,21 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 		cudaDeviceSynchronize();
 	}
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 ////	for(int i = 0; i < 2*n ; i++)
 //	{
 //		runCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver,1,0);
 //		cudaDeviceSynchronize();
 //	}
 //	cudaDeviceSynchronize();
-//	checkCudaDevice;
+//	TNL_CHECK_CUDA_DEVICE;
 ////	for(int i = 0; i < 2*n ; i++)
 //	{
 //		runCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver,2,0);
 //		cudaDeviceSynchronize();
 //	}
 //	cudaDeviceSynchronize();
-//	checkCudaDevice;
+//	TNL_CHECK_CUDA_DEVICE;
 ////	for(int i = 2*n - 1; i > -1; i--)
 //	{
 //		runCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver,3,0);
@@ -180,7 +180,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 //	}
 //
 //	cudaDeviceSynchronize();
-//	checkCudaDevice;
+//	TNL_CHECK_CUDA_DEVICE;
 
 	cudaMemcpy(this->dofVector.getData(), cudaDofVector, this->dofVector.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
 	cudaDeviceSynchronize();
@@ -438,7 +438,7 @@ Real tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 
 
-__global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+__global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 {
 
 	//int gx = threadIdx.x;
@@ -568,7 +568,7 @@ __global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, doub
 }
 
 
-__global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
+__global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver)
 {
 	int gx = threadIdx.x + blockDim.x*blockIdx.x;
 	int gy = blockDim.y*blockIdx.y + threadIdx.y;

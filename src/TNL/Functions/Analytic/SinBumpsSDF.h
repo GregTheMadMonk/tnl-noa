@@ -70,15 +70,9 @@ class SinBumpsSDF< 1, Real  > : public SinBumpsSDFBase< Containers::StaticVector
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" );
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
@@ -103,15 +97,9 @@ class SinBumpsSDF< 2, Real > : public SinBumpsSDFBase< Containers::StaticVector<
       bool setup( const Config::ParameterContainer& parameters,
                  const String& prefix = "" );
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
@@ -135,15 +123,9 @@ class SinBumpsSDF< 3, Real > : public SinBumpsSDFBase< Containers::StaticVector<
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" );
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const PointType& v,
                          const Real& time = 0.0 ) const;

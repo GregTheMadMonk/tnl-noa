@@ -31,7 +31,7 @@ template< typename Mesh,
           typename DifferentialOperator =
             OneSidedMeanCurvature< Mesh,
                                       typename Mesh::RealType,
-                                      typename Mesh::IndexType,
+                                      typename Mesh::GlobalIndexType,
                                       false > >
 class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
                                                      typename DifferentialOperator::RealType,
@@ -97,6 +97,10 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
                                  DofVectorType& rightHandSide,
                                  MeshDependentDataPointer& meshDependentData );
 
+      template< typename Matrix >
+      void saveFailedLinearSystem( const Matrix& matrix,
+                                   const DofVectorType& dofs,
+                                   const DofVectorType& rightHandSide ) const;
 
       protected:
 

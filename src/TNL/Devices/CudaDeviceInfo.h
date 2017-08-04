@@ -50,6 +50,8 @@ class CudaDeviceInfo
 
       static int getCudaCores( int deviceNum );
 
+      static int getRegistersPerMultiprocessor( int deviceNum );
+
       static void writeDeviceInfo( Logger& logger );
 };
 

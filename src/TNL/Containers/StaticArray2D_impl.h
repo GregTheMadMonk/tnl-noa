@@ -12,6 +12,7 @@
 
 #include <TNL/param-types.h>
 #include <TNL/Math.h>
+#include <TNL/Containers/StaticArray.h>
 
 namespace TNL {
 namespace Containers {   
@@ -23,6 +24,7 @@ inline StaticArray< 2, Element >::StaticArray()
 }
 
 template< typename Element >
+   template< typename _unused >
 __cuda_callable__
 inline StaticArray< 2, Element >::StaticArray( const Element v[ size ] )
 {
@@ -89,8 +91,8 @@ template< typename Element >
 __cuda_callable__
 inline const Element& StaticArray< 2, Element >::operator[]( int i ) const
 {
-   TNL_ASSERT( i >= 0 && i < size,
-            std::cerr << "i = " << i << " size = " << size << std::endl; );
+   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_LT( i, size, "Element index is out of bounds." );
    return data[ i ];
 }
 
@@ -98,8 +100,8 @@ template< typename Element >
 __cuda_callable__
 inline Element& StaticArray< 2, Element >::operator[]( int i )
 {
-   TNL_ASSERT( i >= 0 && i < size,
-            std::cerr << "i = " << i << " size = " << size << std::endl; );
+   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_LT( i, size, "Element index is out of bounds." );
    return data[ i ];
 }
 

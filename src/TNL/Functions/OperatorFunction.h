@@ -87,13 +87,13 @@ class OperatorFunction< Operator, MeshFunctionT, void, true, IsAnalytic >
  
       const MeshType& getMesh() const
       {
-         TNL_ASSERT( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
+         TNL_ASSERT_TRUE( this->preimageFunction, "The preimage function was not set." );
          return this->preimageFunction->getMesh();
       };
       
       const MeshPointer& getMeshPointer() const
       { 
-         TNL_ASSERT( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
+         TNL_ASSERT_TRUE( this->preimageFunction, "The preimage function was not set." );
          return this->preimageFunction->getMeshPointer(); 
       };
 
@@ -114,7 +114,7 @@ class OperatorFunction< Operator, MeshFunctionT, void, true, IsAnalytic >
          const MeshEntity& meshEntity,
          const RealType& time = 0.0 ) const
       {
-         TNL_ASSERT( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
+         TNL_ASSERT_TRUE( this->preimageFunction, "The preimage function was not set." );
          return operator_( *preimageFunction, meshEntity, time );
       }
  
@@ -298,13 +298,13 @@ class OperatorFunction< Operator, Function, BoundaryConditions, false, IsAnalyti
  
       const PreimageFunctionType& getPreimageFunction() const
       {
-         TNL_ASSERT( this->preimageFunction, );
+         TNL_ASSERT_TRUE( this->preimageFunction, "The preimage function was not set." );
          return *this->preimageFunction;
       };
  
       PreimageFunctionType& getPreimageFunction()
       {
-         TNL_ASSERT( this->preimageFunction, );
+         TNL_ASSERT_TRUE( this->preimageFunction, "The preimage function was not set." );
          return *this->preimageFunction;
       };
  
