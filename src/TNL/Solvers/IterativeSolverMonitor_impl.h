@@ -28,13 +28,39 @@ namespace Solvers {
 template< typename Real, typename Index>
 IterativeSolverMonitor< Real, Index > :: IterativeSolverMonitor()
 : SolverMonitor(),
-  time( 0.0 ),
-  timeStep( 0.0 ),
   stage( "" ),
+  saved_stage( "" ),
+  saved( false ),
+  time( 0.0 ),
+  saved_time( 0.0 ),
+  timeStep( 0.0 ),
+  saved_timeStep( 0.0 ),
+  residue( 0.0 ),
+  saved_residue( 0.0 ),
   iterations( 0 ),
-  residue( 0 ),
+  saved_iterations( 0 ),
   verbose( 1 )
 {
+}
+
+template< typename Real, typename Index>
+void IterativeSolverMonitor< Real, Index > :: setStage( const std::string& stage )
+{
+   // save the items after a complete stage
+   if( iterations > 0 ) {
+      saved_stage = this->stage;
+      saved_time = time;
+      saved_timeStep = timeStep;
+      saved_iterations = iterations;
+      saved_residue = residue;
+   }
+
+   // reset the current items
+   iterations = 0;
+   residue = 0.0;
+
+   this->stage = stage;
+   saved = true;
 }
 
 template< typename Real, typename Index>
@@ -47,15 +73,6 @@ template< typename Real, typename Index>
 void IterativeSolverMonitor< Real, Index > :: setTimeStep( const RealType& timeStep )
 {
    this->timeStep = timeStep;
-}
-
-template< typename Real, typename Index>
-void IterativeSolverMonitor< Real, Index > :: setStage( const std::string& stage )
-{
-   this->stage = stage;
-   // reset numerical items displayed after stage
-   this->iterations = 0;
-   this->residue = 0.0;
 }
 
 template< typename Real, typename Index>
@@ -77,12 +94,18 @@ void IterativeSolverMonitor< Real, Index > :: setVerbose( const Index& verbose )
 }
 
 template< typename Real, typename Index>
-void IterativeSolverMonitor< Real, Index > :: refresh( bool force )
+void IterativeSolverMonitor< Real, Index > :: refresh()
 {
-//   if( this->verbose > 0 && ( force || this->getIterations() % this->refreshRate == 0 ) )
-   if( this->verbose > 0 || force )
+   if( this->verbose > 0 )
    {
-      const int line_width = this->getLineWidth();
+      // Check if we should display the current values or the values saved after
+      // the previous stage. If the iterations cycle much faster than the solver
+      // monitor refreshes, we display only the values saved after the whole
+      // cycle to hide the irrelevant partial progress.
+      const bool saved = this->saved;
+      this->saved = false;
+
+      const int line_width = getLineWidth();
       int free = line_width ? line_width : std::numeric_limits<int>::max();
 
       auto real_to_string = []( Real value, int precision = 6 ) {
@@ -103,36 +126,37 @@ void IterativeSolverMonitor< Real, Index > :: refresh( bool force )
       // FIXME: nvcc 8.0 ignores default parameter values for lambda functions in template functions, so we have to pass the defaults
 //      print_item( " ELA:" );
       print_item( " ELA:", 0 );
-      print_item( real_to_string( this->getElapsedTime(), 5 ), 8 );
+      print_item( real_to_string( getElapsedTime(), 5 ), 8 );
 //      print_item( " T:" );
       print_item( " T:", 0 );
-      print_item( real_to_string( this->time, 5 ), 8 );
-      if( this->timeStep > 0 ) {
+      print_item( real_to_string( (saved) ? saved_time : time, 5 ), 8 );
+      if( (saved) ? saved_timeStep : timeStep > 0 ) {
 //         print_item( " TAU:" );
          print_item( " TAU:", 0 );
-         print_item( real_to_string( this->timeStep, 5 ), 8 );
+         print_item( real_to_string( (saved) ? saved_timeStep : timeStep, 5 ), 8 );
       }
 
-      if( this->stage.length() && free > 5 ) {
-         if( (int) this->stage.length() <= free - 2 ) {
-            std::cout << "  " << this->stage;
-            free -= ( 2 + this->stage.length() );
+      const std::string displayed_stage = (saved) ? saved_stage : stage;
+      if( displayed_stage.length() && free > 5 ) {
+         if( (int) displayed_stage.length() <= free - 2 ) {
+            std::cout << "  " << displayed_stage;
+            free -= ( 2 + displayed_stage.length() );
          }
          else {
-            std::cout << "  " << this->stage.substr( 0, free - 5 ) << "...";
+            std::cout << "  " << displayed_stage.substr( 0, free - 5 ) << "...";
             free = 0;
          }
       }
 
-      if( this->iterations > 0 && free >= 14 ) {
+      if( (saved) ? saved_iterations : iterations > 0 && free >= 14 ) {
 //         print_item( " ITER:" );
          print_item( " ITER:", 0 );
-         print_item( std::to_string( this->iterations ), 8 );
+         print_item( std::to_string( (saved) ? saved_iterations : iterations ), 8 );
       }
-      if( this->residue && free >= 17 ) {
+      if( (saved) ? saved_residue : residue && free >= 17 ) {
 //         print_item( " RES:" );
          print_item( " RES:", 0 );
-         print_item( real_to_string( this->residue, 5 ), 12 );
+         print_item( real_to_string( (saved) ? saved_residue : residue, 5 ), 12 );
       }
 
       // return to the beginning of the line

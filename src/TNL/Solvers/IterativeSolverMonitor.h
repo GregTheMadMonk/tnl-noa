@@ -24,11 +24,11 @@ public:
 
    IterativeSolverMonitor();
 
+   void setStage( const std::string& stage );
+
    void setTime( const RealType& time );
 
    void setTimeStep( const RealType& timeStep );
-
-   void setStage( const std::string& stage );
 
    void setIterations( const IndexType& iterations );
 
@@ -36,20 +36,18 @@ public:
 
    void setVerbose( const Index& verbose );
  
-   virtual void refresh( bool force = false );
+   virtual void refresh();
 
 protected:
    int getLineWidth();
 
-   RealType time;
+   std::string stage, saved_stage;
 
-   RealType timeStep;
+   std::atomic_bool saved;
 
-   std::string stage;
+   RealType time, saved_time, timeStep, saved_timeStep, residue, saved_residue;
 
-   IndexType iterations;
-
-   RealType residue;
+   IndexType iterations, saved_iterations;
 
    IndexType verbose;
 };
