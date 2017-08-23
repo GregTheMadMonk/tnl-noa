@@ -159,7 +159,6 @@ refreshSolverMonitor( bool force )
       this->solverMonitor->setTimeStep( this->getTau() );
       this->solverMonitor->setTime( this->getTime() );
       this->solverMonitor->setRefreshRate( this->refreshRate );
-      this->solverMonitor->refresh( force );
    }
 }
 

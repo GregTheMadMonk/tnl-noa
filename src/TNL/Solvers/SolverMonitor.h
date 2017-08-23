@@ -28,7 +28,7 @@ public:
         timer( nullptr )
    {}
 
-   virtual void refresh( bool force = false ) = 0;
+   virtual void refresh() = 0;
 
    void setRefreshRate( const int& refreshRate )
    {
@@ -52,7 +52,7 @@ public:
       const std::chrono::milliseconds timeout( timeout_base );
 
       while( ! stopped ) {
-         refresh( true );
+         refresh();
 
          // make sure to detect changes to refresh rate
          int steps = timeout_milliseconds / timeout_base;
@@ -90,8 +90,7 @@ protected:
 
    std::atomic_int timeout_milliseconds;
 
-   std::atomic_bool started;
-   std::atomic_bool stopped;
+   std::atomic_bool started, stopped;
 
    Timer* timer;
 };

@@ -212,7 +212,7 @@ TYPED_TEST( StaticArrayTest, AssignmentOperator )
    EXPECT_TRUE( u3 != u1 );
 
    // assignment from different type
-   StaticArray< Size, char > u4( 128 );
+   StaticArray< Size, char > u4( 127 );
    u3 = u4;
    EXPECT_TRUE( u3 == u4 );
 }

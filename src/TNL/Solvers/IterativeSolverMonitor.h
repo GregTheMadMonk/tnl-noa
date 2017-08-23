@@ -18,18 +18,17 @@ namespace Solvers {
 template< typename Real, typename Index>
 class IterativeSolverMonitor : public SolverMonitor
 {
-   public:
-
+public:
    typedef Index IndexType;
    typedef Real RealType;
 
    IterativeSolverMonitor();
 
+   void setStage( const std::string& stage );
+
    void setTime( const RealType& time );
 
    void setTimeStep( const RealType& timeStep );
-
-   void setStage( const std::string& stage );
 
    void setIterations( const IndexType& iterations );
 
@@ -37,21 +36,18 @@ class IterativeSolverMonitor : public SolverMonitor
 
    void setVerbose( const Index& verbose );
  
-   virtual void refresh( bool force = false );
+   virtual void refresh();
 
-   protected:
-
+protected:
    int getLineWidth();
 
-   RealType time;
+   std::string stage, saved_stage;
 
-   RealType timeStep;
+   std::atomic_bool saved;
 
-   std::string stage;
+   RealType time, saved_time, timeStep, saved_timeStep, residue, saved_residue;
 
-   IndexType iterations;
-
-   RealType residue;
+   IndexType iterations, saved_iterations;
 
    IndexType verbose;
 };

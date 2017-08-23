@@ -325,14 +325,15 @@ TYPED_TEST( ArrayTest, elementwiseAccess )
    testArrayElementwiseAccess( ArrayType() );
 }
 
-// TODO: comparison with different device
 TYPED_TEST( ArrayTest, comparisonOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
 
    ArrayType u( 10 ), v( 10 ), w( 10 );
+   typename ArrayType::HostType u_host( 10 );
    for( int i = 0; i < 10; i ++ ) {
       u.setElement( i, i );
+      u_host.setElement( i, i );
       v.setElement( i, i );
       w.setElement( i, 2 * i );
    }
@@ -345,6 +346,12 @@ TYPED_TEST( ArrayTest, comparisonOperator )
    EXPECT_TRUE( w != u );
    EXPECT_FALSE( u == w );
    EXPECT_FALSE( w == u );
+
+   // comparison with different device
+   EXPECT_TRUE( u == u_host );
+   EXPECT_TRUE( u_host == u );
+   EXPECT_TRUE( w != u_host );
+   EXPECT_TRUE( u_host != w );
 
    v.setSize( 0 );
    EXPECT_FALSE( u == v );
@@ -369,17 +376,30 @@ TYPED_TEST( ArrayTest, comparisonOperatorWithDifferentType )
 }
 */
 
-// TODO: assignment from different device
 TYPED_TEST( ArrayTest, assignmentOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
 
    ArrayType u( 10 ), v( 10 );
-   for( int i = 0; i < 10; i++ )
+   typename ArrayType::HostType u_host( 10 );
+   for( int i = 0; i < 10; i++ ) {
       u.setElement( i, i );
+      u_host.setElement( i, i );
+   }
+
    v.setValue( 0 );
    v = u;
    EXPECT_EQ( u, v );
+
+   // assignment from host to device
+   v.setValue( 0 );
+   v = u_host;
+   EXPECT_EQ( u, v );
+
+   // assignment from device to host
+   u_host.setValue( 0 );
+   u_host = u;
+   EXPECT_EQ( u_host, u );
 }
 
 // test works only for arithmetic types
@@ -388,15 +408,36 @@ template< typename ArrayType,
 void testArrayAssignmentWithDifferentType()
 {
    ArrayType u( 10 );
-   for( int i = 0; i < 10; i++ )
-      u.setElement( i, i );
    Array< short, typename ArrayType::DeviceType, short > v( 10 );
+   Array< short, Devices::Host, short > v_host( 10 );
+   typename ArrayType::HostType u_host( 10 );
+   for( int i = 0; i < 10; i++ ) {
+      u.setElement( i, i );
+      u_host.setElement( i, i );
+   }
+
    v.setValue( 0 );
    v = u;
 // TODO: missing implementation of relevant reduction operation on CUDA with different types
-//   EXPECT_EQ( u, v );
+//   EXPECT_EQ( v, u );
    for( int i = 0; i < 10; i++ )
       EXPECT_EQ( v.getElement( i ), i );
+
+   // assignment from host to device
+   v.setValue( 0 );
+   v = u_host;
+// TODO: missing implementation of relevant reduction operation on CUDA with different types
+//   EXPECT_EQ( v, u_host );
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( v.getElement( i ), i );
+
+   // assignment from host to device
+   v_host.setValue( 0 );
+   v_host = u;
+// TODO: missing implementation of relevant reduction operation on CUDA with different types
+//   EXPECT_EQ( v_host, u );
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( v_host.getElement( i ), i );
 }
 
 template< typename ArrayType,
@@ -406,7 +447,6 @@ void testArrayAssignmentWithDifferentType()
 {
 }
 
-// TODO: assignment from different device
 TYPED_TEST( ArrayTest, assignmentOperatorWithDifferentType )
 {
    using ArrayType = typename TestFixture::ArrayType;

@@ -30,9 +30,8 @@ using both_integral_or_floating = typename std::conditional<
 
 // 1. If both types are integral or floating-point, the larger type is selected.
 // 2. If one type is integral and the other floating-point, the floating-point type is selected.
-// This is necessary only due to the limitations of nvcc. Note that clang and gcc
-// can handle automatic promotion using a single-type template, exactly like
-// std::min and std::max are implemented in STL.
+// Casting both arguments to the same type is necessary because std::min and std::max
+// are implemented as a single-type template.
 template< typename T1, typename T2 >
 using larger_type = typename std::conditional<
          ( both_integral_or_floating< T1, T2 >::value && sizeof(T1) >= sizeof(T2) ) ||

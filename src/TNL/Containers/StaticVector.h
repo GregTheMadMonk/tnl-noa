@@ -24,8 +24,6 @@ class StaticVector : public StaticArray< Size, Real >
    typedef StaticVector< Size, Real > ThisType;
    enum { size = Size };
 
-   using StaticArray< Size, Real >::operator=;
-
    __cuda_callable__
    StaticVector();
 
@@ -97,6 +95,23 @@ class StaticVector : public StaticArray< Size, Real >
 
    __cuda_callable__
    Real lpNorm( const Real& p ) const;
+
+#ifdef HAVE_MIC
+   __cuda_callable__
+   inline StaticVector< Size, Real >& operator=( const StaticVector< Size, Real >& vector )
+   {
+      StaticArray< Size, Real >::operator=( vector );
+      return *this;
+   }
+
+   template< typename Vector >
+   __cuda_callable__
+   inline StaticVector< Size, Real >& operator=( const Vector& vector )
+   {
+      StaticArray< Size, Real >::operator=( vector );
+      return *this;
+   }
+#endif
 };
 
 template< typename Real >
@@ -106,8 +121,6 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    typedef Real RealType;
    typedef StaticVector< 1, Real > ThisType;
    enum { size = 1 };
-
-   using StaticArray< 1, Real >::operator=;
 
    __cuda_callable__
    StaticVector();
@@ -180,6 +193,23 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
 
    __cuda_callable__
    Real lpNorm( const Real& p ) const;   
+
+#ifdef HAVE_MIC
+   __cuda_callable__
+   inline StaticVector< 1, Real >& operator=( const StaticVector< 1, Real >& vector )
+   {
+      StaticArray< 1, Real >::operator=( vector );
+      return *this;
+   }
+
+   template< typename Vector >
+   __cuda_callable__
+   inline StaticVector< 1, Real >& operator=( const Vector& vector )
+   {
+      StaticArray< 1, Real >::operator=( vector );
+      return *this;
+   }
+#endif
 };
 
 template< typename Real >
@@ -189,8 +219,6 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    typedef Real RealType;
    typedef StaticVector< 2, Real > ThisType;
    enum { size = 2 };
-
-   using StaticArray< 2, Real >::operator=;
 
    __cuda_callable__
    StaticVector();
@@ -266,6 +294,23 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
 
    __cuda_callable__
    Real lpNorm( const Real& p ) const;   
+
+#ifdef HAVE_MIC
+   __cuda_callable__
+   inline StaticVector< 2, Real >& operator=( const StaticVector< 2, Real >& vector )
+   {
+      StaticArray< 2, Real >::operator=( vector );
+      return *this;
+   }
+
+   template< typename Vector >
+   __cuda_callable__
+   inline StaticVector< 2, Real >& operator=( const Vector& vector )
+   {
+      StaticArray< 2, Real >::operator=( vector );
+      return *this;
+   }
+#endif
 };
 
 template< typename Real >
@@ -275,8 +320,6 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    typedef Real RealType;
    typedef StaticVector< 3, Real > ThisType;
    enum { size = 3 };
-
-   using StaticArray< 3, Real >::operator=;
 
    __cuda_callable__
    StaticVector();
@@ -352,6 +395,23 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
 
    __cuda_callable__
    Real lpNorm( const Real& p ) const;   
+
+#ifdef HAVE_MIC
+   __cuda_callable__
+   inline StaticVector< 3, Real >& operator=( const StaticVector< 3, Real >& vector )
+   {
+      StaticArray< 3, Real >::operator=( vector );
+      return *this;
+   }
+
+   template< typename Vector >
+   __cuda_callable__
+   inline StaticVector< 3, Real >& operator=( const Vector& vector )
+   {
+      StaticArray< 3, Real >::operator=( vector );
+      return *this;
+   }
+#endif
 };
 
 template< int Size, typename Real, typename Scalar >

@@ -212,7 +212,6 @@ void IterativeSolver< Real, Index> :: refreshSolverMonitor( bool force )
       this->solverMonitor->setIterations( this->getIterations() );
       this->solverMonitor->setResidue( this->getResidue() );
       this->solverMonitor->setRefreshRate( this-> refreshRate );
-//      this->solverMonitor -> refresh( force );
    }
 }
 
