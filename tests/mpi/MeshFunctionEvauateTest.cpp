@@ -18,7 +18,7 @@ using namespace std;
 
 #include <TNL/Timer.h>
 
-//#define OUTPUT 
+#define OUTPUT 
 
 #include "Functions.h"
 
@@ -73,7 +73,8 @@ int main ( int argc, char *argv[])
  globalGrid.setDimensions(size,size);
  globalGrid.setDomain(globalOrigin,globalProportions);
  
- DistributedGrid<MeshType> distrgrid(globalGrid); 
+ int distr[2]={0,1};
+ DistributedGrid<MeshType> distrgrid(globalGrid, distr); 
   
  SharedPointer<MeshType> gridptr;
  SharedPointer<MeshFunctionType> meshFunctionptr;

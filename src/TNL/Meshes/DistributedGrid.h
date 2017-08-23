@@ -23,7 +23,7 @@ namespace Meshes {
           typename Real >*/
 
 template<typename GridType,
-        int meshDimensions= GridType::meshDimension>    
+        int meshDimensions= GridType::getMeshDimension()>    
 class DistributedGrid
 {
 
@@ -86,7 +86,7 @@ class DistributedGrid <GridType,1>
      
    public:
        //compute everithing 
-       DistributedGrid(GridType globalGrid)
+       DistributedGrid(GridType globalGrid, int *distribution=NULL)
        {
            
            //fuj
@@ -229,7 +229,7 @@ class DistributedGrid <GridType,2>
      
    public:
        //compute everithing 
-       DistributedGrid(GridType globalGrid)
+       DistributedGrid(GridType globalGrid,int *distribution=NULL)
        {
            
            //fuj
@@ -239,7 +239,7 @@ class DistributedGrid <GridType,2>
            for (int i=0;i<8;i++)
                 neighbors[i]=-1;
            
-           Dimensions= GridType::meshDimension;
+           Dimensions= GridType::getMeshDimension();
            GlobalGrid=globalGrid;
            //Detect MPI and number of process
            mpiInUse=false;
@@ -270,8 +270,16 @@ class DistributedGrid <GridType,2>
            {
                //With MPI
                //compute node distribution
-               procsdistr[0]=0;
-               procsdistr[1]=0;
+               if(distribution!=NULL)
+               {
+                  procsdistr[0]=distribution[0];
+                  procsdistr[1]=distribution[1];
+               }
+               else
+               {
+                  procsdistr[0]=0;
+                  procsdistr[1]=0;
+               }
                MPI_Dims_create(nproc, 2, procsdistr);
                myproccoord[0]=rank%procsdistr[0]; // CO je X a co Y? --x je 0 a je to sloupec
                myproccoord[1]=rank/procsdistr[0];        
