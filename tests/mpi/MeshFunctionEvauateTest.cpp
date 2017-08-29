@@ -5,6 +5,7 @@
  */
 
 #include <iostream>
+#include <sstream>
 #define HAVE_MPI
 #include <TNL/mpi-supp.h>
 
@@ -73,8 +74,10 @@ int main ( int argc, char *argv[])
  globalGrid.setDimensions(size,size);
  globalGrid.setDomain(globalOrigin,globalProportions);
  
- int distr[2]={0,1};
- DistributedGrid<MeshType> distrgrid(globalGrid, distr); 
+ //int distr[2]={0,1};
+ //DistributedGrid<MeshType> distrgrid(globalGrid, distr); 
+ 
+ DistributedGrid<MeshType> distrgrid(globalGrid);
   
  SharedPointer<MeshType> gridptr;
  SharedPointer<MeshFunctionType> meshFunctionptr;
@@ -96,12 +99,13 @@ int main ( int argc, char *argv[])
 
   for(int i=0;i<cycles;i++)
 	{
-	    //zero->Number=MPI::COMM_WORLD.Get_rank();
-	    zero->Number=i;
+	    zero->Number=MPI::COMM_WORLD.Get_rank();
+	    //zero->Number=i;
 	    eval.start();
 		zeroevaluator.evaluateInteriorEntities( meshFunctionptr , zero );
 		//evaluator.evaluateAllEntities( meshFunctionptr , functionToEvaluate );
-		zero->Number=-1;
+		//zero->Number=-1;
+		zero->Number=MPI::COMM_WORLD.Get_rank();
 		zeroevaluator.evaluateBoundaryEntities( meshFunctionptr , zero );
 		MPI::COMM_WORLD.Barrier();
 		eval.stop();
@@ -114,24 +118,26 @@ int main ( int argc, char *argv[])
 
 		sum+=dof[2*gridptr->getDimensions().y()]; //dummy acces to array	
 	}
+  all.stop();
   
 #ifdef OUTPUT	
   //print local dof
   int maxx=gridptr->getDimensions().x();
   int maxy=gridptr->getDimensions().y();
   distrgrid.printcoords();
+  stringstream sout;
   for(int j=0;j<maxy;j++)
   {
 	for(int i=0;i<maxx;i++)
 	{
-		cout <<dof[maxx*j+i]<<"  ";
+		sout <<dof[maxx*j+i]<<"  ";
 	}
-	cout << endl;
+	sout << endl;
   }
-  cout << endl<<endl;
+  cout << sout.str()<< endl<<endl;
 #endif
   
-  all.stop();
+  
   
   
   
