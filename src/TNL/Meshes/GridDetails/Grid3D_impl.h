@@ -91,6 +91,17 @@ void Grid< 3, Real, Device, Index > :: computeSpaceSteps()
       this->spaceSteps.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
       this->spaceSteps.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
       this->spaceSteps.z() = this->proportions.z() / ( Real ) this->getDimensions().z();
+      
+      this->computeSpaceStepPowers();
+      
+   }
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 3, Real, Device, Index > :: computeSpaceStepPowers()
+{      
       const RealType& hx = this->spaceSteps.x();
       const RealType& hy = this->spaceSteps.y();
       const RealType& hz = this->spaceSteps.z();
@@ -160,8 +171,37 @@ void Grid< 3, Real, Device, Index > :: computeSpaceSteps()
             }
          }
       }
-   }
 }
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 3, Real, Device, Index > :: computeProportions()
+{
+    this->proportions.x()=this->dimensions.x()*this->spaceSteps.x();
+    this->proportions.y()=this->dimensions.y()*this->spaceSteps.y();
+    this->proportions.z()=this->dimensions.z()*this->spaceSteps.z();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 3, Real, Device, Index > :: setOrigin( const PointType& origin)
+{
+    this->origin=origin;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 3, Real, Device, Index > :: setSpaceSteps(const PointType& steps)
+{
+     this->spaceSteps=steps;    
+     computeSpaceStepPowers();
+     computeProportions(); 
+}
+
 
 template< typename Real,
           typename Device,
@@ -451,6 +491,22 @@ template< typename Real,
          }
    lpNorm *= this->getSpaceSteps().x() * this->getSpaceSteps().y() * this->getSpaceSteps().z();
    return ::pow( lpNorm, 1.0 / p );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 3, Real, Device, Index >:: SetDistGrid(DistributedGrid <ThisType,3> * distGrid)
+{
+    this->distGrid=distGrid;
+}
+   
+template< typename Real,
+          typename Device,
+          typename Index >
+DistributedGrid <Grid< 3, Real, Device, Index >,3> * Grid< 3, Real, Device, Index >:: GetDistGrid(void) const
+{
+    return this->distGrid;
 }
 
 template< typename Real,

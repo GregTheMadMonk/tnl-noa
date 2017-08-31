@@ -29,7 +29,7 @@ class DistributedGrid
 
 };
 
-#define HAVE_MPI
+//#define HAVE_MPI
 
 #ifndef HAVE_MPI
 template<typename GridType>    
@@ -179,9 +179,9 @@ class DistributedGrid <GridType,1>
            grid.SetDistGrid(this);
        };
        
-       void printcoords(void)
+       void printcoords(std::ostream& out)
        {
-           std::cout<<rank<<":" <<std::endl;
+           out<<rank<<":" <<std::endl;
        };
        
        bool isMPIUsed(void)
@@ -390,9 +390,9 @@ class DistributedGrid <GridType,2>
            grid.SetDistGrid(this);
        };
        
-       void printcoords(void)
+       void printcoords(std::ostream& out)
        {
-           std::cout<<"("<<myproccoord[0]<<","<<myproccoord[1]<<"):" <<std::endl;
+           out<<"("<<myproccoord[0]<<","<<myproccoord[1]<<"):" <<std::endl;
        };
        
        bool isMPIUsed(void)
@@ -432,10 +432,11 @@ class DistributedGrid <GridType,2>
 //========================3D======================================================
 enum Directions3D { West = 0 , East = 1 , Nord = 2, South=3, Top =4, Bottom=5, 
                   NordWest=6, NordEast=7, SouthWest=8, SouthEast=9,
-                  TopWest=10,TopEast=11,TopNord=12,TopSouth=13,
-                  BottomWest=14,BottomEast=15,BottomNord=16,BottomSouth=17,
-                  TopNordWest=18,TopNordEast=19,TopSouthWest=20,TopSouthEast=21,
-                  BottomNordWest=22,BottomNordEast=23,BottomSouthWest=24,BottomSouthEast=25};
+                  BottomWest=10,BottomEast=11,BottomNord=12,BottomSouth=13,
+                  TopWest=14,TopEast=15,TopNord=16,TopSouth=17,
+                  BottomNordWest=18,BottomNordEast=19,BottomSouthWest=20,BottomSouthEast=21,
+                  TopNordWest=22,TopNordEast=23,TopSouthWest=24,TopSouthEast=25
+                  };
 
 template<typename GridType>    
 class DistributedGrid <GridType,3>
@@ -509,6 +510,7 @@ class DistributedGrid <GridType,3>
                
                localorigin=GlobalGrid.getOrigin();
                localsize=GlobalGrid.getDimensions();
+               localgridsize=localsize;
                return;
            }
            else
@@ -531,10 +533,8 @@ class DistributedGrid <GridType,3>
                myproccoord[2]=rank/(procsdistr[0]*procsdistr[1]); // CO je X, Y, Z? x je 0 y je 1 a z je 2, snad... 
                myproccoord[1]=(rank%(procsdistr[0]*procsdistr[1]))/procsdistr[0];
                myproccoord[0]=(rank%(procsdistr[0]*procsdistr[1]))%procsdistr[0];
-               
-               
-               //compute local mesh size
-               
+
+               //compute local mesh size               
                numberoflarger[0]=GlobalGrid.getDimensions().x()%procsdistr[0];
                numberoflarger[1]=GlobalGrid.getDimensions().y()%procsdistr[1];
                numberoflarger[2]=GlobalGrid.getDimensions().z()%procsdistr[2];
@@ -573,7 +573,6 @@ class DistributedGrid <GridType,3>
                    localorigin.z()=GlobalGrid.getOrigin().z()
                                 +(numberoflarger[2]*(localsize.z()+1)+(myproccoord[2]-numberoflarger[2])*localsize.z()-overlap.z())
                                 *GlobalGrid.getSpaceSteps().z();
-
                
                //nearnodes
                //X Y Z
@@ -589,51 +588,53 @@ class DistributedGrid <GridType,3>
                    neighbors[Bottom]=getRankOfProcCoord(myproccoord[0],myproccoord[1],myproccoord[2]-1);
                if(myproccoord[2]<procsdistr[2]-1)
                    neighbors[Top]=getRankOfProcCoord(myproccoord[0],myproccoord[1],myproccoord[2]+1);
+
                //XY
                if(myproccoord[0]>0 && myproccoord[1]>0)
                    neighbors[NordWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]-1,myproccoord[2]);
-               if(myproccoord[0]>0 && myproccoord[1]<procsdistr[1]-1)
-                   neighbors[SouthWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]+1,myproccoord[2]);
                if(myproccoord[0]<procsdistr[0]-1 && myproccoord[1]>0)
                    neighbors[NordEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1]-1,myproccoord[2]);
+               if(myproccoord[0]>0 && myproccoord[1]<procsdistr[1]-1)
+                   neighbors[SouthWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]+1,myproccoord[2]);
                if(myproccoord[0]<procsdistr[0]-1 && myproccoord[1]<procsdistr[1]-1)
                    neighbors[SouthEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1]+1,myproccoord[2]);             
                //XZ
                if(myproccoord[0]>0 && myproccoord[2]>0)
-                   neighbors[TopWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1],myproccoord[2]-1);
-               if(myproccoord[0]>0 && myproccoord[2]<procsdistr[2]-1)
-                   neighbors[BottomWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1],myproccoord[2]+1);
+                   neighbors[BottomWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1],myproccoord[2]-1);
                if(myproccoord[0]<procsdistr[0]-1 && myproccoord[2]>0)
-                   neighbors[TopEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1],myproccoord[2]-1);
-               if(myproccoord[0]<procsdistr[0]-1 && myproccoord[2]<procsdistr[2]-1)
-                   neighbors[BottomEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1],myproccoord[2]+1);
+                   neighbors[BottomEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1],myproccoord[2]-1); 
+               if(myproccoord[0]>0 && myproccoord[2]<procsdistr[2]-1)
+                   neighbors[TopWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1],myproccoord[2]+1);
+              if(myproccoord[0]<procsdistr[0]-1 && myproccoord[2]<procsdistr[2]-1)
+                   neighbors[TopEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1],myproccoord[2]+1);
                //YZ
                if(myproccoord[1]>0 && myproccoord[2]>0)
-                   neighbors[TopNord]=getRankOfProcCoord(myproccoord[0],myproccoord[1]-1,myproccoord[2]-1);
-               if(myproccoord[1]>0 && myproccoord[2]<procsdistr[2]-1)
-                   neighbors[BottomNord]=getRankOfProcCoord(myproccoord[0],myproccoord[1]-1,myproccoord[2]+1);
+                   neighbors[BottomNord]=getRankOfProcCoord(myproccoord[0],myproccoord[1]-1,myproccoord[2]-1);
                if(myproccoord[1]<procsdistr[1]-1 && myproccoord[2]>0)
-                   neighbors[TopSouth]=getRankOfProcCoord(myproccoord[0],myproccoord[1]+1,myproccoord[2]-1);
+                   neighbors[BottomSouth]=getRankOfProcCoord(myproccoord[0],myproccoord[1]+1,myproccoord[2]-1);
+               if(myproccoord[1]>0 && myproccoord[2]<procsdistr[2]-1)
+                   neighbors[TopNord]=getRankOfProcCoord(myproccoord[0],myproccoord[1]-1,myproccoord[2]+1);               
                if(myproccoord[1]<procsdistr[1]-1 && myproccoord[2]<procsdistr[2]-1)
-                   neighbors[BottomSouth]=getRankOfProcCoord(myproccoord[0],myproccoord[1]+1,myproccoord[2]+1);
+                   neighbors[TopSouth]=getRankOfProcCoord(myproccoord[0],myproccoord[1]+1,myproccoord[2]+1);
                //XYZ
                if(myproccoord[0]>0 && myproccoord[1]>0 && myproccoord[2]>0 )
-                   neighbors[TopNordWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]-1,myproccoord[2]-1);
+                   neighbors[BottomNordWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]-1,myproccoord[2]-1);
                if(myproccoord[0]<procsdistr[0]-1 && myproccoord[1]>0 && myproccoord[2]>0 )
-                   neighbors[TopNordEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1]-1,myproccoord[2]-1);
+                   neighbors[BottomNordEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1]-1,myproccoord[2]-1);
                if(myproccoord[0]>0 && myproccoord[1]<procsdistr[1]-1 && myproccoord[2]>0 )
-                   neighbors[TopSouthWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]+1,myproccoord[2]-1);
+                   neighbors[BottomSouthWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]+1,myproccoord[2]-1);
                if(myproccoord[0]<procsdistr[0]-1 && myproccoord[1]<procsdistr[1]-1 && myproccoord[2]>0 )
-                   neighbors[TopSouthEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1]+1,myproccoord[2]-1);
+                   neighbors[BottomSouthEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1]+1,myproccoord[2]-1);
                if(myproccoord[0]>0 && myproccoord[1]>0 && myproccoord[2]<procsdistr[2]-1 )
-                   neighbors[BottomNordWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]-1,myproccoord[2]+1);
+                   neighbors[TopNordWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]-1,myproccoord[2]+1);
                if(myproccoord[0]<procsdistr[0]-1 && myproccoord[1]>0 && myproccoord[2]<procsdistr[2]-1 )
-                   neighbors[BottomNordEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1]-1,myproccoord[2]+1);
+                   neighbors[TopNordEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1]-1,myproccoord[2]+1);
                if(myproccoord[0]>0 && myproccoord[1]<procsdistr[1]-1 && myproccoord[2]<procsdistr[2]-1 )
-                   neighbors[BottomSouthWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]+1,myproccoord[2]+1);
+                   neighbors[TopSouthWest]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]+1,myproccoord[2]+1);
                if(myproccoord[0]<procsdistr[0]-1 && myproccoord[1]<procsdistr[1]-1 && myproccoord[2]<procsdistr[2]-1 )
-                   neighbors[BottomSouthEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1]+1,myproccoord[2]+1);                           
-                              
+                   neighbors[TopSouthEast]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1]+1,myproccoord[2]+1);   
+
+               
                localbegin=overlap;
                
                if(neighbors[West]==-1)
@@ -646,7 +647,7 @@ class DistributedGrid <GridType,3>
                    localorigin.y()+=overlap.y()*GlobalGrid.getSpaceSteps().y();
                    localbegin.y()=0;
                }
-               if(neighbors[Top]==-1)
+               if(neighbors[Bottom]==-1)
                {
                    localorigin.z()+=overlap.z()*GlobalGrid.getSpaceSteps().z();
                    localbegin.z()=0;
@@ -664,29 +665,26 @@ class DistributedGrid <GridType,3>
                if(neighbors[South]!=-1)
                    localgridsize.y()+=overlap.y();
                
-               if(neighbors[Top]!=-1)
-                   localgridsize.z()+=overlap.z();
                if(neighbors[Bottom]!=-1)
                    localgridsize.z()+=overlap.z();
+               if(neighbors[Top]!=-1)
+                   localgridsize.z()+=overlap.z();
                
-           }
-                     
-           
-                      
+           }                     
        };
        
        void SetupGrid( GridType& grid)
        {
            grid.setOrigin(localorigin);
-           grid.setDimensions(localsize);
+           grid.setDimensions(localgridsize);
            //compute local proporions by sideefect
            grid.setSpaceSteps(GlobalGrid.getSpaceSteps());
            grid.SetDistGrid(this);
        };
        
-       void printcoords(void)
+       void printcoords(std::ostream& out )
        {
-           std::cout<<"("<<myproccoord[0]<<","<<myproccoord[1]<<","<<myproccoord[2]<<"):" <<std::endl;
+           out<<"("<<myproccoord[0]<<","<<myproccoord[1]<<","<<myproccoord[2]<<"):" <<std::endl;
        };
        
        bool isMPIUsed(void)
@@ -719,7 +717,7 @@ class DistributedGrid <GridType,3>
         int getRankOfProcCoord(int x, int y, int z)
         {
             return z*procsdistr[0]*procsdistr[1]+y*procsdistr[0]+x;
-        }
+        }       
 };  
 
 #endif

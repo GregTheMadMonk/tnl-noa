@@ -102,3 +102,41 @@ class ZeroFunction<Real,2> : public Functions::Domain< 2, Functions::MeshDomain 
 		 
 	  }
 };
+
+//============================3D============================================================
+template <typename Real>
+class FunctionToEvaluate<Real,3> : public Functions::Domain< 3, Functions::MeshDomain >
+{
+   public:
+	  typedef Real RealType;
+	  FunctionToEvaluate( )
+	  {};
+
+	  template< typename EntityType >
+	  RealType operator()( const EntityType& meshEntity,
+								  const RealType& time = 0.0 ) const
+	  {
+		 //return meshEntity.getCoordinates().y()*10+meshEntity.getCoordinates().x();
+		 return meshEntity.getCenter().z()*10000+meshEntity.getCenter().y()*100+meshEntity.getCenter().x();
+	  }
+};
+
+template <typename Real>
+class ZeroFunction<Real,3> : public Functions::Domain< 3, Functions::MeshDomain >
+{
+   public:
+          typedef Real RealType;
+          
+          Real Number;
+	  ZeroFunction( )
+	  {};
+          
+	  template< typename EntityType >
+	  RealType operator()( const EntityType& meshEntity,
+								  const RealType& time = 0.0 ) const
+	  {
+		 //return meshEntity.getCoordinates().y()*10+meshEntity.getCoordinates().x();
+		 return this->Number;
+		 
+	  }
+};

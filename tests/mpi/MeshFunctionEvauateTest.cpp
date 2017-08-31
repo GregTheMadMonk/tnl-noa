@@ -41,14 +41,15 @@ int main ( int argc, char *argv[])
   MPI::Init(argc,argv);
   
   //typedef Grid<1,double,Host,int> MeshType;
-  typedef Grid<2,double,Host,int> MeshType;
+  //typedef Grid<2,double,Host,int> MeshType;
+  typedef Grid<3,double,Host,int> MeshType;
   typedef MeshFunction<MeshType> MeshFunctionType;
   typedef Vector<double,Host,int> DofType;
   typedef typename MeshType::Cell Cell;
   typedef typename MeshType::IndexType IndexType; 
   typedef typename MeshType::PointType PointType; 
   
-  int size=10;
+  int size=9;
   int cycles=1;
   if(argc==3)
   {
@@ -63,26 +64,29 @@ int main ( int argc, char *argv[])
  PointType globalOrigin;
  globalOrigin.x()=-0.5;
  globalOrigin.y()=-0.5;
+ globalOrigin.z()=-0.5;
  
  PointType globalProportions;
  globalProportions.x()=size;
  globalProportions.y()=size;
+ globalProportions.z()=size;
  
  
  MeshType globalGrid;
  //globalGrid.setDimensions(9);
- globalGrid.setDimensions(size,size);
+ //globalGrid.setDimensions(size,size);
+ globalGrid.setDimensions(size,size,size);
  globalGrid.setDomain(globalOrigin,globalProportions);
  
- //int distr[2]={0,1};
- //DistributedGrid<MeshType> distrgrid(globalGrid, distr); 
+ int distr[3]={0,0,0}; 
+ DistributedGrid<MeshType> distrgrid(globalGrid, distr); 
  
- DistributedGrid<MeshType> distrgrid(globalGrid);
+ //DistributedGrid<MeshType> distrgrid(globalGrid);
   
  SharedPointer<MeshType> gridptr;
  SharedPointer<MeshFunctionType> meshFunctionptr;
- MeshFunctionEvaluator< MeshFunctionType, FunctionToEvaluate<double,2> > evaluator;
- MeshFunctionEvaluator< MeshFunctionType, ZeroFunction<double,2> > zeroevaluator;
+ MeshFunctionEvaluator< MeshFunctionType, FunctionToEvaluate<double,3> > evaluator;
+ MeshFunctionEvaluator< MeshFunctionType, ZeroFunction<double,3> > zeroevaluator;
  
   distrgrid.SetupGrid(*gridptr);
   
@@ -90,8 +94,8 @@ int main ( int argc, char *argv[])
 
   meshFunctionptr->bind(gridptr,dof);  
   
-  SharedPointer< FunctionToEvaluate<double,2>, Host > functionToEvaluate;
-  SharedPointer< ZeroFunction<double,2>, Host > zero; 
+  SharedPointer< FunctionToEvaluate<double,3>, Host > functionToEvaluate;
+  SharedPointer< ZeroFunction<double,3>, Host > zero; 
    
   setup.stop();
   
@@ -102,17 +106,17 @@ int main ( int argc, char *argv[])
 	    zero->Number=MPI::COMM_WORLD.Get_rank();
 	    //zero->Number=i;
 	    eval.start();
-		zeroevaluator.evaluateInteriorEntities( meshFunctionptr , zero );
-		//evaluator.evaluateAllEntities( meshFunctionptr , functionToEvaluate );
+		//zeroevaluator.evaluateAllEntities( meshFunctionptr , zero );
+		evaluator.evaluateAllEntities( meshFunctionptr , functionToEvaluate );
 		//zero->Number=-1;
-		zero->Number=MPI::COMM_WORLD.Get_rank();
-		zeroevaluator.evaluateBoundaryEntities( meshFunctionptr , zero );
+		/*zero->Number=MPI::COMM_WORLD.Get_rank();
+		zeroevaluator.evaluateBoundaryEntities( meshFunctionptr , zero );*/
 		MPI::COMM_WORLD.Barrier();
 		eval.stop();
 
 
 		sync.start();	
-		DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2>::Synchronize(distrgrid,*meshFunctionptr);
+		DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,3>::Synchronize(distrgrid,*meshFunctionptr);
 		MPI::COMM_WORLD.Barrier();
 		sync.stop();
 
@@ -124,15 +128,22 @@ int main ( int argc, char *argv[])
   //print local dof
   int maxx=gridptr->getDimensions().x();
   int maxy=gridptr->getDimensions().y();
-  distrgrid.printcoords();
+  int maxz=gridptr->getDimensions().z();
+  
   stringstream sout;
-  for(int j=0;j<maxy;j++)
+  distrgrid.printcoords(sout);
+  for(int k=0;k<maxz;k++)
   {
-	for(int i=0;i<maxx;i++)
+	for(int j=0;j<maxy;j++)
 	{
-		sout <<dof[maxx*j+i]<<"  ";
+		for(int ii=0;ii<k;ii++)
+			sout<<"  ";
+		for(int i=0;i<maxx;i++)
+		{
+			sout <<dof[k*maxx*maxy+maxx*j+i]<<"  ";
+		}
+		sout << endl;
 	}
-	sout << endl;
   }
   cout << sout.str()<< endl<<endl;
 #endif

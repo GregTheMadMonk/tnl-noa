@@ -68,6 +68,9 @@ class Grid< 3, Real, Device, Index > : public Object
 
    void setDomain( const PointType& origin,
                    const PointType& proportions );
+   
+   void setOrigin( const PointType& origin);
+   
    __cuda_callable__
    inline const PointType& getOrigin() const;
 
@@ -93,7 +96,13 @@ class Grid< 3, Real, Device, Index > : public Object
  
    __cuda_callable__
    inline const PointType& getSpaceSteps() const;
- 
+
+   inline void setSpaceSteps(const PointType& steps);
+   
+   void SetDistGrid(DistributedGrid <ThisType,3> * distGrid);
+   
+   DistributedGrid <ThisType,3> * GetDistGrid(void) const;
+   
    template< int xPow, int yPow, int zPow >
    __cuda_callable__
    const RealType& getSpaceStepsProducts() const;
@@ -143,6 +152,10 @@ class Grid< 3, Real, Device, Index > : public Object
 
    protected:
 
+   void computeProportions();
+       
+   void computeSpaceStepPowers();    
+       
    void computeSpaceSteps();
 
    CoordinatesType dimensions;
@@ -159,6 +172,8 @@ class Grid< 3, Real, Device, Index > : public Object
    PointType spaceSteps;
  
    RealType spaceStepsProducts[ 5 ][ 5 ][ 5 ];
+   
+   DistributedGrid <ThisType,3> *distGrid;
 
    template< typename, typename, int >
    friend class GridEntityGetter;
