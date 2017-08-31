@@ -92,6 +92,14 @@ int main ( int argc, char *argv[])
   
   DofType dof(gridptr->template getEntitiesCount< Cell >());
 
+  int maxx=gridptr->getDimensions().x();
+  int maxy=gridptr->getDimensions().y();
+  int maxz=gridptr->getDimensions().z();
+  for(int k=0;k<maxz;k++)
+	for(int j=0;j<maxy;j++)
+		for(int i=0;i<maxx;i++)
+			dof[k*maxx*maxy+maxx*j+i]=0;
+  
   meshFunctionptr->bind(gridptr,dof);  
   
   SharedPointer< FunctionToEvaluate<double,3>, Host > functionToEvaluate;
@@ -103,11 +111,12 @@ int main ( int argc, char *argv[])
 
   for(int i=0;i<cycles;i++)
 	{
-	    zero->Number=MPI::COMM_WORLD.Get_rank();
-	    //zero->Number=i;
+	    //zero->Number=MPI::COMM_WORLD.Get_rank();
+	    zero->Number=-1;
 	    eval.start();
-		//zeroevaluator.evaluateAllEntities( meshFunctionptr , zero );
-		evaluator.evaluateAllEntities( meshFunctionptr , functionToEvaluate );
+		zeroevaluator.evaluateBoundaryEntities( meshFunctionptr , zero );
+		zero->Number=MPI::COMM_WORLD.Get_rank();
+		zeroevaluator.evaluateInteriorEntities( meshFunctionptr , zero );
 		//zero->Number=-1;
 		/*zero->Number=MPI::COMM_WORLD.Get_rank();
 		zeroevaluator.evaluateBoundaryEntities( meshFunctionptr , zero );*/
@@ -116,7 +125,7 @@ int main ( int argc, char *argv[])
 
 
 		sync.start();	
-		DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,3>::Synchronize(distrgrid,*meshFunctionptr);
+		//DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,3>::Synchronize(distrgrid,*meshFunctionptr);
 		MPI::COMM_WORLD.Barrier();
 		sync.stop();
 
@@ -126,9 +135,9 @@ int main ( int argc, char *argv[])
   
 #ifdef OUTPUT	
   //print local dof
-  int maxx=gridptr->getDimensions().x();
-  int maxy=gridptr->getDimensions().y();
-  int maxz=gridptr->getDimensions().z();
+  maxx=gridptr->getDimensions().x();
+  maxy=gridptr->getDimensions().y();
+  maxz=gridptr->getDimensions().z();
   
   stringstream sout;
   distrgrid.printcoords(sout);
