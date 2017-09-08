@@ -14,21 +14,21 @@ namespace TNL {
 
 void MPIInit( int* argc, char** argv[] )
 {
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    MPI_Init( argc, argv );
 #endif
 }
 
 void MPIFinalize()
 {
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    MPI_Finalize();
 #endif
 }
 
 bool HaveMPI()
 {
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    return true;
 #else
    return false;
@@ -37,7 +37,7 @@ bool HaveMPI()
 
 int MPIGetRank( MPI_Comm comm )
 {
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    int rank;
    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
    return rank;
@@ -48,7 +48,7 @@ int MPIGetRank( MPI_Comm comm )
 
 int MPIGetSize( MPI_Comm comm )
 {
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    int size;
    MPI_Comm_size( comm, &size );
    return size;
@@ -60,7 +60,7 @@ int MPIGetSize( MPI_Comm comm )
 
 void MPIBarrier( MPI_Comm comm )
 {
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    MPI_Barrier( comm );
 #endif
 }

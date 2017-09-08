@@ -10,17 +10,10 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
-#include <TNL/mpi-supp.h>
 #include <iostream>
-
 
 namespace TNL {
 namespace Meshes {   
-
-/*template< typename OutMeshFunction,
-          typename InFunction,
-          typename Real >*/
 
 template<typename GridType,
         int meshDimensions= GridType::getMeshDimension()>    
@@ -28,10 +21,17 @@ class DistributedGrid
 {
 
 };
+}
+}
 
-//#define HAVE_MPI
+#include <TNL/Meshes/Grid.h>
+#include <TNL/mpi-supp.h>
 
-#ifndef HAVE_MPI
+namespace TNL {
+namespace Meshes { 
+
+#ifndef USE_MPI
+
 template<typename GridType>    
 class DistributedGrid <GridType,1>
 {
@@ -106,7 +106,7 @@ class DistributedGrid <GridType,1>
            left=-1;
            right=-1;
            
-           Dimensions= GridType::meshDimensions;
+           Dimensions= GridType::getMeshDimension();
            GlobalGrid=globalGrid;
            //Detect MPI and number of process
            mpiInUse=false;
@@ -705,6 +705,11 @@ class DistributedGrid <GridType,3>
        CoordinatesType getLocalSize()
        {
            return this->localsize;
+       }
+       
+       CoordinatesType getLocalGridSize()
+       {
+           return this->localgridsize;
        }
        
        CoordinatesType getLocalBegin()

@@ -1,15 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   Functions.h
- * Author: slimon
- *
- * Created on 29. března 2017, 17:10
- */
+/***************************************************************************
+                          DistributedGridTest.cpp  -  description
+                             -------------------
+    begin                : Sep 6, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 
 #pragma once
 
@@ -21,45 +16,46 @@ using namespace TNL::Functions;
 
 template <typename Real,
         int Dim>
-class FunctionToEvaluate{};
+class LinearFunction{};
 
 
 template <typename Real,
         int Dim>
-class ZeroFunction{};
+class ConstFunction{};
 
 template <typename Real>
-class FunctionToEvaluate<Real,1> : public Functions::Domain< 1, Functions::MeshDomain >
+class LinearFunction<Real,1> : public Functions::Domain< 1, Functions::MeshDomain >
 {
    public:
 	  typedef Real RealType;
-	  FunctionToEvaluate( )
+	  LinearFunction( )
 	  {};
 
 	  template< typename EntityType >
 	  RealType operator()( const EntityType& meshEntity,
 								  const RealType& time = 0.0 ) const
 	  {
-		 //return meshEntity.getCoordinates().y()*10+meshEntity.getCoordinates().x();
 		 return meshEntity.getCenter().x();
 		 
 	  }
 };
 
 template <typename Real>
-class ZeroFunction<Real,1> : public Functions::Domain< 1, Functions::MeshDomain >
+class ConstFunction<Real,1> : public Functions::Domain< 1, Functions::MeshDomain >
 {
    public:
 	  typedef Real RealType;
-	  ZeroFunction( )
+          
+          Real Number;
+          
+	  ConstFunction( )
 	  {};
 
 	  template< typename EntityType >
 	  RealType operator()( const EntityType& meshEntity,
 								  const RealType& time = 0.0 ) const
 	  {
-		 //return meshEntity.getCoordinates().y()*10+meshEntity.getCoordinates().x();
-		 return -1.0;
+		 return Number;
 		 
 	  }
 };
@@ -67,11 +63,11 @@ class ZeroFunction<Real,1> : public Functions::Domain< 1, Functions::MeshDomain 
 //=================================2D======================================================
 
 template <typename Real>
-class FunctionToEvaluate<Real,2> : public Functions::Domain< 2, Functions::MeshDomain >
+class LinearFunction<Real,2> : public Functions::Domain< 2, Functions::MeshDomain >
 {
    public:
 	  typedef Real RealType;
-	  FunctionToEvaluate( )
+	  LinearFunction( )
 	  {};
 
 	  template< typename EntityType >
@@ -84,13 +80,13 @@ class FunctionToEvaluate<Real,2> : public Functions::Domain< 2, Functions::MeshD
 };
 
 template <typename Real>
-class ZeroFunction<Real,2> : public Functions::Domain< 2, Functions::MeshDomain >
+class ConstFunction<Real,2> : public Functions::Domain< 2, Functions::MeshDomain >
 {
    public:
           typedef Real RealType;
           
           Real Number;
-	  ZeroFunction( )
+	  ConstFunction( )
 	  {};
           
 	  template< typename EntityType >
@@ -105,11 +101,11 @@ class ZeroFunction<Real,2> : public Functions::Domain< 2, Functions::MeshDomain 
 
 //============================3D============================================================
 template <typename Real>
-class FunctionToEvaluate<Real,3> : public Functions::Domain< 3, Functions::MeshDomain >
+class LinearFunction<Real,3> : public Functions::Domain< 3, Functions::MeshDomain >
 {
    public:
 	  typedef Real RealType;
-	  FunctionToEvaluate( )
+	  LinearFunction( )
 	  {};
 
 	  template< typename EntityType >
@@ -122,13 +118,13 @@ class FunctionToEvaluate<Real,3> : public Functions::Domain< 3, Functions::MeshD
 };
 
 template <typename Real>
-class ZeroFunction<Real,3> : public Functions::Domain< 3, Functions::MeshDomain >
+class ConstFunction<Real,3> : public Functions::Domain< 3, Functions::MeshDomain >
 {
    public:
           typedef Real RealType;
           
           Real Number;
-	  ZeroFunction( )
+	  ConstFunction( )
 	  {};
           
 	  template< typename EntityType >

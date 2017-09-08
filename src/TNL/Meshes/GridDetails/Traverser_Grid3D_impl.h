@@ -49,8 +49,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
    else
    {
        //MPI
-#define HAVE_MPI
-       #ifdef HAVE_MPI
+       #ifdef USE_MPI
        int* neighbors=distributedgrid->getNeighbors(); 
        if(neighbors[West]==-1)
        {
@@ -145,7 +144,7 @@ processInteriorEntities( const GridPointer& gridPointer,
    }
    else
    {
-#ifdef HAVE_MPI
+#ifdef USE_MPI
        int* neighbors=distributedgrid->getNeighbors(); 
        CoordinatesType begin( distributedgrid->getOverlap());
        CoordinatesType end( gridPointer->getDimensions() - distributedgrid->getOverlap()- CoordinatesType(1,1,1) );
@@ -218,6 +217,7 @@ processAllEntities( const GridPointer& gridPointer,
    }
    else
    {
+       #ifdef USE_MPI
        CoordinatesType begin( distributedgrid->getOverlap());
        CoordinatesType end( gridPointer->getDimensions() - distributedgrid->getOverlap()- CoordinatesType(1,1,1) );
        int* neighbors=distributedgrid->getNeighbors(); 
@@ -251,12 +251,13 @@ processAllEntities( const GridPointer& gridPointer,
            end.z()=gridPointer->getDimensions().z()-1;
        }
     
-    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-       gridPointer,
-       begin,
-       end,
-       userDataPointer,
-       0 );  
+        GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+           gridPointer,
+           begin,
+           end,
+           userDataPointer,
+           0 ); 
+        #endif
    }
 }
 

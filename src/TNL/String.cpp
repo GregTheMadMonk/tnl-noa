@@ -15,7 +15,7 @@
 #include <TNL/Containers/List.h>
 #include <TNL/File.h>
 #include <TNL/Math.h>
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    #include <mpi.h>
 #endif
 
@@ -386,7 +386,7 @@ bool String::load( File& file )
 
 /*void String :: MPIBcast( int root, MPI_Comm comm )
 {
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    dbgFunctionName( "mString", "MPIBcast" );
    int iproc;
    MPI_Comm_rank( MPI_COMM_WORLD, &iproc );

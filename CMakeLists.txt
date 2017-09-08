@@ -53,7 +53,7 @@ if( CXX_COMPILER_NAME MATCHES "icpc" )
    message( "Intel compiler detected..."    )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_ICPC -wd2568 -wd2571 -wd2570")
    #####
-   #  Ckeck for MIC 
+   #  Check for MIC 
    #
    if( WITH_MIC STREQUAL "yes" )
        message( "Compile MIC support..."    )
@@ -65,6 +65,23 @@ if( CXX_COMPILER_NAME MATCHES "icpc" )
        set( MIC_CXX_FLAGS "")
    endif( )	
 endif()
+
+#####
+# Check for MPI -- poznej podle vraperu compileru -- da se testovat preklad bez MPI
+#
+if( ${CXX_COMPILER_NAME} STREQUAL "mpic++" )
+   message( "MPI compiler detected."    )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
+endif()
+
+####
+# Check for MPI
+#
+#find_package( MPI )
+#if( MPI_CXX_FOUND )
+#    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
+#    message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
+#endif()
 
 #####
 # Check for CUDA
@@ -194,15 +211,6 @@ if( OPENMP_FOUND )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp" )
 endif()
 #set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp=libgomp" )
-
-####
-# Check for MPI
-#
-#find_package( MPI )
-#if( MPI_CXX_FOUND )
-#    set( BUILD_MPI TRUE )
-#    message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
-#endif()
 
 find_package( DCMTK )
 if( DCMTK_FOUND )

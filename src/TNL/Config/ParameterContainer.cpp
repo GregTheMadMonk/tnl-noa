@@ -95,7 +95,7 @@ ParameterContainer::
 
 /*void ParameterContainer::MPIBcast( int root, MPI_Comm mpi_comm )
 {
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    int i;
    int size = parameters. getSize();
    :: MPIBcast( size, 1, root, mpi_comm );

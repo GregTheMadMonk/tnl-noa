@@ -2,6 +2,7 @@ if( WITH_TESTS STREQUAL "yes" )
 
 ADD_SUBDIRECTORY( Containers )
 ADD_SUBDIRECTORY( Matrices )
+ADD_SUBDIRECTORY( Mpi )
 
 ADD_EXECUTABLE( UniquePointerTest${mpiExt}${debugExt} UniquePointerTest.cpp )
 TARGET_COMPILE_OPTIONS( UniquePointerTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )

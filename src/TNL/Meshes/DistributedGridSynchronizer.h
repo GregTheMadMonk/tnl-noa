@@ -32,13 +32,15 @@ template <typename DistributedGridType,
 		typename MeshFunctionType>  
 class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,1>
 {
+    typedef typename MeshFunctionType::RealType Real;
+    
     public:
     static void Synchronize(DistributedGridType distributedgrid, MeshFunctionType meshfunction)
     {
         if(!distributedgrid.isMPIUsed())
                 return;
-#ifdef HAVE_MPI
-        typedef typename MeshFunctionType::RealType Real;
+#ifdef USE_MPI
+        
 
         Real * leftsendbuf;
         Real * rightsendbuf;
@@ -144,7 +146,7 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,2>
     {
 	if(!distributedgrid.isMPIUsed())
             return;
-#ifdef HAVE_MPI
+#ifdef USE_MPI
         typedef typename MeshFunctionType::RealType Real;
         typedef typename DistributedGridType::CoordinatesType CoordinatesType;
 
@@ -271,26 +273,46 @@ template <typename DistributedGridType,
 		typename MeshFunctionType>  
 class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
 {
-    public:
-    static void Synchronize(DistributedGridType distributedgrid, MeshFunctionType meshfunction)
-    {
-	if(!distributedgrid.isMPIUsed())
-            return;
-#ifdef HAVE_MPI
-        typedef typename MeshFunctionType::RealType Real;
-        typedef typename DistributedGridType::CoordinatesType CoordinatesType;
-
-
+    typedef typename MeshFunctionType::RealType Real;
+    typedef typename DistributedGridType::CoordinatesType CoordinatesType;
+      
+    private:
         Real ** sendbuffs=new Real*[26];
         Real ** rcvbuffs=new Real*[26];
-
-        CoordinatesType overlap = distributedgrid.getOverlap();
-        CoordinatesType localgridsize = meshfunction.getMesh().getDimensions();
-        CoordinatesType localsize=distributedgrid.getLocalSize();
-        CoordinatesType localbegin=distributedgrid.getLocalBegin();
-
         int sizes[26];
+        DistributedGridType *distributedgrid;
         
+        int westSrc;
+        int eastSrc;
+        int nordSrc;
+        int southSrc;
+        int bottomSrc;
+        int topSrc;
+        int xcenter;
+        int ycenter;
+        int zcenter;
+        int westDst;
+        int eastDst;
+        int nordDst;
+        int southDst;
+        int bottomDst;
+        int topDst;
+        
+        CoordinatesType overlap;
+        CoordinatesType localsize;
+    
+    public:
+    
+    DistributedGridSynchronizer(DistributedGridType *distgrid)
+    {
+#ifdef USE_MPI
+        this->distributedgrid=distgrid;        
+        overlap = this->distributedgrid->getOverlap();
+        localsize=this->distributedgrid->getLocalSize();
+        
+        CoordinatesType localbegin=this->distributedgrid->getLocalBegin();
+        CoordinatesType localgridsize = this->distributedgrid->getLocalGridSize();
+
         sizes[West]=sizes[East]=localsize.y()*localsize.z()*overlap.x();
         sizes[Nord]=sizes[South]=localsize.x()*localsize.z()*overlap.y();
         sizes[Bottom]=sizes[Top]=localsize.x()*localsize.y()*overlap.z();
@@ -309,46 +331,59 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
                 rcvbuffs[i]=new Real[sizes[i]];
         }
         
+        westSrc=localbegin.x();
+        eastSrc=localgridsize.x()-2*overlap.x();
+        nordSrc=localbegin.y();
+        southSrc=localgridsize.y()-2*overlap.y();
+        bottomSrc=localbegin.z();
+        topSrc=localgridsize.z()-2*overlap.z();
+            
+        xcenter=localbegin.x();
+        ycenter=localbegin.y();
+        zcenter=localbegin.z();
+        
+        westDst=0;
+        eastDst=localgridsize.x()-overlap.x();
+        nordDst=0;
+        southDst=localgridsize.y()-overlap.y();
+        bottomDst=0;
+        topDst=localgridsize.z()-overlap.z();
+        
+#endif  
+    }
+    
+    ~DistributedGridSynchronizer()
+    {
+#ifdef USE_MPI
+       //free buffers
+        for(int i=0;i<26;i++)
+        {
+            delete [] sendbuffs[i];
+            delete [] rcvbuffs[i];
+        }
+#endif          
+        
+    }
+        
+    void Synchronize(MeshFunctionType meshfunction)
+    {
+	if(!distributedgrid->isMPIUsed())
+            return;
+#ifdef USE_MPI
+        
+        int *neighbor=distributedgrid->getNeighbors();
         
         //fill send buffers
-        //X-Y-Z
-        BufferEntities(meshfunction,sendbuffs[West],localbegin.x(),localbegin.y(),localbegin.z(),overlap.x(),localsize.y(),localsize.z(),true);
-        BufferEntities(meshfunction,sendbuffs[East],localgridsize.x()-2*overlap.x(),localbegin.y(),localbegin.z(),overlap.x(),localsize.y(),localsize.z(),true);
-	BufferEntities(meshfunction,sendbuffs[Nord],localbegin.x(),localbegin.y(),localbegin.z(),localsize.x(),overlap.y(),localsize.z(),true);
-        BufferEntities(meshfunction,sendbuffs[South],localbegin.x(),localgridsize.y()-2*overlap.y(),localbegin.z(),localsize.x(),overlap.y(),localsize.z(),true);
-        BufferEntities(meshfunction,sendbuffs[Bottom],localbegin.x(),localbegin.y(),localbegin.z(),localsize.x(),localsize.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[Top],localbegin.x(),localbegin.y(),localgridsize.z()-2*overlap.z(),localsize.x(),localsize.y(),overlap.z(),true);	
-        //XY
-	BufferEntities(meshfunction,sendbuffs[NordWest],localbegin.x(),localbegin.y(),localbegin.z(),overlap.x(),overlap.y(),localsize.z(),true);
-        BufferEntities(meshfunction,sendbuffs[NordEast],localgridsize.x()-2*overlap.x(),localbegin.y(),localbegin.z(),overlap.x(),overlap.y(),localsize.z(),true);
-	BufferEntities(meshfunction,sendbuffs[SouthWest],localbegin.x(),localgridsize.y()-2*overlap.y(),localbegin.z(),overlap.x(),overlap.y(),localsize.z(),true);
-        BufferEntities(meshfunction,sendbuffs[SouthEast],localgridsize.x()-2*overlap.x(),localgridsize.y()-2*overlap.y(),localbegin.z(),overlap.x(),overlap.y(),localsize.z(),true);
-        //XZ
-        BufferEntities(meshfunction,sendbuffs[BottomWest],localbegin.x(),localbegin.y(),localbegin.z(),overlap.x(),localsize.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[BottomEast],localgridsize.x()-2*overlap.x(),localbegin.y(),localbegin.z(),overlap.x(),localsize.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[TopWest],localbegin.x(),localbegin.y(),localgridsize.z()-2*overlap.z(),overlap.x(),localsize.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[TopEast],localgridsize.x()-2*overlap.x(),localbegin.y(),localgridsize.z()-2*overlap.z(),overlap.x(),localsize.y(),overlap.z(),true);
-        //YZ
-        BufferEntities(meshfunction,sendbuffs[BottomNord],localbegin.x(),localbegin.y(),localbegin.z(),localsize.x(),overlap.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[BottomSouth],localbegin.x(),localgridsize.y()-2*overlap.y(),localbegin.z(),localsize.x(),overlap.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[TopNord],localbegin.x(),localbegin.y(),localgridsize.z()-2*overlap.z(),localsize.x(),overlap.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[TopSouth],localbegin.x(),localgridsize.y()-2*overlap.y(),localgridsize.z()-2*overlap.z(),localsize.x(),overlap.y(),overlap.z(),true);
-        //XYZ
-        BufferEntities(meshfunction,sendbuffs[BottomNordWest],localbegin.x(),localbegin.y(),localbegin.z(),overlap.x(),overlap.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[BottomNordEast],localgridsize.x()-2*overlap.x(),localbegin.y(),localbegin.z(),overlap.x(),overlap.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[BottomSouthWest],localbegin.x(),localgridsize.y()-2*overlap.y(),localbegin.z(),overlap.x(),overlap.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[BottomSouthEast],localgridsize.x()-2*overlap.x(),localgridsize.y()-2*overlap.y(),localbegin.z(),overlap.x(),overlap.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[TopNordWest],localbegin.x(),localbegin.y(),localgridsize.z()-2*overlap.z(),overlap.x(),overlap.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[TopNordEast],localgridsize.x()-2*overlap.x(),localbegin.y(),localgridsize.z()-2*overlap.z(),overlap.x(),overlap.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[TopSouthWest],localbegin.x(),localgridsize.y()-2*overlap.y(),localgridsize.z()-2*overlap.z(),overlap.x(),overlap.y(),overlap.z(),true);
-        BufferEntities(meshfunction,sendbuffs[TopSouthEast],localgridsize.x()-2*overlap.x(),localgridsize.y()-2*overlap.y(),localgridsize.z()-2*overlap.z(),overlap.x(),overlap.y(),overlap.z(),true);
- 
+        CopyBuffers(meshfunction, sendbuffs, true,
+            westSrc, eastSrc, nordSrc, southSrc, bottomSrc, topSrc,
+            xcenter, ycenter, zcenter,
+            overlap, localsize,
+            neighbor);
+        
         //async send
         MPI::Request sendreq[26];
         MPI::Request rcvreq[26];
-		
-        int *neighbor=distributedgrid.getNeighbors();
-                
+               
         for(int i=0;i<26;i++)	
                 if(neighbor[i]!=-1)
                 {
@@ -367,80 +402,18 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
         }
 
         //copy data form rcv buffers
-        //X-Y-Z
-        if(neighbor[West]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[West],0,localbegin.y(),localbegin.z(),overlap.x(),localsize.y(),localsize.z(),false);
-        if(neighbor[East]!=-1)
-            BufferEntities(meshfunction,rcvbuffs[East],localgridsize.x()-overlap.x(),localbegin.y(),localbegin.z(),overlap.x(),localsize.y(),localsize.z(),false);
-        if(neighbor[Nord]!=-1)
-            BufferEntities(meshfunction,rcvbuffs[Nord],localbegin.x(),0,localbegin.z(),localsize.x(),overlap.y(),localsize.z(),false);
-        if(neighbor[South]!=-1)
-            BufferEntities(meshfunction,rcvbuffs[South],localbegin.x(),localgridsize.y()-overlap.y(),localbegin.z(),localsize.x(),overlap.y(),localsize.z(),false);
-        if(neighbor[Bottom]!=-1)
-            BufferEntities(meshfunction,rcvbuffs[Bottom],localbegin.x(),localbegin.y(),0,localsize.x(),localsize.y(),overlap.z(),false);
-        if(neighbor[Top]!=-1)
-            BufferEntities(meshfunction,rcvbuffs[Top],localbegin.x(),localbegin.y(),localgridsize.z()-overlap.z(),localsize.x(),localsize.y(),overlap.z(),false);
-
-        //XY
-        if(neighbor[NordWest]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[NordWest],0,0,localbegin.z(),overlap.x(),overlap.y(),localsize.z(),false);
-        if(neighbor[NordEast]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[NordEast],localgridsize.x()-overlap.x(),0,localbegin.z(),overlap.x(),overlap.y(),localsize.z(),false);
-        if(neighbor[SouthWest]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[SouthWest],0,localgridsize.y()-overlap.y(),localbegin.z(),overlap.x(),overlap.y(),localsize.z(),false);
-        if(neighbor[SouthEast]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[SouthEast],localgridsize.x()-overlap.x(),localgridsize.y()-overlap.y(),localbegin.z(),overlap.x(),overlap.y(),localsize.z(),false);
-        
-        //XZ
-        if(neighbor[BottomWest]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[BottomWest],0,localbegin.y(),0,overlap.x(),localsize.y(),overlap.z(),false);
-        if(neighbor[BottomEast]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[BottomEast],localgridsize.x()-overlap.x(),localbegin.y(),0,overlap.x(),localsize.y(),overlap.z(),false);
-        if(neighbor[TopWest]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[TopWest],0,localbegin.y(),localgridsize.z()-overlap.z(),overlap.x(),localsize.y(),overlap.z(),false);
-        if(neighbor[TopEast]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[TopEast],localgridsize.x()-overlap.x(),localbegin.y(),localgridsize.z()-overlap.z(),overlap.x(),localsize.y(),overlap.z(),false);
-        
-        //YZ
-        if(neighbor[BottomNord]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[BottomNord],localbegin.x(),0,0,localsize.x(),overlap.y(),overlap.z(),false);
-        if(neighbor[BottomSouth]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[BottomSouth],localbegin.x(),localgridsize.y()-overlap.y(),0,localsize.x(),overlap.y(),overlap.z(),false);
-        if(neighbor[TopNord]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[TopNord],localbegin.x(),0,localgridsize.z()-overlap.z(),localsize.x(),overlap.y(),overlap.z(),false);
-        if(neighbor[TopSouth]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[TopSouth],localbegin.x(),localgridsize.y()-overlap.y(),localgridsize.z()-overlap.z(),localsize.x(),overlap.y(),overlap.z(),false);
-        
-        //XYZ
-        if(neighbor[BottomNordWest]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[BottomNordWest],0,0,0,overlap.x(),overlap.y(),overlap.z(),false);
-        if(neighbor[BottomNordEast]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[BottomNordEast],localgridsize.x()-overlap.x(),0,0,overlap.x(),overlap.y(),overlap.z(),false);
-        if(neighbor[BottomSouthWest]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[BottomSouthWest],0,localgridsize.y()-overlap.y(),0,overlap.x(),overlap.y(),overlap.z(),false);
-        if(neighbor[BottomSouthEast]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[BottomSouthEast],localgridsize.x()-overlap.x(),localgridsize.y()-overlap.y(),0,overlap.x(),overlap.y(),overlap.z(),false);        
-        if(neighbor[TopNordWest]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[TopNordWest],0,0,localgridsize.z()-overlap.z(),overlap.x(),overlap.y(),overlap.z(),false);
-        if(neighbor[TopNordEast]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[TopNordEast],localgridsize.x()-overlap.x(),0,localgridsize.z()-overlap.z(),overlap.x(),overlap.y(),overlap.z(),false);
-        if(neighbor[TopSouthWest]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[TopSouthWest],0,localgridsize.y()-overlap.y(),localgridsize.z()-overlap.z(),overlap.x(),overlap.y(),overlap.z(),false);
-        if(neighbor[TopSouthEast]!=-1)        
-            BufferEntities(meshfunction,rcvbuffs[TopSouthEast],localgridsize.x()-overlap.x(),localgridsize.y()-overlap.y(),localgridsize.z()-overlap.z(),overlap.x(),overlap.y(),overlap.z(),false);        
+               //fill send buffers
+        CopyBuffers(meshfunction, rcvbuffs, false,
+            westDst, eastDst, nordDst, southDst, bottomDst, topDst,
+            xcenter, ycenter, zcenter,
+            overlap, localsize,
+            neighbor); 
  
-        //free buffers
-        for(int i=0;i<26;i++)
-        {
-            delete [] sendbuffs[i];
-            delete [] rcvbuffs[i];
-        }
-
     };
     
     private:    
     template <typename Real>
-    static void BufferEntities(MeshFunctionType meshfunction, Real * buffer, int beginx, int beginy, int beginz, int sizex, int sizey, int sizez, bool tobuffer)
+    void BufferEntities(MeshFunctionType meshfunction, Real * buffer, int beginx, int beginy, int beginz, int sizex, int sizey, int sizez, bool tobuffer)
     {
 
         typename MeshFunctionType::MeshType::Cell entity(meshfunction.getMesh());
@@ -461,6 +434,75 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
                 }
             }
         }
+        
+    };
+    
+    template <typename Real>
+    void CopyBuffers(MeshFunctionType meshfunction, Real ** buffers, bool toBuffer,
+            int west, int east, int nord, int south, int bottom, int top,
+            int xcenter, int ycenter, int zcenter,
+            CoordinatesType shortDim, CoordinatesType longDim,
+            int *neighbor)
+    {
+       //X-Y-Z
+        if(neighbor[West]!=-1)
+            BufferEntities(meshfunction,buffers[West],west,ycenter,zcenter,shortDim.x(),longDim.y(),longDim.z(),toBuffer);
+        if(neighbor[East]!=-1)
+            BufferEntities(meshfunction,buffers[East],east,ycenter,zcenter,shortDim.x(),longDim.y(),longDim.z(),toBuffer);
+	if(neighbor[Nord]!=-1)
+            BufferEntities(meshfunction,buffers[Nord],xcenter,nord,zcenter,longDim.x(),shortDim.y(),longDim.z(),toBuffer);
+        if(neighbor[South]!=-1)
+            BufferEntities(meshfunction,buffers[South],xcenter,south,zcenter,longDim.x(),shortDim.y(),longDim.z(),toBuffer);
+        if(neighbor[Bottom]!=-1)
+            BufferEntities(meshfunction,buffers[Bottom],xcenter,ycenter,bottom,longDim.x(),longDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[Top]!=-1)
+            BufferEntities(meshfunction,buffers[Top],xcenter,ycenter,top,longDim.x(),longDim.y(),shortDim.z(),toBuffer);	
+        //XY
+        if(neighbor[NordWest]!=-1)
+            BufferEntities(meshfunction,buffers[NordWest],west,nord,zcenter,shortDim.x(),shortDim.y(),longDim.z(),toBuffer);
+        if(neighbor[NordEast]!=-1)
+            BufferEntities(meshfunction,buffers[NordEast],east,nord,zcenter,shortDim.x(),shortDim.y(),longDim.z(),toBuffer);
+        if(neighbor[SouthWest]!=-1)
+            BufferEntities(meshfunction,buffers[SouthWest],west,south,zcenter,shortDim.x(),shortDim.y(),longDim.z(),toBuffer);
+        if(neighbor[SouthEast]!=-1)
+            BufferEntities(meshfunction,buffers[SouthEast],east,south,zcenter,shortDim.x(),shortDim.y(),longDim.z(),toBuffer);
+        //XZ
+        if(neighbor[BottomWest]!=-1)
+            BufferEntities(meshfunction,buffers[BottomWest],west,ycenter,bottom,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[BottomEast]!=-1)
+            BufferEntities(meshfunction,buffers[BottomEast],east,ycenter,bottom,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[TopWest]!=-1)
+            BufferEntities(meshfunction,buffers[TopWest],west,ycenter,top,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[TopEast]!=-1)
+            BufferEntities(meshfunction,buffers[TopEast],east,ycenter,top,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);
+        
+        //YZ
+        if(neighbor[BottomNord]!=-1)
+            BufferEntities(meshfunction,buffers[BottomNord],xcenter,nord,bottom,longDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[BottomSouth]!=-1)
+            BufferEntities(meshfunction,buffers[BottomSouth],xcenter,south,bottom,longDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[TopNord]!=-1)
+            BufferEntities(meshfunction,buffers[TopNord],xcenter,nord,top,longDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[TopSouth]!=-1)
+            BufferEntities(meshfunction,buffers[TopSouth],xcenter,south,top,longDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+        //XYZ
+        if(neighbor[BottomNordWest]!=-1)
+            BufferEntities(meshfunction,buffers[BottomNordWest],west,nord,bottom,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[BottomNordEast]!=-1)
+            BufferEntities(meshfunction,buffers[BottomNordEast],east,nord,bottom,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[BottomSouthWest]!=-1)
+            BufferEntities(meshfunction,buffers[BottomSouthWest],west,south,bottom,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[BottomSouthEast]!=-1)
+            BufferEntities(meshfunction,buffers[BottomSouthEast],east,south,bottom,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[TopNordWest]!=-1)
+            BufferEntities(meshfunction,buffers[TopNordWest],west,nord,top,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[TopNordEast]!=-1)
+            BufferEntities(meshfunction,buffers[TopNordEast],east,nord,top,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[TopSouthWest]!=-1)
+            BufferEntities(meshfunction,buffers[TopSouthWest],west,south,top,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+        if(neighbor[TopSouthEast]!=-1)
+            BufferEntities(meshfunction,buffers[TopSouthEast],east,south,top,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);   
+
 #endif
     };
 };

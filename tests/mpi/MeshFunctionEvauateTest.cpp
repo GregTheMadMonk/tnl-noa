@@ -6,10 +6,15 @@
 
 #include <iostream>
 #include <sstream>
-#define HAVE_MPI
-#include <TNL/mpi-supp.h>
 
 using namespace std;
+
+
+#ifdef HAVE_MPI
+
+#define USE_MPI
+#include <TNL/mpi-supp.h>
+
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Meshes/Grid.h>
@@ -21,23 +26,21 @@ using namespace std;
 
 #define OUTPUT 
 
-#include "Functions.h"
+#include "../../src/UnitTests/Mpi/Functions.h"
 
 using namespace TNL;
 using namespace TNL::Containers;
 using namespace TNL::Meshes;
 using namespace TNL::Functions;
 using namespace TNL::Devices;
+#endif
 
 int main ( int argc, char *argv[])
 {
-	Timer all,setup,eval,sync;
-
-#ifdef OUTPUT
-  cout << "MeshFunction Evaluate Test for MPI develop by hanouvit" << endl;
-#endif
-  
-#ifdef HAVE_MPI
+	
+#ifdef USE_MPI
+  Timer all,setup,eval,sync;
+	
   MPI::Init(argc,argv);
   
   //typedef Grid<1,double,Host,int> MeshType;
@@ -85,8 +88,8 @@ int main ( int argc, char *argv[])
   
  SharedPointer<MeshType> gridptr;
  SharedPointer<MeshFunctionType> meshFunctionptr;
- MeshFunctionEvaluator< MeshFunctionType, FunctionToEvaluate<double,3> > evaluator;
- MeshFunctionEvaluator< MeshFunctionType, ZeroFunction<double,3> > zeroevaluator;
+ MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,3> > linearFunctionEvaluator;
+ MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > constFunctionEvaluator;
  
   distrgrid.SetupGrid(*gridptr);
   
@@ -102,9 +105,11 @@ int main ( int argc, char *argv[])
   
   meshFunctionptr->bind(gridptr,dof);  
   
-  SharedPointer< FunctionToEvaluate<double,3>, Host > functionToEvaluate;
-  SharedPointer< ZeroFunction<double,3>, Host > zero; 
+  SharedPointer< LinearFunction<double,3>, Host > linearFunctionPtr;
+  SharedPointer< ConstFunction<double,3>, Host > constFunctionPtr; 
    
+  DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,3> synchronizer(&distrgrid);
+  
   setup.stop();
   
   double sum=0.0;
@@ -112,11 +117,12 @@ int main ( int argc, char *argv[])
   for(int i=0;i<cycles;i++)
 	{
 	    //zero->Number=MPI::COMM_WORLD.Get_rank();
-	    zero->Number=-1;
+	    
 	    eval.start();
-		zeroevaluator.evaluateBoundaryEntities( meshFunctionptr , zero );
-		zero->Number=MPI::COMM_WORLD.Get_rank();
-		zeroevaluator.evaluateInteriorEntities( meshFunctionptr , zero );
+		/*zero->Number=-1;
+		zeroevaluator.evaluateBoundaryEntities( meshFunctionptr , zero );*/
+		constFunctionPtr->Number=MPI::COMM_WORLD.Get_rank();
+		constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
 		//zero->Number=-1;
 		/*zero->Number=MPI::COMM_WORLD.Get_rank();
 		zeroevaluator.evaluateBoundaryEntities( meshFunctionptr , zero );*/
@@ -125,7 +131,7 @@ int main ( int argc, char *argv[])
 
 
 		sync.start();	
-		//DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,3>::Synchronize(distrgrid,*meshFunctionptr);
+		synchronizer.Synchronize(*meshFunctionptr);
 		MPI::COMM_WORLD.Barrier();
 		sync.stop();
 
@@ -179,4 +185,5 @@ int main ( int argc, char *argv[])
   std::cout<<"MPI not Supported." << std::endl;
 #endif
   return 0;
+
 }

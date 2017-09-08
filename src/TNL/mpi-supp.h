@@ -13,7 +13,7 @@
 #include <iostream>
 #include <cstdlib>
 
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    #include <mpi.h>
 #else
    typedef int MPI_Comm;
@@ -28,7 +28,7 @@ namespace TNL {
    
 class String;
 
-/*#ifdef HAVE_MPI
+/*#ifdef USE_MPI
 inline MPI_Datatype MPIDataType( const signed char ) { return MPI_CHAR; };
 inline MPI_Datatype MPIDataType( const signed short int ) { return MPI_SHORT; };
 inline MPI_Datatype MPIDataType( const signed int ) { return MPI_INT; };
@@ -55,7 +55,7 @@ int MPIGetSize( MPI_Comm comm = MPI_COMM_WORLD );
 
 void MPIBarrier( MPI_Comm comm = MPI_COMM_WORLD );
 
-#ifdef HAVE_MPI
+#ifdef USE_MPI
 template< class T > void MPISend( const T& data,
                                   int count,
                                   int dest,
@@ -72,7 +72,7 @@ template< class T > void MPISend( const T&,
 };
 #endif
 
-#ifdef HAVE_MPI
+#ifdef USE_MPI
 template< class T > void MPIRecv( T& data,
                                   int count,
                                   int src,
@@ -89,7 +89,7 @@ template< class T > void MPIRecv( T&,
 {};
 #endif
 
-#ifdef HAVE_MPI
+#ifdef USE_MPI
 template< class T > void MPIBcast( T& data,
                                    int count,
                                    int root,
@@ -112,7 +112,7 @@ template< class T > void MPIBcast( T&,
 }
 #endif
 
-#ifdef HAVE_MPI
+#ifdef USE_MPI
 template< typename T > void MPIReduce( T& data,
                                        T& reduced_data,
                                        int count,
@@ -140,7 +140,7 @@ template< typename T > void MPIReduce( T& data,
 };
 #endif
 
-#ifdef HAVE_MPI
+#ifdef USE_MPI
 template< typename T > void MPIAllreduce( T& data,
                                           T& reduced_data,
                                           int count,
@@ -155,7 +155,7 @@ template< typename T > void MPIAllreduce( T& data,
                   comm );
 };
 #else*/
-#ifndef HAVE_MPI
+#ifndef USE_MPI
 template< typename T > void MPIAllreduce( T& data,
                                           T& reduced_data,
                                           int,
