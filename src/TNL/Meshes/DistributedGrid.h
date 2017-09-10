@@ -414,6 +414,11 @@ class DistributedGrid <GridType,2>
        {
            return this->localsize;
        }
+
+       CoordinatesType getLocalGridSize()
+       {
+           return this->localgridsize;
+       }
        
               
        CoordinatesType getLocalBegin()

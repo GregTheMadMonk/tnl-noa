@@ -416,8 +416,7 @@ class DistributedGirdTest_2D : public ::testing::Test {
 	
 	meshFunctionptr->bind(gridptr,*dof);
 	
-	//DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,1> synchronizer(&distrgrid)
-	synchronizer=new DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2>;
+	synchronizer=new DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2>(distrgrid);
 	
 	constFunctionPtr->Number=rank;
 	
@@ -485,7 +484,7 @@ TEST_F(DistributedGirdTest_2D, LinearFunctionTest)
 	//fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
 	setDof_2D(*dof,-1);
 	linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-	synchronizer->Synchronize(*distrgrid,*meshFunctionptr);
+	synchronizer->Synchronize(*meshFunctionptr);
 	
 	int count =gridptr->template getEntitiesCount< Cell >();
 	for(int i=0;i<count;i++)
@@ -500,7 +499,7 @@ TEST_F(DistributedGirdTest_2D, SynchronizerNeighborTest)
 {
 	setDof_2D(*dof,-1);
 	constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-	synchronizer->Synchronize(*distrgrid,*meshFunctionptr);
+	synchronizer->Synchronize(*meshFunctionptr);
 	checkNeighbor_2D(rank, *gridptr, *dof);
 }
 
