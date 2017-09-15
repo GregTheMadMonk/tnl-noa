@@ -20,7 +20,7 @@ namespace Meshes {
 
 template <typename DistributedGridType,
 		typename MeshFunctionType,
-        int dim>  
+        int dim=DistributedGridType::getMeshDimension()>  
 class DistributedGridSynchronizer
 {
 

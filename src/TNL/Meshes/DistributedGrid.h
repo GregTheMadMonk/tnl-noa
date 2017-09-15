@@ -74,7 +74,8 @@ class DistributedGrid <GridType,1>
     typedef typename GridType::PointType PointType;
     typedef Containers::StaticVector< 1, IndexType > CoordinatesType;
     
-    
+	static constexpr int getMeshDimension() { return 1; };    
+
     private : 
         
         GridType GlobalGrid;
@@ -217,6 +218,7 @@ class DistributedGrid <GridType,2>
     typedef typename GridType::PointType PointType;
     typedef Containers::StaticVector< 2, IndexType > CoordinatesType;
     
+	static constexpr int getMeshDimension() { return 2; };
     
     private : 
         
@@ -452,7 +454,8 @@ class DistributedGrid <GridType,3>
     typedef typename GridType::PointType PointType;
     typedef Containers::StaticVector< 3, IndexType > CoordinatesType;
     
-    
+	static constexpr int getMeshDimension() { return 3; };    
+
     private : 
         
         GridType GlobalGrid;

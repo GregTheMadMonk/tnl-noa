@@ -181,7 +181,7 @@ void check_Boundary_2D(int rank, GridType &grid, DofType &dof, typename DofType:
 /*expect 9 process
  * Known BUG of Traversars: Process boundary is writing over overlap.
  * it should be true, true, every where, but we dont chcek boundary overalp on boundary
- * so boundary overlap is not checked (it is filled incorectly).
+ * so boundary overlap is not checked (it is filled incorectly by boundary condition).
  */
 template<typename DofType,typename GridType>
 void check_Overlap_2D(int rank, GridType &grid, DofType &dof, typename DofType::RealType expectedValue)
