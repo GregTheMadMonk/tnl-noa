@@ -78,16 +78,6 @@ void check_Inner_1D(int rank, int nproc, DofType dof, typename DofType::RealType
 		EXPECT_EQ( dof[i], expectedValue) << " "<< i;
 };
 
-template<typename DofType>
-void print_dof_1D(int rank, DofType dof)
-{
-	std::stringstream sout;
-	for(int i=0;i<dof.getSize();i++) //buď je vlevo hranice, nebo overlap
-		sout<< dof[i] << " ";
-	
-	std::cout << rank << ":   " << sout.str() << std::endl;
-};
-
 /*
  * Light check of 1D distriover grid and its synchronization. 
  * Number of process is not limitated.
@@ -182,6 +172,7 @@ TEST_F(DistributedGirdTest_1D, evaluateAllEntities)
 	//All entities, witout overlap
 	setDof_1D(*dof,-1);
 	constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
+	//Printer<MeshType,DofType>::print_dof(rank,*gridptr,*dof);
 	check_Boundary_1D(rank, nproc, *dof, rank);
 	check_Overlap_1D(rank, nproc, *dof, -1);
 	check_Inner_1D(rank, nproc, *dof, rank);

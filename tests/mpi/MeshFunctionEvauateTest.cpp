@@ -24,7 +24,9 @@ using namespace std;
 
 #include <TNL/Timer.h>
 
-#define OUTPUT 
+#define DIMENSION 2
+//#define OUTPUT 
+
 
 #include "../../src/UnitTests/Mpi/Functions.h"
 
@@ -34,7 +36,7 @@ using namespace TNL::Meshes;
 using namespace TNL::Functions;
 using namespace TNL::Devices;
 #endif
-
+ 
 int main ( int argc, char *argv[])
 {
 	
@@ -43,14 +45,17 @@ int main ( int argc, char *argv[])
 	
   MPI::Init(argc,argv);
   
-  //typedef Grid<1,double,Host,int> MeshType;
-  //typedef Grid<2,double,Host,int> MeshType;
-  typedef Grid<3,double,Host,int> MeshType;
+  typedef Grid<DIMENSION,double,Host,int> MeshType;
   typedef MeshFunction<MeshType> MeshFunctionType;
   typedef Vector<double,Host,int> DofType;
   typedef typename MeshType::Cell Cell;
   typedef typename MeshType::IndexType IndexType; 
   typedef typename MeshType::PointType PointType; 
+  
+  typedef DistributedGrid<MeshType> DistributedGridType;
+  
+  typedef LinearFunction<double,DIMENSION> LinearFunctionType;
+  typedef ConstFunction<double,DIMENSION> ConstFunctionType;
   
   int size=9;
   int cycles=1;
@@ -65,107 +70,68 @@ int main ( int argc, char *argv[])
 	setup.start();
   
  PointType globalOrigin;
- globalOrigin.x()=-0.5;
- globalOrigin.y()=-0.5;
- globalOrigin.z()=-0.5;
+ globalOrigin.setValue(-0.5);
  
  PointType globalProportions;
- globalProportions.x()=size;
- globalProportions.y()=size;
- globalProportions.z()=size;
+ globalProportions.setValue(size);
  
  
  MeshType globalGrid;
- //globalGrid.setDimensions(9);
- //globalGrid.setDimensions(size,size);
- globalGrid.setDimensions(size,size,size);
+ globalGrid.setDimensions(globalProportions);
  globalGrid.setDomain(globalOrigin,globalProportions);
  
- int distr[3]={0,0,0}; 
- DistributedGrid<MeshType> distrgrid(globalGrid, distr); 
  
- //DistributedGrid<MeshType> distrgrid(globalGrid);
-  
+ int distr[DIMENSION];
+ for(int i=0;i<DIMENSION;i++) 
+	distr[i]=0;
+ DistributedGridType distrgrid(globalGrid, distr); 
+   
  SharedPointer<MeshType> gridptr;
  SharedPointer<MeshFunctionType> meshFunctionptr;
- MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,3> > linearFunctionEvaluator;
- MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > constFunctionEvaluator;
+ MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
+ MeshFunctionEvaluator< MeshFunctionType, ConstFunctionType > constFunctionEvaluator;
  
   distrgrid.SetupGrid(*gridptr);
   
   DofType dof(gridptr->template getEntitiesCount< Cell >());
 
-  int maxx=gridptr->getDimensions().x();
-  int maxy=gridptr->getDimensions().y();
-  int maxz=gridptr->getDimensions().z();
-  for(int k=0;k<maxz;k++)
-	for(int j=0;j<maxy;j++)
-		for(int i=0;i<maxx;i++)
-			dof[k*maxx*maxy+maxx*j+i]=0;
+  dof.setValue(0);
   
   meshFunctionptr->bind(gridptr,dof);  
   
-  SharedPointer< LinearFunction<double,3>, Host > linearFunctionPtr;
-  SharedPointer< ConstFunction<double,3>, Host > constFunctionPtr; 
+  SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+  SharedPointer< ConstFunctionType, Host > constFunctionPtr; 
    
-  DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,3> synchronizer(&distrgrid);
+  DistributedGridSynchronizer<DistributedGridType,MeshFunctionType> synchronizer(&distrgrid);
   
   setup.stop();
   
   double sum=0.0;
 
+  constFunctionPtr->Number=MPI::COMM_WORLD.Get_rank();
+  
   for(int i=0;i<cycles;i++)
-	{
-	    //zero->Number=MPI::COMM_WORLD.Get_rank();
-	    
+	{    
 	    eval.start();
-		/*zero->Number=-1;
-		zeroevaluator.evaluateBoundaryEntities( meshFunctionptr , zero );*/
-		constFunctionPtr->Number=MPI::COMM_WORLD.Get_rank();
-		constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-		//zero->Number=-1;
-		/*zero->Number=MPI::COMM_WORLD.Get_rank();
-		zeroevaluator.evaluateBoundaryEntities( meshFunctionptr , zero );*/
+		
+		//constFunctionEvaluator.evaluateBoundaryEntities( meshFunctionptr , constFunctionPtr );
+		linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 		MPI::COMM_WORLD.Barrier();
 		eval.stop();
-
 
 		sync.start();	
 		synchronizer.Synchronize(*meshFunctionptr);
 		MPI::COMM_WORLD.Barrier();
 		sync.stop();
 
-		sum+=dof[2*gridptr->getDimensions().y()]; //dummy acces to array	
+		sum+=dof[gridptr->getDimensions().x()/2]; //dummy acces to array	
 	}
   all.stop();
   
 #ifdef OUTPUT	
   //print local dof
-  maxx=gridptr->getDimensions().x();
-  maxy=gridptr->getDimensions().y();
-  maxz=gridptr->getDimensions().z();
-  
-  stringstream sout;
-  distrgrid.printcoords(sout);
-  for(int k=0;k<maxz;k++)
-  {
-	for(int j=0;j<maxy;j++)
-	{
-		for(int ii=0;ii<k;ii++)
-			sout<<"  ";
-		for(int i=0;i<maxx;i++)
-		{
-			sout <<dof[k*maxx*maxy+maxx*j+i]<<"  ";
-		}
-		sout << endl;
-	}
-  }
-  cout << sout.str()<< endl<<endl;
+  Printer<MeshType,DofType>::print_dof(MPI::COMM_WORLD.Get_rank(),*gridptr, dof);
 #endif
-  
-  
-  
-  
   
   if(MPI::COMM_WORLD.Get_rank()==0)
   {

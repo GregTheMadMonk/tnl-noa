@@ -343,20 +343,7 @@ void check_Inner_2D(int rank, GridType grid, DofType dof, typename DofType::Real
 
 
 
-template<typename GridType,typename DofType>
-void print_dof_2D(int rank,GridType grid, DofType dof)
-{
-	int maxx=grid.getDimensions().x();
-	int maxy=grid.getDimensions().y();
-	std::stringstream sout;
-	for(int j=0;j<maxy;j++)
-	{
-		for(int i=0;i<maxx;i++)
-			sout<< dof[j*maxx+i] << " ";
-		sout<<std::endl;
-	}
-	std::cout << rank << ":   " << sout.str() << std::endl;
-};
+
 
 /*
  * Light check of 2D distributed grid and its synchronization. 
@@ -453,6 +440,7 @@ TEST_F(DistributedGirdTest_2D, evaluateAllEntities)
 	//All entities, witout overlap
 	setDof_2D(*dof,-1);
 	constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
+	//Printer<MeshType,DofType>::print_dof(rank,*gridptr,*dof);
 	check_Boundary_2D(rank, *gridptr, *dof, rank);
 	check_Overlap_2D(rank, *gridptr, *dof, -1);
 	check_Inner_2D(rank, *gridptr, *dof, rank);

@@ -589,33 +589,6 @@ void check_Inner_3D(int rank, GridType grid, DofType dof, typename DofType::Real
 }
 
 
-
-template<typename GridType,typename DofType>
-void print_dof_3D(int rank,GridType grid, DofType dof)
-{
-  //print local dof
-  int maxx=grid.getDimensions().x();
-  int maxy=grid.getDimensions().y();
-  int maxz=grid.getDimensions().z();
-  
-  std::stringstream sout;
-  for(int k=0;k<maxz;k++)
-  {
-	for(int j=0;j<maxy;j++)
-	{
-		for(int ii=0;ii<k;ii++)
-			sout<<"  ";
-		for(int i=0;i<maxx;i++)
-		{
-			sout <<dof[k*maxx*maxy+maxx*j+i]<<"  ";
-		}
-		sout << std::endl;
-	}
-  }
-  std::cout << sout.str()<< std::endl<<std::endl;
-}
-
-
 /*
  * Light check of 3D distributed grid and its synchronization. 
  * expected 9 processors
@@ -713,7 +686,7 @@ TEST_F(DistributedGirdTest_3D, evaluateAllEntities)
 	//All entities, witout overlap
 	setDof_3D(*dof,-1);
 	constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-	//print_dof_3D(rank,*gridptr,*dof);
+	//Printer<MeshType,DofType>::print_dof(rank,*gridptr,*dof);
 	check_Boundary_3D(rank, *gridptr, *dof, rank);
 	check_Overlap_3D(rank, *gridptr, *dof, -1);
 	check_Inner_3D(rank, *gridptr, *dof, rank);
@@ -724,7 +697,6 @@ TEST_F(DistributedGirdTest_3D, evaluateBoundaryEntities)
 	//Boundary entities, witout overlap
 	setDof_3D(*dof,-1);
 	constFunctionEvaluator.evaluateBoundaryEntities( meshFunctionptr , constFunctionPtr );
-	//print_dof_2D(rank,*gridptr,dof);
 	check_Boundary_3D(rank, *gridptr, *dof, rank);
 	check_Overlap_3D(rank, *gridptr, *dof, -1);
 	check_Inner_3D(rank, *gridptr, *dof, -1);
