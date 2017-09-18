@@ -165,10 +165,7 @@ class DistributedGrid <GridType,1>
                else
                    localsize.x()+=2*overlap.x();
                          
-           }
-                     
-           
-                      
+           }                   
        };
        
        void SetupGrid( GridType& grid)
@@ -182,9 +179,14 @@ class DistributedGrid <GridType,1>
        
        void printcoords(std::ostream& out)
        {
-           out<<rank<<":" <<std::endl;
+           out<<rank<<":";
        };
-       
+
+       void printdistr(std::ostream& out)
+       {
+           out<<"("<<nproc<<"):";
+       };       
+
        bool isMPIUsed(void)
        {
            return this->mpiInUse;
@@ -394,7 +396,12 @@ class DistributedGrid <GridType,2>
        
        void printcoords(std::ostream& out)
        {
-           out<<"("<<myproccoord[0]<<","<<myproccoord[1]<<"):" <<std::endl;
+           out<<"("<<myproccoord[0]<<","<<myproccoord[1]<<"):";
+       };
+
+       void printdistr(std::ostream& out)
+       {
+           out<<"("<<procsdistr[0]<<","<<procsdistr[1]<<"):";
        };
        
        bool isMPIUsed(void)
@@ -692,7 +699,12 @@ class DistributedGrid <GridType,3>
        
        void printcoords(std::ostream& out )
        {
-           out<<"("<<myproccoord[0]<<","<<myproccoord[1]<<","<<myproccoord[2]<<"):" <<std::endl;
+           out<<"("<<myproccoord[0]<<","<<myproccoord[1]<<","<<myproccoord[2]<<"):";
+       };
+
+       void printdistr(std::ostream& out)
+       {
+           out<<"("<<procsdistr[0]<<","<<procsdistr[1]<<","<<procsdistr[2]<<"):";
        };
        
        bool isMPIUsed(void)

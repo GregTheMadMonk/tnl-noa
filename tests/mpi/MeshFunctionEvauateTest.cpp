@@ -24,9 +24,11 @@ using namespace std;
 
 #include <TNL/Timer.h>
 
-#define DIMENSION 2
+//#define DIMENSION 2
 //#define OUTPUT 
-
+//#define XDISTR
+//#define YDISTR
+//#define ZDISTR
 
 #include "../../src/UnitTests/Mpi/Functions.h"
 
@@ -83,7 +85,20 @@ int main ( int argc, char *argv[])
  
  int distr[DIMENSION];
  for(int i=0;i<DIMENSION;i++) 
-	distr[i]=0;
+	distr[i]=1;
+
+ #ifdef XDISTR
+ 	distr[0]=0;
+ #endif
+
+ #ifdef YDISTR
+	distr[1]=0;
+ #endif
+
+ #ifdef ZDISTR
+ 	distr[2]=0;
+ #endif
+
  DistributedGridType distrgrid(globalGrid, distr); 
    
  SharedPointer<MeshType> gridptr;
@@ -136,7 +151,11 @@ int main ( int argc, char *argv[])
   if(MPI::COMM_WORLD.Get_rank()==0)
   {
 	cout << sum <<endl<<endl;  
-	  
+	
+    cout<<"distr: ";
+	distrgrid.printdistr(cout);
+	cout << endl;
+  
 	cout<<"setup: "<<setup.getRealTime() <<endl;
 	cout<<"evalpercycle: "<<eval.getRealTime()/cycles<<endl;
 	cout<<"syncpercycle: "<<sync.getRealTime()/cycles<<endl;
