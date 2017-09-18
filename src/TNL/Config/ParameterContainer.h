@@ -12,7 +12,6 @@
 
 #include <TNL/Containers/List.h>
 #include <TNL/Config/ConfigDescription.h>
-#include <TNL/mpi-supp.h>
 #include <TNL/param-types.h>
 //#include <TNL/Debugging/StackBacktrace.h>
 

@@ -103,34 +103,33 @@ private:
         }
 
         //async send
-        MPI::Request leftsendreq;
-        MPI::Request rightsendreq;
-        MPI::Request leftrcvreq;
-        MPI::Request rightrcvreq;
+        MPI::Request req[4];
 
         //send everithing, recieve everything 
         if(left!=-1)
         {
-            leftsendreq=MPI::COMM_WORLD.Isend((void*) leftsendbuf, size, MPI::DOUBLE , left, 0);
-            leftrcvreq=MPI::COMM_WORLD.Irecv((void*) leftrcvbuf, size, MPI::DOUBLE, left, 0);
+            req[0]=TNLMPI::ISend(leftsendbuf, size, left);
+            req[2]=TNLMPI::IRecv(leftrcvbuf, size, left);
+        }
+        else
+        {
+            req[0]=MPI::REQUEST_NULL;
+            req[2]=MPI::REQUEST_NULL;
         }        
+
         if(right!=-1)
         {
-            rightsendreq=MPI::COMM_WORLD.Isend((void*) rightsendbuf, size, MPI::DOUBLE , right, 0);
-            rightrcvreq=MPI::COMM_WORLD.Irecv((void*) rightrcvbuf, size, MPI::DOUBLE, right, 0);
+            req[1]=TNLMPI::ISend(rightsendbuf, size, right);
+            req[3]=TNLMPI::IRecv(rightrcvbuf, size, right);
+        }
+        else
+        {
+            req[1]=MPI::REQUEST_NULL;
+            req[3]=MPI::REQUEST_NULL;
         }
 
-        //wait until send is done
-        if(left!=-1)
-        {
-            leftrcvreq.Wait();
-            leftsendreq.Wait();
-        }        
-        if(right!=-1)
-        {
-            rightrcvreq.Wait();
-            rightsendreq.Wait();
-        }
+        //wait until send and recv is done
+        MPI::Request::Waitall(4, req);
 
         //copy data form rcv buffers
         if(left!=-1)
@@ -260,28 +259,25 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,2>
             overlap,localsize,
             neighbor);
 	
-        //async send
-        MPI::Request sendreq[8];
-        MPI::Request rcvreq[8];
+        //async send and rcv
+        MPI::Request req[16];
 		                
         //send everithing, recieve everything 
         for(int i=0;i<8;i++)	
            if(neighbor[i]!=-1)
            {
-               sendreq[i]=MPI::COMM_WORLD.Isend((void*) sendbuffs[i], sizes[i], MPI::DOUBLE , neighbor[i], 0);
-               rcvreq[i]=MPI::COMM_WORLD.Irecv((void*) rcvbuffs[i], sizes[i], MPI::DOUBLE, neighbor[i], 0);
-           }        
+               req[i]=TNLMPI::ISend(sendbuffs[i], sizes[i], neighbor[i]);
+               req[8+i]=TNLMPI::IRecv(rcvbuffs[i], sizes[i], neighbor[i]);
+           }
+		   else
+      	   {
+               req[i]=MPI::REQUEST_NULL;
+               req[8+i]=MPI::REQUEST_NULL;
+           }
 
         //wait until send is done
-        for(int i=0;i<8;i++)
-        {
-           if(neighbor[i]!=-1)
-           {
-               sendreq[i].Wait();
-               rcvreq[i].Wait();
-           }       
-        }
-
+        MPI::Request::Waitall(16, req);
+        
         //copy data form rcv buffers
         CopyBuffers(meshfunction, rcvbuffs, false,
             leftDst, rightDst, upDst, downDst,
@@ -450,29 +446,26 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
             overlap, localsize,
             neighbor);
         
-        //async send
-        MPI::Request sendreq[26];
-        MPI::Request rcvreq[26];
-               
+        //async send and rcv
+        MPI::Request req[52];
+		                
+        //send everithing, recieve everything 
         for(int i=0;i<26;i++)	
-                if(neighbor[i]!=-1)
-                {
-                        sendreq[i]=MPI::COMM_WORLD.Isend((void*) sendbuffs[i], sizes[i], MPI::DOUBLE , neighbor[i], 0);
-                        rcvreq[i]=MPI::COMM_WORLD.Irecv((void*) rcvbuffs[i], sizes[i], MPI::DOUBLE, neighbor[i], 0);
-                }        
+           if(neighbor[i]!=-1)
+           {
+               req[i]=TNLMPI::ISend(sendbuffs[i], sizes[i], neighbor[i]);
+               req[26+i]=TNLMPI::IRecv(rcvbuffs[i], sizes[i], neighbor[i]);
+           }
+		   else
+      	   {
+               req[i]=MPI::REQUEST_NULL;
+               req[26+i]=MPI::REQUEST_NULL;
+           }
 
         //wait until send is done
-        for(int i=0;i<26;i++)
-        {
-                if(neighbor[i]!=-1)
-                {
-                        sendreq[i].Wait();
-                        rcvreq[i].Wait();
-                }       
-        }
+        MPI::Request::Waitall(52, req);
 
         //copy data form rcv buffers
-               //fill send buffers
         CopyBuffers(meshfunction, rcvbuffs, false,
             westDst, eastDst, nordDst, southDst, bottomDst, topDst,
             xcenter, ycenter, zcenter,
@@ -544,8 +537,7 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
         if(neighbor[TopWest]!=-1)
             BufferEntities(meshfunction,buffers[TopWest],west,ycenter,top,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);
         if(neighbor[TopEast]!=-1)
-            BufferEntities(meshfunction,buffers[TopEast],east,ycenter,top,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);
-        
+            BufferEntities(meshfunction,buffers[TopEast],east,ycenter,top,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);   
         //YZ
         if(neighbor[BottomNord]!=-1)
             BufferEntities(meshfunction,buffers[BottomNord],xcenter,nord,bottom,longDim.x(),shortDim.y(),shortDim.z(),toBuffer);

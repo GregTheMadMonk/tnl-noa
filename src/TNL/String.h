@@ -12,8 +12,6 @@
 
 #include <iostream>
 #include <sstream>
-#include <TNL/mpi-supp.h>
-
 
 namespace TNL {
 
@@ -21,6 +19,8 @@ class File;
 namespace Containers {
    template< class T > class List;
 }
+
+class String;
 
 template< typename T >
 String convertToString( const T& value );

@@ -20,167 +20,69 @@
    typedef int MPI_Op;
    #define MPI_COMM_WORLD  0
    #define MPI_MAX 0
-   #define MPI_MIN 0
    #define MPI_SUM 0
+
+template< typename T > 
+void MPIAllreduce( T& data,
+                 T& reduced_data,
+                 int,
+                 MPI_Op,
+                 MPI_Comm )
+{
+    reduced_data = data;
+};
+
+template< typename T >
+void MPIReduce( T& data,
+                T& reduced_data,
+                int,
+                MPI_Op,
+                int,
+                MPI_Comm )
+{
+   reduced_data = data;
+};
+
+template< typename T > 
+void MPIBcast(  T&,
+                int,
+                int,
+                MPI_Comm = MPI_COMM_WORLD )
+{
+};
+   
 #endif
 
 namespace TNL {
-   
-class String;
-
-/*#ifdef USE_MPI
-inline MPI_Datatype MPIDataType( const signed char ) { return MPI_CHAR; };
-inline MPI_Datatype MPIDataType( const signed short int ) { return MPI_SHORT; };
-inline MPI_Datatype MPIDataType( const signed int ) { return MPI_INT; };
-inline MPI_Datatype MPIDataType( const signed long int ) { return MPI_LONG; };
-inline MPI_Datatype MPIDataType( const unsigned char ) { return MPI_UNSIGNED_CHAR; };
-inline MPI_Datatype MPIDataType( const unsigned short int ) { return MPI_UNSIGNED_SHORT; };
-inline MPI_Datatype MPIDataType( const unsigned int ) { return MPI_UNSIGNED; };
-inline MPI_Datatype MPIDataType( const unsigned long int ) { return MPI_UNSIGNED_LONG; };
-inline MPI_Datatype MPIDataType( const float& ) { return MPI_FLOAT; };
-inline MPI_Datatype MPIDataType( const double& ) { return MPI_DOUBLE; };
-inline MPI_Datatype MPIDataType( const long double& ) { return MPI_LONG_DOUBLE; };
-#endif
-*/
-/*
-void MPIInit( int* argc, char** argv[] );
-
-void MPIFinalize();
-
-bool HaveMPI();
-
-int MPIGetRank( MPI_Comm comm = MPI_COMM_WORLD );
-
-int MPIGetSize( MPI_Comm comm = MPI_COMM_WORLD );
-
-void MPIBarrier( MPI_Comm comm = MPI_COMM_WORLD );
+    namespace TNLMPI{
 
 #ifdef USE_MPI
-template< class T > void MPISend( const T& data,
-                                  int count,
-                                  int dest,
-                                  MPI_Comm comm = MPI_COMM_WORLD )
-{
-   MPI_Send( &data, count, MPIDataType( data ), dest, 0, comm );
-};
-#else
-template< class T > void MPISend( const T&,
-                                  int,
-                                  int,
-                                  MPI_Comm  )
-{
-};
+        
+    inline MPI_Datatype MPIDataType( const signed char ) { return MPI_CHAR; };
+    inline MPI_Datatype MPIDataType( const signed short int ) { return MPI_SHORT; };
+    inline MPI_Datatype MPIDataType( const signed int ) { return MPI_INT; };
+    inline MPI_Datatype MPIDataType( const signed long int ) { return MPI_LONG; };
+    inline MPI_Datatype MPIDataType( const unsigned char ) { return MPI_UNSIGNED_CHAR; };
+    inline MPI_Datatype MPIDataType( const unsigned short int ) { return MPI_UNSIGNED_SHORT; };
+    inline MPI_Datatype MPIDataType( const unsigned int ) { return MPI_UNSIGNED; };
+    inline MPI_Datatype MPIDataType( const unsigned long int ) { return MPI_UNSIGNED_LONG; };
+    inline MPI_Datatype MPIDataType( const float ) { return MPI_FLOAT; };
+    inline MPI_Datatype MPIDataType( const double ) { return MPI_DOUBLE; };
+    inline MPI_Datatype MPIDataType( const long double ) { return MPI_LONG_DOUBLE; };
+    
+    template <typename T>
+    MPI::Request ISend( const T *data, int count, int dest)
+    {
+            return MPI::COMM_WORLD.Isend((void*) data, count, MPIDataType(*data) , dest, 0);
+    }     
+
+    template <typename T>
+    MPI::Request IRecv( const T *data, int count, int src)
+    {
+            return MPI::COMM_WORLD.Irecv((void*) data, count, MPIDataType(*data) , src, 0);
+    }     
+
 #endif
 
-#ifdef USE_MPI
-template< class T > void MPIRecv( T& data,
-                                  int count,
-                                  int src,
-                                  MPI_Comm comm = MPI_COMM_WORLD )
-{
-   MPI_Status stat;
-   MPI_Recv( data, count, MPIDataType( data ), src, 0, comm, &stat );
-};
-#else
-template< class T > void MPIRecv( T&,
-                                  int,
-                                  int,
-                                  MPI_Comm = MPI_COMM_WORLD )
-{};
-#endif
-
-#ifdef USE_MPI
-template< class T > void MPIBcast( T& data,
-                                   int count,
-                                   int root,
-                                   MPI_Comm comm = MPI_COMM_WORLD )
-{
-   MPI_Bcast( &data, count, MPIDataType( data ), root, comm );
-};
-
-inline void MPIBcast( String& data, intstd::cout, int root, MPI_Comm comm = MPI_COMM_WORLD )
-{
-   std::cerr << "Call method MPIBcast of mString instead of function MPIBcast( mString&, ... ) " << std::endl;
-   abort();
-}
-#else
-template< class T > void MPIBcast( T&,
-                                   int,
-                                   int,
-                                   MPI_Comm = MPI_COMM_WORLD )
-{
-}
-#endif
-
-#ifdef USE_MPI
-template< typename T > void MPIReduce( T& data,
-                                       T& reduced_data,
-                                       int count,
-                                       MPI_Op op,
-                                       int root,
-                                       MPI_Comm comm )
-{
-   MPI_Reduce( &data,
-               &reduced_data,
-               count,
-               MPIDataType( data ),
-               op,
-               root,
-               comm );
-};
-#else
-template< typename T > void MPIReduce( T& data,
-                                       T& reduced_data,
-                                       int,
-                                       MPI_Op,
-                                       int,
-                                       MPI_Comm )
-{
-   reduced_data = data;
-};
-#endif
-
-#ifdef USE_MPI
-template< typename T > void MPIAllreduce( T& data,
-                                          T& reduced_data,
-                                          int count,
-                                          MPI_Op op,
-                                          MPI_Comm comm )
-{
-   MPI_Allreduce( &data,
-                  &reduced_data,
-                  count,
-                  MPIDataType( data ),
-                  op,
-                  comm );
-};
-#else*/
-#ifndef USE_MPI
-template< typename T > void MPIAllreduce( T& data,
-                                          T& reduced_data,
-                                          int,
-                                          MPI_Op,
-                                          MPI_Comm )
-{
-   reduced_data = data;
-};
-
-template< typename T > void MPIReduce( T& data,
-                                       T& reduced_data,
-                                       int,
-                                       MPI_Op,
-                                       int,
-                                       MPI_Comm )
-{
-   reduced_data = data;
-};
-
-template< class T > void MPIBcast( T&,
-                                   int,
-                                   int,
-                                   MPI_Comm = MPI_COMM_WORLD )
-{
-}
-#endif
-
+}//namespace MPI
 } // namespace TNL
