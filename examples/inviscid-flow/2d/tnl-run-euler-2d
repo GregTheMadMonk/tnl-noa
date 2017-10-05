@@ -5,8 +5,8 @@ tnl-grid-setup --dimensions 2 \
                --origin-y 0.0 \
                --proportions-x 1.0 \
                --proportions-y 1.0 \
-               --size-x 100 \
-               --size-y 100
+               --size-x 400 \
+               --size-y 400
 
 #tnl-init --test-function sin-wave \
 #         --output-file init.tnl
@@ -14,20 +14,28 @@ tnl-grid-setup --dimensions 2 \
 #              --boundary-conditions-constant 0 \
 
 tnl-euler-2d-dbg --time-discretisation explicit \
-              --time-step 1.0e-3 \
-              --boundary-conditions-type mymixed \
+              --time-step 5.0e-4 \
+              --boundary-conditions-type myneumann \
               --discrete-solver euler \
-              --snapshot-period 0.1 \
-              --final-time 1.0 \
-              --left-density 1.0 \
-              --left-velocityX 0.75 \
-              --left-velocityY 0.75 \
-              --left-pressure 1.0 \
-              --right-density 0.125 \
-              --right-velocityX 0 \
-              --right-velocityY 0 \
-              --right-pressure 0.1 \
+              --snapshot-period 0.03 \
+              --final-time 0.3 \
+              --NW-density 0.5323 \
+              --NW-velocityX 1.206 \
+              --NW-velocityY 0.0 \
+              --NW-pressure 0.3 \
+              --NE-density 1.5 \
+              --NE-velocityX 0.0 \
+              --NE-velocityY 0.0 \
+              --NE-pressure 1.5 \
+              --SW-density 0.138 \
+              --SW-velocityX 1.206 \
+              --SW-velocityY 1.206 \
+              --SW-pressure 0.029 \
+              --SE-density 0.5323 \
+              --SE-velocityX 0 \
+              --SE-velocityY 1.206 \
+              --SE-pressure 0.3 \
               --gamma 1.4 \
-              --riemann-border 0.3 \
+              --riemann-border 0.5 \
 
 tnl-view --mesh mesh.tnl --input-files *tnl     

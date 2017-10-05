@@ -8,18 +8,18 @@ tnl-grid-setup --dimensions 1 \
 #tnl-init --test-function sin-wave \
 #         --output-file init.tnl
 tnl-euler-1d-dbg --time-discretisation explicit \
-	      --time-step 1.0e-3 \
-              --boundary-conditions-type mymixed \
+	      --time-step 2.5e-3 \
+              --boundary-conditions-type myneumann \
               --discrete-solver euler \
-              --snapshot-period 0.1 \
-              --final-time 1.0 \
+              --snapshot-period 0.015 \
+              --final-time 0.15 \
               --left-density 1.0 \
-              --left-velocity 0.75 \
-              --left-pressure 1.0 \
-              --right-density 0.125 \
-              --right-velocity 0 \
-              --right-pressure 0.1 \
+              --left-velocity -2.0 \
+              --left-pressure 0.4 \
+              --right-density 1.0 \
+              --right-velocity 2.0 \
+              --right-pressure 0.4 \
               --gamma 1.4 \
-              --riemann-border 0.3 \
+              --riemann-border 0.5 \
 
 tnl-view --mesh mesh.tnl --input-files *tnl     
