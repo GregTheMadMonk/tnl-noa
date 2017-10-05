@@ -13,7 +13,7 @@
 #include <iomanip>
 #include <TNL/Assert.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
-#include <TNL/Meshes/GridDetails/NeighbourGridEntityGetter3D_impl.h>
+#include <TNL/Meshes/GridDetails/NeighborGridEntityGetter3D_impl.h>
 #include <TNL/Meshes/GridDetails/Grid3D.h>
 #include <TNL/Meshes/GridDetails/GridEntityMeasureGetter.h>
 
@@ -188,7 +188,7 @@ void Grid< 3, Real, Device, Index > :: setDimensions( const Index xSize, const I
                          this->numberOfDzEdges;
    this->numberOfVertices = ( xSize + 1 ) * ( ySize + 1 ) * ( zSize + 1 );
  
-   this->cellZNeighboursStep = xSize * ySize;
+   this->cellZNeighborsStep = xSize * ySize;
 
    computeSpaceSteps();
 }

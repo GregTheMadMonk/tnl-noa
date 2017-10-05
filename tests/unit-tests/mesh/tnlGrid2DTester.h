@@ -174,29 +174,29 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
             {
                const CellType auxCell( grid, cell.getCoordinates() + CoordinatesType( -1, 0 ) );
                const IndexType auxCellIndex = grid.getEntityIndex( auxCell );
-               auto neighbourEntities = cell.getNeighbourEntities();
-               CPPUNIT_ASSERT( ( auxCellIndex == neighbourEntities.template getEntityIndex< -1, 0 >() ) );
+               auto neighborEntities = cell.getNeighborEntities();
+               CPPUNIT_ASSERT( ( auxCellIndex == neighborEntities.template getEntityIndex< -1, 0 >() ) );
             }
             if( cell.getCoordinates().x() < xSize - 1 )
             {
                const CellType auxCell( grid, cell.getCoordinates() + CoordinatesType( 1, 0 ) );
                const IndexType auxCellIndex = grid.getEntityIndex( auxCell );
-               auto neighbourEntities = cell.getNeighbourEntities();
-               CPPUNIT_ASSERT( ( auxCellIndex == neighbourEntities.template getEntityIndex< 1, 0 >() ) );
+               auto neighborEntities = cell.getNeighborEntities();
+               CPPUNIT_ASSERT( ( auxCellIndex == neighborEntities.template getEntityIndex< 1, 0 >() ) );
             }
             if( cell.getCoordinates().y() > 0 )
             {
                const CellType auxCell( grid, cell.getCoordinates() + CoordinatesType( 0, -1 ) );
                const IndexType auxCellIndex = grid.getEntityIndex( auxCell );
-               auto neighbourEntities = cell.getNeighbourEntities();
-               CPPUNIT_ASSERT( ( auxCellIndex == neighbourEntities.template getEntityIndex< 0, -1 >() ) );
+               auto neighborEntities = cell.getNeighborEntities();
+               CPPUNIT_ASSERT( ( auxCellIndex == neighborEntities.template getEntityIndex< 0, -1 >() ) );
             }
             if( cell.getCoordinates().y() < ySize - 1 )
             {
                const CellType auxCell( grid, cell.getCoordinates() + CoordinatesType( 0, 1 ) );
                const IndexType auxCellIndex = grid.getEntityIndex( auxCell );
-               auto neighbourEntities = cell.getNeighbourEntities();
-               CPPUNIT_ASSERT( ( auxCellIndex == neighbourEntities.template getEntityIndex< 0, 1 >() ) );
+               auto neighborEntities = cell.getNeighborEntities();
+               CPPUNIT_ASSERT( ( auxCellIndex == neighborEntities.template getEntityIndex< 0, 1 >() ) );
             }
          }
    }
@@ -224,35 +224,35 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
          {
             //const IndexType cellIndex = grid.getEntityIndex( cell );
             cell.refresh(); //setIndex( cellIndex );
-            auto neighbourEntities = cell.template getNeighbourEntities< GridType::Face::entityDimension >();
+            auto neighborEntities = cell.template getNeighborEntities< GridType::Face::entityDimension >();
 
             FaceType face1( grid,
                             cell.getCoordinates(),
                             EntityOrientationType( -1, 0 ),
                             EntityBasisType( 0, 1 ) );
             IndexType face1Index = grid.template getEntityIndex( face1 );
-            CPPUNIT_ASSERT( ( face1Index == neighbourEntities.template getEntityIndex< -1, 0 >() ) );
+            CPPUNIT_ASSERT( ( face1Index == neighborEntities.template getEntityIndex< -1, 0 >() ) );
 
             FaceType face2( grid,
                             cell.getCoordinates() + CoordinatesType( 1, 0 ),
                             EntityOrientationType( 1, 0 ),
                             EntityBasisType( 0, 1 ) );
             IndexType face2Index = grid.template getEntityIndex( face2 );
-            CPPUNIT_ASSERT( ( face2Index == neighbourEntities.template getEntityIndex< 1, 0 >() ) );
+            CPPUNIT_ASSERT( ( face2Index == neighborEntities.template getEntityIndex< 1, 0 >() ) );
 
             FaceType face3( grid,
                             cell.getCoordinates(),
                             EntityOrientationType( 0, -1 ),
                             EntityBasisType( 1, 0 ) );
             IndexType face3Index = grid.template getEntityIndex( face3 );
-            CPPUNIT_ASSERT( ( face3Index == neighbourEntities.template getEntityIndex< 0, -1 >() ) );
+            CPPUNIT_ASSERT( ( face3Index == neighborEntities.template getEntityIndex< 0, -1 >() ) );
  
             FaceType face4( grid,
                             cell.getCoordinates() + CoordinatesType( 0, 1 ),
                             EntityOrientationType( 0, 1 ),
                             EntityBasisType( 1, 0 ) );
             IndexType face4Index = grid.template getEntityIndex( face4 );
-            CPPUNIT_ASSERT( ( face4Index == neighbourEntities.template getEntityIndex< 0, 1 >() ) );
+            CPPUNIT_ASSERT( ( face4Index == neighborEntities.template getEntityIndex< 0, 1 >() ) );
          }
    }
 
@@ -281,20 +281,20 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
                face.setOrientation( EntityOrientationType( 1, 0 ) );
                //const IndexType faceIndex = grid.getEntityIndex( face );
                face.refresh(); //setIndex( faceIndex );
-               auto neighbourCells = face.template getNeighbourEntities< GridType::Cell::entityDimension >();
+               auto neighborCells = face.template getNeighborEntities< GridType::Cell::entityDimension >();
 
 
                if( face.getCoordinates().x() > 0 )
                {
                   CellType cell( grid, face.getCoordinates() + CoordinatesType( -1, 0 ) );
                   IndexType cellIndex = grid.getEntityIndex( cell );
-                  CPPUNIT_ASSERT( ( cellIndex == neighbourCells.template getEntityIndex< -1, 0 >() ) );
+                  CPPUNIT_ASSERT( ( cellIndex == neighborCells.template getEntityIndex< -1, 0 >() ) );
                }
                if( face.getCoordinates().x() < xSize )
                {
                   CellType cell( grid, face.getCoordinates() + CoordinatesType( 0, 0 ) );
                   IndexType cellIndex = grid.getEntityIndex( cell );
-                  CPPUNIT_ASSERT( ( cellIndex == neighbourCells.template getEntityIndex< 1, 0 >() ) );
+                  CPPUNIT_ASSERT( ( cellIndex == neighborCells.template getEntityIndex< 1, 0 >() ) );
                }
             }
             if( face.getCoordinates().x() < xSize )
@@ -302,19 +302,19 @@ class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
                face.setOrientation( EntityOrientationType( 0, 1 ) );
                //const IndexType faceIndex = grid.getEntityIndex( face );
                face.refresh();//setIndex( faceIndex );
-               auto neighbourCells = face.template getNeighbourEntities< GridType::Cell::entityDimension >();
+               auto neighborCells = face.template getNeighborEntities< GridType::Cell::entityDimension >();
  
                if( face.getCoordinates().y() > 0 )
                {
                   CellType cell( grid, face.getCoordinates() + CoordinatesType( 0, -1 ) );
                   IndexType cellIndex = grid.getEntityIndex( cell );
-                  CPPUNIT_ASSERT( ( cellIndex == neighbourCells.template getEntityIndex< 0, -1 >() ) );
+                  CPPUNIT_ASSERT( ( cellIndex == neighborCells.template getEntityIndex< 0, -1 >() ) );
                }
                if( face.getCoordinates().y() < ySize )
                {
                   CellType cell( grid, face.getCoordinates() + CoordinatesType( 0, 0 ) );
                   IndexType cellIndex = grid.getEntityIndex( cell );
-                  CPPUNIT_ASSERT( ( cellIndex == neighbourCells.template getEntityIndex< 0, 1 >() ) );
+                  CPPUNIT_ASSERT( ( cellIndex == neighborCells.template getEntityIndex< 0, 1 >() ) );
                }
             }
          }

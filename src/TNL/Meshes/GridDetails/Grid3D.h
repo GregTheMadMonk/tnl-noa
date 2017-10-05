@@ -13,7 +13,7 @@
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/GridDetails/GridEntityTopology.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter.h>
-#include <TNL/Meshes/GridDetails/NeighbourGridEntityGetter.h>
+#include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
 
 namespace TNL {
 namespace Meshes {
@@ -151,7 +151,7 @@ class Grid< 3, Real, Device, Index > : public Object
 
    PointType origin, proportions;
 
-   IndexType cellZNeighboursStep;
+   IndexType cellZNeighborsStep;
  
    PointType spaceSteps;
  
@@ -161,7 +161,7 @@ class Grid< 3, Real, Device, Index > : public Object
    friend class GridEntityGetter;
  
    template< typename, int, typename >
-   friend class NeighbourGridEntityGetter;
+   friend class NeighborGridEntityGetter;
 };
 
 } // namespace Meshes

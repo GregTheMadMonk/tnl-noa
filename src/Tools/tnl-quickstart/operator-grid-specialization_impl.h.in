@@ -36,7 +36,7 @@ operator()( const MeshFunction& u,
     */  
    static_assert( MeshEntity::entityDimension == {meshDimension}, "Wrong mesh entity dimensions." );
    static_assert( MeshFunction::getEntitiesDimension() == {meshDimension}, "Wrong preimage function" );
-   const typename MeshEntity::template NeighbourEntities< {meshDimension} >& neighbourEntities = entity.getNeighbourEntities(); 
+   const typename MeshEntity::template NeighborEntities< {meshDimension} >& neighborEntities = entity.getNeighborEntities(); 
 
 {explicitScheme}
 }}
@@ -92,7 +92,7 @@ setMatrixElements( const PreimageFunction& u,
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */    
-   const typename MeshEntity::template NeighbourEntities< {meshDimension} >& neighbourEntities = entity.getNeighbourEntities();
+   const typename MeshEntity::template NeighborEntities< {meshDimension} >& neighborEntities = entity.getNeighborEntities();
    const IndexType& index = entity.getIndex();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
 {semiimplicitScheme}

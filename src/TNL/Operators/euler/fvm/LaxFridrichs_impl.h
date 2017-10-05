@@ -151,10 +151,10 @@ void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, Pressur
    TNL_ASSERT( pressureGradient, std::cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
 
    const IndexType& c = centralVolume;
-   const IndexType e = this->mesh -> getElementNeighbour( centralVolume,  1,  0 );
-   const IndexType w = this->mesh -> getElementNeighbour( centralVolume, -1,  0 );
-   const IndexType n = this->mesh -> getElementNeighbour( centralVolume,  0,  1 );
-   const IndexType s = this->mesh -> getElementNeighbour( centralVolume,  0, -1 );
+   const IndexType e = this->mesh -> getElementNeighbor( centralVolume,  1,  0 );
+   const IndexType w = this->mesh -> getElementNeighbor( centralVolume, -1,  0 );
+   const IndexType n = this->mesh -> getElementNeighbor( centralVolume,  0,  1 );
+   const IndexType s = this->mesh -> getElementNeighbor( centralVolume,  0, -1 );
 
    const RealType u1_e = rho_u1[ e ] / regularize( rho[ e ] );
    const RealType u1_w = rho_u1[ w ] / regularize( rho[ w ] );
@@ -168,7 +168,7 @@ void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, Pressur
    const RealType u2_w = rho_u2[ w ] / regularize( rho[ w ] );
 
    /****
-    * Get the central volume and its neighbours (east, north, west, south) coordinates
+    * Get the central volume and its neighbors (east, north, west, south) coordinates
     */
    CoordinatesType c_coordinates, e_coordinates, n_coordinates, w_coordinates, s_coordinates;
    this->mesh -> getElementCoordinates( c, c_coordinates );
@@ -407,10 +407,10 @@ void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometr
    const RealType hy = this->mesh -> getParametricStep(). y();
 
    const IndexType& c = centralVolume;
-   const IndexType e = this->mesh -> getElementNeighbour( centralVolume,  1,  0 );
-   const IndexType w = this->mesh -> getElementNeighbour( centralVolume, -1,  0 );
-   const IndexType n = this->mesh -> getElementNeighbour( centralVolume,  0,  1 );
-   const IndexType s = this->mesh -> getElementNeighbour( centralVolume,  0, -1 );
+   const IndexType e = this->mesh -> getElementNeighbor( centralVolume,  1,  0 );
+   const IndexType w = this->mesh -> getElementNeighbor( centralVolume, -1,  0 );
+   const IndexType n = this->mesh -> getElementNeighbor( centralVolume,  0,  1 );
+   const IndexType s = this->mesh -> getElementNeighbor( centralVolume,  0, -1 );
 
    /****
     * rho_t + ( rho u_1 )_x + ( rho u_2 )_y =  0
@@ -465,10 +465,10 @@ void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometr
    const RealType hy = this->mesh -> getParametricStep(). y();
 
    const IndexType& c = centralVolume;
-   const IndexType e = this->mesh -> getElementNeighbour( centralVolume,  1,  0 );
-   const IndexType w = this->mesh -> getElementNeighbour( centralVolume, -1,  0 );
-   const IndexType n = this->mesh -> getElementNeighbour( centralVolume,  0,  1 );
-   const IndexType s = this->mesh -> getElementNeighbour( centralVolume,  0, -1 );
+   const IndexType e = this->mesh -> getElementNeighbor( centralVolume,  1,  0 );
+   const IndexType w = this->mesh -> getElementNeighbor( centralVolume, -1,  0 );
+   const IndexType n = this->mesh -> getElementNeighbor( centralVolume,  0,  1 );
+   const IndexType s = this->mesh -> getElementNeighbor( centralVolume,  0, -1 );
 
    /****
     * rho_t + ( rho u_1 )_x + ( rho u_2 )_y =  0
