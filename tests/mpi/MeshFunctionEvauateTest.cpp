@@ -99,7 +99,9 @@ int main ( int argc, char *argv[])
  	distr[2]=0;
  #endif
 
- DistributedGridType distrgrid(globalGrid, distr); 
+ typename DistributedGridType::CoordinatesType overlap;
+ overlap.setValue(1);
+ DistributedGridType distrgrid(globalGrid,overlap, distr); 
    
  SharedPointer<MeshType> gridptr;
  SharedPointer<MeshFunctionType> meshFunctionptr;

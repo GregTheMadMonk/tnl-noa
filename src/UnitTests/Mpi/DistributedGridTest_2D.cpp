@@ -355,6 +355,7 @@ typedef Vector<double,Host,int> DofType;
 typedef typename MeshType::Cell Cell;
 typedef typename MeshType::IndexType IndexType; 
 typedef typename MeshType::PointType PointType; 
+typedef DistributedGrid<MeshType> DistributedGridType;
 	 
 class DistributedGirdTest_2D : public ::testing::Test {
  protected:
@@ -396,7 +397,9 @@ class DistributedGirdTest_2D : public ::testing::Test {
 	globalGrid.setDimensions(size,size);
 	globalGrid.setDomain(globalOrigin,globalProportions);
 	
-	distrgrid=new DistributedGrid<MeshType> (globalGrid);
+	typename DistributedGridType::CoordinatesType overlap;
+	overlap.setValue(1);
+	distrgrid=new DistributedGrid<MeshType> (globalGrid,overlap);
 	
 	distrgrid->SetupGrid(*gridptr);
 	dof=new DofType(gridptr->template getEntitiesCount< Cell >());

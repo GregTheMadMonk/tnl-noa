@@ -98,11 +98,9 @@ class DistributedGrid <GridType,1>
      
    public:
        //compute everithing 
-       DistributedGrid(GridType globalGrid, int *distribution=NULL)
-       {
-           
-           //fuj
-           overlap.x()=1;
+       DistributedGrid(GridType globalGrid, CoordinatesType overlap, int *distribution=NULL)
+       {      
+           this->overlap=overlap;
            
            left=-1;
            right=-1;
@@ -246,12 +244,9 @@ class DistributedGrid <GridType,2>
      
    public:
        //compute everithing 
-       DistributedGrid(GridType globalGrid,int *distribution=NULL)
+       DistributedGrid(GridType globalGrid,CoordinatesType overlap,int *distribution=NULL)
        {
-           
-           //fuj
-           overlap.x()=1;
-           overlap.y()=1;
+           this->overlap=overlap;
            
            for (int i=0;i<8;i++)
                 neighbors[i]=-1;
@@ -279,6 +274,8 @@ class DistributedGrid <GridType,2>
                //Without MPI
                myproccoord[0]=0;
                myproccoord[1]=0;
+               procsdistr[0]=1;
+               procsdistr[1]=1;
                localorigin=GlobalGrid.getOrigin();
                localgridsize=GlobalGrid.getDimensions();
                localsize=GlobalGrid.getDimensions();
@@ -487,13 +484,10 @@ class DistributedGrid <GridType,3>
      
    public:
        //compute everithing 
-       DistributedGrid(GridType globalGrid,int *distribution=NULL)
+       DistributedGrid(GridType globalGrid,CoordinatesType overlap,int *distribution=NULL)
        {
            
-           //fuj
-           overlap.x()=1;
-           overlap.y()=1;
-           overlap.z()=1;
+           this->overlap=overlap;
            
            for (int i=0;i<26;i++)
                 neighbors[i]=-1;
@@ -522,6 +516,10 @@ class DistributedGrid <GridType,3>
                myproccoord[0]=0;
                myproccoord[1]=0;
                myproccoord[2]=0;
+               
+               procsdistr[0]=1;
+               procsdistr[1]=1;
+               procsdistr[2]=1;               
                
                localorigin=GlobalGrid.getOrigin();
                localsize=GlobalGrid.getDimensions();
