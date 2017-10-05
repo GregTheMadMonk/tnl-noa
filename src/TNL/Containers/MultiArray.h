@@ -18,7 +18,7 @@
 namespace TNL {
 namespace Containers {   
 
-template< int Dimensions, typename Element = double, typename Device = Devices::Host, typename Index = int >
+template< int Dimension, typename Element = double, typename Device = Devices::Host, typename Index = int >
 class MultiArray : public Array< Element, Device, Index >
 {
 };
@@ -27,7 +27,7 @@ template< typename Element, typename Device, typename Index >
 class MultiArray< 1, Element, Device, Index > : public Array< Element, Device, Index >
 {
    public:
-   enum { Dimensions = 1};
+   enum { Dimension = 1};
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -45,9 +45,9 @@ class MultiArray< 1, Element, Device, Index > : public Array< Element, Device, I
 
    virtual String getSerializationTypeVirtual() const;
 
-   bool setDimensions( const Index iSize );
+   void setDimensions( const Index iSize );
 
-   bool setDimensions( const Containers::StaticVector< 1, Index >& dimensions );
+   void setDimensions( const Containers::StaticVector< 1, Index >& dimensions );
 
    __cuda_callable__ void getDimensions( Index& iSize ) const;
 
@@ -55,7 +55,7 @@ class MultiArray< 1, Element, Device, Index > : public Array< Element, Device, I
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
-   bool setLike( const MultiArray& v );
+   void setLike( const MultiArray& v );
  
    void reset();
 
@@ -106,7 +106,7 @@ template< typename Element, typename Device, typename Index >
 class MultiArray< 2, Element, Device, Index > : public Array< Element, Device, Index >
 {
    public:
-   enum { Dimensions = 2 };
+   enum { Dimension = 2 };
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -124,9 +124,9 @@ class MultiArray< 2, Element, Device, Index > : public Array< Element, Device, I
 
    virtual String getSerializationTypeVirtual() const;
 
-   bool setDimensions( const Index jSize, const Index iSize );
+   void setDimensions( const Index jSize, const Index iSize );
 
-   bool setDimensions( const Containers::StaticVector< 2, Index >& dimensions );
+   void setDimensions( const Containers::StaticVector< 2, Index >& dimensions );
 
    __cuda_callable__ void getDimensions( Index& jSize, Index& iSize ) const;
 
@@ -134,7 +134,7 @@ class MultiArray< 2, Element, Device, Index > : public Array< Element, Device, I
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
-   bool setLike( const MultiArray& v );
+   void setLike( const MultiArray& v );
 
    void reset();
 
@@ -189,7 +189,7 @@ class MultiArray< 3, Element, Device, Index > : public Array< Element, Device, I
 {
    public:
 
-   enum { Dimensions = 3 };
+   enum { Dimension = 3 };
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -207,9 +207,9 @@ class MultiArray< 3, Element, Device, Index > : public Array< Element, Device, I
 
    virtual String getSerializationTypeVirtual() const;
 
-   bool setDimensions( const Index k, const Index j, const Index iSize );
+   void setDimensions( const Index k, const Index j, const Index iSize );
 
-   bool setDimensions( const Containers::StaticVector< 3, Index >& dimensions );
+   void setDimensions( const Containers::StaticVector< 3, Index >& dimensions );
 
    __cuda_callable__ void getDimensions( Index& k, Index& j, Index& iSize ) const;
 
@@ -217,7 +217,7 @@ class MultiArray< 3, Element, Device, Index > : public Array< Element, Device, I
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArrayT >
-   bool setLike( const MultiArrayT& v );
+   void setLike( const MultiArrayT& v );
 
    void reset();
 
@@ -272,7 +272,7 @@ class MultiArray< 4, Element, Device, Index > : public Array< Element, Device, I
 {
    public:
 
-   enum { Dimensions = 4 };
+   enum { Dimension = 4 };
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -290,9 +290,9 @@ class MultiArray< 4, Element, Device, Index > : public Array< Element, Device, I
 
    virtual String getSerializationTypeVirtual() const;
 
-   bool setDimensions( const Index l, const Index k, const Index j, const Index iSize );
+   void setDimensions( const Index l, const Index k, const Index j, const Index iSize );
 
-   bool setDimensions( const Containers::StaticVector< 4, Index >& dimensions );
+   void setDimensions( const Containers::StaticVector< 4, Index >& dimensions );
 
    __cuda_callable__ void getDimensions( Index& l, Index& k, Index& j, Index& iSize ) const;
 
@@ -300,7 +300,7 @@ class MultiArray< 4, Element, Device, Index > : public Array< Element, Device, I
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArrayT >
-   bool setLike( const MultiArrayT& v );
+   void setLike( const MultiArrayT& v );
 
    void reset();
 

@@ -19,8 +19,8 @@
 #include <TNL/Containers/MultiVector.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/VectorField.h>
 
-using namespace std;
 using namespace TNL;
 
 bool getOutputFileName( const String& inputFileName,
@@ -49,7 +49,9 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
                         const String& inputFileName,
                         const Config::ParameterContainer& parameters  )
 {
+
    MeshFunction function( meshPointer );
+   std::cout << "Mesh function: " << function.getType() << std::endl;
    if( ! function.load( inputFileName ) )
    {
       std::cerr << "Unable to load mesh function from a file " << inputFileName << "." << std::endl;
@@ -58,6 +60,7 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
 
    int verbose = parameters. getParameter< int >( "verbose");
    String outputFormat = parameters. getParameter< String >( "output-format" );
+   double scale = parameters. getParameter< double >( "scale" );
    String outputFileName;
    if( ! getOutputFileName( inputFileName,
                             outputFormat,
@@ -66,136 +69,201 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
    if( verbose )
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
-   return function.write( outputFileName, outputFormat );
+   return function.write( outputFileName, outputFormat, scale );
 }
 
+template< typename VectorField >
+bool writeVectorField( const typename VectorField::FunctionType::MeshPointer& meshPointer,
+                       const String& inputFileName,
+                       const Config::ParameterContainer& parameters  )
+{
+
+   VectorField field( meshPointer );
+   std::cout << "VectorField: " << field.getType() << std::endl;
+   if( ! field.load( inputFileName ) )
+   {
+      std::cerr << "Unable to load vector field from a file " << inputFileName << "." << std::endl;
+      return false;
+   }
+
+   int verbose = parameters. getParameter< int >( "verbose");
+   String outputFormat = parameters. getParameter< String >( "output-format" );
+   double scale = parameters. getParameter< double >( "scale" );
+   String outputFileName;
+   if( ! getOutputFileName( inputFileName,
+                            outputFormat,
+                            outputFileName ) )
+      return false;
+   if( verbose )
+     std::cout << " writing to " << outputFileName << " ... " << std::flush;
+
+   return field.write( outputFileName, outputFormat, scale );
+}
+
+
 template< typename MeshPointer,
-          int EntityDimensions,
-          typename Real >
+          int EntityDimension,
+          typename Real,
+          int VectorFieldSize >
 bool setMeshFunctionRealType( const MeshPointer& meshPointer,
                               const String& inputFileName,
+                              const Containers::List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters  )
 {
-   return writeMeshFunction< Functions::MeshFunction< typename MeshPointer::ObjectType, EntityDimensions, Real > >( meshPointer, inputFileName, parameters );
+   if( VectorFieldSize == 0 )
+      return writeMeshFunction< Functions::MeshFunction< typename MeshPointer::ObjectType, EntityDimension, Real > >( meshPointer, inputFileName, parameters );
+   return writeVectorField< Functions::VectorField< VectorFieldSize, Functions::MeshFunction< typename MeshPointer::ObjectType, EntityDimension, Real > > >( meshPointer, inputFileName, parameters );
 }
 
 template< typename MeshPointer,
-          int EntityDimensions >
+          int EntityDimension,
+          int VectorFieldSize >
 bool setMeshEntityType( const MeshPointer& meshPointer,
                         const String& inputFileName,
-                        const List< String >& parsedObjectType,
+                        const Containers::List< String >& parsedObjectType,
                         const Config::ParameterContainer& parameters )
 {
    if( parsedObjectType[ 3 ] == "float" )
-      return setMeshFunctionRealType< MeshPointer, EntityDimensions, float >( meshPointer, inputFileName, parameters );
+      return setMeshFunctionRealType< MeshPointer, EntityDimension, float, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( parsedObjectType[ 3 ] == "double" )
-      return setMeshFunctionRealType< MeshPointer, EntityDimensions, double >( meshPointer, inputFileName, parameters );
+      return setMeshFunctionRealType< MeshPointer, EntityDimension, double, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( parsedObjectType[ 3 ] == "long double" )
-      return setMeshFunctionRealType< MeshPointer, EntityDimensions, long double >( meshPointer, inputFileName, parameters );
+      return setMeshFunctionRealType< MeshPointer, EntityDimension, long double, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
    std::cerr << "Unsupported arithmetics " << parsedObjectType[ 3 ] << " in mesh function " << inputFileName << std::endl;
    return false;
 }
 
 template< typename MeshReal,
-          typename MeshIndex >
-bool setMeshEntityDimensions( const SharedPointer< Meshes::Grid< 1, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
+          typename MeshIndex,
+          int VectorFieldSize >
+bool setMeshEntityDimension( const SharedPointer< Meshes::Grid< 1, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
                               const String& inputFileName,
-                              const List< String >& parsedObjectType,
+                              const Containers::List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
    typedef Meshes::Grid< 1, MeshReal, Devices::Host, MeshIndex > Mesh;
    typedef SharedPointer< Mesh > MeshPointer;
-   int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
-   switch( meshEntityDimensions )
+   int meshEntityDimension = atoi( parsedObjectType[ 2 ].getString() );
+   switch( meshEntityDimension )
    {
       case 0:
-         return setMeshEntityType< MeshPointer, 0 >( meshPointer, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 0, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;      
       case 1:
-         return setMeshEntityType< MeshPointer, 1 >( meshPointer, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 1, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;
       default:
-         std::cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << std::endl;
+         std::cerr << "Unsupported mesh functions entity dimension count " << meshEntityDimension << "." << std::endl;
          return false;
    }
 }
 
 template< typename MeshReal,
-          typename MeshIndex >
-bool setMeshEntityDimensions( const SharedPointer< Meshes::Grid< 2, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
+          typename MeshIndex,
+          int VectorFieldSize >
+bool setMeshEntityDimension( const SharedPointer< Meshes::Grid< 2, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
                               const String& inputFileName,
-                              const List< String >& parsedObjectType,
+                              const Containers::List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
    typedef Meshes::Grid< 2, MeshReal, Devices::Host, MeshIndex > Mesh;
    typedef SharedPointer< Mesh > MeshPointer;
-   int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
-   switch( meshEntityDimensions )
+   int meshEntityDimension = atoi( parsedObjectType[ 2 ].getString() );
+   switch( meshEntityDimension )
    {
       case 0:
-         return setMeshEntityType< MeshPointer, 0 >( meshPointer, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 0, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;            
       case 1:
-         return setMeshEntityType< MeshPointer, 1 >( meshPointer, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 1, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;
       case 2:
-         return setMeshEntityType< MeshPointer, 2 >( meshPointer, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 2, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;
       default:
-         std::cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << std::endl;
+         std::cerr << "Unsupported mesh functions entity dimension count " << meshEntityDimension << "." << std::endl;
          return false;
    }
 }
 
 template< typename MeshReal,
-          typename MeshIndex >
-bool setMeshEntityDimensions( const SharedPointer< Meshes::Grid< 3, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
+          typename MeshIndex,
+          int VectorFieldSize >
+bool setMeshEntityDimension( const SharedPointer< Meshes::Grid< 3, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
                               const String& inputFileName,
-                              const List< String >& parsedObjectType,
+                              const Containers::List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
    typedef Meshes::Grid< 3, MeshReal, Devices::Host, MeshIndex > Mesh;
    typedef SharedPointer< Mesh > MeshPointer;
-   int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
-   switch( meshEntityDimensions )
+   int meshEntityDimension = atoi( parsedObjectType[ 2 ].getString() );
+   switch( meshEntityDimension )
    {
       case 0:
-         return setMeshEntityType< MeshPointer, 0 >( meshPointer, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 0, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;      
       case 1:
-         return setMeshEntityType< MeshPointer, 1 >( meshPointer, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 1, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;
       case 2:
-         return setMeshEntityType< MeshPointer, 2 >( meshPointer, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 2, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;
       case 3:
-         return setMeshEntityType< MeshPointer, 3 >( meshPointer, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 3, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;
       default:
-         std::cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << std::endl;
+         std::cerr << "Unsupported mesh functions entity dimension count " << meshEntityDimension << "." << std::endl;
          return false;
    }
 }
 
-template< typename MeshPointer >
+template< typename MeshPointer, int VectorFieldSize = 0 >
 bool setMeshFunction( const MeshPointer& meshPointer,
                       const String& inputFileName,
-                      const List< String >& parsedObjectType,
+                      const Containers::List< String >& parsedObjectType,
                       const Config::ParameterContainer& parameters )
 {
+   std::cerr << parsedObjectType[ 1 ] << std::endl;
    if( parsedObjectType[ 1 ] != meshPointer->getSerializationType() )
    {
       std::cerr << "Incompatible mesh type for the mesh function " << inputFileName << "." << std::endl;
       return false;
    }
-   return setMeshEntityDimensions( meshPointer, inputFileName, parsedObjectType, parameters );
+   typedef typename MeshPointer::ObjectType::RealType RealType;
+   typedef typename MeshPointer::ObjectType::IndexType IndexType;
+   return setMeshEntityDimension< RealType, IndexType, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
 }
 
+template< typename MeshPointer >
+bool setVectorFieldSize( const MeshPointer& meshPointer,
+                         const String& inputFileName,
+                         Containers::List< String >& parsedObjectType,
+                         const Config::ParameterContainer& parameters )
+{
+   int vectorFieldSize = atoi( parsedObjectType[ 1 ].getString() );
+   Containers::List< String > parsedMeshFunctionType;
+   if( ! parseObjectType( parsedObjectType[ 2 ], parsedMeshFunctionType ) )
+   {
+      std::cerr << "Unable to parse mesh function type  " << parsedObjectType[ 2 ] << " in a vector field." << std::endl;
+      return false;
+   }
+   switch( vectorFieldSize )
+   {
+      case 1:
+         return setMeshFunction< MeshPointer, 1 >( meshPointer, inputFileName, parsedMeshFunctionType, parameters );
+      case 2:
+         return setMeshFunction< MeshPointer, 2 >( meshPointer, inputFileName, parsedMeshFunctionType, parameters );
+      case 3:
+         return setMeshFunction< MeshPointer, 3 >( meshPointer, inputFileName, parsedMeshFunctionType, parameters );
+   }
+   std::cerr << "Unsupported vector field size " << vectorFieldSize << "." << std::endl;
+   return false;
+}
 
-template< typename MeshPointer, typename Element, typename Real, typename Index, int Dimensions >
+template< typename MeshPointer, typename Element, typename Real, typename Index, int Dimension >
 bool convertObject( const MeshPointer& meshPointer,
                     const String& inputFileName,
-                    const List< String >& parsedObjectType,
+                    const Containers::List< String >& parsedObjectType,
                     const Config::ParameterContainer& parameters )
 {
    int verbose = parameters. getParameter< int >( "verbose");
@@ -213,10 +281,15 @@ bool convertObject( const MeshPointer& meshPointer,
        parsedObjectType[ 0 ] == "tnlSharedVector" ||   // TODO: remove deprecated type names
        parsedObjectType[ 0 ] == "tnlVector" )          //
    {
-      Containers::Vector< Element, Devices::Host, Index > vector;
-      if( ! vector. load( inputFileName ) )
+      using MeshType = typename MeshPointer::ObjectType;
+      // FIXME: why is MeshType::GlobalIndexType not the same as Index?
+//      Containers::Vector< Element, Devices::Host, Index > vector;
+      Containers::Vector< Element, Devices::Host, typename MeshType::GlobalIndexType > vector;
+      if( ! vector.load( inputFileName ) )
          return false;
-      if( ! meshPointer->write( vector, outputFileName, outputFormat ) )
+      Functions::MeshFunction< MeshType, MeshType::getMeshDimension(), Element > mf;
+      mf.bind( meshPointer, vector );
+      if( ! mf.write( outputFileName, outputFormat ) )
          return false;
    }
 
@@ -224,14 +297,14 @@ bool convertObject( const MeshPointer& meshPointer,
        parsedObjectType[ 0 ] == "tnlMultiVector" ||      // TODO: remove deprecated type names  
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" ) //
    {
-      Containers::MultiVector< Dimensions, Element, Devices::Host, Index > multiVector;
+      Containers::MultiVector< Dimension, Element, Devices::Host, Index > multiVector;
       if( ! multiVector. load( inputFileName ) )
          return false;
-      typedef Meshes::Grid< Dimensions, Real, Devices::Host, Index > GridType;
-      typedef typename GridType::VertexType VertexType;
+      typedef Meshes::Grid< Dimension, Real, Devices::Host, Index > GridType;
+      typedef typename GridType::PointType PointType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;
-      grid. setDomain( VertexType( 0.0 ), VertexType( 1.0 ) );
+      grid. setDomain( PointType( 0.0 ), PointType( 1.0 ) );
       grid. setDimensions( CoordinatesType( multiVector. getDimensions() ) );
       const Real spaceStep = grid. getSpaceSteps(). x();
       if( ! grid. write( multiVector, outputFileName, outputFormat ) )
@@ -243,7 +316,7 @@ bool convertObject( const MeshPointer& meshPointer,
 template< typename MeshPointer, typename Element, typename Real, typename Index >
 bool setDimensions( const MeshPointer& meshPointer,
                     const String& inputFileName,
-                    const List< String >& parsedObjectType,
+                    const Containers::List< String >& parsedObjectType,
                     const Config::ParameterContainer& parameters )
 {
    int dimensions( 0 );
@@ -271,7 +344,7 @@ bool setDimensions( const MeshPointer& meshPointer,
 template< typename MeshPointer, typename Element, typename Real >
 bool setIndexType( const MeshPointer& meshPointer,
                    const String& inputFileName,
-                   const List< String >& parsedObjectType,
+                   const Containers::List< String >& parsedObjectType,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
@@ -288,15 +361,15 @@ bool setIndexType( const MeshPointer& meshPointer,
       return setDimensions< MeshPointer, Element, Real, int >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( indexType == "long-int" )
       return setDimensions< MeshPointer, Element, Real, long int >( meshPointer, inputFileName, parsedObjectType, parameters );
-   cerr << "Unknown index type " << indexType << "." << endl;
+   std::cerr << "Unknown index type " << indexType << "." << std::endl;
    return false;
 }
 
 template< typename MeshPointer >
 bool setTupleType( const MeshPointer& meshPointer,
                    const String& inputFileName,
-                   const List< String >& parsedObjectType,
-                   const List< String >& parsedElementType,
+                   const Containers::List< String >& parsedObjectType,
+                   const Containers::List< String >& parsedElementType,
                    const Config::ParameterContainer& parameters )
 {
    int dimensions = atoi( parsedElementType[ 1 ].getString() );
@@ -346,7 +419,7 @@ bool setTupleType( const MeshPointer& meshPointer,
 template< typename MeshPointer >
 bool setElementType( const MeshPointer& meshPointer,
                      const String& inputFileName,
-                     const List< String >& parsedObjectType,
+                     const Containers::List< String >& parsedObjectType,
                      const Config::ParameterContainer& parameters )
 {
    String elementType;
@@ -368,14 +441,14 @@ bool setElementType( const MeshPointer& meshPointer,
       return setIndexType< MeshPointer, double, double >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "long double" )
       return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-   List< String > parsedElementType;
+   Containers::List< String > parsedElementType;
    if( ! parseObjectType( elementType, parsedElementType ) )
    {
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
    }
    if( parsedElementType[ 0 ] == "Containers::StaticVector" ||
-       parsedElementType[ 0 ] == "tnlStaticVector" )               // TODO: remove deprecated type names
+       parsedElementType[ 0 ] == "Containers::StaticVector" )               // TODO: remove deprecated type names
       return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedElementType, parameters );
 
    std::cerr << "Unknown element type " << elementType << "." << std::endl;
@@ -400,7 +473,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
    meshPointer->writeMesh( "mesh.asy", "asymptote" );
 
    bool checkOutputFile = parameters. getParameter< bool >( "check-output-file" );
-   List< String > inputFiles = parameters. getParameter< List< String > >( "input-files" );
+   Containers::List< String > inputFiles = parameters. getParameter< Containers::List< String > >( "input-files" );
    bool error( false );
 //#ifdef HAVE_OPENMP
 //#pragma omp parallel for
@@ -434,7 +507,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
          if( verbose )
            std::cout << objectType << " detected ... ";
 
-         List< String > parsedObjectType;
+         Containers::List< String > parsedObjectType;
          if( ! parseObjectType( objectType, parsedObjectType ) )
          {
             std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
@@ -451,6 +524,8 @@ bool processFiles( const Config::ParameterContainer& parameters )
          if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
              parsedObjectType[ 0 ] == "tnlMeshFunction" )                     // TODO: remove deprecated type names
             setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
+         if( parsedObjectType[ 0 ] == "Functions::VectorField" )
+            setVectorFieldSize< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
          if( verbose )
            std::cout << "[ OK ].  " << std::endl;
       }

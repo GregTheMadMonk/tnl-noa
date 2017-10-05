@@ -10,8 +10,6 @@
 
 #include <TNL/Object.h>
 #include <TNL/Assert.h>
-#include <TNL/File.h>
-#include <TNL/List.h>
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -48,11 +46,7 @@ String Object :: getSerializationTypeVirtual() const
 
 bool Object :: save( File& file ) const
 {
-#ifdef HAVE_NOT_CXX11
-   if( ! file. write< const char, Devices::Host, int >( magic_number, strlen( magic_number ) ) )
-#else
    if( ! file. write( magic_number, strlen( magic_number ) ) )
-#endif
       return false;
    if( ! this->getSerializationTypeVirtual().save( file ) ) return false;
    return true;
@@ -82,55 +76,34 @@ bool Object :: boundLoad( File& file )
 bool Object :: save( const String& fileName ) const
 {
    File file;
-   if( ! file. open( fileName, tnlWriteMode ) )
+   if( ! file. open( fileName, IOMode::write ) )
    {
-      std::cerr << "I am not bale to open the file " << fileName << " for writing." << std::endl;
+      std::cerr << "I am not able to open the file " << fileName << " for writing." << std::endl;
       return false;
    }
-   if( ! this->save( file ) )
-      return false;
-   if( ! file. close() )
-   {
-      std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
-      return false;
-   }
-   return true;
+   return this->save( file );
 }
 
 bool Object :: load( const String& fileName )
 {
    File file;
-   if( ! file. open( fileName, tnlReadMode ) )
+   if( ! file. open( fileName, IOMode::read ) )
    {
-      std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
+      std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
       return false;
    }
-   if( ! this->load( file ) )
-      return false;
-   if( ! file. close() )
-   {
-      std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
-      return false;
-   }
-   return true;
+   return this->load( file );
 }
 
 bool Object :: boundLoad( const String& fileName )
 {
    File file;
-   if( ! file. open( fileName, tnlReadMode ) )
+   if( ! file. open( fileName, IOMode::read ) )
    {
-      std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
+      std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
       return false;
    }
-   if( ! this->boundLoad( file ) )
-      return false;
-   if( ! file. close() )
-   {
-      std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
-      return false;
-   }
-   return true;
+   return this->boundLoad( file );
 }
 
 void Object::setDeprecatedReadMode()
@@ -142,36 +115,38 @@ void Object::setDeprecatedReadMode()
 bool getObjectType( File& file, String& type )
 {
    char mn[ 10 ];
-#ifdef HAVE_NOT_CXX11
-   if( ! file. read< char, Devices::Host, int >( mn, strlen( magic_number ) ) )
-#else
    if( ! file. read( mn, strlen( magic_number ) ) )
-#endif
    {
       std::cerr << "Unable to read file " << file. getFileName() << " ... " << std::endl;
       return false;
    }
    if( strncmp( mn, magic_number, 5 ) != 0 &&
-       strncmp( mn, "SIM33", 5 ) != 0 ) return false;
-   if( ! type. load( file ) ) return false;
+       strncmp( mn, "SIM33", 5 ) != 0 )
+   {
+       std::cout << "Not a TNL file (wrong magic number)." << std::endl;
+       return false;
+   }
+   if( ! type. load( file ) )
+   {
+       std::cerr << "Cannot load the object type." << std::endl;
+       return false;
+   }
    return true;
 }
 
 bool getObjectType( const String& fileName, String& type )
 {
    File binaryFile;
-   if( ! binaryFile. open( fileName, tnlReadMode ) )
+   if( ! binaryFile. open( fileName, IOMode::read ) )
    {
       std::cerr << "I am not able to open the file " << fileName << " for detecting the object inside!" << std::endl;
       return false;
    }
-   bool ret_val = getObjectType( binaryFile, type );
-   binaryFile. close();
-   return ret_val;
+   return getObjectType( binaryFile, type );
 }
 
 bool parseObjectType( const String& objectType,
-                      List< String >& parsedObjectType )
+                      Containers::List< String >& parsedObjectType )
 {
    parsedObjectType.reset();
    int objectTypeLength = objectType. getLength();
@@ -191,7 +166,7 @@ bool parseObjectType( const String& objectType,
 
    /****
     * Now, we will extract the parameters.
-    * Each parameter can be template, so we must compute and pair
+    * Each parameter can be template, so we must count and pair
     * '<' with '>'.
     */
    int templateBrackets( 0 );
@@ -203,13 +178,12 @@ bool parseObjectType( const String& objectType,
          templateBrackets ++;
       if( ! templateBrackets )
       {
-         if( objectType[ i ] == ' ' ||
-             objectType[ i ] == ',' ||
+         if( objectType[ i ] == ',' ||
              objectType[ i ] == '>' )
          {
             if( buffer != "" )
             {
-               if( ! parsedObjectType. Append( buffer ) )
+               if( ! parsedObjectType. Append( buffer.strip( ' ' ) ) )
                   return false;
                buffer. setString( "" );
             }

@@ -10,6 +10,8 @@
 
 #pragma once 
 
+#include <TNL/Containers/List.h>
+
 namespace TNL {
 namespace Config {
 
@@ -21,10 +23,10 @@ template<> inline String getUIEntryType< bool >()      { return "bool"; };
 template<> inline String getUIEntryType< int >()       { return "integer"; };
 template<> inline String getUIEntryType< double >()    { return "real"; };
 
-template<> inline String getUIEntryType< List< String > >() { return "list of string"; };
-template<> inline String getUIEntryType< List< bool > >()      { return "list of bool"; };
-template<> inline String getUIEntryType< List< int > >()       { return "list of integer"; };
-template<> inline String getUIEntryType< List< double > >()    { return "list of real"; };
+template<> inline String getUIEntryType< Containers::List< String > >() { return "list of string"; };
+template<> inline String getUIEntryType< Containers::List< bool > >()      { return "list of bool"; };
+template<> inline String getUIEntryType< Containers::List< int > >()       { return "list of integer"; };
+template<> inline String getUIEntryType< Containers::List< double > >()    { return "list of real"; };
 
 struct ConfigEntryType
 {

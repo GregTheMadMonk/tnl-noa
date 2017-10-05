@@ -17,9 +17,9 @@ namespace Functions {
 
 template< typename Operator,
           typename Function >
-class ExactOperatorFunction : public Domain< Operator::getDomainDimensions(), SpaceDomain >
+class ExactOperatorFunction : public Domain< Operator::getDomainDimension(), SpaceDomain >
 {
-   static_assert( Operator::getDomainDimensions() == Function::getDomainDimensions(),
+   static_assert( Operator::getDomainDimension() == Function::getDomainDimension(),
       "Operator and function have different number of domain dimensions." );
  
    public:
@@ -27,9 +27,9 @@ class ExactOperatorFunction : public Domain< Operator::getDomainDimensions(), Sp
       typedef Operator OperatorType;
       typedef Function FunctionType;
       typedef typename FunctionType::RealType RealType;
-      typedef typename FunctionType::VertexType VertexType;
+      typedef typename FunctionType::PointType PointType;
  
-      static constexpr int getDomainDimensions() { return Operator::getDomainDimensions(); }
+      static constexpr int getDomainDimension() { return Operator::getDomainDimension(); }
  
       ExactOperatorFunction(
          const OperatorType& operator_,
@@ -38,7 +38,7 @@ class ExactOperatorFunction : public Domain< Operator::getDomainDimensions(), Sp
  
       __cuda_callable__
       RealType operator()(
-         const VertexType& vertex,
+         const PointType& vertex,
          const RealType& time ) const
       {
          return this->operator_( function, vertex, time );

@@ -16,6 +16,7 @@
 #include <TNL/Solvers/Linear/SOR.h>
 #include <TNL/Solvers/Linear/CG.h>
 #include <TNL/Solvers/Linear/BICGStab.h>
+#include <TNL/Solvers/Linear/BICGStabL.h>
 #include <TNL/Solvers/Linear/CWYGMRES.h>
 #include <TNL/Solvers/Linear/GMRES.h>
 #include <TNL/Solvers/Linear/TFQMR.h>
@@ -25,7 +26,7 @@
 namespace TNL {
 namespace Solvers {   
 
-class tnlDefaultBuildConfigTag{};
+class DefaultBuildConfigTag{};
 
 /****
  * All devices are enabled by default. Those which are not available
@@ -34,6 +35,10 @@ class tnlDefaultBuildConfigTag{};
 template< typename ConfigTag, typename Device > struct ConfigTagDevice{ enum { enabled = true }; };
 #ifndef HAVE_CUDA
 template< typename ConfigTag > struct ConfigTagDevice< ConfigTag, Devices::Cuda >{ enum { enabled = false }; };
+#endif
+
+#ifndef HAVE_MIC
+template< typename ConfigTag > struct ConfigTagDevice< ConfigTag, Devices::MIC >{ enum { enabled = false }; };
 #endif
 
 /****
@@ -54,7 +59,7 @@ template< typename ConfigTag > struct ConfigTagMeshResolve{ enum { enabled = tru
 /****
  * 1, 2, and 3 dimensions are enabled by default
  */
-template< typename ConfigTag, int Dimensions > struct ConfigTagDimensions{ enum { enabled = ( Dimensions > 0 && Dimensions <= 3 ) }; };
+template< typename ConfigTag, int Dimension > struct ConfigTagDimension{ enum { enabled = ( Dimension > 0 && Dimension <= 3 ) }; };
 
 /****
  * Up to the exceptions enlisted below, all mesh types are disabled by default.
@@ -64,9 +69,9 @@ template< typename ConfigTag, typename MeshType > struct ConfigTagMesh{ enum { e
 /****
  * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
  */
-template< typename ConfigTag, int Dimensions, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< ConfigTag, Meshes::Grid< Dimensions, Real, Device, Index > >
-      { enum { enabled = ConfigTagDimensions< ConfigTag, Dimensions >::enabled  &&
+template< typename ConfigTag, int Dimension, typename Real, typename Device, typename Index >
+   struct ConfigTagMesh< ConfigTag, Meshes::Grid< Dimension, Real, Device, Index > >
+      { enum { enabled = ConfigTagDimension< ConfigTag, Dimension >::enabled  &&
                          ConfigTagReal< ConfigTag, Real >::enabled &&
                          ConfigTagDevice< ConfigTag, Device >::enabled &&
                          ConfigTagIndex< ConfigTag, Index >::enabled }; };
@@ -131,6 +136,16 @@ public:
                                                                         typename Matrix::DeviceType,
                                                                         typename Matrix::IndexType > >
     using Template = Linear::BICGStab< Matrix, Preconditioner >;
+};
+
+class  SemiImplicitBICGStabLSolverTag
+{
+public:
+    template< typename Matrix,
+              typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
+                                                                        typename Matrix::DeviceType,
+                                                                        typename Matrix::IndexType > >
+    using Template = Linear::BICGStabL< Matrix, Preconditioner >;
 };
 
 class  SemiImplicitCWYGMRESSolverTag

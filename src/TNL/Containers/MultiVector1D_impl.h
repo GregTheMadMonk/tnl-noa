@@ -22,7 +22,7 @@ template< typename Real, typename Device, typename Index >
 String MultiVector< 1, Real, Device, Index > :: getType()
 {
    return String( "Containers::MultiVector< ") +
-          String( Dimensions ) +
+          String( Dimension ) +
           String( ", " ) +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
@@ -57,28 +57,28 @@ String MultiVector< 1, Real, Device, Index > :: getSerializationTypeVirtual() co
 };
 
 template< typename Real, typename Device, typename Index >
-bool MultiVector< 1, Real, Device, Index > :: setDimensions( const Index iSize )
+void MultiVector< 1, Real, Device, Index > :: setDimensions( const Index iSize )
 {
-   Assert( iSize > 0,
+   TNL_ASSERT( iSize > 0,
               std::cerr << "iSize = " << iSize );
    dimensions[ 0 ] = iSize;
-   return Vector< Real, Device, Index > :: setSize( iSize );
+   Vector< Real, Device, Index > :: setSize( iSize );
 }
 
 template< typename Real, typename Device, typename Index >
-bool MultiVector< 1, Real, Device, Index > :: setDimensions( const StaticVector< Dimensions, Index >& dimensions )
+void MultiVector< 1, Real, Device, Index > :: setDimensions( const StaticVector< Dimension, Index >& dimensions )
 {
-   Assert( dimensions[ 0 ] > 0,
+   TNL_ASSERT( dimensions[ 0 ] > 0,
               std::cerr << " dimensions[ 0 ] = " << dimensions[ 0 ] );
    this->dimensions = dimensions;
-   return Vector< Real, Device, Index > :: setSize( this->dimensions[ 0 ] );
+   Vector< Real, Device, Index > :: setSize( this->dimensions[ 0 ] );
 }
 
 template< typename Real, typename Device, typename Index >
    template< typename MultiVectorT >
-bool MultiVector< 1, Real, Device, Index > :: setLike( const MultiVectorT& multiVector )
+void MultiVector< 1, Real, Device, Index > :: setLike( const MultiVectorT& multiVector )
 {
-   return setDimensions( multiVector. getDimensions() );
+   setDimensions( multiVector. getDimensions() );
 }
 
 template< typename Real, typename Device, typename Index >
@@ -96,7 +96,7 @@ const StaticVector< 1, Index >& MultiVector< 1, Real, Device, Index > :: getDime
 template< typename Real, typename Device, typename Index >
 Index MultiVector< 1, Real, Device, Index > :: getElementIndex( const Index i ) const
 {
-   Assert( i >= 0 && i < this->dimensions[ 0 ],
+   TNL_ASSERT( i >= 0 && i < this->dimensions[ 0 ],
               std::cerr << "i = " << i
                    << "this->dimensions[ 0 ] " << this->dimensions[ 0 ] );
    return i;
@@ -132,7 +132,7 @@ template< typename Real, typename Device, typename Index >
 bool MultiVector< 1, Real, Device, Index > :: operator == ( const MultiVectorT& vector ) const
 {
    // TODO: Static assert on dimensions
-   Assert( this->getDimensions() == vector. getDimensions(),
+   TNL_ASSERT( this->getDimensions() == vector. getDimensions(),
               std::cerr << "You are attempting to compare two Vectors with different dimensions." << std::endl
                    << "First Vector name dimensions are ( " << this->getDimensions() << " )" << std::endl
                    << "Second Vector dimensions are ( " << vector. getDimensions() << " )" << std::endl; );
@@ -151,7 +151,7 @@ MultiVector< 1, Real, Device, Index >&
    MultiVector< 1, Real, Device, Index > :: operator = ( const MultiVector< 1, Real, Device, Index >& vector )
 {
    // TODO: Static assert on dimensions
-   Assert( this->getDimensions() == vector. getDimensions(),
+   TNL_ASSERT( this->getDimensions() == vector. getDimensions(),
               std::cerr << "You are attempting to assign two Vectors with different dimensions." << std::endl
                    << "First vector dimensions are ( " << this->getDimensions() << " )" << std::endl
                    << "Second vector dimensions are ( " << vector. getDimensions() << " )" << std::endl; );
@@ -165,7 +165,7 @@ MultiVector< 1, Real, Device, Index >&
    MultiVector< 1, Real, Device, Index > :: operator = ( const MultiVectorT& vector )
 {
    // TODO: Static assert on dimensions
-   Assert( this->getDimensions() == vector. getDimensions(),
+   TNL_ASSERT( this->getDimensions() == vector. getDimensions(),
               std::cerr << "You are attempting to assign two Vectors with different dimensions." << std::endl
                    << "First vector dimensions are ( " << this->getDimensions() << " )" << std::endl
                    << "Second vector dimensions are ( " << vector. getDimensions() << " )" << std::endl; );

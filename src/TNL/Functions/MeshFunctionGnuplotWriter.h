@@ -13,7 +13,7 @@
 #include <TNL/Meshes/Grid.h>
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
 
 template< typename, int, typename > class MeshFunction;
 
@@ -23,7 +23,8 @@ class MeshFunctionGnuplotWriter
    public:
 
       static bool write( const MeshFunction& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
 
 /***
@@ -41,7 +42,8 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device
       typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
 
 /***
@@ -59,8 +61,10 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device
       typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
+
 
 /***
  * 2D grids cells
@@ -77,7 +81,8 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device
       typedef Functions::MeshFunction< MeshType, 2, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
 
 /***
@@ -95,9 +100,9 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device
       typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
-
 
 /***
  * 2D grids vertices
@@ -114,9 +119,69 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device
       typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
+};
+
+
+/***
+ * 3D grids cells
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real >
+class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >
+{
+   public:
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef Functions::MeshFunction< MeshType, 3, RealType > MeshFunctionType;
+
+      static bool write( const MeshFunctionType& function,
+                         std::ostream& str,
+                         const double& scale );
+};
+
+/***
+ * 3D grids faces
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real >
+class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >
+{
+   public:
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef Functions::MeshFunction< MeshType, 2, RealType > MeshFunctionType;
+
+      static bool write( const MeshFunctionType& function,
+                         std::ostream& str,
+                         const double& scale );
+};
+
+/***
+ * 3D grids vertices
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real >
+class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >
+{
+   public:
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
+
+      static bool write( const MeshFunctionType& function,
+                         std::ostream& str,
+                         const double& scale );
 };
 
 } // namespace Functions
 } // namespace TNL
 
+#include <TNL/Functions/MeshFunctionGnuplotWriter_impl.h>

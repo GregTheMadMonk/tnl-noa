@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTestNeighbourGridEntitiesStorage.h  -  description
+                          tnlTestNeighborGridEntitiesStorage.h  -  description
                              -------------------
     begin                : Dec 18, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -19,24 +19,24 @@
 #pragma once
 
 #include <core/tnlCuda.h>
-#include <mesh/MeshDimensionsTag.h>
-#include "tnlTestNeighbourGridEntityGetter.h"
+#include <mesh/MeshDimensionTag.h>
+#include "tnlTestNeighborGridEntityGetter.h"
 
 template< typename GridEntity,
-          int NeighbourEntityDimensions >
-class tnlTestNeighbourGridEntityLayer 
-: public tnlTestNeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions - 1 >
+          int NeighborEntityDimension >
+class tnlTestNeighborGridEntityLayer 
+: public tnlTestNeighborGridEntityLayer< GridEntity, NeighborEntityDimension - 1 >
 {   
    public:
       
-      typedef tnlTestNeighbourGridEntityLayer< GridEntity, NeighbourEntityDimensions - 1 > BaseType;
-      typedef tnlTestNeighbourGridEntityGetter< GridEntity, NeighbourEntityDimensions > NeighbourEntityGetterType;
+      typedef tnlTestNeighborGridEntityLayer< GridEntity, NeighborEntityDimension - 1 > BaseType;
+      typedef tnlTestNeighborGridEntityGetter< GridEntity, NeighborEntityDimension > NeighborEntityGetterType;
       
-      using BaseType::getNeighbourEntities;
+      using BaseType::getNeighborEntities;
       
       __cuda_callable__
-      tnlTestNeighbourGridEntityLayer( const GridEntity& entity )
-      : neighbourEntities( entity ),
+      tnlTestNeighborGridEntityLayer( const GridEntity& entity )
+      : neighborEntities( entity ),
         BaseType( entity ) 
       {}
             
@@ -45,51 +45,51 @@ class tnlTestNeighbourGridEntityLayer
                     const typename GridEntity::GridType::IndexType& entityIndex )
       {
          BaseType::refresh( grid, entityIndex );
-         neighbourEntities.refresh( grid, entityIndex );
+         neighborEntities.refresh( grid, entityIndex );
       };
       
    protected:
       
-      NeighbourEntityGetterType neighbourEntities;
+      NeighborEntityGetterType neighborEntities;
 };
 
 template< typename GridEntity >
-class tnlTestNeighbourGridEntityLayer< GridEntity, 0 >
+class tnlTestNeighborGridEntityLayer< GridEntity, 0 >
 {
    public:
       
-      typedef tnlTestNeighbourGridEntityGetter< GridEntity, 0 > NeighbourEntityGetterType;     
+      typedef tnlTestNeighborGridEntityGetter< GridEntity, 0 > NeighborEntityGetterType;     
       
       __cuda_callable__
-      tnlTestNeighbourGridEntityLayer( const GridEntity& entity )
-      : neighbourEntities( entity )
+      tnlTestNeighborGridEntityLayer( const GridEntity& entity )
+      : neighborEntities( entity )
       {}
       
       __cuda_callable__
       void refresh( const typename GridEntity::GridType& grid, 
                     const typename GridEntity::GridType::IndexType& entityIndex )
       {
-         neighbourEntities.refresh( grid, entityIndex );
+         neighborEntities.refresh( grid, entityIndex );
       };
       
    protected:
       
-      NeighbourEntityGetterType neighbourEntities;
+      NeighborEntityGetterType neighborEntities;
    
 };
 
 template< typename GridEntity >
-class tnlTestNeighbourGridEntitiesStorage
-: public tnlTestNeighbourGridEntityLayer< GridEntity, GridEntity::meshDimensions >
+class tnlTestNeighborGridEntitiesStorage
+: public tnlTestNeighborGridEntityLayer< GridEntity, GridEntity::meshDimension >
 {
-   typedef tnlTestNeighbourGridEntityLayer< GridEntity, GridEntity::meshDimensions > BaseType;
+   typedef tnlTestNeighborGridEntityLayer< GridEntity, GridEntity::meshDimension > BaseType;
    
    public:
       
-      using BaseType::getNeighbourEntities;
+      using BaseType::getNeighborEntities;
       
       __cuda_callable__
-      tnlTestNeighbourGridEntitiesStorage( const GridEntity& entity )
+      tnlTestNeighborGridEntitiesStorage( const GridEntity& entity )
       : BaseType( entity )
       {}
 

@@ -1,6 +1,3 @@
-# Uncomment the following line to enable CUDA
-#WITH_CUDA = yes
-
 TARGET = {problemBaseName}
 INSTALL_DIR = ${{HOME}}/local
 
@@ -16,11 +13,12 @@ endif
 
 SOURCES = {problemBaseName}.cpp
 HEADERS = {problemBaseName}.h
-OBJECTS = {problemBaseName}.o
 DIST = $(SOURCES) $(CUDA_SOURCES) $(HEADERS) Makefile
 
 ifdef WITH_CUDA
    OBJECTS = {problemBaseName}-cuda.o
+else
+   OBJECTS = {problemBaseName}.o
 endif
      
 all: $(TARGET)

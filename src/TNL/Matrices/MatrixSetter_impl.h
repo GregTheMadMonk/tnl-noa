@@ -18,14 +18,14 @@ namespace Matrices {
 template< typename Mesh,
           typename DifferentialOperator,
           typename BoundaryConditions,
-          typename CompressedRowsLengthsVector >
+          typename CompressedRowLengthsVector >
    template< typename EntityType >
 void
-MatrixSetter< Mesh, DifferentialOperator, BoundaryConditions, CompressedRowsLengthsVector >::
-getCompressedRowsLengths( const MeshPointer& meshPointer,
+MatrixSetter< Mesh, DifferentialOperator, BoundaryConditions, CompressedRowLengthsVector >::
+getCompressedRowLengths( const MeshPointer& meshPointer,
                           const DifferentialOperatorPointer& differentialOperatorPointer,
                           const BoundaryConditionsPointer& boundaryConditionsPointer,
-                          CompressedRowsLengthsVectorPointer& rowLengthsPointer ) const
+                          CompressedRowLengthsVectorPointer& rowLengthsPointer ) const
 {
    {
       SharedPointer< TraversalUserData, DeviceType >

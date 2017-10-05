@@ -73,9 +73,9 @@ bool readNetgenMesh( const Config::ParameterContainer& parameters )
    if( ! meshReader.detectMesh( inputFileName ) )
       return false;
 
-  std::cout << "Reading mesh with " << meshReader.getDimensions() << " dimensions..." << std::endl;
+  std::cout << "Reading mesh with " << meshReader.getDimension() << " dimensions..." << std::endl;
  
-   if( meshReader.getDimensions() == 2 )
+   if( meshReader.getDimension() == 2 )
    {
       if( meshReader.getVerticesInCell() == 3 )
       {
@@ -90,7 +90,7 @@ bool readNetgenMesh( const Config::ParameterContainer& parameters )
          return convertMesh< MeshReaderNetgen, MeshType >( parameters );
       }
    }
-   if( meshReader.getDimensions() == 3 )
+   if( meshReader.getDimension() == 3 )
    {
       if( meshReader.getVerticesInCell() == 4 )
       {
@@ -105,7 +105,7 @@ bool readNetgenMesh( const Config::ParameterContainer& parameters )
          return convertMesh< MeshReaderNetgen, MeshType >( parameters );
       }
    }
-   std::cerr << "Wrong mesh dimensions were detected ( " << meshReader.getDimensions() << " )." << std::endl;
+   std::cerr << "Wrong mesh dimensions were detected ( " << meshReader.getDimension() << " )." << std::endl;
    return false;
 }
 

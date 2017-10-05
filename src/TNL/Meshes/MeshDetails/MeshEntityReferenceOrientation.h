@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 namespace TNL {
@@ -30,7 +36,7 @@ class MeshEntityReferenceOrientation
          auto referenceCornerIds = referenceSeed.getCornerIds();
          for( LocalIndexType i = 0; i < referenceCornerIds.getSize(); i++ )
          {
-            Assert( this->cornerIdsMap.find( referenceCornerIds[i]) == this->cornerIdsMap.end(), );
+            TNL_ASSERT( this->cornerIdsMap.find( referenceCornerIds[i]) == this->cornerIdsMap.end(), );
             this->cornerIdsMap.insert( std::make_pair( referenceCornerIds[i], i ) );
          }
       }
@@ -43,7 +49,7 @@ class MeshEntityReferenceOrientation
          auto cornerIds = seed.getCornerIds();
          for( LocalIndexType i = 0; i < cornerIds.getSize(); i++ )
          {
-            Assert( this->cornerIdsMap.find( cornerIds[ i ] ) != this->cornerIdsMap.end(), );
+            TNL_ASSERT( this->cornerIdsMap.find( cornerIds[ i ] ) != this->cornerIdsMap.end(), );
             result.setPermutationValue( i, this->cornerIdsMap.find( cornerIds[ i ])->second );
          }
          return result;

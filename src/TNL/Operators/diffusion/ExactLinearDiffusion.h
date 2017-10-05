@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Functions/Domain.h>
@@ -15,7 +21,7 @@
 namespace TNL {
 namespace Operators {   
 
-template< int Dimensions >
+template< int Dimension >
 class ExactLinearDiffusion
 {};
 
@@ -24,14 +30,14 @@ class ExactLinearDiffusion< 1 > : public Functions::Domain< 1, Functions::SpaceD
 {
    public:
 
-      static const int Dimensions = 1;
+      static const int Dimension = 1;
  
       static String getType();
  
       template< typename Function >
       __cuda_callable__ inline
       typename Function::RealType operator()( const Function& function,
-                                              const typename Function::VertexType& v,
+                                              const typename Function::PointType& v,
                                               const typename Function::RealType& time = 0.0 ) const;
 };
 
@@ -40,14 +46,14 @@ class ExactLinearDiffusion< 2 > : public Functions::Domain< 2, Functions::SpaceD
 {
    public:
  
-      static const int Dimensions = 2;
+      static const int Dimension = 2;
  
       static String getType();
 
       template< typename Function >
       __cuda_callable__ inline
       typename Function::RealType operator()( const Function& function,
-                                              const typename Function::VertexType& v,
+                                              const typename Function::PointType& v,
                                               const typename Function::RealType& time = 0.0 ) const;
 };
 
@@ -56,14 +62,14 @@ class ExactLinearDiffusion< 3 > : public Functions::Domain< 3 >
 {
    public:
  
-      static const int Dimensions = 3;
+      static const int Dimension = 3;
  
       static String getType();
 
       template< typename Function >
       __cuda_callable__ inline
       typename Function::RealType operator()( const Function& function,
-                                              const typename Function::VertexType& v,
+                                              const typename Function::PointType& v,
                                               const typename Function::RealType& time = 0.0 ) const;
 };
 

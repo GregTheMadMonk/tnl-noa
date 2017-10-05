@@ -1,3 +1,15 @@
+/***************************************************************************
+                          Multireduction_impl.h  -  description
+                             -------------------
+    begin                : May 13, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Jakub Klinkovsky
+
 #pragma once
 
 #include "Multireduction.h"
@@ -5,8 +17,9 @@
 //#define CUDA_REDUCTION_PROFILING
 
 #include <TNL/Assert.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/reduction-operations.h>
-#include <TNL/Containers/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/CudaMultireductionKernel.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
@@ -47,8 +60,8 @@ reduce( Operation& operation,
         typename Operation::ResultType* hostResult )
 {
 #ifdef HAVE_CUDA
-   Assert( n > 0, );
-   Assert( size <= ldInput1, );
+   TNL_ASSERT_GT( n, 0, "The number of datasets must be positive." );
+   TNL_ASSERT_LE( size, ldInput1, "The size of the input cannot exceed its leading dimension." );
 
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::RealType RealType;
@@ -65,7 +78,7 @@ reduce( Operation& operation,
          return false;
       if( deviceInput2 ) {
          RealType hostArray2[ Multireduction_minGpuDataSize ];
-         if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, n * size ) )
+         if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, size ) )
             return false;
          return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, hostArray2, hostResult );
       }
@@ -93,7 +106,7 @@ reduce( Operation& operation,
                                                                    deviceAux1 );
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
-      cout << "   Multireduction of " << n << " datasets on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << endl;
+      std::cout << "   Multireduction of " << n << " datasets on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << std::endl;
       timer.reset();
       timer.start();
    #endif
@@ -107,18 +120,18 @@ reduce( Operation& operation,
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
-      cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << endl;
+      std::cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << std::endl;
       timer.reset();
       timer.start();
    #endif
 
-//   cout << "resultArray = [";
+//   std::cout << "resultArray = [";
 //   for( int i = 0; i < n * reducedSize; i++ ) {
-//      cout << resultArray[ i ];
+//      std::cout << resultArray[ i ];
 //      if( i < n * reducedSize - 1 )
-//         cout << ", ";
+//         std::cout << ", ";
 //   }
-//   cout << "]" << endl;
+//   std::cout << "]" << std::endl;
 
    /***
     * Reduce the data on the host system.
@@ -128,13 +141,12 @@ reduce( Operation& operation,
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
-      cout << "   Multireduction of small data set on CPU took " << timer.getRealTime() << " sec. " << endl;
+      std::cout << "   Multireduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
    #endif
 
-   return checkCudaDevice;
+   return TNL_CHECK_CUDA_DEVICE;
 #else
-   CudaSupportMissingMessage;
-   return false;
+   throw Exceptions::CudaSupportMissing();
 #endif
 };
 
@@ -159,8 +171,8 @@ reduce( Operation& operation,
         const typename Operation::RealType* input2,
         typename Operation::ResultType* result )
 {
-   Assert( n > 0, );
-   Assert( size <= ldInput1, );
+   TNL_ASSERT_GT( n, 0, "The number of datasets must be positive." );
+   TNL_ASSERT_LE( size, ldInput1, "The size of the input cannot exceed its leading dimension." );
 
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::RealType RealType;
@@ -237,6 +249,30 @@ reduce( Operation& operation,
 
    return true;
 }
+
+template< typename Operation >
+bool
+Multireduction< Devices::MIC >::
+reduce( Operation& operation,
+        int n,
+        const typename Operation::IndexType size,
+        const typename Operation::RealType* input1,
+        const typename Operation::IndexType ldInput1,
+        const typename Operation::RealType* input2,
+        typename Operation::ResultType* result )
+{
+   TNL_ASSERT( n > 0, );
+   TNL_ASSERT( size <= ldInput1, );
+
+   typedef typename Operation::IndexType IndexType;
+   typedef typename Operation::RealType RealType;
+   typedef typename Operation::ResultType ResultType;
+
+
+   std::cout << "Not Implemented yet Multireduction< Devices::MIC >::reduce" << std::endl;
+   return true;
+}
+
 
 } // namespace Algorithms
 } // namespace Containers

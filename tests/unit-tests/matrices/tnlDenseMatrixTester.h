@@ -100,11 +100,11 @@ class DenseTester : public CppUnit :: TestCase
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_m = Devices::Cuda::passToDevice( m );
-         CPPUNIT_ASSERT( checkCudaDevice );
+         CPPUNIT_ASSERT( TNL_CHECK_CUDA_DEVICE );
          setElementFastTestKernel<<< 1, 16 >>>( kernel_m );
-         CPPUNIT_ASSERT( checkCudaDevice );
+         CPPUNIT_ASSERT( TNL_CHECK_CUDA_DEVICE );
          Devices::Cuda::freeFromDevice( kernel_m );
-         CPPUNIT_ASSERT( checkCudaDevice );
+         CPPUNIT_ASSERT( TNL_CHECK_CUDA_DEVICE );
 #endif
       }
       for( int i = 0; i < 10; i++ )
@@ -145,11 +145,11 @@ class DenseTester : public CppUnit :: TestCase
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_m = Devices::Cuda::passToDevice( m );
-         CPPUNIT_ASSERT( checkCudaDevice );
+         CPPUNIT_ASSERT( TNL_CHECK_CUDA_DEVICE );
          addElementFastTestKernel<<< 1, 128 >>>( kernel_m );
-         CPPUNIT_ASSERT( checkCudaDevice );
+         CPPUNIT_ASSERT( TNL_CHECK_CUDA_DEVICE );
          Devices::Cuda::freeFromDevice( kernel_m );
-         CPPUNIT_ASSERT( checkCudaDevice );
+         CPPUNIT_ASSERT( TNL_CHECK_CUDA_DEVICE );
 #endif
       }
       for( int i = 0; i < 10; i++ )
@@ -216,11 +216,11 @@ class DenseTester : public CppUnit :: TestCase
       {
 #ifdef HAVE_CUDA
          MatrixType* kernel_m = Devices::Cuda::passToDevice( m );
-         CPPUNIT_ASSERT( checkCudaDevice );
+         CPPUNIT_ASSERT( TNL_CHECK_CUDA_DEVICE );
          setRowFastTestKernel<<< 1, 128 >>>( kernel_m, columns.getData(), values.getData(), ( IndexType ) 10 );
-         CPPUNIT_ASSERT( checkCudaDevice );
+         CPPUNIT_ASSERT( TNL_CHECK_CUDA_DEVICE );
          Devices::Cuda::freeFromDevice( kernel_m );
-         CPPUNIT_ASSERT( checkCudaDevice );
+         CPPUNIT_ASSERT( TNL_CHECK_CUDA_DEVICE );
 #endif
       }
 

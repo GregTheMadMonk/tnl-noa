@@ -19,123 +19,120 @@
 namespace TNL {
 namespace Functions {   
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real = double,
           typename Device = Devices::Host >
-class TestFunction : public Domain< FunctionDimensions, SpaceDomain >
+class TestFunction : public Domain< FunctionDimension, SpaceDomain >
 {
    protected:
 
-   enum TestFunctions{ constant,
-                       expBump,
-                       sinBumps,
-                       sinWave,
-		       cylinder,
-		       flowerpot,
-		       twins,
-           pseudoSquare,
-           blob };
+      enum TestFunctions{ constant,
+                          paraboloid,
+                          expBump,
+                          sinBumps,
+                          sinWave,
+                          cylinder,
+                          flowerpot,
+                          twins,
+                          pseudoSquare,
+                          blob,
+                          vectorNorm,
+                          paraboloidSDF,
+                          sinWaveSDF,
+                          sinBumpsSDF };
 
-   enum TimeDependence { none,
-                         linear,
-                         quadratic,
-                         cosine };
+      enum TimeDependence { none,
+                            linear,
+                            quadratic,
+                            cosine };
+
+      enum Operators { identity,
+                       heaviside };
 
    public:
 
-   enum{ Dimensions = FunctionDimensions };
-   typedef Real RealType;
-   typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      enum{ Dimension = FunctionDimension };
+      typedef Real RealType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
-   TestFunction();
+      TestFunction();
 
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" );
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" );
 
-   bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                 const String& prefix = "" );
 
-   const TestFunction& operator = ( const TestFunction& function );
+      const TestFunction& operator = ( const TestFunction& function );
 
-#ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
-#else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-#endif
-   __cuda_callable__
-   Real getPartialDerivative( const VertexType& vertex,
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+      __cuda_callable__
+      Real getPartialDerivative( const PointType& vertex,
+                                 const Real& time = 0 ) const;
+
+      __cuda_callable__
+      Real operator()( const PointType& vertex,
+                     const Real& time = 0 ) const
+      {
+         return this->getPartialDerivative< 0, 0, 0 >( vertex, time );
+      }
+
+
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+      __cuda_callable__
+      Real getTimeDerivative( const PointType& vertex,
                               const Real& time = 0 ) const;
 
-   __cuda_callable__
-   Real operator()( const VertexType& vertex,
-                  const Real& time = 0 ) const
-   {
-      return this->getPartialDerivative< 0, 0, 0 >( vertex, time );
-   }
+      std::ostream& print( std::ostream& str ) const;
 
-
-#ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
-#else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-#endif
-   __cuda_callable__
-   Real getTimeDerivative( const VertexType& vertex,
-                           const Real& time = 0 ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-   __cuda_callable__
-   Real getTimeDerivative( const Vertex& vertex,
-                           const Real& time = 0 ) const
-   {
-      return this->getTimeDerivative< 0, 0, 0, Vertex >( vertex, time );
-   }
-#endif
-
-   std::ostream& print( std::ostream& str ) const;
-
-   ~TestFunction();
+      ~TestFunction();
 
    protected:
 
-   template< typename FunctionType >
-   bool setupFunction( const Config::ParameterContainer& parameters,
-                      const String& prefix = "" );
+      template< typename FunctionType >
+      bool setupFunction( const Config::ParameterContainer& parameters,
+                         const String& prefix = "" );
+      
+      template< typename OperatorType >
+      bool setupOperator( const Config::ParameterContainer& parameters,
+                          const String& prefix = "" );
 
-   template< typename FunctionType >
-   void deleteFunction();
+      template< typename FunctionType >
+      void deleteFunction();
 
-   void deleteFunctions();
+      template< typename OperatorType >
+      void deleteOperator();
 
-   template< typename FunctionType >
-   void copyFunction( const void* function );
+      void deleteFunctions();
 
-   template< typename FunctionType >
-   std::ostream& printFunction( std::ostream& str ) const;
+      template< typename FunctionType >
+      void copyFunction( const void* function );
 
-   void* function;
+      template< typename FunctionType >
+      std::ostream& printFunction( std::ostream& str ) const;
 
-   TestFunctions functionType;
+      void* function;
 
-   TimeDependence timeDependence;
+      void* operator_;
 
-   Real timeScale;
+      TestFunctions functionType;
+      
+      Operators operatorType;
+
+      TimeDependence timeDependence;
+
+      Real timeScale;
 
 };
 
-template< int FunctionDimensions,
+template< int FunctionDimension,
           typename Real,
           typename Device >
-std::ostream& operator << ( std::ostream& str, const TestFunction< FunctionDimensions, Real, Device >& f )
+std::ostream& operator << ( std::ostream& str, const TestFunction< FunctionDimension, Real, Device >& f )
 {
    str << "Test function: ";
    return f.print( str );

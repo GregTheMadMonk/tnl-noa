@@ -13,6 +13,8 @@
 
 #include "tnlSpmvBenchmark.h"
 
+#include <TNL/Exceptions/CudaSupportMissing.h>
+
 template< typename Real, typename Device, typename Index>
 class tnlSpmvBenchmarkRgCSR : public tnlSpmvBenchmark< Real, Device, Index, tnlRgCSR >
 {
@@ -69,7 +71,7 @@ template< typename Real,
           typename Index>
 bool tnlSpmvBenchmarkRgCSR< Real, Device, Index > :: setup( const CSR< Real, Devices::Host, Index >& csrMatrix )
 {
-   Assert( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
+   TNL_ASSERT( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
    if( Device :: getDevice() == Devices::HostDevice )
    {
       this->matrix. tuneFormat( groupSize,
@@ -134,7 +136,7 @@ void tnlSpmvBenchmarkRgCSR< Real, Device, Index > :: writeProgress() const
        std::cout << right << std::setw( this->benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this->maxError << ". ";
 #ifndef HAVE_CUDA
    if( Device :: getDevice() == Devices::CudaDevice )
-      CudaSupportMissingMessage;;
+      throw Exceptions::CudaSupportMissing();
 #endif
      std::cout << std::endl;
 }

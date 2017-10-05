@@ -59,7 +59,7 @@ class Devices::CudaTester : public CppUnit :: TestCase
       blockSize. x = 1;
       gridSize. x = 1;
       simpleKernel<<< gridSize, blockSize >>>();
-      if( ! checkCudaDevice )
+      if( ! TNL_CHECK_CUDA_DEVICE )
       {
          std::cerr << "Test with simple kernel failed. It seems that the CUDA device does not work properly." << std::endl;
          CPPUNIT_ASSERT( false );

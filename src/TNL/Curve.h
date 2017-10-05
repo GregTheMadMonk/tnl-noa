@@ -13,7 +13,7 @@
 #include <iomanip>
 #include <fstream>
 #include <cstring>
-#include <TNL/List.h>
+#include <TNL/Containers/List.h>
 #include <TNL/Object.h>
 #include <TNL/Math.h>
 #include <TNL/Containers/StaticVector.h>
@@ -22,7 +22,8 @@
 namespace TNL {
 
 //! Basic structure for curves
-template< class T > class CurveElement
+template< class T >
+class CurveElement
 {
    public:
    CurveElement() {};
@@ -34,36 +35,20 @@ template< class T > class CurveElement
  
    bool save( File& file ) const
    {
-#ifdef HAVE_NOT_CXX11
-      if( ! file. write< const T, Devices::Host >( &position ) )
-         return false;
-      if( ! file. write< const bool, Devices::Host >( &separator ) )
-         return false;
-      return true;
-#else
       if( ! file. write( &position ) )
          return false;
       if( ! file. write( &separator ) )
          return false;
       return true;
-#endif
    };
  
    bool load( File& file )
    {
-#ifdef HAVE_NOT_CXX11
-      if( ! file. read< T, Devices::Host >( &position ) )
-         return false;
-      if( ! file. read< bool, Devices::Host >( &separator ) )
-         return false;
-      return true;
-#else
       if( ! file. read( &position ) )
          return false;
       if( ! file. read( &separator ) )
          return false;
       return true;
-#endif
    };
  
    T position;
@@ -71,7 +56,10 @@ template< class T > class CurveElement
    bool separator;
 };
 
-template< class T > class Curve : public Object, public List< CurveElement< T > >
+template< class T >
+class Curve
+ : public Object,
+   public Containers::List< CurveElement< T > >
 {
    public:
    //! Basic contructor
@@ -94,20 +82,20 @@ template< class T > class Curve : public Object, public List< CurveElement< T > 
    //! Append new point
    void Append( const T& vec, bool separator = false )
    {
-      List< CurveElement< T > > :: Append( CurveElement< T >( vec, separator ) );
+      Containers::List< CurveElement< T > > :: Append( CurveElement< T >( vec, separator ) );
    };
 
    //! Erase the curve
    void Erase()
    {
-      List< CurveElement< T > >::reset();
+      Containers::List< CurveElement< T > >::reset();
    };
  
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const
    {
       if( ! Object :: save( file ) ) return false;
-      if( ! List< CurveElement< T > > :: DeepSave( file ) ) return false;
+      if( ! Containers::List< CurveElement< T > > :: DeepSave( file ) ) return false;
       return true;
    };
 
@@ -115,7 +103,7 @@ template< class T > class Curve : public Object, public List< CurveElement< T > 
    bool load( File& file )
    {
       if( ! Object :: load( file ) ) return false;
-      if( ! List< CurveElement< T > > :: DeepLoad( file ) ) return false;
+      if( ! Containers::List< CurveElement< T > > :: DeepLoad( file ) ) return false;
       return true;
    };
 
@@ -178,7 +166,7 @@ template< class T > bool Write( const Curve< T >& curve,
    if( strncmp( format, "tnl",3 ) == 0 )
    {
       File file;
-      if( ! file. open( String( file_name ) + String( ".tnl" ), tnlWriteMode ) )
+      if( ! file. open( String( file_name ) + String( ".tnl" ), IOMode::write ) )
       {
          std::cerr << "I am not able to open the file " << file_name << " for drawing curve." << std::endl;
          return false;
@@ -214,7 +202,7 @@ template< class T > bool Read( Curve< T >& crv,
                                const char* input_file )
 {
    File file;
-   if( ! file. open( String( input_file ), tnlReadMode  ) )
+   if( ! file. open( String( input_file ), IOMode::read  ) )
    {
      std::cout << " unable to open file " << input_file << std::endl;
       return false;

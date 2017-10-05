@@ -17,7 +17,7 @@ namespace Solvers {
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           template< typename ConfTag > class ProblemConfig,
-          typename ConfigTag = tnlDefaultBuildConfigTag >
+          typename ConfigTag = DefaultBuildConfigTag >
 class Solver
 {
    public:

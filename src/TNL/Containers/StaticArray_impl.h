@@ -12,6 +12,7 @@
 
 #include <TNL/param-types.h>
 #include <TNL/Math.h>
+#include <TNL/Containers/StaticArray.h>
 
 namespace TNL {
 namespace Containers {   
@@ -23,6 +24,7 @@ inline StaticArray< Size, Element >::StaticArray()
 };
 
 template< int Size, typename Element >
+   template< typename _unused >
 __cuda_callable__
 inline StaticArray< Size, Element >::StaticArray( const Element v[ Size ] )
 {
@@ -81,8 +83,8 @@ template< int Size, typename Element >
 __cuda_callable__
 inline const Element& StaticArray< Size, Element >::operator[]( int i ) const
 {
-   Assert( i >= 0 && i < size,
-            std::cerr << "i = " << i << " size = " << size << std::endl; );
+   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_LT( i, size, "Element index is out of bounds." );
    return data[ i ];
 }
 
@@ -90,8 +92,8 @@ template< int Size, typename Element >
 __cuda_callable__
 inline Element& StaticArray< Size, Element >::operator[]( int i )
 {
-   Assert( i >= 0 && i < size,
-            std::cerr << "i = " << i << " size = " << size << std::endl; );
+   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_LT( i, size, "Element index is out of bounds." );
    return data[ i ];
 }
 
@@ -203,12 +205,9 @@ std::ostream& StaticArray< Size, Element >::write( std::ostream& str, const char
 template< int Size, typename Element >
 std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Element >& a )
 {
-   a.write( str, "," );
-   /*for( int i = 0; i < Size - 1; i ++ )
-   {
-      str << a[ i ] << ", ";
-   }
-   str << a[ Size - 1 ];*/
+   str << "[ ";
+   a.write( str, ", " );
+   str << " ]";
    return str;
 };
 

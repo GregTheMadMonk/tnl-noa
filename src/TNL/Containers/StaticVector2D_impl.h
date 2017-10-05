@@ -10,7 +10,7 @@
 
 #pragma once 
 
-#include <TNL/Math.h>
+#include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
 namespace Containers {   
@@ -22,31 +22,42 @@ StaticVector< 2, Real >::StaticVector()
 }
 
 template< typename Real >
+   template< typename _unused >
 __cuda_callable__
 StaticVector< 2, Real >::StaticVector( const Real v[ 2 ] )
-: Containers::StaticArray< 2, Real >( v )
+: StaticArray< 2, Real >( v )
 {
 }
 
 template< typename Real >
 __cuda_callable__
 StaticVector< 2, Real >::StaticVector( const Real& v )
-: Containers::StaticArray< 2, Real >( v )
+: StaticArray< 2, Real >( v )
 {
 }
 
 template< typename Real >
 __cuda_callable__
 StaticVector< 2, Real >::StaticVector( const Real& v1, const Real& v2 )
-: Containers::StaticArray< 2, Real >( v1, v2 )
+: StaticArray< 2, Real >( v1, v2 )
 {
 }
 
 template< typename Real >
 __cuda_callable__
 StaticVector< 2, Real >::StaticVector( const StaticVector< 2, Real >& v )
-: Containers::StaticArray< 2, Real >( v )
+: StaticArray< 2, Real >( v )
 {
+}
+
+template< typename Real >
+bool
+StaticVector< 2, Real >::setup( const Config::ParameterContainer& parameters,
+                                const String& prefix )
+{
+   this->data[ 0 ] = parameters.getParameter< double >( prefix + "0" );
+   this->data[ 1 ] = parameters.getParameter< double >( prefix + "1" );
+   return true;
 }
 
 template< typename Real >
@@ -173,10 +184,23 @@ __cuda_callable__
 StaticVector< 2, Real >
 StaticVector< 2, Real >::abs() const
 {
-   return StaticVector< 2, Real >( ::abs( this->data[ 0 ] ),
-                                      ::abs( this->data[ 1 ] ) );
+   return StaticVector< 2, Real >( TNL::abs( this->data[ 0 ] ),
+                                   TNL::abs( this->data[ 1 ] ) );
 }
 
+template< typename Real >
+__cuda_callable__
+Real
+StaticVector< 2, Real >::lpNorm( const Real& p ) const
+{
+   if( p == 1.0 )
+      return TNL::abs( this->data[ 0 ] ) + TNL::abs( this->data[ 1 ] );
+   if( p == 2.0 )
+      return TNL::sqrt( this->data[ 0 ] * this->data[ 0 ] + 
+                        this->data[ 1 ] * this->data[ 1 ] );
+   return TNL::pow( TNL::pow( TNL::abs( this->data[ 0 ] ), p ) +
+                    TNL::pow( TNL::abs( this->data[ 1 ] ), p ), 1.0 / p ); 
+}
 
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -195,3 +219,4 @@ extern template class StaticVector< 2, long double >;
 
 } // namespace Containers
 } // namespace TNL
+

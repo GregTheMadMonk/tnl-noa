@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Object.h>
+#include <TNL/SharedPointer.h>
 
 namespace TNL {
 namespace Solvers {
@@ -26,7 +27,11 @@ class Dummy
    void update( const Matrix& matrix ) {}
 
    template< typename Vector1, typename Vector2 >
-   bool solve( const Vector1& b, Vector2& x ) const { return true; }
+   bool solve( const Vector1& b, Vector2& x ) const
+   {
+      TNL_ASSERT_TRUE( false, "The solve() method of a dummy preconditioner should not be called." );
+      return true;
+   }
 
    String getType() const
    {
@@ -39,7 +44,8 @@ class SolverStarterSolverPreconditionerSetter
 {
    public:
        
-      static void run( LinearSolver& solver, Preconditioner& preconditioner )
+      static void run( LinearSolver& solver,
+                       SharedPointer< Preconditioner, typename LinearSolver::DeviceType >& preconditioner )
       {
          solver.setPreconditioner( preconditioner );
       }
@@ -53,7 +59,8 @@ class SolverStarterSolverPreconditionerSetter< LinearSolver, Dummy< Real, Device
       typedef Device DeviceType;
       typedef Dummy< Real, DeviceType, Index > PreconditionerType;
    
-      static void run( LinearSolver& solver, PreconditionerType& preconditioner )
+      static void run( LinearSolver& solver,
+                       SharedPointer< PreconditionerType, typename LinearSolver::DeviceType >& preconditioner )
       {
          // do nothing
       }

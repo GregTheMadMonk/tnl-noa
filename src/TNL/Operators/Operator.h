@@ -17,25 +17,25 @@ namespace Operators {
 
 template< typename Mesh,
           Functions::DomainType DomainType = Functions::MeshInteriorDomain,
-          int PreimageEntitiesDimensions = Mesh::getMeshDimensions(),
-          int ImageEntitiesDimensions = Mesh::getMeshDimensions(),
+          int PreimageEntitiesDimension = Mesh::getMeshDimension(),
+          int ImageEntitiesDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType >
-class Operator : public Functions::Domain< Mesh::getMeshDimensions(), DomainType >
+          typename Index = typename Mesh::GlobalIndexType >
+class Operator : public Functions::Domain< Mesh::getMeshDimension(), DomainType >
 {
    public:
  
       typedef Mesh MeshType;
       typedef typename MeshType::RealType MeshRealType;
       typedef typename MeshType::DeviceType DeviceType;
-      typedef typename MeshType::IndexType MeshIndexType;
+      typedef typename MeshType::GlobalIndexType MeshIndexType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef void ExactOperatorType;
  
-      constexpr static int getMeshDimensions() { return MeshType::getMeshDimensions(); }
-      constexpr static int getPreimageEntitiesDimensions() { return PreimageEntitiesDimensions; }
-      constexpr static int getImageEntitiesDimensions() { return ImageEntitiesDimensions; }
+      constexpr static int getMeshDimension() { return MeshType::getMeshDimension(); }
+      constexpr static int getPreimageEntitiesDimension() { return PreimageEntitiesDimension; }
+      constexpr static int getImageEntitiesDimension() { return ImageEntitiesDimension; }
  
       bool refresh( const RealType& time = 0.0 ) { return true; }
  

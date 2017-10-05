@@ -61,11 +61,11 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
    }
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
-   List< String > parsedMeshType;
+   Containers::List< String > parsedMeshType;
    if( ! parseObjectType( meshType, parsedMeshType ) )
    {
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
-      return false;
+      return EXIT_FAILURE;
    }
    if( ! resolveMeshType( parsedMeshType, parameters ) )
       return EXIT_FAILURE;

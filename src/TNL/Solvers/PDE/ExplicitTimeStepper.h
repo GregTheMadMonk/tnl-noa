@@ -68,7 +68,7 @@ class ExplicitTimeStepper
                DofVectorPointer& dofVector,
                MeshDependentDataPointer& meshDependentData );
 
-   void getExplicitRHS( const RealType& time,
+   void getExplicitUpdate( const RealType& time,
                         const RealType& tau,
                         DofVectorPointer& _u,
                         DofVectorPointer& _fu );

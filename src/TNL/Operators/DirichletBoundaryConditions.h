@@ -19,15 +19,15 @@ namespace TNL {
 namespace Operators {
 
 template< typename Mesh,
-          typename Function = Functions::Analytic::Constant< Mesh::getMeshDimensions(), typename Mesh::RealType >,
-          int MeshEntitiesDimensions = Mesh::getMeshDimensions(),
+          typename Function = Functions::Analytic::Constant< Mesh::getMeshDimension(), typename Mesh::RealType >,
+          int MeshEntitiesDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType >
+          typename Index = typename Mesh::GlobalIndexType >
 class DirichletBoundaryConditions
 : public Operator< Mesh,
                    Functions::MeshBoundaryDomain,
-                   MeshEntitiesDimensions,
-                   MeshEntitiesDimensions,
+                   MeshEntitiesDimension,
+                   MeshEntitiesDimension,
                    Real,
                    Index >
 {
@@ -41,9 +41,9 @@ class DirichletBoundaryConditions
       
       typedef SharedPointer< Mesh > MeshPointer;
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
-      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::PointType PointType;
 
-      static constexpr int getMeshDimensions() { return MeshType::meshDimensions; }
+      static constexpr int getMeshDimension() { return MeshType::getMeshDimension(); }
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
@@ -80,7 +80,7 @@ class DirichletBoundaryConditions
                                  const EntityType& entity,
                                  const RealType& time = 0 ) const
       {
-         //static_assert( EntityType::getDimensions() == MeshEntitiesDimensions, "Wrong mesh entity dimensions." );
+         //static_assert( EntityType::getDimension() == MeshEntitiesDimension, "Wrong mesh entity dimension." );
          return Functions::FunctionAdapter< MeshType, Function >::template getValue( this->function, entity, time );
       }
 

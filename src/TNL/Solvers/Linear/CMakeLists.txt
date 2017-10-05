@@ -2,6 +2,8 @@ ADD_SUBDIRECTORY( Preconditioners )
 
 SET( headers BICGStab.h
              BICGStab_impl.h
+             BICGStabL.h
+             BICGStabL_impl.h
              CG.h
              CG_impl.h
              CWYGMRES.h

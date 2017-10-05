@@ -22,27 +22,26 @@ template< typename Real = double,
           typename Index = int >
 class Matrix : public virtual Object
 {
-   public:
-
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowsLengthsVector;
+   typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
    typedef Containers::Vector< RealType, DeviceType, IndexType > ValuesVector;
 
    Matrix();
 
-   virtual bool setDimensions( const IndexType rows,
+   virtual void setDimensions( const IndexType rows,
                                const IndexType columns );
 
-   virtual bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths ) = 0;
+   virtual void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths ) = 0;
 
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 
-   virtual void getCompressedRowsLengths( Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const;
+   virtual void getCompressedRowLengths( Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const Matrix< Real2, Device2, Index2 >& matrix );
+   void setLike( const Matrix< Real2, Device2, Index2 >& matrix );
 
    virtual IndexType getNumberOfMatrixElements() const = 0;
 
@@ -85,17 +84,11 @@ class Matrix : public virtual Object
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
 
-   Matrix< RealType, DeviceType, IndexType >& operator = ( const Matrix< RealType, DeviceType, IndexType >& );
-
    template< typename Matrix >
    bool operator == ( const Matrix& matrix ) const;
 
    template< typename Matrix >
    bool operator != ( const Matrix& matrix ) const;
-
-   template< typename Matrix >
-   bool copyFrom( const Matrix& matrix,
-                  const CompressedRowsLengthsVector& rowLengths );
 
    virtual bool save( File& file ) const;
 
@@ -103,11 +96,9 @@ class Matrix : public virtual Object
 
    virtual void print( std::ostream& str ) const;
 
-   protected:
+protected:
 
    IndexType rows, columns;
-
-   public: // TODO: remove this
 
    ValuesVector values;
 };
@@ -123,8 +114,8 @@ template< typename Matrix,
           typename InVector,
           typename OutVector >
 void MatrixVectorProductCuda( const Matrix& matrix,
-                                 const InVector& inVector,
-                                 OutVector& outVector );
+                              const InVector& inVector,
+                              OutVector& outVector );
 
 } // namespace Matrices
 } // namespace TNL

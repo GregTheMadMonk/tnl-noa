@@ -89,8 +89,8 @@ class FDMGradientNormTest
       void runUnitTest()
       {
          RealType coarseErrors[ 3 ], fineErrors[ 3 ];
-         this->getApproximationError( coarseMeshSize[ MeshType::getMeshDimensions() - 1 ], coarseErrors );
-         this->getApproximationError( 2 * coarseMeshSize[ MeshType::getMeshDimensions() - 1 ], fineErrors );
+         this->getApproximationError( coarseMeshSize[ MeshType::getMeshDimension() - 1 ], coarseErrors );
+         this->getApproximationError( 2 * coarseMeshSize[ MeshType::getMeshDimension() - 1 ], fineErrors );
          this->checkEoc( coarseErrors, fineErrors, this->eoc, this->tolerance, verbose );
       }
  
@@ -135,7 +135,7 @@ template< typename Mesh,
           bool verbose >
 bool setTestFunction()
 {
-   return setDifferenceOperator< Mesh, Functions::Analytic::ExpBump< Mesh::getMeshDimensions(), double >, write, verbose >();
+   return setDifferenceOperator< Mesh, Functions::Analytic::ExpBump< Mesh::getMeshDimension(), double >, write, verbose >();
 }
 
 template< typename Device,

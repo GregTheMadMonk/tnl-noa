@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/FileName.h>
@@ -132,20 +138,18 @@ setupLinearSystem( const MeshType& mesh,
                    Matrix& matrix )
 {
    const IndexType dofs = this->getDofs( mesh );
-   typedef typename MatrixType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   CompressedRowsLengthsVectorType rowLengths;
-   if( ! rowLengths.setSize( dofs ) )
-      return false;
-   MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >(
+   typedef typename MatrixType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
+   CompressedRowLengthsVectorType rowLengths;
+   rowLengths.setSize( dofs );
+   MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
+   matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >(
       mesh,
       differentialOperator,
       boundaryCondition,
       rowLengths
    );
    matrix.setDimensions( dofs, dofs );
-   if( ! matrix.setCompressedRowsLengths( rowLengths ) )
-      return false;
+   matrix.setCompressedRowLengths( rowLengths );
    return true;
 }
 
@@ -178,7 +182,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getExplicitRHS( const RealType& time,
+getExplicitUpdate( const RealType& time,
                 const RealType& tau,
                 const MeshType& mesh,
                 DofVectorType& inDofs,
@@ -202,21 +206,12 @@ getExplicitRHS( const RealType& time,
    MeshFunctionType fu( mesh, outDofs );
    //differentialOperator.nonlinearDiffusionOperator.operatorQ.update( mesh, time );
    ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   explicitUpdater.template update< typename Mesh::Cell >(
-      time,
-      mesh,
-      this->differentialOperator,
-      this->boundaryCondition,
-      this->rightHandSide,
-      u,
-      fu );
+   explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
+   explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
+   explicitUpdater.setRightHandSide( this->rightHandSidePointer );
+   
+   explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, u, fu );
  
-   BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
-   boundaryConditionsSetter.template apply< typename Mesh::Cell >(
-      this->boundaryCondition,
-      time,
-      u );
-
    /*cout << "u = " << u << std::endl;
   std::cout << "fu = " << fu << std::endl;
    u.save( "u.tnl" );
@@ -263,6 +258,19 @@ assemblyLinearSystem( const RealType& time,
   std::cout << std::endl << u << std::endl;
    getchar();
    //abort();*/
+}
+
+template< typename Mesh,
+          typename BoundaryCondition,
+          typename RightHandSide,
+          typename DifferentialOperator >
+    template< typename Matrix >
+void
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+saveFailedLinearSystem( const Matrix& matrix,
+                        const DofVectorType& dofs,
+                        const DofVectorType& rightHandSide ) const
+{
 }
 
 } // namespace Problems

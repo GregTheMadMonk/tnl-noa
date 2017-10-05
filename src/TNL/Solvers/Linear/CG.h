@@ -14,7 +14,6 @@
 #include <TNL/Object.h>
 #include <TNL/SharedPointer.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/SharedVector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
@@ -38,8 +37,8 @@ class CG : public Object,
    typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
+   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
+   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
 
 
    CG();
@@ -60,11 +59,9 @@ class CG : public Object,
              typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
    bool solve( const Vector& b, Vector& x );
 
-   ~CG();
-
    protected:
 
-   bool setSize( IndexType size );
+   void setSize( IndexType size );
 
    Containers::Vector< RealType, DeviceType, IndexType >  r, new_r, p, Ap;
 

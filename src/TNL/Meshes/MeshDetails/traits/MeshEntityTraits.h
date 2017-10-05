@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Containers/StaticVector.h>
@@ -28,26 +34,26 @@ template< typename MeshConfig, typename EntityTopology > class MeshEntitySeedKey
 template< typename MeshConfig, typename EntityTopology > class MeshEntityReferenceOrientation;
 
 template< typename MeshConfig,
-          typename DimensionsTag,
-          typename SuperDimensionsTag = MeshDimensionsTag< MeshConfig::meshDimensions > >
+          typename DimensionTag,
+          typename SuperDimensionTag = MeshDimensionTag< MeshConfig::meshDimension > >
 class MeshEntityOrientationNeeded
 {
-	static_assert( 0 <= DimensionsTag::value && DimensionsTag::value < MeshConfig::CellTopology::dimensions, "invalid dimensions" );
-	static_assert( DimensionsTag::value < SuperDimensionsTag::value && SuperDimensionsTag::value <= MeshConfig::CellTopology::dimensions, "invalid superentity dimensions");
+	static_assert( 0 <= DimensionTag::value && DimensionTag::value < MeshConfig::CellTopology::dimensions, "invalid dimensions" );
+	static_assert( DimensionTag::value < SuperDimensionTag::value && SuperDimensionTag::value <= MeshConfig::CellTopology::dimensions, "invalid superentity dimension");
 
-	typedef typename MeshTraits< MeshConfig >::template EntityTraits< SuperDimensionsTag::value >::EntityTopology SuperentityTopology;
+	typedef typename MeshTraits< MeshConfig >::template EntityTraits< SuperDimensionTag::value >::EntityTopology SuperentityTopology;
 
-	static const bool previousSuperDimensionsValue = MeshEntityOrientationNeeded< MeshConfig, DimensionsTag, typename SuperDimensionsTag::Decrement >::value;
-	static const bool thisSuperDimensionsValue = MeshTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, DimensionsTag::value >::orientationEnabled;
+	static const bool previousSuperDimensionValue = MeshEntityOrientationNeeded< MeshConfig, DimensionTag, typename SuperDimensionTag::Decrement >::value;
+	static const bool thisSuperDimensionValue = MeshTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, DimensionTag::value >::orientationEnabled;
 
    public:
-      static const bool value = ( previousSuperDimensionsValue || thisSuperDimensionsValue );
+      static const bool value = ( previousSuperDimensionValue || thisSuperDimensionValue );
 };
 
-template< typename MeshConfig, typename DimensionsTag >
-class MeshEntityOrientationNeeded< MeshConfig, DimensionsTag, DimensionsTag >
+template< typename MeshConfig, typename DimensionTag >
+class MeshEntityOrientationNeeded< MeshConfig, DimensionTag, DimensionTag >
 {
-	static_assert( 0 <= DimensionsTag::value && DimensionsTag::value <= MeshConfig::CellTopology::dimensions, "invalid dimensions" );
+	static_assert( 0 <= DimensionTag::value && DimensionTag::value <= MeshConfig::CellTopology::dimensions, "invalid dimensions" );
 
    public:
       static const bool value = false;
@@ -55,17 +61,17 @@ class MeshEntityOrientationNeeded< MeshConfig, DimensionsTag, DimensionsTag >
 
 
 template< typename MeshConfig,
-          int Dimensions >
+          int Dimension >
 class MeshEntityTraits
 {
    public:
 
-      static const bool storageEnabled = MeshConfig::entityStorage( Dimensions );
-      static const bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, MeshDimensionsTag< Dimensions > >::value;
+      static const bool storageEnabled = MeshConfig::entityStorage( Dimension );
+      static const bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, MeshDimensionTag< Dimension > >::value;
 
       typedef typename MeshConfig::GlobalIndexType                                 GlobalIndexType;
       typedef typename MeshConfig::LocalIndexType                                  LocalIndexType;
-      typedef typename MeshEntityTopology< MeshConfig, Dimensions >::Topology   EntityTopology;
+      typedef typename MeshEntityTopology< MeshConfig, Dimension >::Topology   EntityTopology;
  
       typedef MeshEntity< MeshConfig, EntityTopology >                          EntityType;
       typedef MeshEntitySeed< MeshConfig, EntityTopology >                      SeedType;

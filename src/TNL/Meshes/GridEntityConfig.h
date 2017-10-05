@@ -29,9 +29,9 @@ class GridEntityStencilStorageTag
 };
 
 /****
- * This class says what neighbour grid entity indexes shall be pre-computed and stored in the
- * grid entity structure. If neighbourEntityStorage() returns false, nothing is stored.
- * Otherwise, if neighbour entity storage is enabled, we may store either only neighbour entities in a cross like this
+ * This class says what neighbor grid entity indexes shall be pre-computed and stored in the
+ * grid entity structure. If neighborEntityStorage() returns false, nothing is stored.
+ * Otherwise, if neighbor entity storage is enabled, we may store either only neighbor entities in a cross like this
  *
  *                X
  *   X            X
@@ -39,7 +39,7 @@ class GridEntityStencilStorageTag
  *   X            X
  *                X
  *
- * or all neighbour entities like this
+ * or all neighbor entities like this
  *
  *           XXXXX
  *  XXX      XXXXX
@@ -53,7 +53,7 @@ class GridEntityNoStencilStorage
    public:
  
       template< typename GridEntity >
-      constexpr static bool neighbourEntityStorage( int neighbourEntityStorage )
+      constexpr static bool neighborEntityStorage( int neighborEntityStorage )
       {
          return false;
       }
@@ -70,12 +70,10 @@ class GridEntityCrossStencilStorage
    public:
  
       template< typename GridEntity >
-      constexpr static bool neighbourEntityStorage( const int neighbourEntityDimensions )
+      constexpr static bool neighborEntityStorage( const int neighborEntityDimension )
       {
-         return ( GridEntity::entityDimensions == GridEntity::GridType::meshDimensions &&
-                  neighbourEntityDimensions == GridEntity::GridType::meshDimensions )
-               // FIXME: how is GridEntityCrossStencil cast to int?
-                * GridEntityCrossStencil;
+         return ( GridEntity::getEntityDimension() == GridEntity::GridType::getMeshDimension() &&
+                  neighborEntityDimension == GridEntity::GridType::getMeshDimension() );
       }
  
       constexpr static int getStencilSize()
@@ -86,4 +84,3 @@ class GridEntityCrossStencilStorage
 
 } // namespace Meshes
 } // namespace TNL
-

@@ -11,6 +11,7 @@
 #pragma once 
 
 #include <TNL/Config/ConfigEntryBase.h>
+#include <TNL/Containers/List.h>
 
 namespace TNL {
 namespace Config {  
@@ -20,7 +21,7 @@ struct ConfigEntryList : public ConfigEntryBase
 {
    EntryType defaultValue;
 
-   List< EntryType > enumValues;
+   Containers::List< EntryType > enumValues;
 
    public:
 
@@ -49,12 +50,12 @@ struct ConfigEntryList : public ConfigEntryBase
 
    String getEntryType() const
    {
-      return TNL::getType< List< EntryType > >();
+      return TNL::getType< Containers::List< EntryType > >();
    }
 
    String getUIEntryType() const
    {
-      return TNL::Config::getUIEntryType< List< EntryType > >();
+      return TNL::Config::getUIEntryType< Containers::List< EntryType > >();
    }
 
    String printDefaultValue() const
@@ -62,7 +63,7 @@ struct ConfigEntryList : public ConfigEntryBase
       return convertToString( defaultValue );
    };
 
-   List< EntryType >& getEnumValues()
+   Containers::List< EntryType >& getEnumValues()
    {
       return this->enumValues;
    }
@@ -84,7 +85,7 @@ struct ConfigEntryList : public ConfigEntryBase
      std::cout << " ";
    }
 
-   bool checkValue( const List< EntryType >& values ) const
+   bool checkValue( const Containers::List< EntryType >& values ) const
    {
       if( this->enumValues.getSize() != 0 )
       {

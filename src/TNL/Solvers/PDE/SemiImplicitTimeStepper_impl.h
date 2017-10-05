@@ -11,7 +11,8 @@
 #pragma once
 
 #include <TNL/Math.h>
-#include "SemiImplicitTimeStepper.h"
+#include <TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
+#include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 
 namespace TNL {
 namespace Solvers {
@@ -69,8 +70,7 @@ init( const MeshPointer& mesh )
       std::cerr << "Please check the method 'setupLinearSystem' in your solver." << std::endl;
       return false;
    }
-   if( ! this->rightHandSidePointer->setSize( this->matrix.getData().getRows() ) )
-      return false;
+   this->rightHandSidePointer->setSize( this->matrix.getData().getRows() );
 
    this->preIterateTimer.reset();
    this->linearSystemAssemblerTimer.reset();
@@ -154,14 +154,15 @@ solve( const RealType& time,
        DofVectorPointer& dofVector,
        MeshDependentDataPointer& meshDependentData )
 {
-   Assert( this->problem != 0, );
+   TNL_ASSERT_TRUE( this->problem, "problem was not set" );
    RealType t = time;
    this->linearSystemSolver->setMatrix( this->matrix );
    PreconditionerPointer preconditioner;
-   Linear::Preconditioners::SolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerPointer >
+   Linear::Preconditioners::SolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerType >
        ::run( *(this->linearSystemSolver), preconditioner );
 
-   while( t < stopTime )
+   // ignore very small steps at the end, most likely caused by truncation errors
+   while( stopTime - t > this->timeStep * 1e-6 )
    {
       RealType currentTau = min( this->timeStep, stopTime - t );
 
@@ -207,9 +208,11 @@ solve( const RealType& time,
       this->preconditionerUpdateTimer.stop();
 
       this->linearSystemSolverTimer.start();
-      if( ! this->linearSystemSolver->template solve< DofVectorType, Linear::LinearResidueGetter< MatrixType, DofVectorType > >( *this->rightHandSidePointer, *dofVector ) )
+      if( ! this->linearSystemSolver->solve( *this->rightHandSidePointer, *dofVector ) )
       {
          std::cerr << std::endl << "The linear system solver did not converge." << std::endl;
+         // save the linear system for debugging
+         this->problem->saveFailedLinearSystem( *this->matrix, *dofVector, *this->rightHandSidePointer );
          return false;
       }
       this->linearSystemSolverTimer.stop();

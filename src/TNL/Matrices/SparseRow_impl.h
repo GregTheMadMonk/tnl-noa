@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Matrices/SparseRow.h>
+
 namespace TNL {
 namespace Matrices {   
 
@@ -61,11 +63,11 @@ setElement( const Index& elementIndex,
             const Index& column,
             const Real& value )
 {
-   Assert( this->columns, );
-   Assert( this->values, );
-   Assert( this->step > 0,);
+   TNL_ASSERT( this->columns, );
+   TNL_ASSERT( this->values, );
+   TNL_ASSERT( this->step > 0,);
    //printf( "elementIndex = %d length = %d \n", elementIndex, this->length );
-   Assert( elementIndex >= 0 && elementIndex < this->length,
+   TNL_ASSERT( elementIndex >= 0 && elementIndex < this->length,
               std::cerr << "elementIndex = " << elementIndex << " this->length = " << this->length );
 
    this->columns[ elementIndex * step ] = column;
@@ -73,12 +75,37 @@ setElement( const Index& elementIndex,
 }
 
 template< typename Real, typename Index >
+__cuda_callable__
+const Index&
+SparseRow< Real, Index >::
+getElementColumn( const Index& elementIndex ) const
+{
+   TNL_ASSERT( elementIndex >= 0 && elementIndex < this->length,
+              std::cerr << "elementIndex = " << elementIndex << " this->length = " << this->length );
+
+   return this->columns[ elementIndex * step ];
+}
+
+template< typename Real, typename Index >
+__cuda_callable__
+const Real&
+SparseRow< Real, Index >::
+getElementValue( const Index& elementIndex ) const
+{
+   TNL_ASSERT( elementIndex >= 0 && elementIndex < this->length,
+              std::cerr << "elementIndex = " << elementIndex << " this->length = " << this->length );
+
+   return this->values[ elementIndex * step ];
+}
+
+template< typename Real, typename Index >
 void
 SparseRow< Real, Index >::
 print( std::ostream& str ) const
 {
-   Index pos( 0 );
-   for( Index i = 0; i < length; i++ )
+   using NonConstIndex = typename std::remove_const< Index >::type;
+   NonConstIndex pos( 0 );
+   for( NonConstIndex i = 0; i < length; i++ )
    {
       str << " [ " << columns[ pos ] << " ] = " << values[ pos ] << ", ";
       pos += step;

@@ -13,7 +13,7 @@
 #include <iostream>
 #include <TNL/File.h>
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Math.h>
 #include <TNL/param-types.h>
 
@@ -69,10 +69,10 @@ template< typename Element,
 void tnlConstSharedArray< Element, Device, Index > :: bind( const Element* data,
                                                             const Index size )
 {
-   Assert( size >= 0,
+   TNL_ASSERT( size >= 0,
               std::cerr << "You try to set size of tnlConstSharedArray to negative value."
                         << "New size: " << size << std::endl );
-   Assert( data != 0,
+   TNL_ASSERT( data != 0,
               std::cerr << "You try to use null pointer to data for tnlConstSharedArray." );
 
    this->size = size;
@@ -88,7 +88,7 @@ void tnlConstSharedArray< Element, Device, Index > :: bind( const Array& array,
                                                             IndexType size )
 {
    // TODO: This does not work for static arrays.
-   //tnlStaticAssert( Array::DeviceType::DeviceType == DeviceType::DeviceType,
+   //tnlStaticTNL_ASSERT( Array::DeviceType::DeviceType == DeviceType::DeviceType,
    //                 "Attempt to bind arrays between different devices." );
    this->data = &( array. getData()[ index ] );
    if( ! size )
@@ -130,11 +130,11 @@ template< typename Element,
           typename Index >
 Element tnlConstSharedArray< Element, Device, Index > :: getElement( Index i ) const
 {
-   Assert( 0 <= i && i < this->getSize(),
+   TNL_ASSERT( 0 <= i && i < this->getSize(),
               std::cerr << "Wrong index for getElement method in tnlConstSharedArray with name "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
-   return ArrayOperations< Device >::getMemoryElement( &( this->data[ i ] ) );
+   return Algorithms::ArrayOperations< Device >::getMemoryElement( &( this->data[ i ] ) );
 };
 
 template< typename Element,
@@ -143,12 +143,12 @@ template< typename Element,
 __cuda_callable__
 const Element& tnlConstSharedArray< Element, Device, Index > :: operator[] ( Index i ) const
 {
-   Assert( 0 <= i && i < this->getSize(),
+   TNL_ASSERT( 0 <= i && i < this->getSize(),
               std::cerr << "Wrong index for operator[] in tnlConstSharedArray with name "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
    // TODO: add static assert - this does not make sense for Devices::CudaDevice
-   return ArrayOperations< Device >::getArrayElementReference( this->data, i );
+   return Algorithms::ArrayOperations< Device >::getArrayElementReference( this->data, i );
 };
 
 template< typename Element,
@@ -179,14 +179,13 @@ bool tnlConstSharedArray< Element, Device, Index > :: operator == ( const Array&
 {
    if( array. getSize() != this->getSize() )
       return false;
-   return ArrayOperations< Device,
-                              typename Array :: DeviceType > ::
-    template compareMemory< typename Array :: ElementType,
-                            Element,
-                            typename Array :: IndexType >
-                          ( this->getData(),
-                            array. getData(),
-                            array. getSize() );
+   return Algorithms::ArrayOperations< Device, typename Array :: DeviceType >::
+      template compareMemory< typename Array :: ElementType,
+                              Element,
+                              typename Array :: IndexType >
+                            ( this->getData(),
+                              array. getData(),
+                              array. getSize() );
 }
 
 template< typename Element,
@@ -229,15 +228,11 @@ template< typename Element,
           typename Index >
 bool tnlConstSharedArray< Element, Device, Index > :: save( File& file ) const
 {
-   Assert( this->size != 0,
+   TNL_ASSERT( this->size != 0,
               std::cerr << "You try to save empty array." );
    if( ! Object :: save( file ) )
       return false;
-#ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, Device >( &this->size ) )
-#else
    if( ! file. write( &this->size ) )
-#endif
       return false;
    if( ! file. write< Element, Device, Index >( this->data, this->size ) )
    {

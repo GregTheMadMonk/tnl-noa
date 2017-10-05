@@ -1,6 +1,7 @@
 #!/bin/bash
 
 device="host"
+threadsNumbers="1 2 4 6"
 dimensions="1D 2D 3D"
 #dimensions="1D"
 sizes1D="16 32 64 128 256 512"
@@ -84,6 +85,7 @@ solve()
 {
    timeDiscretisation=$1
    discreteSolver=$2
+   threadsNumber=$3
    ${solverName} --device ${device} \
                  --mesh mesh.tnl \
                  --initial-condition exact-u-00000.tnl \
@@ -113,7 +115,10 @@ solve()
                  --sigma ${sigma} \
                  --time-dependence ${timeDependence} \
                  --snapshot-period ${snapshotPeriod} \
-                 --final-time ${finalTime}
+                 --final-time ${finalTime} \
+                 --refresh-rate 50 \
+                 --openmp-enabled true \
+                 --openmp-max-threads ${threadsNumber}
 }
                
 computeError()
@@ -128,77 +133,84 @@ computeError()
 
 runTest()
 {
-   for testFunction in ${testFunctions};
+   for threadsNumber in ${threadsNumbers};
    do
-      mkdir -p ${testFunction}
-      cd ${testFunction}
-      setupTestFunction ${testFunction}
-      
-      for dim in ${dimensions};
-      do
-         mkdir -p $dim
-         cd ${dim}
-         if test $dim = 1D;
-         then 
-            sizes=$sizes1D
-         fi
-         if test $dim = 2D;
-         then 
-            sizes=$sizes2D
-         fi
-         if test $dim = 3D;
-         then 
-            sizes=$sizes3D
-         fi
-         
-         lastSize=""
-         for size in $sizes;
-         do
-            mkdir -p $size
-            cd $size
-            echo ""
-            echo ""
-            echo ""
-            if test ! -f computation-done;
-            then
-               touch computation-in-progress
-               echo "========================================================================="
-               echo "===                   SETTING UP THE GRID                             ==="
-               echo "========================================================================="
-               setupGrid $dim $size 
-               echo "========================================================================="
-               echo "===                WRITING THE EXACT SOLUTION                         ==="
-               echo "========================================================================="
-               setInitialCondition $testFunction
-               echo "========================================================================="
-               echo "===                   STARTING THE SOLVER                             ==="
-               echo "========================================================================="
-               #solve explicit merson
-               solve semi-implicit gmres
-               mv computation-in-progress computation-done
-            fi            
-            echo "========================================================================="
-            echo "===                   COMPUTING THE ERROR                             ==="
-            echo "========================================================================="
-            computeError
-            echo "========================================================================="
-            echo "===                     COMPUTING THE EOC                             ==="            
-            echo "========================================================================="
-            if test ! x$lastSize = x;
-            then
-               tnl-err2eoc ../$lastSize/errors.txt errors.txt
-            fi
-            echo "========================================================================="
-            echo "===                     COMPUTATION DONE                              ==="            
-            echo "========================================================================="
-            cd ..
-            lastSize=$size
-         done
+      mkdir -p threads-${threadsNumber}
+      cd threads-${threadsNumber}
 
-         cd ..
-      done
-      cd ..
-   done
+        for testFunction in ${testFunctions};
+        do
+           mkdir -p ${testFunction}
+           cd ${testFunction}
+           setupTestFunction ${testFunction}
+
+           for dim in ${dimensions};
+           do
+              mkdir -p $dim
+              cd ${dim}
+              if test $dim = 1D;
+              then 
+                 sizes=$sizes1D
+              fi
+              if test $dim = 2D;
+              then 
+                 sizes=$sizes2D
+              fi
+              if test $dim = 3D;
+              then 
+                 sizes=$sizes3D
+              fi
+
+              lastSize=""
+              for size in $sizes;
+              do
+                 mkdir -p $size
+                 cd $size
+                 echo ""
+                 echo ""
+                 echo ""
+                 if test ! -f computation-done;
+                 then
+                    touch computation-in-progress
+                    echo "========================================================================="
+                    echo "===                   SETTING UP THE GRID                             ==="
+                    echo "========================================================================="
+                    setupGrid $dim $size 
+                    echo "========================================================================="
+                    echo "===                WRITING THE EXACT SOLUTION                         ==="
+                    echo "========================================================================="
+                    setInitialCondition $testFunction
+                    echo "========================================================================="
+                    echo "===                   STARTING THE SOLVER                             ==="
+                    echo "========================================================================="
+                    #solve explicit merson ${threadsNumber}
+                    solve semi-implicit gmres ${threadsNumber}
+                    mv computation-in-progress computation-done
+                 fi            
+                 echo "========================================================================="
+                 echo "===                   COMPUTING THE ERROR                             ==="
+                 echo "========================================================================="
+                 computeError
+                 echo "========================================================================="
+                 echo "===                     COMPUTING THE EOC                             ==="            
+                 echo "========================================================================="
+                 if test ! x$lastSize = x;
+                 then
+                    tnl-err2eoc ../$lastSize/errors.txt errors.txt
+                 fi
+                 echo "========================================================================="
+                 echo "===                     COMPUTATION DONE                              ==="            
+                 echo "========================================================================="
+                 cd ..
+                 lastSize=$size
+              done
+
+              cd ..
+           done
+           cd ..
+        done
+        cd ..
+    done
 }
 
 runTest

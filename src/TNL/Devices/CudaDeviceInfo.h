@@ -11,9 +11,13 @@
 #pragma once
 
 #include <stdlib.h>
-#include <TNL/Devices/Cuda.h>
+
+#include <TNL/String.h>
 
 namespace TNL {
+
+class Logger;
+
 namespace Devices {
 
 class CudaDeviceInfo
@@ -34,6 +38,8 @@ class CudaDeviceInfo
 
       static size_t getGlobalMemory( int deviceNum );
 
+      static size_t getFreeGlobalMemory();
+
       static int getMemoryClockRate( int deviceNum );
 
       static bool getECCEnabled( int deviceNum );
@@ -44,8 +50,10 @@ class CudaDeviceInfo
 
       static int getCudaCores( int deviceNum );
 
+      static int getRegistersPerMultiprocessor( int deviceNum );
+
+      static void writeDeviceInfo( Logger& logger );
 };
 
 } // namespace Devices
 } // namespace TNL
-

@@ -10,22 +10,22 @@
 
 #pragma once
 
+#include "BICGStab.h"
+
 namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename RealType,
-          typename Vector >
-RealType computeBICGStabNewP( Vector& p,
-                              const Vector&r,
-                              const RealType& beta,
-                              const RealType& omega,
-                              const Vector& Ap );
-
 template< typename Matrix,
           typename Preconditioner >
 BICGStab< Matrix, Preconditioner > :: BICGStab()
+: exact_residue( false )
 {
+   /****
+    * Clearing the shared pointer means that there is no
+    * preconditioner set.
+    */
+   this->preconditioner.clear();   
 }
 
 template< typename Matrix,
@@ -45,6 +45,7 @@ configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+   config.addEntry< bool >( prefix + "bicgstab-exact-residue", "Whether the BiCGstab should compute the exact residue in each step (true) or to use a cheap approximation (false).", false );
 }
 
 template< typename Matrix,
@@ -54,6 +55,7 @@ BICGStab< Matrix, Preconditioner >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
+   exact_residue = parameters.getParameter< bool >( "bicgstab-exact-residue" );
    return IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }
 
@@ -76,141 +78,129 @@ template< typename Matrix,
    template< typename Vector, typename ResidueGetter >
 bool BICGStab< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 {
-   if( ! this->setSize( matrix->getRows() ) ) return false;
+   this->setSize( matrix->getRows() );
+
+   RealType alpha, beta, omega, aux, rho, rho_old, b_norm;
+
+   if( preconditioner ) {
+      preconditioner->solve( b, M_tmp );
+      b_norm = M_tmp.lpNorm( ( RealType ) 2.0 );
+
+      matrix->vectorProduct( x, M_tmp );
+      M_tmp.addVector( b, 1.0, -1.0 );
+      preconditioner->solve( M_tmp, r );
+   }
+   else {
+      b_norm = b.lpNorm( 2.0 );
+      matrix->vectorProduct( x, r );
+      r.addVector( b, 1.0, -1.0 );
+   }
+
+   p = r_ast = r;
+   s.setValue( 0.0 );
+   rho = r.scalarProduct( r_ast );
+
+   if( b_norm == 0.0 )
+       b_norm = 1.0;
 
    this->resetIterations();
-   this->setResidue( this->getConvergenceResidue() + 1.0 );
-
-   RealType alpha, beta, omega, s1, s2, rho( 0.0 ), bNorm( 0.0 );
-   // r_0 = b - A x_0, p_0 = r_0
-   // r^ast_0 = r_0
-
-   this->matrix -> vectorProduct( x, r );
-
-   //if( bNorm == 0.0 ) bNorm = 1.0;
-
-   /*if( M )
-   {
-      M -> Solve( b, M_tmp );
-      for( i = 0; i < size; i ++ )
-         b_norm += M_tmp[ i ] * M_tmp[ i ];
-
-      for( i = 0; i < size; i ++ )
-         M_tmp[ i ] =  b[ i ] - r[ i ];
-      M -> Solve( M_tmp, r );
-      for( i = 0; i < size; i ++ )
-      {
-         r_ast[ i ] = p[ i ] = r[ i ];
-         rho += r[ i ] * r_ast[ i ];
-      }
-   }
-   else*/
-   {
-      r.addVector( b, 1.0, -1.0 );
-      p = r_ast = r;
-      rho = r.scalarProduct( r_ast );
-      bNorm = b.lpNorm( 2.0 );
-   }
+   this->setResidue( std::sqrt( rho ) / b_norm );
 
    while( this->nextIteration() )
    {
       /****
        * alpha_j = ( r_j, r^ast_0 ) / ( A * p_j, r^ast_0 )
        */
-      /*if( M ) // preconditioner
-      {
-         A. vectorProduct( p, M_tmp );
-         M -> Solve( M_tmp, Ap );
+      if( preconditioner ) {
+         matrix->vectorProduct( p, M_tmp );
+         preconditioner->solve( M_tmp, Ap );
       }
-      else*/
-          this->matrix -> vectorProduct( p, Ap );
-
-      //dbgCout( "Computing alpha" );
-      s2 = Ap.scalarProduct( r_ast );
-      if( s2 == 0.0 ) alpha = 0.0;
-      else alpha = rho / s2;
+      else {
+         matrix->vectorProduct( p, Ap );
+      }
+      aux = Ap.scalarProduct( r_ast );
+      alpha = rho / aux;
 
       /****
        * s_j = r_j - alpha_j * A p_j
        */
-      s.addVectors( r, 1.0, Ap, -alpha );
+      s.addVectors( r, 1.0, Ap, -alpha, 0.0 );
 
       /****
        * omega_j = ( A s_j, s_j ) / ( A s_j, A s_j )
        */
-      /*if( M ) // preconditioner
-      {
-         A. vectorProduct( s, M_tmp );
-         DrawVector( "As", M_tmp, ( m_int ) ::sqrt( ( m_real ) size ) );
-         M -> Solve( M_tmp, As );
+      if( preconditioner ) {
+         matrix->vectorProduct( s, M_tmp );
+         preconditioner->solve( M_tmp, As );
       }
-      else*/
-          this->matrix -> vectorProduct( s, As );
-
-      s1 = As. scalarProduct( s );
-      s2 = As. scalarProduct( As );
-      if( s2 == 0.0 ) omega = 0.0;
-      else omega = s1 / s2;
+      else {
+         matrix->vectorProduct( s, As );
+      }
+      aux = As.lpNorm( 2.0 );
+      omega = As.scalarProduct( s ) / ( aux * aux );
 
       /****
        * x_{j+1} = x_j + alpha_j * p_j + omega_j * s_j
        */
       x.addVectors( p, alpha, s, omega );
-      
+
       /****
-       * r_{j+1} = s_j - omega_j * A * s_j
+       * r_{j+1} = s_j - omega_j * A s_j
        */
-      r.addVectors( s, 1.0, As, -omega );
+      r.addVectors( s, 1.0, As, -omega, 0.0 );
 
       /****
        * beta = alpha_j / omega_j * ( r_{j+1}, r^ast_0 ) / ( r_j, r^ast_0 )
        */
-      s1 = 0.0;
-      s1 = r. scalarProduct( r_ast );
-      if( rho == 0.0 ) beta = 0.0;
-      else beta = ( s1 / rho ) * ( alpha / omega );
-      rho = s1;
+      rho_old = rho;
+      rho = r.scalarProduct( r_ast );
+      beta = ( rho / rho_old ) * ( alpha / omega );
 
       /****
        * p_{j+1} = r_{j+1} + beta_j * ( p_j - omega_j * A p_j )
        */
       p.addVectors( r, 1.0, Ap, -beta * omega, beta );
-      RealType residue = r.lpNorm( 2.0 );
-      //RealType residue = computeBICGStabNewP( p, r, beta, omega, Ap );
 
-      residue /= bNorm;
-      this->setResidue( residue );
-      if( this->getIterations() % 10 == 0 )
-         this->setResidue( ResidueGetter::getResidue( *matrix, b, x, bNorm ) );
+      if( exact_residue ) {
+         /****
+          * Compute the exact preconditioned residue into the 's' vector.
+          */
+         if( preconditioner ) {
+            matrix->vectorProduct( x, M_tmp );
+            M_tmp.addVector( b, 1.0, -1.0 );
+            preconditioner->solve( M_tmp, s );
+         }
+         else {
+            matrix->vectorProduct( x, s );
+            s.addVector( b, 1.0, -1.0 );
+         }
+         const RealType residue = s.lpNorm( 2.0 );
+         this->setResidue( residue / b_norm );
+      }
+      else {
+         /****
+          * Use the "orthogonal residue vector" for stopping.
+          */
+         const RealType residue = r.lpNorm( 2.0 );
+         this->setResidue( residue / b_norm );
+      }
    }
-   //this->setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
+
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
 }
 
 template< typename Matrix,
           typename Preconditioner >
-BICGStab< Matrix, Preconditioner > :: ~BICGStab()
+void BICGStab< Matrix, Preconditioner > :: setSize( IndexType size )
 {
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-bool BICGStab< Matrix, Preconditioner > :: setSize( IndexType size )
-{
-   if( ! r. setSize( size ) ||
-       ! r_ast. setSize( size ) ||
-       ! p. setSize( size ) ||
-       ! s. setSize( size ) ||
-       ! Ap. setSize( size ) ||
-       ! As. setSize( size ) ||
-       ! M_tmp. setSize( size ) )
-   {
-      std::cerr << "I am not able to allocate all supporting arrays for the BICGStab solver." << std::endl;
-      return false;
-   }
-   return true;
-
+   r.setSize( size );
+   r_ast.setSize( size );
+   p.setSize( size );
+   s.setSize( size );
+   Ap.setSize( size );
+   As.setSize( size );
+   M_tmp.setSize( size );
 }
 
 } // namespace Linear

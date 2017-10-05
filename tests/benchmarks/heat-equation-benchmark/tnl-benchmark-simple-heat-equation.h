@@ -190,20 +190,27 @@ template< typename Real, typename Index >
 __global__ void updateKernel( Real* u,
                               Real* aux,
                               Real* cudaBlockResidue,
-                              const Index dofs )
+                              const Index dofs,
+                              Real tau )
 {
+   extern __shared__ Real du[];
    const Index blockOffset = blockIdx.x * blockDim.x;
    Index idx = blockOffset + threadIdx.x;
  
    if( idx < dofs )
-      u[ idx ] += aux[ idx ];
+   {
+      u[ idx ] += tau * aux[ idx ];
+      du[ threadIdx.x ] = fabs( aux[ idx ] );
+   }
+   else
+      du[ threadIdx.x ] = 0.0;
  
    __syncthreads();
 
    const Index rest = dofs - blockOffset;
    Index n =  rest < blockDim.x ? rest : blockDim.x;
 
-   computeBlockResidue< Real, Index >( aux,
+   computeBlockResidue< Real, Index >( du,
                                        cudaBlockResidue,
                                        n );
 }
@@ -305,11 +312,11 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    }
    
    typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
-   typedef typename GridType::VertexType VertexType;
+   typedef typename GridType::PointType PointType;
    typedef SharedPointer< GridType > GridPointer;
    GridPointer gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
-   gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
    Containers::Vector< Real, Devices::Cuda, Index > vecU;
    vecU.bind( cuda_u, gridXSize * gridYSize );
    Functions::MeshFunction< GridType > meshFunction;
@@ -346,29 +353,31 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
       const Real timeLeft = finalTime - time;
       const Real currentTau = tau < timeLeft ? tau : timeLeft;    
       
-      if( ! pureCRhsCuda( cudaGridSize, cudaBlockSize, cuda_u, cuda_aux, tau, hx_inv, hy_inv, gridXSize, gridYSize) )
+      if( ! pureCRhsCuda( cudaGridSize, cudaBlockSize, cuda_u, cuda_aux, currentTau, hx_inv, hy_inv, gridXSize, gridYSize) )
          return false;
       computationTimer.stop();
       
-      /*cudaMemcpy( aux, cuda_aux, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
-      writeFunction( "rhs", aux, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
-      getchar();*/
-        
+      /*if( iteration % 100 == 0 )
+      {
+         cudaMemcpy( aux, cuda_aux, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
+         writeFunction( "rhs", aux, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
+
+         cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
+         writeFunction( "u", aux, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
+         getchar();
+      }*/      
+      
       updateTimer.start();
       /****
        * Update
        */
       //cout << "Update ... " << std::endl;
-      updateKernel<<< cudaUpdateBlocks, cudaUpdateBlockSize >>>( cuda_u, cuda_aux, cuda_max_du, dofsCount );
+      updateKernel<<< cudaUpdateBlocks, cudaUpdateBlockSize, cudaUpdateBlockSize.x * sizeof( Real ) >>>( cuda_u, cuda_aux, cuda_max_du, dofsCount, tau );
       if( cudaGetLastError() != cudaSuccess )
       {
          std::cerr << "Update failed." << std::endl;
          return false;
-      }
-      /*cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
-      writeFunction( "u", aux, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
-      getchar();*/
-      
+      }            
       
       cudaThreadSynchronize();
       cudaMemcpy( max_du, cuda_max_du, cudaUpdateBlocks.x * sizeof( Real ), cudaMemcpyDeviceToHost );
@@ -391,12 +400,18 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
          cout << "Iteration: " << iteration << "\t Time:" << time << "    \r" << flush;                 
    }
    timer.stop();
+   if( verbose )
+     cout << endl;
+   
    //cudaMemcpy( u, cuda_u, dofsCount * sizeof( Real ), cudaMemcpyDeviceToHost );
    //writeFunction( "final", u, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
 
    /****
     * Saving the result
     */
+   if( verbose )
+     std::cout << "Saving result..." << std::endl;
+   
    meshFunction.save( "simple-heat-equation-result.tnl" );
    
    /***
@@ -496,18 +511,6 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
          aux[ ( gridYSize - 1 ) * gridXSize + i ] = 0.0; //u[ ( gridYSize - 2 ) * gridXSize + i ];
       }
  
-      /*for( Index j = 1; j < gridYSize - 1; j++ )
-         for( Index i = 1; i < gridXSize - 1; i++ )
-         {
-            const Index c = j * gridXSize + i;
-            aux[ c ] = u[ c ] + currentTau * ( ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ] ) * hx_inv +
-                                               ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
-         }
-      Real* swap = aux;
-      aux = u;
-      u = swap;
-      */
-
       for( Index j = 1; j < gridYSize - 1; j++ )
          for( Index i = 1; i < gridXSize - 1; i++ )
          {
@@ -535,15 +538,18 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
         std::cout << "Iteration: " << iteration << "\t \t Time:" << time << "    \r" << std::flush;
    }
    timer.stop();
+   if( verbose )
+     cout << endl;
+
    
    /****
     * Saving the result
     */
    typedef Meshes::Grid< 2, Real, Devices::Host, Index > GridType;
-   typedef typename GridType::VertexType VertexType;
+   typedef typename GridType::PointType PointType;
    SharedPointer< GridType > gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
-   gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
    Containers::Vector< Real, Devices::Host, Index > vecU;
    vecU.bind( u, gridXSize * gridYSize );
    Functions::MeshFunction< GridType > meshFunction;

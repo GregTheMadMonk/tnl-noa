@@ -1,3 +1,15 @@
+/***************************************************************************
+                          CudaMultireductionKernel.h  -  description
+                             -------------------
+    begin                : May 13, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Jakub Klinkovsky
+
 #pragma once
 
 #ifdef HAVE_CUDA
@@ -20,6 +32,9 @@ namespace Algorithms {
  * architecture so that there are no local memory spills.
  */
 static constexpr int Multireduction_maxThreadsPerBlock = 256;  // must be a power of 2
+static constexpr int Multireduction_registersPerThread = 38;   // empirically determined optimal value
+
+// __CUDA_ARCH__ is defined only in device code!
 #if (__CUDA_ARCH__ >= 300 )
    static constexpr int Multireduction_minBlocksPerMultiprocessor = 6;
 #else
@@ -29,7 +44,7 @@ static constexpr int Multireduction_maxThreadsPerBlock = 256;  // must be a powe
 template< typename Operation, int blockSizeX >      
 __global__ void
 __launch_bounds__( Multireduction_maxThreadsPerBlock, Multireduction_minBlocksPerMultiprocessor )
-CudaMultireductionKernel( Operation& operation,
+CudaMultireductionKernel( Operation operation,
                           const typename Operation::IndexType n,
                           const typename Operation::IndexType size,
                           const typename Operation::RealType* input1,
@@ -40,9 +55,7 @@ CudaMultireductionKernel( Operation& operation,
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::ResultType ResultType;
 
-   extern __shared__ __align__ ( 8 ) char __sdata[];
-
-   ResultType* sdata = reinterpret_cast< ResultType* >( __sdata );
+   ResultType* sdata = Devices::Cuda::getSharedMemory< ResultType >();
 
    /***
     * Get thread id (tid) and global element id (gid).
@@ -177,12 +190,14 @@ CudaMultireductionKernelLauncher( Operation& operation,
    // we run the kernel with a fixed number of blocks, so the amount of work per
    // block increases with enlarging the problem, so even small imbalance can
    // cost us dearly.
-   // On Tesla K40c, desGridSizeX = 4 * 6 * 15 = 360.
-//   const IndexType desGridSizeX = 4 * Multireduction_minBlocksPerMultiprocessor
-//                                    * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-   // On Tesla K40c, desGridSizeX = 6 * 15 = 90.
-   const IndexType desGridSizeX = Multireduction_minBlocksPerMultiprocessor
-                                * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
+   // Therefore,  desGridSize = blocksPerMultiprocessor * numberOfMultiprocessors
+   // where blocksPerMultiprocessor is determined according to the number of
+   // available registers on the multiprocessor.
+   // On Tesla K40c, desGridSize = 8 * 15 = 120.
+   const int activeDevice = Devices::CudaDeviceInfo::getActiveDevice();
+   const int blocksdPerMultiprocessor = Devices::CudaDeviceInfo::getRegistersPerMultiprocessor( activeDevice )
+                                      / ( Multireduction_maxThreadsPerBlock * Multireduction_registersPerThread );
+   const int desGridSizeX = blocksdPerMultiprocessor * Devices::CudaDeviceInfo::getCudaMultiprocessors( activeDevice );
    dim3 blockSize, gridSize;
    
    // version A: max 16 rows of threads
@@ -216,12 +231,11 @@ CudaMultireductionKernelLauncher( Operation& operation,
       throw 1;
    }
 
-   // create reference to the reduction buffer singleton and set default size
+   // create reference to the reduction buffer singleton and set size
    // (make an overestimate to avoid reallocation on every call if n is increased by 1 each time)
    const size_t buf_size = 8 * ( n / 8 + 1 ) * desGridSizeX * sizeof( ResultType );
-   CudaReductionBuffer & cudaReductionBuffer = CudaReductionBuffer::getInstance();
-   if( ! cudaReductionBuffer.setSize( buf_size ) )
-      throw 1;
+   CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
+   cudaReductionBuffer.setSize( buf_size );
    output = cudaReductionBuffer.template getData< ResultType >();
 
    // when there is only one warp per blockSize.x, we need to allocate two warps
@@ -290,11 +304,11 @@ CudaMultireductionKernelLauncher( Operation& operation,
          <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
          break;
       case   1:
-         Assert( false, std::cerr << "blockSize should not be 1." << std::endl );
+         TNL_ASSERT( false, std::cerr << "blockSize should not be 1." << std::endl );
       default:
-         Assert( false, std::cerr << "Block size is " << blockSize.x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." << std::endl );
+         TNL_ASSERT( false, std::cerr << "Block size is " << blockSize.x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." << std::endl );
    }
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 
    // return the size of the output array on the CUDA device
    return gridSize.x;
