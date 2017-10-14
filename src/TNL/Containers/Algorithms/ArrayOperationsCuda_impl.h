@@ -201,7 +201,7 @@ compareMemory( const Element1* destination,
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
    //TODO: The parallel reduction on the CUDA device with different element types is needed.
-   bool result;
+   bool result = false;
    Algorithms::tnlParallelReductionEqualities< Element1, Index > reductionEqualities;
    reductionOnCudaDevice( reductionEqualities, size, destination, source, result );
    return result;
