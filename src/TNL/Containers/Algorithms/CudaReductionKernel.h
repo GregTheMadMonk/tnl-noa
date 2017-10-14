@@ -39,16 +39,16 @@ static constexpr int Reduction_registersPerThread = 32;   // empirically determi
    static constexpr int Reduction_minBlocksPerMultiprocessor = 4;
 #endif
 
-template< typename Operation, int blockSize >
+template< int blockSize, typename Operation, typename Index >
 __global__ void
 __launch_bounds__( Reduction_maxThreadsPerBlock, Reduction_minBlocksPerMultiprocessor )
 CudaReductionKernel( Operation operation,
-                     const typename Operation::IndexType size,
-                     const typename Operation::RealType* input1,
-                     const typename Operation::RealType* input2,
+                     const Index size,
+                     const typename Operation::DataType1* input1,
+                     const typename Operation::DataType2* input2,
                      typename Operation::ResultType* output )
 {
-   typedef typename Operation::IndexType IndexType;
+   typedef Index IndexType;
    typedef typename Operation::ResultType ResultType;
 
    ResultType* sdata = Devices::Cuda::getSharedMemory< ResultType >();
@@ -175,16 +175,15 @@ CudaReductionKernel( Operation operation,
 
 }
 
-template< typename Operation >
-typename Operation::IndexType
+template< typename Operation, typename Index >
+int
 CudaReductionKernelLauncher( Operation& operation,
-                             const typename Operation::IndexType size,
-                             const typename Operation::RealType* input1,
-                             const typename Operation::RealType* input2,
+                             const Index size,
+                             const typename Operation::DataType1* input1,
+                             const typename Operation::DataType2* input2,
                              typename Operation::ResultType*& output )
 {
-   typedef typename Operation::IndexType IndexType;
-   typedef typename Operation::RealType RealType;
+   typedef Index IndexType;
    typedef typename Operation::ResultType ResultType;
 
    // The number of blocks should be a multiple of the number of multiprocessors
@@ -222,55 +221,55 @@ CudaReductionKernelLauncher( Operation& operation,
    switch( blockSize.x )
    {
       case 512:
-         CudaReductionKernel< Operation, 512 >
+         CudaReductionKernel< 512 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case 256:
-         cudaFuncSetCacheConfig(CudaReductionKernel< Operation, 256 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaReductionKernel< 256, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaReductionKernel< Operation, 256 >
+         CudaReductionKernel< 256 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case 128:
-         cudaFuncSetCacheConfig(CudaReductionKernel< Operation, 128 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaReductionKernel< 128, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaReductionKernel< Operation, 128 >
+         CudaReductionKernel< 128 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case  64:
-         cudaFuncSetCacheConfig(CudaReductionKernel< Operation,  64 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaReductionKernel<  64, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaReductionKernel< Operation,  64 >
+         CudaReductionKernel<  64 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case  32:
-         cudaFuncSetCacheConfig(CudaReductionKernel< Operation,  32 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaReductionKernel<  32, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaReductionKernel< Operation,  32 >
+         CudaReductionKernel<  32 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case  16:
-         cudaFuncSetCacheConfig(CudaReductionKernel< Operation,  16 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaReductionKernel<  16, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaReductionKernel< Operation,  16 >
+         CudaReductionKernel<  16 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
      case   8:
-         cudaFuncSetCacheConfig(CudaReductionKernel< Operation,   8 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaReductionKernel<   8, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaReductionKernel< Operation,   8 >
+         CudaReductionKernel<   8 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case   4:
-         cudaFuncSetCacheConfig(CudaReductionKernel< Operation,   4 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaReductionKernel<   4, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaReductionKernel< Operation,   4 >
+         CudaReductionKernel<   4 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case   2:
-         cudaFuncSetCacheConfig(CudaReductionKernel< Operation,   2 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaReductionKernel<   2, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaReductionKernel< Operation,   2 >
+         CudaReductionKernel<   2 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case   1:

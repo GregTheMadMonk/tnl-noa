@@ -41,18 +41,18 @@ static constexpr int Multireduction_registersPerThread = 38;   // empirically de
    static constexpr int Multireduction_minBlocksPerMultiprocessor = 4;
 #endif
 
-template< typename Operation, int blockSizeX >      
+template< int blockSizeX, typename Operation, typename Index >
 __global__ void
 __launch_bounds__( Multireduction_maxThreadsPerBlock, Multireduction_minBlocksPerMultiprocessor )
 CudaMultireductionKernel( Operation operation,
-                          const typename Operation::IndexType n,
-                          const typename Operation::IndexType size,
-                          const typename Operation::RealType* input1,
-                          const typename Operation::IndexType ldInput1,
-                          const typename Operation::RealType* input2,
+                          const int n,
+                          const Index size,
+                          const typename Operation::DataType1* input1,
+                          const Index ldInput1,
+                          const typename Operation::DataType2* input2,
                           typename Operation::ResultType* output )
 {
-   typedef typename Operation::IndexType IndexType;
+   typedef Index IndexType;
    typedef typename Operation::ResultType ResultType;
 
    ResultType* sdata = Devices::Cuda::getSharedMemory< ResultType >();
@@ -171,18 +171,16 @@ CudaMultireductionKernel( Operation operation,
    }
 }
 
-template< typename Operation >
-typename Operation::IndexType
+template< typename Operation, typename Index >
+int
 CudaMultireductionKernelLauncher( Operation& operation,
-                                  int n,
-                                  const typename Operation::IndexType size,
-                                  const typename Operation::RealType* input1,
-                                  const typename Operation::IndexType ldInput1,
-                                  const typename Operation::RealType* input2,
+                                  const int n,
+                                  const Index size,
+                                  const typename Operation::DataType1* input1,
+                                  const Index ldInput1,
+                                  const typename Operation::DataType2* input2,
                                   typename Operation::ResultType*& output )
 {
-   typedef typename Operation::IndexType IndexType;
-   typedef typename Operation::RealType RealType;
    typedef typename Operation::ResultType ResultType;
 
    // The number of blocks should be a multiple of the number of multiprocessors
@@ -240,7 +238,7 @@ CudaMultireductionKernelLauncher( Operation& operation,
 
    // when there is only one warp per blockSize.x, we need to allocate two warps
    // worth of shared memory so that we don't index shared memory out of bounds
-   const IndexType shmem = (blockSize.x <= 32)
+   const Index shmem = (blockSize.x <= 32)
             ? 2 * blockSize.x * blockSize.y * sizeof( ResultType )
             : blockSize.x * blockSize.y * sizeof( ResultType );
 
@@ -252,55 +250,55 @@ CudaMultireductionKernelLauncher( Operation& operation,
    switch( blockSize.x )
    {
       case 512:
-         CudaMultireductionKernel< Operation, 512 >
+         CudaMultireductionKernel< 512 >
          <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
          break;
       case 256:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation, 256 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaMultireductionKernel< 256, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaMultireductionKernel< Operation, 256 >
+         CudaMultireductionKernel< 256 >
          <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
          break;
       case 128:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation, 128 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaMultireductionKernel< 128, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaMultireductionKernel< Operation, 128 >
+         CudaMultireductionKernel< 128 >
          <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
          break;
       case  64:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation,  64 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaMultireductionKernel<  64, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaMultireductionKernel< Operation,  64 >
+         CudaMultireductionKernel<  64 >
          <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
          break;
       case  32:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation,  32 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaMultireductionKernel<  32, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaMultireductionKernel< Operation,  32 >
+         CudaMultireductionKernel<  32 >
          <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
          break;
       case  16:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation,  16 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaMultireductionKernel<  16, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaMultireductionKernel< Operation,  16 >
+         CudaMultireductionKernel<  16 >
          <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
          break;
      case   8:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation,   8 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaMultireductionKernel<   8, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaMultireductionKernel< Operation,   8 >
+         CudaMultireductionKernel<   8 >
          <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
          break;
       case   4:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation,   4 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaMultireductionKernel<   4, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaMultireductionKernel< Operation,   4 >
+         CudaMultireductionKernel<   4 >
         <<< gridSize, blockSize, shmem >>>( operation,  n,size, input1, ldInput1, input2, output);
         break;
       case   2:
-         cudaFuncSetCacheConfig(CudaMultireductionKernel< Operation,   2 >, cudaFuncCachePreferShared);
+         cudaFuncSetCacheConfig(CudaMultireductionKernel<   2, Operation, Index >, cudaFuncCachePreferShared);
 
-         CudaMultireductionKernel< Operation,   2 >
+         CudaMultireductionKernel<   2 >
          <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
          break;
       case   1:

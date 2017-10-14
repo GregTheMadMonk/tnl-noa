@@ -22,11 +22,11 @@ namespace Algorithms {
 // and make a specialization for Devices::Host (as it is done in Multireduction.h)
 // It should be as fast as all the manual implementations in VectorOperations.
 
-template< typename Operation >
+template< typename Operation, typename Index >
 bool reductionOnCudaDevice( const Operation& operation,
-                            const typename Operation :: IndexType size,
-                            const typename Operation :: RealType* deviceInput1,
-                            const typename Operation :: RealType* deviceInput2,
+                            const Index size,
+                            const typename Operation :: DataType1* deviceInput1,
+                            const typename Operation :: DataType2* deviceInput2,
                             typename Operation :: ResultType& result );
 
 } // namespace Algorithms

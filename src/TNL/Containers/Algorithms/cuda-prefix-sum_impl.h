@@ -15,7 +15,7 @@
 #include <TNL/Math.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
-#include <TNL/Containers/Algorithms/reduction-operations.h>
+#include <TNL/Containers/Algorithms/ReductionOperations.h>
    
 #ifdef HAVE_CUDA
 

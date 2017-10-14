@@ -76,9 +76,11 @@ class Vector : public Containers::Array< Real, Device, Index >
 
    Real absMin() const;
 
-   Real lpNorm( const Real& p ) const;
+   template< typename ResultType = RealType, typename Real_ >
+   ResultType lpNorm( const Real_ p ) const;
 
-   Real sum() const;
+   template< typename ResultType = RealType >
+   ResultType sum() const;
 
    template< typename Vector >
    Real differenceMax( const Vector& v ) const;
@@ -92,11 +94,11 @@ class Vector : public Containers::Array< Real, Device, Index >
    template< typename Vector >
    Real differenceAbsMin( const Vector& v ) const;
 
-   template< typename Vector >
-   Real differenceLpNorm( const Vector& v, const Real& p ) const;
+   template< typename ResultType = RealType, typename Vector, typename Real_ >
+   ResultType differenceLpNorm( const Vector& v, const Real_ p ) const;
 
-   template< typename Vector >
-   Real differenceSum( const Vector& v ) const;
+   template< typename ResultType = RealType, typename Vector >
+   ResultType differenceSum( const Vector& v ) const;
 
    void scalarMultiplication( const Real& alpha );
 
