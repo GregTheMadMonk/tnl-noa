@@ -52,11 +52,11 @@ getVectorMax( const Vector& v )
 
    Real result( 0 );
    Algorithms::ParallelReductionMax< Real > operation;
-   reductionOnCudaDevice( operation,
-                          v.getSize(),
-                          v.getData(),
-                          ( Real* ) 0,
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v.getSize(),
+                                       v.getData(),
+                                       ( Real* ) 0,
+                                       result );
    return result;
 }
 
@@ -71,11 +71,11 @@ getVectorMin( const Vector& v )
 
    Real result( 0 );
    Algorithms::ParallelReductionMin< Real > operation;
-   reductionOnCudaDevice( operation,
-                          v.getSize(),
-                          v.getData(),
-                          ( Real* ) 0,
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v.getSize(),
+                                       v.getData(),
+                                       ( Real* ) 0,
+                                       result );
    return result;
 }
 
@@ -90,11 +90,11 @@ getVectorAbsMax( const Vector& v )
 
    Real result( 0 );
    Algorithms::ParallelReductionAbsMax< Real > operation;
-   reductionOnCudaDevice( operation,
-                          v.getSize(),
-                          v.getData(),
-                          ( Real* ) 0,
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v.getSize(),
+                                       v.getData(),
+                                       ( Real* ) 0,
+                                       result );
    return result;
 }
 
@@ -109,11 +109,11 @@ getVectorAbsMin( const Vector& v )
 
    Real result( 0 );
    Algorithms::ParallelReductionAbsMin< Real > operation;
-   reductionOnCudaDevice( operation,
-                          v.getSize(),
-                          v.getData(),
-                          ( Real* ) 0,
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v.getSize(),
+                                       v.getData(),
+                                       ( Real* ) 0,
+                                       result );
    return result;
 }
 
@@ -128,11 +128,11 @@ getVectorL1Norm( const Vector& v )
 
    ResultType result( 0 );
    Algorithms::ParallelReductionAbsSum< RealType, ResultType > operation;
-   reductionOnCudaDevice( operation,
-                          v.getSize(),
-                          v.getData(),
-                          ( RealType* ) 0,
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v.getSize(),
+                                       v.getData(),
+                                       ( RealType* ) 0,
+                                       result );
    return result;
 }
 
@@ -147,11 +147,11 @@ getVectorL2Norm( const Vector& v )
 
    ResultType result( 0 );
    Algorithms::ParallelReductionL2Norm< Real, ResultType > operation;
-   reductionOnCudaDevice( operation,
-                          v.getSize(),
-                          v.getData(),
-                          ( Real* ) 0,
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v.getSize(),
+                                       v.getData(),
+                                       ( Real* ) 0,
+                                       result );
    return std::sqrt( result );
 }
 
@@ -173,11 +173,11 @@ getVectorLpNorm( const Vector& v,
    ResultType result( 0 );
    Algorithms::ParallelReductionLpNorm< Real, ResultType, Real_ > operation;
    operation.setPower( p );
-   reductionOnCudaDevice( operation,
-                          v.getSize(),
-                          v.getData(),
-                          ( Real* ) 0,
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v.getSize(),
+                                       v.getData(),
+                                       ( Real* ) 0,
+                                       result );
    return std::pow( result, 1.0 / p );
 }
 
@@ -192,11 +192,11 @@ getVectorSum( const Vector& v )
 
    ResultType result( 0 );
    Algorithms::ParallelReductionSum< Real, ResultType > operation;
-   reductionOnCudaDevice( operation,
-                          v.getSize(),
-                          v.getData(),
-                          ( Real* ) 0,
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v.getSize(),
+                                       v.getData(),
+                                       ( Real* ) 0,
+                                       result );
    return result;
 }
 
@@ -213,11 +213,11 @@ getVectorDifferenceMax( const Vector1& v1,
 
    Real result( 0 );
    Algorithms::ParallelReductionDiffMax< typename Vector1::RealType, typename Vector2::RealType > operation;
-   reductionOnCudaDevice( operation,
-                          v1.getSize(),
-                          v1.getData(),
-                          v2.getData(),
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v1.getSize(),
+                                       v1.getData(),
+                                       v2.getData(),
+                                       result );
    return result;
 }
 
@@ -234,11 +234,11 @@ getVectorDifferenceMin( const Vector1& v1,
 
    Real result( 0 );
    Algorithms::ParallelReductionDiffMin< typename Vector1::RealType, typename Vector2::RealType > operation;
-   reductionOnCudaDevice( operation,
-                          v1.getSize(),
-                          v1.getData(),
-                          v2.getData(),
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v1.getSize(),
+                                       v1.getData(),
+                                       v2.getData(),
+                                       result );
    return result;
 }
 
@@ -256,11 +256,11 @@ getVectorDifferenceAbsMax( const Vector1& v1,
 
    Real result( 0 );
    Algorithms::ParallelReductionDiffAbsMax< typename Vector1::RealType, typename Vector2::RealType > operation;
-   reductionOnCudaDevice( operation,
-                          v1.getSize(),
-                          v1.getData(),
-                          v2.getData(),
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v1.getSize(),
+                                       v1.getData(),
+                                       v2.getData(),
+                                       result );
    return result;
 }
 
@@ -277,11 +277,11 @@ getVectorDifferenceAbsMin( const Vector1& v1,
 
    Real result( 0 );
    Algorithms::ParallelReductionDiffAbsMin< typename Vector1::RealType, typename Vector2::RealType > operation;
-   reductionOnCudaDevice( operation,
-                          v1.getSize(),
-                          v1.getData(),
-                          v2.getData(),
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v1.getSize(),
+                                       v1.getData(),
+                                       v2.getData(),
+                                       result );
    return result;
 }
 
@@ -298,11 +298,11 @@ getVectorDifferenceL1Norm( const Vector1& v1,
 
    ResultType result( 0 );
    Algorithms::ParallelReductionDiffAbsSum< typename Vector1::RealType, typename Vector2::RealType, ResultType > operation;
-   reductionOnCudaDevice( operation,
-                          v1.getSize(),
-                          v1.getData(),
-                          v2.getData(),
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v1.getSize(),
+                                       v1.getData(),
+                                       v2.getData(),
+                                       result );
    return result;
 }
 
@@ -319,12 +319,12 @@ getVectorDifferenceL2Norm( const Vector1& v1,
 
    ResultType result( 0 );
    Algorithms::ParallelReductionDiffL2Norm< typename Vector1::RealType, typename Vector2::RealType, ResultType > operation;
-   reductionOnCudaDevice( operation,
-                          v1.getSize(),
-                          v1.getData(),
-                          v2.getData(),
-                          result );
-   return ::sqrt( result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v1.getSize(),
+                                       v1.getData(),
+                                       v2.getData(),
+                                       result );
+   return std::sqrt( result );
 }
 
 template< typename Vector1, typename Vector2, typename ResultType, typename Real_ >
@@ -343,12 +343,12 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    ResultType result( 0 );
    Algorithms::ParallelReductionDiffLpNorm< typename Vector1::RealType, typename Vector2::RealType, ResultType, Real_ > operation;
    operation.setPower( p );
-   reductionOnCudaDevice( operation,
-                          v1.getSize(),
-                          v1.getData(),
-                          v2.getData(),
-                          result );
-   return ::pow( result, 1.0 / p );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v1.getSize(),
+                                       v1.getData(),
+                                       v2.getData(),
+                                       result );
+   return std::pow( result, 1.0 / p );
 }
 
 template< typename Vector1, typename Vector2, typename ResultType >
@@ -364,11 +364,11 @@ getVectorDifferenceSum( const Vector1& v1,
 
    ResultType result( 0 );
    Algorithms::ParallelReductionDiffSum< typename Vector1::RealType, typename Vector2::RealType, ResultType > operation;
-   reductionOnCudaDevice( operation,
-                          v1.getSize(),
-                          v1.getData(),
-                          v2.getData(),
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v1.getSize(),
+                                       v1.getData(),
+                                       v2.getData(),
+                                       result );
    return result;
 }
 
@@ -433,11 +433,11 @@ getScalarProduct( const Vector1& v1,
        return result;
 #endif*/
    Algorithms::ParallelReductionScalarProduct< typename Vector1::RealType, typename Vector2::RealType > operation;
-   reductionOnCudaDevice( operation,
-                          v1.getSize(),
-                          v1.getData(),
-                          v2.getData(),
-                          result );
+   Reduction< Devices::Cuda >::reduce( operation,
+                                       v1.getSize(),
+                                       v1.getData(),
+                                       v2.getData(),
+                                       result );
    return result;
 }
 

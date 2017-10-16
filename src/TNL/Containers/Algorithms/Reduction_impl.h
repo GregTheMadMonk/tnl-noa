@@ -8,6 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+// Implemented by: Tomas Oberhuber, Jakub Klinkovsky
+
 #pragma once 
 
 #include "Reduction.h"
@@ -29,21 +31,21 @@ namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-
 /****
  * Arrays smaller than the following constant
  * are reduced on CPU. The constant must not be larger
  * than maximal CUDA grid size.
  */
-const int minGPUReductionDataSize = 256;//65536; //16384;//1024;//256;
+static constexpr int Reduction_minGpuDataSize = 256;//65536; //16384;//1024;//256;
 
 template< typename Operation, typename Index >
 bool
-reductionOnCudaDevice( Operation& operation,
-                       const Index size,
-                       const typename Operation::DataType1* deviceInput1,
-                       const typename Operation::DataType2* deviceInput2,
-                       typename Operation::ResultType& result )
+Reduction< Devices::Cuda >::
+reduce( Operation& operation,
+        const Index size,
+        const typename Operation::DataType1* deviceInput1,
+        const typename Operation::DataType2* deviceInput2,
+        typename Operation::ResultType& result )
 {
 #ifdef HAVE_CUDA
 
@@ -65,21 +67,21 @@ reductionOnCudaDevice( Operation& operation,
     * First check if the input array(s) is/are large enough for the reduction on GPU.
     * Otherwise copy it/them to host and reduce on CPU.
     */
-   if( can_reduce_all_on_host && size <= minGPUReductionDataSize )
+   if( can_reduce_all_on_host && size <= Reduction_minGpuDataSize )
    {
-      DataType1 hostArray1[ minGPUReductionDataSize ];
-      using _DT2 = typename std::conditional< std::is_same< DataType2, void >::value, DataType1, DataType2 >::type;
-      _DT2 hostArray2[ minGPUReductionDataSize ];
+      DataType1 hostArray1[ Reduction_minGpuDataSize ];
       if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray1, deviceInput1, size ) )
          return false;
       if( deviceInput2 ) {
+         using _DT2 = typename std::conditional< std::is_same< DataType2, void >::value, DataType1, DataType2 >::type;
+         _DT2 hostArray2[ Reduction_minGpuDataSize ];
          if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray2, (_DT2*) deviceInput2, size ) )
             return false;
+         return Reduction< Devices::Host >::reduce( operation, size, hostArray1, hostArray2, result );
       }
-      result = operation.initialValue();
-      for( IndexType i = 0; i < size; i ++ )
-         result = operation.reduceOnHost( i, result, hostArray1, hostArray2 );
-      return true;
+      else {
+         return Reduction< Devices::Host >::reduce( operation, size, hostArray1, (DataType2*) nullptr, result );
+      }
    }
 
    #ifdef CUDA_REDUCTION_PROFILING
@@ -123,9 +125,7 @@ reductionOnCudaDevice( Operation& operation,
        * Reduce the data on the host system.
        */
       LaterReductionOperation laterReductionOperation;
-      result = laterReductionOperation. initialValue();
-      for( IndexType i = 0; i < reducedSize; i ++ )
-         result = laterReductionOperation.reduceOnHost( i, result, resultArray, ( ResultType*) 0 );
+      Reduction< Devices::Host >::reduce( laterReductionOperation, reducedSize, resultArray, (void*) nullptr, result );
     
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -168,6 +168,69 @@ reductionOnCudaDevice( Operation& operation,
    throw Exceptions::CudaSupportMissing();
 #endif
 };
+
+template< typename Operation, typename Index >
+bool
+Reduction< Devices::Host >::
+reduce( Operation& operation,
+        const Index size,
+        const typename Operation::DataType1* input1,
+        const typename Operation::DataType2* input2,
+        typename Operation::ResultType& result )
+{
+   typedef Index IndexType;
+   typedef typename Operation::DataType1 DataType1;
+   typedef typename Operation::DataType2 DataType2;
+   typedef typename Operation::ResultType ResultType;
+
+#ifdef HAVE_OPENMP
+   constexpr int block_size = 128;
+   if( TNL::Devices::Host::isOMPEnabled() && size >= 2 * block_size )
+#pragma omp parallel
+   {
+      const int blocks = size / block_size;
+
+      // first thread initializes the global result variable
+      #pragma omp single nowait
+      {
+         result = operation.initialValue();
+      }
+
+      // initialize thread-local result variable
+      ResultType r = operation.initialValue();
+
+      #pragma omp for nowait
+      for( int b = 0; b < blocks; b++ ) {
+         const int offset = b * block_size;
+         for( IndexType i = 0; i < block_size; i++ )
+            operation.firstReduction( r, offset + i, input1, input2 );
+      }
+
+      // the first thread that reaches here processes the last, incomplete block
+      #pragma omp single nowait
+      {
+         for( IndexType i = blocks * block_size; i < size; i++ )
+            operation.firstReduction( r, i, input1, input2 );
+      }
+
+      // inter-thread reduction of local results
+      #pragma omp critical
+      {
+         operation.commonReduction( result, r );
+      }
+   }
+   else {
+#endif
+      result = operation.initialValue();
+      for( IndexType i = 0; i < size; i++ )
+         operation.firstReduction( result, i, input1, input2 );
+#ifdef HAVE_OPENMP
+   }
+#endif
+
+   return true;
+}
+
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 

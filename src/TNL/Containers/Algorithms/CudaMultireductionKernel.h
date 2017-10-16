@@ -84,21 +84,21 @@ CudaMultireductionKernel( Operation operation,
    sdata[ tid ] = operation.initialValue();
    while( gid + 4 * gridSizeX < size )
    {
-      operation.cudaFirstReduction( sdata[ tid ], gid,                 input1, input2 );
-      operation.cudaFirstReduction( sdata[ tid ], gid + gridSizeX,     input1, input2 );
-      operation.cudaFirstReduction( sdata[ tid ], gid + 2 * gridSizeX, input1, input2 );
-      operation.cudaFirstReduction( sdata[ tid ], gid + 3 * gridSizeX, input1, input2 );
+      operation.firstReduction( sdata[ tid ], gid,                 input1, input2 );
+      operation.firstReduction( sdata[ tid ], gid + gridSizeX,     input1, input2 );
+      operation.firstReduction( sdata[ tid ], gid + 2 * gridSizeX, input1, input2 );
+      operation.firstReduction( sdata[ tid ], gid + 3 * gridSizeX, input1, input2 );
       gid += 4 * gridSizeX;
    }
    while( gid + 2 * gridSizeX < size )
    {
-      operation.cudaFirstReduction( sdata[ tid ], gid,                 input1, input2 );
-      operation.cudaFirstReduction( sdata[ tid ], gid + gridSizeX,     input1, input2 );
+      operation.firstReduction( sdata[ tid ], gid,                 input1, input2 );
+      operation.firstReduction( sdata[ tid ], gid + gridSizeX,     input1, input2 );
       gid += 2 * gridSizeX;
    }
    while( gid < size )
    {
-      operation.cudaFirstReduction( sdata[ tid ], gid,                 input1, input2 );
+      operation.firstReduction( sdata[ tid ], gid,                 input1, input2 );
       gid += gridSizeX;
    }
    __syncthreads();
@@ -111,25 +111,25 @@ CudaMultireductionKernel( Operation operation,
     */
    if( blockSizeX >= 1024 ) {
       if( threadIdx.x < 512 ) {
-         operation.commonReductionOnDevice( sdata[ tid ], sdata[ tid + 512 ] );
+         operation.commonReduction( sdata[ tid ], sdata[ tid + 512 ] );
       }
       __syncthreads();
    }
    if( blockSizeX >= 512 ) {
       if( threadIdx.x < 256 ) {
-         operation.commonReductionOnDevice( sdata[ tid ], sdata[ tid + 256 ] );
+         operation.commonReduction( sdata[ tid ], sdata[ tid + 256 ] );
       }
       __syncthreads();
    }
    if( blockSizeX >= 256 ) {
       if( threadIdx.x < 128 ) {
-         operation.commonReductionOnDevice( sdata[ tid ], sdata[ tid + 128 ] );
+         operation.commonReduction( sdata[ tid ], sdata[ tid + 128 ] );
       }
       __syncthreads();
    }
    if( blockSizeX >= 128 ) {
       if( threadIdx.x <  64 ) {
-         operation.commonReductionOnDevice( sdata[ tid ], sdata[ tid + 64 ] );
+         operation.commonReduction( sdata[ tid ], sdata[ tid + 64 ] );
       }
       __syncthreads();
    }
@@ -144,22 +144,22 @@ CudaMultireductionKernel( Operation operation,
    if( threadIdx.x < 32 ) {
       volatile ResultType* vsdata = sdata;
       if( blockSizeX >= 64 ) {
-         operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 32 ] );
+         operation.commonReduction( vsdata[ tid ], vsdata[ tid + 32 ] );
       }
       if( blockSizeX >= 32 ) {
-         operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 16 ] );
+         operation.commonReduction( vsdata[ tid ], vsdata[ tid + 16 ] );
       }
       if( blockSizeX >= 16 ) {
-         operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 8 ] );
+         operation.commonReduction( vsdata[ tid ], vsdata[ tid + 8 ] );
       }
       if( blockSizeX >=  8 ) {
-         operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 4 ] );
+         operation.commonReduction( vsdata[ tid ], vsdata[ tid + 4 ] );
       }
       if( blockSizeX >=  4 ) {
-         operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 2 ] );
+         operation.commonReduction( vsdata[ tid ], vsdata[ tid + 2 ] );
       }
       if( blockSizeX >=  2 ) {
-         operation.commonReductionOnDevice( vsdata[ tid ], vsdata[ tid + 1 ] );
+         operation.commonReduction( vsdata[ tid ], vsdata[ tid + 1 ] );
       }
    }
 

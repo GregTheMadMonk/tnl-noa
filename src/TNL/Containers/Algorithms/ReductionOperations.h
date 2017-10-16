@@ -12,7 +12,7 @@
 
 #include <TNL/Constants.h>
 #include <TNL/Math.h>
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/CudaCallable.h>
 
 namespace TNL {
 namespace Containers {
@@ -31,37 +31,28 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return current + data1[ idx ];
-   }
-
    __cuda_callable__ Result initialValue() { return 0; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result += data1[ index ];
    }
 
    __cuda_callable__ void
-   commonReductionOnDevice( ResultType& result,
-                            const ResultType& data )
+   commonReduction( ResultType& result,
+                    const ResultType& data )
    {
       result += data;
    }
 
    __cuda_callable__ void
-   commonReductionOnDevice( volatile ResultType& result,
-                            volatile const ResultType& data )
+   commonReduction( volatile ResultType& result,
+                    volatile const ResultType& data )
    {
       result += data;
    }
@@ -76,37 +67,28 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMin< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return TNL::min( current, data1[ idx ] );
-   }
-
    __cuda_callable__ Result initialValue() { return MaxValue< Result >(); };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result = TNL::min( result, data1[ index ] );
    }
 
    __cuda_callable__ void
-   commonReductionOnDevice( ResultType& result,
-                            const Result& data )
+   commonReduction( ResultType& result,
+                    const Result& data )
    {
       result = TNL::min( result, data );
    }
 
    __cuda_callable__ void
-   commonReductionOnDevice( volatile ResultType& result,
-                            volatile const Result& data )
+   commonReduction( volatile ResultType& result,
+                    volatile const Result& data )
    {
       result = TNL::min( result, data );
    }
@@ -121,37 +103,28 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMax< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return TNL::max( current, data1[ idx ] );
-   }
-
    __cuda_callable__ Result initialValue() { return MinValue< Result>(); };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result = TNL::max( result, data1[ index ] );
    }
 
    __cuda_callable__ void
-   commonReductionOnDevice( ResultType& result,
-                            const Result& data )
+   commonReduction( ResultType& result,
+                    const Result& data )
    {
       result = TNL::max( result, data );
    }
 
    __cuda_callable__ void
-   commonReductionOnDevice( volatile ResultType& result,
-                            volatile const Result& data )
+   commonReduction( volatile ResultType& result,
+                    volatile const Result& data )
    {
       result = TNL::max( result, data );
    }
@@ -166,37 +139,28 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionLogicalAnd< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return current && data1[ idx ];
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) true; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result = result && data1[ index ];
    }
 
    __cuda_callable__ void
-   commonReductionOnDevice( ResultType& result,
-                            const Result& data )
+   commonReduction( ResultType& result,
+                    const Result& data )
    {
       result = result && data;
    }
 
    __cuda_callable__ void
-   commonReductionOnDevice( volatile ResultType& result,
-                            volatile const Result& data )
+   commonReduction( volatile ResultType& result,
+                    volatile const Result& data )
    {
       result = result && data;
    }
@@ -212,37 +176,28 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionLogicalOr< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return current || data1[ idx ];
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) false; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result = result || data1[ index ];
    }
 
    __cuda_callable__ void
-   commonReductionOnDevice( ResultType& result,
-                            const Result& data )
+   commonReduction( ResultType& result,
+                    const Result& data )
    {
       result = result || data;
    }
 
    __cuda_callable__ void
-   commonReductionOnDevice( volatile ResultType& result,
-                            volatile const Result& data )
+   commonReduction( volatile ResultType& result,
+                    volatile const Result& data )
    {
       result = result || data;
    }
@@ -257,23 +212,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return current + TNL::abs( data1[ idx ] );
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) 0; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result += TNL::abs( data1[ index ] );
    }
@@ -288,23 +234,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMin< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return TNL::min( current, TNL::abs( data1[ idx ] ) );
-   }
-
    __cuda_callable__ Result initialValue() { return MaxValue< Result>(); };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result = TNL::min( result, TNL::abs( data1[ index ] ) );
    }
@@ -319,23 +256,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMax< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return std::max( current, TNL::abs( data1[ idx ] ) );
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) 0; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result = TNL::max( result, TNL::abs( data1[ index ] ) );
    }
@@ -350,24 +278,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      const Data& aux = data1[ idx ];
-      return current + aux * aux;
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) 0; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       const Data& aux = data1[ index ];
       result += aux * aux;
@@ -389,23 +307,14 @@ public:
       this->p = p;
    }
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return current + TNL::pow( TNL::abs( data1[ idx ] ), p );
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) 0; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result += TNL::pow( TNL::abs( data1[ index ] ), p );
    }
@@ -428,23 +337,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionLogicalAnd< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return current && ( data1[ idx ] == data2[ idx ] );
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) true; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result = result && ( data1[ index ] == data2[ index ] );
    }
@@ -459,23 +359,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionLogicalAnd< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return current && ( data1[ idx ] != data2[ idx ] );
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) false; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result = result && ( data1[ index ] != data2[ index ] );
    }
@@ -490,23 +381,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return current + ( data1[ idx ] * data2[ idx ] );
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) 0; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result += data1[ index ] * data2[ index ];
    }
@@ -521,23 +403,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return current + ( data1[ idx ] - data2[ idx ] );
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) 0; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result += data1[ index ] - data2[ index ];
    }
@@ -552,23 +425,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMin< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return TNL::min( current, data1[ idx ] - data2[ idx ] );
-   }
-
    __cuda_callable__ Result initialValue() { return MaxValue< Result>(); };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result = TNL::min( result, data1[ index ] - data2[ index ] );
    }
@@ -583,23 +447,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMax< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return TNL::max( current, data1[ idx ] - data2[ idx ] );
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) 0; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result = TNL::max( result, data1[ index ] - data2[ index ] );
    }
@@ -614,23 +469,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return current + TNL::abs( data1[ idx ] - data2[ idx ] );
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) 0; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result += TNL::abs( data1[ index ] - data2[ index ] );
    }
@@ -645,23 +491,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMin< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return TNL::min( current, TNL::abs( data1[ idx ] - data2[ idx ] ) );
-   }
-
    __cuda_callable__ Result initialValue() { return MaxValue< Result>(); };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result = TNL::min( result, TNL::abs( data1[ index ] - data2[ index ] ) );
    }
@@ -676,23 +513,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMax< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return TNL::max( current, TNL::abs( data1[ idx ] - data2[ idx ] ) );
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) 0; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result = TNL::max( result, TNL::abs( data1[ index ] - data2[ index ] ) );
    }
@@ -707,24 +535,14 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      const ResultType aux = data2[ idx ] - data1[ idx ];
-      return current + aux * aux;
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) 0; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       const ResultType aux = data2[ index ] - data1[ index ];
       result += aux * aux;
@@ -745,23 +563,14 @@ public:
       this->p = p;
    }
 
-   template< typename Index >
-   Result reduceOnHost( const Index& idx,
-                        const ResultType& current,
-                        const DataType1* data1,
-                        const DataType2* data2 )
-   {
-      return current + TNL::pow( TNL::abs( data1[ idx ] - data2[ idx ] ), p );
-   }
-
    __cuda_callable__ Result initialValue() { return ( Result ) 0; };
 
    template< typename Index >
    __cuda_callable__ void
-   cudaFirstReduction( ResultType& result,
-                       const Index& index,
-                       const DataType1* data1,
-                       const DataType2* data2 )
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
    {
       result += TNL::pow( TNL::abs( data1[ index ] - data2[ index ] ), p );
    }

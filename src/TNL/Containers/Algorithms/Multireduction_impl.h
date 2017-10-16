@@ -206,7 +206,7 @@ reduce( Operation& operation,
          for( int k = 0; k < n; k++ ) {
             const DataType1* _input1 = input1 + k * ldInput1;
             for( IndexType i = 0; i < block_size; i++ )
-               r[ k ] = operation.reduceOnHost( offset + i, r[ k ], _input1, input2 );
+               operation.firstReduction( r[ k ], offset + i, _input1, input2 );
          }
       }
 
@@ -216,7 +216,7 @@ reduce( Operation& operation,
          for( int k = 0; k < n; k++ ) {
             const DataType1* _input1 = input1 + k * ldInput1;
             for( IndexType i = blocks * block_size; i < size; i++ )
-               r[ k ] = operation.reduceOnHost( i, r[ k ], _input1, input2 );
+               operation.firstReduction( r[ k ], i, _input1, input2 );
          }
       }
 
@@ -224,7 +224,7 @@ reduce( Operation& operation,
       #pragma omp critical
       {
          for( int k = 0; k < n; k++ )
-            operation.commonReductionOnDevice( result[ k ], r[ k ] );
+            operation.commonReduction( result[ k ], r[ k ] );
       }
    }
    else {
@@ -237,14 +237,14 @@ reduce( Operation& operation,
          for( int k = 0; k < n; k++ ) {
             const DataType1* _input1 = input1 + k * ldInput1;
             for( IndexType i = 0; i < block_size; i++ )
-               result[ k ] = operation.reduceOnHost( offset + i, result[ k ], _input1, input2 );
+               operation.firstReduction( result[ k ], offset + i, _input1, input2 );
          }
       }
 
       for( int k = 0; k < n; k++ ) {
          const DataType1* _input1 = input1 + k * ldInput1;
          for( IndexType i = blocks * block_size; i < size; i++ )
-            result[ k ] = operation.reduceOnHost( i, result[ k ], _input1, input2 );
+            operation.firstReduction( result[ k ], i, _input1, input2 );
       }
 #ifdef HAVE_OPENMP
    }

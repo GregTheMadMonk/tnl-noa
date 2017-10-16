@@ -203,7 +203,7 @@ compareMemory( const Element1* destination,
    //TODO: The parallel reduction on the CUDA device with different element types is needed.
    bool result = false;
    Algorithms::ParallelReductionEqualities< Element1, Element2 > reductionEqualities;
-   reductionOnCudaDevice( reductionEqualities, size, destination, source, result );
+   Reduction< Devices::Cuda >::reduce( reductionEqualities, size, destination, source, result );
    return result;
 }
 
