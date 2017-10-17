@@ -12,6 +12,7 @@
 
 #include <TNL/File.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Meshes {
@@ -47,7 +48,6 @@ public:
 
    MeshBoundaryTagsLayer& operator=( const MeshBoundaryTagsLayer& other )
    {
-      // TODO: throw exception if allocation fails
       boundaryTags.setLike( other.boundaryTags );
       boundaryIndices.setLike( other.boundaryIndices );
       interiorIndices.setLike( other.interiorIndices );
@@ -60,7 +60,6 @@ public:
    template< typename Device_ >
    MeshBoundaryTagsLayer& operator=( const MeshBoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other )
    {
-      // TODO: throw exception if allocation fails
       boundaryTags.setLike( other.boundaryTags );
       boundaryIndices.setLike( other.boundaryIndices );
       interiorIndices.setLike( other.interiorIndices );
@@ -95,18 +94,14 @@ public:
 
    void updateBoundaryIndices( DimensionTag )
    {
+      // Array does not have sum(), Vector of bools does not fit due to arithmetics
+      Containers::Vector< typename BoundaryTagsArray::ElementType, typename BoundaryTagsArray::DeviceType, typename BoundaryTagsArray::IndexType > _boundaryTagsVector;
+      _boundaryTagsVector.bind( boundaryTags.getData(), boundaryTags.getSize() );
+      const GlobalIndexType boundaryEntities = _boundaryTagsVector.template sum< GlobalIndexType >();
+      boundaryIndices.setSize( boundaryEntities );
+      interiorIndices.setSize( boundaryTags.getSize() - boundaryEntities );
+
       if( std::is_same< Device, Devices::Host >::value ) {
-         // we can't just sum an array/vector of bools, because the result would also be bool
-         // TODO: perhaps Containers::Vector::sum should provide a template parameter to force the result type
-         // (by default it would be the RealType of the vector)
-         GlobalIndexType boundaryEntities = 0;
-         for( GlobalIndexType i = 0; i < boundaryTags.getSize(); i++ )
-            if( boundaryTags[ i ] )
-               boundaryEntities++;
-
-         boundaryIndices.setSize( boundaryEntities );
-         interiorIndices.setSize( boundaryTags.getSize() - boundaryEntities );
-
          GlobalIndexType b = 0;
          GlobalIndexType i = 0;
          while( b + i < boundaryTags.getSize() ) {
@@ -127,18 +122,10 @@ public:
          OrderingHostArray hostInteriorIndices;
 
          hostBoundaryTags.setLike( boundaryTags );
+         hostBoundaryIndices.setLike( boundaryIndices );
+         hostInteriorIndices.setLike( interiorIndices );
+
          hostBoundaryTags = boundaryTags;
-
-         // we can't just sum an array/vector of bools, because the result would also be bool
-         // TODO: perhaps Containers::Vector::sum should provide a template parameter to force the result type
-         // (by default it would be the RealType of the vector)
-         GlobalIndexType boundaryEntities = 0;
-         for( GlobalIndexType i = 0; i < boundaryTags.getSize(); i++ )
-            if( hostBoundaryTags[ i ] )
-               boundaryEntities++;
-
-         hostBoundaryIndices.setSize( boundaryEntities );
-         hostInteriorIndices.setSize( boundaryTags.getSize() - boundaryEntities );
 
          GlobalIndexType b = 0;
          GlobalIndexType i = 0;
@@ -150,8 +137,6 @@ public:
                hostInteriorIndices[ i++ ] = e;
          }
 
-         boundaryIndices.setLike( hostBoundaryIndices );
-         interiorIndices.setLike( hostInteriorIndices );
          boundaryIndices = hostBoundaryIndices;
          interiorIndices = hostInteriorIndices;
       }
