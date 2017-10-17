@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <TNL/Devices/MIC.h>
 #include <TNL/Math.h>
+#include <TNL/Containers/Algorithms/VectorOperations.h>
 
 namespace TNL {
 namespace Containers {
@@ -138,8 +138,8 @@ getVectorAbsMin( const Vector& v )
    return result;
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorL1Norm( const Vector& v )
 {
@@ -147,7 +147,7 @@ getVectorL1Norm( const Vector& v )
    typedef typename Vector::IndexType Index;
    TNL_ASSERT( v. getSize() > 0, );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v. getSize();
    Devices::MICHider<const Real > vct;
    vct.pointer=v.getData();
@@ -161,15 +161,16 @@ getVectorL1Norm( const Vector& v )
    return result;
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorL2Norm( const Vector& v )
 {
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
    TNL_ASSERT( v. getSize() > 0, );
-   Real result( 0.0 );
+
+   ResultType result( 0.0 );
    const Index n = v. getSize();
    Devices::MICHider<const Real > vct;
    vct.pointer=v.getData();
@@ -186,23 +187,24 @@ getVectorL2Norm( const Vector& v )
    return TNL::sqrt( result );
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType, typename Real_ >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorLpNorm( const Vector& v,
-                 const typename Vector::RealType& p )
+                 const Real_ p )
 {
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
    TNL_ASSERT( v. getSize() > 0, );
    TNL_ASSERT( p > 0.0,
                std::cerr << " p = " << p );
-   if( p == 1.0 )
-      return getVectorL1Norm( v );
-   if( p == 2.0 )
-      return getVectorL2Norm( v );
 
-   Real result( 0.0 );
+   if( p == 1.0 )
+      return getVectorL1Norm< Vector, ResultType >( v );
+   if( p == 2.0 )
+      return getVectorL2Norm< Vector, ResultType >( v );
+
+   ResultType result( 0.0 );
    const Index n = v. getSize();
    Devices::MICHider<const Real > vct;
    vct.pointer=v.getData();
@@ -218,8 +220,8 @@ getVectorLpNorm( const Vector& v,
    return TNL::pow( result, 1.0 / p );
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorSum( const Vector& v )
 {
@@ -227,7 +229,7 @@ getVectorSum( const Vector& v )
    typedef typename Vector::IndexType Index;
    TNL_ASSERT( v. getSize() > 0, );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v. getSize();
    Devices::MICHider<const Real > vct;
    vct.pointer=v.getData();
@@ -243,7 +245,7 @@ getVectorSum( const Vector& v )
 
 template< typename Vector1, typename Vector2 >
 typename Vector1::RealType
-VectorOperations< Devices::MIC>::
+VectorOperations< Devices::MIC >::
 getVectorDifferenceMax( const Vector1& v1,
                         const Vector2& v2 )
 {
@@ -349,8 +351,8 @@ getVectorDifferenceAbsMin( const Vector1& v1,
    return result;
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorDifferenceL1Norm( const Vector1& v1,
                            const Vector2& v2 )
@@ -361,7 +363,7 @@ getVectorDifferenceL1Norm( const Vector1& v1,
    TNL_ASSERT( v1. getSize() > 0, );
    TNL_ASSERT( v1. getSize() == v2. getSize(), );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v1. getSize();
    Devices::MICHider<const Real> vct1;
    Devices::MICHider<const Real > vct2;
@@ -376,8 +378,8 @@ getVectorDifferenceL1Norm( const Vector1& v1,
    return result;
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorDifferenceL2Norm( const Vector1& v1,
                            const Vector2& v2 )
@@ -388,9 +390,8 @@ getVectorDifferenceL2Norm( const Vector1& v1,
    TNL_ASSERT( v1. getSize() > 0, );
    TNL_ASSERT( v1. getSize() == v2. getSize(), );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v1. getSize();
-
    Devices::MICHider<const Real > vct1;
    Devices::MICHider<const Real > vct2;
    vct1.pointer=v1.getData();
@@ -409,12 +410,12 @@ getVectorDifferenceL2Norm( const Vector1& v1,
 }
 
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType, typename Real_ >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorDifferenceLpNorm( const Vector1& v1,
                            const Vector2& v2,
-                           const typename Vector1::RealType& p )
+                           const Real_ p )
 {
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
@@ -425,13 +426,12 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    TNL_ASSERT( v1. getSize() == v2. getSize(), );
 
    if( p == 1.0 )
-      return getVectorDifferenceL1Norm( v1, v2 );
+      return getVectorDifferenceL1Norm< Vector1, Vector2, ResultType >( v1, v2 );
    if( p == 2.0 )
-      return getVectorDifferenceL2Norm( v1, v2 );
+      return getVectorDifferenceL2Norm< Vector1, Vector2, ResultType >( v1, v2 );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v1. getSize();
-
    Devices::MICHider<const Real > vct1;
    Devices::MICHider<const Real > vct2;
    vct1.pointer=v1.getData();
@@ -447,8 +447,8 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    return TNL::pow( result, 1.0 / p );
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorDifferenceSum( const Vector1& v1,
                         const Vector2& v2 )
@@ -459,7 +459,7 @@ getVectorDifferenceSum( const Vector1& v1,
    TNL_ASSERT( v1. getSize() > 0, );
    TNL_ASSERT( v1. getSize() == v2. getSize(), );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v1. getSize();
    Devices::MICHider<const Real > vct1;
    Devices::MICHider<const Real > vct2;
