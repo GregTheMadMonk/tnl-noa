@@ -363,7 +363,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
       CSRCudaType cudaCSR;
       //cout << "Copying matrix to GPU... ";
       cudaCSR = csrMatrix;
-      ::tnlCusparseCSR< Real > cusparseCSR;
+      TNL::tnlCusparseCSR< Real > cusparseCSR;
       cusparseCSR.init( cudaCSR, &cusparseHandle );
       benchmarkMatrix( cusparseCSR,
                        cudaX,
