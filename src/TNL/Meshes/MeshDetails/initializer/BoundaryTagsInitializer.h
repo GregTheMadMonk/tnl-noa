@@ -113,7 +113,7 @@ public:
    public:
       static void exec( Mesh& mesh )
       {
-         StaticFor< int, 0, Mesh::getMeshDimension() + 1, ResetBoundaryTags >::exec( mesh );
+         StaticFor< int, 0, Mesh::getMeshDimension() + 1, ResetBoundaryTags >::execHost( mesh );
 
          auto kernel = [] __cuda_callable__
             ( GlobalIndexType faceIndex,
@@ -137,7 +137,7 @@ public:
                                           kernel,
                                           &meshPointer.template modifyData< DeviceType >() );
 
-         StaticFor< int, 0, Mesh::getMeshDimension() + 1, UpdateBoundaryIndices >::exec( mesh );
+         StaticFor< int, 0, Mesh::getMeshDimension() + 1, UpdateBoundaryIndices >::execHost( mesh );
       }
    };
 

@@ -167,16 +167,16 @@ public:
                                        entities.getData() );
 
       // permute superentities storage
-      StaticFor< int, 0, Dimension, SubentitiesStorageWorker >::exec( mesh, perm );
+      StaticFor< int, 0, Dimension, SubentitiesStorageWorker >::execHost( mesh, perm );
 
       // permute subentities storage
-      StaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesStorageWorker >::exec( mesh, perm );
+      StaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesStorageWorker >::execHost( mesh, perm );
 
       // update superentity indices from the subentities
-      StaticFor< int, 0, Dimension, SubentitiesWorker >::exec( mesh, iperm );
+      StaticFor< int, 0, Dimension, SubentitiesWorker >::execHost( mesh, iperm );
 
       // update subentity indices from the superentities
-      StaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesWorker >::exec( mesh, iperm );
+      StaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesWorker >::execHost( mesh, iperm );
    }
 };
 

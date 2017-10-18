@@ -144,14 +144,14 @@ public:
 
       static void exec( Mesh& mesh )
       {
-         StaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, Inner >::exec( mesh );
+         StaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, Inner >::execHost( mesh );
       }
    };
 
 public:
    static void exec( Mesh& mesh )
    {
-      StaticFor< int, 0, Mesh::getMeshDimension() + 1, OuterLoop >::exec( mesh );
+      StaticFor< int, 0, Mesh::getMeshDimension() + 1, OuterLoop >::execHost( mesh );
    }
 };
 
