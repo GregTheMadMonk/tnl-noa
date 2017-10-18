@@ -20,10 +20,10 @@ class TestTriangleMeshConfig
    : public MeshConfigBase< MeshTriangleTopology, 2, double, int, short int, int >
 {
 public:
-   static constexpr bool entityStorage( int dimensions ) { return true; };
-   template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; };
-   //template< typename EntityTopology > static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimensions ) { return true; };
-   template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; };
+   static constexpr bool entityStorage( int dimensions ) { return true; }
+   template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; }
+   //template< typename EntityTopology > static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimensions ) { return true; }
+   template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
 };
 
 template< typename Device >

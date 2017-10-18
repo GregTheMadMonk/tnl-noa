@@ -24,11 +24,11 @@ using IndexType = int;
 class TestQuadrilateralMeshConfig : public MeshConfigBase< MeshQuadrilateralTopology >
 {
 public:
-   static constexpr bool entityStorage( int dimensions ) { return true; };
-   template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; };
-   template< typename EntityTopology > static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimensions ) { return ( SubentityDimensions % 2 != 0 ); };
-   template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; };
-   template< typename EntityTopology > static constexpr bool boundaryTagsStorage( EntityTopology ) { return true; };
+   static constexpr bool entityStorage( int dimensions ) { return true; }
+   template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; }
+   template< typename EntityTopology > static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimensions ) { return ( SubentityDimensions % 2 != 0 ); }
+   template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
+   template< typename EntityTopology > static constexpr bool boundaryTagsStorage( EntityTopology ) { return true; }
 };
 
 TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
