@@ -70,18 +70,19 @@ if( VTK_FOUND )
    SET( VTK_COMMON_LIBRARIES vtkCommonCore ; vtkIOLegacy )
 endif( VTK_FOUND )
 
-if( BUILD_CUDA AND ${CMAKE_CXX_COMPILER} MATCHES ".*clang\\+\\+" )
-   CUDA_ADD_EXECUTABLE( MeshReaderTest${mpiExt}${debugExt} MeshReaderTest.cu
-                        OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( MeshReaderTest${mpiExt}${debugExt}
-                           ${GTEST_BOTH_LIBRARIES}
-                           ${VTK_COMMON_LIBRARIES}
-                           tnl${mpiExt}${debugExt}-${tnlVersion} )
-else()
+# FIXME: compilation fails with nvcc (CUDA 9.0)
+#if( BUILD_CUDA AND ${CMAKE_CXX_COMPILER} MATCHES ".*clang\\+\\+" )
+#   CUDA_ADD_EXECUTABLE( MeshReaderTest${mpiExt}${debugExt} MeshReaderTest.cu
+#                        OPTIONS ${CXX_TESTS_FLAGS} )
+#   TARGET_LINK_LIBRARIES( MeshReaderTest${mpiExt}${debugExt}
+#                           ${GTEST_BOTH_LIBRARIES}
+#                           ${VTK_COMMON_LIBRARIES}
+#                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+#else()
    ADD_EXECUTABLE( MeshReaderTest${mpiExt}${debugExt} MeshReaderTest.cpp )
    TARGET_COMPILE_OPTIONS( MeshReaderTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( MeshReaderTest${mpiExt}${debugExt}
                            ${GTEST_BOTH_LIBRARIES}
                            ${VTK_COMMON_LIBRARIES}
                            tnl${debugExt}-${tnlVersion} )
-endif()
+#endif()
