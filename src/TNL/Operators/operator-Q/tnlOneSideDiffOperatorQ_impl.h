@@ -58,9 +58,9 @@ operator()( const MeshFunction& u,
             const Real& time ) const
 {
    const IndexType& cellIndex = entity.getIndex();
-   const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities();      
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
-   const RealType& u_x = ( u[ neighbourEntities.template getEntityIndex< 1 >() ] - u[ cellIndex ] ) *
+   const RealType& u_x = ( u[ neighborEntities.template getEntityIndex< 1 >() ] - u[ cellIndex ] ) *
                          mesh.template getSpaceStepsProducts< -1 >();
    return ::sqrt( this->epsSquare + u_x * u_x );          
 }
@@ -79,12 +79,12 @@ getValueStriped( const MeshFunction& u,
                  const Real& time ) const
 {
    const IndexType& cellIndex = entity.getIndex();
-   const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities();      
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const RealType& u_c = u[ cellIndex ];
-   const RealType& u_x_f = ( u[ neighbourEntities.template getEntityIndex< 1 >() ] - u_c ) * 
+   const RealType& u_x_f = ( u[ neighborEntities.template getEntityIndex< 1 >() ] - u_c ) * 
                            mesh.template getSpaceStepsProducts< -1 >();
-   const RealType& u_x_b = ( u_c - u[ neighbourEntities.template getEntityIndex< -1 >() ] ) * 
+   const RealType& u_x_b = ( u_c - u[ neighborEntities.template getEntityIndex< -1 >() ] ) * 
                            mesh.template getSpaceStepsProducts< -1 >();   
    return ::sqrt( this->epsSquare + 0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b ) );
 }
@@ -134,12 +134,12 @@ operator()( const MeshFunction& u,
             const Real& time ) const
 {
    const IndexType& cellIndex = entity.getIndex();
-   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();      
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const RealType& u_c = u[ cellIndex ];
-   const RealType u_x = ( u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] - u_c ) *
+   const RealType u_x = ( u[ neighborEntities.template getEntityIndex< 1, 0 >() ] - u_c ) *
                          mesh.template getSpaceStepsProducts< -1, 0 >();
-   const RealType u_y = ( u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - u_c ) *
+   const RealType u_y = ( u[ neighborEntities.template getEntityIndex< 0, 1 >() ] - u_c ) *
                          mesh.template getSpaceStepsProducts< 0, -1 >();
    return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y ); 
 }
@@ -158,16 +158,16 @@ getValueStriped( const MeshFunction& u,
                  const Real& time ) const
 {
    const IndexType& cellIndex = entity.getIndex();
-   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();      
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const RealType& u_c = u[ cellIndex ];
-   const RealType u_x_f = ( u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] - u_c ) *
+   const RealType u_x_f = ( u[ neighborEntities.template getEntityIndex< 1, 0 >() ] - u_c ) *
                           mesh.template getSpaceStepsProducts< -1, 0 >();
-   const RealType u_y_f = ( u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - u_c ) *
+   const RealType u_y_f = ( u[ neighborEntities.template getEntityIndex< 0, 1 >() ] - u_c ) *
                           mesh.template getSpaceStepsProducts< 0, -1 >();
-   const RealType u_x_b = ( u_c - u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] ) *
+   const RealType u_x_b = ( u_c - u[ neighborEntities.template getEntityIndex< -1, 0 >() ] ) *
                           mesh.template getSpaceStepsProducts< -1, 0 >();
-   const RealType u_y_b = ( u_c - u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] ) *
+   const RealType u_y_b = ( u_c - u[ neighborEntities.template getEntityIndex< 0, -1 >() ] ) *
                           mesh.template getSpaceStepsProducts< 0, -1 >();
    
    return ::sqrt( this->epsSquare + 
@@ -219,15 +219,15 @@ operator()( const MeshFunction& u,
             const Real& time ) const
 {
    const IndexType& cellIndex = entity.getIndex();
-   const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities();      
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const RealType& u_c =u[ cellIndex ];
    
-   const RealType u_x = ( u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] - u_c ) *
+   const RealType u_x = ( u[ neighborEntities.template getEntityIndex< 1, 0, 0 >() ] - u_c ) *
                          mesh.template getSpaceStepsProducts< -1, 0, 0 >();
-   const RealType u_y = ( u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] - u_c ) *
+   const RealType u_y = ( u[ neighborEntities.template getEntityIndex< 0, 1, 0 >() ] - u_c ) *
                          mesh.template getSpaceStepsProducts< 0, -1, 0 >();
-   const RealType u_z = ( u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] - u_c ) *
+   const RealType u_z = ( u[ neighborEntities.template getEntityIndex< 0, 0, 1 >() ] - u_c ) *
                          mesh.template getSpaceStepsProducts< 0, 0, -1 >();
    return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z ); 
 }
@@ -246,21 +246,21 @@ getValueStriped( const MeshFunction& u,
                  const Real& time ) const
 {
    const IndexType& cellIndex = entity.getIndex();
-   const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities();      
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const RealType& u_c = u[ cellIndex ];
    
-   const RealType u_x_f = ( u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] - u_c ) *
+   const RealType u_x_f = ( u[ neighborEntities.template getEntityIndex< 1, 0, 0 >() ] - u_c ) *
                           mesh.template getSpaceStepsProducts< -1, 0, 0 >();
-   const RealType u_y_f = ( u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] - u_c ) *
+   const RealType u_y_f = ( u[ neighborEntities.template getEntityIndex< 0, 1, 0 >() ] - u_c ) *
                           mesh.template getSpaceStepsProducts< 0, -1, 0 >();
-   const RealType u_z_f = ( u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] - u_c ) *
+   const RealType u_z_f = ( u[ neighborEntities.template getEntityIndex< 0, 0, 1 >() ] - u_c ) *
                           mesh.template getSpaceStepsProducts< 0, 0, -1 >();   
-   const RealType u_x_b = ( u_c - u[ neighbourEntities.template getEntityIndex< -1, 0, 0 >() ] ) *
+   const RealType u_x_b = ( u_c - u[ neighborEntities.template getEntityIndex< -1, 0, 0 >() ] ) *
                           mesh.template getSpaceStepsProducts< -1, 0, 0 >();
-   const RealType u_y_b = ( u_c - u[ neighbourEntities.template getEntityIndex< 0, -1, 0 >() ] ) *
+   const RealType u_y_b = ( u_c - u[ neighborEntities.template getEntityIndex< 0, -1, 0 >() ] ) *
                           mesh.template getSpaceStepsProducts< 0, -1, 0 >();
-   const RealType u_z_b = ( u_c - u[ neighbourEntities.template getEntityIndex< 0, 0, -1 >() ] ) *
+   const RealType u_z_b = ( u_c - u[ neighborEntities.template getEntityIndex< 0, 0, -1 >() ] ) *
                           mesh.template getSpaceStepsProducts< 0, 0, -1 >();
    
    return ::sqrt( this->epsSquare + 

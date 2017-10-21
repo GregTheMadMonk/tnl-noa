@@ -13,7 +13,7 @@
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/GridDetails/GridEntityTopology.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter.h>
-#include <TNL/Meshes/GridDetails/NeighbourGridEntityGetter.h>
+#include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
 
 namespace TNL {
 namespace Meshes {
@@ -28,31 +28,31 @@ class Grid< 2, Real, Device, Index > : public Object
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Containers::StaticVector< 2, Real > VertexType;
+   typedef Containers::StaticVector< 2, Real > PointType;
    typedef Containers::StaticVector< 2, Index > CoordinatesType;
    typedef Grid< 2, Real, Devices::Host, Index > HostType;
    typedef Grid< 2, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 2, Real, Device, Index > ThisType;
  
-   static const int meshDimensions = 2;
+   static const int meshDimension = 2;
 
-   template< int EntityDimensions,
+   template< int EntityDimension,
              typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   using MeshEntity = GridEntity< ThisType, EntityDimensions, Config >;
+   using MeshEntity = GridEntity< ThisType, EntityDimension, Config >;
  
-   typedef MeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
-   typedef MeshEntity< meshDimensions - 1, GridEntityNoStencilStorage > Face;
+   typedef MeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
+   typedef MeshEntity< meshDimension - 1, GridEntityNoStencilStorage > Face;
    typedef MeshEntity< 0 > Vertex;
    
 
    // TODO: remove this
-   //template< int EntityDimensions, 
+   //template< int EntityDimension, 
    //          typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   //using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimensions, Config >;
-   //typedef TestMeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > TestCell;
+   //using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimension, Config >;
+   //typedef TestMeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > TestCell;
    /////
    
-   static constexpr int getMeshDimensions() { return meshDimensions; };
+   static constexpr int getMeshDimension() { return meshDimension; };
 
    Grid();
 
@@ -71,13 +71,13 @@ class Grid< 2, Real, Device, Index > : public Object
    __cuda_callable__
    inline const CoordinatesType& getDimensions() const;
 
-   void setDomain( const VertexType& origin,
-                   const VertexType& proportions );
+   void setDomain( const PointType& origin,
+                   const PointType& proportions );
    __cuda_callable__
-   inline const VertexType& getOrigin() const;
+   inline const PointType& getOrigin() const;
 
    __cuda_callable__
-   inline const VertexType& getProportions() const;
+   inline const PointType& getProportions() const;
 
    template< typename EntityType >
    __cuda_callable__
@@ -99,7 +99,7 @@ class Grid< 2, Real, Device, Index > : public Object
    inline const RealType& getCellMeasure() const;
  
    __cuda_callable__
-   inline const VertexType& getSpaceSteps() const;
+   inline const PointType& getSpaceSteps() const;
 
    template< int xPow, int yPow >
    __cuda_callable__
@@ -154,9 +154,9 @@ class Grid< 2, Real, Device, Index > : public Object
  
    IndexType numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
 
-   VertexType origin, proportions;
+   PointType origin, proportions;
  
-   VertexType spaceSteps;
+   PointType spaceSteps;
  
    RealType spaceStepsProducts[ 5 ][ 5 ];
  

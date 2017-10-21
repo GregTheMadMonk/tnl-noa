@@ -198,17 +198,17 @@ setupLinearSystem( const MeshPointer& mesh,
                    Matrix& matrix )
 {
    const IndexType dofs = this->getDofs( mesh );
-   typedef typename Matrix::ObjectType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   SharedPointer< CompressedRowsLengthsVectorType > rowLengths;
+   typedef typename Matrix::ObjectType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
+   SharedPointer< CompressedRowLengthsVectorType > rowLengths;
    if( ! rowLengths->setSize( dofs ) )
       return false;
-   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >( mesh,
+   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
+   matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( mesh,
                                                                           differentialOperatorPointer,
                                                                           boundaryConditionPointer,
                                                                           rowLengths );
    matrix->setDimensions( dofs, dofs );
-   if( ! matrix->setCompressedRowsLengths( *rowLengths ) )
+   if( ! matrix->setCompressedRowLengths( *rowLengths ) )
       return false;
    return true;
 }
@@ -280,26 +280,18 @@ getExplicitUpdate( const RealType& time,
 	       *(_u[i*count+j-1]-_u[(i-2)*count+j-1]))
             ;}
   }
-   else if (this->velocityType == "advection")
-*/  { 
-   this->bindDofs( mesh, _u );
-   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   SharedPointer< MeshFunctionType > u( mesh, _u ); 
-   SharedPointer< MeshFunctionType > fu( mesh, _fu );
-   differentialOperatorPointer->setTau(tau); 
-   explicitUpdater.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           this->differentialOperatorPointer,
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
-                                                           u,
-                                                           fu );
-/*   BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
-   boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
-      this->boundaryCondition, 
-      time + tau, 
-       u ); */
- }
+   else if (this->velocityType == "advection")*/
+   { 
+      this->bindDofs( mesh, _u );
+      Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+      SharedPointer< MeshFunctionType > u( mesh, _u ); 
+      SharedPointer< MeshFunctionType > fu( mesh, _fu );
+      differentialOperatorPointer->setTau(tau); 
+      explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
+      explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
+      explicitUpdater.setRightHandSide( this->rightHandSidePointer );
+      explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, u, fu );
+   }
 }
 template< typename Mesh,
           typename BoundaryCondition,

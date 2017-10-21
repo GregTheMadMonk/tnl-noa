@@ -1,5 +1,5 @@
 /****
- * {meshDimensions}D problem
+ * {meshDimension}D problem
  */
 template< typename MeshReal,
           typename Device,
@@ -7,7 +7,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 TNL::String
-{operatorName}< TNL::Meshes::Grid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
+{operatorName}< TNL::Meshes::Grid< {meshDimension}, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {{
    return TNL::String( "{operatorName}< " ) +
@@ -24,7 +24,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-{operatorName}< TNL::Meshes::Grid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
+{operatorName}< TNL::Meshes::Grid< {meshDimension}, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -34,9 +34,9 @@ operator()( const MeshFunction& u,
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */  
-   static_assert( MeshEntity::entityDimensions == {meshDimensions}, "Wrong mesh entity dimensions." );
-   static_assert( MeshFunction::getEntitiesDimensions() == {meshDimensions}, "Wrong preimage function" );
-   const typename MeshEntity::template NeighbourEntities< {meshDimensions} >& neighbourEntities = entity.getNeighbourEntities(); 
+   static_assert( MeshEntity::entityDimension == {meshDimension}, "Wrong mesh entity dimensions." );
+   static_assert( MeshFunction::getEntitiesDimension() == {meshDimension}, "Wrong preimage function" );
+   const typename MeshEntity::template NeighborEntities< {meshDimension} >& neighborEntities = entity.getNeighborEntities(); 
 
 {explicitScheme}
 }}
@@ -49,7 +49,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-{operatorName}< TNL::Meshes::Grid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
+{operatorName}< TNL::Meshes::Grid< {meshDimension}, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -61,7 +61,7 @@ getLinearSystemRowLength( const MeshType& mesh,
     * by the Finite difference method.
     */
 
-   return 2*Dimensions + 1;
+   return 2*Dimension + 1;
 }}
 
 template< typename MeshReal,
@@ -76,7 +76,7 @@ template< typename MeshReal,
 __cuda_callable__
 inline
 void
-{operatorName}< TNL::Meshes::Grid< {meshDimensions}, MeshReal, Device, MeshIndex >, Real, Index >::
+{operatorName}< TNL::Meshes::Grid< {meshDimension}, MeshReal, Device, MeshIndex >, Real, Index >::
 setMatrixElements( const PreimageFunction& u,
                    const MeshEntity& entity,
                    const RealType& time,
@@ -84,15 +84,15 @@ setMatrixElements( const PreimageFunction& u,
                    Matrix& matrix,
                    Vector& b ) const
 {{
-   static_assert( MeshEntity::entityDimensions == {meshDimensions}, "Wrong mesh entity dimensions." );
-   static_assert( PreimageFunction::getEntitiesDimensions() == {meshDimensions}, "Wrong preimage function" );
+   static_assert( MeshEntity::entityDimension == {meshDimension}, "Wrong mesh entity dimensions." );
+   static_assert( PreimageFunction::getEntitiesDimension() == {meshDimension}, "Wrong preimage function" );
 
    /****
     * Setup the non-zero elements of the linear system here.
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */    
-   const typename MeshEntity::template NeighbourEntities< {meshDimensions} >& neighbourEntities = entity.getNeighbourEntities();
+   const typename MeshEntity::template NeighborEntities< {meshDimension} >& neighborEntities = entity.getNeighborEntities();
    const IndexType& index = entity.getIndex();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
 {semiimplicitScheme}

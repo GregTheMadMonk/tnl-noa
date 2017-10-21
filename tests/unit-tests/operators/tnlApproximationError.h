@@ -33,9 +33,9 @@ class tnlApproximationError
       typedef typename ApproximateOperator::MeshType MeshType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
-      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::PointType PointType;
       typedef SharedPointer< MeshType > MeshPointer;
-      typedef Functions::Analytic::Constant< MeshType::meshDimensions, RealType > ConstantType;
+      typedef Functions::Analytic::Constant< MeshType::meshDimension, RealType > ConstantType;
       typedef Operators::DirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 
       static void getError( const ExactOperator& exactOperator,
@@ -48,7 +48,7 @@ class tnlApproximationError
                             bool writeFunctions )
       {
          typedef Functions::MeshFunction< MeshType, MeshEntity::getDimensions() > MeshFunction;
-         typedef Operators::DirichletBoundaryConditions< MeshType, Functions::Analytic::Constant< MeshType::meshDimensions > > DirichletBoundaryConditions;
+         typedef Operators::DirichletBoundaryConditions< MeshType, Functions::Analytic::Constant< MeshType::meshDimension > > DirichletBoundaryConditions;
          typedef Functions::OperatorFunction< DirichletBoundaryConditions, MeshFunction > BoundaryOperatorFunction;
          typedef Functions::OperatorFunction< ApproximateOperator, MeshFunction > OperatorFunction;
          typedef Functions::ExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
@@ -61,11 +61,11 @@ class tnlApproximationError
 
          String meshSizeString( meshPointer->getDimensions().x() );
          String dimensionsString;
-         if( MeshType::getMeshDimensions() == 1 )
+         if( MeshType::getMeshDimension() == 1 )
             dimensionsString = "1D-";
-         if( MeshType::getMeshDimensions() == 2 )
+         if( MeshType::getMeshDimension() == 2 )
             dimensionsString = "2D-";
-         if( MeshType::getMeshDimensions() == 3 )
+         if( MeshType::getMeshDimension() == 3 )
             dimensionsString = "3D-";
 
          //if( writeFunctions )
@@ -117,8 +117,8 @@ class tnlApproximationError< Mesh, ExactOperator, ApproximateOperator, Function,
       typedef Mesh MeshType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
-      typedef typename MeshType::VertexType VertexType;
-      typedef Constant< MeshType::meshDimensions, RealType > ConstantType;
+      typedef typename MeshType::PointType PointType;
+      typedef Constant< MeshType::meshDimension, RealType > ConstantType;
       typedef DirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 
       static void getError( const Mesh& mesh,

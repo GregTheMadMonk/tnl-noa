@@ -20,8 +20,8 @@ namespace Functions {
 namespace Analytic {
    
 template< typename Real,
-          int Dimensions >
-class BlobBase : public Domain< Dimensions, SpaceDomain >
+          int Dimension >
+class BlobBase : public Domain< Dimension, SpaceDomain >
 {
    public:
 
@@ -35,7 +35,7 @@ class BlobBase : public Domain< Dimensions, SpaceDomain >
       RealType height;
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
 class Blob
 {
@@ -46,9 +46,9 @@ class Blob< 1, Real > : public BlobBase< Real, 1 >
 {
    public:
 
-      enum { Dimensions = 1 };
+      enum { Dimension = 1 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
@@ -64,11 +64,11 @@ class Blob< 1, Real > : public BlobBase< Real, 1 >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
 };
 
@@ -77,9 +77,9 @@ class Blob< 2, Real > : public BlobBase< Real, 2 >
 {
    public:
 
-      enum { Dimensions = 2 };
+      enum { Dimension = 2 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
@@ -95,11 +95,11 @@ class Blob< 2, Real > : public BlobBase< Real, 2 >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
 
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
  
 };
@@ -109,9 +109,9 @@ class Blob< 3, Real > : public BlobBase< Real, 3 >
 {
    public:
 
-      enum { Dimensions = 3 };
+      enum { Dimension = 3 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
@@ -127,17 +127,17 @@ class Blob< 3, Real > : public BlobBase< Real, 3 >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const Blob< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const Blob< Dimension, Real >& f )
 {
    str << "Level-set pseudo square function.";
    return str;

@@ -40,12 +40,12 @@ class OperatorCompositionTest
    typedef typename OperatorType::RealType RealType;
    typedef typename OperatorType::IndexType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef typename MeshType::VertexType VertexType;
-   typedef Functions::Analytic::ExpBump< MeshType::getMeshDimensions(), typename MeshType::RealType > TestFunctionType;
-   typedef Functions::Analytic::Constant< MeshType::getMeshDimensions(), typename MeshType::RealType > Constant;
+   typedef typename MeshType::PointType PointType;
+   typedef Functions::Analytic::ExpBump< MeshType::getMeshDimension(), typename MeshType::RealType > TestFunctionType;
+   typedef Functions::Analytic::Constant< MeshType::getMeshDimension(), typename MeshType::RealType > Constant;
    typedef Operators::NeumannBoundaryConditions< MeshType, Constant > BoundaryConditions;
    typedef Operators::OperatorComposition< OperatorType, OperatorType, BoundaryConditions > OperatorComposition;
-   typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
+   typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimension() > MeshFunctionType;
    typedef Functions::OperatorFunction< OperatorType, MeshFunctionType, BoundaryConditions > OperatorFunction;
    typedef Functions::OperatorFunction< OperatorType, OperatorFunction, BoundaryConditions > OperatorFunction2;
 
@@ -67,7 +67,7 @@ class OperatorCompositionTest
    {      
       SharedPointer< MeshType > mesh;
       mesh->setDimensions( CoordinatesType( 25 ) );
-      mesh->setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
+      mesh->setDomain( PointType( -1.0 ), PointType( 2.0 ) );
       TestFunctionType testFunction;
       testFunction.setAmplitude( 1.0 );
       testFunction.setSigma( 1.0 );

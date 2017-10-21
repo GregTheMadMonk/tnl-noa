@@ -17,7 +17,7 @@
 namespace TNL {
 namespace Containers {   
    
-template< int Dimensions, typename Real = double, typename Device = Devices::Host, typename Index = int >
+template< int Dimension, typename Real = double, typename Device = Devices::Host, typename Index = int >
 class MultiVector : public Vector< Real, Device, Index >
 {
 };
@@ -26,12 +26,12 @@ template< typename Real, typename Device, typename Index >
 class MultiVector< 1, Real, Device, Index > : public Vector< Real, Device, Index >
 {
    public:
-   enum { Dimensions = 1};
+   enum { Dimension = 1};
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef MultiVector< Dimensions, Real, Devices::Host, Index > HostType;
-   typedef MultiVector< Dimensions, Real, Devices::Cuda, Index > CudaType;
+   typedef MultiVector< Dimension, Real, Devices::Host, Index > HostType;
+   typedef MultiVector< Dimension, Real, Devices::Cuda, Index > CudaType;
 
    MultiVector();
 
@@ -47,7 +47,7 @@ class MultiVector< 1, Real, Device, Index > : public Vector< Real, Device, Index
 
    bool setDimensions( const Index iSize );
 
-   bool setDimensions( const StaticVector< Dimensions, Index >& dimensions );
+   bool setDimensions( const StaticVector< Dimension, Index >& dimensions );
 
    void getDimensions( Index& iSize ) const;
 
@@ -100,19 +100,19 @@ class MultiVector< 1, Real, Device, Index > : public Vector< Real, Device, Index
 
    protected:
 
-   StaticVector< Dimensions, Index > dimensions;
+   StaticVector< Dimension, Index > dimensions;
 };
 
 template< typename Real, typename Device, typename Index >
 class MultiVector< 2, Real, Device, Index > : public Vector< Real, Device, Index >
 {
    public:
-   enum { Dimensions = 2 };
+   enum { Dimension = 2 };
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef MultiVector< Dimensions, Real, Devices::Host, Index > HostType;
-   typedef MultiVector< Dimensions, Real, Devices::Cuda, Index > CudaType;
+   typedef MultiVector< Dimension, Real, Devices::Host, Index > HostType;
+   typedef MultiVector< Dimension, Real, Devices::Cuda, Index > CudaType;
 
    MultiVector();
 
@@ -189,12 +189,12 @@ class MultiVector< 3, Real, Device, Index > : public Vector< Real, Device, Index
 {
    public:
 
-   enum { Dimensions = 3 };
+   enum { Dimension = 3 };
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef MultiVector< Dimensions, Real, Devices::Host, Index > HostType;
-   typedef MultiVector< Dimensions, Real, Devices::Cuda, Index > CudaType;
+   typedef MultiVector< Dimension, Real, Devices::Host, Index > HostType;
+   typedef MultiVector< Dimension, Real, Devices::Cuda, Index > CudaType;
 
    MultiVector();
 
@@ -271,12 +271,12 @@ class MultiVector< 4, Real, Device, Index > : public Vector< Real, Device, Index
 {
    public:
 
-   enum { Dimensions = 4 };
+   enum { Dimension = 4 };
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef MultiVector< Dimensions, Real, Devices::Host, Index > HostType;
-   typedef MultiVector< Dimensions, Real, Devices::Cuda, Index > CudaType;
+   typedef MultiVector< Dimension, Real, Devices::Host, Index > HostType;
+   typedef MultiVector< Dimension, Real, Devices::Cuda, Index > CudaType;
 
    MultiVector();
 

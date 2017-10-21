@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 namespace TNL {
@@ -27,13 +33,13 @@ struct tnlSubentityVertex;
 
 
 template< typename MeshConfig,
-          int Dimensions >
+          int Dimension >
 class MeshEntityTopology
 {
    public:
 
    typedef typename MeshSubtopology< typename MeshConfig::CellTopology,
-                                        Dimensions >::Topology Topology;
+                                        Dimension >::Topology Topology;
 };
 
 template< typename MeshConfig >

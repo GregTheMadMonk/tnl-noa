@@ -17,7 +17,7 @@ namespace TNL {
 namespace Operators {   
 
 template< typename Mesh,
-          int InEntityDimensions,
+          int InEntityDimension,
           int OutEntityDimenions >
 class MeshEntitiesInterpolants
 {
@@ -42,16 +42,16 @@ class MeshEntitiesInterpolants< Meshes::Grid< 1, Real, Device, Index >, 1, 0 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntityDimensions() == 1,
+         static_assert( MeshFunction::getEntityDimension() == 1,
             "Mesh function must be defined on cells." );
 
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities();
  
-         return 0.5 * ( u[ neighbourEntities.template getEntityIndex< -1 >() ] +
-                        u[ neighbourEntities.template getEntityIndex<  1 >() ] );
+         return 0.5 * ( u[ neighborEntities.template getEntityIndex< -1 >() ] +
+                        u[ neighborEntities.template getEntityIndex<  1 >() ] );
       }
 };
 
@@ -74,16 +74,16 @@ class MeshEntitiesInterpolants< Meshes::Grid< 1, Real, Device, Index >, 0, 1 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntitiesDimensions() == 0,
+         static_assert( MeshFunction::getEntitiesDimension() == 0,
             "Mesh function must be defined on vertices (or faces in case on 1D grid)." );
  
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 0 >& neighbourEntities = entity.template getNeighbourEntities< 0 >();
+         const typename MeshEntity::template NeighborEntities< 0 >& neighborEntities = entity.template getNeighborEntities< 0 >();
  
-         return 0.5 * ( u[ neighbourEntities.template getEntityIndex< -1 >() ] +
-                        u[ neighbourEntities.template getEntityIndex<  1 >() ] );
+         return 0.5 * ( u[ neighborEntities.template getEntityIndex< -1 >() ] +
+                        u[ neighborEntities.template getEntityIndex<  1 >() ] );
       }
 };
 
@@ -106,20 +106,20 @@ class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 2, 1 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntityDimensions() == 2,
+         static_assert( MeshFunction::getEntityDimension() == 2,
             "Mesh function must be defined on cells." );
  
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
  
          if( entity.getOrientation().x() == 1.0 )
-            return 0.5 * ( u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] +
-                           u[ neighbourEntities.template getEntityIndex<  1, 0 >() ] );
+            return 0.5 * ( u[ neighborEntities.template getEntityIndex< -1, 0 >() ] +
+                           u[ neighborEntities.template getEntityIndex<  1, 0 >() ] );
          else
-            return 0.5 * ( u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] +
-                           u[ neighbourEntities.template getEntityIndex< 0,  1 >() ] );
+            return 0.5 * ( u[ neighborEntities.template getEntityIndex< 0, -1 >() ] +
+                           u[ neighborEntities.template getEntityIndex< 0,  1 >() ] );
       }
 };
 
@@ -142,18 +142,18 @@ class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 2, 0 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntityDimensions() == 2,
+         static_assert( MeshFunction::getEntityDimension() == 2,
             "Mesh function must be defined on cells." );
  
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
  
-         return 0.25 * ( u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex< -1, -1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] );
+         return 0.25 * ( u[ neighborEntities.template getEntityIndex< -1,  1 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  1,  1 >() ] +
+                         u[ neighborEntities.template getEntityIndex< -1, -1 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  1, -1 >() ] );
       }
 };
 
@@ -176,18 +176,18 @@ class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 1, 2 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntitiesDimensions() == 1,
+         static_assert( MeshFunction::getEntitiesDimension() == 1,
             "Mesh function must be defined on faces." );
  
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.template getNeighbourEntities< 1 >();
+         const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.template getNeighborEntities< 1 >();
  
-         return 0.25 * ( u[ neighbourEntities.template getEntityIndex< -1,  0 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  0,  1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  0, -1 >() ] );
+         return 0.25 * ( u[ neighborEntities.template getEntityIndex< -1,  0 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  1,  0 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  0,  1 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  0, -1 >() ] );
       }
 };
 
@@ -210,18 +210,18 @@ class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 0, 2 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntityDimensions() == 1,
+         static_assert( MeshFunction::getEntityDimension() == 1,
             "Mesh function must be defined on vertices." );
 
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 0 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 0 >& neighborEntities = entity.getNeighborEntities();
  
-         return 0.25 * ( u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex< -1, -1 >() ] +
-                         u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] );
+         return 0.25 * ( u[ neighborEntities.template getEntityIndex< -1,  1 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  1,  1 >() ] +
+                         u[ neighborEntities.template getEntityIndex< -1, -1 >() ] +
+                         u[ neighborEntities.template getEntityIndex<  1, -1 >() ] );
       }
 };
 
@@ -244,23 +244,23 @@ class MeshEntitiesInterpolants< Meshes::Grid< 3, Real, Device, Index >, 3, 2 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntityDimensions() == 3,
+         static_assert( MeshFunction::getEntityDimension() == 3,
             "Mesh function must be defined on cells." );
 
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities();
  
          if( entity.getOrientation().x() == 1.0 )
-            return 0.5 * ( u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] +
-                           u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] );
+            return 0.5 * ( u[ neighborEntities.template getEntityIndex< -1,  0,  0 >() ] +
+                           u[ neighborEntities.template getEntityIndex<  1,  0,  0 >() ] );
          if( entity.getOrientation().y() == 1.0 )
-            return 0.5 * ( u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] +
-                           u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] );
+            return 0.5 * ( u[ neighborEntities.template getEntityIndex<  0, -1,  0 >() ] +
+                           u[ neighborEntities.template getEntityIndex<  0,  1,  0 >() ] );
          else
-            return 0.5 * ( u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] +
-                           u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] );
+            return 0.5 * ( u[ neighborEntities.template getEntityIndex<  0,  0, -1 >() ] +
+                           u[ neighborEntities.template getEntityIndex<  0,  0,  1 >() ] );
       }
 };
 
@@ -283,20 +283,20 @@ class MeshEntitiesInterpolants< Meshes::Grid< 3, Real, Device, Index >, 2, 3 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntitiesDimensions() == 2,
+         static_assert( MeshFunction::getEntitiesDimension() == 2,
             "Mesh function must be defined on faces." );
 
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );
  
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.template getNeighbourEntities< 2 >();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.template getNeighborEntities< 2 >();
  
-         return 1.0 / 6.0 * ( u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] +
-                              u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] +
-                              u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] +
-                              u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] +
-                              u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] +
-                              u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] );
+         return 1.0 / 6.0 * ( u[ neighborEntities.template getEntityIndex< -1,  0,  0 >() ] +
+                              u[ neighborEntities.template getEntityIndex<  1,  0,  0 >() ] +
+                              u[ neighborEntities.template getEntityIndex<  0, -1,  0 >() ] +
+                              u[ neighborEntities.template getEntityIndex<  0,  1,  0 >() ] +
+                              u[ neighborEntities.template getEntityIndex<  0,  0, -1 >() ] +
+                              u[ neighborEntities.template getEntityIndex<  0,  0,  1 >() ] );
       }
 };
 

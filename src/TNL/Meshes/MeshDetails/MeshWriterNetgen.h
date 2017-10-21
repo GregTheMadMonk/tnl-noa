@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 #include <fstream>
@@ -37,7 +43,7 @@ class MeshWriterNetgen
       outputFile << std::setprecision( 6 );
       outputFile << fixed;
 
-      const int meshDimensions = MeshType::meshDimensions;
+      const int meshDimension = MeshType::meshDimension;
       typedef typename MeshType::template EntitiesTraits< 0 >::GlobalIndexType VerticesIndexType;
       typedef typename MeshType::PointType                                     PointType;
       const VerticesIndexType numberOfVertices = mesh.getNumberOfVertices();
@@ -46,23 +52,23 @@ class MeshWriterNetgen
       {
          const PointType& point = mesh.getVertex( i ).getPoint();
          outputFile << " ";
-         for( int d = 0; d < meshDimensions; d++ )
+         for( int d = 0; d < meshDimension; d++ )
             outputFile << " " << point[ d ];
          outputFile << std::endl;
       }
 
-      typedef typename MeshType::template EntitiesTraits< meshDimensions >::GlobalIndexType CellIndexType;
-      typedef typename MeshType::template EntitiesTraits< meshDimensions >::Type            CellType;
+      typedef typename MeshType::template EntitiesTraits< meshDimension >::GlobalIndexType CellIndexType;
+      typedef typename MeshType::template EntitiesTraits< meshDimension >::Type            CellType;
       typedef typename CellType::LocalIndexType                                             LocalIndexType;
 
-      const CellIndexType numberOfCells = mesh.template getNumberOfEntities< meshDimensions >();
+      const CellIndexType numberOfCells = mesh.template getNumberOfEntities< meshDimension >();
       outputFile << numberOfCells << std::endl;
       for( CellIndexType cellIdx = 0; cellIdx < numberOfCells; cellIdx++ )
       {
-         const CellType& cell = mesh.template getEntity< meshDimensions >( cellIdx );
+         const CellType& cell = mesh.template getEntity< meshDimension >( cellIdx );
          outputFile << "   1";
          for( LocalIndexType cellVertexIdx = 0;
-              cellVertexIdx < meshDimensions + 1;
+              cellVertexIdx < meshDimension + 1;
               cellVertexIdx++ )
             outputFile << " " << cell.getVertexIndex( cellVertexIdx );
          outputFile << std::endl;

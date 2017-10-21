@@ -24,14 +24,14 @@ namespace Problems {
 template< typename ExactOperator,
           typename TestFunction >
 class HeatEquationEocRhs
- : public Functions::Domain< TestFunction::Dimensions, Functions::SpaceDomain >
+ : public Functions::Domain< TestFunction::Dimension, Functions::SpaceDomain >
 {
    public:
 
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
       typedef typename TestFunction::RealType RealType;
-      typedef typename TestFunction::VertexType VertexType;
+      typedef typename TestFunction::PointType PointType;
 
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
@@ -42,7 +42,7 @@ class HeatEquationEocRhs
       }
 
       __cuda_callable__
-      RealType operator()( const VertexType& vertex,
+      RealType operator()( const PointType& vertex,
                          const RealType& time = 0.0 ) const
       {
          return testFunction.getTimeDerivative( vertex, time )

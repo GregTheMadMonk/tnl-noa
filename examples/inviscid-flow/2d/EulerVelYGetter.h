@@ -27,7 +27,7 @@ class EulerVelYGetter< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Inde
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
+      enum { Dimension = MeshType::getMeshDimension() };
 
       static String getType();
       MeshFunctionType rhoVelY;
@@ -81,7 +81,7 @@ class EulerVelYGetter< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Inde
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
+      enum { Dimension = MeshType::getMeshDimension() };
 
       static String getType();
       MeshFunctionType rhoVelY;
@@ -135,7 +135,7 @@ class EulerVelYGetter< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Inde
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
+      enum { Dimension = MeshType::getMeshDimension() };
 
       static String getType();
       MeshFunctionType rhoVelY;

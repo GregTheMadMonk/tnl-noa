@@ -8,11 +8,17 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Assert.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
-#include <TNL/Meshes/MeshDimensionsTag.h>
+#include <TNL/Meshes/MeshDimensionTag.h>
 
 namespace TNL {
 namespace Meshes {
@@ -33,7 +39,7 @@ public MeshConfigValidatorSubtopologyLayer< MeshConfig, MeshEntity, typename dim
 
 template< typename MeshConfig,
           typename MeshEntity >
-class MeshConfigValidatorSubtopologyLayer< MeshConfig, MeshEntity, MeshDimensionsTag< 0 > >
+class MeshConfigValidatorSubtopologyLayer< MeshConfig, MeshEntity, MeshDimensionTag< 0 > >
 {
    static_assert( ! MeshConfig::subentityStorage( MeshEntity(), 0 ) ||
                     MeshConfig::entityStorage( 0 ), "entities that are stored as subentities must be stored" );
@@ -55,7 +61,7 @@ public MeshConfigValidatorSupertopologyLayer< MeshConfig, MeshEntity, typename d
 
 template< typename MeshConfig,
           typename MeshEntity >
-class MeshConfigValidatorSupertopologyLayer< MeshConfig, MeshEntity, MeshDimensionsTag< MeshEntity::dimensions > >
+class MeshConfigValidatorSupertopologyLayer< MeshConfig, MeshEntity, MeshDimensionTag< MeshEntity::dimensions > >
 {};
 
 
@@ -64,10 +70,10 @@ class MeshConfigValidatorLayer :
  public MeshConfigValidatorLayer< MeshConfig, dimensions - 1 >,
  public MeshConfigValidatorSubtopologyLayer< MeshConfig,
                                                 typename MeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology,
-                                                MeshDimensionsTag< dimensions - 1 > >,
+                                                MeshDimensionTag< dimensions - 1 > >,
  public MeshConfigValidatorSupertopologyLayer< MeshConfig,
                                                   typename MeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology,
-                                                  MeshDimensionsTag< MeshConfig::CellTopology::dimensions > >
+                                                  MeshDimensionTag< MeshConfig::CellTopology::dimensions > >
 {
 	typedef typename MeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology Topology;
 
@@ -84,7 +90,7 @@ class MeshConfigValidatorLayerCell :
    public MeshConfigValidatorLayer< MeshConfig, MeshConfig::CellTopology::dimensions - 1 >,
    public MeshConfigValidatorSubtopologyLayer< MeshConfig,
                                                   typename MeshConfig::CellTopology,
-                                                  MeshDimensionsTag< MeshConfig::CellTopology::dimensions - 1 > >
+                                                  MeshDimensionTag< MeshConfig::CellTopology::dimensions - 1 > >
 {
 	typedef typename MeshConfig::CellTopology    CellTopology;
  	static const int dimensions =  CellTopology::dimensions;
@@ -95,13 +101,13 @@ class MeshConfigValidatorLayerCell :
 template<typename MeshConfig >
 class MeshConfigValidator : public MeshConfigValidatorLayerCell< MeshConfig >
 {
-	static const int meshDimensions = MeshConfig::CellTopology::dimensions;
+	static const int meshDimension = MeshConfig::CellTopology::dimensions;
 
-	static_assert(1 <= meshDimensions, "zero dimensional meshes are not supported");
-	static_assert( meshDimensions <= MeshConfig::worldDimensions, "world dimension must not be less than mesh dimension");
+	static_assert(1 <= meshDimension, "zero dimensional meshes are not supported");
+	static_assert( meshDimension <= MeshConfig::worldDimension, "world dimension must not be less than mesh dimension");
 
 	static_assert( MeshConfig::entityStorage( 0 ), "mesh vertices must be stored");
-	static_assert( MeshConfig::entityStorage( meshDimensions ), "mesh cells must be stored");
+	static_assert( MeshConfig::entityStorage( meshDimension ), "mesh cells must be stored");
 };
 
 } // namespace Meshes

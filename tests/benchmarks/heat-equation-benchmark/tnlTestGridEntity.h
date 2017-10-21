@@ -18,7 +18,7 @@
 #pragma once
 
 template< typename Grid,          
-          int EntityDimensions,
+          int EntityDimension,
           typename Config >
 class tnlTestGridEntity
 {
@@ -27,51 +27,51 @@ class tnlTestGridEntity
 /****
  * Specializations for cells
  */
-template< int Dimensions,
+template< int Dimension,
           typename Real,
           typename Device,
           typename Index,
           typename Config >
-class tnlTestGridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, Dimensions, Config >
+class tnlTestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >
 {
    public:
       
-      typedef Meshes::Grid< Dimensions, Real, Device, Index > GridType;
+      typedef Meshes::Grid< Dimension, Real, Device, Index > GridType;
       typedef GridType MeshType;
       typedef typename GridType::RealType RealType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef typename GridType::VertexType VertexType;
+      typedef typename GridType::PointType PointType;
       typedef Config ConfigType;
       
-      static const int meshDimensions = GridType::meshDimensions;
+      static const int meshDimension = GridType::meshDimension;
       
-      static const int entityDimensions = meshDimensions;
+      static const int entityDimension = meshDimension;
 
-      constexpr static int getDimensions() { return entityDimensions; };
+      constexpr static int getDimension() { return entityDimension; };
       
-      constexpr static int getMeshDimensions() { return meshDimensions; };
+      constexpr static int getDimension() { return meshDimension; };
       
       
-      typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
-      typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
-      typedef tnlTestGridEntity< GridType, entityDimensions, Config > ThisType;
-      //typedef tnlTestNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
+      typedef tnlStaticVector< meshDimension, IndexType > EntityOrientationType;
+      typedef tnlStaticVector< meshDimension, IndexType > EntityBasisType;
+      typedef tnlTestGridEntity< GridType, entityDimension, Config > ThisType;
+      //typedef tnlTestNeighborGridEntitiesStorage< ThisType > NeighborGridEntitiesStorageType;
       
-      /*template< int NeighbourEntityDimensions = entityDimensions >
-      using NeighbourEntities = 
-         tnlTestNeighbourGridEntityGetter<
-            tnlTestGridEntity< Meshes::Grid< Dimensions, Real, Device, Index >,
-                           entityDimensions,
+      /*template< int NeighborEntityDimension = entityDimension >
+      using NeighborEntities = 
+         tnlTestNeighborGridEntityGetter<
+            tnlTestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >,
+                           entityDimension,
                            Config >,
-            NeighbourEntityDimensions >;*/
+            NeighborEntityDimension >;*/
 
 
       __cuda_callable__ inline
       tnlTestGridEntity( const GridType& grid )
       : grid( grid ),
         entityIndex( -1 )/*,
-        neighbourEntitiesStorage( *this )*/
+        neighborEntitiesStorage( *this )*/
       {
          this->coordinates = CoordinatesType( ( Index ) 0 );
          this->orientation = EntityOrientationType( ( Index ) 0 );
@@ -87,7 +87,7 @@ class tnlTestGridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, Dimens
       : grid( grid ),
         entityIndex( -1 ),
         coordinates( coordinates )/*,
-        neighbourEntitiesStorage( *this )*/
+        neighborEntitiesStorage( *this )*/
       {
          this->orientation = EntityOrientationType( ( Index ) 0 );
          this->basis = EntityBasisType( ( Index ) 1 );
@@ -107,7 +107,7 @@ class tnlTestGridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, Dimens
       
       EntityBasisType basis;
       
-      //NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
+      //NeighborGridEntitiesStorageType neighborEntitiesStorage;
       
 };
 

@@ -50,24 +50,24 @@ class MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
 
    protected:
 
-   static bool resolveMeshDimensions( const Config::ParameterContainer& parameters,
+   static bool resolveMeshDimension( const Config::ParameterContainer& parameters,
                                       const Containers::List< String >& parsedMeshType );
 
    // Overload for disabled dimensions
-   template< int MeshDimensions,
-             typename = typename std::enable_if< ! ConfigTagDimensions<ConfigTag,MeshDimensions>::enabled >::type,
+   template< int MeshDimension,
+             typename = typename std::enable_if< ! ConfigTagDimension<ConfigTag,MeshDimension>::enabled >::type,
              typename = void >
    static bool resolveMeshRealType( const Config::ParameterContainer& parameters,
                                     const Containers::List< String >& parsedMeshType );
 
    // Overload for enabled dimensions
-   template< int MeshDimensions,
-             typename = typename std::enable_if< ConfigTagDimensions<ConfigTag,MeshDimensions>::enabled >::type >
+   template< int MeshDimension,
+             typename = typename std::enable_if< ConfigTagDimension<ConfigTag,MeshDimension>::enabled >::type >
    static bool resolveMeshRealType( const Config::ParameterContainer& parameters,
                                     const Containers::List< String >& parsedMeshType );
 
    // Overload for disabled real types
-   template< int MeshDimensions,
+   template< int MeshDimension,
              typename MeshRealType,
              typename = typename std::enable_if< ! ConfigTagReal<ConfigTag, MeshRealType>::enabled >::type,
              typename = void >
@@ -75,14 +75,14 @@ class MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
                                      const Containers::List< String >& parsedMeshType );
 
    // Overload for enabled real types
-   template< int MeshDimensions,
+   template< int MeshDimension,
              typename MeshRealType,
              typename = typename std::enable_if< ConfigTagReal<ConfigTag, MeshRealType>::enabled >::type >
    static bool resolveMeshIndexType( const Config::ParameterContainer& parameters,
                                      const Containers::List< String >& parsedMeshType );
 
    // Overload for disabled index types
-   template< int MeshDimensions,
+   template< int MeshDimension,
              typename MeshRealType,
              typename MeshIndexType,
              typename = typename std::enable_if< ! ConfigTagIndex<ConfigTag, MeshIndexType>::enabled >::type,
@@ -91,7 +91,7 @@ class MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
                                 const Containers::List< String >& parsedMeshType );
 
    // Overload for enabled index types
-   template< int MeshDimensions,
+   template< int MeshDimension,
              typename MeshRealType,
              typename MeshIndexType,
              typename = typename std::enable_if< ConfigTagIndex<ConfigTag, MeshIndexType>::enabled >::type >
@@ -100,30 +100,30 @@ class MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
 
 
 
-   template< int Dimensions, bool DimensionsSupport, typename MeshTypeResolver >
-    friend class MeshTypeResolverDimensionsSupportChecker;
+   template< int Dimension, bool DimensionSupport, typename MeshTypeResolver >
+    friend class MeshTypeResolverDimensionSupportChecker;
 };
 
-/*template< int Dimensions, bool DimensionsSupport, typename MeshTypeResolver >
-class MeshTypeResolverDimensionsSupportChecker
+/*template< int Dimension, bool DimensionSupport, typename MeshTypeResolver >
+class MeshTypeResolverDimensionSupportChecker
 {
 };
 
-template< int Dimensions, typename MeshTypeResolver >
-class MeshTypeResolverDimensionsSupportChecker< Dimensions, true, MeshTypeResolver >
+template< int Dimension, typename MeshTypeResolver >
+class MeshTypeResolverDimensionSupportChecker< Dimension, true, MeshTypeResolver >
 {
    public:
 
-   static bool checkDimensions( const Config::ParameterContainer& parameters,
+   static bool checkDimension( const Config::ParameterContainer& parameters,
                                 const Containers::List< String >& parsedMeshType );
 };
 
-template< int Dimensions, typename MeshTypeResolver >
-class MeshTypeResolverDimensionsSupportChecker< Dimensions, false, MeshTypeResolver >
+template< int Dimension, typename MeshTypeResolver >
+class MeshTypeResolverDimensionSupportChecker< Dimension, false, MeshTypeResolver >
 {
    public:
 
-   static bool checkDimensions( const Config::ParameterContainer& parameters,
+   static bool checkDimension( const Config::ParameterContainer& parameters,
                                 const Containers::List< String >& parsedMeshType );
 };*/
 

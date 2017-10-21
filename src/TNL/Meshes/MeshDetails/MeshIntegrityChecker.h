@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Meshes/Mesh.h>
@@ -19,10 +25,10 @@ namespace Meshes {
 template< typename MeshType >
 class MeshIntegrityChecker
 : public MeshIntegrityCheckerLayer< MeshType,
-                                       MeshDimensionsTag< MeshType::Config::CellType::dimensions > >
+                                       MeshDimensionTag< MeshType::Config::CellType::dimensions > >
 {
-      typedef MeshDimensionsTag< MeshType::Config::CellType::dimensions > DimensionsTag;
-      typedef MeshIntegrityCheckerLayer< MeshType, DimensionsTag > BaseType;
+      typedef MeshDimensionTag< MeshType::Config::CellType::dimensions > DimensionTag;
+      typedef MeshIntegrityCheckerLayer< MeshType, DimensionTag > BaseType;
 
    public:
       static bool checkMesh( const MeshType& mesh )

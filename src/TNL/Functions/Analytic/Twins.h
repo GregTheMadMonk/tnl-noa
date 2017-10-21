@@ -20,8 +20,8 @@ namespace Functions {
 namespace Analytic {   
 
 template< typename Real,
-          int Dimensions >
-class TwinsBase : public Domain< Dimensions, SpaceDomain >
+          int Dimension >
+class TwinsBase : public Domain< Dimension, SpaceDomain >
 {
    public:
 
@@ -31,7 +31,7 @@ class TwinsBase : public Domain< Dimensions, SpaceDomain >
                  const String& prefix = "" );
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
 class Twins
 {
@@ -42,9 +42,9 @@ class Twins< 1, Real > : public TwinsBase< Real, 1 >
 {
    public:
 
-      enum { Dimensions = 1 };
+      enum { Dimension = 1 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
@@ -54,19 +54,19 @@ class Twins< 1, Real > : public TwinsBase< Real, 1 >
       template< int XDiffOrder,
                 int YDiffOrder,
                 int ZDiffOrder,
-                typename Vertex >
+                typename Point >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                typename Point = PointType >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
+      RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
  
 };
@@ -76,9 +76,9 @@ class Twins< 2, Real > : public TwinsBase< Real, 2 >
 {
    public:
 
-      enum { Dimensions = 2 };
+      enum { Dimension = 2 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
@@ -88,19 +88,19 @@ class Twins< 2, Real > : public TwinsBase< Real, 2 >
       template< int XDiffOrder,
                 int YDiffOrder,
                 int ZDiffOrder,
-                typename Vertex >
+                typename Point >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                typename Point = PointType >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
+      RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
  
 };
@@ -110,9 +110,9 @@ class Twins< 3, Real > : public TwinsBase< Real, 3 >
 {
    public:
 
-      enum { Dimensions = 3 };
+      enum { Dimension = 3 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
@@ -122,26 +122,26 @@ class Twins< 3, Real > : public TwinsBase< Real, 3 >
       template< int XDiffOrder,
                 int YDiffOrder,
                 int ZDiffOrder,
-                typename Vertex >
+                typename Point >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                typename Point = PointType >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
+      RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
  
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const Twins< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const Twins< Dimension, Real >& f )
 {
    str << "Twins function.";
    return str;
