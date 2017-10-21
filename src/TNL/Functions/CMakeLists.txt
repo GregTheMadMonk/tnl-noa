@@ -8,7 +8,6 @@ SET( headers Domain.h
              MeshFunctionEvaluator.h
              MeshFunctionEvaluator_impl.h
              MeshFunctionGnuplotWriter.h
-             MeshFunctionGnuplotWriter_impl.h
              MeshFunctionNormGetter.h
              MeshFunctionVTKWriter.h
              OperatorFunction.h
