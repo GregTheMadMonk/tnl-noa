@@ -13,19 +13,19 @@
 namespace TNL {
 namespace Operators {   
 
-template< int Dimensions,
+template< int Dimension,
           int XDerivative,
           int YDerivative,
           int ZDerivative >
 class ExactDifference
-   : public Functions::Domain< Dimensions, Functions::SpaceDomain >
+   : public Functions::Domain< Dimension, Functions::SpaceDomain >
 {
    public:
  
       static String getType()
       {
          return String( "ExactDifference< " ) +
-            String( Dimensions ) + ", " +
+            String( Dimension ) + ", " +
             String( XDerivative ) + ", " +
             String( YDerivative ) + ", " +
             String( ZDerivative ) + " >";
@@ -35,7 +35,7 @@ class ExactDifference
       __cuda_callable__
       typename Function::RealType operator()(
          const Function& function,
-         const typename Function::VertexType& vertex,
+         const typename Function::PointType& vertex,
          const typename Function::RealType& time = 0 ) const
       {
          return function.template getPartialDerivative<

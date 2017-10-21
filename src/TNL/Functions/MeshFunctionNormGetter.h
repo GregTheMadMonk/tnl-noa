@@ -23,18 +23,18 @@ class MeshFunctionNormGetter
  * Specialization for grids
  * TODO: implement this even for other devices
  */
-template< int Dimensions,
+template< int Dimension,
           typename MeshReal,
           typename MeshIndex,
-          int EntityDimensions,
+          int EntityDimension,
           typename Real >
-class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimensions, MeshReal, Devices::Host, MeshIndex >, EntityDimensions, Real >,
-                                 Meshes::Grid< Dimensions, MeshReal, Devices::Host, MeshIndex > >
+class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimension, MeshReal, Devices::Host, MeshIndex >, EntityDimension, Real >,
+                                 Meshes::Grid< Dimension, MeshReal, Devices::Host, MeshIndex > >
 {
    public:
  
-      typedef Functions::MeshFunction< Meshes::Grid< Dimensions, MeshReal, Devices::Host, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
-      typedef Meshes::Grid< Dimensions, MeshReal, Devices::Host, MeshIndex > GridType;
+      typedef Functions::MeshFunction< Meshes::Grid< Dimension, MeshReal, Devices::Host, MeshIndex >, EntityDimension, Real > MeshFunctionType;
+      typedef Meshes::Grid< Dimension, MeshReal, Devices::Host, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
       typedef Devices::Host DeviceType;
       typedef MeshIndex MeshIndexType;
@@ -45,7 +45,7 @@ class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimensions, MeshReal, 
       static RealType getNorm( const MeshFunctionType& function,
                                const RealType& p )
       {
-         if( EntityDimensions == Dimensions )
+         if( EntityDimension == Dimension )
          {
             if( p == 1.0 )
                return function.getMesh().getCellMeasure() * function.getData().lpNorm( 1.0 );
@@ -53,7 +53,7 @@ class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimensions, MeshReal, 
                return std::sqrt( function.getMesh().getCellMeasure() ) * function.getData().lpNorm( 2.0 );
             return std::pow( function.getMesh().getCellMeasure(), 1.0 / p ) * function.getData().lpNorm( p );
          }
-         if( EntityDimensions > 0 )
+         if( EntityDimension > 0 )
          {
             if( p == 1.0 )
             {
@@ -102,18 +102,18 @@ class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimensions, MeshReal, 
 /****
  * Specialization for CUDA devices
  */
-template< int Dimensions,
+template< int Dimension,
           typename MeshReal,
           typename MeshIndex,
-          int EntityDimensions,
+          int EntityDimension,
           typename Real >
-class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimensions, MeshReal, Devices::Cuda, MeshIndex >, EntityDimensions, Real >,
-                                 Meshes::Grid< Dimensions, MeshReal, Devices::Cuda, MeshIndex > >
+class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimension, MeshReal, Devices::Cuda, MeshIndex >, EntityDimension, Real >,
+                                 Meshes::Grid< Dimension, MeshReal, Devices::Cuda, MeshIndex > >
 {
    public:
  
-      typedef Functions::MeshFunction< Meshes::Grid< Dimensions, MeshReal, Devices::Cuda, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
-      typedef Meshes::Grid< Dimensions, MeshReal, Devices::Cuda, MeshIndex > GridType;
+      typedef Functions::MeshFunction< Meshes::Grid< Dimension, MeshReal, Devices::Cuda, MeshIndex >, EntityDimension, Real > MeshFunctionType;
+      typedef Meshes::Grid< Dimension, MeshReal, Devices::Cuda, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
       typedef Devices::Cuda DeviceType;
       typedef MeshIndex MeshIndexType;
@@ -124,7 +124,7 @@ class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimensions, MeshReal, 
       static RealType getNorm( const MeshFunctionType& function,
                                const RealType& p )
       {
-         if( EntityDimensions == Dimensions )
+         if( EntityDimension == Dimension )
          {
             if( p == 1.0 )
                return function.getMesh().getCellMeasure() * function.getData().lpNorm( 1.0 );
@@ -132,7 +132,7 @@ class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimensions, MeshReal, 
                return ::sqrt( function.getMesh().getCellMeasure() ) * function.getData().lpNorm( 2.0 );
             return ::pow( function.getMesh().getCellMeasure(), 1.0 / p ) * function.getData().lpNorm( p );
          }
-         if( EntityDimensions > 0 )
+         if( EntityDimension > 0 )
          {
             TNL_ASSERT( false, std::cerr << "Not implemented yet." << std::endl );
          }

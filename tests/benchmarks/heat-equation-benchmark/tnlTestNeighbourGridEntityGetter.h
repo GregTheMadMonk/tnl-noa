@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTestNeighbourGridEntityGetter.h  -  description
+                          tnlTestNeighborGridEntityGetter.h  -  description
                              -------------------
     begin                : Nov 23, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -21,17 +21,17 @@
 
 
 template< typename GridEntity,
-          int NeighbourEntityDimensions,
+          int NeighborEntityDimension,
           typename EntityStencilTag = 
-            GridEntityStencilStorageTag< GridEntity::ConfigType::template neighbourEntityStorage< GridEntity >( NeighbourEntityDimensions ) > >
-class tnlTestNeighbourGridEntityGetter
+            GridEntityStencilStorageTag< GridEntity::ConfigType::template neighborEntityStorage< GridEntity >( NeighborEntityDimension ) > >
+class tnlTestNeighborGridEntityGetter
 {
    public:
 
       // TODO: not all specializations are implemented yet
       
       __cuda_callable__
-      tnlTestNeighbourGridEntityGetter( const GridEntity& entity )
+      tnlTestNeighborGridEntityGetter( const GridEntity& entity )
       {
          //tnlTNL_ASSERT( false, );
       };
@@ -50,25 +50,25 @@ template< typename Real,
           typename Index,
           typename Config,
           typename StencilStorage >
-class tnlTestNeighbourGridEntityGetter< 
+class tnlTestNeighborGridEntityGetter< 
    GridEntity< Meshes::Grid< 2, Real, Device, Index >, 2, Config >,
    2,
    StencilStorage >
 {
    public:
       
-      static const int EntityDimensions = 2;
-      static const int NeighbourEntityDimensions = 2;
+      static const int EntityDimension = 2;
+      static const int NeighborEntityDimension = 2;
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-      typedef GridEntity< GridType, EntityDimensions, Config > GridEntityType;
-      typedef GridEntity< GridType, NeighbourEntityDimensions, Config > NeighbourGridEntityType;
+      typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
+      typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
+      typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetter;
 
       __cuda_callable__ inline
-      tnlTestNeighbourGridEntityGetter( const GridEntityType& entity )
+      tnlTestNeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
             
@@ -79,7 +79,7 @@ class tnlTestNeighbourGridEntityGetter<
 
       const GridEntityType& entity;
       
-      //tnlTestNeighbourGridEntityGetter(){};      
+      //tnlTestNeighborGridEntityGetter(){};      
 };
 
 

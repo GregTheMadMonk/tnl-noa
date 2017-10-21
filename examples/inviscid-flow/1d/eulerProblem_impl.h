@@ -168,17 +168,17 @@ setupLinearSystem( const MeshPointer& mesh,
                    Matrix& matrix )
 {
 /*   const IndexType dofs = this->getDofs( mesh );
-   typedef typename Matrix::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   CompressedRowsLengthsVectorType rowLengths;
+   typedef typename Matrix::CompressedRowLengthsVector CompressedRowLengthsVectorType;
+   CompressedRowLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
-   MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >( mesh,
+   MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
+   matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( mesh,
                                                                           differentialOperator,
                                                                           boundaryCondition,
                                                                           rowLengths );
    matrix.setDimensions( dofs, dofs );
-   if( ! matrix.setCompressedRowsLengths( rowLengths ) )
+   if( ! matrix.setCompressedRowLengths( rowLengths ) )
       return false;*/
    return true;
 }
@@ -297,13 +297,10 @@ getExplicitUpdate( const RealType& time,
    lF1DMomentum->setVelocity( *velocity);
    lF1DMomentum->setPressure( *pressure);
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Momentum, BoundaryCondition, RightHandSide > explicitUpdaterMomentum;
-   explicitUpdaterMomentum.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           lF1DMomentum,
-                                                           this->boundaryConditionsPointer,
-                                                           this->rightHandSidePointer,
-                                                           uRhoVelocity,
-                                                           fuRhoVelocity );
+   explicitUpdaterMomentum.setDifferentialOperator( lF1DMomentum );
+   explicitUpdaterMomentum.setBoundaryConditions( this->boundaryConditionsPointer );
+   explicitUpdaterMomentum.setRightHandSide( this->rightHandSidePointer );
+   explicitUpdaterMomentum.template update< typename Mesh::Cell >( time, tau, mesh, uRhoVelocity, fuRhoVelocity );
    
    std::cout << "explicitRHSenergy" << std::endl;
    //energy
@@ -311,13 +308,11 @@ getExplicitUpdate( const RealType& time,
    lF1DEnergy->setPressure( *pressure);
    lF1DEnergy->setVelocity( *velocity);
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
-   explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           lF1DEnergy,
-                                                           this->boundaryConditionsPointer,
-                                                           this->rightHandSidePointer,
-                                                           uEnergy,
-                                                           fuEnergy );  
+   explicitUpdaterEnergy.setDifferentialOperator( lF1DEnergy );
+   explicitUpdaterEnergy.setBoundaryConditions( this->boundaryConditionsPointer );
+   explicitUpdaterEnergy.setRightHandSide( this->rightHandSidePointer );
+
+   explicitUpdaterEnergy.template update< typename Mesh::Cell >( time, tau, mesh, uEnergy, fuEnergy );  
  
  }
 

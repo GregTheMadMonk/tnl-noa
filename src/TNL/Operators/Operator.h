@@ -17,11 +17,11 @@ namespace Operators {
 
 template< typename Mesh,
           Functions::DomainType DomainType = Functions::MeshInteriorDomain,
-          int PreimageEntitiesDimensions = Mesh::getMeshDimensions(),
-          int ImageEntitiesDimensions = Mesh::getMeshDimensions(),
+          int PreimageEntitiesDimension = Mesh::getMeshDimension(),
+          int ImageEntitiesDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class Operator : public Functions::Domain< Mesh::getMeshDimensions(), DomainType >
+class Operator : public Functions::Domain< Mesh::getMeshDimension(), DomainType >
 {
    public:
  
@@ -33,9 +33,9 @@ class Operator : public Functions::Domain< Mesh::getMeshDimensions(), DomainType
       typedef Index IndexType;
       typedef void ExactOperatorType;
  
-      constexpr static int getMeshDimensions() { return MeshType::getMeshDimensions(); }
-      constexpr static int getPreimageEntitiesDimensions() { return PreimageEntitiesDimensions; }
-      constexpr static int getImageEntitiesDimensions() { return ImageEntitiesDimensions; }
+      constexpr static int getDimension() { return MeshType::getMeshDimension(); }
+      constexpr static int getPreimageEntitiesDimension() { return PreimageEntitiesDimension; }
+      constexpr static int getImageEntitiesDimension() { return ImageEntitiesDimension; }
  
       bool refresh( const RealType& time = 0.0 ) { return true; }
  

@@ -30,7 +30,7 @@ class Tridiagonal : public Matrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename Matrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
+   typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef Tridiagonal< Real, Device, Index > ThisType;
    typedef Tridiagonal< Real, Devices::Host, Index > HostType;
    typedef Tridiagonal< Real, Devices::Cuda, Index > CudaType;
@@ -46,7 +46,7 @@ class Tridiagonal : public Matrix< Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
+   bool setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 

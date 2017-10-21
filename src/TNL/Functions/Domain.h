@@ -16,7 +16,7 @@ namespace Functions {
 
 enum DomainType { NonspaceDomain, SpaceDomain, MeshDomain, MeshInteriorDomain, MeshBoundaryDomain };
 
-template< int Dimensions,
+template< int Dimension,
           DomainType DomainType_ = SpaceDomain >
 class Domain
 {
@@ -24,7 +24,7 @@ class Domain
  
       typedef void DeviceType;
  
-      static constexpr int getDomainDimensions() { return Dimensions; }
+      static constexpr int getDomainDimension() { return Dimension; }
  
       static constexpr DomainType getDomainType() { return DomainType_; }
 };

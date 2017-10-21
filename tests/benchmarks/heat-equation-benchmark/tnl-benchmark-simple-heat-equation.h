@@ -312,11 +312,11 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    }
    
    typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
-   typedef typename GridType::VertexType VertexType;
+   typedef typename GridType::PointType PointType;
    typedef SharedPointer< GridType > GridPointer;
    GridPointer gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
-   gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
    Containers::Vector< Real, Devices::Cuda, Index > vecU;
    vecU.bind( cuda_u, gridXSize * gridYSize );
    Functions::MeshFunction< GridType > meshFunction;
@@ -558,10 +558,10 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
     * Saving the result
     */
    typedef Meshes::Grid< 2, Real, Devices::Host, Index > GridType;
-   typedef typename GridType::VertexType VertexType;
+   typedef typename GridType::PointType PointType;
    SharedPointer< GridType > gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
-   gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
    Containers::Vector< Real, Devices::Host, Index > vecU;
    vecU.bind( u, gridXSize * gridYSize );
    Functions::MeshFunction< GridType > meshFunction;

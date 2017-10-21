@@ -18,7 +18,7 @@
 namespace TNL {
 namespace Meshes {
 
-template< int Dimensions,
+template< int Dimension,
           typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >

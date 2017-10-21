@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTestNeighbourGridEntityGetter2D_impl.h  -  description
+                          tnlTestNeighborGridEntityGetter2D_impl.h  -  description
                              -------------------
     begin                : Nov 23, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -17,13 +17,13 @@
 
 #pragma once
 
-#include "tnlTestNeighbourGridEntityGetter.h"
+#include "tnlTestNeighborGridEntityGetter.h"
 #include <mesh/grids/Grid2D.h>
 #include <core/tnlStaticFor.h>
 
 /****
  * +-----------------+---------------------------+-------------------+
- * | EntityDimenions | NeighbourEntityDimensions |  Stencil Storage  |
+ * | EntityDimenions | NeighborEntityDimension |  Stencil Storage  |
  * +-----------------+---------------------------+-------------------+
  * |       2         |              2            | No specialization |
  * +-----------------+---------------------------+-------------------+
@@ -33,25 +33,25 @@ template< typename Real,
           typename Index,
           typename Config,
           typename StencilStorage >
-class tnlTestNeighbourGridEntityGetter< 
+class tnlTestNeighborGridEntityGetter< 
    GridEntity< Meshes::Grid< 2, Real, Device, Index >, 2, Config >,
    2,
    StencilStorage >
 {
    public:
       
-      static const int EntityDimensions = 2;
-      static const int NeighbourEntityDimensions = 2;
+      static const int EntityDimension = 2;
+      static const int NeighborEntityDimension = 2;
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-      typedef GridEntity< GridType, EntityDimensions, Config > GridEntityType;
-      typedef GridEntity< GridType, NeighbourEntityDimensions, Config > NeighbourGridEntityType;
+      typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
+      typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
+      typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetter;
 
       __cuda_callable__ inline
-      tnlTestNeighbourGridEntityGetter( const GridEntityType& entity )
+      tnlTestNeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
             
@@ -62,12 +62,12 @@ class tnlTestNeighbourGridEntityGetter<
 
       const GridEntityType& entity;
       
-      //tnlTestNeighbourGridEntityGetter(){};      
+      //tnlTestNeighborGridEntityGetter(){};      
 };
 
 /****
  * +-----------------+---------------------------+-------------------+
- * | EntityDimenions | NeighbourEntityDimensions |  Stencil Storage  |
+ * | EntityDimenions | NeighborEntityDimension |  Stencil Storage  |
  * +-----------------+---------------------------+-------------------+
  * |       2         |              2            |       Cross       |
  * +-----------------+---------------------------+-------------------+
@@ -76,30 +76,30 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Config >
-class tnlTestNeighbourGridEntityGetter< 
+class tnlTestNeighborGridEntityGetter< 
    GridEntity< Meshes::Grid< 2, Real, Device, Index >, 2, Config >,
    2,
    GridEntityStencilStorageTag< GridEntityCrossStencil > >
 {
    public:
       
-      static const int EntityDimensions = 2;
-      static const int NeighbourEntityDimensions = 2;
+      static const int EntityDimension = 2;
+      static const int NeighborEntityDimension = 2;
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-      typedef GridEntity< GridType, EntityDimensions, Config > GridEntityType;
-      typedef GridEntity< GridType, NeighbourEntityDimensions, Config > NeighbourGridEntityType;
+      typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
+      typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
+      typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetter;
       typedef GridEntityStencilStorageTag< GridEntityCrossStencil > StencilStorage;
-      typedef tnlTestNeighbourGridEntityGetter< GridEntityType, 2, StencilStorage > ThisType;
+      typedef tnlTestNeighborGridEntityGetter< GridEntityType, 2, StencilStorage > ThisType;
       
       
       static const int stencilSize = Config::getStencilSize();
 
       __cuda_callable__ inline
-      tnlTestNeighbourGridEntityGetter( const GridEntityType& entity )
+      tnlTestNeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
       
@@ -110,9 +110,9 @@ class tnlTestNeighbourGridEntityGetter<
          public:
             
             __cuda_callable__
-            static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
+            static void exec( ThisType& neighborEntityGetter, const IndexType& entityIndex )
             {
-               neighbourEntityGetter.stencilX[ index + stencilSize ] = entityIndex + index;
+               neighborEntityGetter.stencilX[ index + stencilSize ] = entityIndex + index;
             }
       };
 
@@ -122,10 +122,10 @@ class tnlTestNeighbourGridEntityGetter<
          public:
             
             __cuda_callable__
-            static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
+            static void exec( ThisType& neighborEntityGetter, const IndexType& entityIndex )
             {
-               neighbourEntityGetter.stencilY[ index + stencilSize ] = 
-                  entityIndex + index * neighbourEntityGetter.entity.getMesh().getDimensions().x();
+               neighborEntityGetter.stencilY[ index + stencilSize ] = 
+                  entityIndex + index * neighborEntityGetter.entity.getMesh().getDimensions().x();
             }
       };
 
@@ -147,6 +147,6 @@ class tnlTestNeighbourGridEntityGetter<
       IndexType stencilX[ 2 * stencilSize + 1 ];
       IndexType stencilY[ 2 * stencilSize + 1 ];
       
-      //tnlTestNeighbourGridEntityGetter(){};      
+      //tnlTestNeighborGridEntityGetter(){};      
 };
 

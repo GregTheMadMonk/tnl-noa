@@ -32,7 +32,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
    /****
     * Boundary cells
     */
-   static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
+   static_assert( GridEntity::entityDimension == 1, "The entity has wrong dimensions." );
 
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true >(
       gridPointer,
@@ -55,7 +55,7 @@ processInteriorEntities( const GridPointer& gridPointer,
    /****
     * Interior cells
     */
-   static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
+   static_assert( GridEntity::entityDimension == 1, "The entity has wrong dimensions." );
 
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
       gridPointer,
@@ -79,7 +79,7 @@ processAllEntities(
    /****
     * All cells
     */
-   static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
+   static_assert( GridEntity::entityDimension == 1, "The entity has wrong dimensions." );
 
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
       gridPointer,
@@ -105,7 +105,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
    /****
     * Boundary vertices
     */
-   static_assert( GridEntity::entityDimensions == 0, "The entity has wrong dimensions." );
+   static_assert( GridEntity::entityDimension == 0, "The entity has wrong dimensions." );
 
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true >(
       gridPointer,
@@ -128,7 +128,7 @@ processInteriorEntities( const GridPointer& gridPointer,
    /****
     * Interior vertices
     */
-   static_assert( GridEntity::entityDimensions == 0, "The entity has wrong dimensions." );
+   static_assert( GridEntity::entityDimension == 0, "The entity has wrong dimensions." );
 
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
       gridPointer,
@@ -152,7 +152,7 @@ processAllEntities(
    /****
     * All vertices
     */
-   static_assert( GridEntity::entityDimensions == 0, "The entity has wrong dimensions." );
+   static_assert( GridEntity::entityDimension == 0, "The entity has wrong dimensions." );
 
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
       gridPointer,

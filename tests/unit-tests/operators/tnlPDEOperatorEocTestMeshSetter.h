@@ -28,7 +28,7 @@ class tnlPDEOperatorEocTestMeshSetter< Meshes::Grid< 1, Real, Device, Index > >
    public:
  
       typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
-      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::PointType PointType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
@@ -36,7 +36,7 @@ class tnlPDEOperatorEocTestMeshSetter< Meshes::Grid< 1, Real, Device, Index > >
  
       static bool setup( MeshType& mesh, const IndexType meshSize )
       {
-         VertexType origin, proportions;
+         PointType origin, proportions;
          origin.x() = -2.0;
          proportions.x() = 4.0;
          mesh.setDomain( origin, proportions );
@@ -57,7 +57,7 @@ class tnlPDEOperatorEocTestMeshSetter< Meshes::Grid< 2, Real, Device, Index > >
    public:
  
       typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
-      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::PointType PointType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
@@ -65,7 +65,7 @@ class tnlPDEOperatorEocTestMeshSetter< Meshes::Grid< 2, Real, Device, Index > >
  
       static bool setup( MeshType& mesh, const IndexType meshSize )
       {
-         VertexType origin, proportions;
+         PointType origin, proportions;
          origin.x() = -1.0;
          origin.y() = -1.0;
          proportions.x() = 2.0;
@@ -89,7 +89,7 @@ class tnlPDEOperatorEocTestMeshSetter< Meshes::Grid< 3, Real, Device, Index > >
    public:
  
       typedef Meshes::Grid< 3, Real, Device, Index > MeshType;
-      typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::PointType PointType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
@@ -97,7 +97,7 @@ class tnlPDEOperatorEocTestMeshSetter< Meshes::Grid< 3, Real, Device, Index > >
 
       static bool setup( MeshType& mesh, const IndexType meshSize )
       {
-         VertexType origin, proportions;
+         PointType origin, proportions;
          origin.x() = -1.0;
          origin.y() = -1.0;
          origin.z() = -1.0;

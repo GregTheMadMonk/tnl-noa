@@ -69,8 +69,8 @@ class meanCurvatureFlowEocSetter
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef typename MeshType::VertexType Vertex;
-   enum { Dimensions = MeshType::meshDimensions };
+   typedef typename MeshType::PointType Point;
+   enum { Dimension = MeshType::meshDimension };
 
    static bool run( const Config::ParameterContainer& parameters )
    {
@@ -78,11 +78,11 @@ class meanCurvatureFlowEocSetter
       typedef tnlFiniteVolumeOperatorQ<MeshType, Real, Index, 0> OperatorQ;
       typedef FiniteVolumeNonlinearOperator<MeshType, OperatorQ, Real, Index > NonlinearOperator;
       typedef NonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
-      typedef ExactNonlinearDiffusion< ExactGradientNorm< Dimensions >, Dimensions > ExactOperator;
-      typedef TestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
-      typedef MeanCurvatureFlowEocRhs< ExactOperator, TestFunction, Dimensions > RightHandSide;
-      typedef StaticVector < MeshType::meshDimensions, Real > Vertex;
-      typedef DirichletBoundaryConditions< MeshType, TestFunction, Dimensions, Real, Index > BoundaryConditions;
+      typedef ExactNonlinearDiffusion< ExactGradientNorm< Dimension >, Dimension > ExactOperator;
+      typedef TestFunction< MeshType::meshDimension, Real, Device > TestFunction;
+      typedef MeanCurvatureFlowEocRhs< ExactOperator, TestFunction, Dimension > RightHandSide;
+      typedef StaticVector < MeshType::meshDimension, Real > Point;
+      typedef DirichletBoundaryConditions< MeshType, TestFunction, Dimension, Real, Index > BoundaryConditions;
       typedef MeanCurvatureFlowEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );

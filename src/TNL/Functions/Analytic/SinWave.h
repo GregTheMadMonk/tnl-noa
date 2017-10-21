@@ -46,7 +46,7 @@ class SinWaveBase : public Domain< dimensions, SpaceDomain >
    Real waveLength, amplitude, phase, wavesNumber;
 };
 
-template< int Dimensions, typename Real >
+template< int Dimension, typename Real >
 class SinWave
 {
 };
@@ -57,7 +57,7 @@ class SinWave< 1, Real > : public SinWaveBase< 1, Real >
    public:
  
       typedef Real RealType;
-      typedef Containers::StaticVector< 1, RealType > VertexType;
+      typedef Containers::StaticVector< 1, RealType > PointType;
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -69,11 +69,11 @@ class SinWave< 1, Real > : public SinWaveBase< 1, Real >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
 
 };
@@ -84,7 +84,7 @@ class SinWave< 2, Real > : public SinWaveBase< 2, Real >
    public:
  
       typedef Real RealType;
-      typedef Containers::StaticVector< 2, RealType > VertexType;
+      typedef Containers::StaticVector< 2, RealType > PointType;
  
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -96,11 +96,11 @@ class SinWave< 2, Real > : public SinWaveBase< 2, Real >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
  
 };
@@ -111,7 +111,7 @@ class SinWave< 3, Real > : public SinWaveBase< 3, Real >
    public:
  
       typedef Real RealType;
-      typedef Containers::StaticVector< 3, RealType > VertexType;
+      typedef Containers::StaticVector< 3, RealType > PointType;
 
 
  
@@ -125,18 +125,18 @@ class SinWave< 3, Real > : public SinWaveBase< 3, Real >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                          const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
  
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const SinWave< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const SinWave< Dimension, Real >& f )
 {
    str << "Sin Wave. function: amplitude = " << f.getAmplitude()
        << " wavelength = " << f.getWaveLength()

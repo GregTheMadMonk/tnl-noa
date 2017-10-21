@@ -15,7 +15,7 @@ namespace Meshes {
 
 template< typename Mesh,
           typename MeshEntity,
-          int EntitiesDimensions = MeshEntity::entityDimensions >
+          int EntitiesDimension = MeshEntity::entityDimension >
 class Traverser{};
 
 } // namespace Meshes

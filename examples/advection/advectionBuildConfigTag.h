@@ -25,9 +25,9 @@ template<> struct ConfigTagIndex< advectionBuildConfigTag, long int >{ enum { en
  * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
  */
 
-template< int Dimensions, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< advectionBuildConfigTag, Meshes::Grid< Dimensions, Real, Device, Index > >
-      { enum { enabled = ConfigTagDimensions< advectionBuildConfigTag, Dimensions >::enabled  &&
+template< int Dimension, typename Real, typename Device, typename Index >
+   struct ConfigTagMesh< advectionBuildConfigTag, Meshes::Grid< Dimension, Real, Device, Index > >
+      { enum { enabled = ConfigTagDimension< advectionBuildConfigTag, Dimension >::enabled  &&
                          ConfigTagReal< advectionBuildConfigTag, Real >::enabled &&
                          ConfigTagDevice< advectionBuildConfigTag, Device >::enabled &&
                          ConfigTagIndex< advectionBuildConfigTag, Index >::enabled }; };

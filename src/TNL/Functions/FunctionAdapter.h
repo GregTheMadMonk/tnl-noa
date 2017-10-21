@@ -30,7 +30,7 @@ class FunctionAdapter
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
       typedef typename MeshType::IndexType     IndexType;
-      //typedef typename FunctionType::VertexType VertexType;
+      //typedef typename FunctionType::PointType PointType;
  
       template< typename MeshPointer >
       static bool setup( FunctionType& function,
@@ -65,7 +65,7 @@ class FunctionAdapter< Mesh, Function, SpaceDomain >
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
       typedef typename MeshType::IndexType     IndexType;
-      typedef typename FunctionType::VertexType VertexType;
+      typedef typename FunctionType::PointType PointType;
       
       template< typename MeshPointer >
       static bool setup( FunctionType& function,
@@ -102,7 +102,7 @@ class FunctionAdapter< Mesh, Function, NonspaceDomain >
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
       typedef typename MeshType::IndexType     IndexType;
-      typedef typename FunctionType::VertexType VertexType;
+      typedef typename FunctionType::PointType PointType;
       
       template< typename MeshPointer >
       static bool setup( FunctionType& function,
@@ -162,7 +162,7 @@ class FunctionAdapter< Mesh, Function, SpaceDomain >
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
       typedef typename MeshType::IndexType     IndexType;
-      typedef typename FunctionType::VertexType VertexType;
+      typedef typename FunctionType::PointType PointType;
  
       template< typename EntityType >
       __cuda_callable__ inline
@@ -187,7 +187,7 @@ class FunctionAdapter< Mesh, Function, SpaceDomain >
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
       typedef typename MeshType::IndexType     IndexType;
-      typedef typename FunctionType::VertexType VertexType;
+      typedef typename FunctionType::PointType PointType;
  
       template< typename EntityType >
       __cuda_callable__ inline

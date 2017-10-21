@@ -13,7 +13,7 @@
 #include <iomanip>
 #include <TNL/Assert.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
-#include <TNL/Meshes/GridDetails/NeighbourGridEntityGetter3D_impl.h>
+#include <TNL/Meshes/GridDetails/NeighborGridEntityGetter3D_impl.h>
 #include <TNL/Meshes/GridDetails/Grid3D.h>
 #include <TNL/Meshes/GridDetails/GridEntityMeasureGetter.h>
 
@@ -45,7 +45,7 @@ template< typename Real,
 String Grid< 3, Real, Device, Index > :: getType()
 {
    return String( "Meshes::Grid< " ) +
-          String( meshDimensions ) + ", " +
+          String( meshDimension ) + ", " +
           String( TNL::getType< RealType >() ) + ", " +
           String( Device :: getDeviceType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";
@@ -188,7 +188,7 @@ void Grid< 3, Real, Device, Index > :: setDimensions( const Index xSize, const I
                          this->numberOfDzEdges;
    this->numberOfVertices = ( xSize + 1 ) * ( ySize + 1 ) * ( zSize + 1 );
  
-   this->cellZNeighboursStep = xSize * ySize;
+   this->cellZNeighborsStep = xSize * ySize;
 
    computeSpaceSteps();
 }
@@ -214,8 +214,8 @@ const typename Grid< 3, Real, Device, Index > :: CoordinatesType&
 template< typename Real,
           typename Device,
           typename Index >
-void Grid< 3, Real, Device, Index > :: setDomain( const VertexType& origin,
-                                                     const VertexType& proportions )
+void Grid< 3, Real, Device, Index > :: setDomain( const PointType& origin,
+                                                     const PointType& proportions )
 {
    this->origin = origin;
    this->proportions = proportions;
@@ -226,7 +226,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 3, Real, Device, Index >::VertexType&
+const typename Grid< 3, Real, Device, Index >::PointType&
 Grid< 3, Real, Device, Index >::getOrigin() const
 {
    return this->origin;
@@ -236,7 +236,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 3, Real, Device, Index > :: VertexType&
+const typename Grid< 3, Real, Device, Index > :: PointType&
    Grid< 3, Real, Device, Index > :: getProportions() const
 {
 	return this->proportions;
@@ -251,10 +251,10 @@ Index
 Grid< 3, Real, Device, Index >::
 getEntitiesCount() const
 {
-   static_assert( EntityType::entityDimensions <= 3 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 3 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
-   switch( EntityType::entityDimensions )
+   switch( EntityType::entityDimension )
    {
       case 3:
          return this->numberOfCells;
@@ -277,8 +277,8 @@ EntityType
 Grid< 3, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( EntityType::entityDimensions <= 3 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 3 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
    return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
@@ -292,8 +292,8 @@ Index
 Grid< 3, Real, Device, Index >::
 getEntityIndex( const EntityType& entity ) const
 {
-   static_assert( EntityType::entityDimensions <= 3 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 3 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
  
    return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
@@ -325,7 +325,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename Grid< 3, Real, Device, Index >::VertexType&
+const typename Grid< 3, Real, Device, Index >::PointType&
 Grid< 3, Real, Device, Index >::
 getSpaceSteps() const
 {
@@ -379,7 +379,7 @@ typename GridFunction::RealType
                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   MeshEntity< getMeshDimensions() > cell;
+   MeshEntity< getMeshDimension() > cell;
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -407,7 +407,7 @@ template< typename Real,
                                                                            const GridFunction& f2 ) const
 {
    typename GridFunction::RealType maxDiff( -1.0 );
-   MeshEntity< getMeshDimensions() > cell( *this );
+   MeshEntity< getMeshDimension() > cell( *this );
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -434,7 +434,7 @@ template< typename Real,
                                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   MeshEntity< getMeshDimensions() > cell( *this );
+   MeshEntity< getMeshDimension() > cell( *this );
 
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
@@ -552,7 +552,7 @@ bool Grid< 3, Real, Device, Index > :: write( const MeshFunction& function,
                  cell.getCoordinates().x() < getDimensions().x();
                  cell.getCoordinates().x()++ )
             {
-               VertexType v = cell.getCenter();
+               PointType v = cell.getCenter();
                GnuplotWriter::write( file, v );
                GnuplotWriter::write( file, function[ this->template getEntityIndex( cell ) ] );
                file << std::endl;
@@ -573,7 +573,7 @@ void
 Grid< 3, Real, Device, Index >::
 writeProlog( Logger& logger )
 {
-   logger.writeParameter( "Dimensions:", getMeshDimensions() );
+   logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

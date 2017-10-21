@@ -27,7 +27,7 @@ class Ellpack : public Sparse< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
    typedef Ellpack< Real, Device, Index > ThisType;
@@ -46,9 +46,9 @@ class Ellpack : public Sparse< Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
+   bool setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
-   bool setConstantCompressedRowsLengths( const IndexType& rowLengths );
+   bool setConstantCompressedRowLengths( const IndexType& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
@@ -65,7 +65,7 @@ class Ellpack : public Sparse< Real, Device, Index >
 
    /*template< typename Matrix >
    bool copyFrom( const Matrix& matrix,
-                  const CompressedRowsLengthsVector& rowLengths );*/
+                  const CompressedRowLengthsVector& rowLengths );*/
 
    __cuda_callable__
    bool setElementFast( const IndexType row,

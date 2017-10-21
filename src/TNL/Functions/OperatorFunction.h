@@ -42,7 +42,7 @@ template< typename Operator,
           typename MeshFunction,
           typename BoundaryConditions >
 class OperatorFunction< Operator, MeshFunction, BoundaryConditions, true >
- : public Domain< Operator::getMeshDimensions(), MeshDomain >
+ : public Domain< Operator::getDimension(), MeshDomain >
 {
 };
 
@@ -52,7 +52,7 @@ class OperatorFunction< Operator, MeshFunction, BoundaryConditions, true >
 template< typename Operator,
           typename MeshFunctionT >
 class OperatorFunction< Operator, MeshFunctionT, void, true >
- : public Domain< Operator::getDomainDimensions(), Operator::getDomainType() >
+ : public Domain< Operator::getDomainDimension(), Operator::getDomainType() >
 {
    public:
  
@@ -70,10 +70,10 @@ class OperatorFunction< Operator, MeshFunctionT, void, true >
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
       typedef typename OperatorType::ExactOperatorType ExactOperatorType;
-      typedef MeshFunction< MeshType, OperatorType::getPreimageEntitiesDimensions() > PreimageFunctionType;
+      typedef MeshFunction< MeshType, OperatorType::getPreimageEntitiesDimension() > PreimageFunctionType;
       typedef SharedPointer< MeshType, DeviceType > MeshPointer;
       
-      static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
+      static constexpr int getEntitiesDimension() { return OperatorType::getImageEntitiesDimension(); };     
       
       OperatorFunction( const OperatorType& operator_ )
       :  operator_( operator_ ), preimageFunction( 0 ){};
@@ -130,7 +130,7 @@ class OperatorFunction< Operator, MeshFunctionT, void, true >
 template< typename Operator,
           typename PreimageFunction >
 class OperatorFunction< Operator, PreimageFunction, void, false >
- : public Domain< Operator::getDomainDimensions(), Operator::getDomainType() >
+ : public Domain< Operator::getDomainDimension(), Operator::getDomainType() >
 {
    public:
  
@@ -147,12 +147,12 @@ class OperatorFunction< Operator, PreimageFunction, void, false >
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
       typedef PreimageFunction PreimageFunctionType;
-      typedef Functions::MeshFunction< MeshType, Operator::getImageEntitiesDimensions() > ImageFunctionType;
+      typedef Functions::MeshFunction< MeshType, Operator::getImageEntitiesDimension() > ImageFunctionType;
       typedef OperatorFunction< Operator, PreimageFunction, void, true > OperatorFunctionType;
       typedef typename OperatorType::ExactOperatorType ExactOperatorType;
       typedef SharedPointer< MeshType, DeviceType > MeshPointer;
       
-      static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
+      static constexpr int getEntitiesDimension() { return OperatorType::getImageEntitiesDimension(); };     
       
       OperatorFunction( OperatorType& operator_,
                            const MeshPointer& mesh )
@@ -235,7 +235,7 @@ template< typename Operator,
           typename PreimageFunction,
           typename BoundaryConditions >
 class OperatorFunction< Operator, PreimageFunction, BoundaryConditions, false >
-  : public Domain< Operator::getMeshDimensions(), MeshDomain >
+  : public Domain< Operator::getDimension(), MeshDomain >
 {
    public:
  
@@ -255,12 +255,12 @@ class OperatorFunction< Operator, PreimageFunction, BoundaryConditions, false >
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
       typedef PreimageFunction PreimageFunctionType;
-      typedef Functions::MeshFunction< MeshType, Operator::getImageEntitiesDimensions() > ImageFunctionType;
+      typedef Functions::MeshFunction< MeshType, Operator::getImageEntitiesDimension() > ImageFunctionType;
       typedef BoundaryConditions BoundaryConditionsType;
       typedef OperatorFunction< Operator, PreimageFunction, void, true > OperatorFunctionType;
       typedef typename OperatorType::ExactOperatorType ExactOperatorType;
  
-      static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };
+      static constexpr int getEntitiesDimension() { return OperatorType::getImageEntitiesDimension(); };
  
       OperatorFunction( OperatorType& operator_,
                            const BoundaryConditionsType& boundaryConditions,
