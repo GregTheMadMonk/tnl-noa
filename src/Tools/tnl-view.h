@@ -264,7 +264,7 @@ bool convertObject( const MeshPointer& meshPointer,
       grid. setDomain( PointType( 0.0 ), PointType( 1.0 ) );
       grid. setDimensions( CoordinatesType( multiVector. getDimensions() ) );
       const Real spaceStep = grid. getSpaceSteps(). x();
-      if( ! grid. write( multiVector, outputFileName, outputFormat ) )
+//      if( ! grid. write( multiVector, outputFileName, outputFormat ) )
          return false;
    }
    return true;

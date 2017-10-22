@@ -561,49 +561,6 @@ bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
 template< typename Real,
            typename Device,
            typename Index >
-   template< typename MeshFunction >
-bool Grid< 2, Real, Device, Index > :: write( const MeshFunction& function,
-                                                 const String& fileName,
-                                                 const String& format ) const
-{
-   if( this->template getEntitiesCount< Cell >() != function. getSize() )
-   {
-      std::cerr << "The size ( " << function. getSize()
-           << " ) of a mesh function does not agree with the DOFs ( "
-           << this->template getEntitiesCount< Cell >() << " ) of a mesh." << std::endl;
-      return false;
-   }
-   std::fstream file;
-   file. open( fileName. getString(), std::ios::out );
-   if( ! file )
-   {
-      std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
-      return false;
-   }
-   file << std::setprecision( 12 );
-   if( format == "gnuplot" )
-   {
-      Cell cell( *this );
-      CoordinatesType& cellCoordinates = cell.getCoordinates();
-      for( cellCoordinates.y() = 0; cellCoordinates.y() < getDimensions(). y(); cellCoordinates.y() ++ )
-      {
-         for( cellCoordinates.x() = 0; cellCoordinates.x() < getDimensions(). x(); cellCoordinates.x() ++ )
-         {
-            PointType v = cell.getCenter();
-            GnuplotWriter::write( file,  v );
-            GnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
-            file << std::endl;
-         }
-         file << std::endl;
-      }
-   }
-   file. close();
-   return true;
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
 void
 Grid< 2, Real, Device, Index >::
 writeProlog( Logger& logger ) const

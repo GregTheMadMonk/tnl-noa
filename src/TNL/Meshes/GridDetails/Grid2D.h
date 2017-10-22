@@ -141,11 +141,6 @@ class Grid< 2, Real, Device, Index > : public Object
    bool writeMesh( const String& fileName,
                    const String& format ) const;
 
-   template< typename MeshFunction >
-   bool write( const MeshFunction& function,
-               const String& fileName,
-               const String& format ) const;
-
    void writeProlog( Logger& logger ) const;
 
    protected:
