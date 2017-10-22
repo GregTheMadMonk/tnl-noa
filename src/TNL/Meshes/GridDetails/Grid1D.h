@@ -130,9 +130,6 @@ class Grid< 1, Real, Device, Index > : public Object
 
    bool load( const String& fileName );
 
-   bool writeMesh( const String& fileName,
-                   const String& format ) const;
-
    void writeProlog( Logger& logger ) const;
 
    protected:

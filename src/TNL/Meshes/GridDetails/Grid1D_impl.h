@@ -355,20 +355,8 @@ bool Grid< 1, Real, Device, Index >::load( const String& fileName )
 }
 
 template< typename Real,
-           typename Device,
-           typename Index >
-bool Grid< 1, Real, Device, Index >::writeMesh( const String& fileName,
-                                                   const String& format ) const
-{
-   /*****
-    * TODO: implement this
-    */
-   return true;
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 void
 Grid< 1, Real, Device, Index >::
 writeProlog( Logger& logger ) const

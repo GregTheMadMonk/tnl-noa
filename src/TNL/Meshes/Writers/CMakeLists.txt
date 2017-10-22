@@ -1,4 +1,5 @@
-SET( headers NetgenWriter.h
+SET( headers AsymptoteWriter.h
+             NetgenWriter.h
              VTKWriter.h
              VTKWriter_impl.h
 )

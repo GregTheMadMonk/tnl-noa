@@ -426,7 +426,6 @@ struct FilesProcessor
       if( meshFile != "" )
          if( ! loadMesh( meshFile, *meshPointer ) )
             return false;
-      //meshPointer->writeMesh( "mesh.asy", "asymptote" );
 
       bool checkOutputFile = parameters. getParameter< bool >( "check-output-file" );
       Containers::List< String > inputFiles = parameters. getParameter< Containers::List< String > >( "input-files" );
