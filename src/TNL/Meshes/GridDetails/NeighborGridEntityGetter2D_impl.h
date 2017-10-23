@@ -63,7 +63,7 @@ class NeighborGridEntityGetter<
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-         return NeighborGridEntityType( this->grid,
+         return NeighborGridEntityType( this->entity.getMesh(),
                                          CoordinatesType( entity.getCoordinates().x() + stepX,
                                                           entity.getCoordinates().y() + stepY ) );
       }
@@ -346,7 +346,7 @@ class NeighborGridEntityGetter<
                    << " entity.getMesh().getDimensions() + CoordinatesType( sign( stepX ), sign( stepY ) ) = "
                    << entity.getMesh().getDimensions()  + CoordinatesType( sign( stepX ), sign( stepY ) )
                    << " EntityDimension = " << EntityDimension );
-         return NeighborGridEntityType( this->grid,
+         return NeighborGridEntityType( this->entity.getMesh(),
                                          CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
                                                           entity.getCoordinates().y() + stepY + ( stepY < 0 ) ) );
       }
@@ -487,7 +487,7 @@ class NeighborGridEntityGetter<
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-         return NeighborGridEntityType( this->grid,
+         return NeighborGridEntityType( this->entity.getMesh(),
                                          CoordinatesType( entity.getCoordinates().x() + stepX,
                                                           entity.getCoordinates().y() + stepY ) );
       }
