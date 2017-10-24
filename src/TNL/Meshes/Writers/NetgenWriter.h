@@ -16,69 +16,55 @@
 
 #pragma once
 
-#include <fstream>
-#include <istream>
-#include <sstream>
+#include <ostream>
 #include <iomanip>
 
 #include <TNL/String.h>
 
 namespace TNL {
 namespace Meshes {
+namespace Writers {
 
-class MeshWriterNetgen
+template< typename Mesh >
+class NetgenWriter
 {
-   public:
+   using GlobalIndexType = typename Mesh::GlobalIndexType;
+   using PointType = typename Mesh::PointType;
+   using Cell = typename Mesh::Cell;
+   static constexpr int meshDimension = Mesh::getMeshDimension();
 
-   template< typename MeshType >
-   static bool writeMesh( const String& fileName,
-                          MeshType& mesh,
-                          bool verbose )
+public:
+   static void writeMesh( const Mesh& mesh, std::ostream& str )
    {
-      std::fstream outputFile;
-      outputFile.open( fileName.getString(), std::ios::out );
-      if( ! outputFile )
-      {
-         std::cerr << "I am not able to open the output file " << fileName << "." << std::endl;
-         return false;
-      }
-      outputFile << std::setprecision( 6 );
-      outputFile << std::fixed;
+      str << std::setprecision( 6 );
+      str << std::fixed;
 
-      const int meshDimension = MeshType::meshDimension;
-      typedef typename MeshType::template EntitiesTraits< 0 >::GlobalIndexType VerticesIndexType;
-      typedef typename MeshType::PointType                                     PointType;
-      const VerticesIndexType numberOfVertices = mesh.getVerticesCount();
-      outputFile << numberOfVertices << std::endl;
-      for( VerticesIndexType i = 0; i < numberOfVertices; i++ )
+      const GlobalIndexType numberOfVertices = mesh.template getEntitiesCount< typename Mesh::Vertex >();
+      str << numberOfVertices << std::endl;
+      for( GlobalIndexType i = 0; i < numberOfVertices; i++ )
       {
-         const PointType& point = mesh.getVertex( i ).getPoint();
-         outputFile << " ";
+         const PointType& point = mesh.template getEntity< typename Mesh::Vertex >( i ).getPoint();
+         str << " ";
          for( int d = 0; d < meshDimension; d++ )
-            outputFile << " " << point[ d ];
-         outputFile << std::endl;
+            str << " " << point[ d ];
+         str << std::endl;
       }
 
-      typedef typename MeshType::template EntitiesTraits< meshDimension >::GlobalIndexType CellIndexType;
-      typedef typename MeshType::template EntitiesTraits< meshDimension >::Type            CellType;
-      typedef typename CellType::LocalIndexType                                             LocalIndexType;
-
-      const CellIndexType numberOfCells = mesh.template getEntitiesCount< meshDimension >();
-      outputFile << numberOfCells << std::endl;
-      for( CellIndexType cellIdx = 0; cellIdx < numberOfCells; cellIdx++ )
+      const GlobalIndexType numberOfCells = mesh.template getEntitiesCount< typename Mesh::Cell >();
+      str << numberOfCells << std::endl;
+      for( GlobalIndexType cellIdx = 0; cellIdx < numberOfCells; cellIdx++ )
       {
-         const CellType& cell = mesh.template getEntity< meshDimension >( cellIdx );
-         outputFile << "   1";
-         for( LocalIndexType cellVertexIdx = 0;
+         const Cell& cell = mesh.template getEntity< typename Mesh::Cell >( cellIdx );
+         str << "   1";
+         for( int cellVertexIdx = 0;
               cellVertexIdx < meshDimension + 1;
               cellVertexIdx++ )
-            outputFile << " " << cell.getVertexIndex( cellVertexIdx );
-         outputFile << std::endl;
+            str << " " << cell.getVertexIndex( cellVertexIdx );
+         str << "\n";
       }
-
-      return true;
    }
 };
 
+} // namespace Writers
 } // namespace Meshes
 } // namespace TNL
