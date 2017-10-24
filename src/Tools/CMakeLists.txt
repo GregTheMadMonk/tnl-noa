@@ -7,6 +7,9 @@ CONFIGURE_FILE( "tnl-bindir.in" "${PROJECT_TOOLS_PATH}/tnl-bindir" @ONLY )
 ADD_EXECUTABLE(tnl-grid-setup tnl-grid-setup.cpp )
 target_link_libraries (tnl-grid-setup tnl )
 
+ADD_EXECUTABLE(tnl-grid-to-mesh tnl-grid-to-mesh.cpp )
+target_link_libraries (tnl-grid-to-mesh tnl )
+
 #ADD_EXECUTABLE(tnl-mesh-convert tnl-mesh-convert.cpp )
 #target_link_libraries (tnl-mesh-convert tnl )
 
@@ -42,6 +45,7 @@ INSTALL( TARGETS tnl-init
                  tnl-view
                  tnl-diff
                  tnl-grid-setup
+                 tnl-grid-to-mesh
                  #tnl-mesh-convert
                  tnl-dicom-reader
                  tnl-image-converter
