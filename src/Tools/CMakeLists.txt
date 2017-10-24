@@ -10,8 +10,8 @@ target_link_libraries (tnl-grid-setup tnl )
 ADD_EXECUTABLE(tnl-grid-to-mesh tnl-grid-to-mesh.cpp )
 target_link_libraries (tnl-grid-to-mesh tnl )
 
-#ADD_EXECUTABLE(tnl-mesh-convert tnl-mesh-convert.cpp )
-#target_link_libraries (tnl-mesh-convert tnl )
+ADD_EXECUTABLE(tnl-mesh-converter tnl-mesh-converter.cpp )
+target_link_libraries (tnl-mesh-converter tnl )
 
 ADD_EXECUTABLE(tnl-init tnl-init.cpp )
 target_link_libraries (tnl-init tnl )
@@ -46,7 +46,7 @@ INSTALL( TARGETS tnl-init
                  tnl-diff
                  tnl-grid-setup
                  tnl-grid-to-mesh
-                 #tnl-mesh-convert
+                 tnl-mesh-converter
                  tnl-dicom-reader
                  tnl-image-converter
                  tnl-curve2gnuplot
