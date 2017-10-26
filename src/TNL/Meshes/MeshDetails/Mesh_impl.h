@@ -296,7 +296,7 @@ operator!=( const Mesh& mesh ) const
 template< typename MeshConfig, typename Device >
 void
 Mesh< MeshConfig, Device >::
-writeProlog( Logger& logger )
+writeProlog( Logger& logger ) const
 {
    logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Number of cells:", getEntitiesCount< getMeshDimension() >() );

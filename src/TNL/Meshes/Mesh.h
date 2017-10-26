@@ -170,7 +170,7 @@ class Mesh
 
       bool operator!=( const Mesh& mesh ) const;
 
-      void writeProlog( Logger& logger );
+      void writeProlog( Logger& logger ) const;
 
    protected:
       // Methods for the mesh initializer
