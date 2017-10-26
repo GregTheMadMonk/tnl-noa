@@ -606,7 +606,7 @@ template< typename Real,
            typename Index >
 void
 Grid< 2, Real, Device, Index >::
-writeProlog( Logger& logger )
+writeProlog( Logger& logger ) const
 {
    logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
