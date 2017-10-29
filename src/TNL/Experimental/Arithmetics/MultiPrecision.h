@@ -8,25 +8,31 @@
 /*IMPLEMENTATION OF GMP LIBRARY - FLOATING POINT FUNCTIONS*/
 /* Source: https://gmplib.org/ */
 
-#include<gmp.h>
+#include <gmp.h>
 
 class MultiPrecision{
 public:
     mpf_t number; // number
-    
-    MultiPrecision(mpf_t n); // inits value to 0
-    
+
+    /* INITIALIZATION OF NUMBER */
+    MultiPrecision(mpf_t number); // inits number to 0
+    MultiPrecision(mpf_t number, mp_bitcnt_t precision); // inits number to 0 with bit precision
+    MultiPrecision(mp_bitcnt_t precision); // sets the default precision
+    MultiPrecision(mpf_t number,  mpf_t n); // assigns n value to number
+
     /* ARITHMETIC FUNCTIONS */
-    MultiPrecision addition( MultiPrecision r, MultiPrecision a, MultiPrecision b ); // r = a + b
-    MultiPrecision subtraction( MultiPrecision r, MultiPrecision a, MultiPrecision b ); // r = a - b
-    MultiPrecision multiplication( MultiPrecision r, MultiPrecision a, MultiPrecision b ); // r = a * b
-    MultiPrecision division( MultiPrecision r, MultiPrecision a, MultiPrecision b ); // r = a / b
-    MultiPrecision sqrt( MultiPrecision r, MultiPrecision a ); // r = sqrt(a)  
-    MultiPrecision power( MultiPrecision r, MultiPrecision b, unsigned long int c ); // r = b ** c
-    MultiPrecision negation( MultiPrecision r, MultiPrecision b); // r = -b
-    MultiPrecision abs( MultiPrecision r, MultiPrecision a ); // r = |a|
-    
-    void freeMultiPrecision(); // free memory
+    MultiPrecision addition( MultiPrecision a, MultiPrecision b ); // result = a + b
+    MultiPrecision subtraction( MultiPrecision a, MultiPrecision b ); // result = a - b
+    MultiPrecision multiplication( MultiPrecision a, MultiPrecision b ); // result = a * b
+    MultiPrecision division( MultiPrecision a, MultiPrecision b ); // result = a / b
+    MultiPrecision sqrt( MultiPrecision a ); // result = sqrt(a)
+    MultiPrecision power( MultiPrecision a, unsigned long int c ); // result = b ** c
+    MultiPrecision negation( MultiPrecision a ); // result = -b
+    MultiPrecision abs( MultiPrecision a ); // result = |a|
+    MultiPrecision mul_2exp( MultiPrecision a, mp_bitcnt_t b );
+    MultiPrecision div_2exp( MultiPrecision a, mp_bitcnt_t b );
+
+    /* OPERATORS OVERLOADING */
+
     ~MultiPrecision(); // destructor
 };
-
