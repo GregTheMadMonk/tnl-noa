@@ -8,6 +8,9 @@
 /*IMPLEMENTATION OF GMP LIBRARY - FLOATING POINT FUNCTIONS*/
 /* Source: https://gmplib.org/ */
 
+
+#ifdef HAVE_GMP
+
 #include <gmp.h>
 
 class MultiPrecision{
@@ -36,3 +39,5 @@ public:
 
     ~MultiPrecision(); // destructor
 };
+
+#endif
