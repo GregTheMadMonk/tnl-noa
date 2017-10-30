@@ -400,38 +400,6 @@ public:
    }
 
 
-   GlobalIndexType getVerticesCount() const
-   {
-      return this->vertices.getSize();
-   }
-
-   void setVertex( const GlobalIndexType vertexIndex,
-                   const VertexType& vertex ) const
-   {
-      this->vertices.setElement( vertexIndex, vertex );
-   }
-
-   VertexType& getVertex( const GlobalIndexType vertexIndex )
-   {
-      return this->vertices[ vertexIndex ];
-   }
-
-   const VertexType& getVertex( const GlobalIndexType vertexIndex ) const
-   {
-      return this->vertices[ vertexIndex ];
-   }
-
-   void setVertex( const GlobalIndexType vertexIndex,
-                   const PointType& point )
-   {
-      this->vertices[ vertexIndex ].setPoint( point );
-   }
-
-   /****
-    * This is only for the completeness and compatibility
-    * with higher dimensions entities storage layers.
-    */
-
    void setNumberOfEntities( DimensionTag, const GlobalIndexType& entitiesCount )
    {
       this->vertices.setSize( entitiesCount );

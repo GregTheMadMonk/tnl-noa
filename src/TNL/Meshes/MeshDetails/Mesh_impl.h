@@ -316,4 +316,3 @@ std::ostream& operator<<( std::ostream& str, const Mesh< MeshConfig, Device >& m
 
 } // namespace Meshes
 } // namespace TNL
-
