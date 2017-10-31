@@ -39,7 +39,6 @@ template< typename MeshConfig,
 MeshEntity< MeshConfig, Device, EntityTopology >::
 MeshEntity( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity )
    // no cross-device copy of subentities and superentities here - Mesh constructor has to rebind pointers
-   // TODO: check this
    : MeshEntityIndex< typename MeshConfig::IdType >( entity )
 {
    static_assert( ! std::is_same< Device, Device_ >::value, "this should never happen" );
@@ -70,10 +69,7 @@ operator=( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity )
 {
    static_assert( ! std::is_same< Device, Device_ >::value, "this should never happen" );
 
-   // no cross-device copy here - Mesh::operator= has to rebind pointers
-   // TODO: check this
-//   MeshSubentityAccess< MeshConfig, Device, EntityTopology >::operator=( entity );
-//   MeshSuperentityAccess< MeshConfig, Device, EntityTopology >::operator=( entity );
+   // no cross-device copy of subentities and superentities here - Mesh::operator= has to rebind pointers
    MeshEntityIndex< typename MeshConfig::IdType >::operator=( entity );
    return *this;
 }
@@ -211,7 +207,6 @@ template< typename MeshConfig, typename Device >
 MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 MeshEntity( const MeshEntity< MeshConfig, Device_, MeshVertexTopology >& entity )
    // no cross-device copy of superentities here - Mesh constructor has to rebind pointers
-   // TODO: check this
    : MeshEntityIndex< typename MeshConfig::IdType >( entity )
 {
    static_assert( ! std::is_same< Device, Device_ >::value, "this should never happen" );
@@ -240,9 +235,7 @@ operator=( const MeshEntity< MeshConfig, Device_, MeshVertexTopology >& entity )
 {
    static_assert( ! std::is_same< Device, Device_ >::value, "this should never happen" );
 
-   // no cross-device copy of subentities and superentities here - Mesh::operator= has to rebind pointers
-   // TODO: check this
-//   MeshSuperentityAccess< MeshConfig, Device, EntityTopology >::operator=( entity );
+   // no cross-device copy of superentities here - Mesh::operator= has to rebind pointers
    MeshEntityIndex< typename MeshConfig::IdType >::operator=( entity );
    setPoint( entity.getPoint() );
    return *this;
@@ -269,8 +262,7 @@ bool
 MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 save( File& file ) const
 {
-   if( //! MeshSuperentityStorageLayers< MeshConfig, Device, MeshVertexTopology >::save( file ) ||
-       ! point.save( file ) )
+   if( ! point.save( file ) )
       return false;
    return true;
 }
@@ -280,8 +272,7 @@ bool
 MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 load( File& file )
 {
-   if( //! MeshSuperentityStorageLayers< MeshConfig, Device, MeshVertexTopology >::load( file ) ||
-       ! point.load( file ) )
+   if( ! point.load( file ) )
       return false;
    return true;
 }

@@ -95,7 +95,6 @@ protected:
    MeshSubentityStorageLayer& operator=( const MeshSubentityStorageLayer& other )
    {
       BaseType::operator=( other );
-      // TODO: throw exception if allocation fails
       storageNetwork.setLike( other.storageNetwork );
       storageNetwork = other.storageNetwork;
       return *this;
@@ -105,7 +104,6 @@ protected:
    MeshSubentityStorageLayer& operator=( const MeshSubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
    {
       BaseType::operator=( other );
-      // TODO: throw exception if allocation fails
       storageNetwork.setLike( other.storageNetwork );
       storageNetwork = other.storageNetwork;
       return *this;
