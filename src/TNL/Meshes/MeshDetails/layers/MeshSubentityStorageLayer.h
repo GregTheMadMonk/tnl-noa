@@ -19,7 +19,7 @@
 #include <TNL/File.h>
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshSubentityTraits.h>
+#include <TNL/Meshes/MeshDetails/traits/WeakStorageTraits.h>
 
 namespace TNL {
 namespace Meshes {
@@ -28,8 +28,7 @@ template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
           typename SubdimensionTag,
-          bool SubentityStorage =
-               MeshConfig::subentityStorage( EntityTopology(), SubdimensionTag::value ) >
+          bool SubentityStorage = WeakSubentityStorageTrait< MeshConfig, Device, EntityTopology, SubdimensionTag >::storageEnabled >
 class MeshSubentityStorageLayer;
 
 template< typename MeshConfig,

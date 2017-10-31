@@ -13,7 +13,7 @@
 #include <TNL/File.h>
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshSubentityTraits.h>
+#include <TNL/Meshes/MeshDetails/traits/WeakStorageTraits.h>
 #include <TNL/Meshes/MeshDetails/MeshEntityOrientation.h>
 
 namespace TNL {
@@ -24,7 +24,7 @@ template< typename MeshConfig,
           typename EntityTopology,
           typename DimensionTag,
           bool SubentityStorage =
-               MeshConfig::subentityStorage( EntityTopology(), DimensionTag::value ),
+               WeakSubentityStorageTrait< MeshConfig, Device, EntityTopology, DimensionTag >::storageEnabled,
           bool SubentityOrientationStorage =
                MeshConfig::subentityOrientationStorage( EntityTopology(), DimensionTag::value ) >
 class MeshSubentityAccessLayer;
@@ -141,7 +141,6 @@ class MeshSubentityAccessLayer< MeshConfig,
 protected:
    using GlobalIndexType        = typename SubentityTraitsType::GlobalIndexType;
    using LocalIndexType         = typename SubentityTraitsType::LocalIndexType;
-   using StorageNetworkType     = typename SubentityTraitsType::StorageNetworkType;
    using SubentityAccessorType  = typename SubentityTraitsType::SubentityAccessorType;
    using OrientationArrayType   = typename SubentityTraitsType::OrientationArrayType;
    using IdPermutationArrayType = typename SubentityTraitsType::IdPermutationArrayType;
@@ -286,7 +285,6 @@ class MeshSubentityAccessLayer< MeshConfig,
 protected:
    using GlobalIndexType       = typename SubentityTraitsType::GlobalIndexType;
    using LocalIndexType        = typename SubentityTraitsType::LocalIndexType;
-   using StorageNetworkType    = typename SubentityTraitsType::StorageNetworkType;
    using SubentityAccessorType = typename SubentityTraitsType::SubentityAccessorType;
 
    MeshSubentityAccessLayer() = default;

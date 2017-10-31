@@ -26,8 +26,7 @@ template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
           typename DimensionTag,
-          bool SuperentityStorage =
-             MeshTraits< MeshConfig, Device >::template SuperentityTraits< EntityTopology, DimensionTag::value >::storageEnabled >
+          bool SuperentityStorage = WeakSuperentityStorageTrait< MeshConfig, Device, EntityTopology, DimensionTag >::storageEnabled >
 class MeshSuperentityAccessLayer;
 
 
@@ -130,7 +129,6 @@ class MeshSuperentityAccessLayer< MeshConfig,
 public:
    using GlobalIndexType         = typename SuperentityTraitsType::GlobalIndexType;
    using LocalIndexType          = typename SuperentityTraitsType::LocalIndexType;
-   using StorageNetworkType      = typename SuperentityTraitsType::StorageNetworkType;
    using SuperentityAccessorType = typename SuperentityTraitsType::SuperentityAccessorType;
 
    /****
@@ -248,17 +246,15 @@ class MeshSuperentityAccessLayer< MeshConfig,
                                   false >
 {
    using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
-   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
-   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionTag::value >;
 
 protected:
-   using GlobalIndexType         = typename SuperentityTraitsType::GlobalIndexType;
-   using LocalIndexType          = typename SuperentityTraitsType::LocalIndexType;
-   using SuperentityAccessorType = typename SuperentityTraitsType::SuperentityAccessorType;
+   using GlobalIndexType         = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType          = typename MeshConfig::LocalIndexType;
 
    /***
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
+   template< typename SuperentityAccessorType >
    __cuda_callable__
    void bindSuperentitiesStorageNetwork( DimensionTag,
                                          const SuperentityAccessorType& storage ) {}
@@ -296,17 +292,15 @@ class MeshSuperentityAccessLayer< MeshConfig,
                                   true >
 {
    using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
-   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
-   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionTag::value >;
 
 protected:
-   using GlobalIndexType         = typename SuperentityTraitsType::GlobalIndexType;
-   using LocalIndexType          = typename SuperentityTraitsType::LocalIndexType;
-   using SuperentityAccessorType = typename SuperentityTraitsType::SuperentityAccessorType;
+   using GlobalIndexType         = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType          = typename MeshConfig::LocalIndexType;
 
    /***
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
+   template< typename SuperentityAccessorType >
    __cuda_callable__
    void bindSuperentitiesStorageNetwork( DimensionTag,
                                          const SuperentityAccessorType& storage ) {}
@@ -336,4 +330,3 @@ protected:
 
 } // namespace Meshes
 } // namespace TNL
-

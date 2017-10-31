@@ -31,8 +31,7 @@ class MeshSuperentityTraits
 {
 public:
    static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
-   // FIXME: this would break MeshSuperentityAccess, but it should be possible to implement it similarly to MeshSubentityAccess
-   //static_assert( EntityTopology::dimension < Dimension, "Superentity dimension must be higher than the entity dimension." );
+   static_assert( EntityTopology::dimension < Dimension, "Superentity dimension must be higher than the entity dimension." );
 
    static constexpr bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimension );
 

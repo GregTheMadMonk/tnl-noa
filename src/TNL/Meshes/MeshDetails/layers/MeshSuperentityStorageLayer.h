@@ -19,7 +19,7 @@
 #include <TNL/File.h>
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshSuperentityTraits.h>
+#include <TNL/Meshes/MeshDetails/traits/WeakStorageTraits.h>
 
 namespace TNL {
 namespace Meshes {
@@ -28,8 +28,7 @@ template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
           typename SuperdimensionTag,
-          bool SuperentityStorage =
-               MeshTraits< MeshConfig, Device >::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >::storageEnabled >
+          bool SuperentityStorage = WeakSuperentityStorageTrait< MeshConfig, Device, EntityTopology, SuperdimensionTag >::storageEnabled >
 class MeshSuperentityStorageLayer;
 
 template< typename MeshConfig,
@@ -79,7 +78,6 @@ class MeshSuperentityStorageLayer< MeshConfig, Device, EntityTopology, Superdime
 
 protected:
    using GlobalIndexType    = typename SuperentityTraitsType::GlobalIndexType;
-   using LocalIndexType     = typename SuperentityTraitsType::LocalIndexType;
    using StorageNetworkType = typename SuperentityTraitsType::StorageNetworkType;
  
    MeshSuperentityStorageLayer() = default;
@@ -199,13 +197,9 @@ template< typename MeshConfig,
 class MeshSuperentityStorageLayer< MeshConfig, Device, EntityTopology, DimensionTag< EntityTopology::dimension >, false >
 {
    using SuperdimensionTag = DimensionTag< EntityTopology::dimension >;
-   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
-   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >;
 
 protected:
-   using GlobalIndexType    = typename SuperentityTraitsType::GlobalIndexType;
-   using LocalIndexType     = typename SuperentityTraitsType::LocalIndexType;
-   using StorageNetworkType = typename SuperentityTraitsType::StorageNetworkType;
+   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
  
    MeshSuperentityStorageLayer() = default;
    explicit MeshSuperentityStorageLayer( const MeshSuperentityStorageLayer& other ) {}
@@ -249,13 +243,9 @@ class MeshSuperentityStorageLayer< MeshConfig,
                                    true >
 {
    using SuperdimensionTag = DimensionTag< EntityTopology::dimension >;
-   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
-   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >;
 
 protected:
-   using GlobalIndexType    = typename SuperentityTraitsType::GlobalIndexType;
-   using LocalIndexType     = typename SuperentityTraitsType::LocalIndexType;
-   using StorageNetworkType = typename SuperentityTraitsType::StorageNetworkType;
+   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
  
    MeshSuperentityStorageLayer() = default;
    explicit MeshSuperentityStorageLayer( const MeshSuperentityStorageLayer& other ) {}
