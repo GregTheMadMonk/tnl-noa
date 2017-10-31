@@ -70,7 +70,7 @@ public:
    }
 
 
-   void setNumberOfEntities( const GlobalIndexType& entitiesCount )
+   void setEntitiesCount( const GlobalIndexType& entitiesCount )
    {
       boundaryTags.setSize( entitiesCount );
    }
@@ -240,7 +240,7 @@ public:
    template< typename Device_ >
    MeshBoundaryTagsLayer& operator=( const MeshBoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other ) { return *this; }
 
-   void setNumberOfEntities( const GlobalIndexType& entitiesCount ) {}
+   void setEntitiesCount( const GlobalIndexType& entitiesCount ) {}
 
    void resetBoundaryTags( DimensionTag ) {}
    void setIsBoundaryEntity( DimensionTag, const GlobalIndexType& entityIndex, bool isBoundary ) {}

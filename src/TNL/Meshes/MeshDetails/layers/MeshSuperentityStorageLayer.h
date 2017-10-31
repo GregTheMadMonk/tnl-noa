@@ -113,9 +113,9 @@ protected:
    }
 
 
-   void setNumberOfEntities( const GlobalIndexType& entitiesCount )
+   void setEntitiesCount( const GlobalIndexType& entitiesCount )
    {
-      BaseType::setNumberOfEntities( entitiesCount );
+      BaseType::setEntitiesCount( entitiesCount );
       this->storageNetwork.setKeysRange( entitiesCount );
    }
 
@@ -211,7 +211,7 @@ protected:
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */
-   void setNumberOfEntities( const GlobalIndexType& entitiesCount ) {}
+   void setEntitiesCount( const GlobalIndexType& entitiesCount ) {}
 
    void print( std::ostream& str ) const {}
 
@@ -257,7 +257,7 @@ protected:
    /****
     * These methods are due to 'using BaseType::...;' in the derived classes.
     */
-   void setNumberOfEntities( const GlobalIndexType& entitiesCount ) {}
+   void setEntitiesCount( const GlobalIndexType& entitiesCount ) {}
 
    void print( std::ostream& str ) const {}
 

@@ -49,10 +49,10 @@ public:
 
 protected:
    template< int Dimension >
-   void setNumberOfEntities( const typename EntityTraits< Dimension >::GlobalIndexType& entitiesCount )
+   void setEntitiesCount( const typename EntityTraits< Dimension >::GlobalIndexType& entitiesCount )
    {
       static_assert( EntityTraits< Dimension >::storageEnabled, "You try to set number of entities which are not configured for storage." );
-      BaseType::setNumberOfEntities( DimensionTag< Dimension >(), entitiesCount );
+      BaseType::setEntitiesCount( DimensionTag< Dimension >(), entitiesCount );
    }
 
    template< int Dimension, int Subdimension >
@@ -176,7 +176,7 @@ public:
    /****
      * Make visible getters of the lower layer
      */
-   using BaseType::setNumberOfEntities;
+   using BaseType::setEntitiesCount;
    using BaseType::getEntitiesCount;
    using BaseType::getEntity;
 
@@ -235,12 +235,12 @@ public:
    }
 
 
-   void setNumberOfEntities( DimensionTag, const GlobalIndexType& entitiesCount )
+   void setEntitiesCount( DimensionTag, const GlobalIndexType& entitiesCount )
    {
       this->entities.setSize( entitiesCount );
-      SubentityStorageBaseType::setNumberOfEntities( entitiesCount );
-      SuperentityStorageBaseType::setNumberOfEntities( entitiesCount );
-      BoundaryTagsBaseType::setNumberOfEntities( entitiesCount );
+      SubentityStorageBaseType::setEntitiesCount( entitiesCount );
+      SuperentityStorageBaseType::setEntitiesCount( entitiesCount );
+      BoundaryTagsBaseType::setEntitiesCount( entitiesCount );
    }
 
    __cuda_callable__
@@ -363,7 +363,7 @@ public:
    }
 
 
-   void setNumberOfEntities() {}
+   void setEntitiesCount() {}
    void getEntitiesCount() const {}
    void getEntity() const {}
 
