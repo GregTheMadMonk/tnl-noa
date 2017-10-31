@@ -236,6 +236,7 @@ class MeshSuperentityAccessLayer< MeshConfig,
 {
 };
 
+// termination of recursive inheritance (everything is reduced to EntityStorage == false thanks to the WeakSuperentityStorageTrait)
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
@@ -244,52 +245,6 @@ class MeshSuperentityAccessLayer< MeshConfig,
                                   EntityTopology,
                                   Meshes::DimensionTag< EntityTopology::dimension >,
                                   false >
-{
-   using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
-
-protected:
-   using GlobalIndexType         = typename MeshConfig::GlobalIndexType;
-   using LocalIndexType          = typename MeshConfig::LocalIndexType;
-
-   /***
-    * Necessary because of 'using BaseType::...;' in the derived classes
-    */
-   template< typename SuperentityAccessorType >
-   __cuda_callable__
-   void bindSuperentitiesStorageNetwork( DimensionTag,
-                                         const SuperentityAccessorType& storage ) {}
-   __cuda_callable__
-   void setNumberOfSuperentities( DimensionTag,
-                                  const LocalIndexType size ) {}
-   __cuda_callable__
-   void getSuperentitiesCount( DimensionTag ) const {}
-   __cuda_callable__
-   void getSuperentityIndex( DimensionTag,
-                             const LocalIndexType localIndex ) const {}
-   __cuda_callable__
-   void setSuperentityIndex( DimensionTag,
-                             const LocalIndexType& localIndex,
-                             const GlobalIndexType& globalIndex ) {}
-   __cuda_callable__
-   void getSuperentityIndices() {}
-
-   __cuda_callable__
-   bool operator==( const MeshSuperentityAccessLayer& other ) const
-   {
-      return true;
-   }
-
-   void print( std::ostream& str ) const {}
-};
-
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
-class MeshSuperentityAccessLayer< MeshConfig,
-                                  Device,
-                                  EntityTopology,
-                                  Meshes::DimensionTag< EntityTopology::dimension >,
-                                  true >
 {
    using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
 

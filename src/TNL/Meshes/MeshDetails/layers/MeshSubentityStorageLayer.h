@@ -195,52 +195,7 @@ public:
    { return *this; }
 };
 
-
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
-class MeshSubentityStorageLayer< MeshConfig,
-                                 Device,
-                                 EntityTopology,
-                                 DimensionTag< EntityTopology::dimension >,
-                                 true >
-{
-   using SubdimensionTag = DimensionTag< EntityTopology::dimension >;
-
-protected:
-   MeshSubentityStorageLayer() = default;
-   explicit MeshSubentityStorageLayer( const MeshSubentityStorageLayer& other ) {}
-   template< typename Device_ >
-   MeshSubentityStorageLayer( const MeshSubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other ) {}
-   template< typename Device_ >
-   MeshSubentityStorageLayer& operator=( const MeshSubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other ) { return *this; }
-
-   /****
-    * These methods are due to 'using BaseType::...;' in the derived classes.
-    */
-   template< typename GlobalIndexType >
-   void setEntitiesCount( const GlobalIndexType& entitiesCount ) {}
-
-   void print( std::ostream& str ) const {}
-
-   bool operator==( const MeshSubentityStorageLayer& layer ) const
-   {
-      return true;
-   }
-
-   bool save( File& file ) const
-   {
-      return true;
-   }
-
-   bool load( File& file )
-   {
-      return true;
-   }
- 
-   void getSubentityStorageNetwork( SubdimensionTag ) {}
-};
-
+// termination of recursive inheritance (everything is reduced to EntityStorage == false thanks to the WeakSubentityStorageTrait)
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
@@ -253,6 +208,8 @@ class MeshSubentityStorageLayer< MeshConfig,
    using SubdimensionTag = DimensionTag< EntityTopology::dimension >;
 
 protected:
+   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
+
    MeshSubentityStorageLayer() = default;
    explicit MeshSubentityStorageLayer( const MeshSubentityStorageLayer& other ) {}
    template< typename Device_ >
@@ -260,11 +217,7 @@ protected:
    template< typename Device_ >
    MeshSubentityStorageLayer& operator=( const MeshSubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other ) { return *this; }
 
-   /****
-    * These methods are due to 'using BaseType::...;' in the derived classes.
-    */
-   template< typename GlobalIndexType >
-   void setEntitiesCount( const GlobalIndexType& entitiesCount ) {}
+   void setEntitiesCount( GlobalIndexType entitiesCount ) {}
 
    void print( std::ostream& str ) const {}
 

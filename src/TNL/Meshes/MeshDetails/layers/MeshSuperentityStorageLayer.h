@@ -191,6 +191,7 @@ public:
    { return *this; }
 };
 
+// termination of recursive inheritance (everything is reduced to EntityStorage == false thanks to the WeakSuperentityStorageTrait)
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
@@ -208,56 +209,7 @@ protected:
    template< typename Device_ >
    MeshSuperentityStorageLayer& operator=( const MeshSuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other ) { return *this; }
 
-   /****
-    * These methods are due to 'using BaseType::...;' in the derived classes.
-    */
-   void setEntitiesCount( const GlobalIndexType& entitiesCount ) {}
-
-   void print( std::ostream& str ) const {}
-
-   bool operator==( const MeshSuperentityStorageLayer& layer ) const
-   {
-      return true;
-   }
-
-   bool save( File& file ) const
-   {
-      return true;
-   }
-
-   bool load( File& file )
-   {
-      return true;
-   }
- 
-   void getSuperentityStorageNetwork( SuperdimensionTag ) {}
-};
-
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
-class MeshSuperentityStorageLayer< MeshConfig,
-                                   Device,
-                                   EntityTopology,
-                                   DimensionTag< EntityTopology::dimension >,
-                                   true >
-{
-   using SuperdimensionTag = DimensionTag< EntityTopology::dimension >;
-
-protected:
-   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
- 
-   MeshSuperentityStorageLayer() = default;
-   explicit MeshSuperentityStorageLayer( const MeshSuperentityStorageLayer& other ) {}
-   template< typename Device_ >
-   MeshSuperentityStorageLayer( const MeshSuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other ) {}
-   template< typename Device_ >
-   MeshSuperentityStorageLayer& operator=( const MeshSuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other ) { return *this; }
-
-   /****
-    * These methods are due to 'using BaseType::...;' in the derived classes.
-    */
-   void setEntitiesCount( const GlobalIndexType& entitiesCount ) {}
+   void setEntitiesCount( GlobalIndexType entitiesCount ) {}
 
    void print( std::ostream& str ) const {}
 
