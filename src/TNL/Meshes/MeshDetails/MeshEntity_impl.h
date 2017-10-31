@@ -103,8 +103,7 @@ bool
 MeshEntity< MeshConfig, Device, EntityTopology >::
 save( File& file ) const
 {
-   if( ! MeshSubentityAccess< MeshConfig, Device, EntityTopology >::save( file ) )
-      return false;
+   // no I/O for subentities and superentities - not loaded anyway
    return true;
 }
 
@@ -115,8 +114,7 @@ bool
 MeshEntity< MeshConfig, Device, EntityTopology >::
 load( File& file )
 {
-   if( ! MeshSubentityAccess< MeshConfig, Device, EntityTopology >::load( file ) )
-      return false;
+   // no I/O for subentities and superentities - Mesh::load has to rebind pointers
    return true;
 }
 
@@ -262,6 +260,7 @@ bool
 MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 save( File& file ) const
 {
+   // no I/O for superentities - not loaded anyway
    if( ! point.save( file ) )
       return false;
    return true;
@@ -272,6 +271,7 @@ bool
 MeshEntity< MeshConfig, Device, MeshVertexTopology >::
 load( File& file )
 {
+   // no I/O for superentities - Mesh::load has to rebind pointers
    if( ! point.load( file ) )
       return false;
    return true;

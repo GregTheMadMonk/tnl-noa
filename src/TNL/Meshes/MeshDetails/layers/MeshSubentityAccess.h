@@ -161,26 +161,6 @@ protected:
       return *this;
    }
 
-   bool save( File& file ) const
-   {
-      if( ! BaseType::save( file ) )
-      {
-         std::cerr << "Saving of the entity subentities layer with " << DimensionTag::value << " failed." << std::endl;
-         return false;
-      }
-      return true;
-   }
-
-   bool load( File& file )
-   {
-      if( ! BaseType::load( file ) )
-      {
-         std::cerr << "Loading of the entity subentities layer with " << DimensionTag::value << " failed." << std::endl;
-         return false;
-      }
-      return true;
-   }
-
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
@@ -303,26 +283,6 @@ protected:
       return *this;
    }
 
-   bool save( File& file ) const
-   {
-      if( ! BaseType::save( file ) )
-      {
-         std::cerr << "Saving of the entity subentities layer with " << DimensionTag::value << " failed." << std::endl;
-         return false;
-      }
-      return true;
-   }
-
-   bool load( File& file )
-   {
-      if( ! BaseType::load( file ) )
-      {
-         std::cerr << "Loading of the entity subentities layer with " << DimensionTag::value << " failed." << std::endl;
-         return false;
-      }
-      return true;
-   }
-
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
@@ -426,16 +386,6 @@ protected:
    __cuda_callable__
 	void subentityOrientationsArray( DimensionTag ) {}
 
-   bool save( File& file ) const
-   {
-      return true;
-   }
-
-   bool load( File& file )
-   {
-      return true;
-   }
-
    __cuda_callable__
    bool operator==( const MeshSubentityAccessLayer& other ) const
    {
@@ -483,16 +433,6 @@ protected:
    void getSubentityOrientation( DimensionTag, LocalIndexType index) const {}
    __cuda_callable__
 	void subentityOrientationsArray( DimensionTag ) {}
-
-   bool save( File& file ) const
-   {
-      return true;
-   }
-
-   bool load( File& file )
-   {
-      return true;
-   }
 
    __cuda_callable__
    bool operator==( const MeshSubentityAccessLayer& other ) const
