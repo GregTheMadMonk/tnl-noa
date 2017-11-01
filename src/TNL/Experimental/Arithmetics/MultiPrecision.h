@@ -13,6 +13,8 @@
 
 #include <gmp.h>
 
+#endif
+
 class MultiPrecision{
 public:
     mpf_t number; // number
@@ -39,5 +41,3 @@ public:
 
     ~MultiPrecision(); // destructor
 };
-
-#endif
