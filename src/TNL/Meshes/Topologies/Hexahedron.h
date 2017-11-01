@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshHexahedronTopology.h  -  description
+                          Hexahedron.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <TNL/Meshes/Topologies/MeshQuadrilateralTopology.h>
+#include <TNL/Meshes/Topologies/Quadrilateral.h>
 
 namespace TNL {
 namespace Meshes {
@@ -28,7 +28,7 @@ struct Hexahedron
 
    static String getType()
    {
-      return "MeshHexahedronTopology";
+      return "Topologies::Hexahedron";
    }
 };
 

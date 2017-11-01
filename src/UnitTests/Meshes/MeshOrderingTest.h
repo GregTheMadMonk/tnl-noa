@@ -8,7 +8,7 @@
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshConfigBase.h>
-#include <TNL/Meshes/Topologies/MeshTriangleTopology.h>
+#include <TNL/Meshes/Topologies/Triangle.h>
 #include <TNL/Meshes/MeshBuilder.h>
 
 namespace MeshOrderingTest {

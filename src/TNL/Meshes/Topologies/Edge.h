@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshEdgeTopology.h  -  description
+                          Edge.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -17,7 +17,7 @@
 #pragma once
 
 #include <TNL/Meshes/Topologies/SubentityVertexMap.h>
-#include <TNL/Meshes/Topologies/MeshVertexTopology.h>
+#include <TNL/Meshes/Topologies/Vertex.h>
 
 namespace TNL {
 namespace Meshes {
@@ -29,7 +29,7 @@ struct Edge
 
    static String getType()
    {
-      return "MeshEdgeTopology";
+      return "Topologies::Edge";
    }
 };
 

@@ -13,12 +13,12 @@
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshConfigBase.h>
-#include <TNL/Meshes/Topologies/MeshEdgeTopology.h>
-#include <TNL/Meshes/Topologies/MeshTriangleTopology.h>
-#include <TNL/Meshes/Topologies/MeshQuadrilateralTopology.h>
-#include <TNL/Meshes/Topologies/MeshTetrahedronTopology.h>
-#include <TNL/Meshes/Topologies/MeshHexahedronTopology.h>
-#include <TNL/Meshes/Topologies/MeshSimplexTopology.h>
+#include <TNL/Meshes/Topologies/Edge.h>
+#include <TNL/Meshes/Topologies/Triangle.h>
+#include <TNL/Meshes/Topologies/Quadrilateral.h>
+#include <TNL/Meshes/Topologies/Tetrahedron.h>
+#include <TNL/Meshes/Topologies/Hexahedron.h>
+#include <TNL/Meshes/Topologies/Simplex.h>
 
 namespace TNL {
 namespace Meshes {

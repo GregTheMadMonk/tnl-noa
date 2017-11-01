@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshTriangleTopology.h  -  description
+                          Triangle.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <TNL/Meshes/Topologies/MeshEdgeTopology.h>
+#include <TNL/Meshes/Topologies/Edge.h>
 
 namespace TNL {
 namespace Meshes {
@@ -28,7 +28,7 @@ struct Triangle
 
    static String getType()
    {
-      return "MeshTriangleTopology";
+      return "Topologies::Triangle";
    }
 };
 

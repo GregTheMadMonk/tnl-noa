@@ -5,10 +5,10 @@
 
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshConfigBase.h>
-#include <TNL/Meshes/Topologies/MeshVertexTopology.h>
-#include <TNL/Meshes/Topologies/MeshEdgeTopology.h>
-#include <TNL/Meshes/Topologies/MeshTriangleTopology.h>
-#include <TNL/Meshes/Topologies/MeshTetrahedronTopology.h>
+#include <TNL/Meshes/Topologies/Vertex.h>
+#include <TNL/Meshes/Topologies/Edge.h>
+#include <TNL/Meshes/Topologies/Triangle.h>
+#include <TNL/Meshes/Topologies/Tetrahedron.h>
  
 namespace MeshEntityTest {
 

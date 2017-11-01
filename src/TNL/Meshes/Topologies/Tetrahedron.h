@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshTetrahedronTopology.h  -  description
+                          Tetrahedron.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <TNL/Meshes/Topologies/MeshTriangleTopology.h>
+#include <TNL/Meshes/Topologies/Triangle.h>
 
 namespace TNL {
 namespace Meshes {
@@ -28,7 +28,7 @@ struct Tetrahedron
 
    static String getType()
    {
-      return "MeshTetrahedronTopology";
+      return "Topologies::Tetrahedron";
    }
 };
 

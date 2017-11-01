@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SimplexTopology.h  -  description
+                          Simplex.h  -  description
                              -------------------
     begin                : Aug 29, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -18,7 +18,7 @@
 #pragma once
 
 #include <TNL/Meshes/Topologies/SubentityVertexMap.h>
-#include <TNL/Meshes/Topologies/MeshVertexTopology.h>
+#include <TNL/Meshes/Topologies/Vertex.h>
 
 namespace TNL {
 namespace Meshes {
@@ -32,7 +32,7 @@ class Simplex
 
       static String getType()
       {
-         return String( "SimplexTopology< " ) + String( dimension ) + " >";
+         return String( "Topologies::Simplex< " ) + String( dimension ) + " >";
       }
 };
 

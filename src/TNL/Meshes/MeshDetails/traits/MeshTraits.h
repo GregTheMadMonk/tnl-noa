@@ -19,7 +19,7 @@
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Meshes/DimensionTag.h>
-#include <TNL/Meshes/Topologies/MeshVertexTopology.h>
+#include <TNL/Meshes/Topologies/Vertex.h>
 
 namespace TNL {
 namespace Meshes {

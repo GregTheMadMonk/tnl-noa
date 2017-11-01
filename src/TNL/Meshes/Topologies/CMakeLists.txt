@@ -1,9 +1,9 @@
-SET( headers MeshEdgeTopology.h
-             MeshHexahedronTopology.h
-             MeshQuadrilateralTopology.h
-             MeshTetrahedronTopology.h
-             MeshTriangleTopology.h
-             MeshVertexTopology.h
+SET( headers Edge.h
+             Hexahedron.h
+             Quadrilateral.h
+             Tetrahedron.h
+             Triangle.h
+             Vertex.h
              SubentityVertexMap.h
 )
 

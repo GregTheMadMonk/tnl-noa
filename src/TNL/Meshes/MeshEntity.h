@@ -18,7 +18,7 @@
 
 #include <TNL/File.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/Topologies/MeshVertexTopology.h>
+#include <TNL/Meshes/Topologies/Vertex.h>
 #include <TNL/Meshes/MeshDetails/MeshEntityIndex.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSubentityAccess.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshSuperentityAccess.h>

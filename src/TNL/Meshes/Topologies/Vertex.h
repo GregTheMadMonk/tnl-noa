@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshVertexTopology.h  -  description
+                          Vertex.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -28,7 +28,7 @@ struct Vertex
 
    static String getType()
    {
-      return "MeshVertexTopology";
+      return "Topologies::Vertex";
    }
 };
 
