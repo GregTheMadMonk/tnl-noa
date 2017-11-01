@@ -80,7 +80,7 @@ public:
 };
 
 template< typename MeshConfig >
-class MeshEntityInitializer< MeshConfig, MeshVertexTopology >
+class MeshEntityInitializer< MeshConfig, Topologies::Vertex >
    : public MeshEntityInitializerLayer< MeshConfig,
                                         DimensionTag< 0 >,
                                         DimensionTag< MeshTraits< MeshConfig >::meshDimension > >

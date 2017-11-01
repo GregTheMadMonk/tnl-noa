@@ -39,7 +39,7 @@ class MeshEntity
      protected MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >,
      public MeshEntityIndex< typename MeshConfig::IdType >
 {
-   static_assert( is_compatible_topology< typename MeshConfig::CellTopology, EntityTopology_ >::value,
+   static_assert( Topologies::is_compatible_topology< typename MeshConfig::CellTopology, EntityTopology_ >::value,
                   "Specified entity topology is not compatible with the MeshConfig." );
 
    public:
@@ -133,14 +133,14 @@ class MeshEntity
  * Vertex entity specialization
  */
 template< typename MeshConfig, typename Device >
-class MeshEntity< MeshConfig, Device, MeshVertexTopology >
-   : protected MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >,
+class MeshEntity< MeshConfig, Device, Topologies::Vertex >
+   : protected MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >,
      public MeshEntityIndex< typename MeshConfig::IdType >
 {
    public:
       using MeshTraitsType  = MeshTraits< MeshConfig, Device >;
       using DeviceType      = Device;
-      using EntityTopology  = MeshVertexTopology;
+      using EntityTopology  = Topologies::Vertex;
       using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
       using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
       using PointType       = typename MeshTraitsType::PointType;
@@ -185,8 +185,8 @@ class MeshEntity< MeshConfig, Device, MeshVertexTopology >
       /****
        * Superentities
        */
-      using MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::getSuperentitiesCount;
-      using MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::getSuperentityIndex;
+      using MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::getSuperentitiesCount;
+      using MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::getSuperentityIndex;
 
       /****
        * Points
@@ -198,9 +198,9 @@ class MeshEntity< MeshConfig, Device, MeshVertexTopology >
       void setPoint( const PointType& point );
 
    protected:
-      using MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::bindSuperentitiesStorageNetwork;
-      using MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::setNumberOfSuperentities;
-      using MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::setSuperentityIndex;
+      using MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::bindSuperentitiesStorageNetwork;
+      using MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::setNumberOfSuperentities;
+      using MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::setSuperentityIndex;
 
       PointType point;
 

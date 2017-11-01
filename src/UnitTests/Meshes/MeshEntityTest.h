@@ -19,9 +19,9 @@ using RealType = double;
 using Device = Devices::Host;
 using IndexType = int;
 
-using TestEdgeMeshConfig = MeshConfigBase< MeshEdgeTopology,   2, RealType, IndexType, IndexType, void >;
+using TestEdgeMeshConfig = MeshConfigBase< Topologies::Edge,   2, RealType, IndexType, IndexType, void >;
 
-class TestTriangleMeshConfig : public MeshConfigBase< MeshTriangleTopology >
+class TestTriangleMeshConfig : public MeshConfigBase< Topologies::Triangle >
 {
 public:
    template< typename EntityTopology >
@@ -37,7 +37,7 @@ public:
    }
 };
 
-class TestTetrahedronMeshConfig : public MeshConfigBase< MeshTetrahedronTopology >
+class TestTetrahedronMeshConfig : public MeshConfigBase< Topologies::Tetrahedron >
 {
 public:
    template< typename EntityTopology >
@@ -110,7 +110,7 @@ void generalTestSuperentities( const Entity& entity )
  
 TEST( MeshEntityTest, VertexMeshEntityTest )
 {
-   using EdgeMeshEntityType = TestMeshEntity< TestEdgeMeshConfig, MeshEdgeTopology >;
+   using EdgeMeshEntityType = TestMeshEntity< TestEdgeMeshConfig, Topologies::Edge >;
    using VertexMeshEntityType = TestMeshEntity< TestEdgeMeshConfig, typename EdgeMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
 
    using PointType = typename VertexMeshEntityType::PointType;
@@ -126,7 +126,7 @@ TEST( MeshEntityTest, VertexMeshEntityTest )
 
 TEST( MeshEntityTest, EdgeMeshEntityTest )
 {
-   using EdgeMeshEntityType = TestMeshEntity< TestEdgeMeshConfig, MeshEdgeTopology >;
+   using EdgeMeshEntityType = TestMeshEntity< TestEdgeMeshConfig, Topologies::Edge >;
    using VertexMeshEntityType = TestMeshEntity< TestEdgeMeshConfig, typename EdgeMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
    static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
 
@@ -170,7 +170,7 @@ TEST( MeshEntityTest, EdgeMeshEntityTest )
    EXPECT_EQ( vertexEntities[ 2 ].getPoint(), point2 );
 
    Containers::StaticArray< 3, EdgeMeshEntityType > edgeEntities;
-   SubentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 0 > edgeVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Edge, 0 > edgeVertexSubentities;
    edgeVertexSubentities.setKeysRange( 3 );
    edgeVertexSubentities.allocate();
 
@@ -202,7 +202,7 @@ TEST( MeshEntityTest, EdgeMeshEntityTest )
 
 TEST( MeshEntityTest, TriangleMeshEntityTest )
 {
-   using TriangleMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, MeshTriangleTopology >;
+   using TriangleMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, Topologies::Triangle >;
    using EdgeMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, typename TriangleMeshEntityType::SubentityTraits< 1 >::SubentityTopology >;
    using VertexMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, typename TriangleMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
 
@@ -230,30 +230,30 @@ TEST( MeshEntityTest, TriangleMeshEntityTest )
    EXPECT_EQ( vertexEntities[ 2 ].getPoint(), point2 );
 
    Containers::StaticArray< 3, EdgeMeshEntityType > edgeEntities;
-   SubentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 0 > edgeVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Edge, 0 > edgeVertexSubentities;
    edgeVertexSubentities.setKeysRange( 3 );
    edgeVertexSubentities.allocate();
 
    edgeEntities[ 0 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 0 ) );
-   edgeEntities[ 0 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 0, 0 >::index );
-   edgeEntities[ 0 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 0, 1 >::index );
+   edgeEntities[ 0 ].template setSubentityIndex< 0 >( 0, Topologies::SubentityVertexMap< Topologies::Triangle, Topologies::Edge, 0, 0 >::index );
+   edgeEntities[ 0 ].template setSubentityIndex< 0 >( 1, Topologies::SubentityVertexMap< Topologies::Triangle, Topologies::Edge, 0, 1 >::index );
    edgeEntities[ 1 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 1 ) );
-   edgeEntities[ 1 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 1, 0 >::index );
-   edgeEntities[ 1 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 1, 1 >::index );
+   edgeEntities[ 1 ].template setSubentityIndex< 0 >( 0, Topologies::SubentityVertexMap< Topologies::Triangle, Topologies::Edge, 1, 0 >::index );
+   edgeEntities[ 1 ].template setSubentityIndex< 0 >( 1, Topologies::SubentityVertexMap< Topologies::Triangle, Topologies::Edge, 1, 1 >::index );
    edgeEntities[ 2 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 2 ) );
-   edgeEntities[ 2 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 0 >::index );
-   edgeEntities[ 2 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 1 >::index );
+   edgeEntities[ 2 ].template setSubentityIndex< 0 >( 0, Topologies::SubentityVertexMap< Topologies::Triangle, Topologies::Edge, 2, 0 >::index );
+   edgeEntities[ 2 ].template setSubentityIndex< 0 >( 1, Topologies::SubentityVertexMap< Topologies::Triangle, Topologies::Edge, 2, 1 >::index );
 
-   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 0 ), ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 0, 0 >::index ) );
-   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 1 ), ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 0, 1 >::index ) );
-   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 0 ), ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 1, 0 >::index ) );
-   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 1 ), ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 1, 1 >::index ) );
-   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 0 ), ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 0 >::index ) );
-   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 1 ), ( SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 0 ), ( Topologies::SubentityVertexMap< Topologies::Triangle, Topologies::Edge, 0, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 1 ), ( Topologies::SubentityVertexMap< Topologies::Triangle, Topologies::Edge, 0, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 0 ), ( Topologies::SubentityVertexMap< Topologies::Triangle, Topologies::Edge, 1, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 1 ), ( Topologies::SubentityVertexMap< Topologies::Triangle, Topologies::Edge, 1, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 0 ), ( Topologies::SubentityVertexMap< Topologies::Triangle, Topologies::Edge, 2, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 1 ), ( Topologies::SubentityVertexMap< Topologies::Triangle, Topologies::Edge, 2, 1 >::index ) );
 
    TriangleMeshEntityType triangleEntity;
-   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 0 > triangleVertexSubentities;
-   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 1 > triangleEdgeSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Triangle, 0 > triangleVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Triangle, 1 > triangleEdgeSubentities;
    triangleVertexSubentities.setKeysRange( 1 );
    triangleEdgeSubentities.setKeysRange( 1 );
    triangleVertexSubentities.allocate();
@@ -280,7 +280,7 @@ TEST( MeshEntityTest, TriangleMeshEntityTest )
 
 TEST( MeshEntityTest, TetrahedronMeshEntityTest )
 {
-   using TetrahedronMeshEntityType = TestMeshEntity< TestTetrahedronMeshConfig, MeshTetrahedronTopology >;
+   using TetrahedronMeshEntityType = TestMeshEntity< TestTetrahedronMeshConfig, Topologies::Tetrahedron >;
    using TriangleMeshEntityType = TestMeshEntity< TestTetrahedronMeshConfig, typename TetrahedronMeshEntityType::SubentityTraits< 2 >::SubentityTopology >;
    using EdgeMeshEntityType = TestMeshEntity< TestTetrahedronMeshConfig, typename TetrahedronMeshEntityType::SubentityTraits< 1 >::SubentityTopology >;
    using VertexMeshEntityType = TestMeshEntity< TestTetrahedronMeshConfig, typename TetrahedronMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
@@ -304,7 +304,7 @@ TEST( MeshEntityTest, TetrahedronMeshEntityTest )
              point2( 0.0, 1.0, 0.0 ),
              point3( 0.0, 0.0, 1.0 );
 
-   Containers::StaticArray< MeshSubtopology< MeshTetrahedronTopology, 0 >::count,
+   Containers::StaticArray< Topologies::Subtopology< Topologies::Tetrahedron, 0 >::count,
                    VertexMeshEntityType > vertexEntities;
 
    vertexEntities[ 0 ].setPoint( point0 );
@@ -317,81 +317,81 @@ TEST( MeshEntityTest, TetrahedronMeshEntityTest )
    EXPECT_EQ( vertexEntities[ 2 ].getPoint(),  point2 );
    EXPECT_EQ( vertexEntities[ 3 ].getPoint(),  point3 );
 
-   Containers::StaticArray< MeshSubtopology< MeshTetrahedronTopology, 1 >::count,
+   Containers::StaticArray< Topologies::Subtopology< Topologies::Tetrahedron, 1 >::count,
                             EdgeMeshEntityType > edgeEntities;
-   SubentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 0 > edgeVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Edge, 0 > edgeVertexSubentities;
    edgeVertexSubentities.setKeysRange( 6 );
    edgeVertexSubentities.allocate();
 
    edgeEntities[ 0 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 0 ) );
-   edgeEntities[ 0 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 0, 0 >::index );
-   edgeEntities[ 0 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 0, 1 >::index );
+   edgeEntities[ 0 ].template setSubentityIndex< 0 >( 0, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 0, 0 >::index );
+   edgeEntities[ 0 ].template setSubentityIndex< 0 >( 1, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 0, 1 >::index );
    edgeEntities[ 1 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 1 ) );
-   edgeEntities[ 1 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 1, 0 >::index );
-   edgeEntities[ 1 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 1, 1 >::index );
+   edgeEntities[ 1 ].template setSubentityIndex< 0 >( 0, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 1, 0 >::index );
+   edgeEntities[ 1 ].template setSubentityIndex< 0 >( 1, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 1, 1 >::index );
    edgeEntities[ 2 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 2 ) );
-   edgeEntities[ 2 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 2, 0 >::index );
-   edgeEntities[ 2 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 2, 1 >::index );
+   edgeEntities[ 2 ].template setSubentityIndex< 0 >( 0, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 2, 0 >::index );
+   edgeEntities[ 2 ].template setSubentityIndex< 0 >( 1, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 2, 1 >::index );
    edgeEntities[ 3 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 3 ) );
-   edgeEntities[ 3 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 3, 0 >::index );
-   edgeEntities[ 3 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 3, 1 >::index );
+   edgeEntities[ 3 ].template setSubentityIndex< 0 >( 0, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 3, 0 >::index );
+   edgeEntities[ 3 ].template setSubentityIndex< 0 >( 1, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 3, 1 >::index );
    edgeEntities[ 4 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 4 ) );
-   edgeEntities[ 4 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 4, 0 >::index );
-   edgeEntities[ 4 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 4, 1 >::index );
+   edgeEntities[ 4 ].template setSubentityIndex< 0 >( 0, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 4, 0 >::index );
+   edgeEntities[ 4 ].template setSubentityIndex< 0 >( 1, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 4, 1 >::index );
    edgeEntities[ 5 ].template bindSubentitiesStorageNetwork< 0 >( edgeVertexSubentities.getValues( 5 ) );
-   edgeEntities[ 5 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 5, 0 >::index );
-   edgeEntities[ 5 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 5, 1 >::index );
+   edgeEntities[ 5 ].template setSubentityIndex< 0 >( 0, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 5, 0 >::index );
+   edgeEntities[ 5 ].template setSubentityIndex< 0 >( 1, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 5, 1 >::index );
 
-   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 0, 0 >::index ) );
-   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 0, 1 >::index ) );
-   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 1, 0 >::index ) );
-   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 1, 1 >::index ) );
-   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 2, 0 >::index ) );
-   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 2, 1 >::index ) );
-   EXPECT_EQ( edgeEntities[ 3 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 3, 0 >::index ) );
-   EXPECT_EQ( edgeEntities[ 3 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 3, 1 >::index ) );
-   EXPECT_EQ( edgeEntities[ 4 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 4, 0 >::index ) );
-   EXPECT_EQ( edgeEntities[ 4 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 4, 1 >::index ) );
-   EXPECT_EQ( edgeEntities[ 5 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 5, 0 >::index ) );
-   EXPECT_EQ( edgeEntities[ 5 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 5, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 0 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 0, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 0 ].getVertexIndex( 1 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 0, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 0 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 1, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 1 ].getVertexIndex( 1 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 1, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 0 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 2, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 2 ].getVertexIndex( 1 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 2, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 3 ].getVertexIndex( 0 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 3, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 3 ].getVertexIndex( 1 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 3, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 4 ].getVertexIndex( 0 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 4, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 4 ].getVertexIndex( 1 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 4, 1 >::index ) );
+   EXPECT_EQ( edgeEntities[ 5 ].getVertexIndex( 0 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 5, 0 >::index ) );
+   EXPECT_EQ( edgeEntities[ 5 ].getVertexIndex( 1 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Edge, 5, 1 >::index ) );
 
-   Containers::StaticArray< MeshSubtopology< MeshTetrahedronTopology, 2 >::count,
+   Containers::StaticArray< Topologies::Subtopology< Topologies::Tetrahedron, 2 >::count,
                             TriangleMeshEntityType > triangleEntities;
-   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 0 > triangleVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Triangle, 0 > triangleVertexSubentities;
    triangleVertexSubentities.setKeysRange( 4 );
    triangleVertexSubentities.allocate();
 
    triangleEntities[ 0 ].template bindSubentitiesStorageNetwork< 0 >( triangleVertexSubentities.getValues( 0 ) );
-   triangleEntities[ 0 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 0 >::index );
-   triangleEntities[ 0 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 1 >::index );
-   triangleEntities[ 0 ].template setSubentityIndex< 0 >( 2, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 2 >::index );
+   triangleEntities[ 0 ].template setSubentityIndex< 0 >( 0, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 0, 0 >::index );
+   triangleEntities[ 0 ].template setSubentityIndex< 0 >( 1, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 0, 1 >::index );
+   triangleEntities[ 0 ].template setSubentityIndex< 0 >( 2, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 0, 2 >::index );
    triangleEntities[ 1 ].template bindSubentitiesStorageNetwork< 0 >( triangleVertexSubentities.getValues( 1 ) );
-   triangleEntities[ 1 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 0 >::index );
-   triangleEntities[ 1 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 1 >::index );
-   triangleEntities[ 1 ].template setSubentityIndex< 0 >( 2, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 2 >::index );
+   triangleEntities[ 1 ].template setSubentityIndex< 0 >( 0, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 1, 0 >::index );
+   triangleEntities[ 1 ].template setSubentityIndex< 0 >( 1, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 1, 1 >::index );
+   triangleEntities[ 1 ].template setSubentityIndex< 0 >( 2, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 1, 2 >::index );
    triangleEntities[ 2 ].template bindSubentitiesStorageNetwork< 0 >( triangleVertexSubentities.getValues( 2 ) );
-   triangleEntities[ 2 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 0 >::index );
-   triangleEntities[ 2 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 1 >::index );
-   triangleEntities[ 2 ].template setSubentityIndex< 0 >( 2, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 2 >::index );
+   triangleEntities[ 2 ].template setSubentityIndex< 0 >( 0, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 2, 0 >::index );
+   triangleEntities[ 2 ].template setSubentityIndex< 0 >( 1, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 2, 1 >::index );
+   triangleEntities[ 2 ].template setSubentityIndex< 0 >( 2, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 2, 2 >::index );
    triangleEntities[ 3 ].template bindSubentitiesStorageNetwork< 0 >( triangleVertexSubentities.getValues( 3 ) );
-   triangleEntities[ 3 ].template setSubentityIndex< 0 >( 0, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 3, 0 >::index );
-   triangleEntities[ 3 ].template setSubentityIndex< 0 >( 1, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 3, 1 >::index );
-   triangleEntities[ 3 ].template setSubentityIndex< 0 >( 2, SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 3, 2 >::index );
+   triangleEntities[ 3 ].template setSubentityIndex< 0 >( 0, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 3, 0 >::index );
+   triangleEntities[ 3 ].template setSubentityIndex< 0 >( 1, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 3, 1 >::index );
+   triangleEntities[ 3 ].template setSubentityIndex< 0 >( 2, Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 3, 2 >::index );
 
-   EXPECT_EQ( triangleEntities[ 0 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 0 >::index ) );
-   EXPECT_EQ( triangleEntities[ 0 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 1 >::index ) );
-   EXPECT_EQ( triangleEntities[ 0 ].getVertexIndex( 2 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 2 >::index ) );
-   EXPECT_EQ( triangleEntities[ 1 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 0 >::index ) );
-   EXPECT_EQ( triangleEntities[ 1 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 1 >::index ) );
-   EXPECT_EQ( triangleEntities[ 1 ].getVertexIndex( 2 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 2 >::index ) );
-   EXPECT_EQ( triangleEntities[ 2 ].getVertexIndex( 0 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 0 >::index ) );
-   EXPECT_EQ( triangleEntities[ 2 ].getVertexIndex( 1 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 1 >::index ) );
-   EXPECT_EQ( triangleEntities[ 2 ].getVertexIndex( 2 ),  ( SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 2 >::index ) );
+   EXPECT_EQ( triangleEntities[ 0 ].getVertexIndex( 0 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 0, 0 >::index ) );
+   EXPECT_EQ( triangleEntities[ 0 ].getVertexIndex( 1 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 0, 1 >::index ) );
+   EXPECT_EQ( triangleEntities[ 0 ].getVertexIndex( 2 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 0, 2 >::index ) );
+   EXPECT_EQ( triangleEntities[ 1 ].getVertexIndex( 0 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 1, 0 >::index ) );
+   EXPECT_EQ( triangleEntities[ 1 ].getVertexIndex( 1 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 1, 1 >::index ) );
+   EXPECT_EQ( triangleEntities[ 1 ].getVertexIndex( 2 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 1, 2 >::index ) );
+   EXPECT_EQ( triangleEntities[ 2 ].getVertexIndex( 0 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 2, 0 >::index ) );
+   EXPECT_EQ( triangleEntities[ 2 ].getVertexIndex( 1 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 2, 1 >::index ) );
+   EXPECT_EQ( triangleEntities[ 2 ].getVertexIndex( 2 ),  ( Topologies::SubentityVertexMap< Topologies::Tetrahedron, Topologies::Triangle, 2, 2 >::index ) );
 
    TetrahedronMeshEntityType tetrahedronEntity;
-   SubentityStorage< TestTriangleMeshConfig, MeshTetrahedronTopology, 0 > tetrahedronVertexSubentities;
-   SubentityStorage< TestTriangleMeshConfig, MeshTetrahedronTopology, 1 > tetrahedronEdgeSubentities;
-   SubentityStorage< TestTriangleMeshConfig, MeshTetrahedronTopology, 2 > tetrahedronTriangleSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Tetrahedron, 0 > tetrahedronVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Tetrahedron, 1 > tetrahedronEdgeSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Tetrahedron, 2 > tetrahedronTriangleSubentities;
    tetrahedronVertexSubentities.setKeysRange( 1 );
    tetrahedronEdgeSubentities.setKeysRange( 1 );
    tetrahedronTriangleSubentities.setKeysRange( 1 );
@@ -445,7 +445,7 @@ TEST( MeshEntityTest, TetrahedronMeshEntityTest )
 
 TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
 {
-   using TriangleMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, MeshTriangleTopology >;
+   using TriangleMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, Topologies::Triangle >;
    using EdgeMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, typename TriangleMeshEntityType::SubentityTraits< 1 >::SubentityTopology >;
    using VertexMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, typename TriangleMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
 
@@ -495,7 +495,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    EXPECT_EQ( vertexEntities[ 3 ].getPoint(),  point3 );
 
    Containers::StaticArray< 5, EdgeMeshEntityType > edgeEntities;
-   SubentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 0 > edgeVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Edge, 0 > edgeVertexSubentities;
    edgeVertexSubentities.setKeysRange( 5 );
    edgeVertexSubentities.allocate();
 
@@ -527,8 +527,8 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    EXPECT_EQ( edgeEntities[ 4 ].getVertexIndex( 1 ),  1 );
 
    Containers::StaticArray< 2, TriangleMeshEntityType > triangleEntities;
-   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 0 > triangleVertexSubentities;
-   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 1 > triangleEdgeSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Triangle, 0 > triangleVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Triangle, 1 > triangleEdgeSubentities;
    triangleVertexSubentities.setKeysRange( 2 );
    triangleVertexSubentities.allocate();
    triangleEdgeSubentities.setKeysRange( 2 );
@@ -568,7 +568,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    /*
     * Tests for the superentities layer.
     */
-   SuperentityStorage< TestTriangleMeshConfig, MeshVertexTopology, 1 > vertexEdgeSuperentities;
+   SuperentityStorage< TestTriangleMeshConfig, Topologies::Vertex, 1 > vertexEdgeSuperentities;
    vertexEdgeSuperentities.setKeysRange( 4 );
    vertexEdgeSuperentities.allocate( 3 );
 
@@ -593,7 +593,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    EXPECT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 1 >( 2 ),    4 );
 
 
-   SuperentityStorage< TestTriangleMeshConfig, MeshVertexTopology, 2 > vertexCellSuperentities;
+   SuperentityStorage< TestTriangleMeshConfig, Topologies::Vertex, 2 > vertexCellSuperentities;
    vertexCellSuperentities.setKeysRange( 4 );
    vertexCellSuperentities.allocate( 2 );
 
@@ -607,7 +607,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    EXPECT_EQ( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 1 ),    1 );
 
 
-   SuperentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 2 > edgeCellSuperentities;
+   SuperentityStorage< TestTriangleMeshConfig, Topologies::Edge, 2 > edgeCellSuperentities;
    edgeCellSuperentities.setKeysRange( 5 );
    edgeCellSuperentities.allocate( 2 );
 
@@ -635,7 +635,7 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
 
 TEST( MeshEntityTest, OneTriangleComparisonTest )
 {
-   using TriangleMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, MeshTriangleTopology >;
+   using TriangleMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, Topologies::Triangle >;
    using EdgeMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, typename TriangleMeshEntityType::SubentityTraits< 1 >::SubentityTopology >;
    using VertexMeshEntityType = TestMeshEntity< TestTriangleMeshConfig, typename TriangleMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
 
@@ -659,7 +659,7 @@ TEST( MeshEntityTest, OneTriangleComparisonTest )
    vertices[ 2 ].setPoint( point2 );
 
    Containers::StaticArray< 3, EdgeMeshEntityType > edges;
-   SubentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 0 > edgeVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Edge, 0 > edgeVertexSubentities;
    edgeVertexSubentities.setKeysRange( 3 );
    edgeVertexSubentities.allocate();
 
@@ -674,8 +674,8 @@ TEST( MeshEntityTest, OneTriangleComparisonTest )
    edges[ 2 ].template setSubentityIndex< 0 >( 1, 1 );
 
    TriangleMeshEntityType triangle;
-   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 0 > triangleVertexSubentities;
-   SubentityStorage< TestTriangleMeshConfig, MeshTriangleTopology, 1 > triangleEdgeSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Triangle, 0 > triangleVertexSubentities;
+   SubentityStorage< TestTriangleMeshConfig, Topologies::Triangle, 1 > triangleEdgeSubentities;
    triangleVertexSubentities.setKeysRange( 1 );
    triangleEdgeSubentities.setKeysRange( 1 );
    triangleVertexSubentities.allocate();
@@ -691,7 +691,7 @@ TEST( MeshEntityTest, OneTriangleComparisonTest )
    triangle.template setSubentityIndex< 1 >( 2 , 2 );
 
 
-   SuperentityStorage< TestTriangleMeshConfig, MeshVertexTopology, 1 > vertexEdgeSuperentities;
+   SuperentityStorage< TestTriangleMeshConfig, Topologies::Vertex, 1 > vertexEdgeSuperentities;
    vertexEdgeSuperentities.setKeysRange( 3 );
    vertexEdgeSuperentities.allocate( 2 );
 
@@ -711,7 +711,7 @@ TEST( MeshEntityTest, OneTriangleComparisonTest )
    vertices[ 2 ].template setSuperentityIndex< 1 >( 1, 1 );
 
 
-   SuperentityStorage< TestTriangleMeshConfig, MeshVertexTopology, 2 > vertexCellSuperentities;
+   SuperentityStorage< TestTriangleMeshConfig, Topologies::Vertex, 2 > vertexCellSuperentities;
    vertexCellSuperentities.setKeysRange( 3 );
    vertexCellSuperentities.allocate( 1 );
 
@@ -728,7 +728,7 @@ TEST( MeshEntityTest, OneTriangleComparisonTest )
    vertices[ 2 ].template setSuperentityIndex< 2 >( 0, 0 );
 
 
-   SuperentityStorage< TestTriangleMeshConfig, MeshEdgeTopology, 2 > edgeCellSuperentities;
+   SuperentityStorage< TestTriangleMeshConfig, Topologies::Edge, 2 > edgeCellSuperentities;
    edgeCellSuperentities.setKeysRange( 3 );
    edgeCellSuperentities.allocate( 1 );
 

@@ -19,11 +19,11 @@
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Meshes/DimensionTag.h>
+#include <TNL/Meshes/Topologies/MeshVertexTopology.h>
 
 namespace TNL {
 namespace Meshes {
 
-struct MeshVertexTopology;
 template< typename MeshConfig, typename Device, typename EntityTopology > class MeshEntity;
 template< typename MeshConfig, typename EntityTopology > class MeshEntitySeed;
 template< typename MeshConfig, typename Device, int Dimension > class MeshEntityTraits;
@@ -44,7 +44,7 @@ public:
 
    using CellTopology      = typename MeshConfig::CellTopology;
    using CellType          = MeshEntity< MeshConfig, Device, CellTopology >;
-   using VertexType        = MeshEntity< MeshConfig, Device, MeshVertexTopology >;
+   using VertexType        = MeshEntity< MeshConfig, Device, Topologies::Vertex >;
    using PointType         = Containers::StaticVector< worldDimension, typename MeshConfig::RealType >;
    using CellSeedType      = MeshEntitySeed< MeshConfig, CellTopology >;
 

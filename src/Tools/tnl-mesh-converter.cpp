@@ -36,11 +36,11 @@ template<> struct GridIndexTag< MeshConverterConfigTag, long int >{ enum { enabl
 /****
  * Unstructured meshes.
  */
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, MeshEdgeTopology > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, MeshTriangleTopology > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, MeshQuadrilateralTopology > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, MeshTetrahedronTopology > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, MeshHexahedronTopology > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Edge > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Triangle > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Quadrilateral > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
 
 // Meshes are enabled only for the world dimension equal to the cell dimension.
 template< typename CellTopology, int WorldDimension >

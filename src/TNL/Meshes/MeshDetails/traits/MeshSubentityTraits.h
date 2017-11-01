@@ -42,7 +42,7 @@ public:
 
    static constexpr bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimension );
    static constexpr bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimension );
-   static constexpr int count = MeshSubtopology< EntityTopology, Dimension >::count;
+   static constexpr int count = Topologies::Subtopology< EntityTopology, Dimension >::count;
 
    using GlobalIndexType   = typename MeshConfig::GlobalIndexType;
    using LocalIndexType    = typename MeshConfig::LocalIndexType;
@@ -69,10 +69,11 @@ public:
              LocalIndexType subentityVertexIndex >
    struct Vertex
    {
-      enum { index = SubentityVertexMap< EntityTopology,
-                                         SubentityTopology,
-                                         subentityIndex,
-                                         subentityVertexIndex>::index };
+      static constexpr int index = Topologies::SubentityVertexMap<
+                  EntityTopology,
+                  SubentityTopology,
+                  subentityIndex,
+                  subentityVertexIndex >::index;
    };
 };
 

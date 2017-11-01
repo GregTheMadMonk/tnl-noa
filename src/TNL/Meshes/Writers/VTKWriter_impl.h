@@ -26,7 +26,7 @@ struct VerticesPerEntity
 };
 
 template< typename MeshConfig, typename Device >
-struct VerticesPerEntity< MeshEntity< MeshConfig, Device, MeshVertexTopology > >
+struct VerticesPerEntity< MeshEntity< MeshConfig, Device, Topologies::Vertex > >
 {
    static constexpr int count = 1;
 };

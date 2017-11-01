@@ -192,9 +192,9 @@ getVertexIndex( const LocalIndexType localIndex ) const
  * Vertex entity specialization
  */
 template< typename MeshConfig, typename Device >
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 MeshEntity( const MeshEntity& entity )
-   : MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >( entity ),
+   : MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >( entity ),
      MeshEntityIndex< typename MeshConfig::IdType >( entity )
 {
    setPoint( entity.getPoint() );
@@ -202,8 +202,8 @@ MeshEntity( const MeshEntity& entity )
 
 template< typename MeshConfig, typename Device >
    template< typename Device_ >
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
-MeshEntity( const MeshEntity< MeshConfig, Device_, MeshVertexTopology >& entity )
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
+MeshEntity( const MeshEntity< MeshConfig, Device_, Topologies::Vertex >& entity )
    // no cross-device copy of superentities here - Mesh constructor has to rebind pointers
    : MeshEntityIndex< typename MeshConfig::IdType >( entity )
 {
@@ -214,11 +214,11 @@ MeshEntity( const MeshEntity< MeshConfig, Device_, MeshVertexTopology >& entity 
 
 template< typename MeshConfig, typename Device >
 __cuda_callable__
-MeshEntity< MeshConfig, Device, MeshVertexTopology >& 
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >& 
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 operator=( const MeshEntity& entity )
 {
-   MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::operator=( entity );
+   MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::operator=( entity );
    MeshEntityIndex< typename MeshConfig::IdType >::operator=( entity );
    setPoint( entity.getPoint() );
    return *this;
@@ -227,9 +227,9 @@ operator=( const MeshEntity& entity )
 template< typename MeshConfig, typename Device >
       template< typename Device_ >
 __cuda_callable__
-MeshEntity< MeshConfig, Device, MeshVertexTopology >& 
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
-operator=( const MeshEntity< MeshConfig, Device_, MeshVertexTopology >& entity )
+MeshEntity< MeshConfig, Device, Topologies::Vertex >& 
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
+operator=( const MeshEntity< MeshConfig, Device_, Topologies::Vertex >& entity )
 {
    static_assert( ! std::is_same< Device, Device_ >::value, "this should never happen" );
 
@@ -241,7 +241,7 @@ operator=( const MeshEntity< MeshConfig, Device_, MeshVertexTopology >& entity )
 
 template< typename MeshConfig, typename Device >
 String
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 getType()
 {
    return String( "MeshEntity< ... >" );
@@ -249,7 +249,7 @@ getType()
 
 template< typename MeshConfig, typename Device >
 String
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 getTypeVirtual() const
 {
    return this->getType();
@@ -257,7 +257,7 @@ getTypeVirtual() const
 
 template< typename MeshConfig, typename Device >
 bool
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 save( File& file ) const
 {
    // no I/O for superentities - not loaded anyway
@@ -268,7 +268,7 @@ save( File& file ) const
 
 template< typename MeshConfig, typename Device >
 bool
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 load( File& file )
 {
    // no I/O for superentities - Mesh::load has to rebind pointers
@@ -279,21 +279,21 @@ load( File& file )
 
 template< typename MeshConfig, typename Device >
 void
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 print( std::ostream& str ) const
 {
-   str << "\t Mesh entity dimension: " << MeshVertexTopology::dimension << std::endl;
+   str << "\t Mesh entity dimension: " << Topologies::Vertex::dimension << std::endl;
    str << "\t Coordinates = " << point << std::endl;
-   MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::print( str );
+   MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::print( str );
 }
 
 template< typename MeshConfig, typename Device >
 __cuda_callable__
 bool
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 operator==( const MeshEntity& entity ) const
 {
-   return ( MeshSuperentityAccess< MeshConfig, Device, MeshVertexTopology >::operator==( entity ) &&
+   return ( MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::operator==( entity ) &&
             MeshEntityIndex< typename MeshConfig::IdType >::operator==( entity ) &&
             point == entity.point );
 }
@@ -301,7 +301,7 @@ operator==( const MeshEntity& entity ) const
 template< typename MeshConfig, typename Device >
 __cuda_callable__
 bool
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 operator!=( const MeshEntity& entity ) const
 {
    return ! ( *this == entity );
@@ -309,7 +309,7 @@ operator!=( const MeshEntity& entity ) const
 
 template< typename MeshConfig, typename Device >
 constexpr int
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 getEntityDimension()
 {
    return EntityTopology::dimension;
@@ -317,8 +317,8 @@ getEntityDimension()
 
 template< typename MeshConfig, typename Device >
 __cuda_callable__
-typename MeshEntity< MeshConfig, Device, MeshVertexTopology >::PointType
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+typename MeshEntity< MeshConfig, Device, Topologies::Vertex >::PointType
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 getPoint() const
 {
    return this->point;
@@ -327,7 +327,7 @@ getPoint() const
 template< typename MeshConfig, typename Device >
 __cuda_callable__
 void
-MeshEntity< MeshConfig, Device, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 setPoint( const PointType& point )
 {
    this->point = point;

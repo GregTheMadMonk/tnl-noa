@@ -66,7 +66,7 @@ class MeshEntitySeed
 };
 
 template< typename MeshConfig >
-class MeshEntitySeed< MeshConfig, MeshVertexTopology >
+class MeshEntitySeed< MeshConfig, Topologies::Vertex >
 {
    using MeshConfigTraits = MeshTraits< MeshConfig >;
 
@@ -74,7 +74,7 @@ class MeshEntitySeed< MeshConfig, MeshVertexTopology >
       using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
       using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
       using IdArrayType     = Containers::StaticArray< 1, GlobalIndexType >;
-      using KeyType         = MeshEntitySeedKey< MeshConfig, MeshVertexTopology >;
+      using KeyType         = MeshEntitySeedKey< MeshConfig, Topologies::Vertex >;
 
       static String getType() { return String( "MeshEntitySeed<>" ); }
 

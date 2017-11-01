@@ -20,8 +20,9 @@
 
 namespace TNL {
 namespace Meshes {
+namespace Topologies {
 
-struct MeshTriangleTopology
+struct Triangle
 {
    static constexpr int dimension = 2;
 
@@ -33,30 +34,31 @@ struct MeshTriangleTopology
 
 
 template<>
-struct MeshSubtopology< MeshTriangleTopology, 0 >
+struct Subtopology< Triangle, 0 >
 {
-   typedef MeshVertexTopology Topology;
+   typedef Vertex Topology;
 
    static constexpr int count = 3;
 };
 
 template<>
-struct MeshSubtopology< MeshTriangleTopology, 1 >
+struct Subtopology< Triangle, 1 >
 {
-   typedef MeshEdgeTopology Topology;
+   typedef Edge Topology;
 
    static constexpr int count = 3;
 };
 
 
-template<> struct SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 0, 0> { enum { index = 1 }; };
-template<> struct SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 0, 1> { enum { index = 2 }; };
+template<> struct SubentityVertexMap< Triangle, Edge, 0, 0> { enum { index = 1 }; };
+template<> struct SubentityVertexMap< Triangle, Edge, 0, 1> { enum { index = 2 }; };
 
-template<> struct SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 1, 0> { enum { index = 2 }; };
-template<> struct SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 1, 1> { enum { index = 0 }; };
+template<> struct SubentityVertexMap< Triangle, Edge, 1, 0> { enum { index = 2 }; };
+template<> struct SubentityVertexMap< Triangle, Edge, 1, 1> { enum { index = 0 }; };
 
-template<> struct SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 0> { enum { index = 0 }; };
-template<> struct SubentityVertexMap< MeshTriangleTopology, MeshEdgeTopology, 2, 1> { enum { index = 1 }; };
+template<> struct SubentityVertexMap< Triangle, Edge, 2, 0> { enum { index = 0 }; };
+template<> struct SubentityVertexMap< Triangle, Edge, 2, 1> { enum { index = 1 }; };
 
+} // namespace Topologies
 } // namespace Meshes
 } // namespace TNL

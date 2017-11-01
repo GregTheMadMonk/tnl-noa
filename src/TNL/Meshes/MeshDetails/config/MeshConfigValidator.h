@@ -76,7 +76,7 @@ template< typename MeshConfig,
           bool BoundaryTagsStorage = MeshConfig::boundaryTagsStorage( EntityTopology() ) >
 class MeshConfigValidatorBoundaryTagsLayer
 {
-   using FaceTopology = typename MeshSubtopology< typename MeshConfig::CellTopology, MeshConfig::meshDimension - 1 >::Topology;
+   using FaceTopology = typename Topologies::Subtopology< typename MeshConfig::CellTopology, MeshConfig::meshDimension - 1 >::Topology;
 
    static_assert( MeshConfig::entityStorage( MeshConfig::meshDimension - 1 ),
                   "Faces must be stored when any entity has boundary tags." );
@@ -97,15 +97,15 @@ template< typename MeshConfig, int dimension >
 class MeshConfigValidatorLayer
    : public MeshConfigValidatorLayer< MeshConfig, dimension - 1 >,
      public MeshConfigValidatorSubtopologyLayer< MeshConfig,
-                                                 typename MeshSubtopology< typename MeshConfig::CellTopology, dimension >::Topology,
+                                                 typename Topologies::Subtopology< typename MeshConfig::CellTopology, dimension >::Topology,
                                                  DimensionTag< dimension - 1 > >,
      public MeshConfigValidatorSupertopologyLayer< MeshConfig,
-                                                   typename MeshSubtopology< typename MeshConfig::CellTopology, dimension >::Topology,
+                                                   typename Topologies::Subtopology< typename MeshConfig::CellTopology, dimension >::Topology,
                                                    DimensionTag< MeshConfig::CellTopology::dimension > >,
      public MeshConfigValidatorBoundaryTagsLayer< MeshConfig,
-                                                  typename MeshSubtopology< typename MeshConfig::CellTopology, dimension >::Topology >
+                                                  typename Topologies::Subtopology< typename MeshConfig::CellTopology, dimension >::Topology >
 {
-   using Topology = typename MeshSubtopology< typename MeshConfig::CellTopology, dimension >::Topology;
+   using Topology = typename Topologies::Subtopology< typename MeshConfig::CellTopology, dimension >::Topology;
 
    static_assert( ! MeshConfig::entityStorage( dimension ) ||
                     MeshConfig::subentityStorage( Topology(), 0 ),

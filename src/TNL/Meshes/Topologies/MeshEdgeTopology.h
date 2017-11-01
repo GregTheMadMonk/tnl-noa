@@ -21,8 +21,9 @@
 
 namespace TNL {
 namespace Meshes {
+namespace Topologies {
    
-struct MeshEdgeTopology
+struct Edge
 {
    static constexpr int dimension = 1;
 
@@ -34,12 +35,13 @@ struct MeshEdgeTopology
 
 
 template<>
-struct MeshSubtopology< MeshEdgeTopology, 0 >
+struct Subtopology< Edge, 0 >
 {
-   typedef MeshVertexTopology Topology;
+   typedef Vertex Topology;
 
    static constexpr int count = 2;
 };
 
+} // namespace Topologies
 } // namespace Meshes
 } // namespace TNL

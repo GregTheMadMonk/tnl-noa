@@ -47,15 +47,15 @@ resolveCellTopology( Reader& reader,
    switch( reader.getCellVTKType() )
    {
       case VTKEntityType::Line:
-         return resolveWorldDimension< MeshEdgeTopology >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+         return resolveWorldDimension< Topologies::Edge >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
       case VTKEntityType::Triangle:
-         return resolveWorldDimension< MeshTriangleTopology >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+         return resolveWorldDimension< Topologies::Triangle >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
       case VTKEntityType::Quad:
-         return resolveWorldDimension< MeshQuadrilateralTopology >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+         return resolveWorldDimension< Topologies::Quadrilateral >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
       case VTKEntityType::Tetra:
-         return resolveWorldDimension< MeshTetrahedronTopology >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+         return resolveWorldDimension< Topologies::Tetrahedron >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
       case VTKEntityType::Hexahedron:
-         return resolveWorldDimension< MeshHexahedronTopology >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+         return resolveWorldDimension< Topologies::Hexahedron >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
       default:
          std::cerr << "unsupported cell topology: " << reader.getCellVTKType() << std::endl;
          return false;

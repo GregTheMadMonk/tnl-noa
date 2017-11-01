@@ -26,7 +26,7 @@ using RealType = double;
 using Device = Devices::Host;
 using IndexType = int;
 
-class TestTriangleMeshConfig : public MeshConfigBase< MeshTriangleTopology >
+class TestTriangleMeshConfig : public MeshConfigBase< Topologies::Triangle >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -35,7 +35,7 @@ public:
    template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
 };
 
-class TestQuadrilateralMeshConfig : public MeshConfigBase< MeshQuadrilateralTopology >
+class TestQuadrilateralMeshConfig : public MeshConfigBase< Topologies::Quadrilateral >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -44,7 +44,7 @@ public:
    template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
 };
 
-class TestTetrahedronMeshConfig : public MeshConfigBase< MeshTetrahedronTopology >
+class TestTetrahedronMeshConfig : public MeshConfigBase< Topologies::Tetrahedron >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -53,7 +53,7 @@ public:
    template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
 };
 
-class TestHexahedronMeshConfig : public MeshConfigBase< MeshHexahedronTopology >
+class TestHexahedronMeshConfig : public MeshConfigBase< Topologies::Hexahedron >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -167,7 +167,7 @@ void testFinishedMesh( const Mesh& mesh )
 
 TEST( MeshTest, TwoTrianglesTest )
 {
-   using TriangleMeshEntityType = MeshEntity< TestTriangleMeshConfig, Devices::Host, MeshTriangleTopology >;
+   using TriangleMeshEntityType = MeshEntity< TestTriangleMeshConfig, Devices::Host, Topologies::Triangle >;
    using EdgeMeshEntityType = typename TriangleMeshEntityType::SubentityTraits< 1 >::SubentityType;
    using VertexMeshEntityType = typename TriangleMeshEntityType::SubentityTraits< 0 >::SubentityType;
 
@@ -282,7 +282,7 @@ TEST( MeshTest, TwoTrianglesTest )
 
 TEST( MeshTest, TetrahedronsTest )
 {
-   using TetrahedronMeshEntityType = MeshEntity< TestTetrahedronMeshConfig, Devices::Host, MeshTetrahedronTopology >;
+   using TetrahedronMeshEntityType = MeshEntity< TestTetrahedronMeshConfig, Devices::Host, Topologies::Tetrahedron >;
    using TriangleMeshEntityType = typename TetrahedronMeshEntityType::SubentityTraits< 2 >::SubentityType;
    using EdgeMeshEntityType = typename TetrahedronMeshEntityType::SubentityTraits< 1 >::SubentityType;
    using VertexMeshEntityType = typename TetrahedronMeshEntityType::SubentityTraits< 0 >::SubentityType;
@@ -448,7 +448,7 @@ TEST( MeshTest, TetrahedronsTest )
 
 TEST( MeshTest, RegularMeshOfTrianglesTest )
 {
-   using TriangleMeshEntityType = MeshEntity< TestTriangleMeshConfig, Devices::Host, MeshTriangleTopology >;
+   using TriangleMeshEntityType = MeshEntity< TestTriangleMeshConfig, Devices::Host, Topologies::Triangle >;
    using EdgeMeshEntityType = typename TriangleMeshEntityType::SubentityTraits< 1 >::SubentityType;
    using VertexMeshEntityType = typename TriangleMeshEntityType::SubentityTraits< 0 >::SubentityType;
 
@@ -548,7 +548,7 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
 
 TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
 {
-   using QuadrilateralMeshEntityType = MeshEntity< TestQuadrilateralMeshConfig, Devices::Host, MeshQuadrilateralTopology >;
+   using QuadrilateralMeshEntityType = MeshEntity< TestQuadrilateralMeshConfig, Devices::Host, Topologies::Quadrilateral >;
    using EdgeMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 1 >::SubentityType;
    using VertexMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 0 >::SubentityType;
 
@@ -645,7 +645,7 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
 
 TEST( MeshTest, RegularMeshOfHexahedronsTest )
 {
-   using HexahedronMeshEntityType = MeshEntity< TestHexahedronMeshConfig, Devices::Host, MeshHexahedronTopology >;
+   using HexahedronMeshEntityType = MeshEntity< TestHexahedronMeshConfig, Devices::Host, Topologies::Hexahedron >;
    using QuadrilateralMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 2 >::SubentityType;
    using EdgeMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 1 >::SubentityType;
    using VertexMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 0 >::SubentityType;

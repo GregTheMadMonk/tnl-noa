@@ -120,7 +120,7 @@ struct MeshConfigBase
    template< typename EntityTopology >
    static constexpr bool boundaryTagsStorage( EntityTopology )
    {
-      using FaceTopology = typename MeshSubtopology< CellTopology, meshDimension - 1 >::Topology;
+      using FaceTopology = typename Topologies::Subtopology< CellTopology, meshDimension - 1 >::Topology;
       return entityStorage( meshDimension - 1 ) &&
              superentityStorage( FaceTopology(), meshDimension ) &&
              ( EntityTopology::dimension >= meshDimension - 1 || subentityStorage( FaceTopology(), EntityTopology::dimension ) );

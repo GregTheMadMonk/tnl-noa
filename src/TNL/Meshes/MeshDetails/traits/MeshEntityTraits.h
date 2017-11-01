@@ -60,7 +60,7 @@ public:
 
    using GlobalIndexType               = typename MeshConfig::GlobalIndexType;
    using LocalIndexType                = typename MeshConfig::LocalIndexType;
-   using EntityTopology                = typename MeshEntityTopology< MeshConfig, DimensionTag< Dimension > >::Topology;
+   using EntityTopology                = typename Topologies::EntityTopologyGetter< MeshConfig, DimensionTag< Dimension > >::Topology;
 
    using EntityType                    = MeshEntity< MeshConfig, Device, EntityTopology >;
    using SeedType                      = MeshEntitySeed< MeshConfig, EntityTopology >;

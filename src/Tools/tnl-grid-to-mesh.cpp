@@ -46,7 +46,7 @@ template< typename Real, typename Device, typename Index >
 struct MeshCreator< TNL::Meshes::Grid< 1, Real, Device, Index > >
 {
    using GridType = TNL::Meshes::Grid< 1, Real, Device, Index >;
-   using CellTopology = TNL::Meshes::MeshEdgeTopology;
+   using CellTopology = TNL::Meshes::Topologies::Edge;
    using MeshConfig = TNL::Meshes::MeshConfigBase< CellTopology,
                                                    CellTopology::dimension,
                                                    typename GridType::RealType,
@@ -84,7 +84,7 @@ template< typename Real, typename Device, typename Index >
 struct MeshCreator< TNL::Meshes::Grid< 2, Real, Device, Index > >
 {
    using GridType = TNL::Meshes::Grid< 2, Real, Device, Index >;
-   using CellTopology = TNL::Meshes::MeshQuadrilateralTopology;
+   using CellTopology = TNL::Meshes::Topologies::Quadrilateral;
    using MeshConfig = TNL::Meshes::MeshConfigBase< CellTopology,
                                                    CellTopology::dimension,
                                                    typename GridType::RealType,
@@ -124,7 +124,7 @@ template< typename Real, typename Device, typename Index >
 struct MeshCreator< TNL::Meshes::Grid< 3, Real, Device, Index > >
 {
    using GridType = TNL::Meshes::Grid< 3, Real, Device, Index >;
-   using CellTopology = TNL::Meshes::MeshHexahedronTopology;
+   using CellTopology = TNL::Meshes::Topologies::Hexahedron;
    using MeshConfig = TNL::Meshes::MeshConfigBase< CellTopology,
                                                    CellTopology::dimension,
                                                    typename GridType::RealType,

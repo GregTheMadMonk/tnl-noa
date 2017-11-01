@@ -20,8 +20,9 @@
 
 namespace TNL {
 namespace Meshes {
+namespace Topologies {
 
-struct MeshTetrahedronTopology
+struct Tetrahedron
 {
    static constexpr int dimension = 3;
 
@@ -32,65 +33,66 @@ struct MeshTetrahedronTopology
 };
 
 template<>
-struct MeshSubtopology< MeshTetrahedronTopology, 0 >
+struct Subtopology< Tetrahedron, 0 >
 {
-   typedef MeshVertexTopology Topology;
+   typedef Vertex Topology;
 
    static constexpr int count = 4;
 };
 
 template<>
-struct MeshSubtopology< MeshTetrahedronTopology, 1 >
+struct Subtopology< Tetrahedron, 1 >
 {
-   typedef MeshEdgeTopology Topology;
+   typedef Edge Topology;
 
    static constexpr int count = 6;
 };
 
 template<>
-struct MeshSubtopology< MeshTetrahedronTopology, 2 >
+struct Subtopology< Tetrahedron, 2 >
 {
-   typedef MeshTriangleTopology Topology;
+   typedef Triangle Topology;
 
    static constexpr int count = 4;
 };
 
 
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 0, 0> { enum { index = 1 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 0, 1> { enum { index = 2 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Edge, 0, 0> { enum { index = 1 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Edge, 0, 1> { enum { index = 2 }; };
 
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 1, 0> { enum { index = 2 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 1, 1> { enum { index = 0 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Edge, 1, 0> { enum { index = 2 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Edge, 1, 1> { enum { index = 0 }; };
 
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 2, 0> { enum { index = 0 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 2, 1> { enum { index = 1 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Edge, 2, 0> { enum { index = 0 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Edge, 2, 1> { enum { index = 1 }; };
 
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 3, 0> { enum { index = 0 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 3, 1> { enum { index = 3 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Edge, 3, 0> { enum { index = 0 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Edge, 3, 1> { enum { index = 3 }; };
 
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 4, 0> { enum { index = 1 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 4, 1> { enum { index = 3 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Edge, 4, 0> { enum { index = 1 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Edge, 4, 1> { enum { index = 3 }; };
 
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 5, 0> { enum { index = 2 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshEdgeTopology, 5, 1> { enum { index = 3 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Edge, 5, 0> { enum { index = 2 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Edge, 5, 1> { enum { index = 3 }; };
 
 
 // i-th subvertex is the opposite vertex of i-th subface
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 0> { enum { index = 1 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 1> { enum { index = 2 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 0, 2> { enum { index = 3 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Triangle, 0, 0> { enum { index = 1 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Triangle, 0, 1> { enum { index = 2 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Triangle, 0, 2> { enum { index = 3 }; };
 
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 0> { enum { index = 2 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 1> { enum { index = 0 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 1, 2> { enum { index = 3 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Triangle, 1, 0> { enum { index = 2 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Triangle, 1, 1> { enum { index = 0 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Triangle, 1, 2> { enum { index = 3 }; };
 
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 0> { enum { index = 0 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 1> { enum { index = 1 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 2, 2> { enum { index = 3 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Triangle, 2, 0> { enum { index = 0 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Triangle, 2, 1> { enum { index = 1 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Triangle, 2, 2> { enum { index = 3 }; };
 
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 3, 0> { enum { index = 0 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 3, 1> { enum { index = 1 }; };
-template<> struct SubentityVertexMap< MeshTetrahedronTopology, MeshTriangleTopology, 3, 2> { enum { index = 2 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Triangle, 3, 0> { enum { index = 0 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Triangle, 3, 1> { enum { index = 1 }; };
+template<> struct SubentityVertexMap< Tetrahedron, Triangle, 3, 2> { enum { index = 2 }; };
 
+} // namespace Topologies
 } // namespace Meshes
 } // namespace TNL

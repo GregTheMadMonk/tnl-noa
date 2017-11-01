@@ -38,9 +38,9 @@ template<> struct GridIndexTag< TNLViewBuildConfigTag, long int >{ enum { enable
 /****
  * Unstructured meshes.
  */
-template<> struct MeshCellTopologyTag< TNLViewBuildConfigTag, MeshEdgeTopology > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< TNLViewBuildConfigTag, MeshTriangleTopology > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< TNLViewBuildConfigTag, MeshTetrahedronTopology > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< TNLViewBuildConfigTag, Topologies::Edge > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< TNLViewBuildConfigTag, Topologies::Triangle > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< TNLViewBuildConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
 
 // Meshes are enabled only for the world dimension equal to the cell dimension.
 template< typename CellTopology, int WorldDimension >

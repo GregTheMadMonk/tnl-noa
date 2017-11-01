@@ -60,7 +60,7 @@ struct MyMeshConfig
    static constexpr bool boundaryTagsStorage( EntityTopology )
    {
       using BaseType = MeshConfigBase< Cell, WorldDimension, Real, GlobalIndex, LocalIndex, Id >;
-      using FaceTopology = typename MeshSubtopology< Cell, BaseType::meshDimension - 1 >::Topology;
+      using FaceTopology = typename Topologies::Subtopology< Cell, BaseType::meshDimension - 1 >::Topology;
       return entityStorage( BaseType::meshDimension - 1 ) &&
              superentityStorage( FaceTopology(), BaseType::meshDimension ) &&
              ( EntityTopology::dimension >= BaseType::meshDimension - 1 || subentityStorage( FaceTopology(), EntityTopology::dimension ) );
@@ -82,11 +82,11 @@ struct GridTag< MyBuildConfigTag, Grid< Dimension, Real, Device, Index > >
 { enum { enabled = false }; };
 
 // enable all cell topologies
-template<> struct MeshCellTopologyTag< MyBuildConfigTag, MeshEdgeTopology > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MyBuildConfigTag, MeshTriangleTopology > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MyBuildConfigTag, MeshQuadrilateralTopology > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MyBuildConfigTag, MeshTetrahedronTopology > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MyBuildConfigTag, MeshHexahedronTopology > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MyBuildConfigTag, Topologies::Edge > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MyBuildConfigTag, Topologies::Triangle > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MyBuildConfigTag, Topologies::Quadrilateral > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MyBuildConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MyBuildConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
 
 template< typename CellTopology, int WorldDimension >
 struct MeshWorldDimensionTag< MyBuildConfigTag, CellTopology, WorldDimension >

@@ -20,8 +20,9 @@
 
 namespace TNL {
 namespace Meshes {
+namespace Topologies {
 
-struct MeshVertexTopology
+struct Vertex
 {
    static constexpr int dimension = 0;
 
@@ -31,5 +32,6 @@ struct MeshVertexTopology
    }
 };
 
+} // namespace Topologies
 } // namespace Meshes
 } // namespace TNL

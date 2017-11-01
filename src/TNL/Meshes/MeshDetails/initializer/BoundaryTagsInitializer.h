@@ -15,7 +15,7 @@
 #include <TNL/DevicePointer.h>
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/Topologies/MeshEntityTopology.h>
+#include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 
 namespace TNL {
 namespace Meshes {
@@ -34,7 +34,7 @@ protected:
    template< typename CurrentDimension = DimensionTag< Mesh::getMeshDimension() >, typename _T = void >
    struct BoundaryTagsNeedInitialization
    {
-      using EntityTopology = typename MeshEntityTopology< typename Mesh::Config, CurrentDimension >::Topology;
+      using EntityTopology = typename MeshEntityTraits< typename Mesh::Config, DeviceType, CurrentDimension::value >::EntityTopology;
       static constexpr bool value = Mesh::Config::boundaryTagsStorage( EntityTopology() ) ||
                                     BoundaryTagsNeedInitialization< typename CurrentDimension::Decrement >::value;
    };
@@ -42,7 +42,7 @@ protected:
    template< typename _T >
    struct BoundaryTagsNeedInitialization< DimensionTag< 0 >, _T >
    {
-      using EntityTopology = typename MeshEntityTopology< typename Mesh::Config, DimensionTag< 0 > >::Topology;
+      using EntityTopology = typename MeshEntityTraits< typename Mesh::Config, DeviceType, 0 >::EntityTopology;
       static constexpr bool value = Mesh::Config::boundaryTagsStorage( EntityTopology() );
    };
 
@@ -58,7 +58,7 @@ protected:
    template< int Subdimension >
    class InitializeSubentities
    {
-      using SubentityTopology = typename MeshEntityTopology< typename Mesh::Config, DimensionTag< Subdimension > >::Topology;
+      using SubentityTopology = typename MeshEntityTraits< typename Mesh::Config, DeviceType, Subdimension >::EntityTopology;
       static constexpr bool enabled = Mesh::Config::boundaryTagsStorage( SubentityTopology() );
 
       // _T is necessary to force *partial* specialization, since explicit specializations

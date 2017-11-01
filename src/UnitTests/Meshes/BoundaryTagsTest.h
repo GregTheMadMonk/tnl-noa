@@ -21,7 +21,7 @@ using RealType = double;
 using Device = Devices::Host;
 using IndexType = int;
 
-class TestQuadrilateralMeshConfig : public MeshConfigBase< MeshQuadrilateralTopology >
+class TestQuadrilateralMeshConfig : public MeshConfigBase< Topologies::Quadrilateral >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -33,7 +33,7 @@ public:
 
 TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
 {
-   using QuadrilateralMeshEntityType = MeshEntity< TestQuadrilateralMeshConfig, Devices::Host, MeshQuadrilateralTopology >;
+   using QuadrilateralMeshEntityType = MeshEntity< TestQuadrilateralMeshConfig, Devices::Host, Topologies::Quadrilateral >;
    using EdgeMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 1 >::SubentityType;
    using VertexMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 0 >::SubentityType;
 

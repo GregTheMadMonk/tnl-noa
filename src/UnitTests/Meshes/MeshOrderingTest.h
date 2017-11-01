@@ -17,7 +17,7 @@ using namespace TNL;
 using namespace TNL::Meshes;
 
 class TestTriangleMeshConfig
-   : public MeshConfigBase< MeshTriangleTopology, 2, double, int, short int, int >
+   : public MeshConfigBase< Topologies::Triangle, 2, double, int, short int, int >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
