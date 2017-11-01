@@ -36,11 +36,13 @@ class Simplex
       }
 };
 
-template< unsigned int n, unsigned int k >
-class tnlStaticNumCombinations;
+namespace SimplexDetails {
+   template< unsigned int n, unsigned int k >
+   class NumCombinations;
 
-template<unsigned int n, unsigned int k, unsigned int combinationIndex, unsigned int valueIndex>
-class tnlCombinationValue;
+   template<unsigned int n, unsigned int k, unsigned int combinationIndex, unsigned int valueIndex>
+   class CombinationValue;
+}
 
 template< int dimension,
           int subtopologyDim >
@@ -54,7 +56,7 @@ class Subtopology< Simplex< dimension >, subtopologyDim >
    public:
       typedef Simplex< subtopologyDim > Topology;
 
-      static constexpr int count = tnlNumCombinations< topologyVertexCount, subtopologyVertexCount >::value;
+      static constexpr int count = SimplexDetails::NumCombinations< topologyVertexCount, subtopologyVertexCount >::value;
 };
 
 template< int dimension >
@@ -85,21 +87,24 @@ struct SubentityVertexMap< Simplex< dimension >, Subtopology, subtopologyIndex, 
       static_assert(0 <= vertexIndex && vertexIndex < subtopologyVertexCount, "invalid subtopology vertex index");
 
    public:
-      static constexpr int index = CombinationValue< topologyVertexCount, subtopologyVertexCount, subtopologyIndex, vertexIndex>::value;
+      static constexpr int index = SimplexDetails::CombinationValue< topologyVertexCount, subtopologyVertexCount, subtopologyIndex, vertexIndex>::value;
 };
 
 template< unsigned int n, unsigned int k >
-class tnlStaticNumCombinations
+class NumCombinations
 {
    static_assert(0 < k && k < n, "invalid argument");
 
    public:
-      static const unsigned int value = tnlNumCombinations< n - 1, k - 1 >::value + tnlNumCombinations< n - 1, k >::value;
+      static const unsigned int value = NumCombinations< n - 1, k - 1 >::value + NumCombinations< n - 1, k >::value;
 };
+
+
+namespace SimplexDetails {
 
 // Nummber of combinations (n choose k)
 template< unsigned int n >
-class tnlNumCombinations< n, 0 >
+class NumCombinations< n, 0 >
 {
    static_assert(0 <= n, "invalid argument");
 
@@ -108,7 +113,7 @@ class tnlNumCombinations< n, 0 >
 };
 
 template< unsigned int n >
-class tnlNumCombinations< n, n >
+class NumCombinations< n, n >
 {
    static_assert(0 < n, "invalid argument");
 
@@ -124,33 +129,33 @@ class tnlNumCombinations< n, n >
 template< unsigned int n,
           unsigned int k,
           unsigned int combinationIndex >
-class tnlCombinationIncrement;
+class CombinationIncrement;
 
 template< unsigned int n,
           unsigned int k,
           unsigned int combinationIndex,
           unsigned int valueIndex >
-class tnlCombinationValue
+class CombinationValue
 {
    static_assert( combinationIndex < NumCombinations< n, k >::value, "invalid combination index" );
    static_assert( valueIndex < k, "invalid value index" );
 
-   static const unsigned int incrementValueIndex = tnlCombinationIncrement< n, k, combinationIndex - 1>::valueIndex;
+   static const unsigned int incrementValueIndex = CombinationIncrement< n, k, combinationIndex - 1>::valueIndex;
 
    public:
-      static const unsigned int value = ( valueIndex < incrementValueIndex ? tnlCombinationValue< n, k, combinationIndex - 1, valueIndex >::value :
-                                          tnlCombinationValue< n, k, combinationIndex - 1, incrementValueIndex >::value +
+      static const unsigned int value = ( valueIndex < incrementValueIndex ? CombinationValue< n, k, combinationIndex - 1, valueIndex >::value :
+                                          CombinationValue< n, k, combinationIndex - 1, incrementValueIndex >::value +
                                           valueIndex - incrementValueIndex + 1);
 };
 
 template< unsigned int n,
           unsigned int k,
           unsigned int valueIndex >
-class tnlCombinationValue< n, k, 0, valueIndex >
+class CombinationValue< n, k, 0, valueIndex >
 {
    static_assert( valueIndex < k, "invalid value index" );
 
-   static const unsigned int incrementValueIndex = tnlCombinationIncrement< n, k, 0 >::valueIndex;
+   static const unsigned int incrementValueIndex = CombinationIncrement< n, k, 0 >::valueIndex;
 
    public:
       static const unsigned int value = valueIndex;
@@ -160,23 +165,23 @@ class tnlCombinationValue< n, k, 0, valueIndex >
 template< unsigned int n,
           unsigned int k,
           unsigned int combinationIndex,
-          unsigned int valueIndex >
-class tnlCombinationIncrementImpl
+          unsigned int valueIndex_ >
+class CombinationIncrementImpl
 {
-   static_assert( combinationIndex < tnlNumCombinations< n, k >::value - 1, "nothing to increment" );
+   static_assert( combinationIndex < NumCombinations< n, k >::value - 1, "nothing to increment" );
 
-   static const bool incrementPossible = ( tnlCombinationValue< n, k, combinationIndex, valueIndex >::value + k - valueIndex < n );
+   static const bool incrementPossible = ( CombinationValue< n, k, combinationIndex, valueIndex_ >::value + k - valueIndex_ < n );
 
    public:
-      static constexpr int valueIndex = ( incrementPossible ? valueIndex : tnlCombinationIncrementImpl< n, k, combinationIndex, valueIndex - 1 >::valueIndex );
+      static constexpr int valueIndex = ( incrementPossible ? valueIndex_ : CombinationIncrementImpl< n, k, combinationIndex, valueIndex_ - 1 >::valueIndex );
 };
 
 template< unsigned int n,
           unsigned int k,
           unsigned int combinationIndex >
-class tnlCombinationIncrementImpl< n, k, combinationIndex, 0 >
+class CombinationIncrementImpl< n, k, combinationIndex, 0 >
 {
-   static_assert( combinationIndex < tnlNumCombinations<n, k>::value - 1, "nothing to increment" );
+   static_assert( combinationIndex < NumCombinations<n, k>::value - 1, "nothing to increment" );
 
    public:
       static constexpr int valueIndex = 0;
@@ -185,13 +190,15 @@ class tnlCombinationIncrementImpl< n, k, combinationIndex, 0 >
 template< unsigned int n,
           unsigned int k,
           unsigned int combinationIndex >
-class tnlCombinationIncrement
+class CombinationIncrement
 {
-   static_assert( combinationIndex < tnlNumCombinations< n, k >::value - 1, "nothing to increment" );
+   static_assert( combinationIndex < NumCombinations< n, k >::value - 1, "nothing to increment" );
 
    public:
-      static const unsigned int valueIndex = tnlCombinationIncrementImpl< n, k, combinationIndex, k - 1 >::valueIndex;
+      static const unsigned int valueIndex = CombinationIncrementImpl< n, k, combinationIndex, k - 1 >::valueIndex;
 };
+
+} // namespace SimplexDetails
 
 } // namespace Topologies
 } // namespace Meshes

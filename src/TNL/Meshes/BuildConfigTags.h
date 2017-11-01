@@ -18,7 +18,7 @@
 #include <TNL/Meshes/Topologies/MeshQuadrilateralTopology.h>
 #include <TNL/Meshes/Topologies/MeshTetrahedronTopology.h>
 #include <TNL/Meshes/Topologies/MeshHexahedronTopology.h>
-//#include <TNL/Meshes/Topologies/MeshSimplexTopology.h>
+#include <TNL/Meshes/Topologies/MeshSimplexTopology.h>
 
 namespace TNL {
 namespace Meshes {
@@ -74,13 +74,13 @@ template< typename ConfigTag > struct MeshDeviceTag< ConfigTag, Devices::Cuda > 
 
 // All available cell topologies are disabled by default.
 template< typename ConfigTag, typename CellTopology > struct MeshCellTopologyTag { enum { enabled = false }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, MeshEdgeTopology > { enum { enabled = true }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, MeshTriangleTopology > { enum { enabled = true }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, MeshQuadrilateralTopology > { enum { enabled = true }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, MeshTetrahedronTopology > { enum { enabled = true }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, MeshHexahedronTopology > { enum { enabled = true }; };
-// TODO: MeshSimplexTopology has not been tested yet
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, MeshSimplexTopology > { enum { enabled = true }; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Edge > { enum { enabled = true }; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Triangle > { enum { enabled = true }; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Quadrilateral > { enum { enabled = true }; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
+// TODO: Simplex has not been tested yet
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Simplex > { enum { enabled = true }; };
 
 // All sensible world dimensions are enabled by default.
 template< typename ConfigTag, typename CellTopology, int WorldDimension > struct MeshWorldDimensionTag { enum { enabled = ( WorldDimension >= CellTopology::dimension && WorldDimension <= 3 ) }; };
