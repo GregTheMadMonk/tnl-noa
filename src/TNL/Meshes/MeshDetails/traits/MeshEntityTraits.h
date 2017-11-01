@@ -51,6 +51,21 @@ public:
 
 
 template< typename MeshConfig,
+          typename DimensionTag >
+struct EntityTopologyGetter
+{
+   static_assert( DimensionTag::value <= MeshConfig::meshDimension, "There are no entities with dimension higher than the mesh dimension." );
+   using Topology = typename Topologies::Subtopology< typename MeshConfig::CellTopology, DimensionTag::value >::Topology;
+};
+
+template< typename MeshConfig >
+struct EntityTopologyGetter< MeshConfig, DimensionTag< MeshConfig::CellTopology::dimension > >
+{
+   using Topology = typename MeshConfig::CellTopology;
+};
+
+
+template< typename MeshConfig,
           typename Device,
           int Dimension >
 class MeshEntityTraits
@@ -60,7 +75,7 @@ public:
 
    using GlobalIndexType               = typename MeshConfig::GlobalIndexType;
    using LocalIndexType                = typename MeshConfig::LocalIndexType;
-   using EntityTopology                = typename Topologies::EntityTopologyGetter< MeshConfig, DimensionTag< Dimension > >::Topology;
+   using EntityTopology                = typename EntityTopologyGetter< MeshConfig, DimensionTag< Dimension > >::Topology;
 
    using EntityType                    = MeshEntity< MeshConfig, Device, EntityTopology >;
    using SeedType                      = MeshEntitySeed< MeshConfig, EntityTopology >;

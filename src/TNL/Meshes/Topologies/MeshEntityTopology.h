@@ -38,38 +38,6 @@ struct SubentityVertexMap
 {
 };
 
-
-template< typename MeshConfig,
-          typename DimensionTag >
-struct EntityTopologyGetter
-{
-   static_assert( DimensionTag::value <= MeshConfig::meshDimension, "There are no entities with dimension higher than the mesh dimension." );
-   using Topology = typename Subtopology< typename MeshConfig::CellTopology, DimensionTag::value >::Topology;
-};
-
-template< typename MeshConfig >
-struct EntityTopologyGetter< MeshConfig, DimensionTag< MeshConfig::CellTopology::dimension > >
-{
-   using Topology = typename MeshConfig::CellTopology;
-};
-
-
-// Helper struct to determine if one topology is compatible with another one.
-template< typename Supertopology, typename Subtopology >
-struct is_compatible_topology
-{
-   static_assert( Supertopology::dimension >= Subtopology::dimension,
-                  "wrong order of topologies in template parameters" );
-   static constexpr bool value = std::is_same< typename Topologies::Subtopology< Supertopology, Subtopology::dimension >::Topology,
-                                               Subtopology >::value;
-};
-
-template< typename Supertopology >
-struct is_compatible_topology< Supertopology, Supertopology >
-{
-   static constexpr bool value = true;
-};
-
 } // namespace Topologies
 } // namespace Meshes
 } // namespace TNL
