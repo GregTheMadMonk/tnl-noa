@@ -18,7 +18,7 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/IndexedSet.h>
-#include <TNL/Meshes/Topologies/MeshEntityTopology.h>
+#include <TNL/Meshes/Topologies/SubentityVertexMap.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/initializer/MeshEntitySeed.h>
 

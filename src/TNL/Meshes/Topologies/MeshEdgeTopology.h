@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <TNL/Meshes/Topologies/MeshEntityTopology.h>
+#include <TNL/Meshes/Topologies/SubentityVertexMap.h>
 #include <TNL/Meshes/Topologies/MeshVertexTopology.h>
 
 namespace TNL {

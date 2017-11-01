@@ -19,7 +19,7 @@
 
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Meshes/MeshBuilder.h>
-#include <TNL/Meshes/Topologies/MeshEntityTopology.h>
+#include <TNL/Meshes/Topologies/SubentityVertexMap.h>
 #include <TNL/Meshes/Readers/VTKEntityType.h>
 
 #ifdef HAVE_VTK
@@ -78,7 +78,7 @@ public:
       // https://stackoverflow.com/questions/272900/undefined-reference-to-static-class-member/272996#272996
       TNL_ASSERT_EQ( this->worldDimension, + MeshType::Config::worldDimension, "world dimensions do not match" );
       TNL_ASSERT_EQ( this->meshDimension, + MeshType::Config::meshDimension, "mesh dimensions do not match" );
-      const int subvertices = MeshSubtopology< typename MeshType::Config::CellTopology, 0 >::count;
+      const int subvertices = Topologies::Subtopology< typename MeshType::Config::CellTopology, 0 >::count;
       TNL_ASSERT_EQ( this->verticesInEntities.at( this->meshDimension ), subvertices, "numbers of cell subvertices do not match" );
 
       using MeshBuilder = MeshBuilder< MeshType >;

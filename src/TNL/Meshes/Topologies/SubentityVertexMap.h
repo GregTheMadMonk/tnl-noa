@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshEntityTopology.h  -  description
+                          SubentityVertexMap.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -15,10 +15,6 @@
  */
 
 #pragma once
-
-#include <type_traits>
-
-#include <TNL/Meshes/DimensionTag.h>
 
 namespace TNL {
 namespace Meshes{
