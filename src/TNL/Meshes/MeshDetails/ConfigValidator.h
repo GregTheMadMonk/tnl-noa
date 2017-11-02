@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshConfigValidator.h  -  description
+                          ConfigValidator.h  -  description
                              -------------------
     begin                : Aug 14, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -25,8 +25,8 @@ namespace Meshes {
 template< typename MeshConfig,
           typename EntityTopology,
           typename DimensionTag >
-class MeshConfigValidatorSubtopologyLayer
-   : public MeshConfigValidatorSubtopologyLayer< MeshConfig, EntityTopology, typename DimensionTag::Decrement >
+class ConfigValidatorSubtopologyLayer
+   : public ConfigValidatorSubtopologyLayer< MeshConfig, EntityTopology, typename DimensionTag::Decrement >
 {
    static_assert( ! MeshConfig::subentityStorage( EntityTopology(), DimensionTag::value ) ||
                     MeshConfig::entityStorage( EntityTopology::dimension ),
@@ -41,7 +41,7 @@ class MeshConfigValidatorSubtopologyLayer
 
 template< typename MeshConfig,
           typename EntityTopology >
-class MeshConfigValidatorSubtopologyLayer< MeshConfig, EntityTopology, DimensionTag< 0 > >
+class ConfigValidatorSubtopologyLayer< MeshConfig, EntityTopology, DimensionTag< 0 > >
 {
    static_assert( ! MeshConfig::subentityStorage( EntityTopology(), 0 ) ||
                     MeshConfig::entityStorage( EntityTopology::dimension ),
@@ -54,8 +54,8 @@ class MeshConfigValidatorSubtopologyLayer< MeshConfig, EntityTopology, Dimension
 template< typename MeshConfig,
           typename EntityTopology,
           typename DimensionTag >
-class MeshConfigValidatorSupertopologyLayer
-   : public MeshConfigValidatorSupertopologyLayer< MeshConfig, EntityTopology, typename DimensionTag::Decrement >
+class ConfigValidatorSupertopologyLayer
+   : public ConfigValidatorSupertopologyLayer< MeshConfig, EntityTopology, typename DimensionTag::Decrement >
 {
    static_assert( ! MeshConfig::superentityStorage( EntityTopology(), DimensionTag::value ) ||
                     MeshConfig::entityStorage( EntityTopology::dimension ),
@@ -67,14 +67,14 @@ class MeshConfigValidatorSupertopologyLayer
 
 template< typename MeshConfig,
           typename EntityTopology >
-class MeshConfigValidatorSupertopologyLayer< MeshConfig, EntityTopology, DimensionTag< EntityTopology::dimension > >
+class ConfigValidatorSupertopologyLayer< MeshConfig, EntityTopology, DimensionTag< EntityTopology::dimension > >
 {};
 
 
 template< typename MeshConfig,
           typename EntityTopology,
           bool BoundaryTagsStorage = MeshConfig::boundaryTagsStorage( EntityTopology() ) >
-class MeshConfigValidatorBoundaryTagsLayer
+class ConfigValidatorBoundaryTagsLayer
 {
    using FaceTopology = typename Topologies::Subtopology< typename MeshConfig::CellTopology, MeshConfig::meshDimension - 1 >::Topology;
 
@@ -88,21 +88,21 @@ class MeshConfigValidatorBoundaryTagsLayer
 
 template< typename MeshConfig,
           typename EntityTopology >
-class MeshConfigValidatorBoundaryTagsLayer< MeshConfig, EntityTopology, false >
+class ConfigValidatorBoundaryTagsLayer< MeshConfig, EntityTopology, false >
 {
 };
 
 
 template< typename MeshConfig, int dimension >
-class MeshConfigValidatorLayer
-   : public MeshConfigValidatorLayer< MeshConfig, dimension - 1 >,
-     public MeshConfigValidatorSubtopologyLayer< MeshConfig,
+class ConfigValidatorLayer
+   : public ConfigValidatorLayer< MeshConfig, dimension - 1 >,
+     public ConfigValidatorSubtopologyLayer< MeshConfig,
                                                  typename Topologies::Subtopology< typename MeshConfig::CellTopology, dimension >::Topology,
                                                  DimensionTag< dimension - 1 > >,
-     public MeshConfigValidatorSupertopologyLayer< MeshConfig,
+     public ConfigValidatorSupertopologyLayer< MeshConfig,
                                                    typename Topologies::Subtopology< typename MeshConfig::CellTopology, dimension >::Topology,
                                                    DimensionTag< MeshConfig::CellTopology::dimension > >,
-     public MeshConfigValidatorBoundaryTagsLayer< MeshConfig,
+     public ConfigValidatorBoundaryTagsLayer< MeshConfig,
                                                   typename Topologies::Subtopology< typename MeshConfig::CellTopology, dimension >::Topology >
 {
    using Topology = typename Topologies::Subtopology< typename MeshConfig::CellTopology, dimension >::Topology;
@@ -113,14 +113,14 @@ class MeshConfigValidatorLayer
 };
 
 template< typename MeshConfig >
-class MeshConfigValidatorLayer< MeshConfig, 0 >
+class ConfigValidatorLayer< MeshConfig, 0 >
 {
 };
 
 template< typename MeshConfig >
-class MeshConfigValidatorLayerCell
-   : public MeshConfigValidatorLayer< MeshConfig, MeshConfig::CellTopology::dimension - 1 >,
-     public MeshConfigValidatorSubtopologyLayer< MeshConfig,
+class ConfigValidatorLayerCell
+   : public ConfigValidatorLayer< MeshConfig, MeshConfig::CellTopology::dimension - 1 >,
+     public ConfigValidatorSubtopologyLayer< MeshConfig,
                                                  typename MeshConfig::CellTopology,
                                                  DimensionTag< MeshConfig::CellTopology::dimension - 1 > >
 {
@@ -133,8 +133,8 @@ class MeshConfigValidatorLayerCell
 };
 
 template< typename MeshConfig >
-class MeshConfigValidator
-   : public MeshConfigValidatorLayerCell< MeshConfig >
+class ConfigValidator
+   : public ConfigValidatorLayerCell< MeshConfig >
 {
    static constexpr int meshDimension = MeshConfig::CellTopology::dimension;
 

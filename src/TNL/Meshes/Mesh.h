@@ -22,7 +22,7 @@
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshStorageLayer.h>
-#include <TNL/Meshes/MeshDetails/config/MeshConfigValidator.h>
+#include <TNL/Meshes/MeshDetails/ConfigValidator.h>
 
 namespace TNL {
 namespace Meshes {
@@ -56,6 +56,7 @@ template< typename MeshConfig,
           typename Device = Devices::Host >
 class Mesh
    : public Object,
+     public ConfigValidator< MeshConfig >,
      protected MeshStorageLayers< MeshConfig, Device >,
      public MeshInitializableBase< MeshConfig, Device, Mesh< MeshConfig, Device > >
 {
@@ -177,8 +178,6 @@ class Mesh
       using StorageBaseType::setEntitiesCount;
       using StorageBaseType::getSubentityStorageNetwork;
       using StorageBaseType::getSuperentityStorageNetwork;
-
-      MeshConfigValidator< MeshConfig > configValidator;
 
       friend MeshInitializer< MeshConfig >;
 

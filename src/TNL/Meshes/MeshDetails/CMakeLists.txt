@@ -1,9 +1,9 @@
-ADD_SUBDIRECTORY( config )
 ADD_SUBDIRECTORY( initializer )
 ADD_SUBDIRECTORY( layers )
 ADD_SUBDIRECTORY( traits )
 
-SET( headers IndexPermutationApplier.h
+SET( headers ConfigValidator.h
+             IndexPermutationApplier.h
              MeshEntityIndex.h
              MeshEntityIntegrityChecker.h
              MeshEntityOrientation.h

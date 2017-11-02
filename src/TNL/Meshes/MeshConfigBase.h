@@ -115,7 +115,7 @@ struct MeshConfigBase
     *    - faces must store the cell indices in the superentity layer
     *    - if dim(entity) < dim(face), the entities on which the tags are stored
     *      must be stored as subentities of faces
-    * TODO: check this in the MeshConfigValidator
+    * TODO: check this in the ConfigValidator
     */
    template< typename EntityTopology >
    static constexpr bool boundaryTagsStorage( EntityTopology )
