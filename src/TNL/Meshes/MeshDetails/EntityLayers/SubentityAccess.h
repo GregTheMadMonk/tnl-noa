@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshSubentityAccess.h  -  description
+                          SubentityAccess.h  -  description
                              -------------------
     begin                : Oct 26, 2016
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -27,22 +27,22 @@ template< typename MeshConfig,
                WeakSubentityStorageTrait< MeshConfig, Device, EntityTopology, DimensionTag >::storageEnabled,
           bool SubentityOrientationStorage =
                MeshConfig::subentityOrientationStorage( EntityTopology(), DimensionTag::value ) >
-class MeshSubentityAccessLayer;
+class SubentityAccessLayer;
 
 
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
-class MeshSubentityAccess
-   : public MeshSubentityAccessLayer< MeshConfig,
-                                      Device,
-                                      EntityTopology,
-                                      Meshes::DimensionTag< 0 > >
+class SubentityAccessLayerFamily
+   : public SubentityAccessLayer< MeshConfig,
+                                  Device,
+                                  EntityTopology,
+                                  Meshes::DimensionTag< 0 > >
 {
-   using BaseType = MeshSubentityAccessLayer< MeshConfig,
-                                              Device,
-                                              EntityTopology,
-                                              Meshes::DimensionTag< 0 > >;
+   using BaseType = SubentityAccessLayer< MeshConfig,
+                                          Device,
+                                          EntityTopology,
+                                          Meshes::DimensionTag< 0 > >;
 
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
@@ -103,7 +103,7 @@ public:
    }
 
    __cuda_callable__
-   bool operator==( const MeshSubentityAccess& other ) const
+   bool operator==( const SubentityAccessLayerFamily& other ) const
    {
       return BaseType::operator==( other );
    }
@@ -119,21 +119,21 @@ template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
           typename DimensionTag >
-class MeshSubentityAccessLayer< MeshConfig,
-                                Device,
-                                EntityTopology,
-                                DimensionTag,
-                                true,
-                                true >
-   : public MeshSubentityAccessLayer< MeshConfig,
-                                      Device,
-                                      EntityTopology,
-                                      typename DimensionTag::Increment >
+class SubentityAccessLayer< MeshConfig,
+                            Device,
+                            EntityTopology,
+                            DimensionTag,
+                            true,
+                            true >
+   : public SubentityAccessLayer< MeshConfig,
+                                  Device,
+                                  EntityTopology,
+                                  typename DimensionTag::Increment >
 {
-   using BaseType = MeshSubentityAccessLayer< MeshConfig,
-                                              Device,
-                                              EntityTopology,
-                                              typename DimensionTag::Increment >;
+   using BaseType = SubentityAccessLayer< MeshConfig,
+                                          Device,
+                                          EntityTopology,
+                                          typename DimensionTag::Increment >;
 
    using MeshTraitsType         = MeshTraits< MeshConfig, Device >;
    using SubentityTraitsType    = typename MeshTraitsType::template SubentityTraits< EntityTopology, DimensionTag::value >;
@@ -145,16 +145,16 @@ protected:
    using OrientationArrayType   = typename SubentityTraitsType::OrientationArrayType;
    using IdPermutationArrayType = typename SubentityTraitsType::IdPermutationArrayType;
 
-   MeshSubentityAccessLayer() = default;
+   SubentityAccessLayer() = default;
 
-   explicit MeshSubentityAccessLayer( const MeshSubentityAccessLayer& layer )
+   explicit SubentityAccessLayer( const SubentityAccessLayer& layer )
       : BaseType( layer )
    {
       this->subentityIndices.bind( layer.subentityIndices );
    }
 
    __cuda_callable__
-   MeshSubentityAccessLayer& operator=( const MeshSubentityAccessLayer& layer )
+   SubentityAccessLayer& operator=( const SubentityAccessLayer& layer )
    {
       BaseType::operator=( layer );
       this->subentityIndices.bind( layer.subentityIndices );
@@ -168,7 +168,7 @@ protected:
    }
 
    __cuda_callable__
-   bool operator==( const MeshSubentityAccessLayer& layer ) const
+   bool operator==( const SubentityAccessLayer& layer ) const
    {
       return ( BaseType::operator==( layer ) &&
                subentityIndices == layer.subentityIndices );
@@ -242,22 +242,22 @@ template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
           typename DimensionTag >
-class MeshSubentityAccessLayer< MeshConfig,
-                                Device,
-                                EntityTopology,
-                                DimensionTag,
-                                true,
-                                false >
-   : public MeshSubentityAccessLayer< MeshConfig,
-                                      Device,
-                                      EntityTopology,
-                                      typename DimensionTag::Increment >
+class SubentityAccessLayer< MeshConfig,
+                            Device,
+                            EntityTopology,
+                            DimensionTag,
+                            true,
+                            false >
+   : public SubentityAccessLayer< MeshConfig,
+                                  Device,
+                                  EntityTopology,
+                                  typename DimensionTag::Increment >
 {
    static_assert( DimensionTag::value < EntityTopology::dimension, "" );
-   using BaseType = MeshSubentityAccessLayer< MeshConfig,
-                                              Device,
-                                              EntityTopology,
-                                              typename DimensionTag::Increment >;
+   using BaseType = SubentityAccessLayer< MeshConfig,
+                                          Device,
+                                          EntityTopology,
+                                          typename DimensionTag::Increment >;
 
    using MeshTraitsType        = MeshTraits< MeshConfig, Device >;
    using SubentityTraitsType   = typename MeshTraitsType::template SubentityTraits< EntityTopology, DimensionTag::value >;
@@ -267,16 +267,16 @@ protected:
    using LocalIndexType        = typename SubentityTraitsType::LocalIndexType;
    using SubentityAccessorType = typename SubentityTraitsType::SubentityAccessorType;
 
-   MeshSubentityAccessLayer() = default;
+   SubentityAccessLayer() = default;
 
-   explicit MeshSubentityAccessLayer( const MeshSubentityAccessLayer& layer )
+   explicit SubentityAccessLayer( const SubentityAccessLayer& layer )
       : BaseType( layer )
    {
       this->subentityIndices.bind( layer.subentityIndices );
    }
 
    __cuda_callable__
-   MeshSubentityAccessLayer& operator=( const MeshSubentityAccessLayer& layer )
+   SubentityAccessLayer& operator=( const SubentityAccessLayer& layer )
    {
       BaseType::operator=( layer );
       this->subentityIndices.bind( layer.subentityIndices );
@@ -290,7 +290,7 @@ protected:
    }
 
    __cuda_callable__
-   bool operator==( const MeshSubentityAccessLayer& layer ) const
+   bool operator==( const SubentityAccessLayer& layer ) const
    {
       return ( BaseType::operator==( layer ) &&
                subentityIndices == layer.subentityIndices );
@@ -350,12 +350,12 @@ private:
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
-class MeshSubentityAccessLayer< MeshConfig,
-                                Device,
-                                EntityTopology,
-                                Meshes::DimensionTag< EntityTopology::dimension >,
-                                false,
-                                true >
+class SubentityAccessLayer< MeshConfig,
+                            Device,
+                            EntityTopology,
+                            Meshes::DimensionTag< EntityTopology::dimension >,
+                            false,
+                            true >
 {
    using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
 
@@ -387,7 +387,7 @@ protected:
 	void subentityOrientationsArray( DimensionTag ) {}
 
    __cuda_callable__
-   bool operator==( const MeshSubentityAccessLayer& other ) const
+   bool operator==( const SubentityAccessLayer& other ) const
    {
       return true;
    }
@@ -399,12 +399,12 @@ template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
           typename DimensionTag >
-class MeshSubentityAccessLayer< MeshConfig,
-                                Device,
-                                EntityTopology,
-                                DimensionTag,
-                                false,
-                                false >
+class SubentityAccessLayer< MeshConfig,
+                            Device,
+                            EntityTopology,
+                            DimensionTag,
+                            false,
+                            false >
 {
 protected:
    /***
@@ -435,7 +435,7 @@ protected:
 	void subentityOrientationsArray( DimensionTag ) {}
 
    __cuda_callable__
-   bool operator==( const MeshSubentityAccessLayer& other ) const
+   bool operator==( const SubentityAccessLayer& other ) const
    {
       return true;
    }

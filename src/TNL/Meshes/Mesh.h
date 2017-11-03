@@ -21,7 +21,7 @@
 #include <TNL/Logger.h>
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDetails/layers/MeshStorageLayer.h>
+#include <TNL/Meshes/MeshDetails/MeshLayers/StorageLayer.h>
 #include <TNL/Meshes/MeshDetails/ConfigValidator.h>
 
 namespace TNL {
@@ -29,9 +29,8 @@ namespace Meshes {
 
 template< typename MeshConfig > class Initializer;
 template< typename Mesh > class BoundaryTagsInitializer;
-template< typename Mesh > class MeshEntityStorageRebinder;
-template< typename Mesh, int Dimension >
-struct IndexPermutationApplier;
+template< typename Mesh > class EntityStorageRebinder;
+template< typename Mesh, int Dimension > struct IndexPermutationApplier;
 
 
 template< typename MeshConfig, typename Device, typename MeshType >
@@ -57,10 +56,10 @@ template< typename MeshConfig,
 class Mesh
    : public Object,
      public ConfigValidator< MeshConfig >,
-     protected MeshStorageLayers< MeshConfig, Device >,
+     protected StorageLayerFamily< MeshConfig, Device >,
      public MeshInitializableBase< MeshConfig, Device, Mesh< MeshConfig, Device > >
 {
-      using StorageBaseType = MeshStorageLayers< MeshConfig, Device >;
+      using StorageBaseType = StorageLayerFamily< MeshConfig, Device >;
 
    public:
       using Config          = MeshConfig;
@@ -183,7 +182,7 @@ class Mesh
 
       friend BoundaryTagsInitializer< Mesh >;
 
-      friend MeshEntityStorageRebinder< Mesh >;
+      friend EntityStorageRebinder< Mesh >;
 
       template< typename Mesh, int Dimension >
       friend struct IndexPermutationApplier;

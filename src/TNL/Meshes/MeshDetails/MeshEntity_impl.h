@@ -26,8 +26,8 @@ template< typename MeshConfig,
           typename EntityTopology >
 MeshEntity< MeshConfig, Device, EntityTopology >::
 MeshEntity( const MeshEntity& entity )
-   : MeshSubentityAccess< MeshConfig, Device, EntityTopology >( entity ),
-     MeshSuperentityAccess< MeshConfig, Device, EntityTopology >( entity ),
+   : SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology >( entity ),
+     SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology >( entity ),
      MeshEntityIndex< typename MeshConfig::IdType >( entity )
 {
 }
@@ -52,8 +52,8 @@ MeshEntity< MeshConfig, Device, EntityTopology >&
 MeshEntity< MeshConfig, Device, EntityTopology >::
 operator=( const MeshEntity& entity )
 {
-   MeshSubentityAccess< MeshConfig, Device, EntityTopology >::operator=( entity );
-   MeshSuperentityAccess< MeshConfig, Device, EntityTopology >::operator=( entity );
+   SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology >::operator=( entity );
+   SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology >::operator=( entity );
    MeshEntityIndex< typename MeshConfig::IdType >::operator=( entity );
    return *this;
 }
@@ -126,8 +126,8 @@ MeshEntity< MeshConfig, Device, EntityTopology >::
 print( std::ostream& str ) const
 {
    str << "\t Mesh entity dimension: " << EntityTopology::dimension << std::endl;
-   MeshSubentityAccess< MeshConfig, Device, EntityTopology >::print( str );
-   MeshSuperentityAccess< MeshConfig, Device, EntityTopology >::print( str );
+   SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology >::print( str );
+   SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology >::print( str );
 }
 
 template< typename MeshConfig,
@@ -138,8 +138,8 @@ bool
 MeshEntity< MeshConfig, Device, EntityTopology >::
 operator==( const MeshEntity& entity ) const
 {
-   return ( MeshSubentityAccess< MeshConfig, Device, EntityTopology >::operator==( entity ) &&
-            MeshSuperentityAccess< MeshConfig, Device, EntityTopology >::operator==( entity ) &&
+   return ( SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology >::operator==( entity ) &&
+            SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology >::operator==( entity ) &&
             MeshEntityIndex< typename MeshConfig::IdType >::operator==( entity ) );
 }
 
@@ -194,7 +194,7 @@ getVertexIndex( const LocalIndexType localIndex ) const
 template< typename MeshConfig, typename Device >
 MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 MeshEntity( const MeshEntity& entity )
-   : MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >( entity ),
+   : SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >( entity ),
      MeshEntityIndex< typename MeshConfig::IdType >( entity )
 {
    setPoint( entity.getPoint() );
@@ -218,7 +218,7 @@ MeshEntity< MeshConfig, Device, Topologies::Vertex >&
 MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 operator=( const MeshEntity& entity )
 {
-   MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::operator=( entity );
+   SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::operator=( entity );
    MeshEntityIndex< typename MeshConfig::IdType >::operator=( entity );
    setPoint( entity.getPoint() );
    return *this;
@@ -284,7 +284,7 @@ print( std::ostream& str ) const
 {
    str << "\t Mesh entity dimension: " << Topologies::Vertex::dimension << std::endl;
    str << "\t Coordinates = " << point << std::endl;
-   MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::print( str );
+   SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::print( str );
 }
 
 template< typename MeshConfig, typename Device >
@@ -293,7 +293,7 @@ bool
 MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 operator==( const MeshEntity& entity ) const
 {
-   return ( MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::operator==( entity ) &&
+   return ( SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::operator==( entity ) &&
             MeshEntityIndex< typename MeshConfig::IdType >::operator==( entity ) &&
             point == entity.point );
 }

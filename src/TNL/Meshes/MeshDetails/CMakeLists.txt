@@ -1,8 +1,10 @@
 ADD_SUBDIRECTORY( initializer )
-ADD_SUBDIRECTORY( layers )
+ADD_SUBDIRECTORY( EntityLayers )
+ADD_SUBDIRECTORY( MeshLayers )
 ADD_SUBDIRECTORY( traits )
 
 SET( headers ConfigValidator.h
+             EntityStorageRebinder.h
              IndexPermutationApplier.h
              MeshEntityIndex.h
              MeshEntityIntegrityChecker.h

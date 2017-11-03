@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshBoundaryTagsLayer.h  -  description
+                          BoundaryTagsLayer.h  -  description
                              -------------------
     begin                : Dec 25, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.
@@ -18,12 +18,12 @@ namespace TNL {
 namespace Meshes {
 
 // This is the implementation of the BoundaryTags layer for one specific dimension.
-// It is inherited by MeshStorageLayer.
+// It is inherited by the StorageLayer.
 template< typename MeshConfig,
           typename Device,
           typename DimensionTag,
           bool TagStorage = MeshConfig::boundaryTagsStorage( typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology() ) >
-class MeshBoundaryTagsLayer
+class BoundaryTagsLayer
 {
    using MeshTraitsType    = MeshTraits< MeshConfig, Device >;
    using EntityTraitsType  = typename MeshTraitsType::template EntityTraits< DimensionTag::value >;
@@ -33,20 +33,20 @@ public:
    using BoundaryTagsArray = typename MeshTraitsType::BoundaryTagsArrayType;
    using OrderingArray     = typename MeshTraitsType::GlobalIndexOrderingArrayType;
 
-   MeshBoundaryTagsLayer() = default;
+   BoundaryTagsLayer() = default;
 
-   explicit MeshBoundaryTagsLayer( const MeshBoundaryTagsLayer& other )
+   explicit BoundaryTagsLayer( const BoundaryTagsLayer& other )
    {
       operator=( other );
    }
 
    template< typename Device_ >
-   MeshBoundaryTagsLayer( const MeshBoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other )
+   BoundaryTagsLayer( const BoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other )
    {
       operator=( other );
    }
 
-   MeshBoundaryTagsLayer& operator=( const MeshBoundaryTagsLayer& other )
+   BoundaryTagsLayer& operator=( const BoundaryTagsLayer& other )
    {
       boundaryTags.setLike( other.boundaryTags );
       boundaryIndices.setLike( other.boundaryIndices );
@@ -58,7 +58,7 @@ public:
    }
 
    template< typename Device_ >
-   MeshBoundaryTagsLayer& operator=( const MeshBoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other )
+   BoundaryTagsLayer& operator=( const BoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other )
    {
       boundaryTags.setLike( other.boundaryTags );
       boundaryIndices.setLike( other.boundaryIndices );
@@ -197,7 +197,7 @@ public:
       str << interiorIndices << std::endl;
    }
 
-   bool operator==( const MeshBoundaryTagsLayer& layer ) const
+   bool operator==( const BoundaryTagsLayer& layer ) const
    {
       TNL_ASSERT( ( boundaryTags == layer.boundaryTags && boundaryIndices == layer.boundaryIndices && interiorIndices == layer.interiorIndices ) ||
                   ( boundaryTags != layer.boundaryTags && boundaryIndices != layer.boundaryIndices && interiorIndices != layer.interiorIndices ),
@@ -218,13 +218,13 @@ private:
 
    // friend class is needed for templated assignment operators
    template< typename MeshConfig_, typename Device_, typename DimensionTag_, bool TagStorage_ >
-   friend class MeshBoundaryTagsLayer;
+   friend class BoundaryTagsLayer;
 };
 
 template< typename MeshConfig,
           typename Device,
           typename DimensionTag >
-class MeshBoundaryTagsLayer< MeshConfig, Device, DimensionTag, false >
+class BoundaryTagsLayer< MeshConfig, Device, DimensionTag, false >
 {
    using MeshTraitsType    = MeshTraits< MeshConfig, Device >;
    using EntityTraitsType  = typename MeshTraitsType::template EntityTraits< DimensionTag::value >;
@@ -232,13 +232,13 @@ class MeshBoundaryTagsLayer< MeshConfig, Device, DimensionTag, false >
 public:
    using GlobalIndexType   = typename EntityTraitsType::GlobalIndexType;
 
-   MeshBoundaryTagsLayer() = default;
-   explicit MeshBoundaryTagsLayer( const MeshBoundaryTagsLayer& other ) {}
+   BoundaryTagsLayer() = default;
+   explicit BoundaryTagsLayer( const BoundaryTagsLayer& other ) {}
    template< typename Device_ >
-   MeshBoundaryTagsLayer( const MeshBoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other ) {}
-   MeshBoundaryTagsLayer& operator=( const MeshBoundaryTagsLayer& other ) { return *this; }
+   BoundaryTagsLayer( const BoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other ) {}
+   BoundaryTagsLayer& operator=( const BoundaryTagsLayer& other ) { return *this; }
    template< typename Device_ >
-   MeshBoundaryTagsLayer& operator=( const MeshBoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other ) { return *this; }
+   BoundaryTagsLayer& operator=( const BoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other ) { return *this; }
 
    void setEntitiesCount( const GlobalIndexType& entitiesCount ) {}
 
@@ -263,7 +263,7 @@ public:
  
    void print( std::ostream& str ) const {}
 
-   bool operator==( const MeshBoundaryTagsLayer& layer ) const
+   bool operator==( const BoundaryTagsLayer& layer ) const
    {
       return true;
    }

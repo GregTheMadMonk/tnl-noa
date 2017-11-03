@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshEntityStorageRebinder.h  -  description
+                          EntityStorageRebinder.h  -  description
                              -------------------
     begin                : Oct 22, 2016
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -35,7 +35,7 @@ namespace TNL {
 namespace Meshes {
 
 template< typename Mesh >
-class MeshEntityStorageRebinder
+class EntityStorageRebinder
 {
    using IndexType = typename Mesh::GlobalIndexType;
    using DeviceType = typename Mesh::DeviceType;

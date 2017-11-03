@@ -17,9 +17,9 @@
 #pragma once
 
 #include <TNL/Meshes/Mesh.h>
-#include <TNL/Meshes/MeshDetails/layers/MeshEntityStorageRebinder.h>
-#include <TNL/Meshes/MeshDetails/initializer/Initializer.h>
+#include <TNL/Meshes/MeshDetails/EntityStorageRebinder.h>
 #include <TNL/Meshes/MeshDetails/IndexPermutationApplier.h>
+#include <TNL/Meshes/MeshDetails/initializer/Initializer.h>
 
 namespace TNL {
 namespace Meshes {
@@ -41,7 +41,7 @@ Mesh( const Mesh& mesh )
    : StorageBaseType( mesh )
 {
    // update pointers from entities into the subentity and superentity storage networks
-   MeshEntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
+   EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
 }
 
 template< typename MeshConfig, typename Device >
@@ -50,11 +50,11 @@ Mesh< MeshConfig, Device >::
 Mesh( const Mesh< MeshConfig, Device_ >& mesh )
    // clang complains that subclass cannot be cast to its private/protected base type,
    // but for some reason it works fine for the non-template copy-constructor
-//   : StorageBaseType( *static_cast< const MeshStorageLayers< MeshConfig, Device_ >* >( &mesh ) )
-   : StorageBaseType( *( (const MeshStorageLayers< MeshConfig, Device_ >*) &mesh ) )
+//   : StorageBaseType( *static_cast< const StorageLayerFamily< MeshConfig, Device_ >* >( &mesh ) )
+   : StorageBaseType( *( (const StorageLayerFamily< MeshConfig, Device_ >*) &mesh ) )
 {
    // update pointers from entities into the subentity and superentity storage networks
-   MeshEntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
+   EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
 }
 
 template< typename MeshConfig, typename Device >
@@ -62,9 +62,9 @@ Mesh< MeshConfig, Device >&
 Mesh< MeshConfig, Device >::
 operator=( const Mesh& mesh )
 {
-   StorageBaseType::operator=( *( (const MeshStorageLayers< MeshConfig, Device >*) &mesh ) );
+   StorageBaseType::operator=( *( (const StorageLayerFamily< MeshConfig, Device >*) &mesh ) );
    // update pointers from entities into the subentity and superentity storage networks
-   MeshEntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
+   EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
    return *this;
 }
 
@@ -74,9 +74,9 @@ Mesh< MeshConfig, Device >&
 Mesh< MeshConfig, Device >::
 operator=( const Mesh< MeshConfig, Device_ >& mesh )
 {
-   StorageBaseType::operator=( *( (const MeshStorageLayers< MeshConfig, Device_ >*) &mesh ) );
+   StorageBaseType::operator=( *( (const StorageLayerFamily< MeshConfig, Device_ >*) &mesh ) );
    // update pointers from entities into the subentity and superentity storage networks
-   MeshEntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
+   EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
    return *this;
 }
 
@@ -226,7 +226,7 @@ reorderEntities( const IndexPermutationVector& perm,
    IndexPermutationApplier< Mesh, Dimension >::exec( *this, perm, iperm );
    // update pointers from entities into the subentity and superentity storage networks
    // TODO: it would be enough to rebind just the permuted entities
-   MeshEntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
+   EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
    // update boundary tags
    BoundaryTagsInitializer< Mesh >::exec( *this );
 }
@@ -258,7 +258,7 @@ load( File& file )
       return false;
    }
    // update pointers from entities into the subentity and superentity storage networks
-   MeshEntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
+   EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
    return true;
 }
 

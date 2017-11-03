@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshSuperentityAccess.h  -  description
+                          SuperentityAccess.h  -  description
                              -------------------
     begin                : Aug 15, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -27,22 +27,22 @@ template< typename MeshConfig,
           typename EntityTopology,
           typename DimensionTag,
           bool SuperentityStorage = WeakSuperentityStorageTrait< MeshConfig, Device, EntityTopology, DimensionTag >::storageEnabled >
-class MeshSuperentityAccessLayer;
+class SuperentityAccessLayer;
 
 
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
-class MeshSuperentityAccess
-   : public MeshSuperentityAccessLayer< MeshConfig,
-                                        Device,
-                                        EntityTopology,
-                                        Meshes::DimensionTag< MeshTraits< MeshConfig, Device >::meshDimension > >
+class SuperentityAccessLayerFamily
+   : public SuperentityAccessLayer< MeshConfig,
+                                    Device,
+                                    EntityTopology,
+                                    Meshes::DimensionTag< MeshTraits< MeshConfig, Device >::meshDimension > >
 {
-   using BaseType = MeshSuperentityAccessLayer< MeshConfig,
-                                                Device,
-                                                EntityTopology,
-                                                Meshes::DimensionTag< MeshTraits< MeshConfig, Device >::meshDimension > >;
+   using BaseType = SuperentityAccessLayer< MeshConfig,
+                                            Device,
+                                            EntityTopology,
+                                            Meshes::DimensionTag< MeshTraits< MeshConfig, Device >::meshDimension > >;
 
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
@@ -100,7 +100,7 @@ public:
    }
 
    __cuda_callable__
-   bool operator==( const MeshSuperentityAccess& other ) const
+   bool operator==( const SuperentityAccessLayerFamily& other ) const
    {
       return BaseType::operator==( other );
    }
@@ -115,14 +115,14 @@ template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
           typename DimensionTag >
-class MeshSuperentityAccessLayer< MeshConfig,
-                                  Device,
-                                  EntityTopology,
-                                  DimensionTag,
-                                  true >
-   : public MeshSuperentityAccessLayer< MeshConfig, Device, EntityTopology, typename DimensionTag::Decrement >
+class SuperentityAccessLayer< MeshConfig,
+                              Device,
+                              EntityTopology,
+                              DimensionTag,
+                              true >
+   : public SuperentityAccessLayer< MeshConfig, Device, EntityTopology, typename DimensionTag::Decrement >
 {
-	using BaseType = MeshSuperentityAccessLayer< MeshConfig, Device, EntityTopology, typename DimensionTag::Decrement >;
+	using BaseType = SuperentityAccessLayer< MeshConfig, Device, EntityTopology, typename DimensionTag::Decrement >;
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
    using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionTag::value >;
 
@@ -141,16 +141,16 @@ public:
    using BaseType::getSuperentityIndex;
    using BaseType::getSuperentityIndices;
 
-   MeshSuperentityAccessLayer() = default;
+   SuperentityAccessLayer() = default;
 
-   explicit MeshSuperentityAccessLayer( const MeshSuperentityAccessLayer& layer )
+   explicit SuperentityAccessLayer( const SuperentityAccessLayer& layer )
       : BaseType( layer )
    {
       this->superentityIndices.bind( layer.superentityIndices );
    }
 
    __cuda_callable__
-   MeshSuperentityAccessLayer& operator=( const MeshSuperentityAccessLayer& layer )
+   SuperentityAccessLayer& operator=( const SuperentityAccessLayer& layer )
    {
       BaseType::operator=( layer );
       this->superentityIndices.bind( layer.superentityIndices );
@@ -208,7 +208,7 @@ public:
    }
 
    __cuda_callable__
-   bool operator==( const MeshSuperentityAccessLayer& other ) const
+   bool operator==( const SuperentityAccessLayer& other ) const
    {
       return ( BaseType::operator==( other ) && superentityIndices == other.superentityIndices );
    }
@@ -227,12 +227,12 @@ template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
           typename DimensionTag >
-class MeshSuperentityAccessLayer< MeshConfig,
-                                  Device,
-                                  EntityTopology,
-                                  DimensionTag,
-                                  false >
-   : public MeshSuperentityAccessLayer< MeshConfig, Device, EntityTopology, typename DimensionTag::Decrement >
+class SuperentityAccessLayer< MeshConfig,
+                              Device,
+                              EntityTopology,
+                              DimensionTag,
+                              false >
+   : public SuperentityAccessLayer< MeshConfig, Device, EntityTopology, typename DimensionTag::Decrement >
 {
 };
 
@@ -240,11 +240,11 @@ class MeshSuperentityAccessLayer< MeshConfig,
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
-class MeshSuperentityAccessLayer< MeshConfig,
-                                  Device,
-                                  EntityTopology,
-                                  Meshes::DimensionTag< EntityTopology::dimension >,
-                                  false >
+class SuperentityAccessLayer< MeshConfig,
+                              Device,
+                              EntityTopology,
+                              Meshes::DimensionTag< EntityTopology::dimension >,
+                              false >
 {
    using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
 
@@ -275,7 +275,7 @@ protected:
    void getSuperentityIndices() {}
 
    __cuda_callable__
-   bool operator==( const MeshSuperentityAccessLayer& other ) const
+   bool operator==( const SuperentityAccessLayer& other ) const
    {
       return true;
    }

@@ -102,7 +102,7 @@ class Initializer
          this->mesh = &mesh;
          BaseType::initEntities( *this, points, cellSeeds, mesh );
          // set pointers from entities into the subentity and superentity storage networks
-         MeshEntityStorageRebinder< Mesh< MeshConfig > >::exec( mesh );
+         EntityStorageRebinder< Mesh< MeshConfig > >::exec( mesh );
          // init boundary tags
          BoundaryTagsInitializer< MeshType >::exec( mesh );
       }

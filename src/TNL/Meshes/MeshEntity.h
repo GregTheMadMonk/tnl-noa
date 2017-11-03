@@ -20,23 +20,23 @@
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/Topologies/Vertex.h>
 #include <TNL/Meshes/MeshDetails/MeshEntityIndex.h>
-#include <TNL/Meshes/MeshDetails/layers/MeshSubentityAccess.h>
-#include <TNL/Meshes/MeshDetails/layers/MeshSuperentityAccess.h>
+#include <TNL/Meshes/MeshDetails/EntityLayers/SubentityAccess.h>
+#include <TNL/Meshes/MeshDetails/EntityLayers/SuperentityAccess.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig, typename Device > class Mesh;
 template< typename MeshConfig > class Initializer;
-template< typename Mesh > class MeshEntityStorageRebinder;
+template< typename Mesh > class EntityStorageRebinder;
 template< typename Mesh, int Dimension > struct IndexPermutationApplier;
 
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology_ >
 class MeshEntity
-   : protected MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >,
-     protected MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >,
+   : protected SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >,
+     protected SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >,
      public MeshEntityIndex< typename MeshConfig::IdType >
 {
    static_assert( std::is_same< EntityTopology_, typename MeshTraits< MeshConfig, Device >::template EntityTraits< EntityTopology_::dimension >::EntityTopology >::value,
@@ -92,15 +92,15 @@ class MeshEntity
       /****
        * Subentities
        */
-      using MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >::getSubentitiesCount;
-      using MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >::getSubentityIndex;
-      using MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >::getSubentityOrientation;
+      using SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::getSubentitiesCount;
+      using SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::getSubentityIndex;
+      using SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::getSubentityOrientation;
 
       /****
        * Superentities
        */
-      using MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >::getSuperentitiesCount;
-      using MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >::getSuperentityIndex;
+      using SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::getSuperentitiesCount;
+      using SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::getSuperentityIndex;
 
       /****
        * Vertices
@@ -113,17 +113,17 @@ class MeshEntity
       /****
        * Methods for the mesh initialization
        */
-      using MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >::bindSubentitiesStorageNetwork;
-      using MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >::setSubentityIndex;
-      using MeshSubentityAccess< MeshConfig, Device, EntityTopology_ >::subentityOrientationsArray;
+      using SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::bindSubentitiesStorageNetwork;
+      using SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::setSubentityIndex;
+      using SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::subentityOrientationsArray;
 
-      using MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >::bindSuperentitiesStorageNetwork;
-      using MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >::setNumberOfSuperentities;
-      using MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >::setSuperentityIndex;
+      using SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::bindSuperentitiesStorageNetwork;
+      using SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::setNumberOfSuperentities;
+      using SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::setSuperentityIndex;
 
    friend Initializer< MeshConfig >;
 
-   friend MeshEntityStorageRebinder< Mesh< MeshConfig, DeviceType > >;
+   friend EntityStorageRebinder< Mesh< MeshConfig, DeviceType > >;
 
    template< typename Mesh, int Dimension >
    friend struct IndexPermutationApplier;
@@ -134,7 +134,7 @@ class MeshEntity
  */
 template< typename MeshConfig, typename Device >
 class MeshEntity< MeshConfig, Device, Topologies::Vertex >
-   : protected MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >,
+   : protected SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >,
      public MeshEntityIndex< typename MeshConfig::IdType >
 {
    public:
@@ -185,8 +185,8 @@ class MeshEntity< MeshConfig, Device, Topologies::Vertex >
       /****
        * Superentities
        */
-      using MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::getSuperentitiesCount;
-      using MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::getSuperentityIndex;
+      using SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::getSuperentitiesCount;
+      using SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::getSuperentityIndex;
 
       /****
        * Points
@@ -198,15 +198,15 @@ class MeshEntity< MeshConfig, Device, Topologies::Vertex >
       void setPoint( const PointType& point );
 
    protected:
-      using MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::bindSuperentitiesStorageNetwork;
-      using MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::setNumberOfSuperentities;
-      using MeshSuperentityAccess< MeshConfig, Device, Topologies::Vertex >::setSuperentityIndex;
+      using SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::bindSuperentitiesStorageNetwork;
+      using SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::setNumberOfSuperentities;
+      using SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::setSuperentityIndex;
 
       PointType point;
 
    friend Initializer< MeshConfig >;
 
-   friend MeshEntityStorageRebinder< Mesh< MeshConfig, DeviceType > >;
+   friend EntityStorageRebinder< Mesh< MeshConfig, DeviceType > >;
 
    template< typename Mesh, int Dimension >
    friend struct IndexPermutationApplier;
