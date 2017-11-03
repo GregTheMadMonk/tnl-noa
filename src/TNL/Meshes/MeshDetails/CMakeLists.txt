@@ -7,7 +7,6 @@ SET( headers ConfigValidator.h
              EntityStorageRebinder.h
              IndexPermutationApplier.h
              MeshEntityIndex.h
-             MeshEntityIntegrityChecker.h
              MeshEntityOrientation.h
              MeshEntityReferenceOrientation.h
              MeshEntity_impl.h
