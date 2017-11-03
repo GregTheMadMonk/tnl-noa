@@ -9,7 +9,6 @@
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshConfigBase.h>
 #include <TNL/Meshes/Topologies/Quadrilateral.h>
-#include <TNL/Meshes/MeshDetails/initializer/MeshInitializer.h>
 #include <TNL/Meshes/MeshBuilder.h>
 
 namespace BoundaryTagsTest {

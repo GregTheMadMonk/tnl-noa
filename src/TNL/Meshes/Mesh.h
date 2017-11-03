@@ -27,7 +27,7 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename MeshConfig > class MeshInitializer;
+template< typename MeshConfig > class Initializer;
 template< typename Mesh > class BoundaryTagsInitializer;
 template< typename Mesh > class MeshEntityStorageRebinder;
 template< typename Mesh, int Dimension >
@@ -179,7 +179,7 @@ class Mesh
       using StorageBaseType::getSubentityStorageNetwork;
       using StorageBaseType::getSuperentityStorageNetwork;
 
-      friend MeshInitializer< MeshConfig >;
+      friend Initializer< MeshConfig >;
 
       friend BoundaryTagsInitializer< Mesh >;
 

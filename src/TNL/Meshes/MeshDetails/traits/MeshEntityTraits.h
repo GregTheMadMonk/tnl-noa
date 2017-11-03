@@ -20,7 +20,7 @@
 #include <TNL/Containers/IndexedSet.h>
 #include <TNL/Meshes/Topologies/SubentityVertexMap.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDetails/initializer/MeshEntitySeed.h>
+#include <TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
 
 namespace TNL {
 namespace Meshes {
@@ -78,7 +78,7 @@ public:
    using EntityTopology                = typename EntityTopologyGetter< MeshConfig, DimensionTag< Dimension > >::Topology;
 
    using EntityType                    = MeshEntity< MeshConfig, Device, EntityTopology >;
-   using SeedType                      = MeshEntitySeed< MeshConfig, EntityTopology >;
+   using SeedType                      = EntitySeed< MeshConfig, EntityTopology >;
    using ReferenceOrientationType      = MeshEntityReferenceOrientation< MeshConfig, EntityTopology >;
 
    using StorageArrayType              = Containers::Array< EntityType, Device, GlobalIndexType >;

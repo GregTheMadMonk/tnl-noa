@@ -30,7 +30,7 @@ class MeshEntityReferenceOrientation
 	typedef typename MeshTraits< MeshConfig >::GlobalIndexType GlobalIndexType;
 
    public:
-      typedef MeshEntitySeed< MeshConfig, EntityTopology >        SeedType;
+      typedef EntitySeed< MeshConfig, EntityTopology >            SeedType;
       typedef MeshEntityOrientation< MeshConfig, EntityTopology > EntityOrientation;
 
       MeshEntityReferenceOrientation() = default;

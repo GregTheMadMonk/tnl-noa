@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshEntitySeed.h  -  description
+                          EntitySeed.h  -  description
                              -------------------
     begin                : Aug 18, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -17,14 +17,14 @@
 #pragma once
 
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDetails/initializer/MeshEntitySeedKey.h>
+#include <TNL/Meshes/MeshDetails/initializer/EntitySeedKey.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
           typename EntityTopology >
-class MeshEntitySeed
+class EntitySeed
 {
    using MeshConfigTraits = MeshTraits< MeshConfig >;
    using SubvertexTraits = typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, 0 >;
@@ -33,9 +33,9 @@ class MeshEntitySeed
       using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
       using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
       using IdArrayType     = Containers::StaticArray< SubvertexTraits::count, GlobalIndexType >;
-      using KeyType         = MeshEntitySeedKey< MeshConfig, EntityTopology >;
+      using KeyType         = EntitySeedKey< MeshConfig, EntityTopology >;
 
-      static String getType() { return String( "MeshEntitySeed<>" ); }
+      static String getType() { return String( "EntitySeed<>" ); }
 
       static constexpr LocalIndexType getCornersCount()
       {
@@ -66,7 +66,7 @@ class MeshEntitySeed
 };
 
 template< typename MeshConfig >
-class MeshEntitySeed< MeshConfig, Topologies::Vertex >
+class EntitySeed< MeshConfig, Topologies::Vertex >
 {
    using MeshConfigTraits = MeshTraits< MeshConfig >;
 
@@ -74,9 +74,9 @@ class MeshEntitySeed< MeshConfig, Topologies::Vertex >
       using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
       using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
       using IdArrayType     = Containers::StaticArray< 1, GlobalIndexType >;
-      using KeyType         = MeshEntitySeedKey< MeshConfig, Topologies::Vertex >;
+      using KeyType         = EntitySeedKey< MeshConfig, Topologies::Vertex >;
 
-      static String getType() { return String( "MeshEntitySeed<>" ); }
+      static String getType() { return String( "EntitySeed<>" ); }
 
       static constexpr LocalIndexType getCornersCount()
       {
@@ -106,7 +106,7 @@ class MeshEntitySeed< MeshConfig, Topologies::Vertex >
 };
 
 template< typename MeshConfig, typename EntityTopology >
-std::ostream& operator<<( std::ostream& str, const MeshEntitySeed< MeshConfig, EntityTopology >& e )
+std::ostream& operator<<( std::ostream& str, const EntitySeed< MeshConfig, EntityTopology >& e )
 {
    str << e.getCornerIds();
    return str;

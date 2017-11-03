@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshSuperentityStorageInitializer.h  -  description
+                          SuperentityStorageInitializer.h  -  description
                              -------------------
     begin                : Feb 27, 2014
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -26,15 +26,15 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig >
-class MeshInitializer;
+class Initializer;
 
 template< typename MeshConfig,
           typename SubdimensionTag,
           typename SuperdimensionTag >
-class MeshSuperentityStorageInitializer
+class SuperentityStorageInitializer
 {
    using MeshTraitsType            = MeshTraits< MeshConfig >;
-   using MeshInitializerType       = MeshInitializer< MeshConfig >;
+   using InitializerType           = Initializer< MeshConfig >;
    using GlobalIndexType           = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType            = typename MeshTraitsType::LocalIndexType;
    using EntityTraitsType          = typename MeshTraitsType::template EntityTraits< SubdimensionTag::value >;
@@ -55,7 +55,7 @@ public:
       indexSet.insert( superentityIndex );
    }
 
-   void initSuperentities( MeshInitializerType& meshInitializer )
+   void initSuperentities( InitializerType& meshInitializer )
    {
       TNL_ASSERT_GT( dynamicStorageNetwork.size(), 0,
                      "No superentity indices were collected. This is a bug in the mesh initializer." );

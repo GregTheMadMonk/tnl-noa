@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshSubentitySeedCreator.h  -  description
+                          SubentitySeedsCreator.h  -  description
                              -------------------
     begin                : Aug 20, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -25,7 +25,7 @@ namespace Meshes {
 template< typename MeshConfig,
           typename EntityDimensionTag,
           typename SubentityDimensionTag >
-class MeshSubentitySeedsCreator
+class SubentitySeedsCreator
 {
    using MeshTraitsType        = MeshTraits< MeshConfig >;
    using GlobalIndexType       = typename MeshTraitsType::GlobalIndexType;
@@ -53,7 +53,7 @@ public:
    }
 
 private:
-   using SubentitySeed = MeshEntitySeed< MeshConfig, SubentityTopology >;
+   using SubentitySeed = EntitySeed< MeshConfig, SubentityTopology >;
 
    template< LocalIndexType subentityIndex >
    class CreateSubentitySeeds
@@ -80,7 +80,7 @@ private:
 
 template< typename MeshConfig,
           typename EntityDimensionTag >
-class MeshSubentitySeedsCreator< MeshConfig, EntityDimensionTag, DimensionTag< 0 > >
+class SubentitySeedsCreator< MeshConfig, EntityDimensionTag, DimensionTag< 0 > >
 {
    using MeshTraitsType        = MeshTraits< MeshConfig >;
    using GlobalIndexType       = typename MeshTraitsType::GlobalIndexType;

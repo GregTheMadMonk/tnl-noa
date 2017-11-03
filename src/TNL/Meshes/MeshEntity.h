@@ -27,7 +27,7 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig, typename Device > class Mesh;
-template< typename MeshConfig > class MeshInitializer;
+template< typename MeshConfig > class Initializer;
 template< typename Mesh > class MeshEntityStorageRebinder;
 template< typename Mesh, int Dimension > struct IndexPermutationApplier;
 
@@ -121,7 +121,7 @@ class MeshEntity
       using MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >::setNumberOfSuperentities;
       using MeshSuperentityAccess< MeshConfig, Device, EntityTopology_ >::setSuperentityIndex;
 
-   friend MeshInitializer< MeshConfig >;
+   friend Initializer< MeshConfig >;
 
    friend MeshEntityStorageRebinder< Mesh< MeshConfig, DeviceType > >;
 
@@ -204,7 +204,7 @@ class MeshEntity< MeshConfig, Device, Topologies::Vertex >
 
       PointType point;
 
-   friend MeshInitializer< MeshConfig >;
+   friend Initializer< MeshConfig >;
 
    friend MeshEntityStorageRebinder< Mesh< MeshConfig, DeviceType > >;
 

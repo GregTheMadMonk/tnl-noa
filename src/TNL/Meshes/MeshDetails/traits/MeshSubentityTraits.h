@@ -28,7 +28,7 @@ namespace Meshes {
 template< typename MeshConfig, typename EntityTopology >
 class MeshEntityOrientation;
 template< typename MeshConfig, typename EntityTopology >
-class MeshEntitySeed;
+class EntitySeed;
 
 template< typename MeshConfig,
           typename Device,
@@ -48,7 +48,7 @@ public:
    using LocalIndexType    = typename MeshConfig::LocalIndexType;
    using SubentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
    using SubentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
-   using Seed              = MeshEntitySeed< MeshConfig, SubentityTopology >;
+   using Seed              = EntitySeed< MeshConfig, SubentityTopology >;
    using Orientation       = MeshEntityOrientation< MeshConfig, SubentityTopology >;
 
    /****

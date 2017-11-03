@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshEntitySeedKey.h  -  description
+                          EntitySeedKey.h  -  description
                              -------------------
     begin                : Feb 13, 2014
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -21,7 +21,7 @@ namespace Meshes {
 
 template< typename MeshConfig,
           typename EntityTopology >
-class MeshEntitySeed;
+class EntitySeed;
 
 /****
  * Unique identification of a mesh entity by its vertices.
@@ -29,13 +29,13 @@ class MeshEntitySeed;
  */
 template< typename MeshConfig,
           typename EntityTopology >
-class MeshEntitySeedKey
+class EntitySeedKey
 {
-   using EntitySeedType = MeshEntitySeed< MeshConfig, EntityTopology >;
+   using EntitySeedType = EntitySeed< MeshConfig, EntityTopology >;
    using IdArrayType = typename EntitySeedType::IdArrayType;
 
 public:
-   MeshEntitySeedKey( const EntitySeedType& entitySeed )
+   EntitySeedKey( const EntitySeedType& entitySeed )
    {
       for( typename IdArrayType::IndexType i = 0;
            i < entitySeed.getCornersCount();
@@ -44,7 +44,7 @@ public:
       sortedCorners.sort( );
    }
 
-   bool operator<( const MeshEntitySeedKey& other ) const
+   bool operator<( const EntitySeedKey& other ) const
    {
       for( typename IdArrayType::IndexType i = 0;
            i < IdArrayType::size;

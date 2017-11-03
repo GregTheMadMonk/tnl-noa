@@ -18,7 +18,7 @@
 
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshDetails/layers/MeshEntityStorageRebinder.h>
-#include <TNL/Meshes/MeshDetails/initializer/MeshInitializer.h>
+#include <TNL/Meshes/MeshDetails/initializer/Initializer.h>
 #include <TNL/Meshes/MeshDetails/IndexPermutationApplier.h>
 
 namespace TNL {
@@ -30,8 +30,8 @@ MeshInitializableBase< MeshConfig, Device, MeshType >::
 init( typename MeshTraitsType::PointArrayType& points,
       typename MeshTraitsType::CellSeedArrayType& cellSeeds )
 {
-   MeshInitializer< typename MeshType::Config > meshInitializer;
-   meshInitializer.createMesh( points, cellSeeds, *static_cast<MeshType*>(this) );
+   Initializer< typename MeshType::Config > initializer;
+   initializer.createMesh( points, cellSeeds, *static_cast<MeshType*>(this) );
 }
 
 

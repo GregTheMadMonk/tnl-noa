@@ -25,7 +25,7 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig, typename Device, typename EntityTopology > class MeshEntity;
-template< typename MeshConfig, typename EntityTopology > class MeshEntitySeed;
+template< typename MeshConfig, typename EntityTopology > class EntitySeed;
 template< typename MeshConfig, typename Device, int Dimension > class MeshEntityTraits;
 template< typename MeshConfig, typename Device, typename MeshEntity, int Subdimension > class MeshSubentityTraits;
 template< typename MeshConfig, typename Device, typename MeshEntity, int Superdimension > class MeshSuperentityTraits;
@@ -46,7 +46,7 @@ public:
    using CellType          = MeshEntity< MeshConfig, Device, CellTopology >;
    using VertexType        = MeshEntity< MeshConfig, Device, Topologies::Vertex >;
    using PointType         = Containers::StaticVector< worldDimension, typename MeshConfig::RealType >;
-   using CellSeedType      = MeshEntitySeed< MeshConfig, CellTopology >;
+   using CellSeedType      = EntitySeed< MeshConfig, CellTopology >;
 
    using PointArrayType    = Containers::Array< PointType, DeviceType, GlobalIndexType >;
    using CellSeedArrayType = Containers::Array< CellSeedType, DeviceType, GlobalIndexType >;
