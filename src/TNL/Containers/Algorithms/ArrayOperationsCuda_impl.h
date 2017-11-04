@@ -18,7 +18,7 @@
 #include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
-#include <TNL/Containers/Algorithms/reduction-operations.h>
+#include <TNL/Containers/Algorithms/ReductionOperations.h>
 
 namespace TNL {
 namespace Containers {   
@@ -202,8 +202,8 @@ compareMemory( const Element1* destination,
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
    //TODO: The parallel reduction on the CUDA device with different element types is needed.
    bool result = false;
-   Algorithms::tnlParallelReductionEqualities< Element1, Index > reductionEqualities;
-   reductionOnCudaDevice( reductionEqualities, size, destination, source, result );
+   Algorithms::ParallelReductionEqualities< Element1, Element2 > reductionEqualities;
+   Reduction< Devices::Cuda >::reduce( reductionEqualities, size, destination, source, result );
    return result;
 }
 

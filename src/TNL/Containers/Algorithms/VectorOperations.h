@@ -11,7 +11,6 @@
 #pragma once 
 
 #include <TNL/Containers/Algorithms/Reduction.h>
-#include <TNL/Containers/Algorithms/reduction-operations.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 
@@ -50,18 +49,18 @@ class VectorOperations< Devices::Host >
    template< typename Vector >
    static typename Vector::RealType getVectorAbsMin( const Vector& v );
 
-   template< typename Vector >
-   static typename Vector::RealType getVectorL1Norm( const Vector& v );
+   template< typename Vector, typename ResultType = typename Vector::RealType >
+   static ResultType getVectorL1Norm( const Vector& v );
  
-   template< typename Vector >
-   static typename Vector::RealType getVectorL2Norm( const Vector& v );
+   template< typename Vector, typename ResultType = typename Vector::RealType >
+   static ResultType getVectorL2Norm( const Vector& v );
  
-   template< typename Vector >
-   static typename Vector::RealType getVectorLpNorm( const Vector& v,
-                                                     const typename Vector::RealType& p );
+   template< typename Vector, typename ResultType = typename Vector::RealType, typename Real_ >
+   static ResultType getVectorLpNorm( const Vector& v,
+                                      const Real_ p );
 
-   template< typename Vector >
-   static typename Vector::RealType getVectorSum( const Vector& v );
+   template< typename Vector, typename ResultType = typename Vector::RealType >
+   static ResultType getVectorSum( const Vector& v );
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceMax( const Vector1& v1,
@@ -79,22 +78,22 @@ class VectorOperations< Devices::Host >
    static typename Vector1::RealType getVectorDifferenceAbsMin( const Vector1& v1,
                                                                 const Vector2& v2 );
 
-   template< typename Vector1, typename Vector2 >
-   static typename Vector1::RealType getVectorDifferenceL1Norm( const Vector1& v1,
-                                                                const Vector2& v2 );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
+   static ResultType getVectorDifferenceL1Norm( const Vector1& v1,
+                                                const Vector2& v2 );
 
-   template< typename Vector1, typename Vector2 >
-   static typename Vector1::RealType getVectorDifferenceL2Norm( const Vector1& v1,
-                                                                const Vector2& v2 );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
+   static ResultType getVectorDifferenceL2Norm( const Vector1& v1,
+                                                const Vector2& v2 );
  
-   template< typename Vector1, typename Vector2 >
-   static typename Vector1::RealType getVectorDifferenceLpNorm( const Vector1& v1,
-                                                                const Vector2& v2,
-                                                                const typename Vector1::RealType& p );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType, typename Real_ >
+   static ResultType getVectorDifferenceLpNorm( const Vector1& v1,
+                                                const Vector2& v2,
+                                                const Real_ p );
 
-   template< typename Vector1, typename Vector2 >
-   static typename Vector1::RealType getVectorDifferenceSum( const Vector1& v1,
-                                                             const Vector2& v2 );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
+   static ResultType getVectorDifferenceSum( const Vector1& v1,
+                                             const Vector2& v2 );
  
  
    template< typename Vector >
@@ -158,18 +157,18 @@ class VectorOperations< Devices::Cuda >
    template< typename Vector >
    static typename Vector::RealType getVectorAbsMin( const Vector& v );
  
-   template< typename Vector >
-   static typename Vector::RealType getVectorL1Norm( const Vector& v );
+   template< typename Vector, typename ResultType = typename Vector::RealType >
+   static ResultType getVectorL1Norm( const Vector& v );
  
-   template< typename Vector >
-   static typename Vector::RealType getVectorL2Norm( const Vector& v );
+   template< typename Vector, typename ResultType = typename Vector::RealType >
+   static ResultType getVectorL2Norm( const Vector& v );
  
-   template< typename Vector >
-   static typename Vector::RealType getVectorLpNorm( const Vector& v,
-                                                     const typename Vector::RealType& p );
- 
-   template< typename Vector >
-   static typename Vector::RealType getVectorSum( const Vector& v );
+   template< typename Vector, typename ResultType = typename Vector::RealType, typename Real_ >
+   static ResultType getVectorLpNorm( const Vector& v,
+                                      const Real_ p );
+
+   template< typename Vector, typename ResultType = typename Vector::RealType >
+   static ResultType getVectorSum( const Vector& v );
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceMax( const Vector1& v1,
@@ -187,22 +186,23 @@ class VectorOperations< Devices::Cuda >
    static typename Vector1::RealType getVectorDifferenceAbsMin( const Vector1& v1,
                                                                 const Vector2& v2 );
  
-   template< typename Vector1, typename Vector2 >
-   static typename Vector1::RealType getVectorDifferenceL1Norm( const Vector1& v1,
-                                                                const Vector2& v2 );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
+   static ResultType getVectorDifferenceL1Norm( const Vector1& v1,
+                                                const Vector2& v2 );
 
-   template< typename Vector1, typename Vector2 >
-   static typename Vector1::RealType getVectorDifferenceL2Norm( const Vector1& v1,
-                                                                const Vector2& v2 );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
+   static ResultType getVectorDifferenceL2Norm( const Vector1& v1,
+                                                const Vector2& v2 );
  
-   template< typename Vector1, typename Vector2 >
-   static typename Vector1::RealType getVectorDifferenceLpNorm( const Vector1& v1,
-                                                                const Vector2& v2,
-                                                                const typename Vector1::RealType& p );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType, typename Real_ >
+   static ResultType getVectorDifferenceLpNorm( const Vector1& v1,
+                                                const Vector2& v2,
+                                                const Real_ p );
 
-   template< typename Vector1, typename Vector2 >
-   static typename Vector1::RealType getVectorDifferenceSum( const Vector1& v1,
-                                                             const Vector2& v2 );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
+   static ResultType getVectorDifferenceSum( const Vector1& v1,
+                                             const Vector2& v2 );
+ 
  
    template< typename Vector >
    static void vectorScalarMultiplication( Vector& v,
@@ -226,7 +226,6 @@ class VectorOperations< Devices::Cuda >
                            const typename Vector3::RealType& multiplicator2,
                            const typename Vector1::RealType& thisMultiplicator = 1.0 );
  
-
    template< typename Vector >
    static void computePrefixSum( Vector& v,
                                  const typename Vector::IndexType begin,
@@ -267,18 +266,18 @@ class VectorOperations< Devices::MIC >
    template< typename Vector >
    static typename Vector::RealType getVectorAbsMin( const Vector& v );
    
-   template< typename Vector >
-   static typename Vector::RealType getVectorL1Norm( const Vector& v );
-   
-   template< typename Vector >
-   static typename Vector::RealType getVectorL2Norm( const Vector& v );
-   
-   template< typename Vector >
-   static typename Vector::RealType getVectorLpNorm( const Vector& v,
-                                                     const typename Vector::RealType& p );
-   
-   template< typename Vector >
-   static typename Vector::RealType getVectorSum( const Vector& v );
+   template< typename Vector, typename ResultType = typename Vector::RealType >
+   static ResultType getVectorL1Norm( const Vector& v );
+ 
+   template< typename Vector, typename ResultType = typename Vector::RealType >
+   static ResultType getVectorL2Norm( const Vector& v );
+ 
+   template< typename Vector, typename ResultType = typename Vector::RealType, typename Real_ >
+   static ResultType getVectorLpNorm( const Vector& v,
+                                      const Real_ p );
+
+   template< typename Vector, typename ResultType = typename Vector::RealType >
+   static ResultType getVectorSum( const Vector& v );
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceMax( const Vector1& v1,
@@ -296,22 +295,23 @@ class VectorOperations< Devices::MIC >
    static typename Vector1::RealType getVectorDifferenceAbsMin( const Vector1& v1,
                                                                 const Vector2& v2 );
   
-   template< typename Vector1, typename Vector2 >
-   static typename Vector1::RealType getVectorDifferenceL1Norm( const Vector1& v1,
-                                                                const Vector2& v2 );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
+   static ResultType getVectorDifferenceL1Norm( const Vector1& v1,
+                                                const Vector2& v2 );
 
-   template< typename Vector1, typename Vector2 >
-   static typename Vector1::RealType getVectorDifferenceL2Norm( const Vector1& v1,
-                                                                const Vector2& v2 );
-  
-   template< typename Vector1, typename Vector2 >
-   static typename Vector1::RealType getVectorDifferenceLpNorm( const Vector1& v1,
-                                                           const Vector2& v2,
-                                                           const typename Vector1::RealType& p );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
+   static ResultType getVectorDifferenceL2Norm( const Vector1& v1,
+                                                const Vector2& v2 );
+ 
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType, typename Real_ >
+   static ResultType getVectorDifferenceLpNorm( const Vector1& v1,
+                                                const Vector2& v2,
+                                                const Real_ p );
 
-   template< typename Vector1, typename Vector2 >
-   static typename Vector1::RealType getVectorDifferenceSum( const Vector1& v1,
-                                                               const Vector2& v2 );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
+   static ResultType getVectorDifferenceSum( const Vector1& v1,
+                                             const Vector2& v2 );
+ 
    
    template< typename Vector >
    static void vectorScalarMultiplication( Vector& v,
@@ -352,9 +352,8 @@ class VectorOperations< Devices::MIC >
 } // namespace Containers
 } // namespace TNL
 
+#include <TNL/Containers/Algorithms/VectorOperationsHost_impl.h>
+#include <TNL/Containers/Algorithms/VectorOperationsCuda_impl.h>
 #ifdef HAVE_MIC
 #include <TNL/Containers/Algorithms/VectorOperationsMIC_impl.h>
 #endif
-#include <TNL/Containers/Algorithms/VectorOperationsHost_impl.h>
-#include <TNL/Containers/Algorithms/VectorOperationsCuda_impl.h>
-
