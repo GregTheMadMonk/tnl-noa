@@ -36,12 +36,11 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
                               DataType* auxArray )
 {
    DataType* sharedData = TNL::Devices::Cuda::getSharedMemory< DataType >();
-   DataType* auxData = &sharedData[ elementsInBlock + elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2 ];
-   DataType* warpSums = &auxData[ blockDim.x ];
+   volatile DataType* auxData = &sharedData[ elementsInBlock + elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2 ];
+   volatile DataType* warpSums = &auxData[ blockDim.x ];
 
    const Index lastElementIdx = size - blockIdx.x * elementsInBlock;
-   Index lastElementInBlock = ( lastElementIdx < elementsInBlock ?
-                                lastElementIdx : elementsInBlock );
+   const Index lastElementInBlock = TNL::min( lastElementIdx, elementsInBlock );
 
    /***
     * Load data into the shared memory.
@@ -109,7 +108,7 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
    if( warpIdx == 0 )
       for( int stride = 1; stride < Devices::Cuda::getWarpSize(); stride *= 2 )
          if( threadInWarpIdx >= stride )
-            operation.commonReduction( warpSums[ threadInWarpIdx ], warpSums[ threadInWarpIdx - stride ] );
+            operation.commonReduction( warpSums[ threadIdx.x ], warpSums[ threadIdx.x - stride ] );
    __syncthreads();
 
    /****
@@ -159,20 +158,19 @@ __global__ void
 cudaSecondPhaseBlockPrefixSum( Operation operation,
                                const Index size,
                                const Index elementsInBlock,
-                               const Index gridShift,
+                               DataType gridShift,
                                const DataType* auxArray,
                                DataType* data )
 {
    if( blockIdx.x > 0 )
    {
-      DataType shift( gridShift );
-      operation.commonReduction( shift, auxArray[ blockIdx.x - 1 ] );
+      operation.commonReduction( gridShift, auxArray[ blockIdx.x - 1 ] );
 
       const Index readOffset = blockIdx.x * elementsInBlock;
       Index readIdx = threadIdx.x;
       while( readIdx < elementsInBlock && readOffset + readIdx < size )
       {
-         operation.commonReduction( data[ readIdx + readOffset ], shift );
+         operation.commonReduction( data[ readIdx + readOffset ], gridShift );
          readIdx += blockDim.x;
       }
    }
@@ -188,7 +186,7 @@ cudaRecursivePrefixSum( const PrefixSumType prefixSumType,
                         const Index size,
                         const Index blockSize,
                         const Index elementsInBlock,
-                        const Index gridShift,
+                        const DataType gridShift,
                         const DataType* input,
                         DataType *output )
 {
@@ -233,7 +231,7 @@ cudaRecursivePrefixSum( const PrefixSumType prefixSumType,
                                numberOfBlocks,
                                blockSize,
                                elementsInBlock,
-                               (Index) 0,
+                               operation.initialValue(),
                                auxArray1.getData(),
                                auxArray2.getData() );
 
@@ -260,7 +258,7 @@ cudaGridPrefixSum( PrefixSumType prefixSumType,
                    const Index elementsInBlock,
                    const DataType *deviceInput,
                    DataType *deviceOutput,
-                   Index& gridShift )
+                   DataType& gridShift )
 {
    cudaRecursivePrefixSum( prefixSumType,
                            operation,
@@ -300,16 +298,16 @@ cudaPrefixSum( const Index size,
    /****
     * Loop over all grids.
     */
-   Index gridShift = 0;
+   DataType gridShift = operation.initialValue();
    for( Index gridIdx = 0; gridIdx < numberOfGrids; gridIdx++ )
    {
       /****
        * Compute current grid size and size of data to be scanned
        */
-      Index currentSize = size - gridIdx * maxGridSize * elementsInBlock;
+      const Index gridOffset = gridIdx * maxGridSize * elementsInBlock;
+      Index currentSize = size - gridOffset;
       if( currentSize / elementsInBlock > maxGridSize )
          currentSize = maxGridSize * elementsInBlock;
-      const Index gridOffset = gridIdx * maxGridSize * elementsInBlock;
 
       cudaGridPrefixSum( prefixSumType,
                          operation,
