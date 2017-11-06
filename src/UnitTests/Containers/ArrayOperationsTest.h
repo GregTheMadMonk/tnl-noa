@@ -289,15 +289,13 @@ TYPED_TEST( ArrayOperationsTest, compareMemoryWithConversions_cuda )
    ArrayOperations< Devices::Cuda >::setMemory( deviceData2, (double) 9, size );
    EXPECT_FALSE(( ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory< int, float >( hostData, deviceData, size ) ));
    EXPECT_FALSE(( ArrayOperations< Devices::Cuda, Devices::Host >::compareMemory< float, int >( deviceData, hostData, size ) ));
-   // TODO: missing implementation of relevant reduction operation on CUDA with different types
-//   EXPECT_FALSE(( ArrayOperations< Devices::Cuda >::compareMemory< float, double >( deviceData, deviceData2, size ) ));
+   EXPECT_FALSE(( ArrayOperations< Devices::Cuda >::compareMemory< float, double >( deviceData, deviceData2, size ) ));
 
    ArrayOperations< Devices::Cuda >::setMemory( deviceData, (float) 7, size );
    ArrayOperations< Devices::Cuda >::setMemory( deviceData2, (double) 7, size );
    EXPECT_TRUE(( ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory< int, float >( hostData, deviceData, size ) ));
    EXPECT_TRUE(( ArrayOperations< Devices::Cuda, Devices::Host >::compareMemory< float, int >( deviceData, hostData, size ) ));
-   // TODO: missing implementation of relevant reduction operation on CUDA with different types
-//   EXPECT_TRUE(( ArrayOperations< Devices::Cuda >::compareMemory< float, double >( deviceData, deviceData2, size ) ));
+   EXPECT_TRUE(( ArrayOperations< Devices::Cuda >::compareMemory< float, double >( deviceData, deviceData2, size ) ));
 
    ArrayOperations< Devices::Host >::freeMemory( hostData );
    ArrayOperations< Devices::Cuda >::freeMemory( deviceData );

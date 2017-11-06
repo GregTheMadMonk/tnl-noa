@@ -518,6 +518,34 @@ TYPED_TEST( VectorTest, exclusivePrefixSum )
 
 // TODO: test prefix sum with custom begin and end parameters
 
+TEST( VectorSpecialCasesTest, sumOfBoolVector )
+{
+   using VectorType = Containers::Vector< bool, Devices::Host >;
+   const float epsilon = 64 * std::numeric_limits< float >::epsilon();
+
+   VectorType v( 512 ), w( 512 );
+   v.setValue( true );
+   w.setValue( false );
+
+   const int sum = v.sum< int >();
+   const int l1norm = v.lpNorm< int >( 1.0 );
+   const float l2norm = v.lpNorm< float >( 2.0 );
+   const float l3norm = v.lpNorm< float >( 3.0 );
+   EXPECT_EQ( sum, 512 );
+   EXPECT_EQ( l1norm, 512 );
+   EXPECT_NEAR( l2norm, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( l3norm, std::cbrt( 512 ), epsilon );
+
+   const int diff_sum = v.differenceSum< int >( w );
+   const int diff_l1norm = v.differenceLpNorm< int >( w, 1.0 );
+   const float diff_l2norm = v.differenceLpNorm< float >( w, 2.0 );
+   const float diff_l3norm = v.differenceLpNorm< float >( w, 3.0 );
+   EXPECT_EQ( diff_sum, 512 );
+   EXPECT_EQ( diff_l1norm, 512 );
+   EXPECT_NEAR( diff_l2norm, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( diff_l3norm, std::cbrt( 512 ), epsilon );
+}
+
 #endif // HAVE_GTEST
 
 

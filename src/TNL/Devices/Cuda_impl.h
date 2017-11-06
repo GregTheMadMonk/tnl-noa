@@ -13,6 +13,7 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
+#include <TNL/CudaSharedMemory.h>
 
 namespace TNL {
 namespace Devices {   
@@ -157,11 +158,10 @@ __device__ Index Cuda::getInterleaving( const Index index )
    return index + index / Cuda::getNumberOfSharedMemoryBanks();
 }
 
-template< typename Element, size_t Alignment >
+template< typename Element >
 __device__ Element* Cuda::getSharedMemory()
 {
-   extern __shared__ __align__ ( Alignment ) unsigned char __sdata[];
-   return reinterpret_cast< Element* >( __sdata );
+   return CudaSharedMemory< Element >();
 }
 #endif /* HAVE_CUDA */
 

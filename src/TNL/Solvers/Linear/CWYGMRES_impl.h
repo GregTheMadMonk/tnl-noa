@@ -448,7 +448,7 @@ hauseholder_generate( DeviceVector& Y,
    if( i > 0 ) {
       // aux = Y_{i-1}^T * y_i
       RealType aux[ i ];
-      Containers::Algorithms::tnlParallelReductionScalarProduct< RealType, IndexType > scalarProduct;
+      Containers::Algorithms::ParallelReductionScalarProduct< RealType, RealType > scalarProduct;
       if( ! Containers::Algorithms::Multireduction< DeviceType >::reduce
                ( scalarProduct,
                  i,
@@ -554,7 +554,7 @@ hauseholder_cwy_transposed( DeviceVector& z,
 {
    // aux = Y_i^T * w
    RealType aux[ i + 1 ];
-   Containers::Algorithms::tnlParallelReductionScalarProduct< RealType, IndexType > scalarProduct;
+   Containers::Algorithms::ParallelReductionScalarProduct< RealType, RealType > scalarProduct;
    if( ! Containers::Algorithms::Multireduction< DeviceType >::reduce
             ( scalarProduct,
               i + 1,

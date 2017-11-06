@@ -63,7 +63,7 @@ class NeighborGridEntityGetter<
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-         return NeighborGridEntityType( this->grid,
+         return NeighborGridEntityType( this->entity.getMesh(),
                                          CoordinatesType( entity.getCoordinates().x() + stepX,
                                                           entity.getCoordinates().y() + stepY ) );
       }
@@ -346,7 +346,7 @@ class NeighborGridEntityGetter<
                    << " entity.getMesh().getDimensions() + CoordinatesType( sign( stepX ), sign( stepY ) ) = "
                    << entity.getMesh().getDimensions()  + CoordinatesType( sign( stepX ), sign( stepY ) )
                    << " EntityDimension = " << EntityDimension );
-         return NeighborGridEntityType( this->grid,
+         return NeighborGridEntityType( this->entity.getMesh(),
                                          CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
                                                           entity.getCoordinates().y() + stepY + ( stepY < 0 ) ) );
       }
@@ -411,7 +411,7 @@ class NeighborGridEntityGetter<
                     std::cerr << "( stepX, stepY ) cannot be perpendicular to entity coordinates: stepX = " << stepX << " stepY = " << stepY
                          << " entity.getOrientation() = " << entity.getOrientation() );*/
          TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
-         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions() + entity.getOrientation().abs(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() +
                        CoordinatesType( stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
                                         stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ) ) >= CoordinatesType( 0, 0 ) &&
@@ -487,7 +487,7 @@ class NeighborGridEntityGetter<
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-         return NeighborGridEntityType( this->grid,
+         return NeighborGridEntityType( this->entity.getMesh(),
                                          CoordinatesType( entity.getCoordinates().x() + stepX,
                                                           entity.getCoordinates().y() + stepY ) );
       }

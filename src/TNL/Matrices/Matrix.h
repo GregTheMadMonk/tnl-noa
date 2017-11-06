@@ -20,7 +20,7 @@ namespace Matrices {
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
-class Matrix : public virtual Object
+class Matrix : public Object
 {
 public:
    typedef Real RealType;

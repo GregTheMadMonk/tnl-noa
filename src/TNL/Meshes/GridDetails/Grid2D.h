@@ -146,7 +146,7 @@ class Grid< 2, Real, Device, Index > : public Object
                const String& fileName,
                const String& format ) const;
 
-   void writeProlog( Logger& logger );
+   void writeProlog( Logger& logger ) const;
 
    protected:
 

@@ -20,6 +20,7 @@ SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
 set( headers 
      Assert.h
      Constants.h
+     CudaSharedMemory.h
      CudaStreamPool.h
      Curve.h
      DevicePointer.h
