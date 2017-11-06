@@ -74,13 +74,15 @@ class DistributedGrid <GridType,1>
     typedef typename GridType::PointType PointType;
     typedef Containers::StaticVector< 1, IndexType > CoordinatesType;
     
-	static constexpr int getMeshDimension() { return 1; };    
+    static constexpr int getMeshDimension() { return 1; };    
 
     private : 
         
         GridType GlobalGrid;
         PointType localorigin;
+        CoordinatesType localbegin;
         CoordinatesType localsize;
+        CoordinatesType localgridsize;
         CoordinatesType overlap;
         
         
@@ -123,9 +125,13 @@ class DistributedGrid <GridType,1>
            if(!mpiInUse)
            {
                //Without MPI
+
+               std::cout <<"MEZ MPI"<<std::endl;
                rank=0;
                localorigin=GlobalGrid.getOrigin();
                localsize=GlobalGrid.getDimensions();
+               localgridsize=GlobalGrid.getDimensions();
+               localbegin=CoordinatesType(0);
                return;
            }
            else
@@ -152,16 +158,22 @@ class DistributedGrid <GridType,1>
                    localorigin.x()=GlobalGrid.getOrigin().x()
                                 +(numberoflarger*(localsize.x()+1)+(rank-numberoflarger)*localsize.x()-overlap.x())
                                 *GlobalGrid.getSpaceSteps().x();
+              
+              localbegin=overlap;
                
                //vlevo neni prekryv
                if(left==-1)
+               {
                    localorigin.x()+=overlap.x()*GlobalGrid.getSpaceSteps().x();
+                   localbegin.x()=0;
+               }
                
+               localgridsize=localsize;
                //add overlaps
                if(left==-1||right==-1)
-                   localsize.x()+=overlap.x();
+                   localgridsize.x()+=overlap.x();
                else
-                   localsize.x()+=2*overlap.x();
+                   localgridsize.x()+=2*overlap.x();
                          
            }                   
        };
@@ -169,7 +181,7 @@ class DistributedGrid <GridType,1>
        void SetupGrid( GridType& grid)
        {
            grid.setOrigin(localorigin);
-           grid.setDimensions(localsize);
+           grid.setDimensions(localgridsize);
            //compute local proporions by sideefect
            grid.setSpaceSteps(GlobalGrid.getSpaceSteps());
            grid.SetDistGrid(this);
@@ -204,6 +216,23 @@ class DistributedGrid <GridType,1>
        {
            return this->overlap;
        };
+
+       CoordinatesType getLocalSize()
+       {
+           return this->localsize;
+       }
+
+       CoordinatesType getLocalGridSize()
+       {
+           return this->localgridsize;
+       }
+       
+              
+       CoordinatesType getLocalBegin()
+       {
+           return this->localbegin;
+       }
+       
 };   
 
 //========================2D======================================================
@@ -218,7 +247,7 @@ class DistributedGrid <GridType,2>
     typedef typename GridType::PointType PointType;
     typedef Containers::StaticVector< 2, IndexType > CoordinatesType;
     
-	static constexpr int getMeshDimension() { return 2; };
+    static constexpr int getMeshDimension() { return 2; };
     
     private : 
         
@@ -299,23 +328,21 @@ class DistributedGrid <GridType,2>
                   procsdistr[1]=0;
                }
                MPI_Dims_create(nproc, 2, procsdistr);
-               myproccoord[0]=rank%procsdistr[0]; // CO je X a co Y? --x je 0 a je to sloupec
+               myproccoord[0]=rank%procsdistr[0];
                myproccoord[1]=rank/procsdistr[0];        
-               
-               
-               //compute local mesh size
-               
+
+               //compute local mesh size              
                numberoflarger[0]=GlobalGrid.getDimensions().x()%procsdistr[0];
                numberoflarger[1]=GlobalGrid.getDimensions().y()%procsdistr[1];
-                 
+
                localsize.x()=(GlobalGrid.getDimensions().x()/procsdistr[0]);
                localsize.y()=(GlobalGrid.getDimensions().y()/procsdistr[1]);
-               
+
                if(numberoflarger[0]>myproccoord[0])
                     localsize.x()+=1;               
                if(numberoflarger[1]>myproccoord[1])
                    localsize.y()+=1;
-                                  
+
                if(numberoflarger[0]>myproccoord[0])
                    localorigin.x()=GlobalGrid.getOrigin().x()
                                 +(myproccoord[0]*localsize.x()-overlap.x())*GlobalGrid.getSpaceSteps().x();
@@ -331,7 +358,7 @@ class DistributedGrid <GridType,2>
                    localorigin.y()=GlobalGrid.getOrigin().y()
                                 +(numberoflarger[1]*(localsize.y()+1)+(myproccoord[1]-numberoflarger[1])*localsize.y()-overlap.y())
                                 *GlobalGrid.getSpaceSteps().y();
-                             
+
                //nearnodes
                if(myproccoord[0]>0)
                    neighbors[Left]=getRangOfProcCoord(myproccoord[0]-1,myproccoord[1]);
@@ -350,9 +377,8 @@ class DistributedGrid <GridType,2>
                if(myproccoord[0]<procsdistr[0]-1 && myproccoord[1]<procsdistr[1]-1)
                    neighbors[DownRight]=getRangOfProcCoord(myproccoord[0]+1,myproccoord[1]+1);
                
-               
                localbegin=overlap;
-               
+
                if(neighbors[Left]==-1)
                {
                     localorigin.x()+=overlap.x()*GlobalGrid.getSpaceSteps().x();
@@ -458,7 +484,7 @@ class DistributedGrid <GridType,3>
     typedef typename GridType::PointType PointType;
     typedef Containers::StaticVector< 3, IndexType > CoordinatesType;
     
-	static constexpr int getMeshDimension() { return 3; };    
+    static constexpr int getMeshDimension() { return 3; };    
 
     private : 
         
@@ -543,7 +569,7 @@ class DistributedGrid <GridType,3>
                   procsdistr[2]=0;
                }
                MPI_Dims_create(nproc, 3, procsdistr);
-               myproccoord[2]=rank/(procsdistr[0]*procsdistr[1]); // CO je X, Y, Z? x je 0 y je 1 a z je 2, snad... 
+               myproccoord[2]=rank/(procsdistr[0]*procsdistr[1]);
                myproccoord[1]=(rank%(procsdistr[0]*procsdistr[1]))/procsdistr[0];
                myproccoord[0]=(rank%(procsdistr[0]*procsdistr[1]))%procsdistr[0];
 

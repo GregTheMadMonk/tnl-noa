@@ -451,7 +451,7 @@ save( File& file ) const
                std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
                          << "this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() );
    if( ! Object::save( file ) )
-      return false;
+      return false;              
    return this->data.save( file );
 }
 
@@ -463,7 +463,7 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 load( File& file )
 {
    if( ! Object::load( file ) )
-      return false;
+      return false;   
    if( ! this->data.load( file ) )
       return false;
    const IndexType meshSize = this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >();

@@ -35,10 +35,17 @@ TARGET_LINK_LIBRARIES( ObjectTest${mpiExt}${debugExt}
                            ${GTEST_BOTH_LIBRARIES} 
                            tnl${mpiExt}${debugExt}-${tnlVersion} )
 
+ADD_EXECUTABLE( SaveAndLoadMeshfunctionTest${mpiExt}${debugExt} SaveAndLoadMeshfunctionTest.cpp )
+TARGET_COMPILE_OPTIONS( SaveAndLoadMeshfunctionTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( SaveAndLoadMeshfunctionTest${mpiExt}${debugExt}
+                           ${GTEST_BOTH_LIBRARIES} 
+                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+
 
 ADD_TEST( FileTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/FileTest${mpiExt}${debugExt} )
 ADD_TEST( StringTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/StringTest${mpiExt}${debugExt} )
 ADD_TEST( ObjectTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/ObjectTest${mpiExt}${debugExt} )
 ADD_TEST( UniquePointerTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/UniquePointerTest${mpiExt}${debugExt} )
+ADD_TEST( SaveAndLoadMeshfunctionTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/SaveAndLoadMeshfunctionTest${mpiExt}${debugExt} )
 
 endif( WITH_TESTS STREQUAL "yes" )

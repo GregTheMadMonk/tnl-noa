@@ -50,6 +50,7 @@
 #include <stdio.h>
 
 #include <TNL/Devices/CudaCallable.h>
+#include <TNL/Debugging/StackBacktrace.h>
 
 namespace TNL {
 namespace Assert {
@@ -88,6 +89,9 @@ printDiagnosticsHost( const char* assertion,
        << "Function: " << function << "\n"
        << "Line: " << line << "\n"
        << "Diagnostics:\n" << diagnostics << std::endl;
+
+	PrintStackBacktrace;
+
    throw AssertionError( str.str() );
 }
 
@@ -108,6 +112,8 @@ printDiagnosticsHost( const char* assertion,
              << "Function: " << function << "\n"
              << "Line: " << line << "\n"
              << "Diagnostics:\n" << diagnostics << std::endl;
+
+	PrintStackBacktrace;
 }
 #endif // TNL_THROW_ASSERTION_ERROR
 
