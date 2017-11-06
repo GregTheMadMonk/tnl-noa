@@ -50,7 +50,7 @@ class VectorNormBase : public Domain< Dimensions_, SpaceDomain >
       }
  
       bool setup( const Config::ParameterContainer& parameters,
-                 const String& prefix = "" )
+                  const String& prefix = "" )
       {
          this->power = parameters.template getParameter< double >( prefix + "power" );
          this->maxNorm = parameters.template getParameter< bool >( prefix + "max-norm" );
