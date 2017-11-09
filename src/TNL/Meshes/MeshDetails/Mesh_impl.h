@@ -32,13 +32,16 @@ init( typename MeshTraitsType::PointArrayType& points,
 {
    Initializer< typename MeshType::Config > initializer;
    initializer.createMesh( points, cellSeeds, *static_cast<MeshType*>(this) );
+   // init boundary tags
+   static_cast< BoundaryTags::LayerFamily< MeshConfig, Device, MeshType >* >( static_cast< MeshType* >( this ) )->initLayer();
 }
 
 
 template< typename MeshConfig, typename Device >
 Mesh< MeshConfig, Device >::
 Mesh( const Mesh& mesh )
-   : StorageBaseType( mesh )
+   : StorageBaseType( mesh ),
+     BoundaryTagsLayerFamily( mesh )
 {
    // update pointers from entities into the subentity and superentity storage networks
    EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
@@ -48,10 +51,8 @@ template< typename MeshConfig, typename Device >
    template< typename Device_ >
 Mesh< MeshConfig, Device >::
 Mesh( const Mesh< MeshConfig, Device_ >& mesh )
-   // clang complains that subclass cannot be cast to its private/protected base type,
-   // but for some reason it works fine for the non-template copy-constructor
-//   : StorageBaseType( *static_cast< const StorageLayerFamily< MeshConfig, Device_ >* >( &mesh ) )
-   : StorageBaseType( *( (const StorageLayerFamily< MeshConfig, Device_ >*) &mesh ) )
+   : StorageBaseType( mesh ),
+     BoundaryTagsLayerFamily( mesh )
 {
    // update pointers from entities into the subentity and superentity storage networks
    EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
@@ -62,7 +63,8 @@ Mesh< MeshConfig, Device >&
 Mesh< MeshConfig, Device >::
 operator=( const Mesh& mesh )
 {
-   StorageBaseType::operator=( *( (const StorageLayerFamily< MeshConfig, Device >*) &mesh ) );
+   StorageBaseType::operator=( mesh );
+   BoundaryTagsLayerFamily::operator=( mesh );
    // update pointers from entities into the subentity and superentity storage networks
    EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
    return *this;
@@ -74,7 +76,8 @@ Mesh< MeshConfig, Device >&
 Mesh< MeshConfig, Device >::
 operator=( const Mesh< MeshConfig, Device_ >& mesh )
 {
-   StorageBaseType::operator=( *( (const StorageLayerFamily< MeshConfig, Device_ >*) &mesh ) );
+   StorageBaseType::operator=( mesh );
+   BoundaryTagsLayerFamily::operator=( mesh );
    // update pointers from entities into the subentity and superentity storage networks
    EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
    return *this;
@@ -228,7 +231,7 @@ reorderEntities( const IndexPermutationVector& perm,
    // TODO: it would be enough to rebind just the permuted entities
    EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
    // update boundary tags
-   BoundaryTagsInitializer< Mesh >::exec( *this );
+   static_cast< BoundaryTagsLayerFamily* >( this )->initLayer();
 }
 
 
@@ -238,7 +241,8 @@ Mesh< MeshConfig, Device >::
 save( File& file ) const
 {
    if( ! Object::save( file ) ||
-       ! StorageBaseType::save( file ) )
+       ! StorageBaseType::save( file ) ||
+       ! BoundaryTagsLayerFamily::save( file ) )
    {
       std::cerr << "Mesh saving failed." << std::endl;
       return false;
@@ -252,7 +256,8 @@ Mesh< MeshConfig, Device >::
 load( File& file )
 {
    if( ! Object::load( file ) ||
-       ! StorageBaseType::load( file ) )
+       ! StorageBaseType::load( file ) ||
+       ! BoundaryTagsLayerFamily::load( file ) )
    {
       std::cerr << "Mesh loading failed." << std::endl;
       return false;
@@ -273,6 +278,7 @@ print( std::ostream& str ) const
    }
    else {
       StorageBaseType::print( str );
+      BoundaryTagsLayerFamily::print( str );
    }
 }
 
@@ -281,7 +287,8 @@ bool
 Mesh< MeshConfig, Device >::
 operator==( const Mesh& mesh ) const
 {
-   return StorageBaseType::operator==( mesh );
+   return StorageBaseType::operator==( mesh ) &&
+          BoundaryTagsLayerFamily::operator==( mesh );
 }
 
 template< typename MeshConfig, typename Device >

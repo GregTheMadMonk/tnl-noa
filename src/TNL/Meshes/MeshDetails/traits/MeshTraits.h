@@ -50,8 +50,6 @@ public:
 
    using PointArrayType    = Containers::Array< PointType, DeviceType, GlobalIndexType >;
    using CellSeedArrayType = Containers::Array< CellSeedType, DeviceType, GlobalIndexType >;
-   using BoundaryTagsArrayType = Containers::Array< bool, DeviceType, GlobalIndexType >;
-   using GlobalIndexOrderingArrayType = Containers::Array< GlobalIndexType, DeviceType, GlobalIndexType >;
 
    template< int Dimension >
    using EntityTraits = MeshEntityTraits< MeshConfig, DeviceType, Dimension >;

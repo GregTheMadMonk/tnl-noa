@@ -20,7 +20,6 @@
 #include <TNL/Meshes/MeshDetails/traits/WeakStorageTraits.h>
 #include <TNL/Meshes/MeshDetails/MeshLayers/SubentityStorageLayer.h>
 #include <TNL/Meshes/MeshDetails/MeshLayers/SuperentityStorageLayer.h>
-#include <TNL/Meshes/MeshDetails/MeshLayers/BoundaryTagsLayer.h>
 
 namespace TNL {
 namespace Meshes {
@@ -42,10 +41,9 @@ class StorageLayerFamily
    using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
 
 public:
-   StorageLayerFamily() = default;
-   explicit StorageLayerFamily( const StorageLayerFamily& other ) : BaseType( other ) {}
-   template< typename Device_ >
-   StorageLayerFamily( const StorageLayerFamily< MeshConfig, Device_ >& other ) : BaseType( other ) {}
+   // inherit constructors and assignment operators (including templated versions)
+   using BaseType::BaseType;
+   using BaseType::operator=;
 
 protected:
    template< int Dimension >
@@ -78,70 +76,6 @@ protected:
                                                      typename EntityTraits< Dimension >::EntityTopology >;
       return BaseType::template getSuperentityStorageNetwork< Superdimension >();
    }
-
-
-   // The following methods are implemented in the BoundaryTags layers. They are
-   // needed for the mesh traverser.
-   template< int Dimension >
-   __cuda_callable__
-   bool isBoundaryEntity( const typename EntityTraits< Dimension >::GlobalIndexType& entityIndex ) const
-   {
-      static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
-      return BaseType::isBoundaryEntity( DimensionTag< Dimension >(), entityIndex );
-   }
-
-   template< int Dimension >
-   __cuda_callable__
-   typename EntityTraits< Dimension >::GlobalIndexType getBoundaryEntitiesCount() const
-   {
-      static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
-      return BaseType::getBoundaryEntitiesCount( DimensionTag< Dimension >() );
-   }
-
-   template< int Dimension >
-   __cuda_callable__
-   typename EntityTraits< Dimension >::GlobalIndexType getBoundaryEntityIndex( const typename EntityTraits< Dimension >::GlobalIndexType& i ) const
-   {
-      static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
-      return BaseType::getBoundaryEntityIndex( DimensionTag< Dimension >(), i );
-   }
-
-   template< int Dimension >
-   __cuda_callable__
-   typename EntityTraits< Dimension >::GlobalIndexType getInteriorEntitiesCount() const
-   {
-      static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
-      return BaseType::getInteriorEntitiesCount( DimensionTag< Dimension >() );
-   }
-
-   template< int Dimension >
-   __cuda_callable__
-   typename EntityTraits< Dimension >::GlobalIndexType getInteriorEntityIndex( const typename EntityTraits< Dimension >::GlobalIndexType& i ) const
-   {
-      static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
-      return BaseType::getInteriorEntityIndex( DimensionTag< Dimension >(), i );
-   }
-
-   // setters for boundary tags
-   template< int Dimension >
-   void resetBoundaryTags()
-   {
-      BaseType::resetBoundaryTags( DimensionTag< Dimension >() );
-   }
-
-   template< int Dimension >
-   void updateBoundaryIndices()
-   {
-      BaseType::updateBoundaryIndices( DimensionTag< Dimension >() );
-   }
-
-   template< int Dimension >
-   __cuda_callable__
-   void setIsBoundaryEntity( const typename EntityTraits< Dimension >::GlobalIndexType& entityIndex, bool isBoundary )
-   {
-      static_assert( EntityTraits< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
-      BaseType::setIsBoundaryEntity( DimensionTag< Dimension >(), entityIndex, isBoundary );
-   }
 };
 
 
@@ -158,7 +92,6 @@ class StorageLayer< MeshConfig,
      public SuperentityStorageLayerFamily< MeshConfig,
                                            Device,
                                            typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
-     public BoundaryTagsLayer< MeshConfig, Device, DimensionTag >,
      public StorageLayer< MeshConfig, Device, typename DimensionTag::Increment >
 {
 public:
@@ -171,32 +104,6 @@ public:
    using EntityTopology   = typename EntityTraitsType::EntityTopology;
    using SubentityStorageBaseType = SubentityStorageLayerFamily< MeshConfig, Device, EntityTopology >;
    using SuperentityStorageBaseType = SuperentityStorageLayerFamily< MeshConfig, Device, EntityTopology >;
-   using BoundaryTagsBaseType = BoundaryTagsLayer< MeshConfig, Device, DimensionTag >;
-
-   /****
-     * Make visible getters of the lower layer
-     */
-   using BaseType::setEntitiesCount;
-   using BaseType::getEntitiesCount;
-   using BaseType::getEntity;
-
-   using BaseType::resetBoundaryTags;
-   using BaseType::isBoundaryEntity;
-   using BaseType::setIsBoundaryEntity;
-   using BaseType::updateBoundaryIndices;
-   using BaseType::getBoundaryEntitiesCount;
-   using BaseType::getBoundaryEntityIndex;
-   using BaseType::getInteriorEntitiesCount;
-   using BaseType::getInteriorEntityIndex;
-
-   using BoundaryTagsBaseType::resetBoundaryTags;
-   using BoundaryTagsBaseType::isBoundaryEntity;
-   using BoundaryTagsBaseType::setIsBoundaryEntity;
-   using BoundaryTagsBaseType::updateBoundaryIndices;
-   using BoundaryTagsBaseType::getBoundaryEntitiesCount;
-   using BoundaryTagsBaseType::getBoundaryEntityIndex;
-   using BoundaryTagsBaseType::getInteriorEntitiesCount;
-   using BoundaryTagsBaseType::getInteriorEntityIndex;
 
    StorageLayer() = default;
 
@@ -213,11 +120,10 @@ public:
 
    StorageLayer& operator=( const StorageLayer& other )
    {
-      entities.setLike( other.entities);
+      entities.setLike( other.entities );
       entities = other.entities;
       SubentityStorageBaseType::operator=( other );
       SuperentityStorageBaseType::operator=( other );
-      BoundaryTagsBaseType::operator=( other );
       BaseType::operator=( other );
       return *this;
    }
@@ -225,49 +131,18 @@ public:
    template< typename Device_ >
    StorageLayer& operator=( const StorageLayer< MeshConfig, Device_, DimensionTag >& other )
    {
-      entities.setLike( other.entities);
+      entities.setLike( other.entities );
       entities = other.entities;
       SubentityStorageBaseType::operator=( other );
       SuperentityStorageBaseType::operator=( other );
-      BoundaryTagsBaseType::operator=( other );
       BaseType::operator=( other );
       return *this;
-   }
-
-
-   void setEntitiesCount( DimensionTag, const GlobalIndexType& entitiesCount )
-   {
-      this->entities.setSize( entitiesCount );
-      SubentityStorageBaseType::setEntitiesCount( entitiesCount );
-      SuperentityStorageBaseType::setEntitiesCount( entitiesCount );
-      BoundaryTagsBaseType::setEntitiesCount( entitiesCount );
-   }
-
-   __cuda_callable__
-   GlobalIndexType getEntitiesCount( DimensionTag ) const
-   {
-      return this->entities.getSize();
-   }
-
-   __cuda_callable__
-   EntityType& getEntity( DimensionTag,
-                          const GlobalIndexType entityIndex )
-   {
-      return this->entities[ entityIndex ];
-   }
-
-   __cuda_callable__
-   const EntityType& getEntity( DimensionTag,
-                                const GlobalIndexType entityIndex ) const
-   {
-      return this->entities[ entityIndex ];
    }
 
    bool save( File& file ) const
    {
       if( ! SubentityStorageBaseType::save( file ) ||
           ! SuperentityStorageBaseType::save( file ) ||
-          ! BoundaryTagsBaseType::save( file ) ||
           ! this->entities.save( file ) ||
           ! BaseType::save( file ) )
       {
@@ -281,7 +156,6 @@ public:
    {
       if( ! SubentityStorageBaseType::load( file ) ||
           ! SuperentityStorageBaseType::load( file ) ||
-          ! BoundaryTagsBaseType::load( file ) ||
           ! this->entities.load( file ) ||
           ! BaseType::load( file ) )
       {
@@ -298,7 +172,6 @@ public:
          str << i << " " << entities[ i ] << std::endl;
       SubentityStorageBaseType::print( str );
       SuperentityStorageBaseType::print( str );
-      BoundaryTagsBaseType::print( str );
       str << std::endl;
       BaseType::print( str );
    }
@@ -308,11 +181,41 @@ public:
       return ( entities == meshLayer.entities &&
                SubentityStorageBaseType::operator==( meshLayer ) &&
                SuperentityStorageBaseType::operator==( meshLayer ) &&
-               BoundaryTagsBaseType::operator==( meshLayer ) &&
                BaseType::operator==( meshLayer ) );
    }
 
+
+   using BaseType::getEntitiesCount;
+   __cuda_callable__
+   GlobalIndexType getEntitiesCount( DimensionTag ) const
+   {
+      return this->entities.getSize();
+   }
+
+   using BaseType::getEntity;
+   __cuda_callable__
+   EntityType& getEntity( DimensionTag,
+                          const GlobalIndexType entityIndex )
+   {
+      return this->entities[ entityIndex ];
+   }
+
+   __cuda_callable__
+   const EntityType& getEntity( DimensionTag,
+                                const GlobalIndexType entityIndex ) const
+   {
+      return this->entities[ entityIndex ];
+   }
+
 protected:
+   using BaseType::setEntitiesCount;
+   void setEntitiesCount( DimensionTag, const GlobalIndexType& entitiesCount )
+   {
+      this->entities.setSize( entitiesCount );
+      SubentityStorageBaseType::setEntitiesCount( entitiesCount );
+      SuperentityStorageBaseType::setEntitiesCount( entitiesCount );
+   }
+
    StorageArrayType entities;
 
    // friend class is needed for templated assignment operators
@@ -326,13 +229,11 @@ template< typename MeshConfig,
 class StorageLayer< MeshConfig, Device, DimensionTag, false >
    : public StorageLayer< MeshConfig, Device, typename DimensionTag::Decrement  >
 {
-public:
    using BaseType = StorageLayer< MeshConfig, Device, typename DimensionTag::Decrement >;
-
-   StorageLayer() = default;
-   explicit StorageLayer( const StorageLayer& other )
-      : BaseType( other )
-   {}
+public:
+   // inherit constructors and assignment operators (including templated versions)
+   using BaseType::BaseType;
+   using BaseType::operator=;
 };
 
 // termination of recursive inheritance (everything is reduced to EntityStorage == false thanks to the WeakEntityStorageTrait)
@@ -340,8 +241,8 @@ template< typename MeshConfig,
           typename Device >
 class StorageLayer< MeshConfig, Device, DimensionTag< MeshConfig::meshDimension + 1 >, false >
 {
-public:
-   using DimensionTag     = DimensionTag< MeshConfig::meshDimension >;
+protected:
+   using DimensionTag     = Meshes::DimensionTag< MeshConfig::meshDimension >;
    using GlobalIndexType  = typename MeshConfig::GlobalIndexType;
 
    StorageLayer() = default;
@@ -383,16 +284,6 @@ public:
    {
       return true;
    }
-
-
-   void resetBoundaryTags() {}
-   void isBoundaryEntity() {}
-   void setIsBoundaryEntity() {}
-   void updateBoundaryIndices() {}
-   void getBoundaryEntitiesCount() {}
-   void getBoundaryEntityIndex() {}
-   void getInteriorEntitiesCount() {}
-   void getInteriorEntityIndex() {}
 };
 
 } // namespace Meshes

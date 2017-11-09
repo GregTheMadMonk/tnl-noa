@@ -22,7 +22,6 @@
 #include <TNL/Meshes/MeshDetails/initializer/SuperentityStorageInitializer.h>
 #include <TNL/Meshes/MeshDetails/MeshEntityReferenceOrientation.h>
 #include <TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
-#include <TNL/Meshes/MeshDetails/initializer/BoundaryTagsInitializer.h>
 
 /*
  * How this beast works:
@@ -103,8 +102,6 @@ class Initializer
          BaseType::initEntities( *this, points, cellSeeds, mesh );
          // set pointers from entities into the subentity and superentity storage networks
          EntityStorageRebinder< Mesh< MeshConfig > >::exec( mesh );
-         // init boundary tags
-         BoundaryTagsInitializer< MeshType >::exec( mesh );
       }
 
       template< typename Entity, typename GlobalIndex >

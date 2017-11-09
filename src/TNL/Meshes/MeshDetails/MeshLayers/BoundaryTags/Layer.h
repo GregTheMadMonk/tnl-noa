@@ -1,5 +1,5 @@
 /***************************************************************************
-                          BoundaryTagsLayer.h  -  description
+                          Layer.h  -  description
                              -------------------
     begin                : Dec 25, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.
@@ -14,39 +14,41 @@
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Containers/Vector.h>
 
+#include "Traits.h"
+
 namespace TNL {
 namespace Meshes {
+namespace BoundaryTags {
 
-// This is the implementation of the BoundaryTags layer for one specific dimension.
-// It is inherited by the StorageLayer.
+// This is the implementation of the boundary tags layer for one specific dimension.
+// It is inherited by the BoundaryTags::LayerFamily.
 template< typename MeshConfig,
           typename Device,
           typename DimensionTag,
-          bool TagStorage = MeshConfig::boundaryTagsStorage( typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology() ) >
-class BoundaryTagsLayer
+          bool TagStorage = WeakStorageTrait< MeshConfig, Device, DimensionTag >::boundaryTagsEnabled >
+class Layer
 {
    using MeshTraitsType    = MeshTraits< MeshConfig, Device >;
-   using EntityTraitsType  = typename MeshTraitsType::template EntityTraits< DimensionTag::value >;
 
 public:
-   using GlobalIndexType   = typename EntityTraitsType::GlobalIndexType;
-   using BoundaryTagsArray = typename MeshTraitsType::BoundaryTagsArrayType;
-   using OrderingArray     = typename MeshTraitsType::GlobalIndexOrderingArrayType;
+   using GlobalIndexType   = typename MeshTraitsType::GlobalIndexType;
+   using BoundaryTagsArray = Containers::Array< bool, Device, GlobalIndexType >;
+   using OrderingArray     = Containers::Array< GlobalIndexType, Device, GlobalIndexType >;
 
-   BoundaryTagsLayer() = default;
+   Layer() = default;
 
-   explicit BoundaryTagsLayer( const BoundaryTagsLayer& other )
+   explicit Layer( const Layer& other )
    {
       operator=( other );
    }
 
    template< typename Device_ >
-   BoundaryTagsLayer( const BoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other )
+   Layer( const Layer< MeshConfig, Device_, DimensionTag >& other )
    {
       operator=( other );
    }
 
-   BoundaryTagsLayer& operator=( const BoundaryTagsLayer& other )
+   Layer& operator=( const Layer& other )
    {
       boundaryTags.setLike( other.boundaryTags );
       boundaryIndices.setLike( other.boundaryIndices );
@@ -58,7 +60,7 @@ public:
    }
 
    template< typename Device_ >
-   BoundaryTagsLayer& operator=( const BoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other )
+   Layer& operator=( const Layer< MeshConfig, Device_, DimensionTag >& other )
    {
       boundaryTags.setLike( other.boundaryTags );
       boundaryIndices.setLike( other.boundaryIndices );
@@ -70,7 +72,7 @@ public:
    }
 
 
-   void setEntitiesCount( const GlobalIndexType& entitiesCount )
+   void setEntitiesCount( DimensionTag, const GlobalIndexType& entitiesCount )
    {
       boundaryTags.setSize( entitiesCount );
    }
@@ -197,11 +199,11 @@ public:
       str << interiorIndices << std::endl;
    }
 
-   bool operator==( const BoundaryTagsLayer& layer ) const
+   bool operator==( const Layer& layer ) const
    {
       TNL_ASSERT( ( boundaryTags == layer.boundaryTags && boundaryIndices == layer.boundaryIndices && interiorIndices == layer.interiorIndices ) ||
                   ( boundaryTags != layer.boundaryTags && boundaryIndices != layer.boundaryIndices && interiorIndices != layer.interiorIndices ),
-                  std::cerr << "The BoundaryTags layer is in inconsistent state - this is probably a bug in the mesh initializer." << std::endl
+                  std::cerr << "The BoundaryTags layer is in inconsistent state - this is probably a bug in the boundary tags initializer." << std::endl
                             << "boundaryTags          = " << boundaryTags << std::endl
                             << "layer.boundaryTags    = " << layer.boundaryTags << std::endl
                             << "boundaryIndices       = " << boundaryIndices << std::endl
@@ -218,30 +220,26 @@ private:
 
    // friend class is needed for templated assignment operators
    template< typename MeshConfig_, typename Device_, typename DimensionTag_, bool TagStorage_ >
-   friend class BoundaryTagsLayer;
+   friend class Layer;
 };
 
 template< typename MeshConfig,
           typename Device,
           typename DimensionTag >
-class BoundaryTagsLayer< MeshConfig, Device, DimensionTag, false >
+class Layer< MeshConfig, Device, DimensionTag, false >
 {
-   using MeshTraitsType    = MeshTraits< MeshConfig, Device >;
-   using EntityTraitsType  = typename MeshTraitsType::template EntityTraits< DimensionTag::value >;
+protected:
+   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
 
-public:
-   using GlobalIndexType   = typename EntityTraitsType::GlobalIndexType;
-
-   BoundaryTagsLayer() = default;
-   explicit BoundaryTagsLayer( const BoundaryTagsLayer& other ) {}
+   Layer() = default;
+   explicit Layer( const Layer& other ) {}
    template< typename Device_ >
-   BoundaryTagsLayer( const BoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other ) {}
-   BoundaryTagsLayer& operator=( const BoundaryTagsLayer& other ) { return *this; }
+   Layer( const Layer< MeshConfig, Device_, DimensionTag >& other ) {}
+   Layer& operator=( const Layer& other ) { return *this; }
    template< typename Device_ >
-   BoundaryTagsLayer& operator=( const BoundaryTagsLayer< MeshConfig, Device_, DimensionTag >& other ) { return *this; }
+   Layer& operator=( const Layer< MeshConfig, Device_, DimensionTag >& other ) { return *this; }
 
-   void setEntitiesCount( const GlobalIndexType& entitiesCount ) {}
-
+   void setEntitiesCount( DimensionTag, const GlobalIndexType& entitiesCount ) {}
    void resetBoundaryTags( DimensionTag ) {}
    void setIsBoundaryEntity( DimensionTag, const GlobalIndexType& entityIndex, bool isBoundary ) {}
    void isBoundaryEntity( DimensionTag, const GlobalIndexType& entityIndex ) const {}
@@ -263,11 +261,12 @@ public:
  
    void print( std::ostream& str ) const {}
 
-   bool operator==( const BoundaryTagsLayer& layer ) const
+   bool operator==( const Layer& layer ) const
    {
       return true;
    }
 };
 
+} // namespace BoundaryTags
 } // namespace Meshes
 } // namespace TNL

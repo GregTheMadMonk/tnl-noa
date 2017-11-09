@@ -47,15 +47,11 @@ class SuperentityStorageLayerFamily
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
 public:
-   SuperentityStorageLayerFamily() = default;
-   explicit SuperentityStorageLayerFamily( const SuperentityStorageLayerFamily& other )
-      : BaseType( other )
-   {}
-   template< typename Device_ >
-   SuperentityStorageLayerFamily( const SuperentityStorageLayerFamily< MeshConfig, Device_, EntityTopology >& other )
-      : BaseType( other )
-   {}
+   // inherit constructors and assignment operators (including templated versions)
+   using BaseType::BaseType;
+   using BaseType::operator=;
 
+protected:
    template< int Superdimension >
    typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >::StorageNetworkType&
    getSuperentityStorageNetwork()
@@ -111,12 +107,6 @@ protected:
    }
 
 
-   void setEntitiesCount( const GlobalIndexType& entitiesCount )
-   {
-      BaseType::setEntitiesCount( entitiesCount );
-      this->storageNetwork.setKeysRange( entitiesCount );
-   }
-
    bool save( File& file ) const
    {
       if( ! BaseType::save( file ) ||
@@ -152,6 +142,13 @@ protected:
                storageNetwork == layer.storageNetwork );
    }
 
+protected:
+   void setEntitiesCount( const GlobalIndexType& entitiesCount )
+   {
+      BaseType::setEntitiesCount( entitiesCount );
+      this->storageNetwork.setKeysRange( entitiesCount );
+   }
+
    using BaseType::getSuperentityStorageNetwork;
    StorageNetworkType& getSuperentityStorageNetwork( SuperdimensionTag )
    {
@@ -173,20 +170,11 @@ template< typename MeshConfig,
 class SuperentityStorageLayer< MeshConfig, Device, EntityTopology, SuperdimensionTag, false >
    : public SuperentityStorageLayer< MeshConfig, Device, EntityTopology, typename SuperdimensionTag::Decrement >
 {
-public:
    using BaseType = SuperentityStorageLayer< MeshConfig, Device, EntityTopology, typename SuperdimensionTag::Decrement >;
-
-   SuperentityStorageLayer() = default;
-   explicit SuperentityStorageLayer( const SuperentityStorageLayer& other )
-      : BaseType( other )
-   {}
-   template< typename Device_ >
-   SuperentityStorageLayer( const SuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other )
-      : BaseType( other )
-   {}
-   template< typename Device_ >
-   SuperentityStorageLayer& operator=( const SuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other )
-   { return *this; }
+public:
+   // inherit constructors and assignment operators (including templated versions)
+   using BaseType::BaseType;
+   using BaseType::operator=;
 };
 
 // termination of recursive inheritance (everything is reduced to EntityStorage == false thanks to the WeakSuperentityStorageTrait)

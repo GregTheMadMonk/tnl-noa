@@ -41,15 +41,11 @@ class SubentityStorageLayerFamily
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
 public:
-   SubentityStorageLayerFamily() = default;
-   explicit SubentityStorageLayerFamily( const SubentityStorageLayerFamily& other )
-      : BaseType( other )
-   {}
-   template< typename Device_ >
-   SubentityStorageLayerFamily( const SubentityStorageLayerFamily< MeshConfig, Device_, EntityTopology >& other )
-      : BaseType( other )
-   {}
+   // inherit constructors and assignment operators (including templated versions)
+   using BaseType::BaseType;
+   using BaseType::operator=;
 
+protected:
    template< int Subdimension >
    typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimension >::StorageNetworkType&
    getSubentityStorageNetwork()
@@ -110,13 +106,6 @@ protected:
    }
 
 
-   void setEntitiesCount( const GlobalIndexType& entitiesCount )
-   {
-      BaseType::setEntitiesCount( entitiesCount );
-      this->storageNetwork.setKeysRange( entitiesCount );
-      this->storageNetwork.allocate();
-   }
-
    bool save( File& file ) const
    {
       if( ! BaseType::save( file ) ||
@@ -152,6 +141,14 @@ protected:
                storageNetwork == layer.storageNetwork );
    }
 
+protected:
+   void setEntitiesCount( const GlobalIndexType& entitiesCount )
+   {
+      BaseType::setEntitiesCount( entitiesCount );
+      this->storageNetwork.setKeysRange( entitiesCount );
+      this->storageNetwork.allocate();
+   }
+
    using BaseType::getSubentityStorageNetwork;
    StorageNetworkType& getSubentityStorageNetwork( SubdimensionTag )
    {
@@ -177,20 +174,11 @@ class SubentityStorageLayer< MeshConfig,
                              false >
    : public SubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >
 {
-public:
    using BaseType = SubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >;
-
-   SubentityStorageLayer() = default;
-   explicit SubentityStorageLayer( const SubentityStorageLayer& other )
-      : BaseType( other )
-   {}
-   template< typename Device_ >
-   SubentityStorageLayer( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
-      : BaseType( other )
-   {}
-   template< typename Device_ >
-   SubentityStorageLayer& operator=( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
-   { return *this; }
+public:
+   // inherit constructors and assignment operators (including templated versions)
+   using BaseType::BaseType;
+   using BaseType::operator=;
 };
 
 // termination of recursive inheritance (everything is reduced to EntityStorage == false thanks to the WeakSubentityStorageTrait)

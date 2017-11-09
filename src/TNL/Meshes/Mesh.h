@@ -20,15 +20,15 @@
 #include <TNL/Object.h>
 #include <TNL/Logger.h>
 #include <TNL/Meshes/MeshEntity.h>
+#include <TNL/Meshes/MeshDetails/ConfigValidator.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/MeshLayers/StorageLayer.h>
-#include <TNL/Meshes/MeshDetails/ConfigValidator.h>
+#include <TNL/Meshes/MeshDetails/MeshLayers/BoundaryTags/LayerFamily.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig > class Initializer;
-template< typename Mesh > class BoundaryTagsInitializer;
 template< typename Mesh > class EntityStorageRebinder;
 template< typename Mesh, int Dimension > struct IndexPermutationApplier;
 
@@ -56,10 +56,12 @@ template< typename MeshConfig,
 class Mesh
    : public Object,
      public ConfigValidator< MeshConfig >,
-     protected StorageLayerFamily< MeshConfig, Device >,
-     public MeshInitializableBase< MeshConfig, Device, Mesh< MeshConfig, Device > >
+     public MeshInitializableBase< MeshConfig, Device, Mesh< MeshConfig, Device > >,
+     public StorageLayerFamily< MeshConfig, Device >,
+     public BoundaryTags::LayerFamily< MeshConfig, Device, Mesh< MeshConfig, Device > >
 {
       using StorageBaseType = StorageLayerFamily< MeshConfig, Device >;
+      using BoundaryTagsLayerFamily = BoundaryTags::LayerFamily< MeshConfig, Device, Mesh >;
 
    public:
       using Config          = MeshConfig;
@@ -110,11 +112,6 @@ class Mesh
 
       virtual String getSerializationTypeVirtual() const;
 
-      using StorageBaseType::isBoundaryEntity;
-      using StorageBaseType::getBoundaryEntitiesCount;
-      using StorageBaseType::getBoundaryEntityIndex;
-      using StorageBaseType::getInteriorEntitiesCount;
-      using StorageBaseType::getInteriorEntityIndex;
 
       template< int Dimension >
       static constexpr bool entitiesAvailable();
@@ -179,8 +176,6 @@ class Mesh
       using StorageBaseType::getSuperentityStorageNetwork;
 
       friend Initializer< MeshConfig >;
-
-      friend BoundaryTagsInitializer< Mesh >;
 
       friend EntityStorageRebinder< Mesh >;
 

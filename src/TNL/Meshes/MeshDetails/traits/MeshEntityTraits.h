@@ -87,7 +87,6 @@ public:
 
    static constexpr bool storageEnabled = MeshConfig::entityStorage( Dimension );
    static constexpr bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, DimensionTag< Dimension > >::value;
-   static constexpr bool boundaryTagsEnabled = MeshConfig::boundaryTagsStorage( EntityTopology() );
 };
 
 } // namespace Meshes

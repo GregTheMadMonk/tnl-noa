@@ -1,5 +1,6 @@
-SET( headers BoundaryTagsLayer.h
-             StorageLayer.h
+ADD_SUBDIRECTORY( BoundaryTags )
+
+SET( headers StorageLayer.h
              SubentityStorageLayer.h
              SuperentityStorageLayer.h
 )

@@ -1,5 +1,4 @@
-SET( headers BoundaryTagsInitializer.h
-             EntityInitializer.h
+SET( headers EntityInitializer.h
              EntitySeed.h 
              EntitySeedKey.h
              Initializer.h
