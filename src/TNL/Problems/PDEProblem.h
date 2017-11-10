@@ -42,6 +42,9 @@ class PDEProblem : public Problem< Real, Device, Index >
        * This means that the time stepper will be set from the command line arguments.
        */
       typedef void TimeStepper;
+      
+      template< typename TimeStepper_ >
+      using PDESolverType = Solvers::PDE::TimeDependentPDESolver< Problem, TimeStepper_ >;
 
       static String getTypeStatic();
 

@@ -378,7 +378,8 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Set-up the PDE solver
     */
-   PDE::TimeDependentPDESolver< Problem, TimeStepper > solver;
+   //PDE::TimeDependentPDESolver< Problem, TimeStepper > solver;
+   typename Problem::PDESolverType< TimeStepper > solver;
    // catching exceptions ala gtest:
    // https://github.com/google/googletest/blob/59c795ce08be0c8b225bc894f8da6c7954ea5c14/googletest/src/gtest.cc#L2409-L2431
    const int catch_exceptions = parameters.getParameter< bool >( "catch-exceptions" );
