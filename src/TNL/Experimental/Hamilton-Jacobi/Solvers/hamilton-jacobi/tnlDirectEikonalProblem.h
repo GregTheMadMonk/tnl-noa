@@ -43,6 +43,8 @@ class tnlDirectEikonalProblem
       using MeshPointer = SharedPointer< MeshType >;
       using DofVectorPointer = SharedPointer< DofVectorType >;
       using MeshDependentDataPointer = SharedPointer< MeshDependentDataType >;
+      
+      static constexpr bool isTimeDependent() { return false; };
 
       static String getTypeStatic();
 

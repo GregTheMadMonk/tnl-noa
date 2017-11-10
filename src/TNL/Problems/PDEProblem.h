@@ -13,6 +13,7 @@
 #include <TNL/Problems/Problem.h>
 #include <TNL/SharedPointer.h>
 #include <TNL/Matrices/SlicedEllpack.h>
+#include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 
 namespace TNL {
 namespace Problems {
@@ -38,14 +39,13 @@ class PDEProblem : public Problem< Real, Device, Index >
       typedef Containers::Vector< RealType, DeviceType, IndexType > MeshDependentDataType;
       typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
 
+      static constexpr bool isTimeDependent() { return true; };
+      
       /****
        * This means that the time stepper will be set from the command line arguments.
        */
       typedef void TimeStepper;
       
-      template< typename TimeStepper_ >
-      using PDESolverType = Solvers::PDE::TimeDependentPDESolver< Problem, TimeStepper_ >;
-
       static String getTypeStatic();
 
       String getPrologHeader() const;

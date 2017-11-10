@@ -123,5 +123,5 @@ solve( const MeshPointer& mesh,
        DofVectorPointer& dofs )
 {
    tnlFastSweepingMethod< MeshType, AnisotropyType > fsm;
-   return fsm.solve( mesh, anisotropy, initialData );
+   //return fsm.solve( mesh, anisotropy, initialData );
 }
