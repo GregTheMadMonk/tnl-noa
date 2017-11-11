@@ -106,7 +106,7 @@ ParameterContainer::
          tnlParameterBase* param = parameters[ i ];
          param -> type. MPIBcast( root, MPI_COMM_WORLD );
          param -> name. MPIBcast( root, MPI_COMM_WORLD );
-         if( param -> type == "mString" )
+         if( param -> type == "String" )
          {
             ( ( tnlParameter< String >* ) param ) -> value. MPIBcast( root, mpi_comm );
          }

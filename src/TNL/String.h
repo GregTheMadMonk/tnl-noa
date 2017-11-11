@@ -45,6 +45,11 @@ public:
    String( const char* c,
            int prefix_cut_off = 0,
            int sufix_cut_off = 0 );
+   
+   String( char* c,
+           int prefix_cut_off = 0,
+           int sufix_cut_off = 0 );
+
 
    static String getType();
 

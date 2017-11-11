@@ -26,7 +26,7 @@ template< int, typename > class StaticArray;
 template< typename Element,
           typename Device = Devices::Host,
           typename Index = int >
-class Array : public virtual Object
+class Array : public Object
 {
    public:
 

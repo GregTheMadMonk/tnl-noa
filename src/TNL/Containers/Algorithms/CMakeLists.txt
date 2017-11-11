@@ -6,7 +6,6 @@ set( headers ArrayOperations.h
              ArrayOperationsMIC_impl.h
              cuda-prefix-sum.h
              cuda-prefix-sum_impl.h
-             reduction-operations.h
              CublasWrapper.h
              CudaMultireductionKernel.h
              CudaReductionBuffer.h
@@ -15,6 +14,7 @@ set( headers ArrayOperations.h
              Multireduction_impl.h
              Reduction.h
              Reduction_impl.h
+             ReductionOperations.h
              VectorOperations.h
              VectorOperationsHost_impl.h
              VectorOperationsCuda_impl.h

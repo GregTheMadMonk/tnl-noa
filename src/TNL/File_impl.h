@@ -35,7 +35,7 @@ template< typename Type, typename Device, typename Index >
 bool File::read( Type* buffer,
                  const Index& _elements )
 {
-   TNL_ASSERT_GE( _elements, 0, "Number of elements to read must be non-negative." );
+   TNL_ASSERT_GE( _elements, (Index) 0, "Number of elements to read must be non-negative." );
 
    // convert _elements from Index to std::size_t, which is *unsigned* type
    // (expected by fread etc)
@@ -178,7 +178,7 @@ template< class Type, typename Device, typename Index >
 bool File::write( const Type* buffer,
                   const Index _elements )
 {
-   TNL_ASSERT_GE( _elements, 0, "Number of elements to write must be non-negative." );
+   TNL_ASSERT_GE( _elements, (Index) 0, "Number of elements to write must be non-negative." );
 
    // convert _elements from Index to std::size_t, which is *unsigned* type
    // (expected by fread etc)

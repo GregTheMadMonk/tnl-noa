@@ -63,9 +63,10 @@ class NeighborGridEntityGetter<
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-         return NeighborGridEntity( CoordinatesType( entity.getCoordinates().x() + stepX,
-                                                      entity.getCoordinates().y() + stepY,
-                                                      entity.getCoordinates().z() + stepZ ) );
+         return NeighborGridEntityType( this->entity.getMesh(),
+                                        CoordinatesType( entity.getCoordinates().x() + stepX,
+                                                         entity.getCoordinates().y() + stepY,
+                                                         entity.getCoordinates().z() + stepZ ) );
       }
  
       template< int stepX, int stepY, int stepZ >
@@ -143,9 +144,10 @@ class NeighborGridEntityGetter<
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-         return NeighborGridEntityType( this->entity.getMesh(), CoordinatesType( entity.getCoordinates().x() + stepX,
-                                                      entity.getCoordinates().y() + stepY,
-                                                      entity.getCoordinates().z() + stepZ ) );
+         return NeighborGridEntityType( this->entity.getMesh(),
+                                        CoordinatesType( entity.getCoordinates().x() + stepX,
+                                                         entity.getCoordinates().y() + stepY,
+                                                         entity.getCoordinates().z() + stepZ ) );
       }
  
       template< int stepX, int stepY, int stepZ >
@@ -296,13 +298,13 @@ class NeighborGridEntityGetter<
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
          return NeighborGridEntityType( this->entity.getMesh(),
-                                         CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
-                                                          entity.getCoordinates().y() + stepY + ( stepY < 0 ),
-                                                          entity.getCoordinates().z() + stepZ + ( stepZ < 0 ) ),
-                                         EntityOrientationType( stepX ? (stepX > 0 ? 1 : -1) : 0,
-                                                                stepY ? (stepY > 0 ? 1 : -1) : 0,
-                                                                stepZ ? (stepZ > 0 ? 1 : -1) : 0 ),
-                                         EntityBasisType( ! stepX, !stepY, !stepZ ) );
+                                        CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
+                                                         entity.getCoordinates().y() + stepY + ( stepY < 0 ),
+                                                         entity.getCoordinates().z() + stepZ + ( stepZ < 0 ) ),
+                                        EntityOrientationType( stepX ? (stepX > 0 ? 1 : -1) : 0,
+                                                               stepY ? (stepY > 0 ? 1 : -1) : 0,
+                                                               stepZ ? (stepZ > 0 ? 1 : -1) : 0 ),
+                                        EntityBasisType( ! stepX, !stepY, !stepZ ) );
       }
  
       template< int stepX, int stepY, int stepZ >
@@ -379,13 +381,13 @@ class NeighborGridEntityGetter<
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
          return NeighborGridEntityType( this->entity.getMesh(),
-                                         CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
-                                                          entity.getCoordinates().y() + stepY + ( stepY < 0 ),
-                                                          entity.getCoordinates().z() + stepZ + ( stepZ < 0 ) ),
-                                         EntityOrientationType( stepX ? (stepX > 0 ? 1 : -1) : 0,
-                                                                stepY ? (stepY > 0 ? 1 : -1) : 0,
-                                                                stepZ ? (stepZ > 0 ? 1 : -1) : 0 ),
-                                         EntityBasisType( ! stepX, !stepY, !stepZ ) );
+                                        CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
+                                                         entity.getCoordinates().y() + stepY + ( stepY < 0 ),
+                                                         entity.getCoordinates().z() + stepZ + ( stepZ < 0 ) ),
+                                        EntityOrientationType( stepX ? (stepX > 0 ? 1 : -1) : 0,
+                                                               stepY ? (stepY > 0 ? 1 : -1) : 0,
+                                                               stepZ ? (stepZ > 0 ? 1 : -1) : 0 ),
+                                        EntityBasisType( ! stepX, !stepY, !stepZ ) );
       }
  
       template< int stepX, int stepY, int stepZ >
@@ -462,18 +464,19 @@ class NeighborGridEntityGetter<
                    << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-         return NeighborGridEntity( CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
-                                                      entity.getCoordinates().y() + stepY + ( stepY < 0 ),
-                                                      entity.getCoordinates().z() + stepZ + ( stepZ < 0 ) ),
-                                     EntityOrientationType( !!stepX, !!stepY, !!stepZ ),
-                                     EntityBasisType( !stepX, !stepY, !stepZ ));
+         return NeighborGridEntityType( this->entity.getMesh(),
+                                        CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
+                                                         entity.getCoordinates().y() + stepY + ( stepY < 0 ),
+                                                         entity.getCoordinates().z() + stepZ + ( stepZ < 0 ) ),
+                                        EntityOrientationType( !!stepX, !!stepY, !!stepZ ),
+                                        EntityBasisType( !stepX, !stepY, !stepZ ));
       }
  
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         return GridEntityGetterType::getEntityIndex( this->entity.getMesh(), getEntity< stepX, stepY, stepZ >( entity ) );
+         return GridEntityGetterType::getEntityIndex( this->entity.getMesh(), getEntity< stepX, stepY, stepZ >() );
       }
  
       __cuda_callable__
@@ -545,16 +548,17 @@ class NeighborGridEntityGetter<
                    << " entity.getMesh().getDimensions() + CoordinatesType( sign( stepX ), sign( stepY ), sign( stepZ ) ) = "
                    << entity.getMesh().getDimensions()  + CoordinatesType( sign( stepX ), sign( stepY ), sign( stepZ ) )
                    << " EntityDimension = " << EntityDimension );
-         return NeighborGridEntity( CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
-                                                      entity.getCoordinates().y() + stepY + ( stepY < 0 ),
-                                                      entity.getCoordinates().z() + stepZ + ( stepZ < 0 ) ) );
+         return NeighborGridEntityType( this->entity.getMesh(),
+                                        CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
+                                                         entity.getCoordinates().y() + stepY + ( stepY < 0 ),
+                                                         entity.getCoordinates().z() + stepZ + ( stepZ < 0 ) ) );
       }
  
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         return GridEntityGetterType::getEntityIndex( entity.getMesh(), getEntity< stepX, stepY, stepZ >( entity ) );
+         return GridEntityGetterType::getEntityIndex( entity.getMesh(), getEntity< stepX, stepY, stepZ >() );
       }
  
       __cuda_callable__
@@ -611,7 +615,7 @@ class NeighborGridEntityGetter<
                          << " stepY = " << stepY << " stepZ = " << stepZ
                          << " entity.getOrientation() = " << entity.getOrientation() );*/
          TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0, 0 ), "wrong coordinates" );
-         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions() + entity.getOrientation().abs(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() +
                        CoordinatesType( stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
                                         stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ),
@@ -627,10 +631,10 @@ class NeighborGridEntityGetter<
                         stepZ + ( stepZ < 0 ) * ( entity.getOrientation().z() != 0.0 ) )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-         return NeighborGridEntityType( entity.getMesh(),
-                                         CoordinatesType( entity.getCoordinates().x() + stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
-                                                          entity.getCoordinates().y() + stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ),
-                                                          entity.getCoordinates().z() + stepZ - ( stepZ > 0 ) * ( entity.getOrientation().z() != 0.0 ) ) );
+         return NeighborGridEntityType( this->entity.getMesh(),
+                                        CoordinatesType( entity.getCoordinates().x() + stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
+                                                         entity.getCoordinates().y() + stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ),
+                                                         entity.getCoordinates().z() + stepZ - ( stepZ > 0 ) * ( entity.getOrientation().z() != 0.0 ) ) );
       }
  
       template< int stepX, int stepY, int stepZ >
@@ -695,9 +699,10 @@ class NeighborGridEntityGetter<
                    << entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
-         return NeighborGridEntity( CoordinatesType( entity.getCoordinates().x() + stepX,
-                                                      entity.getCoordinates().y() + stepY,
-                                                      entity.getCoordinates().z() + stepZ ) );
+         return NeighborGridEntityType( this->entity.getMesh(),
+                                        CoordinatesType( entity.getCoordinates().x() + stepX,
+                                                         entity.getCoordinates().y() + stepY,
+                                                         entity.getCoordinates().z() + stepZ ) );
       }
  
       template< int stepX, int stepY, int stepZ >
