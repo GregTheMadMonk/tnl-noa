@@ -21,7 +21,7 @@ template< typename Mesh, int Dimension >
 struct IndexPermutationApplier
 {
 private:
-   using IndexPermutationVector = typename Mesh::IndexPermutationVector;
+   using GlobalIndexVector = typename Mesh::GlobalIndexVector;
 
    template< int Subdimension,
              bool Enabled =
@@ -30,7 +30,7 @@ private:
              >
    struct _SubentitiesStorageWorker
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& perm )
+      static void exec( Mesh& mesh, const GlobalIndexVector& perm )
       {
          auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< Dimension, Subdimension >();
          permuteMultimapKeys( subentitiesStorage, perm );
@@ -40,7 +40,7 @@ private:
    template< int Subdimension >
    struct _SubentitiesStorageWorker< Subdimension, false >
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& iperm ) {}
+      static void exec( Mesh& mesh, const GlobalIndexVector& iperm ) {}
    };
 
 
@@ -51,7 +51,7 @@ private:
              >
    struct _SuperentitiesStorageWorker
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& perm )
+      static void exec( Mesh& mesh, const GlobalIndexVector& perm )
       {
          auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< Dimension, Superdimension >();
          permuteMultimapKeys( superentitiesStorage, perm );
@@ -61,7 +61,7 @@ private:
    template< int Superdimension >
    struct _SuperentitiesStorageWorker< Superdimension, false >
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& iperm ) {}
+      static void exec( Mesh& mesh, const GlobalIndexVector& iperm ) {}
    };
 
 
@@ -72,7 +72,7 @@ private:
              >
    struct IndexPermutationApplierSubentitiesWorker
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& iperm )
+      static void exec( Mesh& mesh, const GlobalIndexVector& iperm )
       {
          auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< Subdimension, Dimension >();
          permuteMultimapValues( superentitiesStorage, iperm );
@@ -82,7 +82,7 @@ private:
    template< int Subdimension >
    struct IndexPermutationApplierSubentitiesWorker< Subdimension, false >
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& iperm ) {}
+      static void exec( Mesh& mesh, const GlobalIndexVector& iperm ) {}
    };
 
 
@@ -93,7 +93,7 @@ private:
              >
    struct IndexPermutationApplierSuperentitiesWorker
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& iperm )
+      static void exec( Mesh& mesh, const GlobalIndexVector& iperm )
       {
          auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< Superdimension, Dimension >();
          permuteMultimapValues( subentitiesStorage, iperm );
@@ -103,7 +103,7 @@ private:
    template< int Superdimension >
    struct IndexPermutationApplierSuperentitiesWorker< Superdimension, false >
    {
-      static void exec( Mesh& mesh, const IndexPermutationVector& iperm ) {}
+      static void exec( Mesh& mesh, const GlobalIndexVector& iperm ) {}
    };
 
 
@@ -122,8 +122,8 @@ private:
 
 public:
    static void exec( Mesh& mesh,
-                     const IndexPermutationVector& perm,
-                     const IndexPermutationVector& iperm )
+                     const GlobalIndexVector& perm,
+                     const GlobalIndexVector& iperm )
    {
       using IndexType = typename Mesh::GlobalIndexType;
       using DeviceType = typename Mesh::DeviceType;

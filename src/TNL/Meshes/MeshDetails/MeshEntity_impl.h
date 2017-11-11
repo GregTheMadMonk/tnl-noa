@@ -61,7 +61,7 @@ operator=( const MeshEntity& entity )
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
-      template< typename Device_ >
+   template< typename Device_ >
 __cuda_callable__
 MeshEntity< MeshConfig, Device, EntityTopology >& 
 MeshEntity< MeshConfig, Device, EntityTopology >::
@@ -225,7 +225,7 @@ operator=( const MeshEntity& entity )
 }
 
 template< typename MeshConfig, typename Device >
-      template< typename Device_ >
+   template< typename Device_ >
 __cuda_callable__
 MeshEntity< MeshConfig, Device, Topologies::Vertex >& 
 MeshEntity< MeshConfig, Device, Topologies::Vertex >::

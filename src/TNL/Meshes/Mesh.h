@@ -19,6 +19,7 @@
 #include <ostream>
 #include <TNL/Object.h>
 #include <TNL/Logger.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshDetails/ConfigValidator.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
@@ -71,7 +72,7 @@ class Mesh
       using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
       using PointType       = typename MeshTraitsType::PointType;
       using RealType        = typename PointType::RealType;
-      using IndexPermutationVector = Containers::Vector< GlobalIndexType, DeviceType, GlobalIndexType >;
+      using GlobalIndexVector = Containers::Vector< GlobalIndexType, DeviceType, GlobalIndexType >;
 
       // shortcuts, compatibility with grids
       using HostType = Mesh< MeshConfig, Devices::Host >;
@@ -150,8 +151,8 @@ class Mesh
        * M is the entity with index iperm[j] in M'.
        */
       template< int Dimension >
-      void reorderEntities( const IndexPermutationVector& perm,
-                            const IndexPermutationVector& iperm );
+      void reorderEntities( const GlobalIndexVector& perm,
+                            const GlobalIndexVector& iperm );
 
 
       bool save( File& file ) const;

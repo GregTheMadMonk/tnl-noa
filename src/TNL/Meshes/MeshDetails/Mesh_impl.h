@@ -202,8 +202,8 @@ template< typename MeshConfig, typename Device >
    template< int Dimension >
 void
 Mesh< MeshConfig, Device >::
-reorderEntities( const IndexPermutationVector& perm,
-                 const IndexPermutationVector& iperm )
+reorderEntities( const GlobalIndexVector& perm,
+                 const GlobalIndexVector& iperm )
 {
    static_assert( entitiesAvailable< Dimension >(), "Entities which are not stored cannot be reordered." );
 
