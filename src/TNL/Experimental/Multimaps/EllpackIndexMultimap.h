@@ -32,7 +32,7 @@ template< typename Index = int,
           typename LocalIndex = Index,
           int SliceSize = EllpackIndexMultimapSliceSizeGetter< Device >::SliceSize >
 class EllpackIndexMultimap
-   : public virtual Object
+   : public Object
 {
    public:
       using DeviceType                 = Device;
