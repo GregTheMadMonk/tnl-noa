@@ -72,7 +72,7 @@ class SemiImplicitTimeStepper
                DofVectorPointer& dofVectorPointer,
                MeshDependentDataPointer& meshDependentData );
  
-   bool writeEpilog( Logger& logger );
+   bool writeEpilog( Logger& logger ) const;
 
    protected:
 

@@ -196,7 +196,7 @@ template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
 bool
 ExplicitTimeStepper< Problem, OdeSolver >::
-writeEpilog( Logger& logger )
+writeEpilog( Logger& logger ) const
 {
    logger.writeParameter< long long int >( "Iterations count:", this->allIterations );
    logger.writeParameter< const char* >( "Pre-iterate time:", "" );

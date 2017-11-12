@@ -245,7 +245,7 @@ template< typename Problem,
           typename LinearSystemSolver >
 bool
 SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
-writeEpilog( Logger& logger )
+writeEpilog( Logger& logger ) const
 {
    logger.writeParameter< long long int >( "Iterations count:", this->allIterations );
    logger.writeParameter< const char* >( "Pre-iterate time:", "" );
