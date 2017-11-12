@@ -5,6 +5,8 @@
 * mail:			dansimon93@gmail.com      *
 ***************************************************/
 
+#ifdef HAVE_GMP
+
 #include "MultiPrecision.h"
 
 /* INIT OF NUMBER */
@@ -148,3 +150,5 @@ MultiPrecision MultiPrecision::sqrt(MultiPrecision r, const MultiPrecision a){
 MultiPrecision::~MultiPrecision(){
     mpf_clear(number);
 }
+
+#endif
