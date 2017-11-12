@@ -30,6 +30,7 @@ class PDESolver : public Object
       using IndexType = Index;
       using SolverMonitorType = IterativeSolverMonitor< RealType, IndexType >;
       
+      
       PDESolver();
 
       static void configSetup( Config::ConfigDescription& config,
@@ -47,6 +48,8 @@ class PDESolver : public Object
       
       void setTotalTimer( Timer& totalTimer );
       
+      void setSolverMonitor( SolverMonitorType& solverMonitor );
+      
       SolverMonitorType& getSolverMonitor();
 
       bool writeEpilog( Logger& logger ) const;      
@@ -54,8 +57,6 @@ class PDESolver : public Object
    protected:
 
       Timer *ioTimer, *computeTimer, *totalTimer;
-      
-      SolverMonitorType solverMonitor;
       
       SolverMonitorType *solverMonitorPointer;
 };

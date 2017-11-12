@@ -21,7 +21,8 @@ template< typename Real,
 PDESolver< Real, Index >::PDESolver()   
 : ioTimer( 0 ),
   computeTimer( 0 ),
-  solverMonitorPointer( &this->solverMonitor )
+  totalTimer( 0 ),
+  solverMonitorPointer( 0 )
 {
 }
    
@@ -41,12 +42,16 @@ PDESolver< Real, Index >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   /****
-    * Set-up solver monitor and launch the main loop.
-    */
-   this->solverMonitorPointer->setVerbose( parameters.getParameter< int >( "verbose" ) );
-   this->solverMonitorPointer->setTimer( *this->totalTimer );
    return true;
+}
+
+template< typename Real,
+          typename Index >
+void
+PDESolver< Real, Index >::
+setSolverMonitor( typename PDESolver< Real, Index >::SolverMonitorType& solverMonitor )
+{
+   this->solverMonitorPointer = &solverMonitor;
 }
 
 template< typename Real,

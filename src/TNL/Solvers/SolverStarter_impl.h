@@ -382,6 +382,10 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
 {
    this->totalTimer.reset();
    this->totalTimer.start();
+   
+   using SolverMonitorType = IterativeSolverMonitor< typename Problem::RealType,
+                                                     typename Problem::IndexType >;
+   SolverMonitorType solverMonitor, *solverMonitorPointer( &solverMonitor );
  
    /****
     * Open the log file
@@ -398,6 +402,16 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
     */
    //PDE::TimeDependentPDESolver< Problem, TimeStepper > solver;
    typename PDE::PDESolverTypeResolver< Problem, DiscreteSolver, TimeStepper >::SolverType solver;
+   solver.setComputeTimer( this->computeTimer );
+   solver.setIoTimer( this->ioTimer );
+   solver.setTotalTimer( this->totalTimer );
+
+   if( problem.getSolverMonitor() )
+      solverMonitorPointer = ( SolverMonitorType* ) problem.getSolverMonitor();
+   solverMonitorPointer->setVerbose( parameters.getParameter< int >( "verbose" ) );
+   solverMonitorPointer->setTimer( this->totalTimer );
+   solver.setSolverMonitor( *solverMonitorPointer );
+   
    // catching exceptions ala gtest:
    // https://github.com/google/googletest/blob/59c795ce08be0c8b225bc894f8da6c7954ea5c14/googletest/src/gtest.cc#L2409-L2431
    const int catch_exceptions = parameters.getParameter< bool >( "catch-exceptions" );
@@ -443,9 +457,6 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
     */
    this->computeTimer.reset();
    this->ioTimer.reset();
-   solver.setComputeTimer( this->computeTimer );
-   solver.setIoTimer( this->ioTimer );
-   solver.setTotalTimer( this->totalTimer );
    
    /****
     * Create solver monitor thread

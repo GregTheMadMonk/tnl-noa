@@ -55,8 +55,6 @@ TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( this->problem->getSolverMonitor() )
-      this->solverMonitorPointer = ( SolverMonitorType* ) this->problem->getSolverMonitor();
    
    BaseType::setup( parameters, prefix );
    
