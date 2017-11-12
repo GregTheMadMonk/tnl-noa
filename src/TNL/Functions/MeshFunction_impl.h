@@ -312,7 +312,7 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 getValue( const EntityType& meshEntity ) const
 {
    static_assert( EntityType::getEntityDimension() == MeshEntityDimension, "Calling with wrong EntityType -- entity dimensions do not match." );
-   return this->data.getValue( meshEntity.getIndex() );
+   return this->data.getElement( meshEntity.getIndex() );
 }
 
 template< typename Mesh,
@@ -325,7 +325,7 @@ setValue( const EntityType& meshEntity,
           const RealType& value )
 {
    static_assert( EntityType::getEntityDimension() == MeshEntityDimension, "Calling with wrong EntityType -- entity dimensions do not match." );
-   this->data.setValue( meshEntity.getIndex(), value );
+   this->data.setElement( meshEntity.getIndex(), value );
 }
 
 template< typename Mesh,
