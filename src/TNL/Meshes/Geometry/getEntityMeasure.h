@@ -17,6 +17,7 @@
 #include <TNL/Meshes/Topologies/Vertex.h>
 #include <TNL/Meshes/Topologies/Edge.h>
 #include <TNL/Meshes/Topologies/Triangle.h>
+#include <TNL/Meshes/Topologies/Quadrilateral.h>
 #include <TNL/Meshes/Topologies/Tetrahedron.h>
 
 namespace TNL {
@@ -115,6 +116,22 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
     const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
     const auto& v2 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 2 ) );
     return getTriangleArea( v2.getPoint() - v0.getPoint(), v1.getPoint() - v0.getPoint() );
+}
+
+// Quadrilateral
+template< typename MeshConfig, typename Device >
+__cuda_callable__
+typename MeshConfig::RealType
+getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
+                  const MeshEntity< MeshConfig, Device, Topologies::Quadrilateral > & entity )
+{
+    // measure = 0.5 * |AC x BD|, where AC and BD are the diagonals
+    // Hence, we can use the same formula as for the triangle area.
+    const auto& v0 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 0 ) );
+    const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
+    const auto& v2 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 2 ) );
+    const auto& v3 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 3 ) );
+    return getTriangleArea( v2.getPoint() - v0.getPoint(), v3.getPoint() - v1.getPoint() );
 }
 
 template< typename Real >
