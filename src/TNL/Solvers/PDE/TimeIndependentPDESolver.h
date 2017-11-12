@@ -18,10 +18,11 @@
 #pragma once
 
 #include <TNL/Object.h>
+#include <TNL/Logger.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Solvers/SolverMonitor.h>
-#include <TNL/Logger.h>
+#include <TNL/Solvers/PDE/PDESolver.h>
+
 
 namespace TNL {
 namespace Solvers {   
@@ -29,7 +30,8 @@ namespace PDE {
 
 template< typename Problem,
           typename DiscreteSolver >
-class TimeIndependentPDESolver : public Object
+class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType,
+                                                   typename Problem::IndexType >
 {
    public:
 
@@ -58,10 +60,6 @@ class TimeIndependentPDESolver : public Object
 
       void setProblem( ProblemType& problem );
 
-      void setComputeTimer( Timer& computeTimer );
-      
-      void setIoTimer( Timer& ioTimer );
-
       bool solve();
 
       bool writeEpilog( Logger& logger ) const;
@@ -77,8 +75,6 @@ class TimeIndependentPDESolver : public Object
       DiscreteSolver discreteSolver;
 
       ProblemType* problem;
-
-      Timer *computeTimer;
 };
 
 

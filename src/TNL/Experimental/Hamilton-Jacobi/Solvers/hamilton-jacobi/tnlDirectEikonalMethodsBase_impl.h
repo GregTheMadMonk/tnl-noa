@@ -125,7 +125,7 @@ updateCell( MeshFunctionType& u,
       a = u[ neighborEntities.template getEntityIndex< -1,  0 >() ];
    else
    {
-      a = ArgAbsMin( u[ neighborEntities.template getEntityIndex< -1,  0 >() ],
+      a = argAbsMin( u[ neighborEntities.template getEntityIndex< -1,  0 >() ],
                      u[ neighborEntities.template getEntityIndex<  1,  0 >() ] );
    }
 
@@ -135,7 +135,7 @@ updateCell( MeshFunctionType& u,
       b = u[ neighborEntities.template getEntityIndex< 0,  -1 >() ];
    else
    {
-      b = ArgAbsMin( u[ neighborEntities.template getEntityIndex< 0,  -1 >() ],
+      b = argAbsMin( u[ neighborEntities.template getEntityIndex< 0,  -1 >() ],
                      u[ neighborEntities.template getEntityIndex< 0,   1 >() ] );
    }
 
@@ -146,7 +146,7 @@ updateCell( MeshFunctionType& u,
        fabs( b ) == TypeInfo< Real >::getMaxValue() ||
        fabs( a - b ) >= h )
    {
-      tmp = ArgAbsMin( a, b ) + sign( value ) * h;
+      tmp = argAbsMin( a, b ) + sign( value ) * h;
       /*   std::cerr << "a = " << a << " b = " << b << " h = " << h 
              << " ArgAbsMin( a, b ) = " << ArgAbsMin( a, b ) << " sign( value ) = " << sign( value )
              << " sign( value ) * h = " << sign( value ) * h
@@ -163,7 +163,7 @@ updateCell( MeshFunctionType& u,
    else
       tmp = 0.5 * ( a + b + sign( value ) * sqrt( 2.0 * h * h - ( a - b ) * ( a - b ) ) );
 
-   u[ cell.getIndex() ] = ArgAbsMin( value, tmp );
+   u[ cell.getIndex() ] = argAbsMin( value, tmp );
    //std::cerr << ArgAbsMin( value, tmp ) << " ";   
 }
 

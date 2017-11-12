@@ -28,8 +28,7 @@ template< typename Problem,
           typename DiscreteSolver >
 TimeIndependentPDESolver< Problem, DiscreteSolver >::
 TimeIndependentPDESolver()
-: problem( 0 ),
-  computeTimer( 0 )
+: problem( 0 )
 {
 }
 
@@ -130,22 +129,6 @@ TimeIndependentPDESolver< Problem, DiscreteSolver >::
 setProblem( ProblemType& problem )
 {
    this->problem = &problem;
-}
-
-template< typename Problem,
-          typename DiscreteSolver >
-void TimeIndependentPDESolver< Problem, DiscreteSolver >::
-setIoTimer( Timer& ioTimer )
-{
-  // this->ioTimer = &ioTimer;
-}
-
-template< typename Problem,
-          typename DiscreteSolver >
-void TimeIndependentPDESolver< Problem, DiscreteSolver >::
-setComputeTimer( Timer& computeTimer )
-{
-   this->computeTimer = &computeTimer;
 }
 
 template< typename Problem,

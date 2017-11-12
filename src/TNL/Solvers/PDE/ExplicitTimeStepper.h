@@ -75,7 +75,7 @@ class ExplicitTimeStepper
                         DofVectorPointer& _u,
                         DofVectorPointer& _fu );
    
-   bool writeEpilog( Logger& logger );
+   bool writeEpilog( Logger& logger ) const;
 
    protected:
 

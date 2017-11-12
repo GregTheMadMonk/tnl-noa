@@ -21,7 +21,11 @@ String
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 getTypeStatic()
 {
-   
+   return String( "DirectEikonalProblem< " + 
+                  Mesh::getTypeStatic() + ", " +
+                  Anisotropy::getTypeStatic() + ", " +
+                  Real::getTypeStatic() + ", " +
+                  Index::getTypeStatic() + " >" );
 }
 
 template< typename Mesh,
@@ -122,6 +126,7 @@ tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 solve( const MeshPointer& mesh,
        DofVectorPointer& dofs )
 {
-   tnlFastSweepingMethod< MeshType, AnisotropyType > fsm;
-   //return fsm.solve( mesh, anisotropy, initialData );
+   FastSweepingMethod< MeshType, AnisotropyType > fsm;
+   fsm.solve( mesh, anisotropy, initialData );
+   return true;
 }

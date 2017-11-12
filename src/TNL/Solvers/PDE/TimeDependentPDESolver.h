@@ -10,12 +10,11 @@
 
 #pragma once
 
-#include <TNL/Object.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Logger.h>
-#include <TNL/Timer.h>
 #include <TNL/SharedPointer.h>
+#include <TNL/Solvers/PDE/PDESolver.h>
 
 namespace TNL {
 namespace Solvers {
@@ -24,14 +23,16 @@ namespace PDE {
 template< typename Problem,
           typename DiscreteSolver,
           typename TimeStepper >
-class TimeDependentPDESolver : public Object
+class TimeDependentPDESolver : public PDESolver< typename Problem::RealType, 
+                                                 typename Problem::IndexType >
 {
    public:
 
-      typedef typename TimeStepper::RealType RealType;
-      typedef typename TimeStepper::DeviceType DeviceType;
-      typedef typename TimeStepper::IndexType IndexType;
-      typedef Problem ProblemType;
+      using RealType = typename Problem::RealType;
+      using DeviceType = typename Problem::DeviceType;
+      using IndexType = typename Problem::IndexType;
+      using BaseType = PDESolver< RealType, IndexType >;
+      using ProblemType = Problem;
       typedef typename ProblemType::MeshType MeshType;
       typedef typename ProblemType::DofVectorType DofVectorType;
       typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
@@ -52,8 +53,6 @@ class TimeDependentPDESolver : public Object
 
       bool writeProlog( Logger& logger,
                         const Config::ParameterContainer& parameters );
-
-      //void setTimeStepper( TimeStepper& timeStepper );
 
       void setProblem( ProblemType& problem );
 
@@ -77,10 +76,6 @@ class TimeDependentPDESolver : public Object
 
       const RealType& getSnapshotPeriod() const;
 
-      void setIoTimer( Timer& ioTimer);
-
-      void setComputeTimer( Timer& computeTimer );
-
       bool solve();
 
       bool writeEpilog( Logger& logger ) const;
@@ -96,16 +91,10 @@ class TimeDependentPDESolver : public Object
       TimeStepper timeStepper;
       
       DiscreteSolver discreteSolver;
-
-      RealType initialTime, finalTime, snapshotPeriod, timeStep, timeStepOrder;
-
+      
       ProblemType* problem;
 
-      Timer *ioTimer, *computeTimer;
-      
-      SolverMonitorType solverMonitor;
-      
-      SolverMonitor *solverMonitorPointer;
+      RealType initialTime, finalTime, snapshotPeriod, timeStep, timeStepOrder;
 };
 
 } // namespace PDE

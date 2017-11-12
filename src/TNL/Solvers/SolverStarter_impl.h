@@ -90,8 +90,8 @@ bool SolverStarter< ConfigTag > :: run( const Config::ParameterContainer& parame
        ! Devices::Cuda::setup( parameters ) )
       return false;
    Problem problem;
-   return UserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
-   //return TimeDependencyResolver< Problem, ConfigTag >::run( problem, parameters );
+   //return UserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
+   return TimeDependencyResolver< Problem, ConfigTag >::run( problem, parameters );
 }
 
 template< typename Problem,
@@ -445,6 +445,7 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    this->ioTimer.reset();
    solver.setComputeTimer( this->computeTimer );
    solver.setIoTimer( this->ioTimer );
+   solver.setTotalTimer( this->totalTimer );
 
    /****
     * Start the solver
