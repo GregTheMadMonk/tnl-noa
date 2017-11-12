@@ -1,6 +1,6 @@
 /**************************************************
 * filename:		MultiPrecision.cpp	  *
-* created:		October 22, 2017	  *
+* created:		November 11, 2017	  *
 * author:		Daniel Simon	 	  *
 * mail:			dansimon93@gmail.com      *
 ***************************************************/
@@ -26,80 +26,121 @@ MultiPrecision::MultiPrecision(mpf_t number,  mpf_t n){
     mpf_init_set(number, n);
 }
 
-/* ARITHMETIC FUNCTIONS */
+/* OPERATORS IMPLEMENTATION */
 
-MultiPrecision addition( MultiPrecision a, MultiPrecision b ){
-    mpf_t result;
-    mpf_init(result);
-    mpf_add(result, a.number, b.number);
+void MultiPrecision::operator=(const MultiPrecision& mp){
+    mpf_set(number, mp.number);
+}
+
+MultiPrecision& MultiPrecision::operator-(){
+    mpf_neg(this->number, this->number);
+    return *this;
+}
+
+MultiPrecision& MultiPrecision::operator+=(const MultiPrecision& mp){
+    mpf_add(this->number, this->number, mp.number);
+    return *this;
+}
+
+MultiPrecision& MultiPrecision::operator-=(const MultiPrecision& mp){
+    mpf_sub(this->number, this->number, mp.number);
+    return *this;
+}
+
+MultiPrecision& MultiPrecision::operator*=(const MultiPrecision& mp){
+    mpf_mul(this->number, this->number, mp.number);
+    return *this;
+}
+
+MultiPrecision& MultiPrecision::operator/=(const MultiPrecision& mp){
+    mpf_div(this->number, this->number, mp.number);
+    return *this;
+}
+
+MultiPrecision MultiPrecision::operator+(const MultiPrecision& mp) const{
+    MultiPrecision result = MultiPrecision(*this);
+    result += mp;
     return result;
 }
 
-MultiPrecision subtraction( MultiPrecision a, MultiPrecision b ){
-    mpf_t result;
-    mpf_init(result);
-    mpf_sub(result, a.number, b.number);
+MultiPrecision MultiPrecision::operator-(const MultiPrecision& mp) const{
+    MultiPrecision result = MultiPrecision(*this);
+    result -= mp;
     return result;
 }
 
-MultiPrecision multiplication( MultiPrecision a, MultiPrecision b ){
-    mpf_t result;
-    mpf_init(result);
-    mpf_mul(result, a.number, b.number);
+MultiPrecision MultiPrecision::operator*(const MultiPrecision& mp) const{
+    MultiPrecision result = MultiPrecision(*this);
+    result *= mp;
     return result;
 }
 
-MultiPrecision division( MultiPrecision a, MultiPrecision b ){
-    mpf_t result;
-    mpf_init(result);
-    mpf_div(result, a.number, b.number);
+MultiPrecision MultiPrecision::operator/(const MultiPrecision& mp) const{
+    MultiPrecision result = MultiPrecision(*this);
+    result /= mp;
     return result;
 }
 
-MultiPrecision sqrt( MultiPrecision a ){
-    mpf_t result;
-    mpf_init(result);
-    mpf_sqrt(result, a.number);
-    return result;
+bool MultiPrecision::operator==(const MultiPrecision &mp) const{
+    MultiPrecision m = MultiPrecision(*this);
+    if (mpf_cmp(m.number, mp.number) == 0)
+        return true;
+    else
+        return false;
 }
 
-MultiPrecision power( MultiPrecision a, unsigned long int c ){
-    mpf_t result;
-    mpf_init(result);
-    mpf_pow_ui(result, a.number, c);
-    return result;
+bool MultiPrecision::operator!=(const MultiPrecision &mp) const{
+    //MultiPrecision m = MultiPrecision(*this);
+    //return !(m.number == mp.number);
+    return !(*this == mp);
 }
 
-MultiPrecision negation( MultiPrecision a ){
-    mpf_t result;
-    mpf_init(result);
-    mpf_neg(result, a.number);
-    return result;
+bool MultiPrecision::operator<(const MultiPrecision &mp) const{
+    MultiPrecision m = MultiPrecision(*this);
+    if (mpf_cmp(m.number, mp.number) < 0)
+        return true;
+    else
+        return false;
 }
 
-MultiPrecision abs( MultiPrecision a ){
-    mpf_t result;
-    mpf_init(result);
-    mpf_abs(result, a.number);
-    return result;
+bool MultiPrecision::operator>(const MultiPrecision &mp) const{
+    MultiPrecision m = MultiPrecision(*this);
+    if (mpf_cmp(m.number, mp.number) > 0)
+        return true;
+    else
+        return false;
 }
 
-MultiPrecision mul_2exp( MultiPrecision a, mp_bitcnt_t b){
-    mpf_t result;
-    mpf_init(result);
-    mpf_mul_2exp(result, a.number, b);
-    return result;
+bool MultiPrecision::operator>=(const MultiPrecision &mp) const{
+    MultiPrecision m = MultiPrecision(*this);
+    if (mpf_cmp(m.number, mp.number) >= 0)
+        return true;
+    else
+        return false;
 }
 
-MultiPrecision div_2exp( MultiPrecision a, mp_bitcnt_t b ){
-    mpf_t result;
-    mpf_init(result);
-    mpf_div_2exp(result, a.number, b);
-    return result;
+bool MultiPrecision::operator<=(const MultiPrecision &mp) const{
+    MultiPrecision m = MultiPrecision(*this);
+    if (mpf_cmp(m.number, mp.number) <= 0)
+        return true;
+    else
+        return false;
 }
 
+/* METHODS */
+void MultiPrecision::printMP(int precision){
+    mpf_out_str(stdout, 10, precision, this->number);
+}
 
-/* OPERATOR OVERLOADING */
+MultiPrecision MultiPrecision::abs(MultiPrecision r, const MultiPrecision a){
+    mpf_abs(r.number, a.number);
+    return r;
+}
+
+MultiPrecision MultiPrecision::sqrt(MultiPrecision r, const MultiPrecision a){
+    mpf_sqrt(r.number, a.number);
+    return r;
+}
 
 
 /* DESTRUCTOR */

@@ -1,13 +1,12 @@
-/**************************************************             
+/**************************************************
 * filename:             MultiPrecision.h          *
-* created:              October 29, 2017          *
+* created:              November 11, 2017          *
 * author:               Daniel Simon              *
 * mail:                 dansimon93@gmail.com      *
 ***************************************************/
 
 /*IMPLEMENTATION OF GMP LIBRARY - FLOATING POINT FUNCTIONS*/
 /* Source: https://gmplib.org/ */
-
 
 #ifdef HAVE_GMP
 
@@ -17,7 +16,8 @@
 
 class MultiPrecision{
 public:
-    mpf_t number; // number
+    /* NUMBER */
+    mpf_t number;
 
     /* INITIALIZATION OF NUMBER */
     MultiPrecision(mpf_t number); // inits number to 0
@@ -25,19 +25,36 @@ public:
     MultiPrecision(mp_bitcnt_t precision); // sets the default precision
     MultiPrecision(mpf_t number,  mpf_t n); // assigns n value to number
 
-    /* ARITHMETIC FUNCTIONS */
-    MultiPrecision addition( MultiPrecision a, MultiPrecision b ); // result = a + b
-    MultiPrecision subtraction( MultiPrecision a, MultiPrecision b ); // result = a - b
-    MultiPrecision multiplication( MultiPrecision a, MultiPrecision b ); // result = a * b
-    MultiPrecision division( MultiPrecision a, MultiPrecision b ); // result = a / b
-    MultiPrecision sqrt( MultiPrecision a ); // result = sqrt(a)
-    MultiPrecision power( MultiPrecision a, unsigned long int c ); // result = b ** c
-    MultiPrecision negation( MultiPrecision a ); // result = -b
-    MultiPrecision abs( MultiPrecision a ); // result = |a|
-    MultiPrecision mul_2exp( MultiPrecision a, mp_bitcnt_t b );
-    MultiPrecision div_2exp( MultiPrecision a, mp_bitcnt_t b );
+    /* OPERATORS */
+    void operator=(const MultiPrecision& mp);
+    MultiPrecision& operator-();
+    MultiPrecision& operator+=(const MultiPrecision& mp);
+    MultiPrecision& operator-=(const MultiPrecision& mp);
+    MultiPrecision& operator*=(const MultiPrecision& mp);
+    MultiPrecision& operator/=(const MultiPrecision& mp);
+    MultiPrecision operator+(const MultiPrecision& mp) const;
+    MultiPrecision operator-(const MultiPrecision& mp) const;
+    MultiPrecision operator*(const MultiPrecision& mp) const;
+    MultiPrecision operator/(const MultiPrecision& mp) const;
+    bool operator==(const MultiPrecision &mp) const;
+    bool operator!=(const MultiPrecision &mp) const;
+    bool operator<(const MultiPrecision &mp) const;
+    bool operator>(const MultiPrecision &mp) const;
+    bool operator>=(const MultiPrecision &mp) const;
+    bool operator<=(const MultiPrecision &mp) const;
+    MultiPrecision& operator++(); // prefix
+    MultiPrecision& operator--(); // prefix
+    MultiPrecision operator++(int); // postfix
+    MultiPrecision operator--(int); // postfix
 
-    /* OPERATORS OVERLOADING */
+    /* METHODS */
+    void printMP(int precision);
+    MultiPrecision abs(MultiPrecision r, const MultiPrecision a);
+    MultiPrecision sqrt(MultiPrecision r, const MultiPrecision a);
+    /// void printNumber(int digits, ostream& str = std::cout );  TODO
 
-    ~MultiPrecision(); // destructor
+    /* DESTRUCTOR */
+    ~MultiPrecision();
 };
+
+/// ostream& operator << ( ostream& str, const MultiPrecision& p ); TODO
