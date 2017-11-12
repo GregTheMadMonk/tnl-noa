@@ -1,3 +1,4 @@
+ADD_SUBDIRECTORY( Geometry )
 ADD_SUBDIRECTORY( GridDetails )
 ADD_SUBDIRECTORY( MeshDetails )
 ADD_SUBDIRECTORY( Readers )
