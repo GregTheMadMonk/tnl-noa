@@ -46,6 +46,8 @@ class PDESolver : public Object
       void setComputeTimer( Timer& computeTimer );
       
       void setTotalTimer( Timer& totalTimer );
+      
+      SolverMonitorType& getSolverMonitor();
 
       bool writeEpilog( Logger& logger ) const;      
       

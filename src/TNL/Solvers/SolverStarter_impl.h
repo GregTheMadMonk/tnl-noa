@@ -446,6 +446,11 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    solver.setComputeTimer( this->computeTimer );
    solver.setIoTimer( this->ioTimer );
    solver.setTotalTimer( this->totalTimer );
+   
+   /****
+    * Create solver monitor thread
+    */
+   SolverMonitorThread t( solver.getSolverMonitor() );
 
    /****
     * Start the solver

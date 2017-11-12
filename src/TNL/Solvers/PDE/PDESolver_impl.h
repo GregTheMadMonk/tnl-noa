@@ -46,9 +46,16 @@ setup( const Config::ParameterContainer& parameters,
     */
    this->solverMonitorPointer->setVerbose( parameters.getParameter< int >( "verbose" ) );
    this->solverMonitorPointer->setTimer( *this->totalTimer );
-   SolverMonitorThread t( *this->solverMonitorPointer );
-
    return true;
+}
+
+template< typename Real,
+          typename Index >
+typename PDESolver< Real, Index >::SolverMonitorType&
+PDESolver< Real, Index >::
+getSolverMonitor()
+{
+   return *this->solverMonitorPointer;
 }
 
 template< typename Real,
