@@ -26,12 +26,20 @@ template< typename Real = double,
           typename Index = int >
 class Dense : public Matrix< Real, Device, Index >
 {
-   public:
+private:
+   // convenient template alias for controlling the selection of copy-assignment operator
+   template< typename Device2 >
+   using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
 
+   // friend class will be needed for templated assignment operators
+   template< typename Real2, typename Device2, typename Index2 >
+   friend class Dense;
+
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename Matrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
+   typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef Dense< Real, Device, Index > ThisType;
    typedef Dense< Real, Devices::Host, Index > HostType;
    typedef Dense< Real, Devices::Cuda, Index > CudaType;
@@ -45,22 +53,29 @@ class Dense : public Matrix< Real, Device, Index >
 
    String getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows,
+   static String getSerializationType();
+
+   virtual String getSerializationTypeVirtual() const;
+
+   void setDimensions( const IndexType rows,
                        const IndexType columns );
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const Dense< Real2, Device2, Index2 >& matrix );
+   void setLike( const Dense< Real2, Device2, Index2 >& matrix );
 
    /****
     * This method is only for the compatibility with the sparse matrices.
     */
-   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
+   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
    /****
     * Returns maximal number of the nonzero matrix elements that can be stored
     * in a given row.
     */
    IndexType getRowLength( const IndexType row ) const;
+
+   __cuda_callable__
+   IndexType getRowLengthFast( const IndexType row ) const;
 
    IndexType getMaxRowLength() const;
 
@@ -152,35 +167,29 @@ class Dense : public Matrix< Real, Device, Index >
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
-#ifdef HAVE_NOT_CXX11
-   template< typename Matrix1, typename Matrix2, int tileDim >
-   void getMatrixProduct( const Matrix1& matrix1,
-                       const Matrix2& matrix2,
-                       const RealType& matrix1Multiplicator = 1.0,
-                       const RealType& matrix2Multiplicator = 1.0 );
-#else
    template< typename Matrix1, typename Matrix2, int tileDim = 32 >
    void getMatrixProduct( const Matrix1& matrix1,
                        const Matrix2& matrix2,
                        const RealType& matrix1Multiplicator = 1.0,
                        const RealType& matrix2Multiplicator = 1.0 );
-#endif
 
-#ifdef HAVE_NOT_CXX11
-   template< typename Matrix, int tileDim >
-   void getTransposition( const Matrix& matrix,
-                          const RealType& matrixMultiplicator = 1.0 );
-#else
    template< typename Matrix, int tileDim = 32 >
    void getTransposition( const Matrix& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
-#endif
 
    template< typename Vector >
    void performSORIteration( const Vector& b,
                              const IndexType row,
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
+
+   // copy assignment
+   Dense& operator=( const Dense& matrix );
+
+   // cross-device copy assignment
+   template< typename Real2, typename Device2, typename Index2,
+             typename = typename Enabler< Device2 >::type >
+   Dense& operator=( const Dense< Real2, Device2, Index2 >& matrix );
 
    bool save( const String& fileName ) const;
 
@@ -192,7 +201,7 @@ class Dense : public Matrix< Real, Device, Index >
 
    void print( std::ostream& str ) const;
 
-   protected:
+protected:
 
    __cuda_callable__
    IndexType getElementIndex( const IndexType row,
@@ -200,11 +209,9 @@ class Dense : public Matrix< Real, Device, Index >
 
    typedef DenseDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class DenseDeviceDependentCode< DeviceType >;
-
 };
 
 } // namespace Matrices
 } // namespace TNL
 
 #include <TNL/Matrices/Dense_impl.h>
-

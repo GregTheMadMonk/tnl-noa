@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "TFQMR.h"
+
 namespace TNL {
 namespace Solvers {
 namespace Linear {
@@ -19,6 +21,11 @@ template< typename Matrix,
 TFQMR< Matrix, Preconditioner > :: TFQMR()
 : size( 0 )
 {
+   /****
+    * Clearing the shared pointer means that there is no
+    * preconditioner set.
+    */
+   this->preconditioner.clear();   
 }
 
 template< typename Matrix,
@@ -69,7 +76,7 @@ template< typename Matrix,
    template< typename Vector, typename ResidueGetter >
 bool TFQMR< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 {
-   if( ! this->setSize( matrix -> getRows() ) ) return false;
+   this->setSize( matrix -> getRows() );
 
    RealType tau, theta, eta, rho, alpha, b_norm, w_norm;
 
@@ -164,44 +171,27 @@ bool TFQMR< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
       this->refreshSolverMonitor();
    }
 
-//   this->matrix->vectorProduct( x, r );
-//   r.addVector( b, 1.0, -1.0 );
-//   this->setResidue( r.lpNorm( 2.0 ) / b_norm );
-
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
-};
+}
 
 template< typename Matrix,
           typename Preconditioner >
-TFQMR< Matrix, Preconditioner > :: ~TFQMR()
-{
-};
-
-template< typename Matrix,
-          typename Preconditioner >
-bool TFQMR< Matrix, Preconditioner > :: setSize( IndexType size )
+void TFQMR< Matrix, Preconditioner > :: setSize( IndexType size )
 {
    if( this->size == size )
-      return true;
+      return;
    this->size = size;
-   if( ! d. setSize( size ) ||
-       ! r. setSize( size ) ||
-       ! w. setSize( size ) ||
-       ! u. setSize( size ) ||
-       ! v. setSize( size ) ||
-       ! r_ast. setSize( size ) ||
-       ! Au. setSize( size ) ||
-       ! M_tmp. setSize( size ) )
-   {
-      std::cerr << "I am not able to allocate all supporting vectors for the TFQMR solver." << std::endl;
-      return false;
-   }
-   return true;
-
-};
+   d.setSize( size );
+   r.setSize( size );
+   w.setSize( size );
+   u.setSize( size );
+   v.setSize( size );
+   r_ast.setSize( size );
+   Au.setSize( size );
+   M_tmp.setSize( size );
+}
 
 } // namespace Linear
 } // namespace Solvers
 } // namespace TNL
-

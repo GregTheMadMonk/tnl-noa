@@ -1,8 +1,20 @@
+/***************************************************************************
+                          spmv.h  -  description
+                             -------------------
+    begin                : Dec 30, 2015
+    copyright            : (C) 2015 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Jakub Klinkovsky
+
 #pragma once
 
 #include "benchmarks.h"
 
-#include <TNL/List.h>
+#include <TNL/Containers/List.h>
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Matrices/SlicedEllpack.h>
@@ -72,7 +84,7 @@ void setCudaTestMatrix( Matrix& matrix,
         setCudaTestMatrixKernel< Matrix >
             <<< cudaGridSize, cudaBlockSize >>>
             ( kernel_matrix, elementsPerRow, gridIdx );
-        checkCudaDevice;
+        TNL_CHECK_CUDA_DEVICE;
     }
     Devices::Cuda::freeFromDevice( kernel_matrix );
 #endif
@@ -102,40 +114,30 @@ benchmarkSpMV( Benchmark & benchmark,
     CudaVector deviceVector, deviceVector2;
 
     // create benchmark group
-    List< String > parsedType;
+    Containers::List< String > parsedType;
     parseObjectType( HostMatrix::getType(), parsedType );
     benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
 
-    if( ! hostRowLengths.setSize( size ) ||
-        ! deviceRowLengths.setSize( size ) ||
-        ! hostMatrix.setDimensions( size, size ) ||
-        ! deviceMatrix.setDimensions( size, size ) ||
-        ! hostVector.setSize( size ) ||
-        ! hostVector2.setSize( size ) ||
-        ! deviceVector.setSize( size ) ||
-        ! deviceVector2.setSize( size ) )
-    {
-        const char* msg = "error: allocation of vectors failed";
-        std::cerr << msg << std::endl;
-        benchmark.addErrorMessage( msg, 2 );
-        return false;
-    }
+    hostRowLengths.setSize( size );
+    hostMatrix.setDimensions( size, size );
+    hostVector.setSize( size );
+    hostVector2.setSize( size );
+#ifdef HAVE_CUDA
+    deviceRowLengths.setSize( size );
+    deviceMatrix.setDimensions( size, size );
+    deviceVector.setSize( size );
+    deviceVector2.setSize( size );
+#endif
 
     hostRowLengths.setValue( elementsPerRow );
+#ifdef HAVE_CUDA
     deviceRowLengths.setValue( elementsPerRow );
+#endif
 
-    if( ! hostMatrix.setCompressedRowsLengths( hostRowLengths ) ) {
-        const char* msg = "error: allocation of host matrix failed";
-        std::cerr << msg << std::endl;
-        benchmark.addErrorMessage( msg, 2 );
-        return false;
-    }
-    if( ! deviceMatrix.setCompressedRowsLengths( deviceRowLengths ) ) {
-        const char* msg = "error: allocation of device matrix failed";
-        std::cerr << msg << std::endl;
-        benchmark.addErrorMessage( msg, 2 );
-        return false;
-    }
+    hostMatrix.setCompressedRowLengths( hostRowLengths );
+#ifdef HAVE_CUDA
+    deviceMatrix.setCompressedRowLengths( deviceRowLengths );
+#endif
 
     const int elements = setHostTestMatrix< HostMatrix >( hostMatrix, elementsPerRow );
     setCudaTestMatrix< DeviceMatrix >( deviceMatrix, elementsPerRow );
@@ -144,9 +146,11 @@ benchmarkSpMV( Benchmark & benchmark,
     // reset function
     auto reset = [&]() {
         hostVector.setValue( 1.0 );
-        deviceVector.setValue( 1.0 );
         hostVector2.setValue( 0.0 );
+#ifdef HAVE_CUDA
+        deviceVector.setValue( 1.0 );
         deviceVector2.setValue( 0.0 );
+#endif
     };
 
     // compute functions
@@ -158,9 +162,10 @@ benchmarkSpMV( Benchmark & benchmark,
     };
 
     benchmark.setOperation( datasetSize );
-    benchmark.time( reset,
-                    "CPU", spmvHost,
-                    "GPU", spmvCuda );
+    benchmark.time( reset, "CPU", spmvHost );
+#ifdef HAVE_CUDA
+    benchmark.time( reset, "GPU", spmvCuda );
+#endif
 
     return true;
 }

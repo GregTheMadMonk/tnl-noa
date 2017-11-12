@@ -1,3 +1,0 @@
-import TNL
-
-print( "OK" )

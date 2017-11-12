@@ -11,6 +11,7 @@
 #pragma once 
 
 #include <TNL/Config/ConfigEntryBase.h>
+#include <TNL/Containers/List.h>
 
 namespace TNL {
 namespace Config {
@@ -20,7 +21,7 @@ struct ConfigEntry : public ConfigEntryBase
 {
    EntryType defaultValue;
 
-   List< EntryType > enumValues;
+   Containers::List< EntryType > enumValues;
 
    public:
 
@@ -61,7 +62,7 @@ struct ConfigEntry : public ConfigEntryBase
       return convertToString( defaultValue );
    };
 
-   List< EntryType >& getEnumValues()
+   Containers::List< EntryType >& getEnumValues()
    {
       return this->enumValues;
    }

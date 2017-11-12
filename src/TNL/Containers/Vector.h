@@ -11,22 +11,13 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include <TNL/Functions/Domain.h>
 
 namespace TNL {
-
-namespace Devices
-{ 
-   class Host;
-}
-
 namespace Containers {   
 
-
-
 template< typename Real = double,
-           typename Device = Devices::Host,
-           typename Index = int >
+          typename Device = Devices::Host,
+          typename Index = int >
 class Vector : public Containers::Array< Real, Device, Index >
 {
    public:

@@ -14,7 +14,7 @@ namespace TNL {
 namespace Meshes {
 
 template< typename Grid,
-          int EntityDimensions >
+          int EntityDimension >
 class GridEntityMeasureGetter
 {
 };
@@ -22,15 +22,15 @@ class GridEntityMeasureGetter
 /***
  * Common implementation for vertices
  */
-template< int Dimensions,
+template< int Dimension,
           typename Real,
           typename Device,
           typename Index >
-class GridEntityMeasureGetter< Meshes::Grid< Dimensions, Real, Device, Index >, 0 >
+class GridEntityMeasureGetter< Meshes::Grid< Dimension, Real, Device, Index >, 0 >
 {
    public:
  
-      typedef Meshes::Grid< Dimensions, Real, Device, Index > GridType;
+      typedef Meshes::Grid< Dimension, Real, Device, Index > GridType;
  
       template< typename EntityType >
       __cuda_callable__ inline

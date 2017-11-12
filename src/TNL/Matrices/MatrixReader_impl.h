@@ -11,10 +11,11 @@
 #pragma once
 
 #include <iomanip>
-#include <TNL/List.h>
+#include <TNL/Containers/List.h>
 #include <TNL/String.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Timer.h>
+#include <TNL/Matrices/MatrixReader.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -45,7 +46,7 @@ bool MatrixReader< Matrix >::readMtxFile( std::istream& file,
 template< typename Matrix >
 bool MatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
                                                        Matrix& matrix,
-                                                       typename Matrix::CompressedRowsLengthsVector& rowLengths,
+                                                       typename Matrix::CompressedRowLengthsVector& rowLengths,
                                                        bool verbose )
 {
    IndexType rows, columns;
@@ -55,18 +56,13 @@ bool MatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
       return false;
 
 
-   if( ! matrix.setDimensions( rows, columns ) ||
-       ! rowLengths.setSize( rows ) )
-   {
-      std::cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << std::endl;
-      return false;
-   }
+   matrix.setDimensions( rows, columns );
+   rowLengths.setSize( rows );
 
-   if( ! computeCompressedRowsLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
+   if( ! computeCompressedRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
       return false;
 
-   if( ! matrix.setCompressedRowsLengths( rowLengths ) )
-      return false;
+   matrix.setCompressedRowLengths( rowLengths );
 
    if( ! readMatrixElementsFromMtxFile( file, matrix, symmetricMatrix, verbose ) )
       return false;
@@ -162,8 +158,8 @@ template< typename Matrix >
 bool MatrixReader< Matrix >::checkMtxHeader( const String& header,
                                                 bool& symmetric )
 {
-   List< String > parsedLine;
-   header.parse( parsedLine );
+   Containers::List< String > parsedLine;
+   header.split( parsedLine );
    if( parsedLine.getSize() < 5 )
       return false;
    if( parsedLine[ 0 ] != "%%MatrixMarket" )
@@ -208,7 +204,7 @@ bool MatrixReader< Matrix >::readMtxHeader( std::istream& file,
    file.seekg( 0, std::ios::beg );
    String line;
    bool headerParsed( false );
-   List< String > parsedLine;
+   Containers::List< String > parsedLine;
    while( true )
    {
       line.getLine( file );
@@ -230,7 +226,7 @@ bool MatrixReader< Matrix >::readMtxHeader( std::istream& file,
       }
 
       parsedLine.reset();
-      line. parse( parsedLine );
+      line.split( parsedLine );
       if( parsedLine. getSize() != 3 )
       {
          std::cerr << "Wrong number of parameters in the matrix header." << std::endl;
@@ -252,7 +248,7 @@ bool MatrixReader< Matrix >::readMtxHeader( std::istream& file,
 }
 
 template< typename Matrix >
-bool MatrixReader< Matrix >::computeCompressedRowsLengthsFromMtxFile( std::istream& file,
+bool MatrixReader< Matrix >::computeCompressedRowLengthsFromMtxFile( std::istream& file,
                                                               Containers::Vector< int, Devices::Host, int >& rowLengths,
                                                               const int columns,
                                                               const int rows,
@@ -364,8 +360,8 @@ bool MatrixReader< Matrix >::parseMtxLineWithElement( const String& line,
                                                          IndexType& column,
                                                          RealType& value )
 {
-   List< String > parsedLine;
-   line.parse( parsedLine );
+   Containers::List< String > parsedLine;
+   line.split( parsedLine );
    if( parsedLine.getSize() != 3 )
    {
       std::cerr << "Wrong number of parameters in the matrix row at line:" << line << std::endl;
@@ -387,7 +383,7 @@ class MatrixReaderDeviceDependentCode< Devices::Host >
                             Matrix& matrix,
                             bool verbose )
    {
-      typename Matrix::CompressedRowsLengthsVector rowLengths;
+      typename Matrix::CompressedRowLengthsVector rowLengths;
       return MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose );
    }
 };
@@ -403,18 +399,14 @@ class MatrixReaderDeviceDependentCode< Devices::Cuda >
                             bool verbose )
    {
       typedef typename Matrix::HostType HostMatrixType;
-      typedef typename HostMatrixType::CompressedRowsLengthsVector CompressedRowsLengthsVector;
+      typedef typename HostMatrixType::CompressedRowLengthsVector CompressedRowLengthsVector;
 
       HostMatrixType hostMatrix;
-      CompressedRowsLengthsVector rowLengthsVector;
+      CompressedRowLengthsVector rowLengthsVector;
       if( ! MatrixReader< HostMatrixType >::readMtxFileHostMatrix( file, hostMatrix, rowLengthsVector, verbose ) )
          return false;
 
-      typename Matrix::CompressedRowsLengthsVector cudaCompressedRowsLengthsVector;
-      cudaCompressedRowsLengthsVector.setLike( rowLengthsVector );
-      cudaCompressedRowsLengthsVector = rowLengthsVector;
-      if( ! matrix.copyFrom( hostMatrix, cudaCompressedRowsLengthsVector ) )
-         return false;
+      matrix = hostMatrix;
       return true;
    }
 };

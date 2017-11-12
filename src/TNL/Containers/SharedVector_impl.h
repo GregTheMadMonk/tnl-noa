@@ -10,7 +10,8 @@
 
 #pragma once
 
-#include <TNL/Containers/VectorOperations.h>
+#include <TNL/Containers/SharedVector.h>
+#include <TNL/Containers/Algorithms/VectorOperations.h>
 
 namespace TNL {
 namespace Containers {   
@@ -18,7 +19,9 @@ namespace Containers {
 template< typename Real,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedVector< Real, Device, Index >::SharedVector()
 {
 }
@@ -26,7 +29,9 @@ SharedVector< Real, Device, Index >::SharedVector()
 template< typename Real,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedVector< Real, Device, Index >::SharedVector( Real* data,
                                                          const Index size )
 : Containers::SharedArray< Real, Device, Index >( data, size )
@@ -36,7 +41,9 @@ SharedVector< Real, Device, Index >::SharedVector( Real* data,
 template< typename Real,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedVector< Real, Device, Index >::SharedVector( Vector< Real, Device, Index >& vector )
 : Containers::SharedArray< Real, Device, Index >( vector )
 {
@@ -45,7 +52,9 @@ SharedVector< Real, Device, Index >::SharedVector( Vector< Real, Device, Index >
 template< typename Real,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedVector< Real, Device, Index >::SharedVector( SharedVector< Real, Device, Index >& vector )
 : Containers::SharedArray< Real, Device, Index >( vector )
 {
@@ -92,7 +101,7 @@ template< typename Real,
 void SharedVector< Real, Device, Index >::addElement( const IndexType i,
                                                          const RealType& value )
 {
-   VectorOperations< Device >::addElement( *this, i, value );
+   Algorithms::VectorOperations< Device >::addElement( *this, i, value );
 }
 
 template< typename Real,
@@ -102,7 +111,7 @@ void SharedVector< Real, Device, Index >::addElement( const IndexType i,
                                                          const RealType& value,
                                                          const RealType& thisElementMultiplicator )
 {
-   VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
+   Algorithms::VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
 }
 
 template< typename Real,
@@ -169,7 +178,7 @@ template< typename Real,
           typename Index >
 SharedVector< Real, Device, Index >& SharedVector< Real, Device, Index > :: operator *= ( const RealType& c )
 {
-   VectorOperations< Device >::vectorScalarMultiplication( *this, c );
+   Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, c );
    return *this;
 }
 
@@ -178,7 +187,7 @@ template< typename Real,
           typename Index >
 SharedVector< Real, Device, Index >& SharedVector< Real, Device, Index > :: operator /= ( const RealType& c )
 {
-   VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0/ c );
+   Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0/ c );
    return *this;
 }
 
@@ -187,7 +196,7 @@ template< typename Real,
           typename Index >
 Real SharedVector< Real, Device, Index > :: max() const
 {
-   return VectorOperations< Device > :: getVectorMax( *this );
+   return Algorithms::VectorOperations< Device > :: getVectorMax( *this );
 }
 
 template< typename Real,
@@ -195,7 +204,7 @@ template< typename Real,
           typename Index >
 Real SharedVector< Real, Device, Index > :: min() const
 {
-   return VectorOperations< Device > :: getVectorMin( *this );
+   return Algorithms::VectorOperations< Device > :: getVectorMin( *this );
 }
 
 
@@ -204,7 +213,7 @@ template< typename Real,
           typename Index >
 Real SharedVector< Real, Device, Index > :: absMax() const
 {
-   return VectorOperations< Device > :: getVectorAbsMax( *this );
+   return Algorithms::VectorOperations< Device > :: getVectorAbsMax( *this );
 }
 
 template< typename Real,
@@ -212,7 +221,7 @@ template< typename Real,
           typename Index >
 Real SharedVector< Real, Device, Index > :: absMin() const
 {
-   return VectorOperations< Device > :: getVectorAbsMin( *this );
+   return Algorithms::VectorOperations< Device > :: getVectorAbsMin( *this );
 }
 
 template< typename Real,
@@ -220,7 +229,7 @@ template< typename Real,
           typename Index >
 Real SharedVector< Real, Device, Index > :: lpNorm( const Real& p ) const
 {
-   return VectorOperations< Device > :: getVectorLpNorm( *this, p );
+   return Algorithms::VectorOperations< Device > :: getVectorLpNorm( *this, p );
 }
 
 
@@ -229,7 +238,7 @@ template< typename Real,
           typename Index >
 Real SharedVector< Real, Device, Index > :: sum() const
 {
-   return VectorOperations< Device > :: getVectorSum( *this );
+   return Algorithms::VectorOperations< Device > :: getVectorSum( *this );
 }
 
 
@@ -239,7 +248,7 @@ template< typename Real,
 template< typename Vector >
 Real SharedVector< Real, Device, Index > :: differenceMax( const Vector& v ) const
 {
-   return VectorOperations< Device > :: getVectorDifferenceMax( *this, v );
+   return Algorithms::VectorOperations< Device > :: getVectorDifferenceMax( *this, v );
 }
 
 
@@ -249,7 +258,7 @@ template< typename Real,
 template< typename Vector >
 Real SharedVector< Real, Device, Index > :: differenceMin( const Vector& v ) const
 {
-   return VectorOperations< Device > :: getVectorDifferenceMin( *this, v );
+   return Algorithms::VectorOperations< Device > :: getVectorDifferenceMin( *this, v );
 }
 
 
@@ -259,7 +268,7 @@ template< typename Real,
 template< typename Vector >
 Real SharedVector< Real, Device, Index > :: differenceAbsMax( const Vector& v ) const
 {
-   return VectorOperations< Device > :: getVectorDifferenceAbsMax( *this, v );
+   return Algorithms::VectorOperations< Device > :: getVectorDifferenceAbsMax( *this, v );
 }
 
 template< typename Real,
@@ -268,7 +277,7 @@ template< typename Real,
 template< typename Vector >
 Real SharedVector< Real, Device, Index > :: differenceAbsMin( const Vector& v ) const
 {
-   return VectorOperations< Device > :: getVectorDifferenceAbsMin( *this, v );
+   return Algorithms::VectorOperations< Device > :: getVectorDifferenceAbsMin( *this, v );
 }
 
 template< typename Real,
@@ -277,7 +286,7 @@ template< typename Real,
 template< typename Vector >
 Real SharedVector< Real, Device, Index > :: differenceLpNorm( const Vector& v, const Real& p ) const
 {
-   return VectorOperations< Device > :: getVectorDifferenceLpNorm( *this, v, p );
+   return Algorithms::VectorOperations< Device > :: getVectorDifferenceLpNorm( *this, v, p );
 }
 
 
@@ -287,7 +296,7 @@ template< typename Real,
 template< typename Vector >
 Real SharedVector< Real, Device, Index > :: differenceSum( const Vector& v ) const
 {
-   return VectorOperations< Device > :: getVectorDifferenceSum( *this, v );
+   return Algorithms::VectorOperations< Device > :: getVectorDifferenceSum( *this, v );
 }
 
 
@@ -296,7 +305,7 @@ template< typename Real,
           typename Index >
 void SharedVector< Real, Device, Index > :: scalarMultiplication( const Real& alpha )
 {
-   VectorOperations< Device > :: vectorScalarMultiplication( *this, alpha );
+   Algorithms::VectorOperations< Device > :: vectorScalarMultiplication( *this, alpha );
 }
 
 
@@ -306,7 +315,7 @@ template< typename Real,
 template< typename Vector >
 Real SharedVector< Real, Device, Index > :: scalarProduct( const Vector& v )
 {
-   return VectorOperations< Device > :: getScalarProduct( *this, v );
+   return Algorithms::VectorOperations< Device > :: getScalarProduct( *this, v );
 }
 
 template< typename Real,
@@ -317,7 +326,7 @@ void SharedVector< Real, Device, Index > :: addVector( const Vector& x,
                                                           const Real& alpha,
                                                           const Real& thisMultiplicator )
 {
-   VectorOperations< Device > :: addVector( *this, x, alpha, thisMultiplicator );
+   Algorithms::VectorOperations< Device > :: addVector( *this, x, alpha, thisMultiplicator );
 }
 
 template< typename Real,
@@ -332,7 +341,7 @@ addVectors( const Vector& v1,
             const Real& multiplicator2,
             const Real& thisMultiplicator )
 {
-   VectorOperations< Device >::addVectors( *this, v1, multiplicator1, v2, multiplicator2, thisMultiplicator );
+   Algorithms::VectorOperations< Device >::addVectors( *this, v1, multiplicator1, v2, multiplicator2, thisMultiplicator );
 }
 
 template< typename Real,
@@ -340,7 +349,7 @@ template< typename Real,
           typename Index >
 void SharedVector< Real, Device, Index > :: computePrefixSum()
 {
-   VectorOperations< Device >::computePrefixSum( *this, 0, this->getSize() );
+   Algorithms::VectorOperations< Device >::computePrefixSum( *this, 0, this->getSize() );
 }
 
 template< typename Real,
@@ -349,7 +358,7 @@ template< typename Real,
 void SharedVector< Real, Device, Index > :: computePrefixSum( const IndexType begin,
                                                                  const IndexType end )
 {
-   VectorOperations< Device >::computePrefixSum( *this, begin, end );
+   Algorithms::VectorOperations< Device >::computePrefixSum( *this, begin, end );
 }
 
 template< typename Real,
@@ -357,7 +366,7 @@ template< typename Real,
           typename Index >
 void SharedVector< Real, Device, Index > :: computeExclusivePrefixSum()
 {
-   VectorOperations< Device >::computeExclusivePrefixSum( *this, 0, this->getSize() );
+   Algorithms::VectorOperations< Device >::computeExclusivePrefixSum( *this, 0, this->getSize() );
 }
 
 template< typename Real,
@@ -366,7 +375,7 @@ template< typename Real,
 void SharedVector< Real, Device, Index > :: computeExclusivePrefixSum( const IndexType begin,
                                                                           const IndexType end )
 {
-   VectorOperations< Device >::computeExclusivePrefixSum( *this, begin, end );
+   Algorithms::VectorOperations< Device >::computeExclusivePrefixSum( *this, begin, end );
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

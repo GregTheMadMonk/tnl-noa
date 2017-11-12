@@ -23,12 +23,20 @@ class MultidiagonalDeviceDependentCode;
 template< typename Real, typename Device = Devices::Host, typename Index = int >
 class Multidiagonal : public Matrix< Real, Device, Index >
 {
-   public:
+private:
+   // convenient template alias for controlling the selection of copy-assignment operator
+   template< typename Device2 >
+   using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
 
+   // friend class will be needed for templated assignment operators
+   template< typename Real2, typename Device2, typename Index2 >
+   friend class Multidiagonal;
+
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename Matrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
+   typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef Multidiagonal< Real, Device, Index > ThisType;
    typedef Multidiagonal< Real, Devices::Host, Index > HostType;
    typedef Multidiagonal< Real, Devices::Cuda, Index > CudaType;
@@ -42,22 +50,29 @@ class Multidiagonal : public Matrix< Real, Device, Index >
 
    String getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows,
+   static String getSerializationType();
+
+   virtual String getSerializationTypeVirtual() const;
+
+   void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
+   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
+
+   __cuda_callable__
+   IndexType getRowLengthFast( const IndexType row ) const;
 
    IndexType getMaxRowLength() const;
 
    template< typename Vector >
-   bool setDiagonals( const Vector& diagonals );
+   void setDiagonals( const Vector& diagonals );
 
    const Containers::Vector< Index, Device, Index >& getDiagonals() const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const Multidiagonal< Real2, Device2, Index2 >& matrix );
+   void setLike( const Multidiagonal< Real2, Device2, Index2 >& matrix );
 
    IndexType getNumberOfMatrixElements() const;
 
@@ -168,6 +183,14 @@ class Multidiagonal : public Matrix< Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
+   // copy assignment
+   Multidiagonal& operator=( const Multidiagonal& matrix );
+
+   // cross-device copy assignment
+   template< typename Real2, typename Device2, typename Index2,
+             typename = typename Enabler< Device2 >::type >
+   Multidiagonal& operator=( const Multidiagonal< Real2, Device2, Index2 >& matrix );
+
    bool save( File& file ) const;
 
    bool load( File& file );
@@ -178,7 +201,7 @@ class Multidiagonal : public Matrix< Real, Device, Index >
 
    void print( std::ostream& str ) const;
 
-   protected:
+protected:
 
    bool getElementIndex( const IndexType row,
                          const IndexType column,
@@ -195,8 +218,6 @@ class Multidiagonal : public Matrix< Real, Device, Index >
 
    typedef MultidiagonalDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class MultidiagonalDeviceDependentCode< DeviceType >;
-
-
 };
 
 } // namespace Matrices

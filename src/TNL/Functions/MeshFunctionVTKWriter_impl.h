@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Functions/MeshFunctionVTKWriter.h>
+
 namespace TNL {
 namespace Functions {   
 
@@ -17,7 +19,8 @@ template< typename MeshFunction >
 bool
 MeshFunctionVTKWriter< MeshFunction >::
 write( const MeshFunction& function,
-                         std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    std::cerr << "VTK writer for mesh functions defined on mesh type " << MeshFunction::MeshType::getType() << " is not (yet) implemented." << std::endl;
    return false;
@@ -34,11 +37,11 @@ template< typename MeshReal,
 void
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
 writeHeader( const MeshFunctionType& function,
-       std::ostream& str )
+             std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -52,7 +55,8 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    writeHeader(function, str);
  
@@ -61,7 +65,6 @@ write( const MeshFunctionType& function,
    const RealType spaceStep = mesh.getSpaceSteps().x();
  
    str << "POINTS " << mesh.getDimensions().x() + 1 << " float" << std::endl;
- 
    for (int i = 0; i <= mesh.getDimensions().x(); i++)
    {
        str << origin + i * spaceStep << " 0 0" << std::endl;
@@ -83,13 +86,11 @@ write( const MeshFunctionType& function,
    str << "SCALARS cellFunctionValues float 1" << std::endl;
    str << "LOOKUP_TABLE default" << std::endl;
 
-   typename MeshType::Cell entity( mesh );
-   for( entity.getCoordinates().x() = 0;
-        entity.getCoordinates().x() < mesh.getDimensions().x();
-        entity.getCoordinates().x() ++ )
+   for( MeshIndex i = 0; i < mesh.template getEntitiesCount< typename MeshType::Cell >(); i++ )
    {
+      typename MeshType::Cell entity = mesh.template getEntity< typename MeshType::Cell >( i );
       entity.refresh();
-      str << function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
  
    return true;
@@ -106,11 +107,11 @@ template< typename MeshReal,
 void
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
 writeHeader( const MeshFunctionType& function,
-       std::ostream& str )
+             std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -124,7 +125,8 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    writeHeader(function, str);
  
@@ -133,7 +135,6 @@ write( const MeshFunctionType& function,
    const RealType spaceStep = mesh.getSpaceSteps().x();
  
    str << "POINTS " << mesh.getDimensions().x() + 1 << " float" << std::endl;
- 
    for (int i = 0; i < mesh.getDimensions().x() + 1; i++)
    {
        str << origin + i * spaceStep << " 0 0" << std::endl;
@@ -155,13 +156,11 @@ write( const MeshFunctionType& function,
    str << "SCALARS VerticesFunctionValues float 1" << std::endl;
    str << "LOOKUP_TABLE default" << std::endl;
 
-   typename MeshType::Vertex entity( mesh );
-   for( entity.getCoordinates().x() = 0;
-        entity.getCoordinates().x() <= mesh.getDimensions().x();
-        entity.getCoordinates().x() ++ )
+   for( MeshIndex i = 0; i < mesh.template getEntitiesCount< typename MeshType::Vertex >(); i++ )
    {
+      typename MeshType::Vertex entity = mesh.template getEntity< typename MeshType::Vertex >( i );
       entity.refresh();
-      str << function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
  
    return true;
@@ -178,11 +177,11 @@ template< typename MeshReal,
 void
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
 writeHeader( const MeshFunctionType& function,
-       std::ostream& str )
+             std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -196,7 +195,8 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    writeHeader(function, str);
  
@@ -205,9 +205,10 @@ write( const MeshFunctionType& function,
    const RealType spaceStepX = mesh.getSpaceSteps().x();
    const RealType originY = mesh.getOrigin().y();
    const RealType spaceStepY = mesh.getSpaceSteps().y();
+   const MeshIndex verticesCount = mesh.template getEntitiesCount< typename MeshType::Vertex >();
+   const MeshIndex entitiesCount = mesh.template getEntitiesCount< typename MeshType::Cell >();
  
-   str << "POINTS " << (mesh.getDimensions().x() + 1) * (mesh.getDimensions().y() + 1) << " float" << std::endl;
- 
+   str << "POINTS " << verticesCount << " float" << std::endl;
    for (int j = 0; j < mesh.getDimensions().y() + 1; j++)
    {
         for (int i = 0; i < mesh.getDimensions().x() + 1; i++)
@@ -216,8 +217,7 @@ write( const MeshFunctionType& function,
         }
    }
  
-   str << std::endl << "CELLS " << mesh.getDimensions().x() * mesh.getDimensions().y() << " " <<
-          mesh.getDimensions().x() * mesh.getDimensions().y() * 5 << std::endl;
+   str << std::endl << "CELLS " << entitiesCount << " " << entitiesCount * 5 << std::endl;
    for (int j = 0; j < mesh.getDimensions().y(); j++)
    {
         for (int i = 0; i < mesh.getDimensions().x(); i++)
@@ -233,23 +233,17 @@ write( const MeshFunctionType& function,
        str << "8 " << std::endl;
    }
  
-   str << std::endl << "CELL_DATA " << mesh.getDimensions().x() * mesh.getDimensions().y() << std::endl;
+   str << std::endl << "CELL_DATA " << entitiesCount << std::endl;
    str << "SCALARS cellFunctionValues float 1" << std::endl;
    str << "LOOKUP_TABLE default" << std::endl;
 
-   typename MeshType::Cell entity( mesh );
-   for( entity.getCoordinates().y() = 0;
-        entity.getCoordinates().y() < mesh.getDimensions().y();
-        entity.getCoordinates().y() ++ )
+   for( MeshIndex i = 0; i < entitiesCount; i++ )
    {
-      for( entity.getCoordinates().x() = 0;
-           entity.getCoordinates().x() < mesh.getDimensions().x();
-           entity.getCoordinates().x() ++ )
-      {
-         entity.refresh();
-         str << function.getData().getElement( entity.getIndex() ) << std::endl;
-      }
+      typename MeshType::Cell entity = mesh.template getEntity< typename MeshType::Cell >( i );
+      entity.refresh();
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
+
    return true;
 }
 
@@ -264,11 +258,11 @@ template< typename MeshReal,
 void
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
 writeHeader( const MeshFunctionType& function,
-       std::ostream& str )
+             std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -282,10 +276,11 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
-   typedef typename MeshType::template MeshEntity< 0 > Vertex;
-   typedef typename MeshType::template MeshEntity< 1 > Face;
+   typedef typename MeshType::template EntityType< 0 > Vertex;
+   typedef typename MeshType::template EntityType< 1 > Face;
    writeHeader(function, str);
  
    const MeshType& mesh = function.getMesh();
@@ -293,9 +288,10 @@ write( const MeshFunctionType& function,
    const RealType spaceStepX = mesh.getSpaceSteps().x();
    const RealType originY = mesh.getOrigin().y();
    const RealType spaceStepY = mesh.getSpaceSteps().y();
+   const MeshIndex verticesCount = mesh.template getEntitiesCount< typename MeshType::Vertex >();
+   const MeshIndex entitiesCount = mesh.template getEntitiesCount< typename MeshType::Face >();
  
-   str << "POINTS " << mesh.template getEntitiesCount< Vertex >() << " float" << std::endl;
- 
+   str << "POINTS " << verticesCount << " float" << std::endl;
    for (int j = 0; j < ( mesh.getDimensions().y() + 1); j++)
    {
         for (int i = 0; i < ( mesh.getDimensions().x() + 1 ); i++)
@@ -304,8 +300,7 @@ write( const MeshFunctionType& function,
         }
    }
  
-   str << std::endl << "CELLS " << mesh.template getEntitiesCount< Face >() << " " <<
-          mesh.template getEntitiesCount< Face >() * 3 << std::endl;
+   str << std::endl << "CELLS " << entitiesCount << " " << entitiesCount * 3 << std::endl;
    for (int j = 0; j < mesh.getDimensions().y(); j++)
    {
         for (int i = 0; i < ( mesh.getDimensions().x() + 1 ); i++)
@@ -322,49 +317,23 @@ write( const MeshFunctionType& function,
         }
    }
  
-   str << std::endl << "CELL_TYPES " << mesh.template getEntitiesCount< Face >() << std::endl;
-   for (int i = 0; i < mesh.template getEntitiesCount< Face >(); i++)
+   str << std::endl << "CELL_TYPES " << entitiesCount << std::endl;
+   for (int i = 0; i < entitiesCount; i++)
    {
        str << "3" << std::endl;
    }
  
-   str << std::endl << "CELL_DATA " << mesh.template getEntitiesCount< Face >() << std::endl;
+   str << std::endl << "CELL_DATA " << entitiesCount << std::endl;
    str << "SCALARS FaceslFunctionValues float 1" << std::endl;
    str << "LOOKUP_TABLE default" << std::endl;
 
-   typedef typename MeshType::Face EntityType;
-   typedef typename EntityType::EntityOrientationType EntityOrientation;
-   EntityType entity( mesh );
- 
-   entity.setOrientation( EntityOrientation( 1.0, 0.0 ) );
-   for( entity.getCoordinates().y() = 0;
-        entity.getCoordinates().y() < mesh.getDimensions().y();
-        entity.getCoordinates().y() ++ )
+   for( MeshIndex i = 0; i < entitiesCount; i++ )
    {
-      for( entity.getCoordinates().x() = 0;
-           entity.getCoordinates().x() <= mesh.getDimensions().x();
-           entity.getCoordinates().x() ++ )
-      {
-         entity.refresh();
-         str << function.getData().getElement( entity.getIndex() ) << std::endl;
-      }
+      typename MeshType::Face entity = mesh.template getEntity< typename MeshType::Face >( i );
+      entity.refresh();
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
- 
-   entity.setOrientation( EntityOrientation( 0.0, 1.0 ) );
-   for( entity.getCoordinates().y() = 0;
-        entity.getCoordinates().y() <= mesh.getDimensions().y();
-        entity.getCoordinates().y() ++ )
 
-   {
-        for( entity.getCoordinates().x() = 0;
-             entity.getCoordinates().x() < mesh.getDimensions().x();
-             entity.getCoordinates().x() ++ )
-
-      {
-         entity.refresh();
-         str << function.getData().getElement( entity.getIndex() ) << std::endl;
-      }
-   }
    return true;
 }
 
@@ -379,11 +348,11 @@ template< typename MeshReal,
 void
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
 writeHeader( const MeshFunctionType& function,
-       std::ostream& str )
+             std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -397,9 +366,10 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
-   typedef typename MeshType::template MeshEntity< 0 > Vertex;
+   typedef typename MeshType::template EntityType< 0 > Vertex;
    writeHeader(function, str);
  
    const MeshType& mesh = function.getMesh();
@@ -407,10 +377,9 @@ write( const MeshFunctionType& function,
    const RealType spaceStepX = mesh.getSpaceSteps().x();
    const RealType originY = mesh.getOrigin().y();
    const RealType spaceStepY = mesh.getSpaceSteps().y();
-
+   const MeshIndex verticesCount = mesh.template getEntitiesCount< typename MeshType::Vertex >();
  
-   str << "POINTS " << mesh.template getEntitiesCount< Vertex >() << " float" << std::endl;
- 
+   str << "POINTS " << verticesCount << " float" << std::endl;
    for (int j = 0; j < ( mesh.getDimensions().y() + 1); j++)
    {
         for (int i = 0; i < ( mesh.getDimensions().x() + 1 ); i++)
@@ -419,8 +388,7 @@ write( const MeshFunctionType& function,
         }
    }
  
-   str << std::endl << "CELLS " << mesh.template getEntitiesCount< Vertex >() << " " <<
-          mesh.template getEntitiesCount< Vertex >() * 2 << std::endl;
+   str << std::endl << "CELLS " << verticesCount << " " << verticesCount * 2 << std::endl;
    for (int j = 0; j < ( mesh.getDimensions().y() + 1 ); j++)
    {
         for (int i = 0; i < ( mesh.getDimensions().x() + 1 ); i++)
@@ -429,30 +397,23 @@ write( const MeshFunctionType& function,
         }
    }
  
-   str << std::endl << "CELL_TYPES " << mesh.template getEntitiesCount< Vertex >() << std::endl;
-   for (int i = 0; i < mesh.template getEntitiesCount< Vertex >(); i++)
+   str << std::endl << "CELL_TYPES " << verticesCount << std::endl;
+   for (int i = 0; i < verticesCount; i++)
    {
        str << "1" << std::endl;
    }
  
-   str << std::endl << "CELL_DATA " << mesh.template getEntitiesCount< Vertex >() << std::endl;
+   str << std::endl << "CELL_DATA " << verticesCount << std::endl;
    str << "SCALARS VerticesFunctionValues float 1" << std::endl;
    str << "LOOKUP_TABLE default" << std::endl;
 
-   typename MeshType::Vertex entity( mesh );
-   for( entity.getCoordinates().y() = 0;
-        entity.getCoordinates().y() <= mesh.getDimensions().y();
-        entity.getCoordinates().y() ++ )
+   for( MeshIndex i = 0; i < verticesCount; i++ )
    {
-      for( entity.getCoordinates().x() = 0;
-           entity.getCoordinates().x() <= mesh.getDimensions().x();
-           entity.getCoordinates().x() ++ )
-      {
-         entity.refresh();
-         str << function.getData().getElement( entity.getIndex() ) << std::endl;
-      }
+      typename MeshType::Vertex entity = mesh.template getEntity< typename MeshType::Vertex >( i );
+      entity.refresh();
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
- 
+
    return true;
 }
 
@@ -467,11 +428,11 @@ template< typename MeshReal,
 void
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >::
 writeHeader( const MeshFunctionType& function,
-       std::ostream& str )
+             std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -485,7 +446,8 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
    writeHeader(function, str);
  
@@ -496,11 +458,10 @@ write( const MeshFunctionType& function,
    const RealType spaceStepY = mesh.getSpaceSteps().y();
    const RealType originZ = mesh.getOrigin().z();
    const RealType spaceStepZ = mesh.getSpaceSteps().z();
-   const RealType entitiesCount = mesh.getDimensions().x() * mesh.getDimensions().y() * mesh.getDimensions().z();
+   const MeshIndex verticesCount = mesh.template getEntitiesCount< typename MeshType::Vertex >();
+   const MeshIndex entitiesCount = mesh.template getEntitiesCount< typename MeshType::Cell >();
  
-   str << "POINTS " << (mesh.getDimensions().x()+1) * (mesh.getDimensions().y()+1) * (mesh.getDimensions().z()+1) <<
-          " float" << std::endl;
- 
+   str << "POINTS " << verticesCount << " float" << std::endl;
    for (int k = 0; k <= mesh.getDimensions().y(); k++)
    {
        for (int j = 0; j <= mesh.getDimensions().y(); j++)
@@ -543,24 +504,13 @@ write( const MeshFunctionType& function,
    str << "SCALARS cellFunctionValues float 1" << std::endl;
    str << "LOOKUP_TABLE default" << std::endl;
 
-   typename MeshType::Cell entity( mesh );
-   for( entity.getCoordinates().z() = 0;
-        entity.getCoordinates().z() < mesh.getDimensions().z();
-        entity.getCoordinates().z() ++ )
+   for( MeshIndex i = 0; i < entitiesCount; i++ )
    {
-        for( entity.getCoordinates().y() = 0;
-             entity.getCoordinates().y() < mesh.getDimensions().y();
-             entity.getCoordinates().y() ++ )
-        {
-            for( entity.getCoordinates().x() = 0;
-                 entity.getCoordinates().x() < mesh.getDimensions().x();
-                 entity.getCoordinates().x() ++ )
-            {
-                entity.refresh();
-                str << function.getData().getElement( entity.getIndex() ) << std::endl;
-            }
-        }
+      typename MeshType::Cell entity = mesh.template getEntity< typename MeshType::Cell >( i );
+      entity.refresh();
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
+
    return true;
 }
 
@@ -575,11 +525,11 @@ template< typename MeshReal,
 void
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >::
 writeHeader( const MeshFunctionType& function,
-       std::ostream& str )
+             std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -593,10 +543,9 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
-   typedef typename MeshType::template MeshEntity< 2 > Face;
-   typedef typename MeshType::template MeshEntity< 3 > Cell;
    writeHeader(function, str);
  
    const MeshType& mesh = function.getMesh();
@@ -606,12 +555,10 @@ write( const MeshFunctionType& function,
    const RealType spaceStepY = mesh.getSpaceSteps().y();
    const RealType originZ = mesh.getOrigin().z();
    const RealType spaceStepZ = mesh.getSpaceSteps().z();
-   const RealType entitiesCount = mesh.template getEntitiesCount< Face >();
-   const RealType pointsCount = mesh.template getEntitiesCount< Cell >();
+   const MeshIndex verticesCount = mesh.template getEntitiesCount< typename MeshType::Vertex >();
+   const MeshIndex entitiesCount = mesh.template getEntitiesCount< typename MeshType::Face >();
  
-   str << "POINTS " << pointsCount <<
-          " float" << std::endl;
- 
+   str << "POINTS " << verticesCount << " float" << std::endl;
    for (int k = 0; k <= mesh.getDimensions().y(); k++)
    {
        for (int j = 0; j <= mesh.getDimensions().y(); j++)
@@ -624,8 +571,7 @@ write( const MeshFunctionType& function,
        }
    }
  
-   str << std::endl << "CELLS " << entitiesCount << " " <<
-          entitiesCount * 5 << std::endl;
+   str << std::endl << "CELLS " << entitiesCount << " " << entitiesCount * 5 << std::endl;
    for (int k = 0; k < mesh.getDimensions().z(); k++)
    {
         for (int j = 0; j < mesh.getDimensions().y(); j++)
@@ -678,67 +624,13 @@ write( const MeshFunctionType& function,
    str << "SCALARS facesFunctionValues float 1" << std::endl;
    str << "LOOKUP_TABLE default" << std::endl;
 
-   typedef typename MeshType::Face EntityType;
-   typedef typename EntityType::EntityOrientationType EntityOrientation;
-   EntityType entity( mesh );
- 
-   entity.setOrientation( EntityOrientation( 1.0, 0.0 , 0.0) );
-   for( entity.getCoordinates().z() = 0;
-        entity.getCoordinates().z() < mesh.getDimensions().z();
-        entity.getCoordinates().z() ++ )
+   for( MeshIndex i = 0; i < entitiesCount; i++ )
    {
-        for( entity.getCoordinates().y() = 0;
-             entity.getCoordinates().y() < mesh.getDimensions().y();
-             entity.getCoordinates().y() ++ )
-        {
-            for( entity.getCoordinates().x() = 0;
-                 entity.getCoordinates().x() <= mesh.getDimensions().x();
-                 entity.getCoordinates().x() ++ )
-            {
-                 entity.refresh();
-                 str << function.getData().getElement( entity.getIndex() ) << std::endl;
-            }
-        }
+      typename MeshType::Face entity = mesh.template getEntity< typename MeshType::Face >( i );
+      entity.refresh();
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
- 
-   entity.setOrientation( EntityOrientation( 0.0, 1.0 , 0.0) );
-   for( entity.getCoordinates().z() = 0;
-        entity.getCoordinates().z() < mesh.getDimensions().z();
-        entity.getCoordinates().z() ++ )
-   {
-        for( entity.getCoordinates().y() = 0;
-             entity.getCoordinates().y() <= mesh.getDimensions().y();
-             entity.getCoordinates().y() ++ )
-        {
-            for( entity.getCoordinates().x() = 0;
-                 entity.getCoordinates().x() < mesh.getDimensions().x();
-                 entity.getCoordinates().x() ++ )
-            {
-                 entity.refresh();
-                 str << function.getData().getElement( entity.getIndex() ) << std::endl;
-            }
-        }
-   }
- 
-   entity.setOrientation( EntityOrientation( 0.0, 0.0 , 1.0) );
-   for( entity.getCoordinates().z() = 0;
-        entity.getCoordinates().z() <= mesh.getDimensions().z();
-        entity.getCoordinates().z() ++ )
-   {
-        for( entity.getCoordinates().y() = 0;
-             entity.getCoordinates().y() < mesh.getDimensions().y();
-             entity.getCoordinates().y() ++ )
-        {
-            for( entity.getCoordinates().x() = 0;
-                 entity.getCoordinates().x() < mesh.getDimensions().x();
-                 entity.getCoordinates().x() ++ )
-            {
-                 entity.refresh();
-                 str << function.getData().getElement( entity.getIndex() ) << std::endl;
-            }
-        }
-   }
- 
+
    return true;
 }
 
@@ -753,11 +645,11 @@ template< typename MeshReal,
 void
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1, Real > >::
 writeHeader( const MeshFunctionType& function,
-       std::ostream& str )
+             std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -771,10 +663,9 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
-   typedef typename MeshType::template MeshEntity< 1 > Edge;
-   typedef typename MeshType::template MeshEntity< 3 > Cell;
    writeHeader(function, str);
  
    const MeshType& mesh = function.getMesh();
@@ -784,12 +675,10 @@ write( const MeshFunctionType& function,
    const RealType spaceStepY = mesh.getSpaceSteps().y();
    const RealType originZ = mesh.getOrigin().z();
    const RealType spaceStepZ = mesh.getSpaceSteps().z();
-   const RealType entitiesCount = mesh.template getEntitiesCount< Edge >();
-   const RealType pointsCount = mesh.template getEntitiesCount< Cell >();
+   const MeshIndex verticesCount = mesh.template getEntitiesCount< typename MeshType::Vertex >();
+   const MeshIndex entitiesCount = mesh.template getEntitiesCount< typename MeshType::Edge >();
  
-   str << "POINTS " << pointsCount <<
-          " float" << std::endl;
- 
+   str << "POINTS " << verticesCount << " float" << std::endl;
    for (int k = 0; k <= mesh.getDimensions().y(); k++)
    {
        for (int j = 0; j <= mesh.getDimensions().y(); j++)
@@ -802,8 +691,7 @@ write( const MeshFunctionType& function,
        }
    }
  
-   str << std::endl << "CELLS " << entitiesCount << " " <<
-          entitiesCount * 3 << std::endl;
+   str << std::endl << "CELLS " << entitiesCount << " " << entitiesCount * 3 << std::endl;
    for (int k = 0; k <= mesh.getDimensions().z(); k++)
    {
         for (int j = 0; j <= mesh.getDimensions().y(); j++)
@@ -850,67 +738,13 @@ write( const MeshFunctionType& function,
    str << "SCALARS edgesFunctionValues float 1" << std::endl;
    str << "LOOKUP_TABLE default" << std::endl;
 
-   typedef typename MeshType::Face EntityType;
-   typedef typename EntityType::EntityOrientationType EntityOrientation;
-   EntityType entity( mesh );
- 
-   entity.setOrientation( EntityOrientation( 1.0, 0.0 , 0.0) );
-   for( entity.getCoordinates().z() = 0;
-        entity.getCoordinates().z() <= mesh.getDimensions().z();
-        entity.getCoordinates().z() ++ )
+   for( MeshIndex i = 0; i < entitiesCount; i++ )
    {
-        for( entity.getCoordinates().y() = 0;
-             entity.getCoordinates().y() <= mesh.getDimensions().y();
-             entity.getCoordinates().y() ++ )
-        {
-            for( entity.getCoordinates().x() = 0;
-                 entity.getCoordinates().x() < mesh.getDimensions().x();
-                 entity.getCoordinates().x() ++ )
-            {
-                 entity.refresh();
-                 str << function.getData().getElement( entity.getIndex() ) << std::endl;
-            }
-        }
+      typename MeshType::Edge entity = mesh.template getEntity< typename MeshType::Edge >( i );
+      entity.refresh();
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
- 
-   entity.setOrientation( EntityOrientation( 0.0, 1.0 , 0.0) );
-   for( entity.getCoordinates().z() = 0;
-        entity.getCoordinates().z() <= mesh.getDimensions().z();
-        entity.getCoordinates().z() ++ )
-   {
-        for( entity.getCoordinates().y() = 0;
-             entity.getCoordinates().y() < mesh.getDimensions().y();
-             entity.getCoordinates().y() ++ )
-        {
-            for( entity.getCoordinates().x() = 0;
-                 entity.getCoordinates().x() <= mesh.getDimensions().x();
-                 entity.getCoordinates().x() ++ )
-            {
-                 entity.refresh();
-                 str << function.getData().getElement( entity.getIndex() ) << std::endl;
-            }
-        }
-   }
- 
-   entity.setOrientation( EntityOrientation( 0.0, 0.0 , 1.0) );
-   for( entity.getCoordinates().z() = 0;
-        entity.getCoordinates().z() < mesh.getDimensions().z();
-        entity.getCoordinates().z() ++ )
-   {
-        for( entity.getCoordinates().y() = 0;
-             entity.getCoordinates().y() <= mesh.getDimensions().y();
-             entity.getCoordinates().y() ++ )
-        {
-            for( entity.getCoordinates().x() = 0;
-                 entity.getCoordinates().x() <= mesh.getDimensions().x();
-                 entity.getCoordinates().x() ++ )
-            {
-                 entity.refresh();
-                 str << function.getData().getElement( entity.getIndex() ) << std::endl;
-            }
-        }
-   }
- 
+
    return true;
 }
 
@@ -925,11 +759,11 @@ template< typename MeshReal,
 void
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >::
 writeHeader( const MeshFunctionType& function,
-       std::ostream& str )
+             std::ostream& str )
 {
     const MeshType& mesh = function.getMesh();
-    const typename MeshType::VertexType& origin = mesh.getOrigin();
-    const typename MeshType::VertexType& proportions = mesh.getProportions();
+    const typename MeshType::PointType& origin = mesh.getOrigin();
+    const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
     str << "TNL DATA" << std::endl;
     str << "ASCII" << std::endl;
@@ -943,9 +777,9 @@ template< typename MeshReal,
 bool
 MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
-       std::ostream& str )
+       std::ostream& str,
+       const double& scale )
 {
-   typedef typename MeshType::template MeshEntity< 0 > Vertex;
    writeHeader(function, str);
  
    const MeshType& mesh = function.getMesh();
@@ -955,9 +789,9 @@ write( const MeshFunctionType& function,
    const RealType spaceStepY = mesh.getSpaceSteps().y();
    const RealType originZ = mesh.getOrigin().z();
    const RealType spaceStepZ = mesh.getSpaceSteps().z();
+   const MeshIndex verticesCount = mesh.template getEntitiesCount< typename MeshType::Vertex >();
  
-   str << "POINTS " << mesh.template getEntitiesCount< Vertex >() << " float" << std::endl;
- 
+   str << "POINTS " << verticesCount << " float" << std::endl;
    for (int k = 0; k <= mesh.getDimensions().y(); k++)
    {
        for (int j = 0; j <= mesh.getDimensions().y(); j++)
@@ -970,8 +804,7 @@ write( const MeshFunctionType& function,
        }
    }
  
-   str << std::endl << "CELLS " << mesh.template getEntitiesCount< Vertex >() << " " <<
-          mesh.template getEntitiesCount< Vertex >() * 2 << std::endl;
+   str << std::endl << "CELLS " << verticesCount << " " << verticesCount * 2 << std::endl;
    for (int k = 0; k < ( mesh.getDimensions().z() + 1 ); k++)
    {
         for (int j = 0; j < ( mesh.getDimensions().y() + 1 ); j++)
@@ -983,35 +816,23 @@ write( const MeshFunctionType& function,
         }
    }
  
-   str << std::endl << "CELL_TYPES " << mesh.template getEntitiesCount< Vertex >() << std::endl;
-   for (int i = 0; i < mesh.template getEntitiesCount< Vertex >(); i++)
+   str << std::endl << "CELL_TYPES " << verticesCount << std::endl;
+   for (int i = 0; i < verticesCount; i++)
    {
        str << "1" << std::endl;
    }
  
-   str << std::endl << "CELL_DATA " << mesh.template getEntitiesCount< Vertex >() << std::endl;
+   str << std::endl << "CELL_DATA " << verticesCount << std::endl;
    str << "SCALARS verticesFunctionValues float 1" << std::endl;
    str << "LOOKUP_TABLE default" << std::endl;
 
-   typename MeshType::Vertex entity( mesh );
-   for( entity.getCoordinates().z() = 0;
-        entity.getCoordinates().z() <= mesh.getDimensions().z();
-        entity.getCoordinates().z() ++ )
+   for( MeshIndex i = 0; i < verticesCount; i++ )
    {
-        for( entity.getCoordinates().y() = 0;
-             entity.getCoordinates().y() <= mesh.getDimensions().y();
-             entity.getCoordinates().y() ++ )
-        {
-            for( entity.getCoordinates().x() = 0;
-                 entity.getCoordinates().x() <= mesh.getDimensions().x();
-                 entity.getCoordinates().x() ++ )
-            {
-                 entity.refresh();
-                 str << function.getData().getElement( entity.getIndex() ) << std::endl;
-            }
-        }
+      typename MeshType::Vertex entity = mesh.template getEntity< typename MeshType::Vertex >( i );
+      entity.refresh();
+      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
    }
- 
+
    return true;
 }
 

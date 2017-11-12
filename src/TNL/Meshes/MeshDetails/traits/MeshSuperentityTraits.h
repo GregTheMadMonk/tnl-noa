@@ -8,11 +8,17 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/ConstSharedArray.h>
-#include <TNL/List.h>
+#include <TNL/Containers/List.h>
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshConfigBase.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
@@ -25,7 +31,7 @@ namespace Meshes {
 
 template< typename MeshConfig,
           typename EntityTopology,
-          int Dimensions >
+          int Dimension >
 class MeshSuperentityTraits
 {
    public:
@@ -34,10 +40,10 @@ class MeshSuperentityTraits
    typedef typename MeshConfig::LocalIndexType                               LocalIndexType;
 
 
-   static const bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimensions );
+   static const bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimension );
    //typedef tnlStorageTraits< storageEnabled >                               SuperentityStorageTag;
    typedef MeshEntity< MeshConfig, EntityTopology >                            EntityType;
-   typedef MeshEntityTraits< MeshConfig, Dimensions >                     EntityTraits;
+   typedef MeshEntityTraits< MeshConfig, Dimension >                     EntityTraits;
    typedef typename EntityTraits::EntityTopology                             SuperentityTopology;
    typedef typename EntityTraits::EntityType                                 SuperentityType;
 
@@ -60,7 +66,7 @@ class MeshSuperentityTraits
    /****
     * This is used by the mesh initializer.
     */
-   typedef List< GlobalIndexType >                                       GrowableContainerType;
+   typedef Containers::List< GlobalIndexType >                                       GrowableContainerType;
 
 };
 

@@ -20,8 +20,8 @@ namespace Functions {
 namespace Analytic {   
 
 template< typename Real,
-          int Dimensions >
-class CylinderBase : public Domain< Dimensions, SpaceDomain >
+          int Dimension >
+class CylinderBase : public Domain< Dimension, SpaceDomain >
 {
    public:
 
@@ -39,7 +39,7 @@ class CylinderBase : public Domain< Dimensions, SpaceDomain >
       RealType diameter;
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
 class Cylinder
 {
@@ -50,31 +50,24 @@ class Cylinder< 1, Real > : public CylinderBase< Real, 1 >
 {
    public:
 
-      enum { Dimensions = 1 };
+      enum { Dimension = 1 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
       Cylinder();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
-                typename Vertex = VertexType >
-#endif
+                typename Point = PointType >
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
+      RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;
 
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
  
 };
@@ -84,31 +77,24 @@ class Cylinder< 2, Real > : public CylinderBase< Real, 2 >
 {
    public:
 
-      enum { Dimensions = 2 };
+      enum { Dimension = 2 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
       Cylinder();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
-                typename Vertex = VertexType >
-#endif
+                typename Point = PointType >
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
+      RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
  
 };
@@ -118,38 +104,31 @@ class Cylinder< 3, Real > : public CylinderBase< Real, 3 >
 {
    public:
 
-      enum { Dimensions = 3 };
+      enum { Dimension = 3 };
       typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimension, Real > PointType;
 
       static String getType();
 
       Cylinder();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
-                typename Vertex = VertexType >
-#endif
+                typename Point = PointType >
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
+      RealType getPartialDerivative( const Point& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
  
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const Cylinder< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const Cylinder< Dimension, Real >& f )
 {
    str << "Cylinder function.";
    return str;

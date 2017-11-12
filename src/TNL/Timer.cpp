@@ -9,6 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/Timer.h>
+#include <TNL/Logger.h>
 
 #include <TNL/tnlConfig.h>
 #ifdef HAVE_SYS_RESOURCE_H

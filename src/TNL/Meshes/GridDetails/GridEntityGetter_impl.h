@@ -25,45 +25,40 @@ template< typename Real,
           typename Device,
           typename Index,
           typename GridEntity,
-          int EntityDimensions >
+          int EntityDimension >
 class GridEntityGetter<
    Meshes::Grid< 1, Real, Device, Index >,
    GridEntity,
-   EntityDimensions >
+   EntityDimension >
 {
    public:
  
-      static const int entityDimensions = EntityDimensions;
+      static const int entityDimension = EntityDimension;
  
       typedef Meshes::Grid< 1, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
+      //typedef typename GridType::template GridEntity< entityDimension > GridEntity;
  
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         Assert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-              std::cerr << " index = " << index
-                   << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
-                   << " entityDimensions = " << entityDimensions );
+         TNL_ASSERT_GE( index, 0, "Index must be non-negative." );
+         TNL_ASSERT_LT( index, grid.template getEntitiesCount< GridEntity >(), "Index is out of bounds." );
          return GridEntity
             ( grid,
               CoordinatesType( index ),
               typename GridEntity::EntityOrientationType( 0 ),
-              typename GridEntity::EntityBasisType( EntityDimensions ) );
+              typename GridEntity::EntityBasisType( EntityDimension ) );
       }
  
       __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
-         Assert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates() < grid.getDimensions() + CoordinatesType( 1 - entityDimensions ),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " grid.getDimensions() = " << grid.getDimensions()
-                   << " EntityDimensions = " << entityDimensions );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), grid.getDimensions() + CoordinatesType( 1 - entityDimension ), "wrong coordinates" );
          return entity.getCoordinates().x();
       }
 };
@@ -79,21 +74,19 @@ class GridEntityGetter< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >
 {
    public:
  
-      static const int entityDimensions = 2;
+      static const int entityDimension = 2;
  
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
+      //typedef typename GridType::template GridEntity< entityDimension > GridEntity;
  
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         Assert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           std::cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
-                << " entityDimensions = " << entityDimensions );
+         TNL_ASSERT_GE( index, 0, "Index must be non-negative." );
+         TNL_ASSERT_LT( index, grid.template getEntitiesCount< GridEntity >(), "Index is out of bounds." );
 
          const CoordinatesType dimensions = grid.getDimensions();
 
@@ -109,10 +102,8 @@ class GridEntityGetter< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
-         Assert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < grid.getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " grid.getDimensions() = " << grid.getDimensions() );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), grid.getDimensions(), "wrong coordinates" );
 
          //const CoordinatesType coordinates = entity.getCoordinates();
          //const CoordinatesType dimensions = grid.getDimensions();
@@ -131,21 +122,19 @@ class GridEntityGetter< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 1 >
 {
    public:
  
-      static const int entityDimensions = 1;
+      static const int entityDimension = 1;
  
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      //typedef typename GridType::template GridEntity< entityDimensions, EntityConfig > GridEntity;
+      //typedef typename GridType::template GridEntity< entityDimension, EntityConfig > GridEntity;
  
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         Assert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           std::cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
-                << " entityDimensions = " << entityDimensions );
+         TNL_ASSERT_GE( index, 0, "Index must be non-negative." );
+         TNL_ASSERT_LT( index, grid.template getEntitiesCount< GridEntity >(), "Index is out of bounds." );
  
          const CoordinatesType dimensions = grid.getDimensions();
 
@@ -171,11 +160,8 @@ class GridEntityGetter< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 1 >
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
-         Assert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < grid.getDimensions() + abs( entity.getOrientation() ),
-                 std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                      << " dimensions.x() = " << grid.getDimensions()
-                      << " abs( entity.getOrientation() ) = " << abs( entity.getOrientation() ) );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), grid.getDimensions() + abs( entity.getOrientation() ), "wrong coordinates" );
  
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
@@ -194,21 +180,19 @@ class GridEntityGetter< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 0 >
 {
    public:
  
-      static const int entityDimensions = 0;
+      static const int entityDimension = 0;
  
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
+      //typedef typename GridType::template GridEntity< entityDimension > GridEntity;
  
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         Assert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           std::cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
-                << " entityDimensions = " << entityDimensions );
+         TNL_ASSERT_GE( index, 0, "Index must be non-negative." );
+         TNL_ASSERT_LT( index, grid.template getEntitiesCount< GridEntity >(), "Index is out of bounds." );
 
          const CoordinatesType dimensions = grid.getDimensions();
 
@@ -225,9 +209,8 @@ class GridEntityGetter< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 0 >
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
-         Assert( entity.getCoordinates() >= 0 && entity.getCoordinates() <= grid.getDimensions(),
-            std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                 << " grid.getDimensions() = " << grid.getDimensions() );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LE( entity.getCoordinates(), grid.getDimensions(), "wrong coordinates" );
  
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
@@ -247,21 +230,19 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 3 >
 {
    public:
  
-      static const int entityDimensions = 3;
+      static const int entityDimension = 3;
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
+      //typedef typename GridType::template GridEntity< entityDimension > GridEntity;
  
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         Assert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           std::cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
-                << " entityDimensions = " << entityDimensions );
+         TNL_ASSERT_GE( index, 0, "Index must be non-negative." );
+         TNL_ASSERT_LT( index, grid.template getEntitiesCount< GridEntity >(), "Index is out of bounds." );
 
          const CoordinatesType dimensions = grid.getDimensions();
 
@@ -278,10 +259,8 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 3 >
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
-         Assert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() < grid.getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " grid.getDimensions() = " << grid.getDimensions() );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), grid.getDimensions(), "wrong coordinates" );
 
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
@@ -299,21 +278,19 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 2 >
 {
    public:
  
-      static const int entityDimensions = 2;
+      static const int entityDimension = 2;
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
+      //typedef typename GridType::template GridEntity< entityDimension > GridEntity;
  
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         Assert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           std::cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
-                << " entityDimensions = " << entityDimensions );
+         TNL_ASSERT_GE( index, 0, "Index must be non-negative." );
+         TNL_ASSERT_LT( index, grid.template getEntitiesCount< GridEntity >(), "Index is out of bounds." );
 
          const CoordinatesType dimensions = grid.getDimensions();
  
@@ -354,11 +331,8 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 2 >
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
-         Assert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() < grid.getDimensions() + abs( entity.getOrientation() ),
-                 std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                      << " dimensions.x() = " << grid.getDimensions()
-                      << " abs( entity.getOrientation() ) = " << abs( entity.getOrientation() ) );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), grid.getDimensions() + abs( entity.getOrientation() ), "wrong coordinates" );
  
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
@@ -389,21 +363,19 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 1 >
 {
    public:
  
-      static const int entityDimensions = 1;
+      static const int entityDimension = 1;
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
+      //typedef typename GridType::template GridEntity< entityDimension > GridEntity;
  
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         Assert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           std::cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
-                << " entityDimensions = " << entityDimensions );
+         TNL_ASSERT_GE( index, 0, "Index must be non-negative." );
+         TNL_ASSERT_LT( index, grid.template getEntitiesCount< GridEntity >(), "Index is out of bounds." );
  
          const CoordinatesType dimensions = grid.getDimensions();
 
@@ -447,12 +419,10 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 1 >
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
-         Assert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() < grid.getDimensions() +
-                       CoordinatesType( 1, 1, 1 ) - entity.getBasis(),
-            std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                 << " dimensions.x() = " << grid.getDimensions()
-                 << " CoordinatesType( 1, 1, 1 ) - entity.getBasis() = " << CoordinatesType( 1, 1, 1 ) - entity.getBasis() );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(),
+                        grid.getDimensions() + CoordinatesType( 1, 1, 1 ) - entity.getBasis(),
+                        "wrong coordinates" );
  
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
@@ -479,21 +449,19 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 0 >
 {
    public:
  
-      static const int entityDimensions = 0;
+      static const int entityDimension = 0;
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
+      //typedef typename GridType::template GridEntity< entityDimension > GridEntity;
  
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         Assert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           std::cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
-                << " entityDimensions = " << entityDimensions );
+         TNL_ASSERT_GE( index, 0, "Index must be non-negative." );
+         TNL_ASSERT_LT( index, grid.template getEntitiesCount< GridEntity >(), "Index is out of bounds." );
 
          const CoordinatesType dimensions = grid.getDimensions();
  
@@ -512,9 +480,8 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 0 >
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
-         Assert( entity.getCoordinates() >= 0 && entity.getCoordinates() <= grid.getDimensions(),
-            std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                 << " grid.getDimensions() = " << grid.getDimensions() );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0, 0 ), "wrong coordinates" );
+         TNL_ASSERT_LE( entity.getCoordinates(), grid.getDimensions(), "wrong coordinates" );
  
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
@@ -527,4 +494,3 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 0 >
 
 } // namespace Meshes
 } // namespace TNL
-

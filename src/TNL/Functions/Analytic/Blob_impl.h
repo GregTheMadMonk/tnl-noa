@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExpBump_impl.h  -  description
+                          Blob_impl.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -17,9 +17,9 @@ namespace Functions {
 namespace Analytic {
 
 template< typename Real,
-          int Dimensions >
+          int Dimension >
 bool
-BlobBase< Real, Dimensions >::
+BlobBase< Real, Dimension >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -51,7 +51,7 @@ template< typename Real >
 __cuda_callable__
 Real
 Blob< 1, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();
@@ -66,7 +66,7 @@ template< typename Real >
 __cuda_callable__
 Real
 Blob< 1, Real >::
-operator()( const VertexType& v,
+operator()( const PointType& v,
             const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
@@ -94,7 +94,7 @@ template< typename Real >
 __cuda_callable__
 Real
 Blob< 2, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();
@@ -110,7 +110,7 @@ template< typename Real >
 __cuda_callable__
 Real
 Blob< 2, Real >::
-operator()( const VertexType& v,
+operator()( const PointType& v,
             const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
@@ -138,7 +138,7 @@ template< typename Real >
 __cuda_callable__
 Real
 Blob< 3, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();
@@ -153,7 +153,7 @@ template< typename Real >
 __cuda_callable__
 Real
 Blob< 3, Real >::
-operator()( const VertexType& v,
+operator()( const PointType& v,
             const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );

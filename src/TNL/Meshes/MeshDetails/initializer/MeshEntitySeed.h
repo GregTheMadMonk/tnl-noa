@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
@@ -37,8 +43,8 @@ class MeshEntitySeed
 
       void setCornerId( LocalIndexType cornerIndex, GlobalIndexType pointIndex )
       {
-         Assert( 0 <= cornerIndex && cornerIndex < getCornersCount(), std::cerr << "cornerIndex = " << cornerIndex );
-         Assert( 0 <= pointIndex, std::cerr << "pointIndex = " << pointIndex );
+         TNL_ASSERT( 0 <= cornerIndex && cornerIndex < getCornersCount(), std::cerr << "cornerIndex = " << cornerIndex );
+         TNL_ASSERT( 0 <= pointIndex, std::cerr << "pointIndex = " << pointIndex );
 
          this->cornerIds[ cornerIndex ] = pointIndex;
       }

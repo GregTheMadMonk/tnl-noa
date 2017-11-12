@@ -11,46 +11,67 @@
 #pragma once
 
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Exceptions/CudaBadAlloc.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 
 namespace TNL {
 namespace Devices {   
 
 __cuda_callable__ 
-inline int Cuda::getMaxGridSize()
+inline constexpr int Cuda::getMaxGridSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 65535;
 };
 
 __cuda_callable__
-inline int Cuda::getMaxBlockSize()
+inline constexpr int Cuda::getMaxBlockSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 1024;
 };
 
 __cuda_callable__ 
-inline int Cuda::getWarpSize()
+inline constexpr int Cuda::getWarpSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 32;
+}
+
+__cuda_callable__
+inline constexpr int Cuda::getNumberOfSharedMemoryBanks()
+{
+   // TODO: make it preprocessor macro constant defined in tnlConfig
+   return 32;
+}
+
+inline constexpr int Cuda::getGPUTransferBufferSize()
+{
+   return 1 << 20;
 }
 
 #ifdef HAVE_CUDA
-template< typename Index >
-__device__ Index Cuda::getGlobalThreadIdx( const Index gridIdx )
+__device__ inline int Cuda::getGlobalThreadIdx( const int gridIdx, const int gridSize )
 {
-   return ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   return ( gridIdx * gridSize + blockIdx.x ) * blockDim.x + threadIdx.x;
+}
+
+__device__ inline int Cuda::getGlobalThreadIdx_x( const dim3& gridIdx )
+{
+   return ( gridIdx.x * getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+}
+
+__device__ inline int Cuda::getGlobalThreadIdx_y( const dim3& gridIdx )
+{
+   return ( gridIdx.y * getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
+}
+
+__device__ inline int Cuda::getGlobalThreadIdx_z( const dim3& gridIdx )
+{
+   return ( gridIdx.z * getMaxGridSize() + blockIdx.z ) * blockDim.z + threadIdx.z;
 }
 #endif
 
-
-__cuda_callable__ 
-inline int Cuda::getNumberOfSharedMemoryBanks()
-{
-   // TODO: make it preprocessor macro constant defined in tnlConfig
-   return 32;
-}
 
 template< typename ObjectType >
 ObjectType* Cuda::passToDevice( const ObjectType& object )
@@ -59,23 +80,20 @@ ObjectType* Cuda::passToDevice( const ObjectType& object )
    ObjectType* deviceObject;
    if( cudaMalloc( ( void** ) &deviceObject,
                    ( size_t ) sizeof( ObjectType ) ) != cudaSuccess )
-   {
-      checkCudaDevice;
-      return 0;
-   }
+      throw Exceptions::CudaBadAlloc();
    if( cudaMemcpy( ( void* ) deviceObject,
                    ( void* ) &object,
                    sizeof( ObjectType ),
                    cudaMemcpyHostToDevice ) != cudaSuccess )
    {
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
       cudaFree( ( void* ) deviceObject );
+      TNL_CHECK_CUDA_DEVICE;
       return 0;
    }
    return deviceObject;
 #else
-   Assert( false, std::cerr << "CUDA support is missing." );
-   return 0;
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -88,26 +106,25 @@ ObjectType Cuda::passFromDevice( const ObjectType* object )
                ( void* ) &object,
                sizeof( ObjectType ),
                cudaMemcpyDeviceToHost );
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
    return aux;
 #else
-   Assert( false, std::cerr << "CUDA support is missing." );
-   return 0;
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
 template< typename ObjectType >
 void Cuda::passFromDevice( const ObjectType* deviceObject,
-                              ObjectType& hostObject )
+                           ObjectType& hostObject )
 {
 #ifdef HAVE_CUDA
    cudaMemcpy( ( void* ) &hostObject,
                ( void* ) deviceObject,
                sizeof( ObjectType ),
                cudaMemcpyDeviceToHost );
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 #else
-   Assert( false, std::cerr << "CUDA support is missing." );
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -127,9 +144,9 @@ void Cuda::freeFromDevice( ObjectType* deviceObject )
 {
 #ifdef HAVE_CUDA
    cudaFree( ( void* ) deviceObject );
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 #else
-   Assert( false, std::cerr << "CUDA support is missing." );
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -140,25 +157,12 @@ __device__ Index Cuda::getInterleaving( const Index index )
    return index + index / Cuda::getNumberOfSharedMemoryBanks();
 }
 
-template< typename Element >
-__device__ getSharedMemory< Element >::operator Element*()
+template< typename Element, size_t Alignment >
+__device__ Element* Cuda::getSharedMemory()
 {
-   extern __shared__ int __sharedMemory[];
-   return ( Element* ) __sharedMemory;
-};
-
-__device__ inline getSharedMemory< double >::operator double*()
-{
-   extern __shared__ double __sharedMemoryDouble[];
-   return ( double* ) __sharedMemoryDouble;
-};
-
-__device__ inline getSharedMemory< long int >::operator long int*()
-{
-   extern __shared__ long int __sharedMemoryLongInt[];
-   return ( long int* ) __sharedMemoryLongInt;
-};
-
+   extern __shared__ __align__ ( Alignment ) unsigned char __sdata[];
+   return reinterpret_cast< Element* >( __sdata );
+}
 #endif /* HAVE_CUDA */
 
 } // namespace Devices

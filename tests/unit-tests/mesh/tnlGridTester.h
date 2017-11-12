@@ -20,7 +20,7 @@
 #include <TNL/Meshes/Grid.h>
 
 
-template< int Dimensions, typename RealType, typename Device, typename IndexType >
+template< int Dimension, typename RealType, typename Device, typename IndexType >
 class GridTester{};
 
 #include "tnlGrid1DTester.h"

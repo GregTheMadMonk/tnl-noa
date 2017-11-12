@@ -155,7 +155,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m1.getRows() );
       rowLengths.setValue( 5 );
-      m1.setCompressedRowsLengths( rowLengths );
+      m1.setCompressedRowLengths( rowLengths );
       m2.setLike( m1 );
       CPPUNIT_ASSERT( m1.getRows() == m2.getRows() );
    }
@@ -171,7 +171,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       for( int i = 0; i < 7; i++ )
          CPPUNIT_ASSERT( m.setElement( 0, i, i ) );
@@ -191,7 +191,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       if( std::is_same< DeviceType, Devices::Host >::value )
       {
@@ -206,7 +206,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          SparseTester__setElementFastTestCudaKernel< MatrixType >
                                                             <<< cudaGridSize, cudaBlockSize >>>
@@ -215,7 +215,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -231,7 +231,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
@@ -256,7 +256,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       if( std::is_same< DeviceType, Devices::Host >::value )
       {
@@ -269,7 +269,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          SparseTester__setElementFast_DiagonalMatrixTestCudaKernel< MatrixType >
                                                                            <<< cudaGridSize, cudaBlockSize >>>
@@ -278,7 +278,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -302,7 +302,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
@@ -319,7 +319,7 @@ class SparseTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 9; i >= 0; i-- )
          for( int j = 9; j >= 0; j-- )
             m.setElement( i, j, i+j );
@@ -337,7 +337,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       if( std::is_same< DeviceType, Devices::Host >::value )
       {
@@ -353,7 +353,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          SparseTester__setElementFast_DenseTestCudaKernel1< MatrixType >
                                                                          <<< cudaGridSize, cudaBlockSize >>>
@@ -362,7 +362,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -375,7 +375,7 @@ class SparseTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       if( std::is_same< DeviceType, Devices::Host >::value )
       {
          for( int i = 9; i >= 0; i-- )
@@ -388,7 +388,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          SparseTester__setElementFast_DenseTestCudaKernel2< MatrixType >
                                                                          <<< cudaGridSize, cudaBlockSize >>>
@@ -397,7 +397,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -416,7 +416,7 @@ class SparseTester : public CppUnit :: TestCase
       rowLengths.setSize( m.getRows() );
       for( int i = 0; i < 10; i++ )
          rowLengths.setElement( i, i+1 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j <= i; j++ )
@@ -431,7 +431,7 @@ class SparseTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 9; i >= 0; i-- )
          for( int j = i; j >= 0; j-- )
             m.setElement( i, j, i + j );
@@ -453,7 +453,7 @@ class SparseTester : public CppUnit :: TestCase
       rowLengths.setSize( m.getRows() );
       for( int i = 0; i < 10; i++ )
          rowLengths.setElement( i, i+1 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       if( std::is_same< DeviceType, Devices::Host >::value )
       {
@@ -467,7 +467,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          SparseTester__setElementFast_LowerTriangularMatrixTestCudaKernel1< MatrixType >
                                                                                    <<< cudaGridSize, cudaBlockSize >>>
@@ -476,7 +476,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -489,7 +489,7 @@ class SparseTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       if( std::is_same< DeviceType, Devices::Host >::value )
       {
          for( int i = 9; i >= 0; i-- )
@@ -502,7 +502,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          SparseTester__setElementFast_LowerTriangularMatrixTestCudaKernel2< MatrixType >
                                                                                    <<< cudaGridSize, cudaBlockSize >>>
@@ -511,7 +511,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -532,7 +532,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
@@ -562,7 +562,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       RealType values[ 1 ];
       IndexType columnIndexes[ 1 ];
 
@@ -593,7 +593,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
 
       if( std::is_same< DeviceType, Devices::Host >::value )
@@ -613,7 +613,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
          SparseTester__setRowFast_DiagonalMatrixTestCudaKernel< MatrixType >
@@ -623,7 +623,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -647,7 +647,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       RealType values[ 10 ];
       IndexType columnIndexes[ 10 ];
 
@@ -673,7 +673,7 @@ class SparseTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 9; i >= 0; i-- )
       {
          for( int j = 9; j >= 0; j-- )
@@ -694,7 +694,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       RealType values[ 10 ];
       IndexType columnIndexes[ 10 ];
@@ -720,7 +720,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
          SparseTester__setRowFast_DenseTestCudaKernel1< MatrixType >
@@ -730,7 +730,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -743,7 +743,7 @@ class SparseTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       if( std::is_same< DeviceType, Devices::Host >::value )
       {
@@ -760,7 +760,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
          SparseTester__setRowFast_DenseTestCudaKernel2< MatrixType >
@@ -770,7 +770,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -788,7 +788,7 @@ class SparseTester : public CppUnit :: TestCase
       rowLengths.setSize( m.getRows() );
       for( int i = 0; i < 10; i++ )
          rowLengths.setElement( i, i+1 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
 
       RealType values[ 10 ];
@@ -813,7 +813,7 @@ class SparseTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 9; i >= 0; i-- )
       {
          for( int j = i; j >= 0; j-- )
@@ -838,7 +838,7 @@ class SparseTester : public CppUnit :: TestCase
       rowLengths.setSize( m.getRows() );
       for( int i = 0; i < 10; i++ )
          rowLengths.setElement( i, i+1 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
 
       RealType values[ 10 ];
@@ -861,7 +861,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
          SparseTester__setRowFast_LowerTriangularMatrixTestCudaKernel< MatrixType >
@@ -871,7 +871,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -884,7 +884,7 @@ class SparseTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       if( std::is_same< DeviceType, Devices::Host >::value )
       {
@@ -901,7 +901,7 @@ class SparseTester : public CppUnit :: TestCase
          MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
          SparseTester__setRowFast_LowerTriangularMatrixTestCudaKernel< MatrixType >
@@ -911,7 +911,7 @@ class SparseTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_testResult );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 
@@ -936,7 +936,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 0; i < size; i++ )
       {
          v.setElement( i, i );
@@ -960,7 +960,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( size );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 0; i < size; i++ )
       {
          for( int j = 0; j < size; j++ )
@@ -985,7 +985,7 @@ class SparseTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( size );
-      m.setCompressedRowsLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 0; i < size; i++ )
       {
          for( int j = 0; j <= i; j++ )

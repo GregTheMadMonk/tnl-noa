@@ -29,8 +29,8 @@ class FunctionAdapter
       typedef Function FunctionType;
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
-      typedef typename MeshType::IndexType     IndexType;
-      //typedef typename FunctionType::VertexType VertexType;
+      typedef typename MeshType::GlobalIndexType     IndexType;
+      //typedef typename FunctionType::PointType PointType;
  
       template< typename MeshPointer >
       static bool setup( FunctionType& function,
@@ -64,8 +64,8 @@ class FunctionAdapter< Mesh, Function, SpaceDomain >
       typedef Function FunctionType;
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
-      typedef typename MeshType::IndexType     IndexType;
-      typedef typename FunctionType::VertexType VertexType;
+      typedef typename MeshType::GlobalIndexType     IndexType;
+      typedef typename FunctionType::PointType PointType;
       
       template< typename MeshPointer >
       static bool setup( FunctionType& function,
@@ -101,8 +101,8 @@ class FunctionAdapter< Mesh, Function, NonspaceDomain >
       typedef Function FunctionType;
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
-      typedef typename MeshType::IndexType     IndexType;
-      typedef typename FunctionType::VertexType VertexType;
+      typedef typename MeshType::GlobalIndexType     IndexType;
+      typedef typename FunctionType::PointType PointType;
       
       template< typename MeshPointer >
       static bool setup( FunctionType& function,
@@ -137,7 +137,7 @@ class FunctionAdapter< Mesh, Function, MeshFunction >
       typedef Function FunctionType;
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
-      typedef typename MeshType::IndexType     IndexType;
+      typedef typename MeshType::GlobalIndexType     IndexType;
  
       template< typename EntityType >
       __cuda_callable__ inline
@@ -161,8 +161,8 @@ class FunctionAdapter< Mesh, Function, SpaceDomain >
       typedef Function FunctionType;
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
-      typedef typename MeshType::IndexType     IndexType;
-      typedef typename FunctionType::VertexType VertexType;
+      typedef typename MeshType::GlobalIndexType     IndexType;
+      typedef typename FunctionType::PointType PointType;
  
       template< typename EntityType >
       __cuda_callable__ inline
@@ -186,8 +186,8 @@ class FunctionAdapter< Mesh, Function, SpaceDomain >
       typedef Function FunctionType;
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
-      typedef typename MeshType::IndexType     IndexType;
-      typedef typename FunctionType::VertexType VertexType;
+      typedef typename MeshType::GlobalIndexType     IndexType;
+      typedef typename FunctionType::PointType PointType;
  
       template< typename EntityType >
       __cuda_callable__ inline

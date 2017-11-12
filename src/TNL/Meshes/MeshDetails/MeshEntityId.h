@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 namespace TNL {
@@ -25,7 +31,7 @@ class MeshEntityId
 
    const IDType &getId() const
    {
-      Assert( this->id >= 0, );
+      TNL_ASSERT( this->id >= 0, );
       return this->id;
    }
 

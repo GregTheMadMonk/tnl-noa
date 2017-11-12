@@ -3,12 +3,13 @@ ADD_SUBDIRECTORY( Algorithms )
 set( headers Array.h
              Array_impl.h
              ArrayIO.h
-             ArrayOperations.h
-             ArrayOperationsHost_impl.h
-             ArrayOperationsCuda_impl.h
              DynamicTypeTag.h
+             IndexedMap.h
+             IndexedMap_impl.h
              IndexedSet.h
              IndexedSet_impl.h
+             List.h
+             List_impl.h
              MultiArray.h
              MultiArray1D_impl.h
              MultiArray2D_impl.h
@@ -29,9 +30,6 @@ set( headers Array.h
              MultiVector2D_impl.h
              MultiVector3D_impl.h
              MultiVector4D_impl.h
-             VectorOperations.h
-             VectorOperationsHost_impl.h
-             VectorOperationsCuda_impl.h                                      
              SharedVector.h
              SharedVector_impl.h
              StaticVector.h 
@@ -46,7 +44,6 @@ set( common_SOURCES
      ${CURRENT_DIR}/MultiArray_impl.cpp
      ${CURRENT_DIR}/Array_impl.cpp
      ${CURRENT_DIR}/StaticArray_impl.cpp 
-     ${CURRENT_DIR}/VectorOperationsHost_impl.cpp
      ${CURRENT_DIR}/MultiVector_impl.cpp
      ${CURRENT_DIR}/SharedVector_impl.cpp
      ${CURRENT_DIR}/Vector_impl.cpp
@@ -56,22 +53,13 @@ set( common_SOURCES
 IF( BUILD_CUDA )
    set( tnl_containers_CUDA__SOURCES
         ${common_SOURCES}
-        ${CURRENT_DIR}/ArrayOperationsHost_impl.cu
-        ${CURRENT_DIR}/ArrayOperationsCuda_impl.cu
         ${CURRENT_DIR}/Array_impl.cu
         ${CURRENT_DIR}/SharedArray_impl.cu
         ${CURRENT_DIR}/MultiArray_impl.cu
         ${CURRENT_DIR}/StaticArray_impl.cu
-        ${CURRENT_DIR}/VectorOperationsCuda_impl.cu
         ${CURRENT_DIR}/Vector_impl.cu
         ${CURRENT_DIR}/StaticVector_impl.cu 
         PARENT_SCOPE )
-ELSE()
-   set( common_SOURCES
-        ${common_SOURCES}
-        ${CURRENT_DIR}/ArrayOperationsHost_impl.cpp
-        ${CURRENT_DIR}/ArrayOperationsCuda_impl.cpp
- )               
 ENDIF()    
 
 set( tnl_containers_SOURCES     

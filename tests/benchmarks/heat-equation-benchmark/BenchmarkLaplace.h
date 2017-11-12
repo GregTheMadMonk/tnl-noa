@@ -19,8 +19,8 @@ template< typename MeshReal,
 class BenchmarkLaplace< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >
 : public Operators::Operator< Meshes::Grid< 1, MeshReal, Device, MeshIndex >,
                               Functions::MeshInteriorDomain,
-                              Meshes::Grid< 1, MeshReal, Device, MeshIndex >::getMeshDimensions(),
-                              Meshes::Grid< 1, MeshReal, Device, MeshIndex >::getMeshDimensions(),
+                              Meshes::Grid< 1, MeshReal, Device, MeshIndex >::getMeshDimension(),
+                              Meshes::Grid< 1, MeshReal, Device, MeshIndex >::getMeshDimension(),
                               Real,
                               Index >
 {
@@ -31,7 +31,7 @@ class BenchmarkLaplace< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, In
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
+      enum { Dimension = MeshType::getMeshDimension() };
 
       static String getType();
 
@@ -67,8 +67,8 @@ template< typename MeshReal,
 class BenchmarkLaplace< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 : public Operators::Operator< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
                               Functions::MeshInteriorDomain,
-                              Meshes::Grid< 2, MeshReal, Device, MeshIndex >::getMeshDimensions(),
-                              Meshes::Grid< 2, MeshReal, Device, MeshIndex >::getMeshDimensions(),
+                              Meshes::Grid< 2, MeshReal, Device, MeshIndex >::getMeshDimension(),
+                              Meshes::Grid< 2, MeshReal, Device, MeshIndex >::getMeshDimension(),
                               Real,
                               Index >
 {
@@ -79,7 +79,7 @@ class BenchmarkLaplace< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Ind
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
+      enum { Dimension = MeshType::getMeshDimension() };
 
       static String getType();
 
@@ -115,8 +115,8 @@ template< typename MeshReal,
 class BenchmarkLaplace< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 : public Operators::Operator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
                               Functions::MeshInteriorDomain,
-                              Meshes::Grid< 3, MeshReal, Device, MeshIndex >::getMeshDimensions(),
-                              Meshes::Grid< 3, MeshReal, Device, MeshIndex >::getMeshDimensions(),
+                              Meshes::Grid< 3, MeshReal, Device, MeshIndex >::getMeshDimension(),
+                              Meshes::Grid< 3, MeshReal, Device, MeshIndex >::getMeshDimension(),
                               Real,
                               Index >
 {
@@ -127,7 +127,7 @@ class BenchmarkLaplace< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Ind
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
+      enum { Dimension = MeshType::getMeshDimension() };
 
       static String getType();
 

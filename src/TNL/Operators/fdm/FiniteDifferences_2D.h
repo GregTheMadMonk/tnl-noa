@@ -66,10 +66,10 @@ class FiniteDifferences<
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const Real& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1, 0 >();
          const Real& u_c = u[ entity.getIndex() ];
-         return ( u[ neighbourEntities.template getEntityIndex< 1, 0 >()] - u_c ) * hxDiv;
+         return ( u[ neighborEntities.template getEntityIndex< 1, 0 >()] - u_c ) * hxDiv;
       }
 };
 
@@ -90,10 +90,10 @@ class FiniteDifferences<
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const Real& hyDiv = entity.getMesh().template getSpaceStepsProducts< 0, -1 >();
          const Real& u_c = u[ entity.getIndex() ];
-         return ( u[ neighbourEntities.template getEntityIndex< 0, 1 >()] - u_c ) * hyDiv;
+         return ( u[ neighborEntities.template getEntityIndex< 0, 1 >()] - u_c ) * hyDiv;
       }
 };
 
@@ -117,10 +117,10 @@ class FiniteDifferences<
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const Real& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1,  0 >();
          const Real& u_c = u[ entity.getIndex() ];
-         return ( u_c - u[ neighbourEntities.template getEntityIndex< -1, 0 >()] ) * hxDiv;
+         return ( u_c - u[ neighborEntities.template getEntityIndex< -1, 0 >()] ) * hxDiv;
       }
 };
 
@@ -141,10 +141,10 @@ class FiniteDifferences<
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const Real& hyDiv = entity.getMesh().template getSpaceStepsProducts< 0, -1 >();
          const Real& u_c = u[ entity.getIndex() ];
-         return ( u_c - u[ neighbourEntities.template getEntityIndex< 0, -1 >()] ) * hyDiv;
+         return ( u_c - u[ neighborEntities.template getEntityIndex< 0, -1 >()] ) * hyDiv;
       }
 };
 
@@ -168,10 +168,10 @@ class FiniteDifferences<
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const Real& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1, 0 >();
-         return ( u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] -
-                  u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] ) * ( 0.5 * hxDiv );
+         return ( u[ neighborEntities.template getEntityIndex< 1, 0 >() ] -
+                  u[ neighborEntities.template getEntityIndex< -1, 0 >() ] ) * ( 0.5 * hxDiv );
       }
 };
 
@@ -192,10 +192,10 @@ class FiniteDifferences<
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const Real& hyDiv = entity.getMesh().template getSpaceStepsProducts< 0, -1 >();
-         return ( u[ neighbourEntities.template getEntityIndex< 0,  1 >() ] -
-                  u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] ) * ( 0.5 * hyDiv );
+         return ( u[ neighborEntities.template getEntityIndex< 0,  1 >() ] -
+                  u[ neighborEntities.template getEntityIndex< 0, -1 >() ] ) * ( 0.5 * hyDiv );
       }
 };
 
@@ -220,12 +220,12 @@ class FiniteDifferences<
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const Real& hxSquareDiv = entity.getMesh().template getSpaceStepsProducts< -2,0 >();
          const Real& u_c = u[ entity.getIndex() ];
-         return ( u[ neighbourEntities.template getEntityIndex< 2, 0 >() ] -
+         return ( u[ neighborEntities.template getEntityIndex< 2, 0 >() ] -
                   2.0 * u_c +
-                  u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] ) * hxSquareDiv;
+                  u[ neighborEntities.template getEntityIndex< 1, 0 >() ] ) * hxSquareDiv;
       }
 };
 
@@ -246,12 +246,12 @@ class FiniteDifferences<
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const Real& hxSquareDiv = entity.getMesh().template getSpaceStepsProducts< -2, 0 >();
          const Real& u_c = u[ entity.getIndex() ];
-         return ( u[ neighbourEntities.template getEntityIndex< -2, 0 >() ] -
+         return ( u[ neighborEntities.template getEntityIndex< -2, 0 >() ] -
                   2.0 * u_c +
-                  u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] ) * hxSquareDiv;
+                  u[ neighborEntities.template getEntityIndex< -1, 0 >() ] ) * hxSquareDiv;
       }
 };
 
@@ -272,12 +272,12 @@ class FiniteDifferences<
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const Real& hxSquareDiv = entity.getMesh().template getSpaceStepsProducts< -2, 0 >();
          const Real& u_c = u[ entity.getIndex() ];
-         return ( u[ neighbourEntities.template getEntityIndex<  1, 0 >() ] -
+         return ( u[ neighborEntities.template getEntityIndex<  1, 0 >() ] -
                   2.0 * u_c +
-                  u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] ) * hxSquareDiv;
+                  u[ neighborEntities.template getEntityIndex< -1, 0 >() ] ) * hxSquareDiv;
       }
 };
 
@@ -298,12 +298,12 @@ class FiniteDifferences<
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const Real& hxSquareDiv = entity.getMesh().template getSpaceStepsProducts< 0, -2 >();
          const Real& u_c = u[ entity.getIndex() ];
-         return ( u[ neighbourEntities.template getEntityIndex< 0, 2 >() ] -
+         return ( u[ neighborEntities.template getEntityIndex< 0, 2 >() ] -
                   2.0 * u_c +
-                  u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] ) * hxSquareDiv;
+                  u[ neighborEntities.template getEntityIndex< 0, 1 >() ] ) * hxSquareDiv;
       }
 };
 
@@ -324,12 +324,12 @@ class FiniteDifferences<
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const Real& hxSquareDiv = entity.getMesh().template getSpaceStepsProducts< 0, -2 >();
          const Real& u_c = u[ entity.getIndex() ];
-         return ( u[ neighbourEntities.template getEntityIndex< 0, -2 >() ] -
+         return ( u[ neighborEntities.template getEntityIndex< 0, -2 >() ] -
                   2.0 * u_c +
-                  u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] ) * hxSquareDiv;
+                  u[ neighborEntities.template getEntityIndex< 0, -1 >() ] ) * hxSquareDiv;
       }
 };
 
@@ -351,12 +351,12 @@ class FiniteDifferences<
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
          const Real& hySquareDiv = entity.getMesh().template getSpaceStepsProducts< 0, -2 >();
          const Real& u_c = u[ entity.getIndex() ];
-         return ( u[ neighbourEntities.template getEntityIndex< 0,  1 >() ] -
+         return ( u[ neighborEntities.template getEntityIndex< 0,  1 >() ] -
                   2.0 * u_c +
-                  u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] ) * hySquareDiv;
+                  u[ neighborEntities.template getEntityIndex< 0, -1 >() ] ) * hySquareDiv;
       }
 };
 

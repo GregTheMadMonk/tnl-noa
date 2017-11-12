@@ -21,12 +21,14 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Problems/HeatEquationProblem.h>
 #include <TNL/Meshes/Grid.h>
+#include "HeatEquationBuildConfigTag.h"
 
 using namespace TNL;
 using namespace TNL::Problems;
 
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
 typedef Solvers::FastBuildConfig BuildConfig;
+//typedef Solvers::HeatEquationBuildConfig BuildConfig;
 
 template< typename MeshConfig >
 class heatEquationConfig
@@ -46,7 +48,7 @@ class heatEquationConfig
          config.addEntry< String >( "boundary-conditions-file", "File with the values of the boundary conditions.", "boundary.tnl" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< double >( "right-hand-side-constant", "This sets a constant value for the right-hand side.", 0.0 );
-         //config.addEntry< String >( "initial-condition", "File with the initial condition.", "initial.tnl");
+         config.addEntry< String >( "initial-condition", "File with the initial condition.", "initial.tnl");
       };
 };
 
@@ -64,19 +66,16 @@ class heatEquationSetter
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef Containers::StaticVector< MeshType::meshDimensions, Real > Vertex;
-
    static bool run( const Config::ParameterContainer& parameters )
    {
-      enum { Dimensions = MeshType::meshDimensions };
+      enum { Dimension = MeshType::getMeshDimension() };
       typedef Operators::LinearDiffusion< MeshType, Real, Index > ApproximateOperator;
-      typedef Functions::Analytic::Constant< Dimensions, Real > RightHandSide;
-      typedef Containers::StaticVector < MeshType::meshDimensions, Real > Vertex;
+      typedef Functions::Analytic::Constant< Dimension, Real > RightHandSide;
 
       String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
       if( parameters.checkParameter( "boundary-conditions-constant" ) )
       {
-         typedef Functions::Analytic::Constant< Dimensions, Real > Constant;
+         typedef Functions::Analytic::Constant< Dimension, Real > Constant;
          if( boundaryConditionsType == "dirichlet" )
          {
             typedef Operators::DirichletBoundaryConditions< MeshType, Constant > BoundaryConditions;

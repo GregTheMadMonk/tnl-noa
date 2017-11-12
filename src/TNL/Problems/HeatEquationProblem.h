@@ -22,6 +22,8 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Timer.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 namespace TNL {
 namespace Problems {
@@ -32,9 +34,9 @@ template< typename Mesh,
           typename DifferentialOperator = Operators::LinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
 class HeatEquationProblem : public PDEProblem< Mesh,
-                                                     typename DifferentialOperator::RealType,
-                                                     typename Mesh::DeviceType,
-                                                     typename DifferentialOperator::IndexType  >
+                                               typename DifferentialOperator::RealType,
+                                               typename Mesh::DeviceType,
+                                               typename DifferentialOperator::IndexType  >
 {
    public:
 
@@ -44,7 +46,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
-      typedef Matrices::CSR< RealType, DeviceType, IndexType > MatrixType;
+      typedef Matrices::SlicedEllpack< RealType, DeviceType, IndexType > MatrixType;
       typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
@@ -90,12 +92,12 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       void bindDofs( const MeshPointer& meshPointer,
                      const DofVectorPointer& dofs );
 
-      void getExplicitRHS( const RealType& time,
-                           const RealType& tau,
-                           const MeshPointer& meshPointer,
-                           DofVectorPointer& _u,
-                           DofVectorPointer& _fu,
-                           MeshDependentDataPointer& meshDependentData );
+      void getExplicitUpdate( const RealType& time,
+                              const RealType& tau,
+                              const MeshPointer& meshPointer,
+                              DofVectorPointer& _u,
+                              DofVectorPointer& _fu,
+                              MeshDependentDataPointer& meshDependentData );
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
@@ -106,10 +108,15 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                                  DofVectorPointer& rightHandSidePointer,
                                  MeshDependentDataPointer& meshDependentData );
 
+      template< typename Matrix >
+      void saveFailedLinearSystem( const Matrix& matrix,
+                                   const DofVectorType& dofs,
+                                   const DofVectorType& rightHandSide ) const;
 
       protected:
          
          MeshFunctionPointer uPointer;
+         MeshFunctionPointer fuPointer;
       
          DifferentialOperatorPointer differentialOperatorPointer;
 
@@ -120,6 +127,14 @@ class HeatEquationProblem : public PDEProblem< Mesh,
          Timer gpuTransferTimer;
          
          Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+         
+         Solvers::PDE::LinearSystemAssembler< Mesh, 
+                                              MeshFunctionType,
+                                              DifferentialOperator,
+                                              BoundaryCondition,
+                                              RightHandSide,
+                                              Solvers::PDE::BackwardTimeDiscretisation,
+                                              DofVectorType > systemAssembler;
 };
 
 } // namespace Problems

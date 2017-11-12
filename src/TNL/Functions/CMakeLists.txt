@@ -14,7 +14,11 @@ SET( headers Domain.h
              MeshFunctionVTKWriter_impl.h             
              OperatorFunction.h
              TestFunction.h             
-             TestFunction_impl.h )
+             TestFunction_impl.h
+             VectorField.h
+             VectorFieldGnuplotWriter.h
+             VectorFieldGnuplotWriter_impl.h
+ )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Functions )
 set( common_SOURCES

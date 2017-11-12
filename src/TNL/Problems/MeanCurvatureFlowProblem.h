@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Operators/diffusion/OneSidedMeanCurvature.h>
@@ -25,7 +31,7 @@ template< typename Mesh,
           typename DifferentialOperator =
             OneSidedMeanCurvature< Mesh,
                                       typename Mesh::RealType,
-                                      typename Mesh::IndexType,
+                                      typename Mesh::GlobalIndexType,
                                       false > >
 class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
                                                      typename DifferentialOperator::RealType,
@@ -75,7 +81,7 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
       void bindDofs( const MeshType& mesh,
                      DofVectorType& dofs );
 
-      void getExplicitRHS( const RealType& time,
+      void getExplicitUpdate( const RealType& time,
                            const RealType& tau,
                            const MeshType& mesh,
                            DofVectorType& _u,
@@ -91,6 +97,10 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
                                  DofVectorType& rightHandSide,
                                  MeshDependentDataPointer& meshDependentData );
 
+      template< typename Matrix >
+      void saveFailedLinearSystem( const Matrix& matrix,
+                                   const DofVectorType& dofs,
+                                   const DofVectorType& rightHandSide ) const;
 
       protected:
 

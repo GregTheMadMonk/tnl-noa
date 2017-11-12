@@ -12,7 +12,6 @@
 
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/SharedVector.h>
 #include <TNL/Math.h>
 
 #ifdef HAVE_CUSPARSE
@@ -61,30 +60,46 @@ String CSR< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool CSR< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                         const IndexType columns )
+String CSR< Real, Device, Index >::getSerializationType()
 {
-   if( ! Sparse< Real, Device, Index >::setDimensions( rows, columns ) ||
-       ! this->rowPointers.setSize( this->rows + 1 ) )
-      return false;
-   this->rowPointers.setValue( 0 );
-   return true;
+   return HostType::getType();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool CSR< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
+String CSR< Real, Device, Index >::getSerializationTypeVirtual() const
 {
+   return this->getSerializationType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void CSR< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                const IndexType columns )
+{
+   Sparse< Real, Device, Index >::setDimensions( rows, columns );
+   this->rowPointers.setSize( this->rows + 1 );
+   this->rowPointers.setValue( 0 );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void CSR< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+{
+   TNL_ASSERT_GT( this->getRows(), 0, "cannot set row lengths of an empty matrix" );
+   TNL_ASSERT_GT( this->getColumns(), 0, "cannot set row lengths of an empty matrix" );
+   TNL_ASSERT_EQ( this->getRows(), rowLengths.getSize(), "wrong size of the rowLengths vector" );
+
    /****
     * Compute the rows pointers. The last one is
     * the end of the last row and so it says the
     * necessary length of the vectors this->values
     * and this->columnIndexes.
     */
-   Assert( this->getRows() > 0, );
-   Assert( this->getColumns() > 0, );
-   Containers::SharedVector< IndexType, DeviceType, IndexType > rowPtrs;
+   Containers::Vector< IndexType, DeviceType, IndexType > rowPtrs;
    rowPtrs.bind( this->rowPointers.getData(), this->getRows() );
    rowPtrs = rowLengths;
    this->rowPointers.setElement( this->rows, 0 );
@@ -94,17 +109,24 @@ bool CSR< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsL
    /****
     * Allocate values and column indexes
     */
-   if( ! this->values.setSize( this->rowPointers.getElement( this->rows ) ) ||
-       ! this->columnIndexes.setSize( this->rowPointers.getElement( this->rows ) ) )
-      return false;
+   this->values.setSize( this->rowPointers.getElement( this->rows ) );
+   this->columnIndexes.setSize( this->rowPointers.getElement( this->rows ) );
    this->columnIndexes.setValue( this->columns );
-   return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
 Index CSR< Real, Device, Index >::getRowLength( const IndexType row ) const
+{
+   return this->rowPointers.getElement( row + 1 ) - this->rowPointers.getElement( row );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Index CSR< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
 {
    return this->rowPointers[ row + 1 ] - this->rowPointers[ row ];
 }
@@ -115,12 +137,10 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool CSR< Real, Device, Index >::setLike( const CSR< Real2, Device2, Index2 >& matrix )
+void CSR< Real, Device, Index >::setLike( const CSR< Real2, Device2, Index2 >& matrix )
 {
-   if( ! Sparse< Real, Device, Index >::setLike( matrix ) ||
-       ! this->rowPointers.setLike( matrix.rowPointers ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::setLike( matrix );
+   this->rowPointers.setLike( matrix.rowPointers );
 }
 
 template< typename Real,
@@ -163,7 +183,7 @@ bool CSR< Real, Device, Index >::addElementFast( const IndexType row,
                                                           const RealType& value,
                                                           const RealType& thisElementMultiplicator )
 {
-   /*Assert( row >= 0 && row < this->rows &&
+   /*TNL_ASSERT( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
               std::cerr << " row = " << row
                    << " column = " << column
@@ -213,7 +233,7 @@ bool CSR< Real, Device, Index >::addElement( const IndexType row,
                                                       const RealType& value,
                                                       const RealType& thisElementMultiplicator )
 {
-   Assert( row >= 0 && row < this->rows &&
+   TNL_ASSERT( row >= 0 && row < this->rows &&
                column >= 0 && column < this->columns,
                std::cerr << " row = " << row
                     << " column = " << column
@@ -271,7 +291,7 @@ bool CSR< Real, Device, Index > :: setRowFast( const IndexType row,
 
    for( IndexType i = 0; i < elements; i++ )
    {
-      printf( "Setting element row: %d column: %d value: %f \n", row, columnIndexes[ i ], values[ i ] );
+      //printf( "Setting element row: %d column: %d value: %f \n", row, columnIndexes[ i ], values[ i ] );
       this->columnIndexes[ elementPointer ] = columnIndexes[ i ];
       this->values[ elementPointer ] = values[ i ];
       elementPointer++;
@@ -406,16 +426,16 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-const typename CSR< Real, Device, Index >::MatrixRow
+typename CSR< Real, Device, Index >::ConstMatrixRow
 CSR< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
    const IndexType rowOffset = this->rowPointers[ rowIndex ];
    const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
-   return MatrixRow( &this->columnIndexes[ rowOffset ],
-                     &this->values[ rowOffset ],
-                     rowLength,
-                     1 );
+   return ConstMatrixRow( &this->columnIndexes[ rowOffset ],
+                          &this->values[ rowOffset ],
+                          rowLength,
+                          1 );
 }
 
 template< typename Real,
@@ -455,7 +475,7 @@ void CSR< Real, Device, Index >::addMatrix( const CSR< Real2, Device, Index2 >& 
                                             const RealType& matrixMultiplicator,
                                             const RealType& thisMatrixMultiplicator )
 {
-   Assert( false, std::cerr << "TODO: implement" );
+   TNL_ASSERT( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -467,7 +487,7 @@ template< typename Real,
 void CSR< Real, Device, Index >::getTransposition( const CSR< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   Assert( false, std::cerr << "TODO: implement" );
+   TNL_ASSERT( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -480,7 +500,7 @@ bool CSR< Real, Device, Index >::performSORIteration( const Vector& b,
                                                       Vector& x,
                                                       const RealType& omega ) const
 {
-   Assert( row >=0 && row < this->getRows(),
+   TNL_ASSERT( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row
                    << " this->getRows() = " << this->getRows() << std::endl );
 
@@ -505,6 +525,36 @@ bool CSR< Real, Device, Index >::performSORIteration( const Vector& b,
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
    return true;
+}
+
+
+// copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+CSR< Real, Device, Index >&
+CSR< Real, Device, Index >::operator=( const CSR& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
+   this->rowPointers = matrix.rowPointers;
+   return *this;
+}
+
+// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2, typename Device2, typename Index2, typename >
+CSR< Real, Device, Index >&
+CSR< Real, Device, Index >::operator=( const CSR< Real2, Device2, Index2 >& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
+   this->rowPointers = matrix.rowPointers;
+   return *this;
 }
 
 
@@ -629,7 +679,7 @@ void CSR< Real, Device, Index >::spmvCudaVectorized( const InVector& inVector,
                                                               const IndexType warpEnd,
                                                               const IndexType inWarpIdx ) const
 {
-   volatile Real* aux = Devices::getSharedMemory< Real >();
+   volatile Real* aux = Devices::Cuda::getSharedMemory< Real >();
    for( IndexType row = warpStart; row < warpEnd; row++ )
    {
       aux[ threadIdx.x ] = 0.0;
@@ -723,13 +773,45 @@ class CSRDeviceDependentCode< Devices::Host >
          const InVector* inVectorPtr = &inVector;
          OutVector* outVectorPtr = &outVector;
 #ifdef HAVE_OPENMP
-#pragma omp parallel for firstprivate( matrixPtr, inVectorPtr, outVectorPtr ), schedule(static ), if( Devices::Host::isOMPEnabled() )
+#pragma omp parallel for firstprivate( matrixPtr, inVectorPtr, outVectorPtr ), schedule(dynamic,100), if( Devices::Host::isOMPEnabled() )
 #endif
          for( Index row = 0; row < rows; row ++ )
             ( *outVectorPtr )[ row ] = matrixPtr->rowVectorProduct( row, *inVectorPtr );
       }
 
 };
+
+#ifdef HAVE_MIC
+template<>
+class CSRDeviceDependentCode< Devices::MIC >
+{
+   public:
+
+      typedef Devices::MIC Device;
+
+      template< typename Real,
+                typename Index,
+                typename InVector,
+                typename OutVector >
+      static void vectorProduct( const CSR< Real, Device, Index >& matrix,      
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+      {
+          cout <<"Not Implemented YET tnlCSRMatrixDeviceDependentCode for MIC" <<endl;
+      };
+  /*       const Index rows = matrix.getRows();
+         const tnlCSRMatrix< Real, Device, Index >* matrixPtr = &matrix;
+         const InVector* inVectorPtr = &inVector;
+         OutVector* outVectorPtr = &outVector;
+#ifdef HAVE_OPENMP
+#pragma omp parallel for firstprivate( matrixPtr, inVectorPtr, outVectorPtr ), schedule(static ), if( tnlHost::isOMPEnabled() )
+#endif         
+         for( Index row = 0; row < rows; row ++ )
+            ( *outVectorPtr )[ row ] = matrixPtr->rowVectorProduct( row, *inVectorPtr );
+      }*/
+
+};
+#endif
 
 #ifdef HAVE_CUDA
 template< typename Real,
@@ -773,7 +855,7 @@ void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index >& matrix,
    Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
    InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
    OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
    dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
    const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
    const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
@@ -826,11 +908,11 @@ void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index >& matrix,
                                               gridIdx );
 
    }
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
    Devices::Cuda::freeFromDevice( kernel_this );
    Devices::Cuda::freeFromDevice( kernel_inVector );
    Devices::Cuda::freeFromDevice( kernel_outVector );
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 #endif
 }
 

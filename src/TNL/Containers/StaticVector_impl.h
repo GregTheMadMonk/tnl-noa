@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Containers/StaticVector.h>
+
 namespace TNL {
 namespace Containers {   
 
@@ -20,24 +22,36 @@ StaticVector< Size, Real >::StaticVector()
 }
 
 template< int Size, typename Real >
+   template< typename _unused >
 __cuda_callable__
 StaticVector< Size, Real >::StaticVector( const Real v[ Size ] )
-: Containers::StaticArray< Size, Real >( v )
+: StaticArray< Size, Real >( v )
 {
 }
 
 template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >::StaticVector( const Real& v )
-: Containers::StaticArray< Size, Real >( v )
+: StaticArray< Size, Real >( v )
 {
 }
 
 template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >::StaticVector( const StaticVector< Size, Real >& v )
-: Containers::StaticArray< Size, Real >( v )
+: StaticArray< Size, Real >( v )
 {
+}
+
+template< int Size, typename Real >
+bool
+StaticVector< Size, Real >::setup( const Config::ParameterContainer& parameters,
+                                   const String& prefix )
+{
+   for( int i = 0; i < Size; i++ )
+      if( ! parameters.template getParameter< double >( prefix + String( i ), this->data[ i ] ) )
+         return false;
+   return true;
 }
 
 template< int Size, typename Real >
@@ -180,9 +194,34 @@ StaticVector< Size, Real >::abs() const
    return v;
 }
 
-
 template< int Size, typename Real >
-StaticVector< Size, Real > operator * ( const Real& c, const StaticVector< Size, Real >& u )
+__cuda_callable__
+Real
+StaticVector< Size, Real >::lpNorm( const Real& p ) const
+{
+   if( p == 1.0 )
+   {
+      Real aux = TNL::abs( this->data[ 0 ] );
+      for( int i = 1; i < Size; i++ )
+         aux += TNL::abs( this->data[ i ] );
+      return aux;
+   }
+   if( p == 2.0 )
+   {
+      Real aux = this->data[ 0 ] * this->data[ 0 ];
+      for( int i = 1; i < Size; i++ )
+         aux += this->data[ i ] * this->data[ i ];
+      return TNL::sqrt( aux );
+   }
+   Real aux = TNL::pow( TNL::abs( this->data[ 0 ] ), p );
+   for( int i = 1; i < Size; i++ )
+      aux += TNL::pow( TNL::abs( this->data[ i ] ), p );
+   return TNL::pow( aux, 1.0 / p );
+}
+
+template< int Size, typename Real, typename Scalar >
+__cuda_callable__
+StaticVector< Size, Real > operator * ( const Scalar& c, const StaticVector< Size, Real >& u )
 {
    return u * c;
 }

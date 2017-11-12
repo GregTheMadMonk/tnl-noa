@@ -93,7 +93,7 @@ void tnlCPUReductionMin( const Vector< T >& host_vector,
 {
    const T* data = host_vector. Data();
    const int size = host_vector. GetSize();
-   //Assert( data );
+   //TNL_ASSERT( data );
    min = data[ 0 ];
    for( int i = 1; i < size; i ++ )
       min = :: min( min,  data[ i ] );
@@ -105,7 +105,7 @@ void tnlCPUReductionMax( const Vector< T >& host_vector,
 {
    const T* data = host_vector. Data();
    const int size = host_vector. GetSize();
-   //Assert( data );
+   //TNL_ASSERT( data );
    max = data[ 0 ];
    for( int i = 1; i < size; i ++ )
       max = :: max( max,  data[ i ] );

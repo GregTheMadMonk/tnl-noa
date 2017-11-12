@@ -10,8 +10,7 @@
 
 #include <iomanip>
 #include <TNL/Logger.h>
-#include <TNL/tnlConfig.h>
-#include <TNL/SystemInfo.h>
+#include <TNL/Devices/Host.h>
 #include <TNL/Devices/CudaDeviceInfo.h>
 
 namespace TNL {
@@ -45,90 +44,41 @@ void Logger :: writeSeparator()
 
 bool Logger :: writeSystemInformation( const Config::ParameterContainer& parameters )
 {
-   SystemInfo systemInfo;
-
-
-   writeParameter< String >( "Host name:", systemInfo.getHostname() );
-   writeParameter< String >( "Architecture:", systemInfo.getArchitecture() );
-   // FIXME: generalize for multi-socket systems, here we consider only the first found CPU
-   const int cpu_id = 0;
-   const int threads = systemInfo.getNumberOfThreads( cpu_id );
-   const int cores = systemInfo.getNumberOfCores( cpu_id );
-   int threadsPerCore = threads / cores;
-   writeParameter< String >( "CPU info", String("") );
-   writeParameter< String >( "Model name:", systemInfo.getCPUModelName( cpu_id ), 1 );
-   writeParameter< int >( "Cores:", cores, 1 );
-   writeParameter< int >( "Threads per core:", threadsPerCore, 1 );
-   writeParameter< String >( "Max clock rate (in MHz):", systemInfo.getCPUMaxFrequency( cpu_id ) / 1000, 1 );
-   tnlCacheSizes cacheSizes = systemInfo.getCPUCacheSizes( cpu_id );
-   String cacheInfo = String( cacheSizes.L1data ) + ", "
-                       + String( cacheSizes.L1instruction ) + ", "
-                       + String( cacheSizes.L2 ) + ", "
-                       + String( cacheSizes.L3 );
-   writeParameter< String >( "Cache (L1d, L1i, L2, L3):", cacheInfo, 1 );
+   Devices::Host::writeDeviceInfo( *this );
    if( parameters.getParameter< String >( "device" ) == "cuda" )
-   {
-      writeParameter< String >( "CUDA GPU info", String("") );
-      // TODO: Printing all devices does not make sense, but in the future TNL
-      //       might use more than one device for computations. Printing only
-      //       the active device for now...
-//      int devices = Devices::CudaDeviceInfo::getNumberOfDevices();
-//      writeParameter< int >( "Number of devices", devices, 1 );
-//      for( int i = 0; i < devices; i++ )
-//      {
-//        writeParameter< int >( "Device no.", i, 1 );
-        int i = Devices::CudaDeviceInfo::getActiveDevice();
-        writeParameter< String >( "Name", Devices::CudaDeviceInfo::getDeviceName( i ), 2 );
-        String deviceArch = String( Devices::CudaDeviceInfo::getArchitectureMajor( i ) ) + "." +
-                                String( Devices::CudaDeviceInfo::getArchitectureMinor( i ) );
-        writeParameter< String >( "Architecture", deviceArch, 2 );
-        writeParameter< int >( "CUDA cores", Devices::CudaDeviceInfo::getCudaCores( i ), 2 );
-        double clockRate = ( double ) Devices::CudaDeviceInfo::getClockRate( i ) / 1.0e3;
-        writeParameter< double >( "Clock rate (in MHz)", clockRate, 2 );
-        double globalMemory = ( double ) Devices::CudaDeviceInfo::getGlobalMemory( i ) / 1.0e9;
-        writeParameter< double >( "Global memory (in GB)", globalMemory, 2 );
-        double memoryClockRate = ( double ) Devices::CudaDeviceInfo::getMemoryClockRate( i ) / 1.0e3;
-        writeParameter< double >( "Memory clock rate (in Mhz)", memoryClockRate, 2 );
-        writeParameter< bool >( "ECC enabled", Devices::CudaDeviceInfo::getECCEnabled( i ), 2 );
-//      }
-   }
-   writeParameter< String >( "System:", systemInfo.getSystemName() );
-   writeParameter< String >( "Release:", systemInfo.getSystemRelease() );
-   writeParameter< char* >( "TNL Compiler:", ( char* ) TNL_CPP_COMPILER_NAME );
+      Devices::CudaDeviceInfo::writeDeviceInfo( *this );
    return true;
 }
 
 void Logger :: writeCurrentTime( const char* label )
 {
-   SystemInfo systemInfo;
-   writeParameter< String >( label, systemInfo.getCurrentTime() );
+   writeParameter< String >( label, Devices::Host::getCurrentTime() );
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 template void Logger::writeParameter< char* >( const String&,
-                                                  const String&,
-                                                  const Config::ParameterContainer&,
-                                                  int );
+                                               const String&,
+                                               const Config::ParameterContainer&,
+                                               int );
 template void Logger::writeParameter< double >( const String&,
-                                                   const String&,
-                                                   const Config::ParameterContainer&,
-                                                   int );
-template void Logger::writeParameter< int >( const String&,
                                                 const String&,
                                                 const Config::ParameterContainer&,
                                                 int );
+template void Logger::writeParameter< int >( const String&,
+                                             const String&,
+                                             const Config::ParameterContainer&,
+                                             int );
 
 // TODO: fix this
 //template void Logger :: WriteParameter< char* >( const char*,
-//                                                    const char*&,
-//                                                    int );
+//                                                 const char*&,
+//                                                 int );
 template void Logger::writeParameter< double >( const String&,
-                                                   const double&,
-                                                   int );
-template void Logger::writeParameter< int >( const String&,
-                                                const int&,
+                                                const double&,
                                                 int );
-
+template void Logger::writeParameter< int >( const String&,
+                                             const int&,
+                                             int );
 #endif
 
 } // namespace TNL

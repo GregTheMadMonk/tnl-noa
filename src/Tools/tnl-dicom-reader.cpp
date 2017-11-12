@@ -38,7 +38,7 @@ bool processDicomFiles( const Config::ParameterContainer& parameters )
 
 bool processDicomSeries( const Config::ParameterContainer& parameters )
 {
-   const List< String >& dicomSeriesNames = parameters.getParameter< List< String > >( "dicom-series" );
+   const Containers::List< String >& dicomSeriesNames = parameters.getParameter< Containers::List< String > >( "dicom-series" );
    String meshFile = parameters.getParameter< String >( "mesh-file" );
    bool verbose = parameters.getParameter< bool >( "verbose" );
 

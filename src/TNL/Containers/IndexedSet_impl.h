@@ -10,85 +10,83 @@
 
 #pragma once
 
+#include <TNL/Containers/IndexedSet.h>
+
 namespace TNL {
 namespace Containers {
 
-template< typename Element,
-          typename Index,
-          typename Key >
-void IndexedSet< Element, Index, Key >::reset()
+template< class Key,
+          class Index,
+          class Compare,
+          class Allocator >
+void
+IndexedSet< Key, Index, Compare, Allocator >::clear()
 {
    map.clear();
 }
 
-template< typename Element,
-          typename Index,
-          typename Key >
-Index IndexedSet< Element, Index, Key >::getSize() const
+template< class Key,
+          class Index,
+          class Compare,
+          class Allocator >
+typename IndexedSet< Key, Index, Compare, Allocator >::size_type
+IndexedSet< Key, Index, Compare, Allocator >::size() const
 {
    return map.size();
 }
 
-template< typename Element,
-          typename Index,
-          typename Key >
-Index IndexedSet< Element, Index, Key >::insert( const Element &data )
+template< class Key,
+          class Index,
+          class Compare,
+          class Allocator >
+Index
+IndexedSet< Key, Index, Compare, Allocator >::insert( const Key& key )
 {
-   STDMapIteratorType iter = map.insert( STDMapValueType( Key( data ),
-                                         DataWithIndex( data, getSize() ) ) ).first;
-   return iter->second.index;
+   auto iter = map.insert( value_type( key, size() ) ).first;
+   return iter->second;
 }
 
-template< typename Element,
-          typename Index,
-          typename Key >
-bool IndexedSet< Element, Index, Key >::find( const Element &data, Index& index ) const
+template< class Key,
+          class Index,
+          class Compare,
+          class Allocator >
+bool
+IndexedSet< Key, Index, Compare, Allocator >::find( const Key& key, Index& index ) const
 {
-   STDMapIteratorType iter = map.find( Key( data ) );
-   if (iter == map.end())
+   auto iter = map.find( Key( key ) );
+   if( iter == map.end() )
       return false;
    index = iter->second.index;
    return true;
 }
 
-template< typename Element,
-          typename Index,
-          typename Key >
-   template<typename ArrayType>
-void IndexedSet< Element, Index, Key >::toArray( ArrayType& array ) const
+template< class Key,
+          class Index,
+          class Compare,
+          class Allocator >
+typename IndexedSet< Key, Index, Compare, Allocator >::size_type
+IndexedSet< Key, Index, Compare, Allocator >::count( const Key& key ) const
 {
-   Assert( array.getSize() == getSize(),
-              std::cerr << "array.getSize() = " << array.getSize()
-                   << " getSize() = " << getSize() );
-
-   for( STDMapIteratorType iter = map.begin();
-        iter != map.end();
-        ++iter)
-      array[ iter->second.index ] = iter->second.data;
+   return map.count( key );
 }
 
-template< typename Element,
-          typename Index,
-          typename Key >
-const Element& IndexedSet< Element, Index, Key >::getElement( KeyType key ) const
+template< class Key,
+          class Index,
+          class Compare,
+          class Allocator >
+typename IndexedSet< Key, Index, Compare, Allocator >::size_type
+IndexedSet< Key, Index, Compare, Allocator >::erase( const Key& key )
 {
-   return map[ key ];
+   return map.erase( key );
 }
 
-template< typename Element,
-          typename Index,
-          typename Key >
-Element& IndexedSet< Element, Index, Key >::getElement( KeyType key )
+template< class Key,
+          class Index,
+          class Compare,
+          class Allocator >
+void IndexedSet< Key, Index, Compare, Allocator >::print( std::ostream& str ) const
 {
-   return map[ key ];
-}
-
-template< typename Element,
-          typename Index,
-          typename Key >
-void IndexedSet< Element, Index, Key >::print( std::ostream& str ) const
-{
-   STDMapIteratorType iter = map.begin();
+   auto iter = map.begin();
    str << iter->second.data;
    iter++;
    while( iter != map.end() )
@@ -98,10 +96,11 @@ void IndexedSet< Element, Index, Key >::print( std::ostream& str ) const
    }
 }
 
-template< typename Element,
-          typename Index,
-          typename Key >
-std::ostream& operator<<( std::ostream& str, IndexedSet< Element, Index, Key >& set )
+template< class Key,
+          class Index,
+          class Compare,
+          class Allocator >
+std::ostream& operator<<( std::ostream& str, IndexedSet< Key, Index, Compare, Allocator >& set )
 {
    set.print( str );
    return str;

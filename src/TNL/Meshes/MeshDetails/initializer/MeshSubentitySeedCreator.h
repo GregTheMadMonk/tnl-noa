@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/StaticFor.h>
@@ -17,11 +23,11 @@ namespace Meshes {
 
 template< typename MeshConfig,
           typename EntityTopology,
-          typename SubDimensionsTag >
+          typename SubDimensionTag >
 class MeshSubentitySeedsCreator
 {
 	typedef typename MeshTraits< MeshConfig >::LocalIndexType                                                      LocalIndexType;
-	typedef typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, SubDimensionsTag::value > SubentityTraits;
+	typedef typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, SubDimensionTag::value > SubentityTraits;
 	typedef typename SubentityTraits::SubentityTopology                                                               SubentityTopology;
 	typedef typename MeshTraits< MeshConfig >::IdArrayAccessorType                                                 IdArrayAccessorType;
 	typedef typename MeshTraits< MeshConfig >::template SubentityTraits< SubentityTopology, 0 >                    SubentityVertexTraits;
@@ -32,7 +38,7 @@ class MeshSubentitySeedsCreator
    public:
       typedef typename SubentityTraits::SeedArrayType SubentitySeedArray;
       typedef MeshEntitySeed< MeshConfig, EntityTopology >  EntitySeed;
-      //typedef typename MeshEntityTraits< MeshConfig, SubDimensionsTag >::SeedIndexedSetType                     SeedIndexedSet;
+      //typedef typename MeshEntityTraits< MeshConfig, SubDimensionTag >::SeedIndexedSetType                     SeedIndexedSet;
 
       //template< typename SeedIndexedSet >
       static SubentitySeedArray create( const EntitySeed &entitySeed  )

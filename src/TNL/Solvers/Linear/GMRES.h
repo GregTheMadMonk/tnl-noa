@@ -37,8 +37,8 @@ public:
    typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
+   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
+   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
 
    GMRES();
 
@@ -82,14 +82,15 @@ protected:
                             RealType& sn );
 
 
-   bool setSize( IndexType _size, IndexType m );
+   void setSize( IndexType _size, IndexType m );
 
    Containers::Vector< RealType, DeviceType, IndexType > _r, w, _v, _M_tmp;
    Containers::Vector< RealType, Devices::Host, IndexType > _s, _cs, _sn, _H;
 
-   IndexType size, restarting;
+   IndexType size, restarting_min, restarting_max, restarting_step_min, restarting_step_max;
 
    MatrixPointer matrix;
+   
    PreconditionerPointer preconditioner;
 };
 

@@ -14,7 +14,6 @@
 #include <TNL/Object.h>
 #include <TNL/SharedPointer.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/SharedVector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
@@ -39,8 +38,8 @@ class TFQMR : public Object,
    typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
+   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
+   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
 
    TFQMR();
 
@@ -56,17 +55,15 @@ class TFQMR : public Object,
 
    void setPreconditioner( const PreconditionerPointer& preconditioner );
 
-   template< typename VectorPointer,
-             typename ResidueGetter = LinearResidueGetter< Matrix, typename VectorPointer::ObjectType >  >
-   bool solve( const VectorPointer& b, VectorPointer& x );
-
-   ~TFQMR();
+   template< typename Vector,
+             typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
+   bool solve( const Vector& b, Vector& x );
 
    protected:
 
-   bool setSize( IndexType size );
+   void setSize( IndexType size );
 
-   Containers::Vector< RealType, DeviceType, IndexType >  d, r, w, u, v, r_ast, Au, M_tmp;
+   Containers::Vector< RealType, DeviceType, IndexType > d, r, w, u, v, r_ast, Au, M_tmp;
 
    IndexType size;
 

@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
@@ -17,9 +23,9 @@ namespace Meshes {
 
 template< typename MeshConfig,
           typename MeshEntity,
-          typename DimensionsTag,
+          typename DimensionTag,
           bool SuperentityStorage =
-             MeshTraits< MeshConfig >::template SuperentityTraits< MeshEntity, DimensionsTag::value >::storageEnabled >
+             MeshTraits< MeshConfig >::template SuperentityTraits< MeshEntity, DimensionTag::value >::storageEnabled >
 class MeshSuperentityAccessLayer;
 
 
@@ -28,12 +34,12 @@ template< typename MeshConfig,
 class MeshSuperentityAccess :
    public MeshSuperentityAccessLayer< MeshConfig,
                                          MeshEntity,
-                                         MeshDimensionsTag< MeshTraits< MeshConfig >::meshDimensions > >
+                                         MeshDimensionTag< MeshTraits< MeshConfig >::meshDimension > >
 {
    public:
       typedef MeshSuperentityAccessLayer< MeshConfig,
                                              MeshEntity,
-                                             MeshDimensionsTag< MeshTraits< MeshConfig >::meshDimensions > > BaseType;
+                                             MeshDimensionTag< MeshTraits< MeshConfig >::meshDimension > > BaseType;
  
       bool operator == ( const MeshSuperentityAccess< MeshConfig, MeshEntity>& a ) const { return true; } // TODO: fix
  
@@ -46,38 +52,38 @@ class MeshSuperentityAccess :
 
 template< typename MeshConfig,
           typename MeshEntity,
-          typename Dimensions >
+          typename Dimension >
 class MeshSuperentityAccessLayer< MeshConfig,
                                      MeshEntity,
-                                     Dimensions,
+                                     Dimension,
                                      true > :
-   public MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimensions::Decrement >
+   public MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimension::Decrement >
 {
-	typedef MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimensions::Decrement > BaseType;
+	typedef MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimension::Decrement > BaseType;
 
    public:
  
       typedef MeshTraits< MeshConfig >                                                             MeshTraitsType;
-      typedef typename MeshTraitsType::template SuperentityTraits< MeshEntity, Dimensions::value > SuperentityTraitsType;
+      typedef typename MeshTraitsType::template SuperentityTraits< MeshEntity, Dimension::value > SuperentityTraitsType;
       typedef typename MeshTraitsType::IdArrayAccessorType                                         IdArrayAccessorType;
       typedef typename SuperentityTraitsType::StorageNetworkType                                   StorageNetworkType;
       typedef typename SuperentityTraitsType::SuperentityAccessorType                              SuperentityAccessorType;
       //typedef typename StorageNetworkType::PortsType                            SuperentityAccessorType;
 
 	   using BaseType::superentityIds;
-	   IdArrayAccessorType superentityIds( Dimensions ) const { return m_superentityIndices; }
+	   IdArrayAccessorType superentityIds( Dimension ) const { return m_superentityIndices; }
 
 	   using BaseType::superentityIdsArray;
-	   IdArrayAccessorType &superentityIdsArray( Dimensions ) { return m_superentityIndices; }
+	   IdArrayAccessorType &superentityIdsArray( Dimension ) { return m_superentityIndices; }
  
       using BaseType::getSuperentityIndices;
-      const SuperentityAccessorType& getSuperentityIndices( Dimensions ) const
+      const SuperentityAccessorType& getSuperentityIndices( Dimension ) const
       {
          std::cerr << "###" << std::endl;
          return this->superentityIndices;
       }
  
-      SuperentityAccessorType& getSuperentityIndices( Dimensions )
+      SuperentityAccessorType& getSuperentityIndices( Dimension )
       {
          std::cerr << "######" << std::endl;
          return this->superentityIndices;
@@ -85,12 +91,12 @@ class MeshSuperentityAccessLayer< MeshConfig,
  
       void print( std::ostream& str ) const
       {
-         str << "Superentities with " << Dimensions::value << " dimensions are: " <<
+         str << "Superentities with " << Dimension::value << " dimensions are: " <<
             this->superentityIndices << std::endl;
          BaseType::print( str );
       }
  
-      //bool operator == ( const MeshSuperentityAccessLayer< MeshConfig, MeshEntity, Dimensions, tnlStorageTraits< true > >& l ) { return true; } // TODO: fix
+      //bool operator == ( const MeshSuperentityAccessLayer< MeshConfig, MeshEntity, Dimension, tnlStorageTraits< true > >& l ) { return true; } // TODO: fix
 
    private:
 	   IdArrayAccessorType m_superentityIndices;
@@ -101,12 +107,12 @@ class MeshSuperentityAccessLayer< MeshConfig,
 
 template< typename MeshConfig,
           typename MeshEntity,
-          typename Dimensions >
+          typename Dimension >
 class MeshSuperentityAccessLayer< MeshConfig,
                                      MeshEntity,
-                                     Dimensions,
+                                     Dimension,
                                      false > :
-   public MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimensions::Decrement >
+   public MeshSuperentityAccessLayer< MeshConfig, MeshEntity, typename Dimension::Decrement >
 {
 };
 
@@ -114,7 +120,7 @@ template< typename MeshConfig,
           typename MeshEntity >
 class MeshSuperentityAccessLayer< MeshConfig,
                                      MeshEntity,
-                                     MeshDimensionsTag< MeshEntity::dimensions >,
+                                     MeshDimensionTag< MeshEntity::dimensions >,
                                      false >
 {
    protected:
@@ -133,7 +139,7 @@ template< typename MeshConfig,
           typename MeshEntity >
 class MeshSuperentityAccessLayer< MeshConfig,
                                      MeshEntity,
-                                     MeshDimensionsTag< MeshEntity::dimensions >,
+                                     MeshDimensionTag< MeshEntity::dimensions >,
                                      true >
 {
    protected:

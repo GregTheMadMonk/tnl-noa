@@ -33,18 +33,6 @@ class FiniteDifferences< Meshes::Grid< 1, Real, Device, Index > >
    typedef typename GridType::Cell CellType;
 
 
-#ifdef HAVE_NOT_CXX11
-   template< typename GridFunction,
-             int XDifferenceOrder,
-             int YDifferenceOrder,
-             int ZDifferenceOrder,
-             int XDifferenceDirection,
-             int YDifferenceDirection,
-             int ZDifferenceDirection >
-   static RealType getDifference( const GridType& grid,
-                                  const GridFunction& inFunction,
-                                  GridFunction& outFunction );
-#else
    template< typename GridFunction,
              int XDifferenceOrder,
              int YDifferenceOrder,
@@ -55,20 +43,7 @@ class FiniteDifferences< Meshes::Grid< 1, Real, Device, Index > >
    static RealType getDifference( const GridType& grid,
                                   const GridFunction& inFunction,
                                   GridFunction& outFunction );
-#endif
 
-#ifdef HAVE_NOT_CXX11
-   template< typename GridFunction,
-             int XDifferenceOrder,
-             int YDifferenceOrder,
-             int ZDifferenceOrder,
-             int XDifferenceDirection,
-             int YDifferenceDirection,
-             int ZDifferenceDirection >
-   static RealType getDifference( const GridType& grid,
-                                  const CellType& cell,
-                                  const GridFunction& function );
-#else
    template< typename GridFunction,
              int XDifferenceOrder,
              int YDifferenceOrder,
@@ -79,8 +54,6 @@ class FiniteDifferences< Meshes::Grid< 1, Real, Device, Index > >
    static RealType getDifference( const GridType& grid,
                                   const CellType& cell,
                                   const GridFunction& function );
-#endif
-
 };
 
 template< typename Real, typename Device, typename Index >
@@ -96,18 +69,6 @@ class FiniteDifferences< Meshes::Grid< 2, Real, Device, Index > >
    typedef typename GridType::Cell CellType;
 
 
-#ifdef HAVE_NOT_CXX11
-   template< typename GridFunction,
-             int XDifferenceOrder,
-             int YDifferenceOrder,
-             int ZDifferenceOrder,
-             int XDifferenceDirection,
-             int YDifferenceDirection,
-             int ZDifferenceDirection >
-   static RealType getDifference( const GridType& grid,
-                                  const GridFunction& inFunction,
-                                  GridFunction& outFunction );
-#else
    template< typename GridFunction,
              int XDifferenceOrder,
              int YDifferenceOrder,
@@ -118,20 +79,7 @@ class FiniteDifferences< Meshes::Grid< 2, Real, Device, Index > >
    static RealType getDifference( const GridType& grid,
                                   const GridFunction& inFunction,
                                   GridFunction& outFunction );
-#endif
 
-#ifdef HAVE_NOT_CXX11
-   template< typename GridFunction,
-             int XDifferenceOrder,
-             int YDifferenceOrder,
-             int ZDifferenceOrder,
-             int XDifferenceDirection,
-             int YDifferenceDirection,
-             int ZDifferenceDirection >
-   static RealType getDifference( const GridType& grid,
-                                  const CellType& cell,
-                                  const GridFunction& function );
-#else
    template< typename GridFunction,
              int XDifferenceOrder,
              int YDifferenceOrder,
@@ -142,8 +90,6 @@ class FiniteDifferences< Meshes::Grid< 2, Real, Device, Index > >
    static RealType getDifference( const GridType& grid,
                                   const CellType& cell,
                                   const GridFunction& function );
-#endif
-
 };
 
 template< typename Real, typename Device, typename Index >
@@ -158,18 +104,6 @@ class FiniteDifferences< Meshes::Grid< 3, Real, Device, Index > >
    //typedef typename GridType::CoordinatesType CoordinatesType;
    typedef typename GridType::Cell CellType;
 
-#ifdef HAVE_NOT_CXX11
-   template< typename GridFunction,
-             int XDifferenceOrder,
-             int YDifferenceOrder,
-             int ZDifferenceOrder,
-             int XDifferenceDirection,
-             int YDifferenceDirection,
-             int ZDifferenceDirection >
-   static RealType getDifference( const GridType& grid,
-                                  const GridFunction& inFunction,
-                                  GridFunction& outFunction );
-#else
    template< typename GridFunction,
              int XDifferenceOrder,
              int YDifferenceOrder,
@@ -180,20 +114,7 @@ class FiniteDifferences< Meshes::Grid< 3, Real, Device, Index > >
    static RealType getDifference( const GridType& grid,
                                   const GridFunction& inFunction,
                                   GridFunction& outFunction );
-#endif
 
-#ifdef HAVE_NOT_CXX11
-   template< typename GridFunction,
-             int XDifferenceOrder,
-             int YDifferenceOrder,
-             int ZDifferenceOrder,
-             int XDifferenceDirection,
-             int YDifferenceDirection,
-             int ZDifferenceDirection >
-   static RealType getDifference( const GridType& grid,
-                                  const CellType& cell,
-                                  const GridFunction& function );
-#else
    template< typename GridFunction,
              int XDifferenceOrder,
              int YDifferenceOrder,
@@ -204,8 +125,6 @@ class FiniteDifferences< Meshes::Grid< 3, Real, Device, Index > >
    static RealType getDifference( const GridType& grid,
                                   const CellType& cell,
                                   const GridFunction& function );
-#endif
-
 };
 
 } // namespace Operators

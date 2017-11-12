@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <math.h>
 #include <TNL/Object.h>
 #include <TNL/SharedPointer.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
@@ -36,8 +35,8 @@ class SOR : public Object,
    typedef typename Matrix :: DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
+   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
+   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
 
    SOR();
 
@@ -61,8 +60,6 @@ class SOR : public Object,
              typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
    bool solve( const Vector& b, Vector& x );
 
-   ~SOR();
-
    protected:
 
    RealType omega;
@@ -76,4 +73,3 @@ class SOR : public Object,
 } // namespace TNL
 
 #include <TNL/Solvers/Linear/SOR_impl.h>
-

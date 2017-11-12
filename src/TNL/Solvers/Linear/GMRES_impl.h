@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "GMRES.h"
+
 namespace TNL {
 namespace Solvers {
 namespace Linear {
@@ -19,8 +21,16 @@ template< typename Matrix,
 GMRES< Matrix, Preconditioner >::
 GMRES()
 : size( 0 ),
-  restarting( 10 )
+  restarting_min( 10 ),
+  restarting_max( 10 ),
+  restarting_step_min( 3 ),
+  restarting_step_max( 3 )
 {
+   /****
+    * Clearing the shared pointer means that there is no
+    * preconditioner set.
+    */
+   this->preconditioner.clear();
 }
 
 template< typename Matrix,
@@ -49,7 +59,10 @@ configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
-   config.addEntry< int >( prefix + "gmres-restarting", "Number of iterations after which the GMRES restarts.", 10 );
+   config.addEntry< int >( prefix + "gmres-restarting-min", "Minimal number of iterations after which the GMRES restarts.", 10 );
+   config.addEntry< int >( prefix + "gmres-restarting-max", "Maximal number of iterations after which the GMRES restarts.", 10 );
+   config.addEntry< int >( prefix + "gmres-restarting-step-min", "Minimal adjusting step for the adaptivity of the GMRES restarting parameter.", 3 );
+   config.addEntry< int >( prefix + "gmres-restarting-step-max", "Maximal adjusting step for the adaptivity of the GMRES restarting parameter.", 3 );
 }
 
 template< typename Matrix,
@@ -60,7 +73,10 @@ setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
    IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
-   this->setRestarting( parameters.getParameter< int >( "gmres-restarting" ) );
+   restarting_min = parameters.getParameter< int >( "gmres-restarting-min" );
+   this->setRestarting( parameters.getParameter< int >( "gmres-restarting-max" ) );
+   restarting_step_min = parameters.getParameter< int >( "gmres-restarting-step-min" );
+   restarting_step_max = parameters.getParameter< int >( "gmres-restarting-step-max" );
    return true;
 }
 
@@ -72,7 +88,7 @@ setRestarting( IndexType rest )
 {
    if( size != 0 )
       setSize( size, rest );
-   restarting = rest;
+   restarting_max = rest;
 }
 
 template< typename Matrix,
@@ -100,18 +116,20 @@ bool
 GMRES< Matrix, Preconditioner >::
 solve( const Vector& b, Vector& x )
 {
-   Assert( matrix, std::cerr << "No matrix was set in GMRES. Call setMatrix() before solve()." << std::endl );
-   if( restarting <= 0 )
+   TNL_ASSERT_TRUE( matrix, "No matrix was set in GMRES. Call setMatrix() before solve()." );
+   if( restarting_min <= 0 || restarting_max <= 0 || restarting_min > restarting_max )
    {
-      std::cerr << "I have wrong value for the restarting of the GMRES solver. It is set to " << restarting
-           << ". Please set some positive value using the SetRestarting method." << std::endl;
+      std::cerr << "Wrong value for the GMRES restarting parameters: r_min = " << restarting_min
+                << ", r_max = " << restarting_max << std::endl;
       return false;
    }
-   if( ! setSize( matrix -> getRows(), restarting ) )
+   if( restarting_step_min < 0 || restarting_step_max < 0 || restarting_step_min > restarting_step_max )
    {
-       std::cerr << "I am not able to allocate enough memory for the GMRES solver. You may try to decrease the restarting parameter." << std::endl;
-       return false;
+      std::cerr << "Wrong value for the GMRES restarting adjustment parameters: d_min = " << restarting_step_min
+                << ", d_max = " << restarting_step_max << std::endl;
+      return false;
    }
+   setSize( matrix -> getRows(), restarting_max );
 
    IndexType _size = size;
  
@@ -154,10 +172,38 @@ solve( const Vector& b, Vector& x )
    this->resetIterations();
    this->setResidue( beta / normb );
 
+   // parameters for the adaptivity of the restarting parameter
+         RealType beta_ratio = 1;           // = beta / beta_ratio (small value indicates good convergence rate)
+   const RealType max_beta_ratio = 0.99;    // = cos(8°) \approx 0.99
+   const RealType min_beta_ratio = 0.175;   // = cos(80°) \approx 0.175
+         int restart_cycles = 0;    // counter of restart cycles
+         int m = restarting_max;    // current restarting parameter
+
    Containers::Vector< RealType, DeviceType, IndexType > vi, vk;
    while( this->checkNextIteration() )
    {
-      const IndexType m = restarting;
+      // adaptivity of the restarting parameter
+      // reference:  A.H. Baker, E.R. Jessup, Tz.V. Kolev - A simple strategy for varying the restart parameter in GMRES(m)
+      //             http://www.sciencedirect.com/science/article/pii/S0377042709000132
+      if( restarting_max > restarting_min && restart_cycles > 0 ) {
+         if( beta_ratio > max_beta_ratio )
+            // near stagnation -> set maximum
+            m = restarting_max;
+         else if( beta_ratio >= min_beta_ratio ) {
+            // the step size is determined based on current m using linear interpolation
+            // between restarting_step_min and restarting_step_max
+            const int step = restarting_step_min + (float) ( restarting_step_max - restarting_step_min ) /
+                                                           ( restarting_max - restarting_min ) *
+                                                           ( m - restarting_min );
+            if( m - step >= restarting_min )
+               m -= step;
+            else
+               // set restarting_max when we hit restarting_min (see Baker et al. (2009))
+               m = restarting_max;
+         }
+//         std::cerr << "restarting: cycle = " << restart_cycles << ", beta_ratio = " << beta_ratio << ", m = " << m << "    " << std::endl;
+      }
+
       for( IndexType i = 0; i < m + 1; i ++ )
          H[ i ] = s[ i ] = cs[ i ] = sn[ i ] = 0.0;
 
@@ -272,6 +318,7 @@ solve( const Vector& b, Vector& x )
       /****
        * r = M.solve(b - A * x);
        */
+      const RealType beta_old = beta;
       beta = 0.0;
       if( preconditioner )
       {
@@ -292,6 +339,9 @@ solve( const Vector& b, Vector& x )
       //cout << " beta = " << beta << std::endl;
       //cout << "residue = " << beta / normb << std::endl;
 
+      // update parameters for the adaptivity of the restarting parameter
+      ++restart_cycles;
+      beta_ratio = beta / beta_old;
    }
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
@@ -378,26 +428,22 @@ applyPlaneRotation( RealType& dx,
 
 template< typename Matrix,
           typename Preconditioner >
-bool
+void
 GMRES< Matrix, Preconditioner >::
 setSize( IndexType _size, IndexType m )
 {
-   if( size == _size && restarting == m ) return true;
+   if( size == _size && restarting_max == m )
+      return;
    size = _size;
-   restarting = m;
-   if( ! _r.setSize( size ) ||
-       ! w.setSize( size ) ||
-       ! _s.setSize( restarting + 1 ) ||
-       ! _cs.setSize( restarting + 1 ) ||
-       ! _sn.setSize( restarting + 1 ) ||
-       ! _v.setSize( size * ( restarting + 1 ) ) ||
-       ! _H.setSize( ( restarting + 1 ) * restarting ) ||
-       ! _M_tmp.setSize( size ) )
-   {
-      std::cerr << "I could not allocate all supporting arrays for the GMRES solver." << std::endl;
-      return false;
-   }
-   return true;
+   restarting_max = m;
+   _r.setSize( size );
+   w.setSize( size );
+   _s.setSize( m + 1 );
+   _cs.setSize( m + 1 );
+   _sn.setSize( m + 1 );
+   _v.setSize( size * ( m + 1 ) );
+   _H.setSize( ( m + 1 ) * m );
+   _M_tmp.setSize( size );
 }
 
 } // namespace Linear

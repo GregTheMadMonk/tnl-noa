@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Functions/Domain.h>
@@ -17,15 +23,15 @@ namespace Problems {
 
 template< typename ExactOperator,
           typename TestFunction,
-          int Dimensions >
-class MeanCurvatureFlowEocRhs : public Domain< Dimensions, SpaceDomain >
+          int Dimension >
+class MeanCurvatureFlowEocRhs : public Domain< Dimension, SpaceDomain >
 {
    public:
 
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
       typedef typename TestFunctionType::RealType RealType;
-      typedef StaticVector< Dimensions, RealType > VertexType;
+      typedef StaticVector< Dimension, RealType > PointType;
 
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
@@ -35,10 +41,10 @@ class MeanCurvatureFlowEocRhs : public Domain< Dimensions, SpaceDomain >
          return true;
       };
 
-      template< typename Vertex,
+      template< typename Point,
                 typename Real >
       __cuda_callable__
-      Real operator()( const Vertex& vertex,
+      Real operator()( const Point& vertex,
                        const Real& time ) const
       {
          return testFunction.getTimeDerivative( vertex, time )

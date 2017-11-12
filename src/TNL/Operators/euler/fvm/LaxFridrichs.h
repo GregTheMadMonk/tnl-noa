@@ -37,20 +37,20 @@ class LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, Pressu
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename MeshType :: VertexType VertexType;
+   typedef typename MeshType :: PointType PointType;
    typedef typename MeshType :: CoordinatesType CoordinatesType;
 
    LaxFridrichs();
 
    static String getTypeStatic();
 
-   void getExplicitRhs( const IndexType centralVolume,
+   void getExplicitUpdate( const IndexType centralVolume,
                         RealType& rho_t,
                         RealType& rho_u1_t,
                         RealType& rho_u2_t,
                         const RealType& tau ) const;
 
-   void getExplicitRhs( const IndexType centralVolume,
+   void getExplicitUpdate( const IndexType centralVolume,
                         RealType& rho_t,
                         RealType& rho_u1_t,
                         RealType& rho_u2_t,
@@ -106,18 +106,18 @@ class LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeomet
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename MeshType :: VertexType VertexType;
+   typedef typename MeshType :: PointType PointType;
    typedef typename MeshType :: CoordinatesType CoordinatesType;
 
    LaxFridrichs();
 
-   void getExplicitRhs( const IndexType centralVolume,
+   void getExplicitUpdate( const IndexType centralVolume,
                         RealType& rho_t,
                         RealType& rho_u1_t,
                         RealType& rho_u2_t,
                         const RealType& tau ) const;
 
-   void getExplicitRhs( const IndexType centralVolume,
+   void getExplicitUpdate( const IndexType centralVolume,
                         RealType& rho_t,
                         RealType& rho_u1_t,
                         RealType& rho_u2_t,

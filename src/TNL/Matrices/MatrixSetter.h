@@ -15,22 +15,22 @@ namespace Matrices {
 
 template< typename DifferentialOperator,
           typename BoundaryConditions,
-          typename CompressedRowsLengthsVector >
+          typename CompressedRowLengthsVector >
 class MatrixSetterTraversalUserData
 {
    public:
       
-      typedef typename CompressedRowsLengthsVector::DeviceType DeviceType;
+      typedef typename CompressedRowLengthsVector::DeviceType DeviceType;
 
       const DifferentialOperator* differentialOperator;
 
       const BoundaryConditions* boundaryConditions;
 
-      CompressedRowsLengthsVector* rowLengths;
+      CompressedRowLengthsVector* rowLengths;
 
       MatrixSetterTraversalUserData( const DifferentialOperator* differentialOperator,
                                      const BoundaryConditions* boundaryConditions,
-                                     CompressedRowsLengthsVector* rowLengths )
+                                     CompressedRowLengthsVector* rowLengths )
       : differentialOperator( differentialOperator ),
         boundaryConditions( boundaryConditions ),
         rowLengths( rowLengths )
@@ -41,26 +41,26 @@ class MatrixSetterTraversalUserData
 template< typename Mesh,
           typename DifferentialOperator,
           typename BoundaryConditions,
-          typename CompressedRowsLengthsVector >
+          typename CompressedRowLengthsVector >
 class MatrixSetter
 {
    public:
    typedef Mesh MeshType;
    typedef SharedPointer< MeshType > MeshPointer;
    typedef typename MeshType::DeviceType DeviceType;
-   typedef typename CompressedRowsLengthsVector::RealType IndexType;
+   typedef typename CompressedRowLengthsVector::RealType IndexType;
    typedef MatrixSetterTraversalUserData< DifferentialOperator,
                                           BoundaryConditions,
-                                          CompressedRowsLengthsVector > TraversalUserData;
+                                          CompressedRowLengthsVector > TraversalUserData;
    typedef SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
    typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-   typedef SharedPointer< CompressedRowsLengthsVector, DeviceType > CompressedRowsLengthsVectorPointer;
+   typedef SharedPointer< CompressedRowLengthsVector, DeviceType > CompressedRowLengthsVectorPointer;
 
    template< typename EntityType >
-   void getCompressedRowsLengths( const MeshPointer& meshPointer,
+   void getCompressedRowLengths( const MeshPointer& meshPointer,
                                   const DifferentialOperatorPointer& differentialOperatorPointer,
                                   const BoundaryConditionsPointer& boundaryConditionsPointer,
-                                  CompressedRowsLengthsVectorPointer& rowLengthsPointer ) const;
+                                  CompressedRowLengthsVectorPointer& rowLengthsPointer ) const;
 
    class TraversalBoundaryEntitiesProcessor
    {
@@ -97,32 +97,32 @@ class MatrixSetter
 };
 
 /*
-template< int Dimensions,
+template< int Dimension,
           typename Real,
           typename Device,
           typename Index,
           typename DifferentialOperator,
           typename BoundaryConditions,
-          typename CompressedRowsLengthsVector >
-class MatrixSetter< Meshes::Grid< Dimensions, Real, Device, Index >,
+          typename CompressedRowLengthsVector >
+class MatrixSetter< Meshes::Grid< Dimension, Real, Device, Index >,
                        DifferentialOperator,
                        BoundaryConditions,
-                       CompressedRowsLengthsVector >
+                       CompressedRowLengthsVector >
 {
    public:
-   typedef Meshes::Grid< Dimensions, Real, Device, Index > MeshType;
+   typedef Meshes::Grid< Dimension, Real, Device, Index > MeshType;
    typedef typename MeshType::DeviceType DeviceType;
-   typedef typename CompressedRowsLengthsVector::RealType IndexType;
+   typedef typename CompressedRowLengthsVector::RealType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef MatrixSetterTraversalUserData< DifferentialOperator,
                                              BoundaryConditions,
-                                             CompressedRowsLengthsVector > TraversalUserData;
+                                             CompressedRowLengthsVector > TraversalUserData;
 
    template< typename EntityType >
-   void getCompressedRowsLengths( const MeshType& mesh,
+   void getCompressedRowLengths( const MeshType& mesh,
                        const DifferentialOperator& differentialOperator,
                        const BoundaryConditions& boundaryConditions,
-                       CompressedRowsLengthsVector& rowLengths ) const;
+                       CompressedRowLengthsVector& rowLengths ) const;
 
    class TraversalBoundaryEntitiesProcessor
    {

@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/Containers/Vector.h>
-#include <TNL/Containers/SharedVector.h>
 #include <TNL/Meshes/Grid.h>
 
 namespace TNL {
@@ -19,7 +17,7 @@ namespace Operators {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType > 
+          typename Index = typename Mesh::GlobalIndexType > 
 class tnlOneSideDiffOperatorQ
 {
 };

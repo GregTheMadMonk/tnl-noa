@@ -1,3 +1,15 @@
+/***************************************************************************
+                          CWYGMRES.h  -  description
+                             -------------------
+    begin                : May 13, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Jakub Klinkovsky
+
 #pragma once
 
 #include <math.h>
@@ -27,8 +39,8 @@ public:
    typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType, true > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType, true > PreconditionerPointer;
+   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
+   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
    typedef Containers::Vector< RealType, DeviceType, IndexType > DeviceVector;
    typedef Containers::Vector< RealType, Devices::Host, IndexType > HostVector;
 
@@ -96,7 +108,7 @@ protected:
                             RealType& sn );
 
 
-   bool setSize( IndexType _size, IndexType m );
+   void setSize( IndexType _size, IndexType m );
 
    // single vectors
    DeviceVector r, z, w, _M_tmp;
@@ -107,7 +119,7 @@ protected:
    // host-only storage for Givens rotations and the least squares problem
    HostVector cs, sn, H, s;
 
-   IndexType size, ldSize, restarting;
+   IndexType size, ldSize, restarting_min, restarting_max, restarting_step_min, restarting_step_max;
 
    MatrixPointer matrix;
    PreconditionerPointer preconditioner;

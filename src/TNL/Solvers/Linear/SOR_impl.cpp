@@ -8,6 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
 #include <TNL/Solvers/Linear/SOR.h>
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Matrices/Ellpack.h>
@@ -54,4 +56,4 @@ template class SOR< Matrices::Multidiagonal< double, Devices::Cuda, long int > >
 } // namespace Solvers
 } // namespace TNL
 
-
+#endif // #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

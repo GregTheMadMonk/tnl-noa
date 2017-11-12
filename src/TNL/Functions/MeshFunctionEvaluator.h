@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Functions/OperatorFunction.h>
 #include <TNL/Functions/FunctionAdapter.h>
@@ -58,7 +57,7 @@ template< typename OutMeshFunction,
           typename InFunction >
 class MeshFunctionEvaluator
 {
-   static_assert( OutMeshFunction::getDomainDimensions() == InFunction::getDomainDimensions(),
+   static_assert( OutMeshFunction::getDomainDimension() == InFunction::getDomainDimension(),
                   "Input and output functions must have the same domain dimensions." );
 
    public:
@@ -162,4 +161,3 @@ class MeshFunctionEvaluatorAdditionEntitiesProcessor
 } // namespace TNL
 
 #include <TNL/Functions/MeshFunctionEvaluator_impl.h>
-

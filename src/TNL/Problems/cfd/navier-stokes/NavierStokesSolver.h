@@ -104,7 +104,7 @@ class NavierStokesSolver
                                   const Vector& e );
 
    template< typename SolverVectorType >
-   void getExplicitRhs( const RealType& time,
+   void getExplicitUpdate( const RealType& time,
                         const RealType& tau,
                         SolverVectorType& u,
                         SolverVectorType& fu );

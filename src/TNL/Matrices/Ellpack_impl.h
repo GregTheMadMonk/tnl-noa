@@ -50,10 +50,26 @@ String Ellpack< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                             const IndexType columns )
+String Ellpack< Real, Device, Index >::getSerializationType()
 {
-   Assert( rows > 0 && columns > 0,
+   return getType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+String Ellpack< Real, Device, Index >::getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                    const IndexType columns )
+{
+   TNL_ASSERT( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
    this->rows = rows;
@@ -62,33 +78,32 @@ bool Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
       this->alignedRows = roundToMultiple( columns, Devices::Cuda::getWarpSize() );
    else this->alignedRows = rows;
    if( this->rowLengths != 0 )
-      return allocateElements();
-   return true;
+      allocateElements();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
+void Ellpack< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
-   Assert( this->getRows() > 0, );
-   Assert( this->getColumns() > 0, );
-   Assert( rowLengths.getSize() > 0, );
+   TNL_ASSERT_GT( this->getRows(), 0, "cannot set row lengths of an empty matrix" );
+   TNL_ASSERT_GT( this->getColumns(), 0, "cannot set row lengths of an empty matrix" );
+   TNL_ASSERT_EQ( this->getRows(), rowLengths.getSize(), "wrong size of the rowLengths vector" );
+
    this->rowLengths = this->maxRowLength = rowLengths.max();
-   return allocateElements();
+   allocateElements();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::setConstantCompressedRowsLengths( const IndexType& rowLengths )
+void Ellpack< Real, Device, Index >::setConstantCompressedRowLengths( const IndexType& rowLengths )
 {
-   Assert( rowLengths > 0,
+   TNL_ASSERT( rowLengths > 0,
               std::cerr << " rowLengths = " << rowLengths );
    this->rowLengths = rowLengths;
    if( this->rows > 0 )
-      return allocateElements();
-   return true;
+      allocateElements();
 }
 
 template< typename Real,
@@ -102,16 +117,23 @@ Index Ellpack< Real, Device, Index >::getRowLength( const IndexType row ) const
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
+Index Ellpack< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
+{
+   return this->rowLengths;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool Ellpack< Real, Device, Index >::setLike( const Ellpack< Real2, Device2, Index2 >& matrix )
+void Ellpack< Real, Device, Index >::setLike( const Ellpack< Real2, Device2, Index2 >& matrix )
 {
-   if( ! Sparse< Real, Device, Index >::setLike( matrix ) )
-      return false;
+   Sparse< Real, Device, Index >::setLike( matrix );
    this->rowLengths = matrix.rowLengths;
    this->alignedRows = matrix.alignedRows;
-   return true;
 }
 
 template< typename Real,
@@ -132,7 +154,7 @@ template< typename Real,
              typename Index2 >
 bool Ellpack< Real, Device, Index >::operator == ( const Ellpack< Real2, Device2, Index2 >& matrix ) const
 {
-   Assert( this->getRows() == matrix.getRows() &&
+   TNL_ASSERT( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
               std::cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
@@ -152,16 +174,6 @@ bool Ellpack< Real, Device, Index >::operator != ( const Ellpack< Real2, Device2
 {
    return ! ( ( *this ) == matrix );
 }
-
-/*template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Matrix >
-bool Ellpack< Real, Device, Index >::copyFrom( const Matrix& matrix,
-                                                        const CompressedRowsLengthsVector& rowLengths )
-{
-   return Matrix< RealType, DeviceType, IndexType >::copyFrom( matrix, rowLengths );
-}*/
 
 template< typename Real,
           typename Device,
@@ -195,7 +207,7 @@ bool Ellpack< Real, Device, Index > :: addElementFast( const IndexType row,
                                                                 const RealType& thisElementMultiplicator )
 {
    // TODO: return this back when CUDA kernels support std::cerr
-   /*Assert( row >= 0 && row < this->rows &&
+   /*TNL_ASSERT( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
               std::cerr << " row = " << row
                    << " column = " << column
@@ -455,16 +467,16 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-const typename Ellpack< Real, Device, Index >::MatrixRow
+typename Ellpack< Real, Device, Index >::ConstMatrixRow
 Ellpack< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
    //printf( "this->rowLengths = %d this = %p \n", this->rowLengths, this );
    IndexType rowBegin = DeviceDependentCode::getRowBegin( *this, rowIndex );
-   return MatrixRow( &this->columnIndexes[ rowBegin ],
-                     &this->values[ rowBegin ],
-                     this->rowLengths,
-                     DeviceDependentCode::getElementStep( *this ) );
+   return ConstMatrixRow( &this->columnIndexes[ rowBegin ],
+                          &this->values[ rowBegin ],
+                          this->rowLengths,
+                          DeviceDependentCode::getElementStep( *this ) );
 }
 
 template< typename Real,
@@ -509,7 +521,7 @@ void Ellpack< Real, Device, Index > :: addMatrix( const Ellpack< Real2, Device, 
                                                                  const RealType& matrixMultiplicator,
                                                                  const RealType& thisMatrixMultiplicator )
 {
-   Assert( false, std::cerr << "TODO: implement" );
+   TNL_ASSERT( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -521,7 +533,7 @@ template< typename Real,
 void Ellpack< Real, Device, Index >::getTransposition( const Ellpack< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   Assert( false, std::cerr << "TODO: implement" );
+   TNL_ASSERT( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -534,7 +546,7 @@ bool Ellpack< Real, Device, Index > :: performSORIteration( const Vector& b,
                                                                            Vector& x,
                                                                            const RealType& omega ) const
 {
-   Assert( row >=0 && row < this->getRows(),
+   TNL_ASSERT( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row
                    << " this->getRows() = " << this->getRows() << std::endl );
 
@@ -564,17 +576,95 @@ bool Ellpack< Real, Device, Index > :: performSORIteration( const Vector& b,
 }
 
 
+// copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+Ellpack< Real, Device, Index >&
+Ellpack< Real, Device, Index >::operator=( const Ellpack& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
+   return *this;
+}
+
+// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2, typename Device2, typename Index2, typename >
+Ellpack< Real, Device, Index >&
+Ellpack< Real, Device, Index >::operator=( const Ellpack< Real2, Device2, Index2 >& matrix )
+{
+   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
+                  "unknown device" );
+   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
+                  "unknown device" );
+
+   // setLike does not work here due to different alignment on Cuda and Host
+   this->rowLengths = matrix.rowLengths;
+   this->setDimensions( matrix.getRows(), matrix.getColumns() );
+
+   const int blockSize = 32;
+   const int blocks = roundUpDivision( this->getRows(), blockSize );
+
+   // host -> cuda
+   if( std::is_same< Device, Devices::Cuda >::value ) {
+      typename ValuesVector::HostType tmpValues;
+      typename ColumnIndexesVector::HostType tmpColumnIndexes;
+      tmpValues.setLike( this->values );
+      tmpColumnIndexes.setLike( this->columnIndexes );
+
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
+#endif
+      for( Index b = 0; b < blocks; b++ ) {
+         const Index offset = b * blockSize;
+         for( Index j = 0; j < rowLengths; j++ )
+            for( Index i = 0; i < blockSize && offset + i < this->getRows(); i++ ) {
+               tmpValues[ offset + j * alignedRows + i ] = matrix.values[ ( offset + i ) * rowLengths + j ];
+               tmpColumnIndexes[ offset + j * alignedRows + i ] = matrix.columnIndexes[ ( offset + i ) * rowLengths + j ];
+            }
+      }
+
+      this->values = tmpValues;
+      this->columnIndexes = tmpColumnIndexes;
+   }
+
+   // cuda -> host
+   if( std::is_same< Device, Devices::Host >::value ) {
+      ValuesVector tmpValues;
+      ColumnIndexesVector tmpColumnIndexes;
+      tmpValues.setLike( matrix.values );
+      tmpColumnIndexes.setLike( matrix.columnIndexes );
+      tmpValues = matrix.values;
+      tmpColumnIndexes = matrix.columnIndexes;
+
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
+#endif
+      for( Index b = 0; b < blocks; b++ ) {
+         const Index offset = b * rowLengths;
+         for( Index i = 0; i < blockSize && b * blockSize + i < this->getRows(); i++ )
+            for( Index j = 0; j < rowLengths; j++ ) {
+               this->values[ offset + i * rowLengths + j ] = tmpValues[ b * blockSize + j * matrix.alignedRows + i ];
+               this->columnIndexes[ offset + i * rowLengths + j ] = tmpColumnIndexes[ b * blockSize + j * matrix.alignedRows + i ];
+            }
+      }
+   }
+
+   return *this;
+}
+
+
 template< typename Real,
           typename Device,
           typename Index >
 bool Ellpack< Real, Device, Index >::save( File& file ) const
 {
    if( ! Sparse< Real, Device, Index >::save( file) ) return false;
-#ifdef HAVE_NOT_CXX11
-   if( ! file.write< IndexType, Devices::Host, IndexType >( &this->rowLengths, 1 ) ) return false;
-#else
    if( ! file.write( &this->rowLengths ) ) return false;
-#endif
    return true;
 }
 
@@ -584,11 +674,7 @@ template< typename Real,
 bool Ellpack< Real, Device, Index >::load( File& file )
 {
    if( ! Sparse< Real, Device, Index >::load( file) ) return false;
-#ifdef HAVE_NOT_CXX11
-   if( ! file.read< IndexType, Devices::Host, IndexType >( &this->rowLengths, 1 ) ) return false;
-#else
    if( ! file.read( &this->rowLengths ) ) return false;
-#endif
    return true;
 }
 
@@ -634,11 +720,9 @@ void Ellpack< Real, Device, Index >::print( std::ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::allocateElements()
+void Ellpack< Real, Device, Index >::allocateElements()
 {
-   if( ! Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths );
 }
 
 template<>
@@ -706,7 +790,7 @@ template<
 __global__ void EllpackVectorProductCudaKernel(
    const Index rows,
    const Index columns,
-   const Index compressedRowsLengths,
+   const Index compressedRowLengths,
    const Index alignedRows,
    const Index paddingIndex,
    const Index* columnIndexes,
@@ -722,7 +806,7 @@ __global__ void EllpackVectorProductCudaKernel(
    Index el( 0 );
    Real result( 0.0 );
    Index columnIndex;
-   while( el++ < compressedRowsLengths &&
+   while( el++ < compressedRowLengths &&
           ( columnIndex = columnIndexes[ i ] ) < columns &&
           columnIndex != paddingIndex )
    {
@@ -803,12 +887,12 @@ class EllpackDeviceDependentCode< Devices::Cuda >
                   inVector.getData(),
                   outVector.getData(),
                   gridIdx );
-               checkCudaDevice;
+               TNL_CHECK_CUDA_DEVICE;
             }
             //Devices::Cuda::freeFromDevice( kernel_this );
             //Devices::Cuda::freeFromDevice( kernel_inVector );
             //Devices::Cuda::freeFromDevice( kernel_outVector );
-            checkCudaDevice;
+            TNL_CHECK_CUDA_DEVICE;
             cudaThreadSynchronize();
          #endif
  

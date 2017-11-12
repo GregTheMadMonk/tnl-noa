@@ -1,6 +1,8 @@
 ADD_SUBDIRECTORY( Config )
 ADD_SUBDIRECTORY( Containers )
+ADD_SUBDIRECTORY( Debugging )
 ADD_SUBDIRECTORY( Devices )
+ADD_SUBDIRECTORY( Exceptions )
 ADD_SUBDIRECTORY( Experimental )
 ADD_SUBDIRECTORY( Functions )
 ADD_SUBDIRECTORY( Images )
@@ -25,19 +27,17 @@ set( headers
      File_impl.h
      FileName.h
      Object.h
-     List.h
-     List_impl.h
      Logger.h
      Logger_impl.h
      Math.h
      mpi-supp.h
+     ParallelFor.h
      param-types.h
      SharedPointer.h
      SmartPointer.h
      SmartPointersRegister.h
      StaticFor.h
      String.h
-     SystemInfo.h
      Timer.h
      UniquePointer.h )
 
@@ -48,7 +48,6 @@ set( common_SOURCES
      Logger.cpp
      SmartPointersRegister.cpp
      String.cpp
-     SystemInfo.cpp
      Timer.cpp )
      
 set( tnl_SOURCES ${tnl_config_SOURCES}
@@ -93,6 +92,8 @@ if( BUILD_CUDA )
 else( BUILD_CUDA )
    ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED 
                 ${tnl_SOURCES} )
+#ifMIC
+  #TARGET_COMPILE_DEFINITIONS( tnl${debugExt}-${tnlVersion} PUBLIC -DHAVE_MIC )
 endif( BUILD_CUDA )                                    
                
 SET_TARGET_PROPERTIES( tnl${debugExt}-${tnlVersion} PROPERTIES 

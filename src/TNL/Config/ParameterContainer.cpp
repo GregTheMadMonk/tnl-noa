@@ -200,7 +200,7 @@ parseCommandLine( int argc, char* argv[],
             std::cerr << "Missing value for the parameter " << option << "." << std::endl;
             return false;
          }
-         List< String > parsedEntryType;
+         Containers::List< String > parsedEntryType;
          if( ! parseObjectType( entryType, parsedEntryType ) )
          {
             std::cerr << "Internal error: Uknown config entry type " << entryType << "." << std::endl;
@@ -208,26 +208,26 @@ parseCommandLine( int argc, char* argv[],
          }
          if( parsedEntryType[ 0 ] == "List" )
          {
-            List< String >* string_list( 0 );
-            List< bool >* bool_list( 0 );
-            List< int >* integer_list( 0 );
-            List< double >* real_list( 0 );
+            Containers::List< String >* string_list( 0 );
+            Containers::List< bool >* bool_list( 0 );
+            Containers::List< int >* integer_list( 0 );
+            Containers::List< double >* real_list( 0 );
 
             if( parsedEntryType[ 1 ] == "String" )
-               string_list = new List< String >;
+               string_list = new Containers::List< String >;
             if( parsedEntryType[ 1 ] == "bool" )
-               bool_list = new List< bool >;
+               bool_list = new Containers::List< bool >;
             if( parsedEntryType[ 1 ] == "int" )
-               integer_list = new List< int >;
+               integer_list = new Containers::List< int >;
             if( parsedEntryType[ 1 ] == "double" )
-               real_list = new List< double >;
+               real_list = new Containers::List< double >;
  
             while( i < argc && ( ( argv[ i ] )[ 0 ] != '-' || ( atof( argv[ i ] ) < 0.0 && ( integer_list || real_list ) ) ) )
             {
                const char* value = argv[ i ++ ];
                if( string_list )
                {
-                  /*if( ! ( ( ConfigEntry< List< String > >* )  entry )->checkValue( String( value ) ) )
+                  /*if( ! ( ( ConfigEntry< Containers::List< String > >* )  entry )->checkValue( String( value ) ) )
                   {
                      delete string_list;
                      return false;
@@ -246,7 +246,7 @@ parseCommandLine( int argc, char* argv[],
                }
                if( integer_list )
                {
-                  /*if( ! ( ConfigEntry< List< int > >* ) entry->checkValue( atoi( value ) ) )
+                  /*if( ! ( ConfigEntry< Containers::List< int > >* ) entry->checkValue( atoi( value ) ) )
                   {
                      delete integer_list;
                      return false;
@@ -255,7 +255,7 @@ parseCommandLine( int argc, char* argv[],
                }
                if( real_list )
                {
-                  /*if( ! ( ConfigEntry< List< double > >* ) entry->checkValue( atof( value ) ) )
+                  /*if( ! ( ConfigEntry< Containers::List< double > >* ) entry->checkValue( atof( value ) ) )
                   {
                      delete real_list;
                      return false;
@@ -265,22 +265,22 @@ parseCommandLine( int argc, char* argv[],
             }
             if( string_list )
             {
-               parameters. addParameter< List< String > >( option, *string_list );
+               parameters. addParameter< Containers::List< String > >( option, *string_list );
                delete string_list;
             }
             if( bool_list )
             {
-               parameters. addParameter< List< bool > >( option, *bool_list );
+               parameters. addParameter< Containers::List< bool > >( option, *bool_list );
                delete bool_list;
             }
             if( integer_list )
             {
-               parameters. addParameter< List< int > >( option, *integer_list );
+               parameters. addParameter< Containers::List< int > >( option, *integer_list );
                delete integer_list;
             }
             if( real_list )
             {
-               parameters. addParameter< List< double > >( option, *real_list );
+               parameters. addParameter< Containers::List< double > >( option, *real_list );
                delete real_list;
             }
             if( i < argc ) i --;

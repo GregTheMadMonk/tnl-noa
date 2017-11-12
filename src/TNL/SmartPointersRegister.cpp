@@ -44,7 +44,7 @@ bool SmartPointersRegister::synchronizeDevice( int deviceId )
       const auto & set = pointersOnDevices.at( deviceId );
       for( auto&& it : set )
          ( *it ).synchronize();
-      return checkCudaDevice;
+      return TNL_CHECK_CUDA_DEVICE;
    }
    catch( std::out_of_range ) {
       return false;

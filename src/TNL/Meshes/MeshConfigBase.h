@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 namespace TNL {
@@ -20,7 +26,7 @@ namespace Meshes {
  * mesh storage layer.
  */
 template< typename Cell,
-          int WorldDimensions = Cell::dimensions,
+          int WorldDimension = Cell::dimensions,
           typename Real = double,
           typename GlobalIndex = int,
           typename LocalIndex = GlobalIndex,
@@ -33,8 +39,8 @@ struct MeshConfigBase
    typedef LocalIndex  LocalIndexType;
    typedef Id          IdType;
 
-   static const int worldDimensions = WorldDimensions;
-   static const int meshDimensions = Cell::dimensions;
+   static const int worldDimension = WorldDimension;
+   static const int meshDimension = Cell::dimensions;
 
    static String getType()
    {
@@ -50,20 +56,20 @@ struct MeshConfigBase
        *  Vertices and cells must always be stored
        */
       return true;
-		//return ( dimensions == 0 || dimensions == cellDimensions );
+		//return ( dimensions == 0 || dimensions == cellDimension );
 	}
  
    /****
     *  Storage of subentities of mesh entities
     */
 	template< typename MeshEntity >
-	static constexpr bool subentityStorage( MeshEntity, int SubentityDimensions )
+	static constexpr bool subentityStorage( MeshEntity, int SubentityDimension )
 	{
       /****
        *  Vertices must always be stored
        */
       return true;
-		//return ( SubentityDimensions == 0 );
+		//return ( SubentityDimension == 0 );
 	}
 
 	/****
@@ -71,22 +77,22 @@ struct MeshConfigBase
     * It must be false for vertices and cells.
     */
 	template< typename MeshEntity >
-	static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions )
+	static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimension )
 	{
-		return ( SubentityDimensions > 0 );
+		return ( SubentityDimension > 0 );
 	}
 
 	/****
     *  Storage of superentities of mesh entities
     */
 	template< typename MeshEntity >
-	static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions )
+	static constexpr bool superentityStorage( MeshEntity, int SuperentityDimension )
 	{
       return true;
 		//return false;
 	}
  
-   static_assert( WorldDimensions >= Cell::dimensions, "The number of the cell dimensions cannot be larger than the world dimension." );
+   static_assert( WorldDimension >= Cell::dimensions, "The number of the cell dimensions cannot be larger than the world dimension." );
 };
 
 } // namespace Meshes
