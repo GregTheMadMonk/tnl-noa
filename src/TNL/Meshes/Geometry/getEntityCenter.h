@@ -14,10 +14,6 @@
 #include <TNL/Meshes/GridEntity.h>
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshEntity.h>
-#include <TNL/Meshes/Topologies/Vertex.h>
-#include <TNL/Meshes/Topologies/Edge.h>
-#include <TNL/Meshes/Topologies/Triangle.h>
-#include <TNL/Meshes/Topologies/Tetrahedron.h>
 
 namespace TNL {
 namespace Meshes {
@@ -28,7 +24,7 @@ __cuda_callable__
 typename Grid::PointType
 getEntityCenter( const Grid & grid, const GridEntity< Grid, EntityDimension, Config > & entity )
 {
-    return entity.getCenter();
+   return entity.getCenter();
 }
 
 template< typename MeshConfig, typename Device >
@@ -37,43 +33,33 @@ typename MeshTraits< MeshConfig >::PointType
 getEntityCenter( const Mesh< MeshConfig, Device > & mesh,
                  const MeshEntity< MeshConfig, Device, Topologies::Vertex > & entity )
 {
-    return entity.getPoint();
+   return entity.getPoint();
 }
 
-template< typename MeshConfig, typename Device >
+/*
+ * Get an arithmetic mean of the entity's subvertices.
+ *
+ * For an simplex entity this corresponds to the centroid of the entity, but
+ * note that other shapes such as general polygons have different formulas for
+ * the centroid: https://en.wikipedia.org/wiki/Centroid#Centroid_of_a_polygon
+ */
+template< typename MeshConfig, typename Device, typename EntityTopology >
 __cuda_callable__
 typename MeshTraits< MeshConfig >::PointType
 getEntityCenter( const Mesh< MeshConfig, Device > & mesh,
-                 const MeshEntity< MeshConfig, Device, Topologies::Edge > & entity )
+                 const MeshEntity< MeshConfig, Device, EntityTopology > & entity )
 {
-    const auto& v0 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 0 ) );
-    const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
-    return 0.5 * ( v0.getPoint() + v1.getPoint() );
-}
-
-template< typename MeshConfig, typename Device >
-__cuda_callable__
-typename MeshTraits< MeshConfig >::PointType
-getEntityCenter( const Mesh< MeshConfig, Device > & mesh,
-                 const MeshEntity< MeshConfig, Device, Topologies::Triangle > & entity )
-{
-    const auto& v0 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 0 ) );
-    const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
-    const auto& v2 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 2 ) );
-    return ( 1.0 / 3.0 ) * ( v0.getPoint() + v1.getPoint() + v2.getPoint() );
-}
-
-template< typename MeshConfig, typename Device >
-__cuda_callable__
-typename MeshTraits< MeshConfig >::PointType
-getEntityCenter( const Mesh< MeshConfig, Device > & mesh,
-                 const MeshEntity< MeshConfig, Device, Topologies::Tetrahedron > & entity )
-{
-    const auto& v0 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 0 ) );
-    const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
-    const auto& v2 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 2 ) );
-    const auto& v3 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 3 ) );
-    return 0.25 * ( v0.getPoint() + v1.getPoint() + v2.getPoint() + v3.getPoint() );
+   using EntityType = MeshEntity< MeshConfig, Device, EntityTopology >;
+   constexpr typename MeshConfig::LocalIndexType subvertices = EntityType::template getSubentitiesCount< 0 >();
+   typename MeshTraits< MeshConfig >::PointType c{ 0.0 };
+   for( typename MeshConfig::LocalIndexType i = 0;
+        i < subvertices;
+        i++ )
+   {
+      const auto& v = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( i ) );
+      c += v.getPoint();
+   }
+   return ( 1.0 / subvertices ) * c;
 }
 
 } // namespace Meshes
