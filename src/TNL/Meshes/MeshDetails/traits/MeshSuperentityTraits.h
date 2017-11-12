@@ -29,14 +29,15 @@ template< typename MeshConfig,
           int Dimension >
 class MeshSuperentityTraits
 {
+   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType  = typename MeshConfig::LocalIndexType;
+
 public:
    static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
    static_assert( EntityTopology::dimension < Dimension, "Superentity dimension must be higher than the entity dimension." );
 
    static constexpr bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimension );
 
-   using GlobalIndexType     = typename MeshConfig::GlobalIndexType;
-   using LocalIndexType      = typename MeshConfig::LocalIndexType;
    using SuperentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
    using SuperentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
 

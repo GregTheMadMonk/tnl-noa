@@ -61,7 +61,7 @@ public:
 
    template< int Superdimension >
    __cuda_callable__
-   void setNumberOfSuperentities( const typename SuperentityTraits< Superdimension >::LocalIndexType size )
+   void setNumberOfSuperentities( const typename MeshTraitsType::LocalIndexType size )
    {
       static_assert( SuperentityTraits< Superdimension >::storageEnabled, "You try to set number of superentities which are not configured for storage." );
       BaseType::setNumberOfSuperentities( Meshes::DimensionTag< Superdimension >(),
@@ -70,7 +70,7 @@ public:
 
    template< int Superdimension >
    __cuda_callable__
-   typename SuperentityTraits< Superdimension >::LocalIndexType
+   typename MeshTraitsType::LocalIndexType
    getSuperentitiesCount() const
    {
       static_assert( SuperentityTraits< Superdimension >::storageEnabled, "You try to get number of superentities which are not configured for storage." );
@@ -80,8 +80,8 @@ public:
    template< int Superdimension >
    __cuda_callable__
    void
-   setSuperentityIndex( const typename SuperentityTraits< Superdimension >::LocalIndexType& localIndex,
-                        const typename SuperentityTraits< Superdimension >::GlobalIndexType& globalIndex )
+   setSuperentityIndex( const typename MeshTraitsType::LocalIndexType& localIndex,
+                        const typename MeshTraitsType::GlobalIndexType& globalIndex )
    {
       static_assert( SuperentityTraits< Superdimension >::storageEnabled, "You try to set superentities which are not configured for storage." );
       BaseType::setSuperentityIndex( Meshes::DimensionTag< Superdimension >(),
@@ -91,8 +91,8 @@ public:
 
    template< int Superdimension >
    __cuda_callable__
-   typename SuperentityTraits< Superdimension >::GlobalIndexType
-   getSuperentityIndex( const typename SuperentityTraits< Superdimension >::LocalIndexType localIndex ) const
+   typename MeshTraitsType::GlobalIndexType
+   getSuperentityIndex( const typename MeshTraitsType::LocalIndexType localIndex ) const
    {
       static_assert( SuperentityTraits< Superdimension >::storageEnabled, "You try to get superentities which are not configured for storage." );
       return BaseType::getSuperentityIndex( Meshes::DimensionTag< Superdimension >(),
@@ -127,8 +127,8 @@ class SuperentityAccessLayer< MeshConfig,
    using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, DimensionTag::value >;
 
 public:
-   using GlobalIndexType         = typename SuperentityTraitsType::GlobalIndexType;
-   using LocalIndexType          = typename SuperentityTraitsType::LocalIndexType;
+   using GlobalIndexType         = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType          = typename MeshTraitsType::LocalIndexType;
    using SuperentityAccessorType = typename SuperentityTraitsType::SuperentityAccessorType;
 
    /****
@@ -249,8 +249,8 @@ class SuperentityAccessLayer< MeshConfig,
    using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
 
 protected:
-   using GlobalIndexType         = typename MeshConfig::GlobalIndexType;
-   using LocalIndexType          = typename MeshConfig::LocalIndexType;
+   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType  = typename MeshConfig::LocalIndexType;
 
    /***
     * Necessary because of 'using BaseType::...;' in the derived classes

@@ -127,10 +127,10 @@ class EntityInitializerLayer< MeshConfig,
    using InitializerType            = Initializer< MeshConfig >;
    using MeshType                   = typename InitializerType::MeshType;
 
+   using GlobalIndexType            = typename MeshTraits< MeshConfig >::GlobalIndexType;
+   using LocalIndexType             = typename MeshTraits< MeshConfig >::LocalIndexType;
    using SuperentityTraitsType      = typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >;
    using SuperentityTopology        = typename SuperentityTraitsType::EntityTopology;
-   using GlobalIndexType            = typename SuperentityTraitsType::GlobalIndexType;
-   using LocalIndexType             = typename SuperentityTraitsType::LocalIndexType;
    using SubentitySeedsCreatorType  = SubentitySeedsCreator< MeshConfig, SuperdimensionTag, SubdimensionTag >;
    using SuperentityInitializerType = SuperentityStorageInitializer< MeshConfig, SubdimensionTag, SuperdimensionTag >;
 
@@ -187,10 +187,10 @@ class EntityInitializerLayer< MeshConfig,
    using InitializerType            = Initializer< MeshConfig >;
    using MeshType                   = typename InitializerType::MeshType;
 
+   using GlobalIndexType            = typename MeshTraits< MeshConfig >::GlobalIndexType;
+   using LocalIndexType             = typename MeshTraits< MeshConfig >::LocalIndexType;
    using SuperentityTraitsType      = typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >;
    using SuperentityTopology        = typename SuperentityTraitsType::EntityTopology;
-   using GlobalIndexType            = typename SuperentityTraitsType::GlobalIndexType;
-   using LocalIndexType             = typename SuperentityTraitsType::LocalIndexType;
    using SubentitySeedsCreatorType  = SubentitySeedsCreator< MeshConfig, SuperdimensionTag, SubdimensionTag >;
    using SuperentityInitializerType = SuperentityStorageInitializer< MeshConfig, SubdimensionTag, SuperdimensionTag >;
 
@@ -251,10 +251,10 @@ class EntityInitializerLayer< MeshConfig,
    using InitializerType           = Initializer< MeshConfig >;
    using MeshType                  = typename InitializerType::MeshType;
 
+   using GlobalIndexType           = typename MeshTraits< MeshConfig >::GlobalIndexType;
+   using LocalIndexType            = typename MeshTraits< MeshConfig >::LocalIndexType;
    using SuperentityTraitsType     = typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >;
    using SuperentityTopology       = typename SuperentityTraitsType::EntityTopology;
-   using GlobalIndexType           = typename SuperentityTraitsType::GlobalIndexType;
-   using LocalIndexType            = typename SuperentityTraitsType::LocalIndexType;
    using SubentitySeedsCreatorType = SubentitySeedsCreator< MeshConfig, SuperdimensionTag, SubdimensionTag >;
 
 public:
@@ -309,10 +309,10 @@ class EntityInitializerLayer< MeshConfig,
    using InitializerType           = Initializer< MeshConfig >;
    using MeshType                  = typename InitializerType::MeshType;
 
+   using GlobalIndexType           = typename MeshTraits< MeshConfig >::GlobalIndexType;
+   using LocalIndexType            = typename MeshTraits< MeshConfig >::LocalIndexType;
    using SuperentityTraitsType     = typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >;
    using SuperentityTopology       = typename SuperentityTraitsType::EntityTopology;
-   using GlobalIndexType           = typename SuperentityTraitsType::GlobalIndexType;
-   using LocalIndexType            = typename SuperentityTraitsType::LocalIndexType;
    using SubentitySeedsCreatorType = SubentitySeedsCreator< MeshConfig, SuperdimensionTag, SubdimensionTag >;
 
 public:
@@ -363,10 +363,10 @@ class EntityInitializerLayer< MeshConfig,
    using InitializerType            = Initializer< MeshConfig >;
    using MeshType                   = typename InitializerType::MeshType;
 
+   using GlobalIndexType            = typename MeshTraits< MeshConfig >::GlobalIndexType;
+   using LocalIndexType             = typename MeshTraits< MeshConfig >::LocalIndexType;
    using SuperentityTraitsType      = typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >;
    using SuperentityTopology        = typename SuperentityTraitsType::EntityTopology;
-   using GlobalIndexType            = typename SuperentityTraitsType::GlobalIndexType;
-   using LocalIndexType             = typename SuperentityTraitsType::LocalIndexType;
    using SubentitySeedsCreatorType  = SubentitySeedsCreator< MeshConfig, SuperdimensionTag, SubdimensionTag >;
    using SuperentityInitializerType = SuperentityStorageInitializer< MeshConfig, SubdimensionTag, SuperdimensionTag >;
 

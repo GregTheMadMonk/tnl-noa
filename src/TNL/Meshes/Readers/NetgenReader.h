@@ -176,7 +176,7 @@ public:
          return false;
       getline( inputFile, line );
       iss.str( line );
-      typedef typename MeshType::MeshTraitsType::template EntityTraits< 0 >::GlobalIndexType VertexIndexType;
+      typedef typename MeshType::Config::GlobalIndexType VertexIndexType;
       VertexIndexType pointsCount;
       iss >> pointsCount;
       meshBuilder.setPointsCount( pointsCount );

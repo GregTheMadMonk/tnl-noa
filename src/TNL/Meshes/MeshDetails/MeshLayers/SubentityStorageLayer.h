@@ -71,8 +71,7 @@ class SubentityStorageLayer< MeshConfig,
    using SubentityTraitsType = typename MeshTraitsType::template SubentityTraits< EntityTopology, SubdimensionTag::value >;
 
 protected:
-   using GlobalIndexType    = typename SubentityTraitsType::GlobalIndexType;
-   using LocalIndexType     = typename SubentityTraitsType::LocalIndexType;
+   using GlobalIndexType    = typename MeshTraitsType::GlobalIndexType;
    using StorageNetworkType = typename SubentityTraitsType::StorageNetworkType;
 
    SubentityStorageLayer() = default;

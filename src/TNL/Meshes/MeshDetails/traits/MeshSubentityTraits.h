@@ -36,6 +36,9 @@ template< typename MeshConfig,
           int Dimension >
 class MeshSubentityTraits
 {
+   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType  = typename MeshConfig::LocalIndexType;
+
 public:
    static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
    static_assert( EntityTopology::dimension > Dimension, "Subentity dimension must be smaller than the entity dimension." );
@@ -44,8 +47,6 @@ public:
    static constexpr bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimension );
    static constexpr int count = Topologies::Subtopology< EntityTopology, Dimension >::count;
 
-   using GlobalIndexType   = typename MeshConfig::GlobalIndexType;
-   using LocalIndexType    = typename MeshConfig::LocalIndexType;
    using SubentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
    using SubentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
    using Seed              = EntitySeed< MeshConfig, SubentityTopology >;

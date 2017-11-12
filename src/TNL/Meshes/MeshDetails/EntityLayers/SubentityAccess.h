@@ -60,15 +60,15 @@ public:
    }
 
    template< int Subdimension >
-   static constexpr typename SubentityTraits< Subdimension >::LocalIndexType getSubentitiesCount()
+   static constexpr typename MeshTraitsType::LocalIndexType getSubentitiesCount()
    {
       return SubentityTraits< Subdimension >::count;
    }
 
    template< int Subdimension >
    __cuda_callable__
-   void setSubentityIndex( const typename SubentityTraits< Subdimension >::LocalIndexType& localIndex,
-                           const typename SubentityTraits< Subdimension >::GlobalIndexType& globalIndex )
+   void setSubentityIndex( const typename MeshTraitsType::LocalIndexType& localIndex,
+                           const typename MeshTraitsType::GlobalIndexType& globalIndex )
    {
       static_assert( SubentityTraits< Subdimension >::storageEnabled, "You try to set subentity which is not configured for storage." );
       BaseType::setSubentityIndex( Meshes::DimensionTag< Subdimension >(),
@@ -78,8 +78,8 @@ public:
 
    template< int Subdimension >
    __cuda_callable__
-   typename SubentityTraits< Subdimension >::GlobalIndexType
-   getSubentityIndex( const typename SubentityTraits< Subdimension >::LocalIndexType localIndex ) const
+   typename MeshTraitsType::GlobalIndexType
+   getSubentityIndex( const typename MeshTraitsType::LocalIndexType localIndex ) const
    {
       static_assert( SubentityTraits< Subdimension >::storageEnabled, "You try to get subentity which is not configured for storage." );
       return BaseType::getSubentityIndex( Meshes::DimensionTag< Subdimension >(),
@@ -96,7 +96,7 @@ public:
 
    template< int Subdimension >
    __cuda_callable__
-   typename SubentityTraits< Subdimension >::IdPermutationArrayType getSubentityOrientation( typename SubentityTraits< Subdimension >::LocalIndexType index ) const
+   typename SubentityTraits< Subdimension >::IdPermutationArrayType getSubentityOrientation( typename MeshTraitsType::LocalIndexType index ) const
    {
       static_assert( SubentityTraits< Subdimension >::orientationEnabled, "You try to get subentity orientation which is not configured for storage." );
       return BaseType::getSubentityOrientation( Meshes::DimensionTag< Subdimension >(), index );
@@ -139,8 +139,8 @@ class SubentityAccessLayer< MeshConfig,
    using SubentityTraitsType    = typename MeshTraitsType::template SubentityTraits< EntityTopology, DimensionTag::value >;
 
 protected:
-   using GlobalIndexType        = typename SubentityTraitsType::GlobalIndexType;
-   using LocalIndexType         = typename SubentityTraitsType::LocalIndexType;
+   using GlobalIndexType        = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType         = typename MeshTraitsType::LocalIndexType;
    using SubentityAccessorType  = typename SubentityTraitsType::SubentityAccessorType;
    using OrientationArrayType   = typename SubentityTraitsType::OrientationArrayType;
    using IdPermutationArrayType = typename SubentityTraitsType::IdPermutationArrayType;
@@ -263,8 +263,8 @@ class SubentityAccessLayer< MeshConfig,
    using SubentityTraitsType   = typename MeshTraitsType::template SubentityTraits< EntityTopology, DimensionTag::value >;
 
 protected:
-   using GlobalIndexType       = typename SubentityTraitsType::GlobalIndexType;
-   using LocalIndexType        = typename SubentityTraitsType::LocalIndexType;
+   using GlobalIndexType       = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
    using SubentityAccessorType = typename SubentityTraitsType::SubentityAccessorType;
 
    SubentityAccessLayer() = default;
@@ -360,6 +360,9 @@ class SubentityAccessLayer< MeshConfig,
    using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
 
 protected:
+   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType  = typename MeshConfig::LocalIndexType;
+
    /***
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
@@ -368,11 +371,9 @@ protected:
    void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
    void getSubentitiesCount( DimensionTag ) const {}
-   template< typename LocalIndexType >
    __cuda_callable__
    void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
-   template< typename LocalIndexType, typename GlobalIndexType >
    __cuda_callable__
    void setSubentityIndex( DimensionTag,
                            const LocalIndexType& localIndex,
@@ -407,6 +408,9 @@ class SubentityAccessLayer< MeshConfig,
                             false >
 {
 protected:
+   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType  = typename MeshConfig::LocalIndexType;
+
    /***
     * Necessary because of 'using BaseType::...;' in the derived classes
     */
@@ -416,11 +420,9 @@ protected:
                                        const SubentityAccessorType& storage ) {}
    __cuda_callable__
    void getSubentitiesCount( DimensionTag ) const {}
-   template< typename LocalIndexType >
    __cuda_callable__
    void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
-   template< typename LocalIndexType, typename GlobalIndexType >
    __cuda_callable__
    void setSubentityIndex( DimensionTag,
                            const LocalIndexType& localIndex,

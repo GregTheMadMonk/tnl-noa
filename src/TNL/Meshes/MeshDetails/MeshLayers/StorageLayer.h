@@ -47,7 +47,7 @@ public:
 
 protected:
    template< int Dimension >
-   void setEntitiesCount( const typename EntityTraits< Dimension >::GlobalIndexType& entitiesCount )
+   void setEntitiesCount( const typename MeshTraitsType::GlobalIndexType& entitiesCount )
    {
       static_assert( EntityTraits< Dimension >::storageEnabled, "You try to set number of entities which are not configured for storage." );
       BaseType::setEntitiesCount( DimensionTag< Dimension >(), entitiesCount );
@@ -97,9 +97,9 @@ class StorageLayer< MeshConfig,
 public:
    using BaseType = StorageLayer< MeshConfig, Device, typename DimensionTag::Increment >;
    using MeshTraitsType   = MeshTraits< MeshConfig, Device >;
+   using GlobalIndexType  = typename MeshTraitsType::GlobalIndexType;
    using EntityTraitsType = typename MeshTraitsType::template EntityTraits< DimensionTag::value >;
    using StorageArrayType = typename EntityTraitsType::StorageArrayType;
-   using GlobalIndexType  = typename EntityTraitsType::GlobalIndexType;
    using EntityType       = typename EntityTraitsType::EntityType;
    using EntityTopology   = typename EntityTraitsType::EntityTopology;
    using SubentityStorageBaseType = SubentityStorageLayerFamily< MeshConfig, Device, EntityTopology >;

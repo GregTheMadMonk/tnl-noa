@@ -247,7 +247,7 @@ TEST( MeshOrderingTest, OrderingOnHost )
    MeshHost mesh;
    ASSERT_TRUE( buildTriangleMesh( mesh ) );
 
-   using PermutationVector = typename MeshHost::IndexPermutationVector;
+   using PermutationVector = typename MeshHost::GlobalIndexVector;
    PermutationVector vertexIdentity, edgeIdentity, cellIdentity,
                      vertexPermutation, edgePermutation, cellPermutation,
                      vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
@@ -282,7 +282,7 @@ TEST( MeshOrderingTest, OrderingOnCuda )
    ASSERT_TRUE( buildTriangleMesh( meshHost ) );
    mesh = meshHost;
 
-   using PermutationCuda = typename MeshCuda::IndexPermutationVector;
+   using PermutationCuda = typename MeshCuda::GlobalIndexVector;
    PermutationCuda vertexIdentity, edgeIdentity, cellIdentity,
                    vertexPermutation, edgePermutation, cellPermutation,
                    vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
@@ -303,7 +303,7 @@ TEST( MeshOrderingTest, OrderingOnCuda )
    // test is on host
    {
       // local scope so we can use the same names
-      using PermutationVector = typename MeshHost::IndexPermutationVector;
+      using PermutationVector = typename MeshHost::GlobalIndexVector;
       PermutationVector vertexIdentity, edgeIdentity, cellIdentity,
                         vertexPermutation, edgePermutation, cellPermutation,
                         vertexInversePermutation, edgeInversePermutation, cellInversePermutation;

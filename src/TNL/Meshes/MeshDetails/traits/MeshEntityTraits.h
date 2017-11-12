@@ -70,13 +70,12 @@ template< typename MeshConfig,
           int Dimension >
 class MeshEntityTraits
 {
+   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
+
 public:
    static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
 
-   using GlobalIndexType               = typename MeshConfig::GlobalIndexType;
-   using LocalIndexType                = typename MeshConfig::LocalIndexType;
    using EntityTopology                = typename EntityTopologyGetter< MeshConfig, DimensionTag< Dimension > >::Topology;
-
    using EntityType                    = MeshEntity< MeshConfig, Device, EntityTopology >;
    using SeedType                      = EntitySeed< MeshConfig, EntityTopology >;
    using ReferenceOrientationType      = MeshEntityReferenceOrientation< MeshConfig, EntityTopology >;

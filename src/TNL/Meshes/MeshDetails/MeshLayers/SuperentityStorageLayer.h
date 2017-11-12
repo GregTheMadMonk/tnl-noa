@@ -73,7 +73,7 @@ class SuperentityStorageLayer< MeshConfig, Device, EntityTopology, Superdimensio
    using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >;
 
 protected:
-   using GlobalIndexType    = typename SuperentityTraitsType::GlobalIndexType;
+   using GlobalIndexType    = typename MeshTraitsType::GlobalIndexType;
    using StorageNetworkType = typename SuperentityTraitsType::StorageNetworkType;
  
    SuperentityStorageLayer() = default;
