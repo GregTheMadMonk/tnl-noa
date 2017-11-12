@@ -370,7 +370,6 @@ protected:
    __cuda_callable__
    void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
-   void getSubentitiesCount( DimensionTag ) const {}
    __cuda_callable__
    void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
@@ -418,8 +417,6 @@ protected:
    __cuda_callable__
    void bindSubentitiesStorageNetwork( DimensionTag,
                                        const SubentityAccessorType& storage ) {}
-   __cuda_callable__
-   void getSubentitiesCount( DimensionTag ) const {}
    __cuda_callable__
    void getSubentityIndex( DimensionTag,
                            const LocalIndexType localIndex ) const {}
