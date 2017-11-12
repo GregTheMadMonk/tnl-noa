@@ -336,9 +336,9 @@ setup( const Config::ParameterContainer& parameters,
    if( testFunction == "smooth-heaviside-of-vector-norm" )
    {
       typedef VectorNorm< Dimension, Real > FunctionType;
-      typedef SmoothHeaviside< Dimension, Real > OperatorType;
+      typedef SmoothHeaviside< FunctionType > OperatorType;
       functionType = vectorNorm;
-      operatorType = SmoothHeaviside;
+      operatorType = smoothHeaviside;
       return ( setupFunction< FunctionType >( parameters, prefix + "vector-norm-" ) && 
                setupOperator< OperatorType >( parameters, prefix + "smooth-heaviside-" ) );
    }

@@ -32,8 +32,18 @@ class SmoothHeaviside : public Functions::Domain< Function::getDomainDimenions()
       SmoothHeaviside()
       : sharpness( 1.0 ){}
       
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" )
+      {
+         config.addEntry< double >( prefix + "sharpness", "Outer multiplicator of the Heaviside operator - -1.0 turns the function graph upside/down.", 1.0 );
+      }
+
       bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" ){};
+                  const String& prefix = "" )
+      {
+         this->sharpness = parameters.getParameter< double >( prefix + "sharpness" );
+         return true;
+      }
       
       
       void setSharpness( const RealType& sharpness )
