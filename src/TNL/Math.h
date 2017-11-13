@@ -75,7 +75,6 @@ ResultType max( const T1& a, const T2& b )
 #endif
 }
 
-
 /***
  * This function returns absolute value of given number.
  */
@@ -92,6 +91,45 @@ T abs( const T& n )
 #endif
 }
 
+/***
+ * This function returns argument of minimum of two numbers.
+ */
+template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
+__cuda_callable__ inline
+ResultType argMin( const T1& a, const T2& b )
+{
+   return ( a < b ) ?  a : b;
+}
+
+/***
+ * This function returns argument of maximum of two numbers.
+ */
+template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
+__cuda_callable__
+ResultType argMax( const T1& a, const T2& b )
+{
+   return ( a > b ) ?  a : b;   
+}
+
+/***
+ * This function returns argument of minimum of absolute values of two numbers.
+ */
+template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
+__cuda_callable__ inline
+ResultType argAbsMin( const T1& a, const T2& b )
+{
+   return ( TNL::abs( a ) < TNL::abs( b ) ) ?  a : b;
+}
+
+/***
+ * This function returns argument of maximum of absolute values of two numbers.
+ */
+template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
+__cuda_callable__
+ResultType argAbsMax( const T1& a, const T2& b )
+{
+   return ( TNL::abs( a ) > TNL::abs( b ) ) ?  a : b;   
+}
 
 template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
 __cuda_callable__ inline
