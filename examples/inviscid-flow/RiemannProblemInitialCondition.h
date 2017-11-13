@@ -121,13 +121,14 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 1,MeshReal, Device, Me
          for( int i = 0; i < mesh.getDimensions().x(); i++)
             if ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                {
+                  std::cout<<i;
                   CellType cell(mesh, CoordinatesType(i));
                   (* conservativeVariables.getDensity()).setValue(cell, this->SWDDensity);
                }
             else
                {
                   CellType cell(mesh, CoordinatesType(i));
-                  (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEDDensity);
+//                  (* conservativeVariables.getDensity()).setValue(cell, this->SEDDensity);
                }
       };
 
@@ -140,12 +141,12 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 1,MeshReal, Device, Me
             if ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                {
                   CellType cell(mesh, CoordinatesType(i));
-                  (* conservativeVariables.getMomentum()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWDMomentum);
+//                  (* conservativeVariables.getMomentum()).setValue(cell, this->SWDMomentum);
                }
             else
                {
                   CellType cell(mesh, CoordinatesType(i));
-                  (* conservativeVariables.getMomentum()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEDMomentum);
+//                  (* conservativeVariables.getMomentum()).setValue(cell, this->SEDMomentum);
                }
       };
 
@@ -158,12 +159,12 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 1,MeshReal, Device, Me
             if ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                {
                   CellType cell(mesh, CoordinatesType(i));
-                  (* conservativeVariables.getEnergy()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWDEnergy);
+//                  (* conservativeVariables.getEnergy()).setValue(cell, this->SWDEnergy);
                }
             else
                {
                   CellType cell(mesh, CoordinatesType(i));
-                  (* conservativeVariables.getEnergy()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEDEnergy);
+//                  (* conservativeVariables.getEnergy()).setValue(cell, this->SEDEnergy);
                }
       };
 
@@ -178,7 +179,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 1,MeshReal, Device, Me
 template <typename MeshReal,
           typename Device,
           typename MeshIndex>
-class RiemannProblemInitialConditionSetter< Meshes::Grid< 2,MeshReal, Device, MeshIndex > >
+class RiemannProblemInitialConditionSetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex > >
 {
    public:
       
@@ -275,28 +276,28 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 2,MeshReal, Device, Me
                  && ( j <= this->discontinuityPlacement[ 1 ] * mesh.getDimensions().y() ) )
                   {
                      CellType cell(mesh, CoordinatesType(i,j));
-                     (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWDDensity);
+                     (* conservativeVariables.getDensity()).setValue(cell, this->SWDDensity);
                   }
                else
                if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                  && ( j <= this->discontinuityPlacement[ 1 ] * mesh.getDimensions().y() ) )
                   {
                      CellType cell(mesh, CoordinatesType(i,j));
-                     (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEDDensity);
+                     (* conservativeVariables.getDensity()).setValue(cell, this->SEDDensity);
                   }
                else
                if ( ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                  && ( j > this->discontinuityPlacement[ 1 ] * mesh.getDimensions().y() ) )
                   {
                      CellType cell(mesh, CoordinatesType(i,j));
-                     (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->NWDDensity);
+                     (* conservativeVariables.getDensity()).setValue(cell, this->NWDDensity);
                   }
                else
                if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                  && ( j > this->discontinuityPlacement[ 1 ] * mesh.getDimensions().y() ) )
                   {
                      CellType cell(mesh, CoordinatesType(i,j));
-                     (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->NEDDensity);
+                     (* conservativeVariables.getDensity()).setValue(cell, this->NEDDensity);
                   }
       };
 
@@ -311,28 +312,28 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 2,MeshReal, Device, Me
                  && ( j <= this->discontinuityPlacement[ 1 ] * mesh.getDimensions().y() ) )
                   {
                      CellType cell(mesh, CoordinatesType(i,j));
-                     (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWDMomentum);
+                     (* conservativeVariables.getDensity()).setValue(cell, this->SWDMomentum);
                   }
                else
                if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                  && ( j <= this->discontinuityPlacement[ 1 ] * mesh.getDimensions().y() ) )
                   {
                      CellType cell(mesh, CoordinatesType(i,j));
-                     (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEDMomentum);
+                     (* conservativeVariables.getDensity()).setValue(cell, this->SEDMomentum);
                   }
                else
                if ( ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                  && ( j > this->discontinuityPlacement[ 1 ] * mesh.getDimensions().y() ) )
                   {
                      CellType cell(mesh, CoordinatesType(i,j));
-                     (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->NWDMomentum);
+                     (* conservativeVariables.getDensity()).setValue(cell, this->NWDMomentum);
                   }
                else
                if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                  && ( j > this->discontinuityPlacement[ 1 ] * mesh.getDimensions().y() ) )
                   {
                      CellType cell(mesh, CoordinatesType(i,j));
-                     (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->NEDMomentum);
+                     (* conservativeVariables.getDensity()).setValue(cell, this->NEDMomentum);
                   }
       };
 
@@ -347,28 +348,28 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 2,MeshReal, Device, Me
                  && ( j <= this->discontinuityPlacement[ 1 ] * mesh.getDimensions().y() ) )
                   {
                      CellType cell(mesh, CoordinatesType(i,j));
-                     (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWDEnergy);
+                     (* conservativeVariables.getDensity()).setValue(cell, this->SWDEnergy);
                   }
                else
                if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                  && ( j <= this->discontinuityPlacement[ 1 ] * mesh.getDimensions().y() ) )
                   {
                      CellType cell(mesh, CoordinatesType(i,j));
-                     (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEDEnergy);
+                     (* conservativeVariables.getDensity()).setValue(cell, this->SEDEnergy);
                   }
                else
                if ( ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                  && ( j > this->discontinuityPlacement[ 1 ] * mesh.getDimensions().y() ) )
                   {
                      CellType cell(mesh, CoordinatesType(i,j));
-                     (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->NWDEnergy);
+                     (* conservativeVariables.getDensity()).setValue(cell, this->NWDEnergy);
                   }
                else
                if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                  && ( j > this->discontinuityPlacement[ 1 ] * mesh.getDimensions().y() ) )
                   {
                      CellType cell(mesh, CoordinatesType(i,j));
-                     (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->NEDEnergy);
+                     (* conservativeVariables.getDensity()).setValue(cell, this->NEDEnergy);
                   }
       };
 
@@ -382,11 +383,11 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 2,MeshReal, Device, Me
 template <typename MeshReal,
           typename Device,
           typename MeshIndex>
-class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, MeshIndex > >
+class RiemannProblemInitialConditionSetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex > >
 {
    public:
       
-      typedef Meshes::Grid< 3,MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::RealType RealType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
@@ -481,7 +482,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k <= this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWDDensity);
+                        (* conservativeVariables.getDensity()).setValue(cell, this->SWDDensity);
                      }
                   else
                   if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -489,7 +490,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k <= this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEDDensity);
+                        (* conservativeVariables.getDensity()).setValue(cell, this->SEDDensity);
                      }
                   else
                   if ( ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -497,7 +498,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k <= this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->NWDDensity);
+                        (* conservativeVariables.getDensity()).setValue(cell, this->NWDDensity);
                      }
                   else
                   if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -505,7 +506,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k <= this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->NEDDensity);
+                        (* conservativeVariables.getDensity()).setValue(cell, this->NEDDensity);
                      }
                   else
                   if ( ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -513,7 +514,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k > this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWUDensity);
+                        (* conservativeVariables.getDensity()).setValue(cell, this->SWUDensity);
                      }
                   else
                   if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -521,7 +522,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k > this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEUDensity);
+                        (* conservativeVariables.getDensity()).setValue(cell, this->SEUDensity);
                      }
                   else
                   if ( ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -529,7 +530,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k > this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWUDensity);
+                        (* conservativeVariables.getDensity()).setValue(cell, this->SWUDensity);
                      }
                   else
                   if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -537,7 +538,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k > this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getDensity()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEUDensity);
+                        (* conservativeVariables.getDensity()).setValue(cell, this->SEUDensity);
                      }
       };
 
@@ -554,7 +555,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k <= this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getMomentum()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWDMomentum);
+                        (* conservativeVariables.getMomentum()).setValue(cell, this->SWDMomentum);
                      }
                   else
                   if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -562,7 +563,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k <= this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getMomentum()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEDMomentum);
+                        (* conservativeVariables.getMomentum()).setValue(cell, this->SEDMomentum);
                      }
                   else
                   if ( ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -570,7 +571,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k <= this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getMomentum()).setElement(mesh.template getEntityIndex< CellType >(cell), this->NWDMomentum);
+                        (* conservativeVariables.getMomentum()).setValue(cell, this->NWDMomentum);
                      }
                   else
                   if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -578,7 +579,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k <= this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getMomentum()).setElement(mesh.template getEntityIndex< CellType >(cell), this->NEDMomentum);
+                        (* conservativeVariables.getMomentum()).setValue(cell, this->NEDMomentum);
                      }
                   else
                   if ( ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -586,7 +587,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k > this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getMomentum()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWUMomentum);
+                        (* conservativeVariables.getMomentum()).setValue(cell, this->SWUMomentum);
                      }
                   else
                   if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -594,7 +595,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k > this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getMomentum()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEUMomentum);
+                        (* conservativeVariables.getMomentum()).setValue(cell, this->SEUMomentum);
                      }
                   else
                   if ( ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -602,7 +603,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k > this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getMomentum()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWUMomentum);
+                        (* conservativeVariables.getMomentum()).setValue(cell, this->SWUMomentum);
                      }
                   else
                   if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -610,7 +611,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k > this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getMomentum()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEUMomentum);
+                        (* conservativeVariables.getMomentum()).setValue(cell, this->SEUMomentum);
                      }
       };
 
@@ -627,7 +628,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k <= this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getEnergy()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWDEnergy);
+                        (* conservativeVariables.getEnergy()).setValue(cell, this->SWDEnergy);
                      }
                   else
                   if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -635,7 +636,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k <= this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getEnergy()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEDEnergy);
+                        (* conservativeVariables.getEnergy()).setValue(cell, this->SEDEnergy);
                      }
                   else
                   if ( ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -643,7 +644,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k <= this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getEnergy()).setElement(mesh.template getEntityIndex< CellType >(cell), this->NWDEnergy);
+                        (* conservativeVariables.getEnergy()).setValue(cell, this->NWDEnergy);
                      }
                   else
                   if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -651,7 +652,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k <= this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getEnergy()).setElement(mesh.template getEntityIndex< CellType >(cell), this->NEDEnergy);
+                        (* conservativeVariables.getEnergy()).setValue(cell, this->NEDEnergy);
                      }
                   else
                   if ( ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -659,7 +660,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k > this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getEnergy()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWUEnergy);
+                        (* conservativeVariables.getEnergy()).setValue(cell, this->SWUEnergy);
                      }
                   else
                   if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -667,7 +668,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k > this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getEnergy()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEUEnergy);
+                        (* conservativeVariables.getEnergy()).setValue(cell, this->SEUEnergy);
                      }
                   else
                   if ( ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -675,7 +676,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k > this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getEnergy()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SWUEnergy);
+                        (* conservativeVariables.getEnergy()).setValue(cell, this->SWUEnergy);
                      }
                   else
                   if ( ( i > this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
@@ -683,7 +684,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3,MeshReal, Device, Me
                     && ( k > this->discontinuityPlacement[ 2 ] * mesh.getDimensions().z() ) )
                      {
                         CellType cell(mesh, CoordinatesType(i,j,k));
-                        (* conservativeVariables.getEnergy()).setElement(mesh.template getEntityIndex< CellType >(cell), this->SEUEnergy);
+                        (* conservativeVariables.getEnergy()).setValue(cell, this->SEUEnergy);
                      }
       };
 
@@ -776,7 +777,7 @@ class RiemannProblemInitialCondition
          config.addEntry< double >( prefix + "SED-pressure", "This sets a value of southeast down pressure.", 1.0  );
          config.addEntry< double >( prefix + "gamma", "Gamma in the ideal gas state equation.", 1.67 );
 
-         config.addEntry< String >( prefix + "scheme", " One of predefined initial condition.", "none");
+         config.addEntry< String >( prefix + "initial", " One of predefined initial condition.", "none");
             config.addEntryEnum< String >( "none" );
             config.addEntryEnum< String >( "1D_2" );
             config.addEntryEnum< String >( "1D_3a" );
@@ -790,8 +791,8 @@ class RiemannProblemInitialCondition
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         String scheme = parameters.getParameter< String >( prefix + "scheme" );
-         if(scheme == prefix + "none")
+         String initial = parameters.getParameter< String >( prefix + "initial" );
+         if(initial == prefix + "none")
             {
                this->discontinuityPlacement.setup( parameters, prefix + "discontinuity-placement-" );
                this->gamma = parameters.getParameter< double >( prefix + "gamma" );
@@ -853,7 +854,7 @@ class RiemannProblemInitialCondition
                this->SEDMomentum = SEDVelocity * SEDDensity;
  
            }
-         if(scheme == prefix + "1D_2")
+         if(initial == prefix + "1D_2")
            predefinedInitialCondition( 1.666, 0.5, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
                                        0.0, 0.0, 0.0, 1.0, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
                                        0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
@@ -868,7 +869,7 @@ class RiemannProblemInitialCondition
                                        0.0, 0.0, 0.0, //double preNEDVelocityX, double preNEDVelocityY,double preNEDVelocityZ,
                                        2.0, 0.0, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
                                        );
-      if(scheme == prefix + "1D_3a")
+      if(initial == prefix + "1D_3a")
            predefinedInitialCondition( 1.666, 0.8, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
                                        0.0, 0.0, 0.0, 1.0, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
                                        0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
@@ -883,7 +884,7 @@ class RiemannProblemInitialCondition
                                        0.0, 0.0, 0.0, //double preNEDVelocityX, double preNEDVelocityY,double preNEDVelocityZ,
                                        -1.57945, 0.0, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
                                        );
-      if(scheme == prefix + "1D_4")
+      if(initial == prefix + "1D_4")
            predefinedInitialCondition( 1.666, 0.4, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
                                        0.0, 0.0, 0.0, 5.99924, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
                                        0.0, 0.0, 0.0, 5.99242, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
@@ -898,7 +899,7 @@ class RiemannProblemInitialCondition
                                        0.0, 0.0, 0.0, //double preNEDVelocityX, double preNEDVelocityY,double preNEDVelocityZ,
                                        -6.19633, 0.0, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
                                        );
-      if(scheme == prefix + "1D_5")
+      if(initial == prefix + "1D_5")
            predefinedInitialCondition( 1.666, 0.5, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
                                        0.0, 0.0, 0.0, 1.4, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
                                        0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
@@ -913,7 +914,7 @@ class RiemannProblemInitialCondition
                                        0.0, 0.0, 0.0, //double preNEDVelocityX, double preNEDVelocityY,double preNEDVelocityZ,
                                        0.0, 0.0, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
                                        );
-      if(scheme == prefix + "1D_6")
+      if(initial == prefix + "1D_6")
            predefinedInitialCondition( 1.666, 0.5, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
                                        0.0, 0.0, 0.0, 1.4, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
                                        0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
@@ -928,7 +929,7 @@ class RiemannProblemInitialCondition
                                        0.0, 0.0, 0.0, //double preNEDVelocityX, double preNEDVelocityY,double preNEDVelocityZ,
                                        1.0, 0.0, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
                                        );
-      if(scheme == prefix + "1D_Noh")
+      if(initial == prefix + "1D_Noh")
            predefinedInitialCondition( 1.666, 0.5, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
                                        0.0, 0.0, 0.0, 1.0, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
                                        0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
@@ -943,7 +944,7 @@ class RiemannProblemInitialCondition
                                        0.0, 0.0, 0.0, //double preNEDVelocityX, double preNEDVelocityY,double preNEDVelocityZ,
                                        -1.0, 0.0, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
                                        );
-      if(scheme == prefix + "1D_peak")
+      if(initial == prefix + "1D_peak")
            predefinedInitialCondition( 1.666, 0.5, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
                                        0.0, 0.0, 0.0, 0.12612, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
                                        0.0, 0.0, 0.0, 6.5915, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
@@ -958,7 +959,7 @@ class RiemannProblemInitialCondition
                                        0.0, 0.0, 0.0, //double preNEDVelocityX, double preNEDVelocityY,double preNEDVelocityZ,
                                        2.26542, 0.0, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
                                        );
-      if(scheme == prefix + "2D_3")
+      if(initial == prefix + "2D_3")
            predefinedInitialCondition( 1.666, 0.5, 0.5, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
                                        0.0, 0.0, 0.5323, 0.138, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
                                        0.0, 0.0, 1.5, 0.5323, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
@@ -973,7 +974,7 @@ class RiemannProblemInitialCondition
                                        0.0, 0.0, 0.0, //double preNEDVelocityX, double preNEDVelocityY,double preNEDVelocityZ,
                                        0.0, 1.206, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
                                        );
-      if(scheme == prefix + "2D_4")
+      if(initial == prefix + "2D_4")
            predefinedInitialCondition( 1.666, 0.5, 0.5, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
                                        0.0, 0.0, 0.5065, 1.1, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
                                        0.0, 0.0, 1.1, 0.5065, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
@@ -989,7 +990,7 @@ class RiemannProblemInitialCondition
                                        0.0, 0.8939, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
                                        );
 
-      if(scheme == prefix + "2D_6")
+      if(initial == prefix + "2D_6")
            predefinedInitialCondition( 1.666, 0.5, 0.5, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
                                        0.0, 0.0, 2.0, 1.0, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
                                        0.0, 0.0, 1.0, 3.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
@@ -1004,7 +1005,7 @@ class RiemannProblemInitialCondition
                                        0.75, -0.5, 0.0, //double preNEDVelocityX, double preNEDVelocityY,double preNEDVelocityZ,
                                        -0.75, -0.5, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
                                        );
-      if(scheme == prefix + "2D_12")
+      if(initial == prefix + "2D_12")
            predefinedInitialCondition( 1.666, 0.5, 0.5, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
                                        0.0, 0.0, 1.0, 0.8, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
                                        0.0, 0.0, 0.5313, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
@@ -1020,7 +1021,7 @@ class RiemannProblemInitialCondition
                                        0.0, 0.7276, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
                                        );
 
-      if(scheme == prefix + "2D_15")
+      if(initial == prefix + "2D_15")
            predefinedInitialCondition( 1.666, 0.5, 0.5, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
                                        0.0, 0.0, 0.5197, 0.8, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
                                        0.0, 0.0, 1.0, 0.5313, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
@@ -1035,7 +1036,7 @@ class RiemannProblemInitialCondition
                                        0.1, -0.3, 0.0, //double preNEDVelocityX, double preNEDVelocityY,double preNEDVelocityZ,
                                        0.1, 0.4276, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
                                        );
-      if(scheme == prefix + "2D_17")
+      if(initial == prefix + "2D_17")
            predefinedInitialCondition( 1.666, 0.5, 0.5, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
                                        0.0, 0.0, 2.0, 1.0625, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
                                        0.0, 0.0, 1.0, 0.5197, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 

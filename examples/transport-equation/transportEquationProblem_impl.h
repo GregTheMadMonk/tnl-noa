@@ -162,11 +162,12 @@ makeSnapshot( const RealType& time,
 {
    std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
+   MeshFunctionType printDofs( mesh, dofs );
    FileName fileName;
    fileName.setFileNameBase( "u-" );
    fileName.setExtension( "tnl" );
    fileName.setIndex( step );
-   if( ! dofs->save( fileName.getFileName() ) )
+   if( ! printDofs.save( fileName.getFileName() ) )
       return false;
    return true;
 }

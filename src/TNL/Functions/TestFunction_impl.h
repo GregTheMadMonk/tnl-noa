@@ -75,6 +75,7 @@ configSetup( Config::ConfigDescription& config,
       config.addEntryEnum( "sin-wave-sdf" );
       config.addEntryEnum( "sin-bumps-sdf" );
       config.addEntryEnum( "heaviside-of-vector-norm" );
+      config.addEntryEnum( "smooth-heaviside-of-vector-norm" );
 
    config.addEntry     < double >( prefix + "constant", "Value of the constant function.", 0.0 );
    config.addEntry     < double >( prefix + "wave-length", "Wave length of the sine based test functions.", 1.0 );
@@ -100,6 +101,7 @@ configSetup( Config::ConfigDescription& config,
    config.addEntry     < double >( prefix + "height", "Height of zero-level-set function for the blob, pseudosquare test functions.", 1.0 );
    Analytic::VectorNorm< 3, double >::configSetup( config, "vector-norm-" );
    TNL::Operators::Analytic::Heaviside< 3, double >::configSetup( config, "heaviside-" );
+   TNL::Operators::Analytic::SmoothHeaviside< 3, double >::configSetup( config, "smooth-heaviside-" );
    config.addEntry     < String >( prefix + "time-dependence", "Time dependence of the test function.", "none" );
       config.addEntryEnum( "none" );
       config.addEntryEnum( "linear" );
@@ -336,7 +338,7 @@ setup( const Config::ParameterContainer& parameters,
    if( testFunction == "smooth-heaviside-of-vector-norm" )
    {
       typedef VectorNorm< Dimension, Real > FunctionType;
-      typedef SmoothHeaviside< FunctionType > OperatorType;
+      typedef SmoothHeaviside< Dimension, Real > OperatorType;
       functionType = vectorNorm;
       operatorType = smoothHeaviside;
       return ( setupFunction< FunctionType >( parameters, prefix + "vector-norm-" ) && 
@@ -467,6 +469,13 @@ getPartialDerivative( const PointType& vertex,
             return scale * ( ( OperatorType* ) this->operator_ )->
                       template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
          }
+         if( operatorType == smoothHeaviside )
+         {
+            typedef SmoothHeaviside< Dimension, Real > OperatorType;
+
+            return scale * ( ( OperatorType* ) this->operator_ )->
+                      template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+         }
       }
       case expBump:
       {
@@ -545,6 +554,13 @@ getPartialDerivative( const PointType& vertex,
          if( operatorType == heaviside )
          {
             typedef Heaviside< Dimension, Real > OperatorType;
+
+            return scale * ( ( OperatorType* ) this->operator_ )->
+                      template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
+         }
+         if( operatorType == smoothHeaviside )
+         {
+            typedef SmoothHeaviside< Dimension, Real > OperatorType;
 
             return scale * ( ( OperatorType* ) this->operator_ )->
                       template getPartialDerivative< FunctionType, XDiffOrder, YDiffOrder, ZDiffOrder >( * ( FunctionType*) this->function, vertex, time );
