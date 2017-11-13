@@ -8,6 +8,10 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#ifdef HAVE_MPI
+	#define USE_MPI
+#endif
+
 #include "tnl-init.h"
 
 #include <TNL/File.h>
@@ -16,6 +20,8 @@
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Meshes/Grid.h>
+
+#include <TNL/mpi-supp.h>
 
 using namespace TNL;
 
@@ -45,6 +51,10 @@ void setupConfig( Config::ConfigDescription& config )
 
 int main( int argc, char* argv[] )
 {
+#ifdef USE_MPI
+   MPI::Init(argc,argv);
+#endif
+
    Config::ParameterContainer parameters;
    Config::ConfigDescription conf_desc;
 
@@ -69,5 +79,10 @@ int main( int argc, char* argv[] )
    }
    if( ! resolveMeshType( parsedMeshType, parameters ) )
       return EXIT_FAILURE;
+
+#ifdef USE_MPI
+   MPI::Finalize();
+#endif
+
    return EXIT_SUCCESS;
 }

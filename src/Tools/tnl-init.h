@@ -19,6 +19,9 @@
 #include <TNL/FileName.h>
 #include <TNL/Functions/MeshFunction.h>
 
+#include <TNL/Meshes/DistributedGrid.h>
+#include <TNL/Meshes/DistributedGridIO.h>
+
 using namespace TNL;
 
 template< typename MeshType,
@@ -28,11 +31,28 @@ template< typename MeshType,
           int zDiff >
 bool renderFunction( const Config::ParameterContainer& parameters )
 {
+#ifdef USE_MPI
+   //suppose global mesh loaded from file - EXPLOSIVE CODE
+   SharedPointer< MeshType > globalMeshPointer;
+   String meshFile = parameters.getParameter< String >( "mesh" );
+   std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
+   if( ! globalMeshPointer->load( meshFile ) )
+      return false;
+   
+   typename Meshes::DistributedGrid<MeshType>::CoordinatesType overlap;
+   overlap.setValue(1);
+   Meshes::DistributedGrid<MeshType> distrgrid(*globalMeshPointer,overlap);
+   
+   SharedPointer< MeshType > meshPointer;
+   distrgrid.SetupGrid(*meshPointer);
+#else
+
    SharedPointer< MeshType > meshPointer;
    String meshFile = parameters.getParameter< String >( "mesh" );
    std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
    if( ! meshPointer->load( meshFile ) )
       return false;
+#endif
 
    typedef Functions::TestFunction< MeshType::getMeshDimension(), RealType > FunctionType;
    typedef SharedPointer< FunctionType, typename MeshType::DeviceType > FunctionPointer;
@@ -87,8 +107,15 @@ bool renderFunction( const Config::ParameterContainer& parameters )
       }
       else
         std::cout << "+ -> Writing the function to " << outputFile << " ... " << std::endl;
+#ifdef USE_MPI
+      File file;
+      file.open( outputFile+convertToString(MPI::COMM_WORLD.Get_rank()), IOMode::write );
+      Meshes::DistributedGridIO<MeshFunctionType> ::save(file, *meshFunction );
+      file.close();
+#else
       if( ! meshFunction->save( outputFile) )
          return false;
+#endif
       time += tau;
       step ++;
    }
