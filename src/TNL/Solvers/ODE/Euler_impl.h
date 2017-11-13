@@ -230,8 +230,12 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
 
    
    
-   localResidue /= tau * ( RealType ) size;   
-   MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this->solver_comm );
+   localResidue /= tau * ( RealType ) size;
+#ifdef USE_MPI   
+   TNLMPI::Allreduce( localResidue, currentResidue, 1, MPI_SUM);
+#else
+   currentResidue=localResidue;
+#endif
 
 }
 

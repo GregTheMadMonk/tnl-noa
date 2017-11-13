@@ -10,53 +10,11 @@
 
 #pragma once
 
-#include <iostream>
-#include <cstdlib>
-
 #ifdef USE_MPI
    #include <mpi.h>
-#else
-   typedef int MPI_Comm;
-   typedef int MPI_Op;
-   #define MPI_COMM_WORLD  0
-   #define MPI_MAX 0
-   #define MPI_SUM 0
-
-template< typename T > 
-void MPIAllreduce( T& data,
-                 T& reduced_data,
-                 int,
-                 MPI_Op,
-                 MPI_Comm )
-{
-    reduced_data = data;
-};
-
-template< typename T >
-void MPIReduce( T& data,
-                T& reduced_data,
-                int,
-                MPI_Op,
-                int,
-                MPI_Comm )
-{
-   reduced_data = data;
-};
-
-template< typename T > 
-void MPIBcast(  T&,
-                int,
-                int,
-                MPI_Comm = MPI_COMM_WORLD )
-{
-};
-   
-#endif
 
 namespace TNL {
     namespace TNLMPI{
-
-#ifdef USE_MPI
         
     inline MPI_Datatype MPIDataType( const signed char ) { return MPI_CHAR; };
     inline MPI_Datatype MPIDataType( const signed short int ) { return MPI_SHORT; };
@@ -80,9 +38,34 @@ namespace TNL {
     MPI::Request IRecv( const T *data, int count, int src)
     {
             return MPI::COMM_WORLD.Irecv((void*) data, count, MPIDataType(*data) , src, 0);
-    }     
+    }
 
-#endif
+    template< typename T > 
+    void Bcast(  T& data, int count, int root)
+    {
+            MPI::COMM_WORLD.Bcast((void*) &data, count,  MPIDataType(data), root);
+    };
+
+    template< typename T >
+    void Allreduce( T& data,
+                 T& reduced_data,
+                 int count,
+                 const MPI_Op &op)
+    {
+            MPI::COMM_WORLD.Allreduce((void*) &data, (void*) &reduced_data,count,MPIDataType(data),op);
+    };
+
+    template< typename T >
+    void Reduce( T& data,
+                T& reduced_data,
+                int count,
+                MPI_Op &op,
+                int root)
+    {
+         MPI::COMM_WORLD.Reduce((void*) &data, (void*) &reduced_data,count,MPIDataType(data),op,root);
+    };
 
 }//namespace MPI
 } // namespace TNL
+
+#endif
