@@ -155,9 +155,9 @@ class MeshFunction :
       using Object::load;
  
       using Object::boundLoad;
- 
+
    protected:
-      
+  
       MeshPointer meshPointer;
       
       VectorType data;

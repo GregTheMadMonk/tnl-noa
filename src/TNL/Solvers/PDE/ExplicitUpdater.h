@@ -19,6 +19,10 @@
 #include <TNL/Meshes/GridDetails/Traverser_Grid3D.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 
+#ifdef USE_MPI
+    #include <TNL/Meshes/DistributedGridSynchronizer.h>
+#endif
+
 
 namespace TNL {
 namespace Solvers {

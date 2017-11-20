@@ -24,6 +24,10 @@
 
 #include "HeatEquationProblem.h"
 
+#ifdef USE_MPI
+    #include <TNL/Meshes/DistributedGridIO.h>
+#endif
+
 namespace TNL {
 namespace Problems {
 
@@ -133,11 +137,18 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 {
    this->bindDofs( meshPointer, dofs );
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
+#ifdef USE_MPI
+   File file;
+   file.open( initialConditionFile+convertToString(MPI::COMM_WORLD.Get_rank()), IOMode::read );
+   Meshes::DistributedGridIO<MeshFunctionType> ::load(file, *uPointer );
+   file.close();
+#else
    if( ! this->uPointer->boundLoad( initialConditionFile ) )
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
    }
+#endif
    return true;
 }
 
@@ -187,8 +198,15 @@ makeSnapshot( const RealType& time,
    fileName.setFileNameBase( "u-" );
    fileName.setExtension( "tnl" );
    fileName.setIndex( step );
+#ifdef USE_MPI
+   File file;
+   file.open( fileName.getFileName()+convertToString(MPI::COMM_WORLD.Get_rank()), IOMode::write );
+   Meshes::DistributedGridIO<MeshFunctionType> ::save(file, *uPointer );
+   file.close();
+#else
    if( ! this->uPointer->save( fileName.getFileName() ) )
       return false;
+#endif
    return true;
 }
 

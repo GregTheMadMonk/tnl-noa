@@ -11,6 +11,10 @@
 #ifndef TNL_HEAT_EQUATION_H_
 #define TNL_HEAT_EQUATION_H_
 
+#ifdef HAVE_MPI
+    #define USE_MPI
+#endif
+
 #include <TNL/Solvers/Solver.h>
 #include <TNL/Solvers/FastBuildConfigTag.h>
 #include <TNL/Solvers/BuildConfigTags.h>

@@ -16,6 +16,10 @@
 #include <TNL/SharedPointer.h>
 #include <TNL/Solvers/PDE/PDESolver.h>
 
+#ifdef USE_MPI
+    #include <TNL/Meshes/DistributedGrid.h>
+#endif
+
 namespace TNL {
 namespace Solvers {
 namespace PDE {   
@@ -44,6 +48,10 @@ class TimeDependentPDESolver : public PDESolver< typename Problem::RealType,
       static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
 
       TimeDependentPDESolver();
+
+#ifdef USE_MPI
+      ~TimeDependentPDESolver();
+#endif
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" );
@@ -83,6 +91,12 @@ class TimeDependentPDESolver : public PDESolver< typename Problem::RealType,
    protected:
 
       MeshPointer meshPointer;
+
+#ifdef USE_MPI
+      MeshPointer globalMeshPointer;
+
+      Meshes::DistributedGrid<MeshType> * distrGrid;
+#endif
 
       DofVectorPointer dofsPointer;
 
