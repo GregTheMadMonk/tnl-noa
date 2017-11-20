@@ -186,16 +186,15 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
             v[ i ] = ( *this->vectorField[ i ] )[ index ];
          return v;
       }
-/*
+
       template< typename EntityType >
       void setValue( const EntityType& meshEntity,
-                     const PointType& value )
+                     const FunctionType& value )
       {
-         static_assert( ( EntityType::getEntityDimension() == MeshEntityDimension ) && ( PointType::getSize() == Size ), "Calling with wrong EntityType -- entity dimensions do not match." );
          for(int i = 0; i < Size; i++ )
             this->vectorfield[ i ].setValue( meshEntity.getIndex(), value[ i ] );
       }
-*/
+
       template< typename EntityType >
       __cuda_callable__
       VectorType getVector( const EntityType& meshEntity ) const

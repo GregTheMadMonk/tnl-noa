@@ -12,4 +12,4 @@ add_subdirectory( navier-stokes )
 
 add_subdirectory( inviscid-flow )
 #add_subdirectory( mean-curvature-flow )
-
+add_subdirectory( flow )

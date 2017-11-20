@@ -21,7 +21,7 @@ template<> struct ConfigTagReal< eulerBuildConfigTag, long double > { enum { ena
 template<> struct ConfigTagIndex< eulerBuildConfigTag, short int >{ enum { enabled = false }; };
 template<> struct ConfigTagIndex< eulerBuildConfigTag, long int >{ enum { enabled = false }; };
 
-template< int Dimension > struct ConfigTagDimension< eulerBuildConfigTag, Dimension >{ enum { enabled = ( Dimension == 1 ) }; };
+//template< int Dimension > struct ConfigTagDimension< eulerBuildConfigTag, Dimension >{ enum { enabled = ( Dimension == 1 ) }; };
 
 /****
  * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
