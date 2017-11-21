@@ -44,7 +44,7 @@ enum class VTKEntityType
    Pyramid = 14
 };
 
-std::ostream& operator<<( std::ostream& str, VTKEntityType type )
+static std::ostream& operator<<( std::ostream& str, VTKEntityType type )
 {
    switch( type )
    {
@@ -96,7 +96,7 @@ std::ostream& operator<<( std::ostream& str, VTKEntityType type )
    return str;
 }
 
-int getVTKEntityDimension( VTKEntityType type )
+static int getVTKEntityDimension( VTKEntityType type )
 {
    switch( type )
    {
