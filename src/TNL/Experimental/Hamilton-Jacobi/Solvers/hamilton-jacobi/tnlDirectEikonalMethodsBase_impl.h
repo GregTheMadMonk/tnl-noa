@@ -31,15 +31,38 @@ initInterface( const MeshFunctionType& input,
       if( ! cell.isBoundaryEntity()  )
       {
          const auto& neighbors = cell.getNeighborEntities();
+         const RealType& h = mesh.getSpaceSteps().x();
          //const IndexType& c = cell.getIndex();
          const IndexType e = neighbors.template getEntityIndex<  1 >();
          const IndexType w = neighbors.template getEntityIndex< -1 >();
 
-         if( c * input[ e ] <= 0 || c * input[ w ] <= 0 )
+         /*if( c * input[ e ] <= 0 || c * input[ w ] <= 0 )
          {
             output[ cell.getIndex() ] = c;
             interfaceMap[ cell.getIndex() ] = true;
             continue;
+         }*/
+         if( c * input[ e ] <=0 )
+         {
+             /*if( c >= 0 )
+             {
+                output[ cell.getIndex() ] = ( h * c )/( c - input[ e ] );
+             }
+             else
+             {
+                 output[ cell.getIndex() ] = - ( h * c )/( c - input[ e ] );
+             }*/
+             c >= 0 ? output[ cell.getIndex() ] = ( h * c )/( c - input[ e ] ) :
+                      output[ cell.getIndex() ] = - ( h * c )/( c - input[ e ] );
+             interfaceMap[ cell.getIndex() ] = true;
+             continue;
+         }
+         else if( c * input[ w ] <=0 )
+         {
+             c <= 0 ? output[ cell.getIndex() ] = ( h * c )/( c - input[ e ] ) :
+                      output[ cell.getIndex() ] = - ( h * c )/( c - input[ e ] );
+             interfaceMap[ cell.getIndex() ] = true;
+             continue;
          }
       }
       output[ cell.getIndex() ] =
@@ -85,6 +108,9 @@ initInterface( const MeshFunctionType& input,
          if( ! cell.isBoundaryEntity()  )
          {
             auto neighbors = cell.getNeighborEntities();
+            //const RealType& hx = mesh.getSpaceSteps().x();
+            //const RealType& hy = mesh.getSpaceSteps().y();
+            //const RealType& pom;
             const IndexType e = neighbors.template getEntityIndex<  1,  0 >();
             const IndexType w = neighbors.template getEntityIndex< -1,  0 >();
             const IndexType n = neighbors.template getEntityIndex<  0,  1 >();
@@ -92,7 +118,7 @@ initInterface( const MeshFunctionType& input,
             if( c * input[ e ] <= 0 || c * input[ w ] <= 0 ||
                 c * input[ n ] <= 0 || c * input[ s ] <= 0 )
             {
-               output[ cell.getIndex() ] = c;
+               output[ cell.getIndex() ] = tnlTypeInfo< RealType >::getMaxValue();
                interfaceMap[ cell.getIndex() ] = true;
                continue;
             }
