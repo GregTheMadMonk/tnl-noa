@@ -7,8 +7,10 @@
 
 #pragma once 
 
-#include <mesh/tnlGrid.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/Meshes/Grid.h>
+#include <TNL/Functions/MeshFunction.h>
+
+using namespace TNL;
 
 template< typename Mesh >
 class tnlDirectEikonalMethodsBase
@@ -18,16 +20,16 @@ class tnlDirectEikonalMethodsBase
 template< typename Real,
           typename Device,
           typename Index >
-class tnlDirectEikonalMethodsBase< tnlGrid< 1, Real, Device, Index > >
+class tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >
 {
    public:
       
-      typedef tnlGrid< 1, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
       typedef Real RealType;
       typedef Device DevcieType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
-      typedef tnlMeshFunction< MeshType, 1, bool > InterfaceMapType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType, 1, bool > InterfaceMapType;
       
       void initInterface( const MeshFunctionType& input,
                           MeshFunctionType& output,
@@ -43,16 +45,16 @@ class tnlDirectEikonalMethodsBase< tnlGrid< 1, Real, Device, Index > >
 template< typename Real,
           typename Device,
           typename Index >
-class tnlDirectEikonalMethodsBase< tnlGrid< 2, Real, Device, Index > >
+class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
 {
    public:
       
-      typedef tnlGrid< 2, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
       typedef Real RealType;
       typedef Device DevcieType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
-      typedef tnlMeshFunction< MeshType, 2, bool > InterfaceMapType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType, 2, bool > InterfaceMapType;
 
       void initInterface( const MeshFunctionType& input,
                           MeshFunctionType& output,
@@ -66,16 +68,16 @@ class tnlDirectEikonalMethodsBase< tnlGrid< 2, Real, Device, Index > >
 template< typename Real,
           typename Device,
           typename Index >
-class tnlDirectEikonalMethodsBase< tnlGrid< 3, Real, Device, Index > >
+class tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
 {
    public:
       
-      typedef tnlGrid< 3, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 3, Real, Device, Index > MeshType;
       typedef Real RealType;
       typedef Device DevcieType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
-      typedef tnlMeshFunction< MeshType, 3, bool > InterfaceMapType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType, 3, bool > InterfaceMapType;
 
       void initInterface( const MeshFunctionType& input,
                           MeshFunctionType& output,

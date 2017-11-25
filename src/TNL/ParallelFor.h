@@ -76,6 +76,8 @@ struct ParallelFor< Devices::Cuda >
 
          Devices::Cuda::synchronizeDevice();
          ParallelForKernel<<< gridSize, blockSize >>>( start, end, f, args... );
+         cudaDeviceSynchronize();
+         TNL_CHECK_CUDA_DEVICE;
       }
 #endif
    }

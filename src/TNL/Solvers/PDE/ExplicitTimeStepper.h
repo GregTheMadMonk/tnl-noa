@@ -39,6 +39,8 @@ class ExplicitTimeStepper
    typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
    typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
    typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
+   
+   static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
 
    ExplicitTimeStepper();
 
@@ -73,7 +75,7 @@ class ExplicitTimeStepper
                         DofVectorPointer& _u,
                         DofVectorPointer& _fu );
    
-   bool writeEpilog( Logger& logger );
+   bool writeEpilog( Logger& logger ) const;
 
    protected:
 
