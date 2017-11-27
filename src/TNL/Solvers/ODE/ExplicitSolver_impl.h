@@ -150,7 +150,7 @@ setTimer( Timer* timer )
 template< class Problem >
 void
 ExplicitSolver< Problem >::
-refreshSolverMonitor()
+refreshSolverMonitor( bool force )
 {
    if( this->solverMonitor )
    {
@@ -159,7 +159,6 @@ refreshSolverMonitor()
       this->solverMonitor->setTimeStep( this->getTau() );
       this->solverMonitor->setTime( this->getTime() );
       this->solverMonitor->setRefreshRate( this->refreshRate );
-      this->solverMonitor->refresh();
    }
 }
 

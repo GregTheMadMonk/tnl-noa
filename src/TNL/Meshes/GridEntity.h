@@ -51,22 +51,18 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimensio
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef Config ConfigType;
  
-      static const int meshDimension = GridType::meshDimension;
+      constexpr static int getMeshDimension() { return GridType::getMeshDimension(); };            
  
-      static const int entityDimension = EntityDimension;
+      constexpr static int getEntityDimension() { return EntityDimension; };
  
-      constexpr static int getDimension() { return EntityDimension; };
- 
-      constexpr static int getMeshDimension() { return meshDimension; };            
- 
-      typedef Containers::StaticVector< meshDimension, IndexType > EntityOrientationType;
-      typedef Containers::StaticVector< meshDimension, IndexType > EntityBasisType;
-      typedef GridEntity< GridType, entityDimension, Config > ThisType;
+      typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityOrientationType;
+      typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityBasisType;
+      typedef GridEntity< GridType, EntityDimension, Config > ThisType;
       typedef typename GridType::PointType PointType;
  
       typedef NeighborGridEntitiesStorage< ThisType, Config > NeighborGridEntitiesStorageType;
  
-      template< int NeighborEntityDimension = entityDimension >
+      template< int NeighborEntityDimension = getEntityDimension() >
       using NeighborEntities =
          NeighborGridEntityGetter<
             GridEntity< Meshes::Grid< Dimension, Real, Device, Index >,
@@ -116,7 +112,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimensio
       __cuda_callable__ inline
       void setBasis( const EntityBasisType& basis );
  
-      template< int NeighborEntityDimension = entityDimension >
+      template< int NeighborEntityDimension = getEntityDimension() >
       __cuda_callable__ inline
       const NeighborEntities< NeighborEntityDimension >&
       getNeighborEntities() const;
@@ -175,25 +171,21 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Con
       typedef typename GridType::PointType PointType;
       typedef Config ConfigType;
  
-      static const int meshDimension = GridType::meshDimension;
+      constexpr static int getMeshDimension() { return GridType::getMeshDimension(); };
  
-      static const int entityDimension = meshDimension;
-
-      constexpr static int getDimension() { return entityDimension; };
- 
-      constexpr static int getMeshDimension() { return meshDimension; };
+      constexpr static int getEntityDimension() { return getMeshDimension(); };
  
  
-      typedef Containers::StaticVector< meshDimension, IndexType > EntityOrientationType;
-      typedef Containers::StaticVector< meshDimension, IndexType > EntityBasisType;
-      typedef GridEntity< GridType, entityDimension, Config > ThisType;
+      typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityOrientationType;
+      typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityBasisType;
+      typedef GridEntity< GridType, Dimension, Config > ThisType;
       typedef NeighborGridEntitiesStorage< ThisType, Config > NeighborGridEntitiesStorageType;
  
-      template< int NeighborEntityDimension = entityDimension >
+      template< int NeighborEntityDimension = getEntityDimension() >
       using NeighborEntities =
          NeighborGridEntityGetter<
             GridEntity< Meshes::Grid< Dimension, Real, Device, Index >,
-                           entityDimension,
+                           Dimension,
                            Config >,
             NeighborEntityDimension >;
 
@@ -298,24 +290,20 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >
       typedef typename GridType::PointType PointType;
       typedef Config ConfigType;
  
-      static const int meshDimension = GridType::meshDimension;
+      constexpr static int getMeshDimension() { return GridType::getMeshDimension(); };
  
-      static const int entityDimension = 0;
+      constexpr static int getEntityDimension() { return 0; };
  
-      constexpr static int getDimension() { return entityDimension; };
- 
-      constexpr static int getMeshDimension() { return meshDimension; };
- 
-      typedef Containers::StaticVector< meshDimension, IndexType > EntityOrientationType;
-      typedef Containers::StaticVector< meshDimension, IndexType > EntityBasisType;
-      typedef GridEntity< GridType, entityDimension, Config > ThisType;
+      typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityOrientationType;
+      typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityBasisType;
+      typedef GridEntity< GridType, 0, Config > ThisType;
       typedef NeighborGridEntitiesStorage< ThisType, Config > NeighborGridEntitiesStorageType;
  
-      template< int NeighborEntityDimension = entityDimension >
+      template< int NeighborEntityDimension = getEntityDimension() >
       using NeighborEntities =
          NeighborGridEntityGetter<
             GridEntity< Meshes::Grid< Dimension, Real, Device, Index >,
-                           entityDimension,
+                           0,
                            Config >,
             NeighborEntityDimension >;
 
@@ -363,7 +351,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >
       void setBasis( const EntityBasisType& basis ){};
 
  
-      template< int NeighborEntityDimension = entityDimension >
+      template< int NeighborEntityDimension = getEntityDimension() >
       __cuda_callable__ inline
       const NeighborEntities< NeighborEntityDimension >&
       getNeighborEntities() const;

@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <stdlib.h>
 #include <iostream>
 
 #include <TNL/Assert.h>
@@ -41,9 +40,7 @@ template< class T > class ListDataElement;
  */
 template< class T > class List
 {
-
    public:
-
       typedef T ElementType;
 
       //! Basic constructor
@@ -118,7 +115,6 @@ template< class T > class List
       bool DeepLoad( File& file );
  
    protected:
-
       //! Pointer to the first element
       ListDataElement< T >* first;
 
@@ -135,8 +131,6 @@ template< class T > class List
 
       //! Iterator index
       mutable int index;
- 
-
 };
 
 template< typename T > std::ostream& operator << ( std::ostream& str, const List< T >& list );

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Devices::Cuda.h  -  description
+                          Cuda.h  -  description
                              -------------------
     begin                : Nov 7, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -16,6 +16,7 @@
 #include <TNL/Assert.h>
 #include <TNL/SmartPointersRegister.h>
 #include <TNL/Timer.h>
+#include <TNL/Devices/CudaCallable.h>
 
 namespace TNL {
 
@@ -25,12 +26,6 @@ namespace Config {
 }
 
 namespace Devices {
-
-#ifdef HAVE_CUDA
-#define __cuda_callable__ __device__ __host__
-#else
-#define __cuda_callable__
-#endif
 
 class Cuda
 {
@@ -148,7 +143,7 @@ class Cuda
     * reinterpret_cast works too.
     * See http://stackoverflow.com/a/19339004/4180822 for reference.
     */
-   template< typename Element, size_t Alignment = sizeof( Element ) >
+   template< typename Element >
    static __device__ Element* getSharedMemory();
 #endif
 
@@ -156,7 +151,7 @@ class Cuda
    /****
     * I do not know why, but it is more reliable to pass the error code instead
     * of calling cudaGetLastError() inside the method.
-    * We recommend to use macro 'checkCudaDevice' defined bellow.
+    * We recommend to use macro 'TNL_CHECK_CUDA_DEVICE' defined bellow.
     */
    static bool checkDevice( const char* file_name, int line, cudaError error );
 #else
@@ -184,14 +179,14 @@ class Cuda
 };
 
 #ifdef HAVE_CUDA
-#define checkCudaDevice ::TNL::Devices::Cuda::checkDevice( __FILE__, __LINE__, cudaGetLastError() )
-std::ostream& operator << ( std::ostream& str, const dim3& d );
+#define TNL_CHECK_CUDA_DEVICE ::TNL::Devices::Cuda::checkDevice( __FILE__, __LINE__, cudaGetLastError() )
 #else
-#define checkCudaDevice ::TNL::Devices::Cuda::checkDevice()
+#define TNL_CHECK_CUDA_DEVICE ::TNL::Devices::Cuda::checkDevice()
 #endif
 
-#define CudaSupportMissingMessage \
-   std::cerr << "The CUDA support is missing in the source file " << __FILE__ << " at line " << __LINE__ << ". Please set WITH_CUDA=yes in the install script. " << std::endl;
+#ifdef HAVE_CUDA
+std::ostream& operator << ( std::ostream& str, const dim3& d );
+#endif
 
 } // namespace Devices
 } // namespace TNL   

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExpBump.h  -  description
+                          Blob.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -54,15 +54,9 @@ class Blob< 1, Real > : public BlobBase< Real, 1 >
 
       Blob();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
@@ -85,15 +79,9 @@ class Blob< 2, Real > : public BlobBase< Real, 2 >
 
       Blob();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
@@ -117,15 +105,9 @@ class Blob< 3, Real > : public BlobBase< Real, 3 >
 
       Blob();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;

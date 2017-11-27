@@ -9,5 +9,3 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include "ArrayOperationsTest.h"
-
-

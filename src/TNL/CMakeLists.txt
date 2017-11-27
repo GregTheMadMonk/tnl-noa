@@ -2,6 +2,7 @@ ADD_SUBDIRECTORY( Config )
 ADD_SUBDIRECTORY( Containers )
 ADD_SUBDIRECTORY( Debugging )
 ADD_SUBDIRECTORY( Devices )
+ADD_SUBDIRECTORY( Exceptions )
 ADD_SUBDIRECTORY( Experimental )
 ADD_SUBDIRECTORY( Functions )
 ADD_SUBDIRECTORY( Images )
@@ -19,6 +20,7 @@ SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
 set( headers 
      Assert.h
      Constants.h
+     CudaSharedMemory.h
      CudaStreamPool.h
      Curve.h
      DevicePointer.h
@@ -30,6 +32,7 @@ set( headers
      Logger_impl.h
      Math.h
      mpi-supp.h
+     ParallelFor.h
      param-types.h
      SharedPointer.h
      SmartPointer.h
@@ -90,6 +93,8 @@ if( BUILD_CUDA )
 else( BUILD_CUDA )
    ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED 
                 ${tnl_SOURCES} )
+#ifMIC
+  #TARGET_COMPILE_DEFINITIONS( tnl${debugExt}-${tnlVersion} PUBLIC -DHAVE_MIC )
 endif( BUILD_CUDA )                                    
                
 SET_TARGET_PROPERTIES( tnl${debugExt}-${tnlVersion} PROPERTIES 

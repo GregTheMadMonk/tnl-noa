@@ -23,7 +23,8 @@ class MeshFunctionGnuplotWriter
    public:
 
       static bool write( const MeshFunction& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
 
 /***
@@ -41,7 +42,8 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device
       typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
 
 /***
@@ -59,7 +61,8 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device
       typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
 
 
@@ -78,7 +81,8 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device
       typedef Functions::MeshFunction< MeshType, 2, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
 
 /***
@@ -96,7 +100,8 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device
       typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
 
 /***
@@ -114,7 +119,8 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device
       typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
 
 
@@ -133,7 +139,8 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device
       typedef Functions::MeshFunction< MeshType, 3, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
 
 /***
@@ -151,7 +158,8 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device
       typedef Functions::MeshFunction< MeshType, 2, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
 
 /***
@@ -169,7 +177,8 @@ class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device
       typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         std::ostream& str );
+                         std::ostream& str,
+                         const double& scale );
 };
 
 } // namespace Functions

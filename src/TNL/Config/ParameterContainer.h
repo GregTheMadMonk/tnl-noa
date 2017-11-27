@@ -14,6 +14,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/mpi-supp.h>
 #include <TNL/param-types.h>
+//#include <TNL/Debugging/StackBacktrace.h>
 
 namespace TNL {
 namespace Config {   
@@ -62,7 +63,7 @@ class ParameterContainer
 
    template< class T > bool getParameter( const String& name,
                                           T& value,
-                                          bool verbose = false ) const
+                                          bool verbose = true ) const
    {
       int i;
       const int size = parameters. getSize();
@@ -73,7 +74,10 @@ class ParameterContainer
             return true;
          }
       if( verbose )
+      {
          std::cerr << "Missing parameter '" << name << "'." << std::endl;
+         throw(0); //PrintStackBacktrace;
+      }
       return false;
    }
 
@@ -124,7 +128,7 @@ setParameter( const String& name,
    {
       if( parameters[ i ] -> name == name )
       {
-         if( parameters[ i ] -> type == getType( value ) )
+         if( parameters[ i ] -> type == TNL::getType< T >() )
          {
             ( ( tnlParameter< T > * ) parameters[ i ] ) -> value = value;
             return true;
@@ -133,7 +137,7 @@ setParameter( const String& name,
          {
             std::cerr << "Parameter " << name << " already exists with different type "
                  << parameters[ i ] -> type << " not "
-                 << getType( value ) << std::endl;
+                 << TNL::getType< T >() << std::endl;
             abort( );
             return false;
          }

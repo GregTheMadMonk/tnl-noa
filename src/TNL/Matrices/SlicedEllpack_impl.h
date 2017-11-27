@@ -51,34 +51,53 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpack< Real, Device, Index, SliceSize >::setDimensions( const IndexType rows,
-                                                                              const IndexType columns )
+String SlicedEllpack< Real, Device, Index, SliceSize >::getSerializationType()
 {
-   TNL_ASSERT( rows > 0 && columns > 0,
-              std::cerr << "rows = " << rows
-                   << " columns = " << columns << std::endl );
-   return Sparse< Real, Device, Index >::setDimensions( rows, columns );
+   return getType();
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpack< Real, Device, Index, SliceSize >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+String SlicedEllpack< Real, Device, Index, SliceSize >::getSerializationTypeVirtual() const
 {
-   TNL_ASSERT( this->getRows() > 0, );
-   TNL_ASSERT( this->getColumns() > 0, );
+   return this->getSerializationType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+void SlicedEllpack< Real, Device, Index, SliceSize >::setDimensions( const IndexType rows,
+                                                                     const IndexType columns )
+{
+   TNL_ASSERT( rows > 0 && columns > 0,
+              std::cerr << "rows = " << rows
+                   << " columns = " << columns << std::endl );
+   Sparse< Real, Device, Index >::setDimensions( rows, columns );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+void SlicedEllpack< Real, Device, Index, SliceSize >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+{
+   TNL_ASSERT_GT( this->getRows(), 0, "cannot set row lengths of an empty matrix" );
+   TNL_ASSERT_GT( this->getColumns(), 0, "cannot set row lengths of an empty matrix" );
+   TNL_ASSERT_EQ( this->getRows(), rowLengths.getSize(), "wrong size of the rowLengths vector" );
+
    const IndexType slices = roundUpDivision( this->rows, SliceSize );
-   if( ! this->sliceCompressedRowLengths.setSize( slices ) ||
-       ! this->slicePointers.setSize( slices + 1 ) )
-      return false;
+   this->sliceCompressedRowLengths.setSize( slices );
+   this->slicePointers.setSize( slices + 1 );
 
    DeviceDependentCode::computeMaximalRowLengthInSlices( *this, rowLengths );
 
    this->maxRowLength = rowLengths.max();
 
    this->slicePointers.computeExclusivePrefixSum();
-   return this->allocateMatrixElements( this->slicePointers.getElement( slices ) );
+   this->allocateMatrixElements( this->slicePointers.getElement( slices ) );
 }
 
 template< typename Real,
@@ -95,16 +114,25 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
+__cuda_callable__
+Index SlicedEllpack< Real, Device, Index, SliceSize >::getRowLengthFast( const IndexType row ) const
+{
+   const IndexType slice = row / SliceSize;
+   return this->sliceCompressedRowLengths[ slice ];
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool SlicedEllpack< Real, Device, Index, SliceSize >::setLike( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix )
+void SlicedEllpack< Real, Device, Index, SliceSize >::setLike( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix )
 {
-   if( !Sparse< Real, Device, Index >::setLike( matrix ) ||
-       ! this->slicePointers.setLike( matrix.slicePointers ) ||
-       ! this->sliceCompressedRowLengths.setLike( matrix.sliceCompressedRowLengths ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::setLike( matrix );
+   this->slicePointers.setLike( matrix.slicePointers );
+   this->sliceCompressedRowLengths.setLike( matrix.sliceCompressedRowLengths );
 }
 
 template< typename Real,
@@ -573,6 +601,95 @@ bool SlicedEllpack< Real, Device, Index, SliceSize >::performSORIteration( const
 }
 
 
+// copy assignment
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+SlicedEllpack< Real, Device, Index, SliceSize >&
+SlicedEllpack< Real, Device, Index, SliceSize >::operator=( const SlicedEllpack& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
+   this->slicePointers = matrix.slicePointers;
+   this->sliceCompressedRowLengths = matrix.sliceCompressedRowLengths;
+   return *this;
+}
+
+// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+   template< typename Real2, typename Device2, typename Index2, typename >
+SlicedEllpack< Real, Device, Index, SliceSize >&
+SlicedEllpack< Real, Device, Index, SliceSize >::operator=( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix )
+{
+   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value || std::is_same< Device, Devices::MIC >::value,
+                  "unknown device" );
+   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value || std::is_same< Device2, Devices::MIC >::value,
+                  "unknown device" );
+
+   this->setLike( matrix );
+   this->slicePointers = matrix.slicePointers;
+   this->sliceCompressedRowLengths = matrix.sliceCompressedRowLengths;
+
+   // host -> cuda
+   if( std::is_same< Device, Devices::Cuda >::value ) {
+      typename ValuesVector::HostType tmpValues;
+      typename ColumnIndexesVector::HostType tmpColumnIndexes;
+      tmpValues.setLike( matrix.values );
+      tmpColumnIndexes.setLike( matrix.columnIndexes );
+
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
+#endif
+      for( Index sliceIdx = 0; sliceIdx < matrix.sliceCompressedRowLengths.getSize(); sliceIdx++ ) {
+         const Index rowLength = matrix.sliceCompressedRowLengths[ sliceIdx ];
+         const Index offset = matrix.slicePointers[ sliceIdx ];
+         for( Index j = 0; j < rowLength; j++ )
+            for( Index i = 0; i < SliceSize; i++ ) {
+               tmpValues[ offset + j * SliceSize + i ] = matrix.values[ offset + i * rowLength + j ];
+               tmpColumnIndexes[ offset + j * SliceSize + i ] = matrix.columnIndexes[ offset + i * rowLength + j ];
+            }
+      }
+
+      this->values = tmpValues;
+      this->columnIndexes = tmpColumnIndexes;
+   }
+
+   // cuda -> host
+   if( std::is_same< Device, Devices::Host >::value ) {
+      ValuesVector tmpValues;
+      ColumnIndexesVector tmpColumnIndexes;
+      tmpValues.setLike( matrix.values );
+      tmpColumnIndexes.setLike( matrix.columnIndexes );
+      tmpValues = matrix.values;
+      tmpColumnIndexes = matrix.columnIndexes;
+
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
+#endif
+      for( Index sliceIdx = 0; sliceIdx < sliceCompressedRowLengths.getSize(); sliceIdx++ ) {
+         const Index rowLength = sliceCompressedRowLengths[ sliceIdx ];
+         const Index offset = slicePointers[ sliceIdx ];
+         for( Index i = 0; i < SliceSize; i++ )
+            for( Index j = 0; j < rowLength; j++ ) {
+               this->values[ offset + i * rowLength + j ] = tmpValues[ offset + j * SliceSize + i ];
+               this->columnIndexes[ offset + i * rowLength + j ] = tmpColumnIndexes[ offset + j * SliceSize + i ];
+            }
+      }
+   }
+   
+   if( std::is_same< Device, Devices::MIC >::value ) {
+      throw std::runtime_error("Not Implemented yet for MIC");
+   }
+
+   return *this;
+}
+
+
 template< typename Real,
           typename Device,
           typename Index,
@@ -623,23 +740,30 @@ template< typename Real,
           int SliceSize >
 void SlicedEllpack< Real, Device, Index, SliceSize >::print( std::ostream& str ) const
 {
-   for( IndexType row = 0; row < this->getRows(); row++ )
-   {
-      str <<"Row: " << row << " -> ";
-      const IndexType sliceIdx = row / SliceSize;
-      const IndexType rowLength = this->sliceCompressedRowLengths.getElement( sliceIdx );
-      IndexType elementPtr = this->slicePointers.getElement( sliceIdx ) +
-                             rowLength * ( row - sliceIdx * SliceSize );
-      const IndexType rowEnd( elementPtr + rowLength );
-      while( elementPtr < rowEnd &&
-             this->columnIndexes.getElement( elementPtr ) < this->columns &&
-             this->columnIndexes.getElement( elementPtr ) != this->getPaddingIndex() )
+   if( std::is_same< Device, Devices::Host >::value ) {
+      for( IndexType row = 0; row < this->getRows(); row++ )
       {
-         const Index column = this->columnIndexes.getElement( elementPtr );
-         str << " Col:" << column << "->" << this->values.getElement( elementPtr ) << "\t";
-         elementPtr++;
+         str <<"Row: " << row << " -> ";
+         const IndexType sliceIdx = row / SliceSize;
+         const IndexType rowLength = this->sliceCompressedRowLengths.getElement( sliceIdx );
+         IndexType elementPtr = this->slicePointers.getElement( sliceIdx ) +
+                                rowLength * ( row - sliceIdx * SliceSize );
+         const IndexType rowEnd( elementPtr + rowLength );
+         while( elementPtr < rowEnd &&
+                this->columnIndexes.getElement( elementPtr ) < this->columns &&
+                this->columnIndexes.getElement( elementPtr ) != this->getPaddingIndex() )
+         {
+            const Index column = this->columnIndexes.getElement( elementPtr );
+            str << " Col:" << column << "->" << this->values.getElement( elementPtr ) << "\t";
+            elementPtr++;
+         }
+         str << std::endl;
       }
-      str << std::endl;
+   }
+   else {
+      HostType hostMatrix;
+      hostMatrix = *this;
+      hostMatrix.print( str );
    }
 }
 
@@ -882,7 +1006,7 @@ class SlicedEllpackDeviceDependentCode< Devices::Cuda >
          }
          Devices::Cuda::freeFromDevice( kernel_matrix );
          Devices::Cuda::freeFromDevice( kernel_rowLengths );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
 #endif
          return true;
       }
@@ -923,16 +1047,70 @@ class SlicedEllpackDeviceDependentCode< Devices::Cuda >
                   inVector.getData(),
                   outVector.getData(),
                   gridIdx );
-               checkCudaDevice;
+               TNL_CHECK_CUDA_DEVICE;
             }
             //Devices::Cuda::freeFromDevice( kernel_this );
             //Devices::Cuda::freeFromDevice( kernel_inVector );
             //Devices::Cuda::freeFromDevice( kernel_outVector );
-            checkCudaDevice;
+            TNL_CHECK_CUDA_DEVICE;
             cudaThreadSynchronize();
          #endif
       }
 
+};
+
+template<>
+class SlicedEllpackDeviceDependentCode< Devices::MIC >
+{
+   public:
+
+      typedef Devices::MIC Device;
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+      static void initRowTraverse( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                   const Index row,
+                                   Index& rowBegin,
+                                   Index& rowEnd,
+                                   Index& step )
+      {
+         throw std::runtime_error("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverse");
+      }
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+      __cuda_callable__
+      static void initRowTraverseFast( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                       const Index row,
+                                       Index& rowBegin,
+                                       Index& rowEnd,
+                                       Index& step )
+      {
+         throw std::runtime_error("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverseFast");
+      }
+
+      template< typename Real,
+                typename Index,
+                int SliceSize >
+            static bool computeMaximalRowLengthInSlices( SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                                   const typename SlicedEllpack< Real, Device, Index >::CompressedRowLengthsVector& rowLengths )
+      {
+         throw std::runtime_error("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::computeMaximalRowLengthInSlices");
+      }
+
+      template< typename Real,
+                typename Index,
+                typename InVector,
+                typename OutVector,
+                int SliceSize >
+      static void vectorProduct( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                 const InVector& inVector,
+                                 OutVector& outVector )
+      {
+         throw std::runtime_error("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::vectorProduct");
+      }
 };
 
 } // namespace Matrices

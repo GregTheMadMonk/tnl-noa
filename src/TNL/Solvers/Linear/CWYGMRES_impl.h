@@ -14,6 +14,7 @@
 
 #include <type_traits>
 
+#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/Multireduction.h>
 #include <TNL/Matrices/MatrixOperations.h>
 
@@ -29,7 +30,10 @@ CWYGMRES< Matrix, Preconditioner >::
 CWYGMRES()
 : size( 0 ),
   ldSize( 0 ),
-  restarting( 10 )
+  restarting_min( 10 ),
+  restarting_max( 10 ),
+  restarting_step_min( 3 ),
+  restarting_step_max( 3 )
 {
    /****
     * Clearing the shared pointer means that there is no
@@ -64,7 +68,10 @@ configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
-   config.addEntry< int >( prefix + "gmres-restarting", "Number of iterations after which the CWYGMRES restarts.", 10 );
+   config.addEntry< int >( prefix + "gmres-restarting-min", "Minimal number of iterations after which the GMRES restarts.", 10 );
+   config.addEntry< int >( prefix + "gmres-restarting-max", "Maximal number of iterations after which the GMRES restarts.", 10 );
+   config.addEntry< int >( prefix + "gmres-restarting-step-min", "Minimal adjusting step for the adaptivity of the GMRES restarting parameter.", 3 );
+   config.addEntry< int >( prefix + "gmres-restarting-step-max", "Maximal adjusting step for the adaptivity of the GMRES restarting parameter.", 3 );
 }
 
 template< typename Matrix,
@@ -75,7 +82,10 @@ setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
    IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
-   this->setRestarting( parameters.getParameter< int >( "gmres-restarting" ) );
+   restarting_min = parameters.getParameter< int >( "gmres-restarting-min" );
+   this->setRestarting( parameters.getParameter< int >( "gmres-restarting-max" ) );
+   restarting_step_min = parameters.getParameter< int >( "gmres-restarting-step-min" );
+   restarting_step_max = parameters.getParameter< int >( "gmres-restarting-step-max" );
    return true;
 }
 
@@ -87,7 +97,7 @@ setRestarting( IndexType rest )
 {
    if( size != 0 )
       setSize( size, rest );
-   restarting = rest;
+   restarting_max = rest;
 }
 
 template< typename Matrix,
@@ -115,18 +125,20 @@ bool
 CWYGMRES< Matrix, Preconditioner >::
 solve( const Vector& b, Vector& x )
 {
-   TNL_ASSERT( matrix, std::cerr << "No matrix was set in CWYGMRES. Call setMatrix() before solve()." << std::endl );
-   if( restarting <= 0 )
+   TNL_ASSERT_TRUE( matrix, "No matrix was set in CWYGMRES. Call setMatrix() before solve()." );
+   if( restarting_min <= 0 || restarting_max <= 0 || restarting_min > restarting_max )
    {
-      std::cerr << "I have wrong value for the restarting of the CWYGMRES solver. It is set to " << restarting
-           << ". Please set some positive value using the SetRestarting method." << std::endl;
+      std::cerr << "Wrong value for the GMRES restarting parameters: r_min = " << restarting_min
+                << ", r_max = " << restarting_max << std::endl;
       return false;
    }
-   if( ! setSize( matrix -> getRows(), restarting ) )
+   if( restarting_step_min < 0 || restarting_step_max < 0 || restarting_step_min > restarting_step_max )
    {
-      std::cerr << "I am not able to allocate enough memory for the CWYGMRES solver. You may try to decrease the restarting parameter." << std::endl;
-       return false;
+      std::cerr << "Wrong value for the GMRES restarting adjustment parameters: d_min = " << restarting_step_min
+                << ", d_max = " << restarting_step_max << std::endl;
+      return false;
    }
+   setSize( matrix -> getRows(), restarting_max );
 
    RealType normb( 0.0 ), beta( 0.0 );
    /****
@@ -160,10 +172,37 @@ solve( const Vector& b, Vector& x )
    this->resetIterations();
    this->setResidue( beta / normb );
 
+   // parameters for the adaptivity of the restarting parameter
+         RealType beta_ratio = 1;           // = beta / beta_ratio (small value indicates good convergence rate)
+   const RealType max_beta_ratio = 0.99;    // = cos(8°) \approx 0.99
+   const RealType min_beta_ratio = 0.175;   // = cos(80°) \approx 0.175
+         int restart_cycles = 0;    // counter of restart cycles
+         int m = restarting_max;    // current restarting parameter
+
    DeviceVector vi, vk;
    while( this->checkNextIteration() )
    {
-      const IndexType m = restarting;
+      // adaptivity of the restarting parameter
+      // reference:  A.H. Baker, E.R. Jessup, Tz.V. Kolev - A simple strategy for varying the restart parameter in GMRES(m)
+      //             http://www.sciencedirect.com/science/article/pii/S0377042709000132
+      if( restart_cycles > 0 ) {
+         if( beta_ratio > max_beta_ratio )
+            // near stagnation -> set maximum
+            m = restarting_max;
+         else if( beta_ratio >= min_beta_ratio ) {
+            // the step size is determined based on current m using linear interpolation
+            // between restarting_step_min and restarting_step_max
+            const int step = restarting_step_min + (float) ( restarting_step_max - restarting_step_min ) /
+                                                           ( restarting_max - restarting_min ) *
+                                                           ( m - restarting_min );
+            if( m - step >= restarting_min )
+               m -= step;
+            else
+               // set restarting_max when we hit restarting_min (see Baker et al. (2009))
+               m = restarting_max;
+         }
+//         std::cerr << "restarting: cycle = " << restart_cycles << ", beta_ratio = " << beta_ratio << ", m = " << m << "    " << std::endl;
+      }
 
       /***
        * z = r / | r | =  1.0 / beta * r
@@ -295,6 +334,7 @@ solve( const Vector& b, Vector& x )
       /****
        * r = M.solve(b - A * x);
        */
+      const RealType beta_old = beta;
       if( preconditioner )
       {
          matrix->vectorProduct( x, _M_tmp );
@@ -313,6 +353,9 @@ solve( const Vector& b, Vector& x )
 //      cout << " beta = " << beta << endl;
 //      cout << "residue = " << beta / normb << endl;
 
+      // update parameters for the adaptivity of the restarting parameter
+      ++restart_cycles;
+      beta_ratio = beta / beta_old;
    }
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
@@ -375,9 +418,9 @@ hauseholder_generate( DeviceVector& Y,
                                                             z.getData(),
                                                             i,
                                                             size );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
 #else
-      CudaSupportMissingMessage;
+      throw Exceptions::CudaSupportMissing();
 #endif
    }
 
@@ -401,11 +444,11 @@ hauseholder_generate( DeviceVector& Y,
    // assuming it's stable enough...
    const RealType t_i = 2.0 / (norm_yi * norm_yi);
 
-   T[ i + i * (restarting + 1) ] = t_i;
+   T[ i + i * (restarting_max + 1) ] = t_i;
    if( i > 0 ) {
       // aux = Y_{i-1}^T * y_i
       RealType aux[ i ];
-      Containers::Algorithms::tnlParallelReductionScalarProduct< RealType, IndexType > scalarProduct;
+      Containers::Algorithms::ParallelReductionScalarProduct< RealType, RealType > scalarProduct;
       if( ! Containers::Algorithms::Multireduction< DeviceType >::reduce
                ( scalarProduct,
                  i,
@@ -421,9 +464,9 @@ hauseholder_generate( DeviceVector& Y,
 
       // [T_i]_{0..i-1} = - T_{i-1} * t_i * aux
       for( int k = 0; k < i; k++ ) {
-         T[ k + i * (restarting + 1) ] = 0.0;
+         T[ k + i * (restarting_max + 1) ] = 0.0;
          for( int j = k; j < i; j++ )
-            T[ k + i * (restarting + 1) ] -= T[ k + j * (restarting + 1) ] * (t_i * aux[ j ]);
+            T[ k + i * (restarting_max + 1) ] -= T[ k + j * (restarting_max + 1) ] * (t_i * aux[ j ]);
       }
    }
 }
@@ -441,7 +484,7 @@ hauseholder_apply_trunc( HostVector& out,
    DeviceVector y_i;
    y_i.bind( &Y.getData()[ i * ldSize ], size );
 
-   const RealType aux = T[ i + i * (restarting + 1) ] * y_i.scalarProduct( z );
+   const RealType aux = T[ i + i * (restarting_max + 1) ] * y_i.scalarProduct( z );
    if( std::is_same< DeviceType, Devices::Host >::value ) {
       for( int k = 0; k <= i; k++ )
          out[ k ] = z[ k ] - y_i[ k ] * aux;
@@ -449,9 +492,9 @@ hauseholder_apply_trunc( HostVector& out,
    if( std::is_same< DeviceType, Devices::Cuda >::value ) {
       // copy part of y_i to buffer on host
       // here we duplicate the upper (m+1)x(m+1) submatrix of Y on host for fast access
-      RealType* host_yi = &YL[ i * (restarting + 1) ];
+      RealType* host_yi = &YL[ i * (restarting_max + 1) ];
       RealType host_z[ i + 1 ];
-      if( ! Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( host_yi, y_i.getData(), restarting + 1 ) ||
+      if( ! Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( host_yi, y_i.getData(), restarting_max + 1 ) ||
           ! Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( host_z, z.getData(), i + 1 ) )
       {
          std::cerr << "Failed to copy part of device vectors y_i or z to host buffer." << std::endl;
@@ -480,7 +523,7 @@ hauseholder_cwy( DeviceVector& v,
    if( std::is_same< DeviceType, Devices::Cuda >::value ) {
       // the upper (m+1)x(m+1) submatrix of Y is duplicated on host for fast access
       for( int k = 0; k <= i; k++ )
-         aux[ k ] = YL[ i + k * (restarting + 1) ];
+         aux[ k ] = YL[ i + k * (restarting_max + 1) ];
    }
 
    // aux = T_i * aux
@@ -488,7 +531,7 @@ hauseholder_cwy( DeviceVector& v,
    for( int k = 0; k <= i; k++ ) {
       RealType aux2 = 0.0;
       for( int j = k; j <= i; j++ )
-         aux2 += T[ k + j * (restarting + 1) ] * aux[ j ];
+         aux2 += T[ k + j * (restarting_max + 1) ] * aux[ j ];
       aux[ k ] = aux2;
    }
 
@@ -511,7 +554,7 @@ hauseholder_cwy_transposed( DeviceVector& z,
 {
    // aux = Y_i^T * w
    RealType aux[ i + 1 ];
-   Containers::Algorithms::tnlParallelReductionScalarProduct< RealType, IndexType > scalarProduct;
+   Containers::Algorithms::ParallelReductionScalarProduct< RealType, RealType > scalarProduct;
    if( ! Containers::Algorithms::Multireduction< DeviceType >::reduce
             ( scalarProduct,
               i + 1,
@@ -530,7 +573,7 @@ hauseholder_cwy_transposed( DeviceVector& z,
    for( int k = i; k >= 0; k-- ) {
       RealType aux2 = 0.0;
       for( int j = 0; j <= k; j++ )
-         aux2 += T[ j + k * (restarting + 1) ] * aux[ j ];
+         aux2 += T[ j + k * (restarting_max + 1) ] * aux[ j ];
       aux[ k ] = aux2;
    }
 
@@ -629,9 +672,10 @@ applyPlaneRotation( RealType& dx,
 
 template< typename Matrix,
           typename Preconditioner >
-bool CWYGMRES< Matrix, Preconditioner > :: setSize( IndexType _size, IndexType m )
+void CWYGMRES< Matrix, Preconditioner > :: setSize( IndexType _size, IndexType m )
 {
-   if( size == _size && restarting == m ) return true;
+   if( size == _size && restarting_max == m )
+      return;
    size = _size;
    if( std::is_same< DeviceType, Devices::Cuda >::value )
       // align each column to 256 bytes - optimal for CUDA
@@ -639,24 +683,19 @@ bool CWYGMRES< Matrix, Preconditioner > :: setSize( IndexType _size, IndexType m
    else
        // on the host, we add 1 to disrupt the cache false-sharing pattern
       ldSize = roundToMultiple( size, 256 / sizeof( RealType ) ) + 1;
-   restarting = m;
-   if( ! r.setSize( size ) ||
-       ! z.setSize( size ) ||
-       ! w.setSize( size ) ||
-       ! V.setSize( ldSize * ( restarting + 1 ) ) ||
-       ! Y.setSize( ldSize * ( restarting + 1 ) ) ||
-       ! T.setSize( (restarting + 1) * (restarting + 1) ) ||
-       ! YL.setSize( (restarting + 1) * (restarting + 1) ) ||
-       ! cs.setSize( restarting + 1 ) ||
-       ! sn.setSize( restarting + 1 ) ||
-       ! H.setSize( ( restarting + 1 ) * restarting ) ||
-       ! s.setSize( restarting + 1 ) ||
-       ! _M_tmp.setSize( size ) )
-   {
-      std::cerr << "I could not allocate all supporting arrays for the CWYGMRES solver." << std::endl;
-      return false;
-   }
-   return true;
+   restarting_max = m;
+   r.setSize( size );
+   z.setSize( size );
+   w.setSize( size );
+   V.setSize( ldSize * ( m + 1 ) );
+   Y.setSize( ldSize * ( m + 1 ) );
+   T.setSize( (m + 1) * (m + 1) );
+   YL.setSize( (m + 1) * (m + 1) );
+   cs.setSize( m + 1 );
+   sn.setSize( m + 1 );
+   H.setSize( ( m + 1 ) * m );
+   s.setSize( m + 1 );
+   _M_tmp.setSize( size );
 }
 
 } // namespace Linear

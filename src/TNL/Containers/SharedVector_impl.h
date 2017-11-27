@@ -19,7 +19,9 @@ namespace Containers {
 template< typename Real,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedVector< Real, Device, Index >::SharedVector()
 {
 }
@@ -27,7 +29,9 @@ SharedVector< Real, Device, Index >::SharedVector()
 template< typename Real,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedVector< Real, Device, Index >::SharedVector( Real* data,
                                                          const Index size )
 : Containers::SharedArray< Real, Device, Index >( data, size )
@@ -37,7 +41,9 @@ SharedVector< Real, Device, Index >::SharedVector( Real* data,
 template< typename Real,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedVector< Real, Device, Index >::SharedVector( Vector< Real, Device, Index >& vector )
 : Containers::SharedArray< Real, Device, Index >( vector )
 {
@@ -46,7 +52,9 @@ SharedVector< Real, Device, Index >::SharedVector( Vector< Real, Device, Index >
 template< typename Real,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedVector< Real, Device, Index >::SharedVector( SharedVector< Real, Device, Index >& vector )
 : Containers::SharedArray< Real, Device, Index >( vector )
 {

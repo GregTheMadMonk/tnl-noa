@@ -154,8 +154,7 @@ setupLinearSystem( const MeshPointer& meshPointer,
    const IndexType dofs = this->getDofs( meshPointer );
    typedef typename MatrixPointer::ObjectType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
    SharedPointer< CompressedRowLengthsVectorType > rowLengthsPointer;
-   if( ! rowLengthsPointer->setSize( dofs ) )
-      return false;
+   rowLengthsPointer->setSize( dofs );
    Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >(
       meshPointer,
@@ -163,8 +162,7 @@ setupLinearSystem( const MeshPointer& meshPointer,
       boundaryConditionPointer,
       rowLengthsPointer );
    matrixPointer->setDimensions( dofs, dofs );
-   if( ! matrixPointer->setCompressedRowLengths( *rowLengthsPointer ) )
-      return false;
+   matrixPointer->setCompressedRowLengths( *rowLengthsPointer );
    return true;
    //return MultidiagonalMatrixSetter< Mesh >::setupMatrix( mesh, matrix );
 }
@@ -181,10 +179,10 @@ makeSnapshot( const RealType& time,
               DofVectorPointer& dofs,
               MeshDependentDataPointer& meshDependentData )
 {
-  std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
+   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
 
    this->bindDofs( meshPointer, dofs );
-   //cout << "dofs = " << dofs << endl;
+
    FileName fileName;
    fileName.setFileNameBase( "u-" );
    fileName.setExtension( "tnl" );
@@ -250,6 +248,19 @@ assemblyLinearSystem( const RealType& time,
       this->uPointer,
       matrixPointer,
       bPointer );
+}
+
+template< typename Mesh,
+          typename BoundaryCondition,
+          typename RightHandSide,
+          typename DifferentialOperator >
+    template< typename Matrix >
+void
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+saveFailedLinearSystem( const Matrix& matrix,
+                        const DofVectorType& dofs,
+                        const DofVectorType& rightHandSide ) const
+{
 }
 
 } // namespace Problems

@@ -56,11 +56,8 @@ class NeighborGridEntityGetter<
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
       {
-         TNL_ASSERT( this->entity.getCoordinates() >= CoordinatesType( 0 ) &&
-                    this->entity.getCoordinates() < this->entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << this->entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() + CoordinatesType( step ) >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() + CoordinatesType( step ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
@@ -73,11 +70,8 @@ class NeighborGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() + CoordinatesType( step ) >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() + CoordinatesType( step ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
@@ -136,11 +130,8 @@ class NeighborGridEntityGetter<
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
       {
-         TNL_ASSERT( this->entity.getCoordinates() >= CoordinatesType( 0 ) &&
-                    this->entity.getCoordinates() < this->entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << this->entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() + CoordinatesType( step ) >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() + CoordinatesType( step ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
@@ -153,11 +144,8 @@ class NeighborGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() + CoordinatesType( step ) >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() + CoordinatesType( step ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
@@ -237,11 +225,8 @@ class NeighborGridEntityGetter<
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates().x() + step + ( step < 0 ) >= CoordinatesType( 0 ) &&
                     entity.getCoordinates().x() + step + ( step < 0 ) <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
@@ -254,11 +239,8 @@ class NeighborGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0 ), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates().x() + step + ( step < 0 ) >= CoordinatesType( 0 ).x() &&
                     entity.getCoordinates().x() + step + ( step < 0 ) <= entity.getMesh().getDimensions().x(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
@@ -318,11 +300,8 @@ class NeighborGridEntityGetter<
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0 ), "wrong coordinates" );
+         TNL_ASSERT_LE( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates().x() + step - ( step > 0 ) >= CoordinatesType( 0 ) &&
                     entity.getCoordinates().x() + step - ( step > 0 ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
@@ -335,11 +314,8 @@ class NeighborGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0 ), "wrong coordinates" );
+         TNL_ASSERT_LE( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates().x() + step - ( step > 0 ) >= 0 &&
                     entity.getCoordinates().x() + step - ( step > 0 ) < entity.getMesh().getDimensions().x(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
@@ -394,11 +370,8 @@ class NeighborGridEntityGetter<
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0 ), "wrong coordinates" );
+         TNL_ASSERT_LE( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates().x() + step - ( step > 0 ) >= CoordinatesType( 0 ) &&
                     entity.getCoordinates().x() + step - ( step > 0 ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
@@ -411,11 +384,8 @@ class NeighborGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0 ), "wrong coordinates" );
+         TNL_ASSERT_LE( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates().x() + step - ( step > 0 ) >= CoordinatesType( 0 ) &&
                     entity.getCoordinates().x() + step - ( step > 0 ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
@@ -470,11 +440,8 @@ class NeighborGridEntityGetter<
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0 ), "wrong coordinates" );
+         TNL_ASSERT_LE( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
                     entity.getCoordinates().x() + step <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
@@ -487,11 +454,8 @@ class NeighborGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         TNL_ASSERT( entity.getCoordinates() >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
-              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimension = " << EntityDimension );
+         TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0 ), "wrong coordinates" );
+         TNL_ASSERT_LE( entity.getCoordinates(), entity.getMesh().getDimensions(), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
                     entity.getCoordinates().x() + step <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
@@ -512,4 +476,3 @@ class NeighborGridEntityGetter<
 
 } // namespace Meshes
 } // namespace TNL
-

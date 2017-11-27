@@ -14,7 +14,7 @@
 #include <TNL/Containers/Array.h>
 
 #ifdef HAVE_GTEST 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #endif
 
 using namespace TNL;
@@ -24,11 +24,13 @@ TEST( ObjectTest, SaveAndLoadTest )
 {
    Object testObject;
    File file;
-   file.open( "test-file.tnl", tnlWriteMode );
+   file.open( "test-file.tnl", IOMode::write );
    ASSERT_TRUE( testObject.save( file ) );
    file.close();
-   file.open( "test-file.tnl", tnlReadMode );
+   file.open( "test-file.tnl", IOMode::read );
    ASSERT_TRUE( testObject.load( file ) );
+
+   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 }
 
 TEST( ObjectTest, parseObjectTypeTest )
@@ -104,14 +106,13 @@ TEST( ObjectTest, parseObjectTypeTest )
 #endif
 
 
+#include "GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST
    ::testing::InitGoogleTest( &argc, argv );
    return RUN_ALL_TESTS();
 #else
-   return EXIT_FAILURE;
+   throw GtestMissingError();
 #endif
 }
-
-

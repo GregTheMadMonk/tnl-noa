@@ -345,10 +345,10 @@ void NavierStokesSolver< AdvectionScheme,
                                                             SolverVectorType& u,
                                                             SolverVectorType& fu )
 {
-   TNL_ASSERT( this->advection, );
-   TNL_ASSERT( this->u1Viscosity, );
-   TNL_ASSERT( this->u2Viscosity, );
-   TNL_ASSERT( this->boundaryConditions, );
+   TNL_ASSERT_TRUE( this->advection, "advection scheme was not set" );
+   TNL_ASSERT_TRUE( this->u1Viscosity, "diffusion scheme was not set" );
+   TNL_ASSERT_TRUE( this->u2Viscosity, "diffusion scheme was not set" );
+   TNL_ASSERT_TRUE( this->boundaryConditions, "boundary conditions were not set" );
 
    SharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e,
                                                       rho_t, rho_u1_t, rho_u2_t, e_t;

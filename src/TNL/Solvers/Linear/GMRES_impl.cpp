@@ -8,6 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
 #include <TNL/Solvers/Linear/GMRES.h>
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Matrices/Ellpack.h>
@@ -53,3 +55,5 @@ template class GMRES< Matrices::Multidiagonal< double, Devices::Cuda, long int >
 } // namespace Linear
 } // namespace Solvers
 } // namespace TNL
+
+#endif // #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

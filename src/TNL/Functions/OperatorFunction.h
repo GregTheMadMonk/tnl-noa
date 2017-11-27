@@ -30,18 +30,20 @@ namespace Functions {
  */
    
 template< typename Operator,
-          typename MeshFunction,
+          typename Function = typename Operator::FunctionType,
           typename BoundaryConditions = void,
-          bool EvaluateOnFly = false >
+          bool EvaluateOnFly = false,
+          bool IsAnalytic = ( Function::getDomainType() == SpaceDomain || Function::getDomainType() == NonspaceDomain ) >
 class OperatorFunction{};
 
 /****
  * Specialization for 'On the fly' evaluation with the boundary conditions does not make sense.
  */
 template< typename Operator,
-          typename MeshFunction,
-          typename BoundaryConditions >
-class OperatorFunction< Operator, MeshFunction, BoundaryConditions, true >
+          typename MeshFunctionT,
+          typename BoundaryConditions,
+          bool IsAnalytic >
+class OperatorFunction< Operator, MeshFunctionT, BoundaryConditions, true, IsAnalytic >
  : public Domain< Operator::getDimension(), MeshDomain >
 {
 };
@@ -50,8 +52,9 @@ class OperatorFunction< Operator, MeshFunction, BoundaryConditions, true >
  * Specialization for 'On the fly' evaluation and no boundary conditions.
  */
 template< typename Operator,
-          typename MeshFunctionT >
-class OperatorFunction< Operator, MeshFunctionT, void, true >
+          typename MeshFunctionT,
+          bool IsAnalytic >
+class OperatorFunction< Operator, MeshFunctionT, void, true, IsAnalytic >
  : public Domain< Operator::getDomainDimension(), Operator::getDomainType() >
 {
    public:
@@ -59,7 +62,7 @@ class OperatorFunction< Operator, MeshFunctionT, void, true >
       static_assert( MeshFunctionT::getDomainType() == MeshDomain ||
                      MeshFunctionT::getDomainType() == MeshInteriorDomain ||
                      MeshFunctionT::getDomainType() == MeshBoundaryDomain,
-         "Only mesh preimageFunctions may be used in the operator preimageFunction. Use ExactOperatorFunction instead of OperatorFunction." );
+         "Only mesh preimageFnctions may be used in the operator preimageFunction. Use ExactOperatorFunction instead of OperatorFunction." );
       static_assert( std::is_same< typename Operator::MeshType, typename MeshFunctionT::MeshType >::value,
           "Both, operator and mesh preimageFunction must be defined on the same mesh." );
  
@@ -84,13 +87,13 @@ class OperatorFunction< Operator, MeshFunctionT, void, true >
  
       const MeshType& getMesh() const
       {
-         TNL_ASSERT( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
+         TNL_ASSERT_TRUE( this->preimageFunction, "The preimage function was not set." );
          return this->preimageFunction->getMesh();
       };
       
       const MeshPointer& getMeshPointer() const
       { 
-         tnlTNL_ASSERT( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
+         TNL_ASSERT_TRUE( this->preimageFunction, "The preimage function was not set." );
          return this->preimageFunction->getMeshPointer(); 
       };
 
@@ -111,7 +114,7 @@ class OperatorFunction< Operator, MeshFunctionT, void, true >
          const MeshEntity& meshEntity,
          const RealType& time = 0.0 ) const
       {
-         TNL_ASSERT( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
+         TNL_ASSERT_TRUE( this->preimageFunction, "The preimage function was not set." );
          return operator_( *preimageFunction, meshEntity, time );
       }
  
@@ -128,8 +131,9 @@ class OperatorFunction< Operator, MeshFunctionT, void, true >
  * Specialization for precomputed evaluation and no boundary conditions.
  */
 template< typename Operator,
-          typename PreimageFunction >
-class OperatorFunction< Operator, PreimageFunction, void, false >
+          typename PreimageFunction,
+          bool IsAnalytic >
+class OperatorFunction< Operator, PreimageFunction, void, false, IsAnalytic >
  : public Domain< Operator::getDomainDimension(), Operator::getDomainType() >
 {
    public:
@@ -172,7 +176,7 @@ class OperatorFunction< Operator, PreimageFunction, void, false >
  
       const ImageFunctionType& getImageFunction() const { return this->imageFunction; };
  
-      void setPreimageFunction( PreimageFunction& preimageFunction )
+      void setPreimageFunction( PreimageFunctionType& preimageFunction )
       {
          this->preimageFunction = &preimageFunction;
          this->imageFunction.setMesh( preimageFunction.getMeshPointer() );
@@ -232,18 +236,19 @@ class OperatorFunction< Operator, PreimageFunction, void, false >
  * Specialization for precomputed evaluation and with boundary conditions.
  */
 template< typename Operator,
-          typename PreimageFunction,
-          typename BoundaryConditions >
-class OperatorFunction< Operator, PreimageFunction, BoundaryConditions, false >
+          typename Function,
+          typename BoundaryConditions,
+          bool IsAnalytic >
+class OperatorFunction< Operator, Function, BoundaryConditions, false, IsAnalytic >
   : public Domain< Operator::getDimension(), MeshDomain >
 {
    public:
  
-      static_assert( PreimageFunction::getDomainType() == MeshDomain ||
-                     PreimageFunction::getDomainType() == MeshInteriorDomain ||
-                     PreimageFunction::getDomainType() == MeshBoundaryDomain,
+      static_assert( Function::getDomainType() == MeshDomain ||
+                     Function::getDomainType() == MeshInteriorDomain ||
+                     Function::getDomainType() == MeshBoundaryDomain,
          "Only mesh preimageFunctions may be used in the operator preimageFunction. Use ExactOperatorFunction instead of OperatorFunction." );
-      static_assert( std::is_same< typename Operator::MeshType, typename PreimageFunction::MeshType >::value,
+      static_assert( std::is_same< typename Operator::MeshType, typename Function::MeshType >::value,
           "Both, operator and mesh preimageFunction must be defined on the same mesh." );
       static_assert( std::is_same< typename BoundaryConditions::MeshType, typename Operator::MeshType >::value,
          "The operator and the boundary conditions are defined on different mesh types." );
@@ -254,10 +259,10 @@ class OperatorFunction< Operator, PreimageFunction, BoundaryConditions, false >
       typedef typename OperatorType::RealType RealType;
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
-      typedef PreimageFunction PreimageFunctionType;
+      typedef Function PreimageFunctionType;
       typedef Functions::MeshFunction< MeshType, Operator::getImageEntitiesDimension() > ImageFunctionType;
       typedef BoundaryConditions BoundaryConditionsType;
-      typedef OperatorFunction< Operator, PreimageFunction, void, true > OperatorFunctionType;
+      typedef OperatorFunction< Operator, Function, void, true > OperatorFunctionType;
       typedef typename OperatorType::ExactOperatorType ExactOperatorType;
  
       static constexpr int getEntitiesDimension() { return OperatorType::getImageEntitiesDimension(); };
@@ -286,20 +291,20 @@ class OperatorFunction< Operator, PreimageFunction, BoundaryConditions, false >
       
       const MeshPointer& getMeshPointer() const { return imageFunction.getMeshPointer(); };
       
-      void setPreimageFunction( const PreimageFunction& preimageFunction )
+      void setPreimageFunction( const PreimageFunctionType& preimageFunction )
       {
          this->preimageFunction = &preimageFunction;
       }
  
       const PreimageFunctionType& getPreimageFunction() const
       {
-         TNL_ASSERT( this->preimageFunction, );
+         TNL_ASSERT_TRUE( this->preimageFunction, "The preimage function was not set." );
          return *this->preimageFunction;
       };
  
       PreimageFunctionType& getPreimageFunction()
       {
-         TNL_ASSERT( this->preimageFunction, );
+         TNL_ASSERT_TRUE( this->preimageFunction, "The preimage function was not set." );
          return *this->preimageFunction;
       };
  
@@ -355,6 +360,67 @@ class OperatorFunction< Operator, PreimageFunction, BoundaryConditions, false >
       const BoundaryConditionsType& boundaryConditions;
  
       template< typename, typename > friend class MeshFunctionEvaluator;
+};
+
+/****
+ * Specialization for precomputed evaluation and with boundary conditions.
+ */
+template< typename Operator,
+          typename Function >
+class OperatorFunction< Operator, Function, void, false, true >
+  : public Domain< Function::getDomainDimension(), Function::getDomainType() >
+{
+   public:
+      
+      typedef Function FunctionType;
+      typedef typename FunctionType::RealType RealType;
+      typedef typename FunctionType::PointType PointType;
+      typedef Operator OperatorType;
+      
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
+      {
+         return( this->function.setup( parameters, prefix) &&
+                 this->operator_.setup( parameters, prefix ) );
+      }
+      
+      __cuda_callable__
+      FunctionType& getFunction()
+      {
+         return this->function;
+      }
+      
+      __cuda_callable__
+      const FunctionType& getFunction() const
+      {
+         return this->function;
+      }
+      
+      __cuda_callable__
+      OperatorType& getOperator()
+      {
+         return this->operator_;
+      }
+      
+      __cuda_callable__
+      const OperatorType& getOperator() const
+      {
+         return this->operator_;
+      }
+      
+      __cuda_callable__
+      RealType operator()( const PointType& v,
+                           const RealType& time = 0.0 ) const
+      {
+         return this->operator_( this->function, v, time );
+      }
+      
+   protected:
+      
+      Function function;
+      
+      Operator operator_;
+ 
 };
 
 } // namespace Functions

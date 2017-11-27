@@ -115,7 +115,7 @@ evaluateEntities( OutMeshFunctionPointer& meshFunction,
    static_assert( std::is_same< typename std::decay< typename OutMeshFunctionPointer::ObjectType >::type, OutMeshFunction >::value, "expected a smart pointer" );
    static_assert( std::is_same< typename std::decay< typename InFunctionPointer::ObjectType >::type, InFunction >::value, "expected a smart pointer" );
 
-   typedef typename MeshType::template MeshEntity< OutMeshFunction::getEntitiesDimension() > MeshEntityType;
+   typedef typename MeshType::template EntityType< OutMeshFunction::getEntitiesDimension() > MeshEntityType;
    typedef Functions::MeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData > AssignmentEntitiesProcessor;
    typedef Functions::MeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
    //typedef typename OutMeshFunction::MeshPointer OutMeshPointer;
@@ -171,4 +171,3 @@ evaluateEntities( OutMeshFunctionPointer& meshFunction,
 
 } // namespace Functions
 } // namespace TNL
-

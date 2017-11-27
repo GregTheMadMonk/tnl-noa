@@ -12,159 +12,107 @@
 
 #include <cmath>
 #include <type_traits>
+#include <algorithm>
 
-#include <TNL/Devices/Cuda.h>
-
-#ifdef HAVE_CUDA
-#include <cuda.h>
-#endif
+#include <TNL/Devices/CudaCallable.h>
 
 namespace TNL {
 
 template< typename T1, typename T2 >
 using enable_if_same_base = std::enable_if< std::is_same< typename std::decay< T1 >::type, T2 >::value, T2 >;
 
+template< typename T1, typename T2 >
+using both_integral_or_floating = typename std::conditional<
+         ( std::is_integral< T1 >::value && std::is_integral< T2 >::value ) ||
+         ( std::is_floating_point< T1 >::value && std::is_floating_point< T2 >::value ),
+   std::true_type,
+   std::false_type >::type;
+
+// 1. If both types are integral or floating-point, the larger type is selected.
+// 2. If one type is integral and the other floating-point, the floating-point type is selected.
+// Casting both arguments to the same type is necessary because std::min and std::max
+// are implemented as a single-type template.
+template< typename T1, typename T2 >
+using larger_type = typename std::conditional<
+         ( both_integral_or_floating< T1, T2 >::value && sizeof(T1) >= sizeof(T2) ) ||
+         std::is_floating_point<T1>::value,
+   T1, T2 >::type;
+
 /***
  * This function returns minimum of two numbers.
- * Specializations use the functions defined in the CUDA's math_functions.h
- * in CUDA device code and STL functions otherwise.
+ * GPU device code uses the functions defined in the CUDA's math_functions.h,
+ * MIC uses trivial override and host uses the STL functions.
  */
-template< typename Type1, typename Type2 >
+template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
 __cuda_callable__ inline
-Type1 min( const Type1& a, const Type2& b )
+ResultType min( const T1& a, const T2& b )
 {
+#if defined(__CUDA_ARCH__)
+   return ::min( (ResultType) a, (ResultType) b );
+#elif defined(__MIC__)
    return a < b ? a : b;
-};
-
-// specialization for int
-template< class T >
-__cuda_callable__ inline
-typename enable_if_same_base< T, int >::type
-min( const T& a, const T& b )
-{
-#ifdef __CUDA_ARCH__
-   return ::min( a, b );
 #else
-   return std::min( a, b );
-#endif
-}
-
-// specialization for float
-template< class T >
-__cuda_callable__ inline
-typename enable_if_same_base< T, float >::type
-min( const T& a, const T& b )
-{
-#ifdef __CUDA_ARCH__
-   return ::fminf( a, b );
-#else
-   return std::fmin( a, b );
-#endif
-}
-
-// specialization for double
-template< class T >
-__cuda_callable__ inline
-typename enable_if_same_base< T, double >::type
-min( const T& a, const T& b )
-{
-#ifdef __CUDA_ARCH__
-   return ::fmin( a, b );
-#else
-   return std::fmin( a, b );
+   return std::min( (ResultType) a, (ResultType) b );
 #endif
 }
 
 
 /***
  * This function returns maximum of two numbers.
- * Specializations use the functions defined in the CUDA's math_functions.h
- * in CUDA device code and STL functions otherwise.
+ * GPU device code uses the functions defined in the CUDA's math_functions.h,
+ * MIC uses trivial override and host uses the STL functions.
  */
-template< typename Type1, typename Type2 >
+template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
 __cuda_callable__
-Type1 max( const Type1& a, const Type2& b )
+ResultType max( const T1& a, const T2& b )
 {
+#if defined(__CUDA_ARCH__)
+   return ::max( (ResultType) a, (ResultType) b );
+#elif defined(__MIC__)
    return a > b ? a : b;
-};
-
-// specialization for int
-template< class T >
-__cuda_callable__ inline
-typename enable_if_same_base< T, int >::type
-max( const T& a, const T& b )
-{
-#ifdef __CUDA_ARCH__
-   return ::max( a, b );
 #else
-   return std::max( a, b );
-#endif
-}
-
-// specialization for float
-template< class T >
-__cuda_callable__ inline
-typename enable_if_same_base< T, float >::type
-max( const T& a, const T& b )
-{
-#ifdef __CUDA_ARCH__
-   return ::fmaxf( a, b );
-#else
-   return std::fmax( a, b );
-#endif
-}
-
-// specialization for double
-template< class T >
-__cuda_callable__ inline
-typename enable_if_same_base< T, double >::type
-max( const T& a, const T& b )
-{
-#ifdef __CUDA_ARCH__
-   return ::fmax( a, b );
-#else
-   return std::fmax( a, b );
+   return std::max( (ResultType) a, (ResultType) b );
 #endif
 }
 
 
 /***
  * This function returns absolute value of given number.
- * Specializations use the functions defined in the CUDA's math_functions.h
- * in CUDA device code and STL functions otherwise.
  */
 template< class T >
 __cuda_callable__ inline
-typename std::enable_if< ! std::is_arithmetic< T >::value, T >::type
-abs( const T& n )
+T abs( const T& n )
 {
+#if defined(__MIC__)
    if( n < ( T ) 0 )
       return -n;
    return n;
-}
-
-// specialization for any arithmetic type (e.g. int, float, double)
-template< class T >
-__cuda_callable__ inline
-typename std::enable_if< std::is_arithmetic< T >::value, T >::type
-abs( const T& n )
-{
-#ifdef __CUDA_ARCH__
-   return ::abs( n );
 #else
    return std::abs( n );
 #endif
 }
 
 
-template< class T >
+template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
 __cuda_callable__ inline
-T pow( const T& base, const T& exp )
+ResultType pow( const T1& base, const T2& exp )
 {
-#ifdef __CUDA_ARCH__
-   return ::pow( base, exp );
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::pow( (ResultType) base, (ResultType) exp );
 #else
-   return std::pow( base, exp );
+   return std::pow( (ResultType) base, (ResultType) exp );
+#endif
+}
+
+
+template< typename T >
+__cuda_callable__ inline
+T sqrt( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::sqrt( value );
+#else
+   return std::sqrt( value );
 #endif
 }
 
@@ -176,16 +124,16 @@ void swap( Type& a, Type& b )
    Type tmp( a );
    a = b;
    b = tmp;
-};
+}
 
 template< class T >
 __cuda_callable__
 T sign( const T& a )
 {
-   if( a < ( T ) 0 ) return -1;
-   if( a == ( T ) 0 ) return 0;
-   return 1;
-};
+   if( a < ( T ) 0 ) return ( T ) -1;
+   if( a == ( T ) 0 ) return ( T ) 0;
+   return ( T ) 1;
+}
 
 template< typename Real >
 __cuda_callable__
@@ -220,4 +168,3 @@ inline bool isPow2( long int x )
 }
 
 } // namespace TNL
-

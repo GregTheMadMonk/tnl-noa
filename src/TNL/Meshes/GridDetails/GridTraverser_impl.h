@@ -8,7 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#include <TNL/Devices/MIC.h>
+
 #pragma once
+
+#include "GridTraverser.h"
+
+#include <TNL/Exceptions/CudaSupportMissing.h>
 
 namespace TNL {
 namespace Meshes {
@@ -193,11 +199,75 @@ processEntities(
    if( stream == 0 )
    {
       cudaStreamSynchronize( s );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
    }
+#else
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
+/****
+ * 1D traverser, MIC
+ */
+
+template< typename Real,
+          typename Index >
+   template<
+      typename GridEntity,
+      typename EntitiesProcessor,
+      typename UserData,
+      bool processOnlyBoundaryEntities >
+void
+GridTraverser< Meshes::Grid< 1, Real, Devices::MIC, Index > >::
+processEntities(
+   const GridPointer& gridPointer,
+   const CoordinatesType& begin,
+   const CoordinatesType& end,
+   SharedPointer< UserData, DeviceType >& userDataPointer,
+   const int& stream )
+{
+    std::cout << "Not Implemented yet Grid Traverser <1, Real, Device::MIC>" << std::endl;
+/*
+   auto& pool = CudaStreamPool::getInstance();
+   const cudaStream_t& s = pool.getStream( stream );
+
+   Devices::Cuda::synchronizeDevice();
+   if( processOnlyBoundaryEntities )
+   {
+      dim3 cudaBlockSize( 2 );
+      dim3 cudaBlocks( 1 );
+      GridBoundaryTraverser1D< Real, Index, GridEntity, UserData, EntitiesProcessor >
+            <<< cudaBlocks, cudaBlockSize, 0, s >>>
+            ( &gridPointer.template getData< Devices::Cuda >(),
+              &userDataPointer.template modifyData< Devices::Cuda >(),
+              begin,
+              end );
+   }
+   else
+   {
+      dim3 cudaBlockSize( 256 );
+      dim3 cudaBlocks;
+      cudaBlocks.x = Devices::Cuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
+      const IndexType cudaXGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.x );
+
+      for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
+         GridTraverser1D< Real, Index, GridEntity, UserData, EntitiesProcessor >
+            <<< cudaBlocks, cudaBlockSize, 0, s >>>
+            ( &gridPointer.template getData< Devices::Cuda >(),
+              &userDataPointer.template modifyData< Devices::Cuda >(),
+              begin,
+              end,
+              gridXIdx );
+   }
+
+   // only launches into the stream 0 are synchronized
+   if( stream == 0 )
+   {
+      cudaStreamSynchronize( s );
+      checkCudaDevice;
+   }
+*/
+}
 
 /****
  * 2D traverser, host
@@ -311,23 +381,6 @@ GridTraverser2D(
    coordinates.x() = begin.x() + Devices::Cuda::getGlobalThreadIdx_x( gridIdx );
    coordinates.y() = begin.y() + Devices::Cuda::getGlobalThreadIdx_y( gridIdx );
    
-   /*if( processOnlyBoundaryEntities && 
-      ( GridEntity::getMeshDimension() == 2 || GridEntity::getMeshDimension() == 0 ) )
-   {
-      if( coordinates.x() == begin.x() || coordinates.x() == end.x() ||
-          coordinates.y() == begin.y() || coordinates.y() == end.y() )
-      {
-         GridEntity entity( *grid, coordinates, gridEntityParameters... );
-         entity.refresh();
-         EntitiesProcessor::processEntity
-         ( *grid,
-           *userData,
-           entity );
-      }
-      return;
-   }*/
-   
-   
    if( coordinates <= end )
    {
       GridEntity entity( *grid, coordinates, gridEntityParameters... );
@@ -434,7 +487,7 @@ processEntities(
 {
 #ifdef HAVE_CUDA
    if( processOnlyBoundaryEntities && 
-      ( GridEntity::getMeshDimension() == 2 || GridEntity::getMeshDimension() == 0 ) )
+       ( GridEntity::getEntityDimension() == 2 || GridEntity::getEntityDimension() == 0 ) )
    {
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocksCountAlongX, cudaGridsCountAlongX,
@@ -499,7 +552,7 @@ processEntities(
       cudaStreamSynchronize( s2 );
       cudaStreamSynchronize( s3 );
       cudaStreamSynchronize( s4 );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
    }
    else
    {
@@ -533,9 +586,109 @@ processEntities(
       if( stream == 0 )
       {
          cudaStreamSynchronize( s );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
       }
    }
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
+}
+
+/****
+ * 2D traverser, MIC
+ */
+template< typename Real,
+          typename Index >
+   template<
+      typename GridEntity,
+      typename EntitiesProcessor,
+      typename UserData,
+      bool processOnlyBoundaryEntities,
+         int XOrthogonalBoundary,
+         int YOrthogonalBoundary,
+      typename... GridEntityParameters >
+void
+GridTraverser< Meshes::Grid< 2, Real, Devices::MIC, Index > >::
+processEntities(
+   const GridPointer& gridPointer,
+   const CoordinatesType& begin,
+   const CoordinatesType& end,
+   SharedPointer< UserData, DeviceType >& userDataPointer,
+   const int& stream,
+   const GridEntityParameters&... gridEntityParameters )
+{
+        
+    
+#ifdef HAVE_MIC   
+   Devices::MIC::synchronizeDevice();
+
+    //TOHLE JE PRUSER -- nemim poslat vypustku -- 
+    //GridEntity entity( gridPointer.template getData< Devices::MIC >(), begin, gridEntityParameters... );
+
+
+    Devices::MICHider<const GridType> hMicGrid;
+    hMicGrid.pointer=& gridPointer.template getData< Devices::MIC >();
+    Devices::MICHider<UserData> hMicUserData;
+    hMicUserData.pointer=& userDataPointer.template modifyData<Devices::MIC>();
+    TNLMICSTRUCT(begin, const CoordinatesType);
+    TNLMICSTRUCT(end, const CoordinatesType);
+
+    #pragma offload target(mic) in(sbegin,send,hMicUserData,hMicGrid)  
+    {
+        
+        #pragma omp parallel firstprivate( sbegin, send )
+        {     
+            TNLMICSTRUCTUSE(begin, const CoordinatesType);
+            TNLMICSTRUCTUSE(end, const CoordinatesType);    
+            GridEntity entity( *(hMicGrid.pointer), *(kernelbegin) );
+          
+            if( processOnlyBoundaryEntities )
+             {      
+               if( YOrthogonalBoundary )
+                  #pragma omp for
+                  for( auto k = kernelbegin->x();
+                       k <= kernelend->x();
+                       k ++ )
+                  {
+                     entity.getCoordinates().x() = k;
+                     entity.getCoordinates().y() = kernelbegin->y();
+                     entity.refresh();
+                     EntitiesProcessor::processEntity( entity.getMesh(), *(hMicUserData.pointer), entity );
+                     entity.getCoordinates().y() = kernelend->y();
+                     entity.refresh();
+                     EntitiesProcessor::processEntity( entity.getMesh(), *(hMicUserData.pointer), entity );
+                  }
+               if( XOrthogonalBoundary )
+                  #pragma omp for
+                  for( auto k = kernelbegin->y();
+                       k <= kernelend->y();
+                       k ++ )
+                  {
+                     entity.getCoordinates().y() = k;
+                     entity.getCoordinates().x() = kernelbegin->x();
+                     entity.refresh();
+                     EntitiesProcessor::processEntity( entity.getMesh(), *(hMicUserData.pointer), entity );
+                     entity.getCoordinates().x() = kernelend->x();
+                     entity.refresh();
+                     EntitiesProcessor::processEntity( entity.getMesh(), *(hMicUserData.pointer), entity );
+                  }
+             }
+            else
+            {
+                  #pragma omp for
+                  for( IndexType y = kernelbegin->y(); y <= kernelend->y(); y ++ )
+                     for( IndexType x = kernelbegin->x(); x <= kernelend->x(); x ++ )
+                     {
+                        // std::cerr << x << "   " <<y << std::endl;
+                        entity.getCoordinates().x() = x;
+                        entity.getCoordinates().y() = y;
+                        entity.refresh();
+                        EntitiesProcessor::processEntity( entity.getMesh(), *(hMicUserData.pointer), entity );
+                     }      
+             }
+        }
+    }
+      
 #endif
 }
 
@@ -828,7 +981,7 @@ processEntities(
 {
 #ifdef HAVE_CUDA   
    if( processOnlyBoundaryEntities && 
-      ( GridEntity::getMeshDimension() == 3 || GridEntity::getMeshDimension() == 0 ) )
+       ( GridEntity::getEntityDimension() == 3 || GridEntity::getEntityDimension() == 0 ) )
    {
       dim3 cudaBlockSize( 16, 16 );
       const IndexType entitiesAlongX = end.x() - begin.x() + 1;
@@ -940,7 +1093,7 @@ processEntities(
       cudaStreamSynchronize( s4 );
       cudaStreamSynchronize( s5 );
       cudaStreamSynchronize( s6 );      
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
    }
    else
    {
@@ -976,10 +1129,75 @@ processEntities(
       if( stream == 0 )
       {
          cudaStreamSynchronize( s );
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
       }
    }
+#else
+   throw Exceptions::CudaSupportMissing();
 #endif
+}
+
+/****
+ * 3D traverser, MIC
+ */
+template< typename Real,
+          typename Index >
+   template<
+      typename GridEntity,
+      typename EntitiesProcessor,
+      typename UserData,
+      bool processOnlyBoundaryEntities,
+         int XOrthogonalBoundary,
+         int YOrthogonalBoundary,
+         int ZOrthogonalBoundary,
+      typename... GridEntityParameters >
+void
+GridTraverser< Meshes::Grid< 3, Real, Devices::MIC, Index > >::
+processEntities(
+   const GridPointer& gridPointer,
+   const CoordinatesType& begin,
+   const CoordinatesType& end,
+   SharedPointer< UserData, DeviceType >& userDataPointer,
+   const int& stream,
+   const GridEntityParameters&... gridEntityParameters )
+{
+    std::cout << "Not Implemented yet Grid Traverser <3, Real, Device::MIC>" << std::endl;
+    
+/* HAVE_CUDA   
+   dim3 cudaBlockSize( 8, 8, 8 );
+   dim3 cudaBlocks;
+   cudaBlocks.x = Devices::Cuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
+   cudaBlocks.y = Devices::Cuda::getNumberOfBlocks( end.y() - begin.y() + 1, cudaBlockSize.y );
+   cudaBlocks.z = Devices::Cuda::getNumberOfBlocks( end.z() - begin.z() + 1, cudaBlockSize.z );
+   const IndexType cudaXGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.x );
+   const IndexType cudaYGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.y );
+   const IndexType cudaZGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.z );
+
+   auto& pool = CudaStreamPool::getInstance();
+   const cudaStream_t& s = pool.getStream( stream );
+
+   Devices::Cuda::synchronizeDevice();
+   for( IndexType gridZIdx = 0; gridZIdx < cudaZGrids; gridZIdx ++ )
+      for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
+         for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
+            GridTraverser3D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
+               <<< cudaBlocks, cudaBlockSize, 0, s >>>
+               ( &gridPointer.template getData< Devices::Cuda >(),
+                 &userDataPointer.template modifyData< Devices::Cuda >(),
+                 begin,
+                 end,
+                 gridXIdx,
+                 gridYIdx,
+                 gridZIdx,
+                 gridEntityParameters... );
+
+   // only launches into the stream 0 are synchronized
+   if( stream == 0 )
+   {
+      cudaStreamSynchronize( s );
+      checkCudaDevice;
+   }
+ */
 }
 
 } // namespace Meshes

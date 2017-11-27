@@ -21,10 +21,13 @@
 namespace TNL {
 namespace Containers {   
 
+
 template< typename Element,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedArray< Element, Device, Index >::SharedArray()
 : size( 0 ), data( 0 )
 {
@@ -33,7 +36,9 @@ SharedArray< Element, Device, Index >::SharedArray()
 template< typename Element,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedArray< Element, Device, Index >::SharedArray( Element* _data,
                                                           const Index _size )
 {
@@ -43,7 +48,9 @@ SharedArray< Element, Device, Index >::SharedArray( Element* _data,
 template< typename Element,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedArray< Element, Device, Index >::SharedArray( Array< Element, Device, Index >& array )
 {
    this->bind( array );
@@ -52,7 +59,9 @@ SharedArray< Element, Device, Index >::SharedArray( Array< Element, Device, Inde
 template< typename Element,
           typename Device,
           typename Index >
+#ifndef HAVE_MIC
 __cuda_callable__
+#endif
 SharedArray< Element, Device, Index >::SharedArray( SharedArray< Element, Device, Index >& array )
 {
    this->bind( array );
@@ -352,11 +361,7 @@ bool SharedArray< Element, Device, Index > :: save( File& file ) const
               std::cerr << "You try to save empty array." << std::endl );
    if( ! Object :: save( file ) )
       return false;
-#ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, Devices::Host >( &this->size ) )
-#else
    if( ! file. write( &this->size ) )
-#endif
       return false;
    if( ! file. write< Element, Device, Index >( this->data, this->size ) )
    {
@@ -382,13 +387,8 @@ bool SharedArray< Element, Device, Index > :: load( File& file )
    if( ! Object :: load( file ) )
       return false;
    Index _size;
-#ifdef HAVE_NOT_CXX11
-   if( ! file. read< Index, Devices::Host >( &_size ) )
-      return false;
-#else
    if( ! file. read( &_size, 1 ) )
       return false;
-#endif
    if( _size != this->size )
    {
       std::cerr << "Error: The size " << _size << " of the data to be load is different from the " <<

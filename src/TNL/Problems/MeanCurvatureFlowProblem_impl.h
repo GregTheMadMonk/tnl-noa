@@ -140,8 +140,7 @@ setupLinearSystem( const MeshType& mesh,
    const IndexType dofs = this->getDofs( mesh );
    typedef typename MatrixType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
    CompressedRowLengthsVectorType rowLengths;
-   if( ! rowLengths.setSize( dofs ) )
-      return false;
+   rowLengths.setSize( dofs );
    MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >(
       mesh,
@@ -150,8 +149,7 @@ setupLinearSystem( const MeshType& mesh,
       rowLengths
    );
    matrix.setDimensions( dofs, dofs );
-   if( ! matrix.setCompressedRowLengths( rowLengths ) )
-      return false;
+   matrix.setCompressedRowLengths( rowLengths );
    return true;
 }
 
@@ -260,6 +258,19 @@ assemblyLinearSystem( const RealType& time,
   std::cout << std::endl << u << std::endl;
    getchar();
    //abort();*/
+}
+
+template< typename Mesh,
+          typename BoundaryCondition,
+          typename RightHandSide,
+          typename DifferentialOperator >
+    template< typename Matrix >
+void
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+saveFailedLinearSystem( const Matrix& matrix,
+                        const DofVectorType& dofs,
+                        const DofVectorType& rightHandSide ) const
+{
 }
 
 } // namespace Problems

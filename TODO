@@ -1,6 +1,15 @@
-- pridet execution policy https://github.com/harrism/hemi/blob/master/hemi/execution_policy.h
-- prejmenova Assert na TNL_ASSERT a rozsirit asserce podobne jako v GTest
-- odstranit paramee lazy ze smart pointeru
+TODO:
+- pri zpracovani dat z MRI jde vetsinou o prilis male snimky na optimalni vyuziti GPU (ve 2D). Kdyby se ale pomoci CUDA streamu provadelo vice 
+  vypoctu soucasne, mohlo by se dosahnout mnohem lepsiho urychleni
+
+TODO:
+- objekt NeighborEnities by mohl vracet i lokalni index dane neighbor entity, coz je potreba pro spravne vkladani maticovych elementu,
+  ted se tyto indexy doplnuji rucne podle znalosti indexovani v gridu. Jelikoz neighbor entities mohou znat typ okoli/vzor numerickeho schematu,
+  dokazaly by se prizpusobit i ruznym patternum. To by pak vyresilo i skladani operatoru s ruznymi patterny.
+
+TODO:
+- pridat execution policy https://github.com/harrism/hemi/blob/master/hemi/execution_policy.h
+- odstranit parametr lazy ze smart pointeru
 
 TODO:
  - implementovat tnlMixedGridBoundaryConditions, kde by se pro kazdou stranu gridu definoval jiny zvlastni typ
@@ -14,14 +23,6 @@ TODO:
  - nebylo by nutne definovat pomocne datove structury pro traverser
  - data by se na hostu preskupila do souvisleho bloku dat a ten se prenesl najednou
 
-
-TODO:
- - zrejme bude potreba udrzovat ke kazdemu objektu jeho obraz na GPU/MIC
- - to by zarizovala metoda syncToDevice() napr. kazdy objekt by mel promennou modified, ktera by rikala, jestli se zmenil a zda je nutne ho
-   prekopirovavat
-
-TODO:
- - zavest namespaces
 
 TODO: CUDA unified memory
  - pretizit operator new s cudaMallocManaged, pak by bylo mozne vytvaret CUDA objekty pristupne pro host a device
@@ -43,7 +44,6 @@ TODO: implementace maticovych resicu
       * Gaussova eliminace
       * SOR metoda
       * Jacobiho metoda
-      * TFQMR metoda
       * IDR metody 
 
 TODO: Nahradit sablonovy parametr dimenze sitove entity za typ entity. Pak by se mohlo zkusit, napriklad u gridu

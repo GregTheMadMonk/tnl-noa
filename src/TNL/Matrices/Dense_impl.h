@@ -13,10 +13,6 @@
 #include <TNL/Assert.h>
 #include <TNL/Matrices/Dense.h>
 
-#ifdef HAVE_CUDA
-#include <TNL/Containers/Algorithms/reduction-operations.h>
-#endif
-
 namespace TNL {
 namespace Matrices {   
 
@@ -49,14 +45,28 @@ String Dense< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool Dense< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                           const IndexType columns )
+String Dense< Real, Device, Index >::getSerializationType()
 {
-   if( ! Matrix< Real, Device, Index >::setDimensions( rows, columns ) ||
-       ! this->values.setSize( rows * columns ) )
-     return false;
+   return getType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+String Dense< Real, Device, Index >::getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Dense< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                  const IndexType columns )
+{
+   Matrix< Real, Device, Index >::setDimensions( rows, columns );
+   this->values.setSize( rows * columns );
    this->values.setValue( 0.0 );
-   return true;
 }
 
 template< typename Real,
@@ -65,23 +75,31 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool Dense< Real, Device, Index >::setLike( const Dense< Real2, Device2, Index2 >& matrix )
+void Dense< Real, Device, Index >::setLike( const Dense< Real2, Device2, Index2 >& matrix )
 {
-   return this->setDimensions( matrix.getRows(), matrix.getColumns() );
+   this->setDimensions( matrix.getRows(), matrix.getColumns() );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Dense< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void Dense< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
-   return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
 Index Dense< Real, Device, Index >::getRowLength( const IndexType row ) const
+{
+   return this->getColumns();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Index Dense< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
 {
    return this->getColumns();
 }
@@ -153,8 +171,8 @@ template< typename Real,
           typename Device,
           typename Index >
 bool Dense< Real, Device, Index >::setElement( const IndexType row,
-                                                        const IndexType column,
-                                                        const RealType& value )
+                                               const IndexType column,
+                                               const RealType& value )
 {
    this->values.setElement( this->getElementIndex( row, column ), value );
    return true;
@@ -166,9 +184,9 @@ template< typename Real,
           typename Index >
 __cuda_callable__
 bool Dense< Real, Device, Index >::addElementFast( const IndexType row,
-                                                            const IndexType column,
-                                                            const RealType& value,
-                                                            const RealType& thisElementMultiplicator )
+                                                   const IndexType column,
+                                                   const RealType& value,
+                                                   const RealType& thisElementMultiplicator )
 {
    TNL_ASSERT( row >= 0 && row < this->getRows() &&
               column >= 0 && column < this->getColumns(),
@@ -818,7 +836,7 @@ void Dense< Real, Device, Index >::getTransposition( const Matrix& matrix,
                                                          gridIdx_x,
                                                          gridIdx_y );
             }
-            checkCudaDevice;
+            TNL_CHECK_CUDA_DEVICE;
          }
       Devices::Cuda::freeFromDevice( this_device );
       Devices::Cuda::freeFromDevice( matrix_device );
@@ -845,6 +863,39 @@ void Dense< Real, Device, Index >::performSORIteration( const Vector& b,
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
 }
+
+
+// copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+Dense< Real, Device, Index >&
+Dense< Real, Device, Index >::operator=( const Dense& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   return *this;
+}
+
+// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2, typename Device2, typename Index2, typename >
+Dense< Real, Device, Index >&
+Dense< Real, Device, Index >::operator=( const Dense< Real2, Device2, Index2 >& matrix )
+{
+   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
+                  "unknown device" );
+   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
+                  "unknown device" );
+
+   this->setLike( matrix );
+
+   std::cerr << "Cross-device assignment for the Dense format is not implemented yet." << std::endl;
+   throw 1;
+}
+
 
 template< typename Real,
           typename Device,

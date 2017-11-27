@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExpBump.h  -  description
+                          PseudoSquare.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -54,15 +54,9 @@ class PseudoSquare< 1, Real > : public PseudoSquareBase< Real, 1 >
 
       PseudoSquare();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
@@ -85,15 +79,9 @@ class PseudoSquare< 2, Real > : public PseudoSquareBase< Real, 2 >
 
       PseudoSquare();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
@@ -116,15 +104,9 @@ class PseudoSquare< 3, Real > : public PseudoSquareBase< Real, 3 >
 
       PseudoSquare();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
       RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;

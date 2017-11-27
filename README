@@ -9,7 +9,7 @@ Installation
     GNU g++ 4.8 or later (https://gcc.gnu.org/)
     CUDA 8.0 or later (https://developer.nvidia.com/cuda-downloads)
 
-    For image processing problems, you may optionaly install:
+    For image processing problems, you may optionally install:
     DCMTK (http://dicom.offis.de/dcmtk.php.en)
     libpng (http://www.libpng.org/pub/png/libpng.html)
     libjpeg (http://libjpeg.sourceforge.net/)
