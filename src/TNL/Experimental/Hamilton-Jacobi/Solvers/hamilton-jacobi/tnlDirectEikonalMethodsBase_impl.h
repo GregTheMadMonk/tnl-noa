@@ -129,7 +129,7 @@ initInterface( const MeshFunctionType& input,
             /*if( c * input[ e ] <= 0 || c * input[ w ] <= 0 ||
                 c * input[ n ] <= 0 || c * input[ s ] <= 0 )
             {
-               output[ cell.getIndex() ] = tnlTypeInfo< RealType >::getMaxValue();
+               output[ cell.getIndex() ] = TypeInfo< RealType >::getMaxValue();
                interfaceMap[ cell.getIndex() ] = true;
                continue;
             }*/
