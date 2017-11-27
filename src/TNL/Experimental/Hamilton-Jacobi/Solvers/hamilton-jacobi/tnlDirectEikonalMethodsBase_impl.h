@@ -51,21 +51,23 @@ initInterface( const MeshFunctionType& input,
              {
                  output[ cell.getIndex() ] = - ( h * c )/( c - input[ e ] );
              }*/
-             c >= 0 ? output[ cell.getIndex() ] = ( h * c )/( c - input[ e ] ) :
-                      output[ cell.getIndex() ] = - ( h * c )/( c - input[ e ] );
+             output[ cell.getIndex() ] =
+             c >= 0 ? ( h * c )/( c - input[ e ] ) :
+                      - ( h * c )/( c - input[ e ] );
              interfaceMap[ cell.getIndex() ] = true;
              continue;
          }
-         else if( c * input[ w ] <=0 )
+         if( c * input[ w ] <=0 )
          {
-             c <= 0 ? output[ cell.getIndex() ] = ( h * c )/( c - input[ e ] ) :
-                      output[ cell.getIndex() ] = - ( h * c )/( c - input[ e ] );
+             output[ cell.getIndex() ] =
+             c >= 0 ? ( h * c )/( c - input[ w ] ) :
+                      - ( h * c )/( c - input[ w ] );
              interfaceMap[ cell.getIndex() ] = true;
              continue;
          }
       }
       output[ cell.getIndex() ] =
-      c > 0 ? TypeInfo< RealType >::getMaxValue() :
+      c > 0 ? TNL::TypeInfo< RealType >::getMaxValue() :
              -TypeInfo< RealType >::getMaxValue();
       interfaceMap[ cell.getIndex() ] = false;
    }
@@ -101,25 +103,81 @@ initInterface( const MeshFunctionType& input,
       for( cell.getCoordinates().x() = 0;
            cell.getCoordinates().x() < mesh.getDimensions().x();
            cell.getCoordinates().x() ++ )
+          output[ cell.getIndex() ] =
+              input( cell ) >= 0 ? TypeInfo< RealType >::getMaxValue() :
+                                   - TypeInfo< RealType >::getMaxValue();
+   
+   for( cell.getCoordinates().y() = 0;
+        cell.getCoordinates().y() < mesh.getDimensions().y();
+        cell.getCoordinates().y() ++ )
+      for( cell.getCoordinates().x() = 0;
+           cell.getCoordinates().x() < mesh.getDimensions().x();
+           cell.getCoordinates().x() ++ )
       {
          cell.refresh();
          const RealType& c = input( cell );
          if( ! cell.isBoundaryEntity()  )
          {
             auto neighbors = cell.getNeighborEntities();
-            //const RealType& hx = mesh.getSpaceSteps().x();
-            //const RealType& hy = mesh.getSpaceSteps().y();
-            //const RealType& pom;
+            const RealType& hx = mesh.getSpaceSteps().x();
+            const RealType& hy = mesh.getSpaceSteps().y();
+            Real pom = 0;
             const IndexType e = neighbors.template getEntityIndex<  1,  0 >();
-            const IndexType w = neighbors.template getEntityIndex< -1,  0 >();
+            //const IndexType w = neighbors.template getEntityIndex< -1,  0 >();
             const IndexType n = neighbors.template getEntityIndex<  0,  1 >();
-            const IndexType s = neighbors.template getEntityIndex<  0, -1 >();            
-            if( c * input[ e ] <= 0 || c * input[ w ] <= 0 ||
+            //const IndexType s = neighbors.template getEntityIndex<  0, -1 >();            
+            /*if( c * input[ e ] <= 0 || c * input[ w ] <= 0 ||
                 c * input[ n ] <= 0 || c * input[ s ] <= 0 )
             {
                output[ cell.getIndex() ] = tnlTypeInfo< RealType >::getMaxValue();
                interfaceMap[ cell.getIndex() ] = true;
                continue;
+            }*/
+            if( c * input[ n ] <= 0 )
+            {
+                if( c >= 0 )
+                {
+                    pom = ( hy * c )/( c - input[ n ]);
+                    if( output[ cell.getIndex() ] > pom ) 
+                        output[ cell.getIndex() ] = pom;
+                    
+                    output[ n ] = ( hy * c )/( c - input[ n ]) - hy;
+                }else
+                {
+                    pom = - ( hy * c )/( c - input[ n ]);
+                    if( output[ cell.getIndex() ] < pom )
+                        output[ cell.getIndex() ] = pom;
+                    
+                    output[ n ] = hy - ( hy * c )/( c - input[ n ]);
+                }
+                interfaceMap[ cell.getIndex() ] = true;
+                interfaceMap[ n ] = true;
+                continue;
+            }
+            if( c * input[ e ] <= 0 )
+            {
+                if( c >= 0 )
+                {
+                    pom = ( hx * c )/( c - input[ e ]);
+                    if( output[ cell.getIndex() ] > pom )
+                        output[ cell.getIndex() ] = pom;
+                   
+                    pom = pom - hx; //output[ e ] = (hx * c)/( c - input[ e ]) - hx;
+                    if( output[ e ] != 0 && output[ e ] >= pom )
+                        output[ e ] = pom;                         
+                }else
+                {
+                    pom = - (hx * c)/( c - input[ e ]);
+                    if( output[ cell.getIndex() ] < pom )
+                        output[ cell.getIndex() ] = pom;
+                    
+                    pom = pom + hx; //output[ e ] = hx - (hx * c)/( c - input[ e ]);
+                    if( output[ e ] < pom )
+                        output[ e ] = pom;
+                }
+                interfaceMap[ cell.getIndex() ] = true;
+                interfaceMap[ e ] = true;
+                continue;
             }
          }
          output[ cell.getIndex() ] =
