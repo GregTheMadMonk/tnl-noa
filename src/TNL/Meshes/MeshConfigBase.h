@@ -46,9 +46,6 @@ struct MeshConfigBase
    static constexpr int worldDimension = WorldDimension;
    static constexpr int meshDimension = Cell::dimension;
  
-   static_assert( worldDimension >= meshDimension, "The cell dimension cannot be larger than the world dimension." );
-   static_assert( meshDimension > 0, "The cell dimension must be at least 1." );
-
    static String getType()
    {
       return String( "Meshes::MeshConfigBase< " ) +
