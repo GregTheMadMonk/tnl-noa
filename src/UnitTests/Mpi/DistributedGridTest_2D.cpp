@@ -361,7 +361,7 @@ class DistributedGirdTest_2D : public ::testing::Test {
  protected:
 
     static DistributedGrid<MeshType> *distrgrid;
-    static DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2> *synchronizer;
+    //static DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2> *synchronizer;
     static DofType *dof;
 
     static SharedPointer<MeshType> gridptr;
@@ -406,7 +406,7 @@ class DistributedGirdTest_2D : public ::testing::Test {
     
     meshFunctionptr->bind(gridptr,*dof);
     
-    synchronizer=new DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2>(distrgrid);
+    //synchronizer=new DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2>(distrgrid);
     
     constFunctionPtr->Number=rank;
     
@@ -417,7 +417,7 @@ class DistributedGirdTest_2D : public ::testing::Test {
   // Can be omitted if not needed.
   static void TearDownTestCase() {
       delete dof;
-      delete synchronizer;
+      //delete synchronizer;
       delete distrgrid;
 
   }
@@ -425,7 +425,7 @@ class DistributedGirdTest_2D : public ::testing::Test {
 };
 
 DistributedGrid<MeshType> *DistributedGirdTest_2D::distrgrid=NULL;
-DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2> *DistributedGirdTest_2D::synchronizer=NULL;
+//DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2> *DistributedGirdTest_2D::synchronizer=NULL;
 DofType *DistributedGirdTest_2D::dof=NULL;
 SharedPointer<MeshType> DistributedGirdTest_2D::gridptr;
 SharedPointer<MeshFunctionType> DistributedGirdTest_2D::meshFunctionptr;
@@ -475,7 +475,8 @@ TEST_F(DistributedGirdTest_2D, LinearFunctionTest)
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_2D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-    synchronizer->Synchronize(*meshFunctionptr);
+    //synchronizer->Synchronize(*meshFunctionptr);
+    meshFunctionptr->synchronize();
     
     int count =gridptr->template getEntitiesCount< Cell >();
     for(int i=0;i<count;i++)
@@ -490,7 +491,8 @@ TEST_F(DistributedGirdTest_2D, SynchronizerNeighborTest)
 {
     setDof_2D(*dof,-1);
     constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-    synchronizer->Synchronize(*meshFunctionptr);
+    //synchronizer->Synchronize(*meshFunctionptr);
+    meshFunctionptr->synchronize();
     checkNeighbor_2D(rank, *gridptr, *dof);
 }
 

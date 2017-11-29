@@ -13,6 +13,8 @@
 #include <TNL/Functions/MeshFunctionGnuplotWriter.h>
 #include <TNL/Functions/MeshFunctionVTKWriter.h>
 #include <TNL/SharedPointer.h>
+#include <TNL/Meshes/DistributedGrid.h>
+#include <TNL/Meshes/DistributedGridSynchronizer.h>
 
 #pragma once
 
@@ -155,14 +157,27 @@ class MeshFunction :
       using Object::load;
  
       using Object::boundLoad;
+
+#ifdef USE_MPI
+      void synchronize(void);    
+#endif
  
    protected:
+
+#ifdef USE_MPI
+      Meshes::DistributedGridSynchronizer<Meshes::DistributedGrid<MeshType>,ThisType> synchronizer;    
+#endif
       
       MeshPointer meshPointer;
       
       VectorType data;
  
       template< typename, typename > friend class MeshFunctionEvaluator;
+
+#ifdef USE_MPI
+   private:
+      void SetupSynchronizer(Meshes::DistributedGrid<Mesh> *distrgrid);
+#endif   
 };
 
 } // namespace Functions

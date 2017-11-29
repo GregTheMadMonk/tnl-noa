@@ -78,12 +78,12 @@ class DistributedGrid <GridType,1>
 
     private : 
         
-        GridType GlobalGrid;
         PointType localorigin;
         CoordinatesType localbegin;
         CoordinatesType localsize;
         CoordinatesType localgridsize;
         CoordinatesType overlap;
+        PointType spaceSteps;
         
         
         IndexType Dimensions;        
@@ -96,19 +96,33 @@ class DistributedGrid <GridType,1>
         
         int left;
         int right;
+
+        bool isSet;
         
      
    public:
+       DistributedGrid()
+       {
+            isSet=false;
+       };
+
        //compute everithing 
        DistributedGrid(GridType globalGrid, CoordinatesType overlap, int *distribution=NULL)
        {      
+           SetGlobalGrid(globalGrid,overlap,distribution);      
+       };
+
+       void SetGlobalGrid(GridType globalGrid, CoordinatesType overlap, int *distribution=NULL)
+       {
+           isSet=true;
+
            this->overlap=overlap;
            
            left=-1;
            right=-1;
            
            Dimensions= GridType::getMeshDimension();
-           GlobalGrid=globalGrid;
+           spaceSteps=globalGrid.getSpaceSteps();
            //Detect MPI and number of process
            mpiInUse=false;
            if(MPI::Is_initialized())
@@ -126,18 +140,18 @@ class DistributedGrid <GridType,1>
            {
                //Without MPI
 
-               std::cout <<"MEZ MPI"<<std::endl;
+               std::cout <<"BEZ MPI"<<std::endl;
                rank=0;
-               localorigin=GlobalGrid.getOrigin();
-               localsize=GlobalGrid.getDimensions();
-               localgridsize=GlobalGrid.getDimensions();
+               localorigin=globalGrid.getOrigin();
+               localsize=globalGrid.getDimensions();
+               localgridsize=globalGrid.getDimensions();
+               
                localbegin=CoordinatesType(0);
                return;
            }
            else
            {
                //With MPI
-               
                //nearnodes
                if(rank!=0)
                    left=rank-1;
@@ -145,26 +159,26 @@ class DistributedGrid <GridType,1>
                    right=rank+1;
                   
                //compute local mesh size               
-               numberoflarger=GlobalGrid.getDimensions().x()%nproc;
+               numberoflarger=globalGrid.getDimensions().x()%nproc;
                  
-               localsize.x()=(GlobalGrid.getDimensions().x()/nproc);               
+               localsize.x()=(globalGrid.getDimensions().x()/nproc);               
                if(numberoflarger>rank)
                     localsize.x()+=1;                      
                                   
                if(numberoflarger>rank)
-                   localorigin.x()=GlobalGrid.getOrigin().x()
-                                +(rank*localsize.x()-overlap.x())*GlobalGrid.getSpaceSteps().x();
+                   localorigin.x()=globalGrid.getOrigin().x()
+                                +(rank*localsize.x()-overlap.x())*globalGrid.getSpaceSteps().x();
                else
-                   localorigin.x()=GlobalGrid.getOrigin().x()
+                   localorigin.x()=globalGrid.getOrigin().x()
                                 +(numberoflarger*(localsize.x()+1)+(rank-numberoflarger)*localsize.x()-overlap.x())
-                                *GlobalGrid.getSpaceSteps().x();
+                                *globalGrid.getSpaceSteps().x();
               
               localbegin=overlap;
                
                //vlevo neni prekryv
                if(left==-1)
                {
-                   localorigin.x()+=overlap.x()*GlobalGrid.getSpaceSteps().x();
+                   localorigin.x()+=overlap.x()*globalGrid.getSpaceSteps().x();
                    localbegin.x()=0;
                }
                
@@ -175,15 +189,16 @@ class DistributedGrid <GridType,1>
                else
                    localgridsize.x()+=2*overlap.x();
                          
-           }                   
-       };
+           }  
+       }; 
        
        void SetupGrid( GridType& grid)
        {
+           TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by SetupGrid");
            grid.setOrigin(localorigin);
            grid.setDimensions(localgridsize);
            //compute local proporions by sideefect
-           grid.setSpaceSteps(GlobalGrid.getSpaceSteps());
+           grid.setSpaceSteps(spaceSteps);
            grid.SetDistGrid(this);
        };
        
@@ -204,11 +219,13 @@ class DistributedGrid <GridType,1>
        
        int getLeft()
        {
+           TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by getLeft");
            return this->left;
        };
        
        int getRight()
        {
+           TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by getRight");
            return this->right;
        };
        
@@ -251,7 +268,7 @@ class DistributedGrid <GridType,2>
     
     private : 
         
-        GridType GlobalGrid;
+        PointType spaceSteps;
         PointType localorigin;
         CoordinatesType localsize;//velikost gridu zpracovavane danym uzlem bez prekryvu
         CoordinatesType localbegin;//souradnice zacatku zpracovavane vypoctove oblasi
@@ -270,18 +287,32 @@ class DistributedGrid <GridType,2>
         int numberoflarger[2];
         
         int neighbors[8];
+
+        bool isSet;
      
    public:
-       //compute everithing 
-       DistributedGrid(GridType globalGrid,CoordinatesType overlap,int *distribution=NULL)
+       DistributedGrid()
        {
+            isSet=false;
+       };
+
+       //compute everithing 
+       DistributedGrid(GridType &globalGrid, CoordinatesType overlap, int *distribution=NULL)
+       {      
+           SetGlobalGrid(globalGrid,overlap,distribution);      
+       };
+
+       void SetGlobalGrid(GridType &globalGrid, CoordinatesType overlap, int *distribution=NULL)
+       {
+           isSet=true;
+
            this->overlap=overlap;
            
            for (int i=0;i<8;i++)
                 neighbors[i]=-1;
            
            Dimensions= GridType::getMeshDimension();
-           GlobalGrid=globalGrid;
+           spaceSteps=globalGrid.getSpaceSteps();
            //Detect MPI and number of process
            mpiInUse=false;
            
@@ -305,9 +336,9 @@ class DistributedGrid <GridType,2>
                myproccoord[1]=0;
                procsdistr[0]=1;
                procsdistr[1]=1;
-               localorigin=GlobalGrid.getOrigin();
-               localgridsize=GlobalGrid.getDimensions();
-               localsize=GlobalGrid.getDimensions();
+               localorigin=globalGrid.getOrigin();
+               localgridsize=globalGrid.getDimensions();
+               localsize=globalGrid.getDimensions();
                localbegin.x()=0;
                localbegin.y()=0;
                
@@ -332,11 +363,11 @@ class DistributedGrid <GridType,2>
                myproccoord[1]=rank/procsdistr[0];        
 
                //compute local mesh size              
-               numberoflarger[0]=GlobalGrid.getDimensions().x()%procsdistr[0];
-               numberoflarger[1]=GlobalGrid.getDimensions().y()%procsdistr[1];
+               numberoflarger[0]=globalGrid.getDimensions().x()%procsdistr[0];
+               numberoflarger[1]=globalGrid.getDimensions().y()%procsdistr[1];
 
-               localsize.x()=(GlobalGrid.getDimensions().x()/procsdistr[0]);
-               localsize.y()=(GlobalGrid.getDimensions().y()/procsdistr[1]);
+               localsize.x()=(globalGrid.getDimensions().x()/procsdistr[0]);
+               localsize.y()=(globalGrid.getDimensions().y()/procsdistr[1]);
 
                if(numberoflarger[0]>myproccoord[0])
                     localsize.x()+=1;               
@@ -344,20 +375,20 @@ class DistributedGrid <GridType,2>
                    localsize.y()+=1;
 
                if(numberoflarger[0]>myproccoord[0])
-                   localorigin.x()=GlobalGrid.getOrigin().x()
-                                +(myproccoord[0]*localsize.x()-overlap.x())*GlobalGrid.getSpaceSteps().x();
+                   localorigin.x()=globalGrid.getOrigin().x()
+                                +(myproccoord[0]*localsize.x()-overlap.x())*globalGrid.getSpaceSteps().x();
                else
-                   localorigin.x()=GlobalGrid.getOrigin().x()
+                   localorigin.x()=globalGrid.getOrigin().x()
                                 +(numberoflarger[0]*(localsize.x()+1)+(myproccoord[0]-numberoflarger[0])*localsize.x()-overlap.x())
-                                *GlobalGrid.getSpaceSteps().x();
+                                *globalGrid.getSpaceSteps().x();
                
                if(numberoflarger[1]>myproccoord[1])
-                   localorigin.y()=GlobalGrid.getOrigin().y()
-                                +(myproccoord[1]*localsize.y()-overlap.y())*GlobalGrid.getSpaceSteps().y();
+                   localorigin.y()=globalGrid.getOrigin().y()
+                                +(myproccoord[1]*localsize.y()-overlap.y())*globalGrid.getSpaceSteps().y();
                else
-                   localorigin.y()=GlobalGrid.getOrigin().y()
+                   localorigin.y()=globalGrid.getOrigin().y()
                                 +(numberoflarger[1]*(localsize.y()+1)+(myproccoord[1]-numberoflarger[1])*localsize.y()-overlap.y())
-                                *GlobalGrid.getSpaceSteps().y();
+                                *globalGrid.getSpaceSteps().y();
 
                //nearnodes
                if(myproccoord[0]>0)
@@ -381,13 +412,13 @@ class DistributedGrid <GridType,2>
 
                if(neighbors[Left]==-1)
                {
-                    localorigin.x()+=overlap.x()*GlobalGrid.getSpaceSteps().x();
+                    localorigin.x()+=overlap.x()*globalGrid.getSpaceSteps().x();
                     localbegin.x()=0;
                }
 
                if(neighbors[Up]==-1)
                {
-                   localorigin.y()+=overlap.y()*GlobalGrid.getSpaceSteps().y();
+                   localorigin.y()+=overlap.y()*globalGrid.getSpaceSteps().y();
                    localbegin.y()=0;
                }
 
@@ -410,10 +441,11 @@ class DistributedGrid <GridType,2>
        
        void SetupGrid( GridType& grid)
        {
+           TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by SetupGrid");
            grid.setOrigin(localorigin);
            grid.setDimensions(localgridsize);
            //compute local proporions by sideefect
-           grid.setSpaceSteps(GlobalGrid.getSpaceSteps());
+           grid.setSpaceSteps(spaceSteps);
            grid.SetDistGrid(this);
        };
        
@@ -439,6 +471,7 @@ class DistributedGrid <GridType,2>
        
        int * getNeighbors()
        {
+           TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by getNeighbors");
            return this->neighbors;
        }
        
@@ -488,7 +521,7 @@ class DistributedGrid <GridType,3>
 
     private : 
         
-        GridType GlobalGrid;
+        PointType spaceSteps;
         PointType localorigin;
         CoordinatesType localsize;
         CoordinatesType localgridsize;
@@ -507,19 +540,33 @@ class DistributedGrid <GridType,3>
         int numberoflarger[3];
         
         int neighbors[26];
+
+        bool isSet;
      
    public:
-       //compute everithing 
-       DistributedGrid(GridType globalGrid,CoordinatesType overlap,int *distribution=NULL)
+       DistributedGrid()
        {
-           
+            isSet=false;
+       };
+
+       //compute everithing 
+       DistributedGrid(GridType &globalGrid, CoordinatesType overlap, int *distribution=NULL)
+       {      
+           SetGlobalGrid(globalGrid,overlap,distribution);      
+       };
+
+       void SetGlobalGrid(GridType &globalGrid, CoordinatesType overlap, int *distribution=NULL)
+       {
+
+           isSet=true;           
+
            this->overlap=overlap;
            
            for (int i=0;i<26;i++)
                 neighbors[i]=-1;
            
            Dimensions= GridType::getMeshDimension();
-           GlobalGrid=globalGrid;
+           spaceSteps=globalGrid.getSpaceSteps();
            //Detect MPI and number of process
            mpiInUse=false;
            
@@ -547,8 +594,8 @@ class DistributedGrid <GridType,3>
                procsdistr[1]=1;
                procsdistr[2]=1;               
                
-               localorigin=GlobalGrid.getOrigin();
-               localsize=GlobalGrid.getDimensions();
+               localorigin=globalGrid.getOrigin();
+               localsize=globalGrid.getDimensions();
                localgridsize=localsize;
                return;
            }
@@ -574,13 +621,13 @@ class DistributedGrid <GridType,3>
                myproccoord[0]=(rank%(procsdistr[0]*procsdistr[1]))%procsdistr[0];
 
                //compute local mesh size               
-               numberoflarger[0]=GlobalGrid.getDimensions().x()%procsdistr[0];
-               numberoflarger[1]=GlobalGrid.getDimensions().y()%procsdistr[1];
-               numberoflarger[2]=GlobalGrid.getDimensions().z()%procsdistr[2];
+               numberoflarger[0]=globalGrid.getDimensions().x()%procsdistr[0];
+               numberoflarger[1]=globalGrid.getDimensions().y()%procsdistr[1];
+               numberoflarger[2]=globalGrid.getDimensions().z()%procsdistr[2];
                  
-               localsize.x()=(GlobalGrid.getDimensions().x()/procsdistr[0]);
-               localsize.y()=(GlobalGrid.getDimensions().y()/procsdistr[1]);
-               localsize.z()=(GlobalGrid.getDimensions().z()/procsdistr[2]);
+               localsize.x()=(globalGrid.getDimensions().x()/procsdistr[0]);
+               localsize.y()=(globalGrid.getDimensions().y()/procsdistr[1]);
+               localsize.z()=(globalGrid.getDimensions().z()/procsdistr[2]);
                
                if(numberoflarger[0]>myproccoord[0])
                     localsize.x()+=1;               
@@ -590,28 +637,28 @@ class DistributedGrid <GridType,3>
                    localsize.z()+=1;
                                   
                if(numberoflarger[0]>myproccoord[0])
-                   localorigin.x()=GlobalGrid.getOrigin().x()
-                                +(myproccoord[0]*localsize.x()-overlap.x())*GlobalGrid.getSpaceSteps().x();
+                   localorigin.x()=globalGrid.getOrigin().x()
+                                +(myproccoord[0]*localsize.x()-overlap.x())*globalGrid.getSpaceSteps().x();
                else
-                   localorigin.x()=GlobalGrid.getOrigin().x()
+                   localorigin.x()=globalGrid.getOrigin().x()
                                 +(numberoflarger[0]*(localsize.x()+1)+(myproccoord[0]-numberoflarger[0])*localsize.x()-overlap.x())
-                                *GlobalGrid.getSpaceSteps().x();
+                                *globalGrid.getSpaceSteps().x();
                
                if(numberoflarger[1]>myproccoord[1])
-                   localorigin.y()=GlobalGrid.getOrigin().y()
-                                +(myproccoord[1]*localsize.y()-overlap.y())*GlobalGrid.getSpaceSteps().y();
+                   localorigin.y()=globalGrid.getOrigin().y()
+                                +(myproccoord[1]*localsize.y()-overlap.y())*globalGrid.getSpaceSteps().y();
                else
-                   localorigin.y()=GlobalGrid.getOrigin().y()
+                   localorigin.y()=globalGrid.getOrigin().y()
                                 +(numberoflarger[1]*(localsize.y()+1)+(myproccoord[1]-numberoflarger[1])*localsize.y()-overlap.y())
-                                *GlobalGrid.getSpaceSteps().y();
+                                *globalGrid.getSpaceSteps().y();
 
                if(numberoflarger[2]>myproccoord[2])
-                   localorigin.z()=GlobalGrid.getOrigin().z()
-                                +(myproccoord[2]*localsize.z()-overlap.z())*GlobalGrid.getSpaceSteps().z();
+                   localorigin.z()=globalGrid.getOrigin().z()
+                                +(myproccoord[2]*localsize.z()-overlap.z())*globalGrid.getSpaceSteps().z();
                else
-                   localorigin.z()=GlobalGrid.getOrigin().z()
+                   localorigin.z()=globalGrid.getOrigin().z()
                                 +(numberoflarger[2]*(localsize.z()+1)+(myproccoord[2]-numberoflarger[2])*localsize.z()-overlap.z())
-                                *GlobalGrid.getSpaceSteps().z();
+                                *globalGrid.getSpaceSteps().z();
                
                //nearnodes
                //X Y Z
@@ -678,17 +725,17 @@ class DistributedGrid <GridType,3>
                
                if(neighbors[West]==-1)
                {
-                   localorigin.x()+=overlap.x()*GlobalGrid.getSpaceSteps().x();
+                   localorigin.x()+=overlap.x()*globalGrid.getSpaceSteps().x();
                    localbegin.x()=0;
                }
                if(neighbors[Nord]==-1)
                {
-                   localorigin.y()+=overlap.y()*GlobalGrid.getSpaceSteps().y();
+                   localorigin.y()+=overlap.y()*globalGrid.getSpaceSteps().y();
                    localbegin.y()=0;
                }
                if(neighbors[Bottom]==-1)
                {
-                   localorigin.z()+=overlap.z()*GlobalGrid.getSpaceSteps().z();
+                   localorigin.z()+=overlap.z()*globalGrid.getSpaceSteps().z();
                    localbegin.z()=0;
                }
                
@@ -714,10 +761,11 @@ class DistributedGrid <GridType,3>
        
        void SetupGrid( GridType& grid)
        {
+           TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by SetupGrid");
            grid.setOrigin(localorigin);
            grid.setDimensions(localgridsize);
            //compute local proporions by sideefect
-           grid.setSpaceSteps(GlobalGrid.getSpaceSteps());
+           grid.setSpaceSteps(spaceSteps);
            grid.SetDistGrid(this);
        };
        
@@ -743,6 +791,7 @@ class DistributedGrid <GridType,3>
        
        int * getNeighbors()
        {
+           TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by getNeighbors");
            return this->neighbors;
        }
        
