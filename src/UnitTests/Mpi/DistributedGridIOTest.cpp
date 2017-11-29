@@ -330,7 +330,7 @@ class TestDistributedGridIO{
         CoordinatesType overlap;
         overlap.setValue(1);
         DistributedGridType distrgrid(globalGrid,overlap, distr);
-        DistributedGridSynchronizer<DistributedGridType,MeshFunctionType> synchronizer(&distrgrid);
+        //DistributedGridSynchronizer<DistributedGridType,MeshFunctionType> synchronizer(&distrgrid);
 
         //Crete "distributedgrid driven" grid filed by load
         SharedPointer<MeshType> loadGridptr;
@@ -346,7 +346,7 @@ class TestDistributedGridIO{
         DistributedGridIO<MeshFunctionType> ::load(file, *loadMeshFunctionptr );
         file.close();
 
-        synchronizer.Synchronize(*loadMeshFunctionptr);//need synchronization for overlaps to be filled corectly in loadDof
+        loadMeshFunctionptr->synchronize();//need synchronization for overlaps to be filled corectly in loadDof
 
 
         //Crete "distributedgrid driven" grid filed by evaluated linear function
@@ -359,7 +359,8 @@ class TestDistributedGridIO{
         meshFunctionptr->bind(gridptr,dof);
         
         linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
-        synchronizer.Synchronize(*meshFunctionptr);//need synchronization for overlaps to be filled corectly in dof
+        //synchronizer.Synchronize(*meshFunctionptr);//need synchronization for overlaps to be filled corectly in dof
+        meshFunctionptr->synchronize();
 
         for(int i=0;i<localDof.getSize();i++)
         {

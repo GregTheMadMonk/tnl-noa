@@ -12,7 +12,7 @@
 
 
 #include <TNL/Meshes/DistributedGrid.h>
-#include <TNL/Functions/MeshFunction.h>
+//#include <TNL/Functions/MeshFunction.h>
 #include <TNL/mpi-supp.h>
 
 namespace TNL {
@@ -47,36 +47,54 @@ private:
         int size;
 
         DistributedGridType *distributedgrid;
-#endif
+
+        bool isSet;
 
     
     public:
+    DistributedGridSynchronizer()
+    {
+        isSet=false;
+    };
+
     DistributedGridSynchronizer(DistributedGridType *distrgrid)
     {
+        isSet=false;
+        SetDistributedGrid(distrgrid);
+    };
+
+    void SetDistributedGrid(DistributedGridType *distrgrid)
+    {
+        if(isSet)
+        {
+            DeleteBuffers();
+        }
+        isSet=true;
+
         this->distributedgrid=distrgrid;
-#ifdef USE_MPI
+
         size = distributedgrid->getOverlap().x();
 
         leftsendbuf=new Real[size];
         rightsendbuf=new Real[size];
         leftrcvbuf=new Real[size];
         rightrcvbuf=new Real[size];      
-#endif
-    }
+    };
 
     ~DistributedGridSynchronizer()
     {
-        delete [] leftrcvbuf;
-        delete [] rightrcvbuf;
-        delete [] leftsendbuf;
-        delete [] rightsendbuf; 
-    }
+        if(isSet)
+        {
+            DeleteBuffers();
+        };
+    };
 
     void Synchronize(MeshFunctionType &meshfunction)
     {
+        TNL_ASSERT_TRUE(isSet,"Synchronizer is not set, but used to Synchronize");
+
         if(!distributedgrid->isMPIUsed())
                 return;
-#ifdef USE_MPI
 
         Cell leftentity(meshfunction.getMesh());
         Cell rightentity(meshfunction.getMesh());
@@ -151,8 +169,18 @@ private:
                 meshfunction.getData()[rightentity.getIndex()]=rightrcvbuf[i];
             }
         }
-#endif
     };
+
+    private:
+    void DeleteBuffers(void)
+    {
+        delete [] leftrcvbuf;
+        delete [] rightrcvbuf;
+        delete [] leftsendbuf;
+        delete [] rightsendbuf; 
+    };
+#endif
+
 };
 
 //=========================2D=================================================
@@ -186,14 +214,30 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,2>
         
         CoordinatesType overlap;
         CoordinatesType localsize;
-#endif
+
+        bool isSet;
 
     public:
-    DistributedGridSynchronizer(DistributedGridType *distgrid)
+    DistributedGridSynchronizer()
     {
+        isSet=false;
+    };
+
+    DistributedGridSynchronizer(DistributedGridType *distrgrid)
+    {
+        isSet=false;
+        SetDistributedGrid(distrgrid);
+    };
+
+    void SetDistributedGrid(DistributedGridType *distrgrid)
+    {
+        if(isSet)
+        {
+            DeleteBuffers();
+        }
+        isSet=true;
         
-#ifdef USE_MPI
-        this->distributedgrid=distgrid;
+        this->distributedgrid=distrgrid;
 
         overlap = distributedgrid->getOverlap();
         localsize = distributedgrid->getLocalSize();
@@ -232,28 +276,25 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,2>
         rightDst=localgridsize.x()-overlap.x();
         upDst=0;
         downDst=localgridsize.y()-overlap.y();                       
-#endif
-        
     }
 
     ~DistributedGridSynchronizer()
     {
-        for(int i=0;i<8;i++)
-        {
-            delete [] sendbuffs[i];
-            delete [] rcvbuffs[i];
-        }
+        if(isSet)
+            DeleteBuffers();
     }
         
     void Synchronize(MeshFunctionType &meshfunction)
     {
-	if(!distributedgrid->isMPIUsed())
+
+        TNL_ASSERT_TRUE(isSet,"Synchronizer is not set, but used to Synchronize");
+
+	    if(!distributedgrid->isMPIUsed())
             return;
-#ifdef USE_MPI
 
-    int *neighbor=distributedgrid->getNeighbors();
+        int *neighbor=distributedgrid->getNeighbors();
 
-    CopyBuffers(meshfunction, sendbuffs, true,
+        CopyBuffers(meshfunction, sendbuffs, true,
             leftSrc, rightSrc, upSrc, downSrc,
             xcenter, ycenter,
             overlap,localsize,
@@ -330,8 +371,19 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,2>
                             meshfunction.getData()[entity.getIndex()]=buffer[i*sizex+j];
             }
         }
-#endif
     };
+    
+    void DeleteBuffers(void)
+    {
+        for(int i=0;i<8;i++)
+        {
+            delete [] sendbuffs[i];
+            delete [] rcvbuffs[i];
+        }
+    };
+
+#endif
+
 };
 
 //=========================3D=================================================
@@ -339,6 +391,8 @@ template <typename DistributedGridType,
 		typename MeshFunctionType>  
 class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
 {
+
+#ifdef USE_MPI
     typedef typename MeshFunctionType::RealType Real;
     typedef typename DistributedGridType::CoordinatesType CoordinatesType;
       
@@ -366,13 +420,31 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
         
         CoordinatesType overlap;
         CoordinatesType localsize;
+
+        bool isSet;
     
     public:
     
-    DistributedGridSynchronizer(DistributedGridType *distgrid)
+    DistributedGridSynchronizer()
     {
-#ifdef USE_MPI
-        this->distributedgrid=distgrid;        
+        isSet=false;
+    };
+
+    DistributedGridSynchronizer(DistributedGridType *distrgrid)
+    {
+        isSet=false;
+        SetDistributedGrid(distrgrid);
+    };
+
+    void SetDistributedGrid(DistributedGridType *distrgrid)
+    {
+        if(isSet)
+        {
+            DeleteBuffers();
+        }
+        isSet=true;
+
+        this->distributedgrid=distrgrid;        
         overlap = this->distributedgrid->getOverlap();
         localsize = this->distributedgrid->getLocalSize();
         
@@ -415,27 +487,23 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
         bottomDst=0;
         topDst=localgridsize.z()-overlap.z();
         
-#endif  
     }
     
     ~DistributedGridSynchronizer()
     {
-#ifdef USE_MPI
-       //free buffers
-        for(int i=0;i<26;i++)
+        if(isSet)
         {
-            delete [] sendbuffs[i];
-            delete [] rcvbuffs[i];
+            DeleteBuffers();
         }
-#endif          
-        
     }
         
     void Synchronize(MeshFunctionType &meshfunction)
     {
-	if(!distributedgrid->isMPIUsed())
+
+        TNL_ASSERT_TRUE(isSet,"Synchronizer is not set, but used to Synchronize");
+
+    	if(!distributedgrid->isMPIUsed())
             return;
-#ifdef USE_MPI
         
         int *neighbor=distributedgrid->getNeighbors();
         
@@ -565,8 +633,18 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
         if(neighbor[TopSouthEast]!=-1)
             BufferEntities(meshfunction,buffers[TopSouthEast],east,south,top,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);   
 
-#endif
     };
+
+    void DeleteBuffers(void)
+    {
+        //free buffers
+        for(int i=0;i<26;i++)
+        {
+            delete [] sendbuffs[i];
+            delete [] rcvbuffs[i];
+        }
+    };
+#endif
 };
 
 } // namespace Meshes

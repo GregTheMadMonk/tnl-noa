@@ -97,7 +97,7 @@ class DistributedGirdTest_1D : public ::testing::Test {
  protected:
 
     static DistributedGrid<MeshType> *distrgrid;
-    static DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,1> *synchronizer;
+    //static DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,1> *synchronizer;
     static DofType *dof;
 
     static SharedPointer<MeshType> gridptr;
@@ -141,7 +141,7 @@ class DistributedGirdTest_1D : public ::testing::Test {
     
     meshFunctionptr->bind(gridptr,*dof);
 
-    synchronizer=new DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,1>(distrgrid);
+    //synchronizer=new DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,1>(distrgrid);
     
     constFunctionPtr->Number=rank;
   }
@@ -151,13 +151,13 @@ class DistributedGirdTest_1D : public ::testing::Test {
   // Can be omitted if not needed.
   static void TearDownTestCase() {
       delete dof;
-      delete synchronizer;
+      //delete synchronizer;
       delete distrgrid;
   }
 };
 
 DistributedGrid<MeshType> *DistributedGirdTest_1D::distrgrid=NULL;
-DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,1> *DistributedGirdTest_1D::synchronizer=NULL;
+//DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,1> *DistributedGirdTest_1D::synchronizer=NULL;
 DofType *DistributedGirdTest_1D::dof=NULL;
 SharedPointer<MeshType> DistributedGirdTest_1D::gridptr;
 SharedPointer<MeshFunctionType> DistributedGirdTest_1D::meshFunctionptr;
@@ -206,8 +206,9 @@ TEST_F(DistributedGirdTest_1D, LinearFunctionTest)
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_1D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-    synchronizer->Synchronize(*meshFunctionptr);
-    
+    //synchronizer->Synchronize(*meshFunctionptr);
+    meshFunctionptr->synchronize();
+
     auto entite= gridptr->template getEntity< Cell >(0);
     entite.refresh();
     EXPECT_EQ(meshFunctionptr->getValue(entite), (*linearFunctionPtr)(entite)) << "Linear function Overlap error on left Edge.";
@@ -221,7 +222,9 @@ TEST_F(DistributedGirdTest_1D, SynchronizerNeighborTest)
 {
     setDof_1D(*dof,-1);
     constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-    synchronizer->Synchronize(*meshFunctionptr);
+    //synchronizer->Synchronize(*meshFunctionptr);
+    meshFunctionptr->synchronize();
+
     if(rank!=0)
         EXPECT_EQ((*dof)[0],rank-1)<< "Left Overlap was filled by wrong process.";
     if(rank!=nproc-1)
