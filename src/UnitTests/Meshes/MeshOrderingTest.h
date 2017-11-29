@@ -7,7 +7,7 @@
 
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshEntity.h>
-#include <TNL/Meshes/MeshConfigBase.h>
+#include <TNL/Meshes/DefaultConfig.h>
 #include <TNL/Meshes/Topologies/Triangle.h>
 #include <TNL/Meshes/MeshBuilder.h>
 
@@ -17,7 +17,7 @@ using namespace TNL;
 using namespace TNL::Meshes;
 
 class TestTriangleMeshConfig
-   : public MeshConfigBase< Topologies::Triangle, 2, double, int, short int, int >
+   : public DefaultConfig< Topologies::Triangle, 2, double, int, short int, int >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }

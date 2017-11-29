@@ -7,13 +7,13 @@ ADD_SUBDIRECTORY( TypeResolver )
 ADD_SUBDIRECTORY( Writers )
 
 SET( headers BuildConfigTags.h
+             DefaultConfig.h
              DimensionTag.h
              DummyMesh.h
              GridEntityConfig.h
              GridEntity.h
              Grid.h
              MeshBuilder.h
-             MeshConfigBase.h
              MeshEntity.h
              Mesh.h
              Traverser.h

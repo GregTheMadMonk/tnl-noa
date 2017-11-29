@@ -7,7 +7,7 @@
 
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshEntity.h>
-#include <TNL/Meshes/MeshConfigBase.h>
+#include <TNL/Meshes/DefaultConfig.h>
 #include <TNL/Meshes/Topologies/Quadrilateral.h>
 #include <TNL/Meshes/MeshBuilder.h>
 
@@ -20,7 +20,7 @@ using RealType = double;
 using Device = Devices::Host;
 using IndexType = int;
 
-class TestQuadrilateralMeshConfig : public MeshConfigBase< Topologies::Quadrilateral >
+class TestQuadrilateralMeshConfig : public DefaultConfig< Topologies::Quadrilateral >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }

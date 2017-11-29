@@ -12,7 +12,7 @@
 
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/Mesh.h>
-#include <TNL/Meshes/MeshConfigBase.h>
+#include <TNL/Meshes/DefaultConfig.h>
 #include <TNL/Meshes/Topologies/Edge.h>
 #include <TNL/Meshes/Topologies/Triangle.h>
 #include <TNL/Meshes/Topologies/Quadrilateral.h>
@@ -104,7 +104,7 @@ template< typename ConfigTag >
 struct MeshConfigTemplateTag
 {
    template< typename Cell, int WorldDimension, typename Real, typename GlobalIndex, typename LocalIndex, typename Id >
-   using MeshConfig = MeshConfigBase< Cell, WorldDimension, Real, GlobalIndex, LocalIndex, Id >;
+   using MeshConfig = DefaultConfig< Cell, WorldDimension, Real, GlobalIndex, LocalIndex, Id >;
 };
 
 // The Mesh is enabled for allowed Device, CellTopology, WorldDimension, Real,

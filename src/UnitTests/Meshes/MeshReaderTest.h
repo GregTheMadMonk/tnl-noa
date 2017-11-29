@@ -1,5 +1,5 @@
 #include <TNL/Meshes/Mesh.h>
-#include <TNL/Meshes/MeshConfigBase.h>
+#include <TNL/Meshes/DefaultConfig.h>
 #include <TNL/Meshes/BuildConfigTags.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 
@@ -26,7 +26,7 @@ template< typename Cell,
           typename LocalIndex = GlobalIndex,
           typename Id = void >
 struct MyMeshConfig
-   : public MeshConfigBase< Cell, WorldDimension, Real, GlobalIndex, LocalIndex, Id >
+   : public DefaultConfig< Cell, WorldDimension, Real, GlobalIndex, LocalIndex, Id >
 {
    static constexpr bool entityStorage( int dimension )
    {
@@ -59,7 +59,7 @@ struct MyMeshConfig
    template< typename EntityTopology >
    static constexpr bool boundaryTagsStorage( EntityTopology )
    {
-      using BaseType = MeshConfigBase< Cell, WorldDimension, Real, GlobalIndex, LocalIndex, Id >;
+      using BaseType = DefaultConfig< Cell, WorldDimension, Real, GlobalIndex, LocalIndex, Id >;
       using FaceTopology = typename Topologies::Subtopology< Cell, BaseType::meshDimension - 1 >::Topology;
       return entityStorage( BaseType::meshDimension - 1 ) &&
              superentityStorage( FaceTopology(), BaseType::meshDimension ) &&

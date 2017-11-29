@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 #include <TNL/Meshes/MeshEntity.h>
-#include <TNL/Meshes/MeshConfigBase.h>
+#include <TNL/Meshes/DefaultConfig.h>
 #include <TNL/Meshes/Topologies/Vertex.h>
 #include <TNL/Meshes/Topologies/Edge.h>
 #include <TNL/Meshes/Topologies/Triangle.h>
@@ -19,9 +19,9 @@ using RealType = double;
 using Device = Devices::Host;
 using IndexType = int;
 
-using TestEdgeMeshConfig = MeshConfigBase< Topologies::Edge,   2, RealType, IndexType, IndexType, void >;
+using TestEdgeMeshConfig = DefaultConfig< Topologies::Edge,   2, RealType, IndexType, IndexType, void >;
 
-class TestTriangleMeshConfig : public MeshConfigBase< Topologies::Triangle >
+class TestTriangleMeshConfig : public DefaultConfig< Topologies::Triangle >
 {
 public:
    template< typename EntityTopology >
@@ -37,7 +37,7 @@ public:
    }
 };
 
-class TestTetrahedronMeshConfig : public MeshConfigBase< Topologies::Tetrahedron >
+class TestTetrahedronMeshConfig : public DefaultConfig< Topologies::Tetrahedron >
 {
 public:
    template< typename EntityTopology >

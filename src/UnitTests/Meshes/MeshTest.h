@@ -7,7 +7,7 @@
 
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshEntity.h>
-#include <TNL/Meshes/MeshConfigBase.h>
+#include <TNL/Meshes/DefaultConfig.h>
 #include <TNL/Meshes/Topologies/Vertex.h>
 #include <TNL/Meshes/Topologies/Edge.h>
 #include <TNL/Meshes/Topologies/Triangle.h>
@@ -25,7 +25,7 @@ using RealType = double;
 using Device = Devices::Host;
 using IndexType = int;
 
-class TestTriangleMeshConfig : public MeshConfigBase< Topologies::Triangle >
+class TestTriangleMeshConfig : public DefaultConfig< Topologies::Triangle >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -34,7 +34,7 @@ public:
    template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
 };
 
-class TestQuadrilateralMeshConfig : public MeshConfigBase< Topologies::Quadrilateral >
+class TestQuadrilateralMeshConfig : public DefaultConfig< Topologies::Quadrilateral >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -43,7 +43,7 @@ public:
    template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
 };
 
-class TestTetrahedronMeshConfig : public MeshConfigBase< Topologies::Tetrahedron >
+class TestTetrahedronMeshConfig : public DefaultConfig< Topologies::Tetrahedron >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -52,7 +52,7 @@ public:
    template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
 };
 
-class TestHexahedronMeshConfig : public MeshConfigBase< Topologies::Hexahedron >
+class TestHexahedronMeshConfig : public DefaultConfig< Topologies::Hexahedron >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }

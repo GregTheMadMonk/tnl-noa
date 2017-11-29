@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshConfigBase.h  -  description
+                          DefaultConfig.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -35,20 +35,20 @@ template< typename Cell,
           typename GlobalIndex = int,
           typename LocalIndex = GlobalIndex,
           typename Id = void >
-struct MeshConfigBase
+struct DefaultConfig
 {
-   typedef Cell        CellTopology;
-   typedef Real        RealType;
-   typedef GlobalIndex GlobalIndexType;
-   typedef LocalIndex  LocalIndexType;
-   typedef Id          IdType;
+   using CellTopology = Cell;
+   using RealType = Real;
+   using GlobalIndexType = GlobalIndex;
+   using LocalIndexType = LocalIndex;
+   using IdType = Id;
 
    static constexpr int worldDimension = WorldDimension;
    static constexpr int meshDimension = Cell::dimension;
- 
+
    static String getType()
    {
-      return String( "Meshes::MeshConfigBase< " ) +
+      return String( "Meshes::DefaultConfig< " ) +
              Cell::getType() + ", " +
              String( WorldDimension ) + ", " +
              TNL::getType< Real >() + ", " +
@@ -56,7 +56,7 @@ struct MeshConfigBase
              TNL::getType< LocalIndex >() + ", " +
              TNL::getType< Id >() + " >";
    };
- 
+
    /****
     * Storage of mesh entities.
     */
@@ -68,7 +68,7 @@ struct MeshConfigBase
       return true;
       //return ( dimension == 0 || dimension == cellDimension );
    }
- 
+
    /****
     * Storage of subentities of mesh entities.
     */
