@@ -1,6 +1,6 @@
 /**************************************************
 * filename:             MultiPrecision.h          *
-* created:              November 11, 2017          *
+* created:              November 11, 2017         *
 * author:               Daniel Simon              *
 * mail:                 dansimon93@gmail.com      *
 ***************************************************/
@@ -19,14 +19,14 @@ public:
     /* NUMBER */
     mpf_t number;
 
-    /* INITIALIZATION OF NUMBER */
-    MultiPrecision(mpf_t number); // inits number to 0
-    MultiPrecision(mpf_t number, mp_bitcnt_t precision); // inits number to 0 with bit precision
-    MultiPrecision(mp_bitcnt_t precision); // sets the default precision
-    MultiPrecision(mpf_t number,  mpf_t n); // assigns n value to number
+    /* CONSTRUCTORS */
+    MultiPrecision(); // initialize number to 0
+    explicit MultiPrecision(int precision); // sets the default precision
+    explicit MultiPrecision(double d); // initialize number
+    /// TODO Constructor for Quad
 
     /* OPERATORS */
-    void operator=(const MultiPrecision& mp);
+    MultiPrecision& operator=(const MultiPrecision& mp);
     MultiPrecision& operator-();
     MultiPrecision& operator+=(const MultiPrecision& mp);
     MultiPrecision& operator-=(const MultiPrecision& mp);
@@ -37,24 +37,21 @@ public:
     MultiPrecision operator*(const MultiPrecision& mp) const;
     MultiPrecision operator/(const MultiPrecision& mp) const;
     bool operator==(const MultiPrecision &mp) const;
+    /// TODO Operator for comparing Quad and MultiPrecision
     bool operator!=(const MultiPrecision &mp) const;
     bool operator<(const MultiPrecision &mp) const;
     bool operator>(const MultiPrecision &mp) const;
     bool operator>=(const MultiPrecision &mp) const;
     bool operator<=(const MultiPrecision &mp) const;
-    MultiPrecision& operator++(); // prefix
-    MultiPrecision& operator--(); // prefix
-    MultiPrecision operator++(int); // postfix
-    MultiPrecision operator--(int); // postfix
+    MultiPrecision& operator++();
+    MultiPrecision& operator--();
+    MultiPrecision operator++(int);
+    MultiPrecision operator--(int);
 
     /* METHODS */
-    void printMP(int precision);
-    MultiPrecision abs(MultiPrecision r, const MultiPrecision a);
-    MultiPrecision sqrt(MultiPrecision r, const MultiPrecision a);
-    /// void printNumber(int digits, ostream& str = std::cout );  TODO
+    void printMP();
+    /// TODO void printNumber(int digits, ostream& str = std::cout );
 
     /* DESTRUCTOR */
     ~MultiPrecision();
 };
-
-/// ostream& operator << ( ostream& str, const MultiPrecision& p ); TODO
