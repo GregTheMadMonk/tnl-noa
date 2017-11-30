@@ -27,7 +27,7 @@ template< typename Reader,
           typename... ProblemSetterArgs >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-run( Reader& reader,
+run( const Reader& reader,
      ProblemSetterArgs&&... problemSetterArgs )
 {
    return resolveCellTopology( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
@@ -40,7 +40,7 @@ template< typename Reader,
           typename... ProblemSetterArgs >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveCellTopology( Reader& reader,
+resolveCellTopology( const Reader& reader,
                      ProblemSetterArgs&&... problemSetterArgs )
 {
    using Readers::EntityShape;
@@ -71,7 +71,7 @@ template< typename Reader,
              typename, typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveWorldDimension( Reader& reader,
+resolveWorldDimension( const Reader& reader,
                        ProblemSetterArgs&&... problemSetterArgs )
 {
    std::cerr << "The cell topology " << CellTopology::getType() << " is disabled in the build configuration." << std::endl;
@@ -87,7 +87,7 @@ template< typename Reader,
              typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveWorldDimension( Reader& reader,
+resolveWorldDimension( const Reader& reader,
                        ProblemSetterArgs&&... problemSetterArgs )
 {
    switch( reader.getWorldDimension() )
@@ -114,7 +114,7 @@ template< typename Reader,
              typename, typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveReal( Reader& reader,
+resolveReal( const Reader& reader,
              ProblemSetterArgs&&... problemSetterArgs )
 {
    std::cerr << "The combination of world dimension (" << WorldDimension
@@ -133,7 +133,7 @@ template< typename Reader,
              typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveReal( Reader& reader,
+resolveReal( const Reader& reader,
              ProblemSetterArgs&&... problemSetterArgs )
 {
    if( reader.getRealType() == "float" )
@@ -157,7 +157,7 @@ template< typename Reader,
              typename, typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveGlobalIndex( Reader& reader,
+resolveGlobalIndex( const Reader& reader,
                     ProblemSetterArgs&&... problemSetterArgs )
 {
    std::cerr << "The mesh real type " << getType< Real >() << " is disabled in the build configuration." << std::endl;
@@ -175,7 +175,7 @@ template< typename Reader,
              typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveGlobalIndex( Reader& reader,
+resolveGlobalIndex( const Reader& reader,
                     ProblemSetterArgs&&... problemSetterArgs )
 {
    if( reader.getGlobalIndexType() == "short int" )
@@ -200,7 +200,7 @@ template< typename Reader,
              typename, typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveLocalIndex( Reader& reader,
+resolveLocalIndex( const Reader& reader,
                    ProblemSetterArgs&&... problemSetterArgs )
 {
    std::cerr << "The mesh global index type " << getType< GlobalIndex >() << " is disabled in the build configuration." << std::endl;
@@ -219,7 +219,7 @@ template< typename Reader,
              typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveLocalIndex( Reader& reader,
+resolveLocalIndex( const Reader& reader,
                    ProblemSetterArgs&&... problemSetterArgs )
 {
    if( reader.getLocalIndexType() == "short int" )
@@ -245,7 +245,7 @@ template< typename Reader,
              typename, typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveId( Reader& reader,
+resolveId( const Reader& reader,
            ProblemSetterArgs&&... problemSetterArgs )
 {
    std::cerr << "The mesh local index type " << getType< LocalIndex >() << " is disabled in the build configuration." << std::endl;
@@ -265,7 +265,7 @@ template< typename Reader,
              typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveId( Reader& reader,
+resolveId( const Reader& reader,
            ProblemSetterArgs&&... problemSetterArgs )
 {
    if( reader.getIdType() == "short int" )
@@ -294,7 +294,7 @@ template< typename Reader,
              typename, typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveMeshType( Reader& reader,
+resolveMeshType( const Reader& reader,
                  ProblemSetterArgs&&... problemSetterArgs )
 {
    std::cerr << "The mesh id type " << getType< Id >() << " is disabled in the build configuration." << std::endl;
@@ -315,7 +315,7 @@ template< typename Reader,
              typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveMeshType( Reader& reader,
+resolveMeshType( const Reader& reader,
                  ProblemSetterArgs&&... problemSetterArgs )
 {
    using MeshConfig = typename BuildConfigTags::MeshConfigTemplateTag< ConfigTag >::template MeshConfig< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex, Id >;
@@ -331,7 +331,7 @@ template< typename Reader,
              typename, typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveTerminate( Reader& reader,
+resolveTerminate( const Reader& reader,
                   ProblemSetterArgs&&... problemSetterArgs )
 {
    std::cerr << "The mesh config type " << TNL::getType< MeshConfig >() << " is disabled in the build configuration for device " << Device::getDeviceType() << "." << std::endl;
@@ -347,7 +347,7 @@ template< typename Reader,
              typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveTerminate( Reader& reader,
+resolveTerminate( const Reader& reader,
                   ProblemSetterArgs&&... problemSetterArgs )
 {
    using MeshType = Meshes::Mesh< MeshConfig, Device >;

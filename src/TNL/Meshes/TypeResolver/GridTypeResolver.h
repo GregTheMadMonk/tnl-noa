@@ -26,12 +26,12 @@ class GridTypeResolver
 {
 public:
 
-   static bool run( Reader& reader,
+   static bool run( const Reader& reader,
                     ProblemSetterArgs&&... problemSetterArgs );
 
 protected:
 
-   static bool resolveGridDimension( Reader& reader,
+   static bool resolveGridDimension( const Reader& reader,
                                      ProblemSetterArgs&&... problemSetterArgs );
 
    // NOTE: We could disable the grids only by the GridTag, but doing the
@@ -42,13 +42,13 @@ protected:
    template< int MeshDimension,
              typename = typename std::enable_if< ! BuildConfigTags::GridDimensionTag< ConfigTag, MeshDimension >::enabled >::type,
              typename = void >
-   static bool resolveReal( Reader& reader,
+   static bool resolveReal( const Reader& reader,
                             ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for enabled grid dimensions
    template< int MeshDimension,
              typename = typename std::enable_if< BuildConfigTags::GridDimensionTag< ConfigTag, MeshDimension >::enabled >::type >
-   static bool resolveReal( Reader& reader,
+   static bool resolveReal( const Reader& reader,
                             ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for disabled real types
@@ -56,14 +56,14 @@ protected:
              typename Real,
              typename = typename std::enable_if< ! BuildConfigTags::GridRealTag< ConfigTag, Real >::enabled >::type,
              typename = void >
-   static bool resolveIndex( Reader& reader,
+   static bool resolveIndex( const Reader& reader,
                              ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for enabled real types
    template< int MeshDimension,
              typename Real,
              typename = typename std::enable_if< BuildConfigTags::GridRealTag< ConfigTag, Real >::enabled >::type >
-   static bool resolveIndex( Reader& reader,
+   static bool resolveIndex( const Reader& reader,
                              ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for disabled index types
@@ -72,7 +72,7 @@ protected:
              typename Index,
              typename = typename std::enable_if< ! BuildConfigTags::GridIndexTag< ConfigTag, Index >::enabled >::type,
              typename = void >
-   static bool resolveGridType( Reader& reader,
+   static bool resolveGridType( const Reader& reader,
                                 ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for enabled index types
@@ -80,20 +80,20 @@ protected:
              typename Real,
              typename Index,
              typename = typename std::enable_if< BuildConfigTags::GridIndexTag< ConfigTag, Index >::enabled >::type >
-   static bool resolveGridType( Reader& reader,
+   static bool resolveGridType( const Reader& reader,
                                 ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for disabled grid types
    template< typename GridType,
              typename = typename std::enable_if< ! BuildConfigTags::GridTag< ConfigTag, GridType >::enabled >::type,
              typename = void >
-   static bool resolveTerminate( Reader& reader,
+   static bool resolveTerminate( const Reader& reader,
                                  ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for enabled grid types
    template< typename GridType,
              typename = typename std::enable_if< BuildConfigTags::GridTag< ConfigTag, GridType >::enabled >::type >
-   static bool resolveTerminate( Reader& reader,
+   static bool resolveTerminate( const Reader& reader,
                                  ProblemSetterArgs&&... problemSetterArgs );
 };
 

@@ -26,12 +26,12 @@ class MeshTypeResolver
 {
 public:
 
-   static bool run( Reader& reader,
+   static bool run( const Reader& reader,
                     ProblemSetterArgs&&... problemSetterArgs );
 
 protected:
 
-   static bool resolveCellTopology( Reader& reader,
+   static bool resolveCellTopology( const Reader& reader,
                                     ProblemSetterArgs&&... problemSetterArgs );
 
    // NOTE: We could disable the meshes only by the MeshTag, but doing the
@@ -42,13 +42,13 @@ protected:
    template< typename CellTopology,
              typename = typename std::enable_if< ! BuildConfigTags::MeshCellTopologyTag< ConfigTag, CellTopology >::enabled >::type,
              typename = void >
-   static bool resolveWorldDimension( Reader& reader,
+   static bool resolveWorldDimension( const Reader& reader,
                                       ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for enabled cell topologies
    template< typename CellTopology,
              typename = typename std::enable_if< BuildConfigTags::MeshCellTopologyTag< ConfigTag, CellTopology >::enabled >::type >
-   static bool resolveWorldDimension( Reader& reader,
+   static bool resolveWorldDimension( const Reader& reader,
                                       ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for disabled world dimensions
@@ -56,14 +56,14 @@ protected:
              int WorldDimension,
              typename = typename std::enable_if< ! BuildConfigTags::MeshWorldDimensionTag< ConfigTag, CellTopology, WorldDimension >::enabled >::type,
              typename = void >
-   static bool resolveReal( Reader& reader,
+   static bool resolveReal( const Reader& reader,
                             ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for enabled world dimensions
    template< typename CellTopology,
              int WorldDimension,
              typename = typename std::enable_if< BuildConfigTags::MeshWorldDimensionTag< ConfigTag, CellTopology, WorldDimension >::enabled >::type >
-   static bool resolveReal( Reader& reader,
+   static bool resolveReal( const Reader& reader,
                             ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for disabled real types
@@ -72,7 +72,7 @@ protected:
              typename Real,
              typename = typename std::enable_if< ! BuildConfigTags::MeshRealTag< ConfigTag, Real >::enabled >::type,
              typename = void >
-   static bool resolveGlobalIndex( Reader& reader,
+   static bool resolveGlobalIndex( const Reader& reader,
                                    ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for enabled real types
@@ -80,7 +80,7 @@ protected:
              int WorldDimension,
              typename Real,
              typename = typename std::enable_if< BuildConfigTags::MeshRealTag< ConfigTag, Real >::enabled >::type >
-   static bool resolveGlobalIndex( Reader& reader,
+   static bool resolveGlobalIndex( const Reader& reader,
                                    ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for disabled global index types
@@ -90,7 +90,7 @@ protected:
              typename GlobalIndex,
              typename = typename std::enable_if< ! BuildConfigTags::MeshGlobalIndexTag< ConfigTag, GlobalIndex >::enabled >::type,
              typename = void >
-   static bool resolveLocalIndex( Reader& reader,
+   static bool resolveLocalIndex( const Reader& reader,
                                   ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for enabled global index types
@@ -99,7 +99,7 @@ protected:
              typename Real,
              typename GlobalIndex,
              typename = typename std::enable_if< BuildConfigTags::MeshGlobalIndexTag< ConfigTag, GlobalIndex >::enabled >::type >
-   static bool resolveLocalIndex( Reader& reader,
+   static bool resolveLocalIndex( const Reader& reader,
                                   ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for disabled local index types
@@ -110,7 +110,7 @@ protected:
              typename LocalIndex,
              typename = typename std::enable_if< ! BuildConfigTags::MeshLocalIndexTag< ConfigTag, LocalIndex >::enabled >::type,
              typename = void >
-   static bool resolveId( Reader& reader,
+   static bool resolveId( const Reader& reader,
                           ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for enabled local index types
@@ -120,7 +120,7 @@ protected:
              typename GlobalIndex,
              typename LocalIndex,
              typename = typename std::enable_if< BuildConfigTags::MeshLocalIndexTag< ConfigTag, LocalIndex >::enabled >::type >
-   static bool resolveId( Reader& reader,
+   static bool resolveId( const Reader& reader,
                           ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for disabled id types
@@ -132,7 +132,7 @@ protected:
              typename Id,
              typename = typename std::enable_if< ! BuildConfigTags::MeshIdTag< ConfigTag, GlobalIndex, Id >::enabled >::type,
              typename = void >
-   static bool resolveMeshType( Reader& reader,
+   static bool resolveMeshType( const Reader& reader,
                                 ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for enabled id types
@@ -143,7 +143,7 @@ protected:
              typename LocalIndex,
              typename Id,
              typename = typename std::enable_if< BuildConfigTags::MeshIdTag< ConfigTag, GlobalIndex, Id >::enabled >::type >
-   static bool resolveMeshType( Reader& reader,
+   static bool resolveMeshType( const Reader& reader,
                                 ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for disabled mesh types
@@ -159,7 +159,7 @@ protected:
                                                                              typename MeshConfig::IdType
                                                                            >::enabled >::type,
              typename = void >
-   static bool resolveTerminate( Reader& reader,
+   static bool resolveTerminate( const Reader& reader,
                                  ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for enabled mesh types
@@ -174,7 +174,7 @@ protected:
                                                                              typename MeshConfig::LocalIndexType,
                                                                              typename MeshConfig::IdType
                                                                            >::enabled >::type >
-   static bool resolveTerminate( Reader& reader,
+   static bool resolveTerminate( const Reader& reader,
                                  ProblemSetterArgs&&... problemSetterArgs );
 };
 

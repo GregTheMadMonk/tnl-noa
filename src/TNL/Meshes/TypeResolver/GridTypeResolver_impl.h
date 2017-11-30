@@ -26,7 +26,7 @@ template< typename Reader,
           typename... ProblemSetterArgs >
 bool
 GridTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-run( Reader& reader,
+run( const Reader& reader,
      ProblemSetterArgs&&... problemSetterArgs )
 {
    return resolveGridDimension( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
@@ -39,7 +39,7 @@ template< typename Reader,
           typename... ProblemSetterArgs >
 bool
 GridTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveGridDimension( Reader& reader,
+resolveGridDimension( const Reader& reader,
                       ProblemSetterArgs&&... problemSetterArgs )
 {
    if( reader.getMeshDimension() == 1 )
@@ -61,7 +61,7 @@ template< typename Reader,
              typename, typename >
 bool
 GridTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveReal( Reader& reader,
+resolveReal( const Reader& reader,
              ProblemSetterArgs&&... problemSetterArgs )
 {
    std::cerr << "The grid dimension " << MeshDimension << " is disabled in the build configuration." << std::endl;
@@ -77,7 +77,7 @@ template< typename Reader,
              typename >
 bool
 GridTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveReal( Reader& reader,
+resolveReal( const Reader& reader,
              ProblemSetterArgs&&... problemSetterArgs )
 {
    if( reader.getRealType() == "float" )
@@ -100,7 +100,7 @@ template< typename Reader,
              typename, typename >
 bool
 GridTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveIndex( Reader& reader,
+resolveIndex( const Reader& reader,
               ProblemSetterArgs&&... problemSetterArgs )
 {
    std::cerr << "The grid real type " << getType< Real >() << " is disabled in the build configuration." << std::endl;
@@ -117,7 +117,7 @@ template< typename Reader,
              typename >
 bool
 GridTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveIndex( Reader& reader,
+resolveIndex( const Reader& reader,
               ProblemSetterArgs&&... problemSetterArgs )
 {
    if( reader.getGlobalIndexType() == "short int" )
@@ -141,7 +141,7 @@ template< typename Reader,
              typename, typename >
 bool
 GridTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveGridType( Reader& reader,
+resolveGridType( const Reader& reader,
                  ProblemSetterArgs&&... problemSetterArgs )
 {
    std::cerr << "The grid index type " << getType< Index >() << " is disabled in the build configuration." << std::endl;
@@ -159,7 +159,7 @@ template< typename Reader,
              typename >
 bool
 GridTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveGridType( Reader& reader,
+resolveGridType( const Reader& reader,
                  ProblemSetterArgs&&... problemSetterArgs )
 {
    using GridType = Meshes::Grid< MeshDimension, Real, Device, Index >;
@@ -175,7 +175,7 @@ template< typename Reader,
              typename, typename >
 bool
 GridTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveTerminate( Reader& reader,
+resolveTerminate( const Reader& reader,
                   ProblemSetterArgs&&... problemSetterArgs )
 {
    std::cerr << "The mesh type " << TNL::getType< GridType >() << " is disabled in the build configuration." << std::endl;
@@ -191,7 +191,7 @@ template< typename Reader,
              typename >
 bool
 GridTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveTerminate( Reader& reader,
+resolveTerminate( const Reader& reader,
                   ProblemSetterArgs&&... problemSetterArgs )
 {
    return ProblemSetter< GridType >::run( std::forward<ProblemSetterArgs>(problemSetterArgs)... );
