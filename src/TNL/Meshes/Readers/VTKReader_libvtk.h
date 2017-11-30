@@ -20,7 +20,7 @@
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Meshes/MeshBuilder.h>
 #include <TNL/Meshes/Topologies/SubentityVertexMap.h>
-#include <TNL/Meshes/Readers/VTKEntityType.h>
+#include <TNL/Meshes/Readers/EntityShape.h>
 
 #ifdef HAVE_VTK
 #include <vtkSmartPointer.h>
@@ -136,8 +136,8 @@ public:
       return this->meshDimension;
    }
  
-   VTKEntityType
-   getCellVTKType() const
+   EntityShape
+   getCellShape() const
    {
       return this->entityTypes.at( this->meshDimension );
    }
@@ -148,7 +148,7 @@ public:
 //      return this->verticesInEntities.at( this->getMeshDimension() );
 //   }
 
-//   VTKEntityType
+//   EntityShape
 //   getEntityType( int entityDimension ) const
 //   {
 //      return this->entityTypes.at( entityDimension );
@@ -202,7 +202,7 @@ protected:
    std::unordered_map< VTKIndexType, std::vector< VTKIndexType > > entitySeeds;
 
    // maps dimension to VTK type of the entity with given dimension
-   std::unordered_map< int, VTKEntityType > entityTypes;
+   std::unordered_map< int, EntityShape > entityTypes;
 
    void reset()
    {
@@ -274,7 +274,7 @@ protected:
          vtkCell* cell = vtkMesh.GetCell( i );
          const int dimension = cell->GetCellDimension();
          const int points = cell->GetNumberOfPoints();
-         const VTKEntityType type = (VTKEntityType) cell->GetCellType();
+         const EntityShape type = (EntityShape) cell->GetCellType();
 
          // number of vertices in entities
          if( this->verticesInEntities.find( dimension ) == this->verticesInEntities.cend() )

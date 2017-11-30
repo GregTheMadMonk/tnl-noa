@@ -16,7 +16,7 @@
 #include <vector>
 
 #include <TNL/Meshes/MeshBuilder.h>
-#include <TNL/Meshes/Readers/VTKEntityType.h>
+#include <TNL/Meshes/Readers/EntityShape.h>
 
 namespace TNL {
 namespace Meshes {
@@ -107,7 +107,7 @@ public:
 
       // read entity types
       long int entitiesRead = 0;
-      std::map< int, VTKEntityType > entityTypes;
+      std::map< int, EntityShape > entityTypes;
       while( entitiesRead < numberOfEntities ) {
          if( ! inputFile ) {
             std::cerr << "VTKReader: unable to read enough entity types, the file may be invalid or corrupted." << std::endl;
@@ -120,8 +120,8 @@ public:
          iss.clear();
          iss.str( line );
          iss >> typeId;
-         const VTKEntityType type = (VTKEntityType) typeId;
-         const int dimension = getVTKEntityDimension( type );
+         const EntityShape type = (EntityShape) typeId;
+         const int dimension = getEntityDimension( type );
 
          // check entity type
          if( entityTypes.find( dimension ) == entityTypes.cend() )
@@ -137,12 +137,12 @@ public:
          entitiesRead++;
       }
 
-      // set meshDimension and cellVTKType
+      // set meshDimension and cellShape
       meshDimension = 0;
       for( auto it : entityTypes )
          if( it.first > meshDimension ) {
             meshDimension = it.first;
-            cellVTKType = it.second;
+            cellShape = it.second;
          }
 
       return true;
@@ -156,7 +156,7 @@ public:
       using PointType = typename MeshType::PointType;
       using CellSeedType = typename MeshBuilder::CellSeedType;
 
-      const VTKEntityType cellType = TopologyToVTKMap< typename MeshType::template EntityTraits< MeshType::getMeshDimension() >::EntityTopology >::type;
+      const EntityShape cellType = TopologyToEntityShape< typename MeshType::template EntityTraits< MeshType::getMeshDimension() >::EntityTopology >::shape;
       MeshBuilder meshBuilder;
 
       std::ifstream inputFile( fileName.getString() );
@@ -233,7 +233,7 @@ public:
       iss >> numberOfEntities;
 
       // read entity types, count cells
-      std::vector< VTKEntityType > entityTypes;
+      std::vector< EntityShape > entityTypes;
       entityTypes.resize( numberOfEntities );
       IndexType numberOfCells = 0;
       for( IndexType entityIndex = 0; entityIndex < numberOfEntities; entityIndex++ ) {
@@ -248,8 +248,8 @@ public:
          iss.clear();
          iss.str( line );
          iss >> typeId;
-         entityTypes[ entityIndex ] = (VTKEntityType) typeId;
-         const int dimension = getVTKEntityDimension( entityTypes[ entityIndex ] );
+         entityTypes[ entityIndex ] = (EntityShape) typeId;
+         const int dimension = getEntityDimension( entityTypes[ entityIndex ] );
          if( dimension == MeshType::getMeshDimension() )
             numberOfCells++;
       }
@@ -311,10 +311,10 @@ public:
       return worldDimension;
    }
 
-   VTKEntityType
-   getCellVTKType() const
+   EntityShape
+   getCellShape() const
    {
-      return cellVTKType;
+      return cellShape;
    }
 
    String
@@ -351,14 +351,14 @@ protected:
 
    String fileName;
    int meshDimension, worldDimension;
-   VTKEntityType cellVTKType = VTKEntityType::Vertex;
+   EntityShape cellShape = EntityShape::Vertex;
    std::string realType;
 
    void reset()
    {
       fileName = "";
       meshDimension = worldDimension = 0;
-      cellVTKType = VTKEntityType::Vertex;
+      cellShape = EntityShape::Vertex;
       realType = "";
    }
 

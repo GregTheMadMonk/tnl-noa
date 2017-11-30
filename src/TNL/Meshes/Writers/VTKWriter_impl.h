@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/Writers/VTKWriter.h>
-#include <TNL/Meshes/Readers/VTKEntityType.h>
+#include <TNL/Meshes/Readers/EntityShape.h>
 
 namespace TNL {
 namespace Meshes {
@@ -57,30 +57,30 @@ struct VerticesPerEntity< GridEntity< Grid, 3, Config > >
 
 
 template< typename GridEntity >
-struct GridEntityToVTKType {};
+struct GridEntityShape {};
 
 template< typename Grid, typename Config >
-struct GridEntityToVTKType< GridEntity< Grid, 0, Config > >
+struct GridEntityShape< GridEntity< Grid, 0, Config > >
 {
-   static constexpr Readers::VTKEntityType type = Readers::VTKEntityType::Vertex;
+   static constexpr Readers::EntityShape shape = Readers::EntityShape::Vertex;
 };
 
 template< typename Grid, typename Config >
-struct GridEntityToVTKType< GridEntity< Grid, 1, Config > >
+struct GridEntityShape< GridEntity< Grid, 1, Config > >
 {
-   static constexpr Readers::VTKEntityType type = Readers::VTKEntityType::Line;
+   static constexpr Readers::EntityShape shape = Readers::EntityShape::Line;
 };
 
 template< typename Grid, typename Config >
-struct GridEntityToVTKType< GridEntity< Grid, 2, Config > >
+struct GridEntityShape< GridEntity< Grid, 2, Config > >
 {
-   static constexpr Readers::VTKEntityType type = Readers::VTKEntityType::Pixel;
+   static constexpr Readers::EntityShape shape = Readers::EntityShape::Pixel;
 };
 
 template< typename Grid, typename Config >
-struct GridEntityToVTKType< GridEntity< Grid, 3, Config > >
+struct GridEntityShape< GridEntity< Grid, 3, Config > >
 {
-   static constexpr Readers::VTKEntityType type = Readers::VTKEntityType::Voxel;
+   static constexpr Readers::EntityShape shape = Readers::EntityShape::Voxel;
 };
 
 
@@ -370,7 +370,7 @@ struct MeshEntityTypesVTKWriter
 
       const Index entitiesCount = mesh.template getEntitiesCount< EntityType >();
       for( Index i = 0; i < entitiesCount; i++ ) {
-         const int type = (int) Meshes::Readers::TopologyToVTKMap< typename EntityType::EntityTopology >::type;
+         const int type = (int) Meshes::Readers::TopologyToEntityShape< typename EntityType::EntityTopology >::shape;
          str << type << "\n";
       }
    }
@@ -391,7 +391,7 @@ struct MeshEntityTypesVTKWriter< Grid< Dimension, MeshReal, Device, MeshIndex >,
 
       const MeshIndex entitiesCount = mesh.template getEntitiesCount< EntityType >();
       for( MeshIndex i = 0; i < entitiesCount; i++ ) {
-         const int type = (int) __impl::GridEntityToVTKType< EntityType >::type;
+         const int type = (int) __impl::GridEntityShape< EntityType >::shape;
          str << type << "\n";
       }
    }

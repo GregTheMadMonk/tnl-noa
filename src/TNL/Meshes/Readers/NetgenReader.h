@@ -21,7 +21,7 @@
 #include <sstream>
 
 #include <TNL/Meshes/MeshBuilder.h>
-#include <TNL/Meshes/Readers/VTKEntityType.h>
+#include <TNL/Meshes/Readers/EntityShape.h>
 
 namespace TNL {
 namespace Meshes {
@@ -124,20 +124,20 @@ public:
       //cout << "There are " << verticesInCell << " vertices in cell ..." << std::endl;
       
       if( meshDimension == 1 && verticesInCell == 2 )
-         cellVTKType = VTKEntityType::Line;
+         cellShape = EntityShape::Line;
       else if( meshDimension == 2 ) {
          if( verticesInCell == 3 )
-            cellVTKType = VTKEntityType::Triangle;
+            cellShape = EntityShape::Triangle;
          else if( verticesInCell == 4 )
-            cellVTKType = VTKEntityType::Quad;
+            cellShape = EntityShape::Quad;
       }
       else if( meshDimension == 3 ) {
          if( verticesInCell == 4 )
-            cellVTKType = VTKEntityType::Tetra;
+            cellShape = EntityShape::Tetra;
          else if( verticesInCell == 8 )
-            cellVTKType = VTKEntityType::Hexahedron;
+            cellShape = EntityShape::Hexahedron;
       }
-      if( cellVTKType == VTKEntityType::Vertex ) {
+      if( cellShape == EntityShape::Vertex ) {
          std::cerr << "Unknown cell topology: mesh dimension is " << meshDimension << ", number of vertices in cells is " << verticesInCell << "." << std::endl;
          return false;
       }
@@ -251,10 +251,10 @@ public:
       return worldDimension;
    }
 
-   VTKEntityType
-   getCellVTKType() const
+   EntityShape
+   getCellShape() const
    {
-      return cellVTKType;
+      return cellShape;
    }
 
    String
@@ -288,13 +288,13 @@ public:
 protected:
    String fileName;
    int meshDimension, worldDimension;
-   VTKEntityType cellVTKType = VTKEntityType::Vertex;
+   EntityShape cellShape = EntityShape::Vertex;
 
    void reset()
    {
       fileName = "";
       meshDimension = worldDimension = 0;
-      cellVTKType = VTKEntityType::Vertex;
+      cellShape = EntityShape::Vertex;
    }
 };
 

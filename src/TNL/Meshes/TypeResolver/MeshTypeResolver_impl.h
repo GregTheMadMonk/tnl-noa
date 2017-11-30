@@ -15,7 +15,7 @@
 #include <TNL/String.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/TypeResolver/MeshTypeResolver.h>
-#include <TNL/Meshes/Readers/VTKEntityType.h>
+#include <TNL/Meshes/Readers/EntityShape.h>
 
 namespace TNL {
 namespace Meshes {
@@ -43,21 +43,21 @@ MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs...
 resolveCellTopology( Reader& reader,
                      ProblemSetterArgs&&... problemSetterArgs )
 {
-   using Readers::VTKEntityType;
-   switch( reader.getCellVTKType() )
+   using Readers::EntityShape;
+   switch( reader.getCellShape() )
    {
-      case VTKEntityType::Line:
+      case EntityShape::Line:
          return resolveWorldDimension< Topologies::Edge >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-      case VTKEntityType::Triangle:
+      case EntityShape::Triangle:
          return resolveWorldDimension< Topologies::Triangle >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-      case VTKEntityType::Quad:
+      case EntityShape::Quad:
          return resolveWorldDimension< Topologies::Quadrilateral >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-      case VTKEntityType::Tetra:
+      case EntityShape::Tetra:
          return resolveWorldDimension< Topologies::Tetrahedron >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-      case VTKEntityType::Hexahedron:
+      case EntityShape::Hexahedron:
          return resolveWorldDimension< Topologies::Hexahedron >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
       default:
-         std::cerr << "unsupported cell topology: " << reader.getCellVTKType() << std::endl;
+         std::cerr << "unsupported cell topology: " << reader.getCellShape() << std::endl;
          return false;
    }
 }

@@ -13,7 +13,7 @@
 #include <TNL/String.h>
 #include <TNL/Object.h>
 #include <TNL/Containers/List.h>
-#include <TNL/Meshes/Readers/VTKEntityType.h>
+#include <TNL/Meshes/Readers/EntityShape.h>
 
 namespace TNL {
 namespace Meshes {
@@ -48,11 +48,11 @@ public:
          globalIndexType = localIndexType = idType = parsedMeshType[ 4 ];
          // populate entity types (not necessary for GridTypeResolver, but while we're at it...)
          if( meshDimension == 1 )
-            cellVTKType = VTKEntityType::Line;
+            cellShape = EntityShape::Line;
          else if( meshDimension == 2 )
-            cellVTKType = VTKEntityType::Quad;
+            cellShape = EntityShape::Quad;
          else if( meshDimension == 3 )
-            cellVTKType = VTKEntityType::Hexahedron;
+            cellShape = EntityShape::Hexahedron;
       }
       else if( meshType == "Meshes::Mesh" ) {
          Containers::List< String > parsedMeshConfig;
@@ -75,15 +75,15 @@ public:
          idType = parsedMeshConfig[ 6 ];
 
          if( topology == "MeshEdgeTopology" )
-            cellVTKType = VTKEntityType::Line;
+            cellShape = EntityShape::Line;
          else if( topology == "MeshTriangleTopology" )
-            cellVTKType = VTKEntityType::Triangle;
+            cellShape = EntityShape::Triangle;
          else if( topology == "MeshQuadrilateralTopology" )
-            cellVTKType = VTKEntityType::Quad;
+            cellShape = EntityShape::Quad;
          else if( topology == "MeshTetrahedronTopology" )
-            cellVTKType = VTKEntityType::Tetra;
+            cellShape = EntityShape::Tetra;
          else if( topology == "MeshHexahedronTopology" )
-            cellVTKType = VTKEntityType::Hexahedron;
+            cellShape = EntityShape::Hexahedron;
          else {
             std::cerr << "Detected topology '" << topology << "' is not supported." << std::endl;
             return false;
@@ -122,10 +122,10 @@ public:
       return worldDimension;
    }
 
-   VTKEntityType
-   getCellVTKType() const
+   EntityShape
+   getCellShape() const
    {
-      return cellVTKType;
+      return cellShape;
    }
  
    String
@@ -157,7 +157,7 @@ protected:
    String meshType;
    int meshDimension = 0;
    int worldDimension = 0;
-   VTKEntityType cellVTKType = VTKEntityType::Vertex;
+   EntityShape cellShape = EntityShape::Vertex;
    String realType;
    String globalIndexType;
    String localIndexType;
@@ -168,7 +168,7 @@ protected:
       fileName = "";
       meshType = "";
       meshDimension = worldDimension = 0;
-      cellVTKType = VTKEntityType::Vertex;
+      cellShape = EntityShape::Vertex;
       realType = localIndexType = globalIndexType = idType = "";
    }
 };
