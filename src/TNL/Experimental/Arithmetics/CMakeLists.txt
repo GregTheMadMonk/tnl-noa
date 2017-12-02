@@ -7,7 +7,7 @@ set( headers FlopsCounter.h
 	     MultiPrecision.h #Added by D. Simon
               )
 
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Experimental/Arithemtics )
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Experimental/Arithmetics )
 
 set( tnl_experimental_arithmetics_SOURCES 
                  ${CURRENT_DIR}/FlopsCounter.cpp
