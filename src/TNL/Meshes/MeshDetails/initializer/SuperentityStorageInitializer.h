@@ -57,7 +57,7 @@ public:
 
    void initSuperentities( InitializerType& meshInitializer )
    {
-      TNL_ASSERT_GT( dynamicStorageNetwork.size(), 0,
+      TNL_ASSERT_GT( dynamicStorageNetwork.size(), (size_t) 0,
                      "No superentity indices were collected. This is a bug in the mesh initializer." );
       TNL_ASSERT_EQ( (size_t) getMaxSuperentityIndex(), dynamicStorageNetwork.size() - 1,
                      "Superentities for some entities are missing. "
