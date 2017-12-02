@@ -43,7 +43,7 @@ enum class EntityShape
    Pyramid = 14
 };
 
-static std::ostream& operator<<( std::ostream& str, EntityShape shape )
+inline std::ostream& operator<<( std::ostream& str, EntityShape shape )
 {
    switch( shape )
    {
@@ -95,7 +95,7 @@ static std::ostream& operator<<( std::ostream& str, EntityShape shape )
    return str;
 }
 
-static int getEntityDimension( EntityShape shape )
+inline int getEntityDimension( EntityShape shape )
 {
    switch( shape )
    {
