@@ -1,0 +1,98 @@
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
+
+before_script:
+    - which g++
+    - which cmake
+
+# Stages are useful only to enforce some ordering of the jobs. Every job is run
+# in its own directory and only very few data can be shared between the jobs in
+# different stages. It has to be zipped and uploaded to the server, so we can't
+# do it with the build directory. Hence, we must build, test and install in the
+# same job.
+stages:
+    - build
+
+# default flags for cmake
+.default_cmake_flags_def: &default_cmake_flags
+    WITH_CUDA: "no"
+    WITH_CUDA_ARCH: "auto"
+    WITH_MIC: "no"
+    WITH_TESTS: "yes"
+    WITH_COVERAGE: "no"
+    WITH_EXAMPLES: "yes"
+
+# template for build jobs
+.build_template_def: &build_template
+    stage: build
+    script:
+        - pwd
+        - export MAKEFLAGS=-j$(grep "core id" /proc/cpuinfo | wc -l)
+        # hack to set correct g++ for nvcc on jlk.fjfi.cvut.cz
+        - if [[ "$CI_RUNNER_DESCRIPTION" == "jlk.fjfi.cvut.cz" ]]; then
+                export CUDA_HOST_COMPILER="g++-6";
+          fi
+        - mkdir -p "./$BUILD_TYPE"
+        - pushd "./$BUILD_TYPE"
+        - cmake ..
+                -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+                -DCMAKE_INSTALL_PREFIX=$(pwd)/${BUILD_TYPE}_install_prefix
+                -DWITH_CUDA=${WITH_CUDA}
+                -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH}
+                -DWITH_MIC=${WITH_MIC}
+                -DWITH_TESTS=${WITH_TESTS}
+                -DWITH_COVERAGE=${WITH_COVERAGE}
+                -DWITH_EXAMPLES=${WITH_EXAMPLES}
+        - make
+        - make test
+        - make install
+        # clean to save disk space on the runner
+        - popd
+        - rm -rf "./$BUILD_TYPE"
+    variables:
+        <<: *default_cmake_flags
+        BUILD_TYPE: Debug
+
+base_Debug:
+    <<: *build_template
+
+base_Release:
+    <<: *build_template
+    variables:
+        <<: *default_cmake_flags
+        BUILD_TYPE: Release
+
+# TODO
+#openmp:
+#    <<: *build_template
+#    tags:
+#        - openmp
+#    variables:
+#        WITH_OPENMP: "yes"
+        
+cuda_Debug:
+    <<: *build_template
+    tags:
+        - gpu
+    variables:
+        <<: *default_cmake_flags
+        WITH_CUDA: "yes"
+        BUILD_TYPE: Debug
+        
+cuda_Release:
+    <<: *build_template
+    tags:
+        - gpu
+    variables:
+        <<: *default_cmake_flags
+        WITH_CUDA: "yes"
+        BUILD_TYPE: Release
+        
+#openmp+cuda:
+#    <<: *build_template
+#    tags:
+#        - openmp
+#        - gpu
+#    variables:
+# TODO
+#        WITH_OPENMP: "yes"
+#        WITH_CUDA: "yes"

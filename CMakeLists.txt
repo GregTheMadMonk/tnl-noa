@@ -66,6 +66,16 @@ if( CXX_COMPILER_NAME MATCHES "icpc" )
    endif( )	
 endif()
 
+# force colorized output in continuous integration
+if( DEFINED ENV{CI_JOB_NAME} )
+   message(STATUS "Continuous integration detected -- forcing compilers to produce colorized output.")
+   if( CXX_COMPILER_NAME MATCHES "clang" )
+      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics" )
+   else()
+      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color" )
+   endif()
+endif()
+
 #####
 # Check for CUDA
 #
@@ -125,7 +135,11 @@ if( WITH_CUDA STREQUAL "yes" )
                 endif()
                 message( "GPU architecture options:  ${CUDA_ARCH}" )
             else()
-                set( CUDA_ARCH -gencode arch=compute_${WITH_CUDA_ARCH},code=sm_${WITH_CUDA_ARCH} )
+                if( NOT WITH_CUDA_ARCH STREQUAL "" )
+                    set( CUDA_ARCH -gencode arch=compute_${WITH_CUDA_ARCH},code=sm_${WITH_CUDA_ARCH} )
+                else()
+                    message( FATAL_ERROR "\$WITH_CUDA_ARCH cannot be empty." )
+                endif()
             endif()
         endif()
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES )
