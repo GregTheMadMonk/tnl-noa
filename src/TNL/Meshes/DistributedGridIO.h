@@ -71,7 +71,7 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
     typedef typename MeshFunctionType::VectorType VectorType;
     //typedef DistributedGrid< MeshType,MeshFunctionType::getMeshDimension()> DistributedGridType;
     
-    static bool save(File &file,MeshFunctionType &meshFunction)
+    static bool save(File &file,File &meshOutputFile, MeshFunctionType &meshFunction)
     {
         auto *distrGrid=meshFunction.getMesh().GetDistGrid();
         
@@ -93,6 +93,8 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
         newMesh->setSpaceSteps(spaceSteps);
         newMesh->setOrigin(origin+TNL::Containers::tnlDotProduct(spaceSteps,localBegin));
         
+        newMesh->save( meshOutputFile );
+
         VectorType newDof(newMesh-> template getEntitiesCount< typename MeshType::Cell >());
 
         MeshFunctionType newMeshFunction;

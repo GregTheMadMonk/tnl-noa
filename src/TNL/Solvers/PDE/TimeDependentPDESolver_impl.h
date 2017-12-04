@@ -30,16 +30,6 @@ TimeDependentPDESolver()
 {
 }
 
-#ifdef USE_MPI
-template< typename Problem,
-          typename DiscreteSolver,
-          typename TimeStepper >
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
-~TimeDependentPDESolver()
-{
-    delete distrGrid;
-}
-#endif
 
 template< typename Problem,
           typename DiscreteSolver,   
@@ -85,8 +75,8 @@ setup( const Config::ParameterContainer& parameters,
 
    typename Meshes::DistributedGrid<MeshType>::CoordinatesType overlap;
    overlap.setValue(1);
-   this->distrGrid=new Meshes::DistributedGrid<MeshType>(*globalMeshPointer,overlap);
-   distrGrid->SetupGrid(*meshPointer);
+   this->distrGrid.SetGlobalGrid(*globalMeshPointer,overlap);
+   distrGrid.SetupGrid(*meshPointer);
 #else
    std::cout << "Loading a mesh from the file " << meshFile << "...";
    if( ! this->meshPointer->load( meshFile ) )

@@ -147,7 +147,9 @@ class ExplicitUpdater
                                              TraverserBoundaryEntitiesProcessor >
                                            ( meshPointer,
                                              userDataPointer );
-         
+#ifdef USE_MPI
+         uPointer->synchronize();
+#endif
       }
       
          

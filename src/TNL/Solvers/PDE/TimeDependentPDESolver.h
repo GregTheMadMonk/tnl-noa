@@ -49,10 +49,6 @@ class TimeDependentPDESolver : public PDESolver< typename Problem::RealType,
 
       TimeDependentPDESolver();
 
-#ifdef USE_MPI
-      ~TimeDependentPDESolver();
-#endif
-
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" );
 
@@ -95,7 +91,7 @@ class TimeDependentPDESolver : public PDESolver< typename Problem::RealType,
 #ifdef USE_MPI
       MeshPointer globalMeshPointer;
 
-      Meshes::DistributedGrid<MeshType> * distrGrid;
+      Meshes::DistributedGrid<MeshType> distrGrid;
 #endif
 
       DofVectorPointer dofsPointer;

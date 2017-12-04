@@ -200,8 +200,11 @@ makeSnapshot( const RealType& time,
    fileName.setIndex( step );
 #ifdef USE_MPI
    File file;
-   file.open( fileName.getFileName()+convertToString(MPI::COMM_WORLD.Get_rank()), IOMode::write );
-   Meshes::DistributedGridIO<MeshFunctionType> ::save(file, *uPointer );
+   File meshFile;
+   meshFile.open( convertToString(MPI::COMM_WORLD.Get_rank())+String("mesh.tnl"),IOMode::write);
+   file.open( convertToString(MPI::COMM_WORLD.Get_rank())+fileName.getFileName(), IOMode::write );
+   Meshes::DistributedGridIO<MeshFunctionType> ::save(file,meshFile, *uPointer );
+   meshFile.close();
    file.close();
 #else
    if( ! this->uPointer->save( fileName.getFileName() ) )

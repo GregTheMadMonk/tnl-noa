@@ -110,7 +110,10 @@ bool renderFunction( const Config::ParameterContainer& parameters )
 #ifdef USE_MPI
       File file;
       file.open( outputFile+convertToString(MPI::COMM_WORLD.Get_rank()), IOMode::write );
-      Meshes::DistributedGridIO<MeshFunctionType> ::save(file, *meshFunction );
+      File meshFile;
+      meshFile.open(convertToString(MPI::COMM_WORLD.Get_rank())+String("mesh.tnl"),IOMode::write);
+      Meshes::DistributedGridIO<MeshFunctionType> ::save(file,meshFile, *meshFunction );
+      meshFile.close();
       file.close();
 #else
       if( ! meshFunction->save( outputFile) )

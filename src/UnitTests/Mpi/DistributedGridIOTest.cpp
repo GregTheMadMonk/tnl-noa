@@ -245,10 +245,11 @@ class TestDistributedGridIO{
         linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
         
         File file;
+        File meshFile;
         file.open( String( "/tmp/test-file.tnl-" )+convertToString(MPI::COMM_WORLD.Get_rank()), IOMode::write );
-        
-        DistributedGridIO<MeshFunctionType> ::save(file, *meshFunctionptr );
-        
+        meshFile.open( String( "/tmp/test-file-mesh.tnl-" )+convertToString(MPI::COMM_WORLD.Get_rank()), IOMode::write );
+        DistributedGridIO<MeshFunctionType> ::save(file,meshFile, *meshFunctionptr );
+        meshFile.close();
         file.close();
 
         //create similar local mesh function and evaluate linear function on it
