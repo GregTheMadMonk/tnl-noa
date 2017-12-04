@@ -187,7 +187,7 @@ initInterface( const MeshFunctionType& input,
       }
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
    template< typename MeshEntity >
@@ -230,7 +230,7 @@ updateCell( MeshFunctionType& u,
        fabs( b ) == TypeInfo< Real >::getMaxValue() ||
        fabs( a - b ) >= h )
    {
-      tmp = argAbsMin( a, b ) + sign( value ) * h;
+      tmp = argAbsMin( a, b ) + sign( value ) * h;*/
       /*   std::cerr << "a = " << a << " b = " << b << " h = " << h 
              << " ArgAbsMin( a, b ) = " << ArgAbsMin( a, b ) << " sign( value ) = " << sign( value )
              << " sign( value ) * h = " << sign( value ) * h
@@ -243,14 +243,71 @@ updateCell( MeshFunctionType& u,
       std::cerr << " tmp = " << tmp << std::endl;
       std::cerr << " res = " << res << std::endl;*/
 
-   }
+   /*}
    else
       tmp = 0.5 * ( a + b + sign( value ) * sqrt( 2.0 * h * h - ( a - b ) * ( a - b ) ) );
 
    u[ cell.getIndex() ] = argAbsMin( value, tmp );
    //std::cerr << ArgAbsMin( value, tmp ) << " ";   
-}
+}*/
 
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename MeshEntity >
+void
+tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
+updateCell( MeshFunctionType& u,
+            const MeshEntity& cell)
+            //MeshFunctionType& v
+{
+   const auto& neighborEntities = cell.template getNeighborEntities< 2 >();
+   const MeshType& mesh = cell.getMesh();
+  
+   const RealType& hx = mesh.getSpaceSteps().x();
+   const RealType& hy = mesh.getSpaceSteps().y();
+   const RealType value = u( cell );
+   //const RealType permeability = v( cell );
+   Real a, b, tmp;
+   
+   if( cell.getCoordinates().x() == 0 )
+      a = u[ neighborEntities.template getEntityIndex< 1,  0 >() ];
+   else if( cell.getCoordinates().x() == mesh.getDimensions().x() - 1 )
+      a = u[ neighborEntities.template getEntityIndex< -1,  0 >() ];
+   else
+   {
+      a = TNL::argAbsMin( u[ neighborEntities.template getEntityIndex< -1,  0 >() ],
+                     u[ neighborEntities.template getEntityIndex<  1,  0 >() ] );
+   }
+
+   if( cell.getCoordinates().y() == 0 )
+      b = u[ neighborEntities.template getEntityIndex< 0,  1 >()];
+   else if( cell.getCoordinates().y() == mesh.getDimensions().y() - 1 )
+      b = u[ neighborEntities.template getEntityIndex< 0,  -1 >() ];
+   else
+   {
+      b = TNL::argAbsMin( u[ neighborEntities.template getEntityIndex< 0,  -1 >() ],
+                     u[ neighborEntities.template getEntityIndex< 0,   1 >() ] );
+   }
+   if( fabs( a ) == TypeInfo< Real >::getMaxValue() && 
+       fabs( b ) == TypeInfo< Real >::getMaxValue() )
+      return;
+   if( fabs( a ) == TypeInfo< Real >::getMaxValue() ||
+       fabs( b ) == TypeInfo< Real >::getMaxValue() ||
+       fabs( a - b ) >= TNL::sqrt( (hx * hx + hy * hy)/1 ) ) //permeability ) )
+   {
+      tmp = 
+        fabs( a ) >= fabs( b ) ? b + TNL::sign( value ) * hy :
+                                 a + TNL::sign( value ) * hx;
+   }
+   else
+      tmp = ( hx * hx * a + hy * hy * b + 
+            sign( value ) * hx * hy * sqrt( ( hx * hx + hy * hy )/1 - 
+            ( a - b ) * ( a - b ) ) )/( hx * hx + hy * hy ); //permeability
+            
+   
+   u[ cell.getIndex() ] = argAbsMin( value, tmp );
+}
 
 template< typename Real,
           typename Device,
