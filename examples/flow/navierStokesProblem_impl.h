@@ -280,9 +280,6 @@ getExplicitUpdate( const RealType& time,
    {
       this->boundaryConditionPointer->setTimestep(0);
    }
-   std::cout<<tau<< std::endl;
-   std::cout<<time<< std::endl;
-   getchar();
    this->boundaryConditionPointer->setCavitySpeed(this->cavitySpeed);
    this->boundaryConditionPointer->setCompressibleConservativeVariables(this->conservativeVariables);
    this->boundaryConditionPointer->setGamma(this->gamma);
