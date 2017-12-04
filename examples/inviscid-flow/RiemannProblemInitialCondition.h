@@ -119,7 +119,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 1,MeshReal, Device, Me
       typedef typename MeshType::CoordinatesType CoordinatesType;
       MeshType mesh = (* conservativeVariables.getDensity()).getMesh();
          for( int i = 0; i < mesh.getDimensions().x(); i++)
-            if ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
+            if ( i < this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                {
                   CellType cell(mesh, CoordinatesType(i));
                   cell.refresh();
@@ -139,7 +139,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 1,MeshReal, Device, Me
       typedef typename MeshType::CoordinatesType CoordinatesType;
       MeshType mesh = (* conservativeVariables.getDensity()).getMesh();
          for( int i = 0; i < mesh.getDimensions().x(); i++)
-            if ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
+            if ( i < this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                {
                   CellType cell(mesh, CoordinatesType(i));
                   cell.refresh();
@@ -159,7 +159,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 1,MeshReal, Device, Me
       typedef typename MeshType::CoordinatesType CoordinatesType;
       MeshType mesh = (* conservativeVariables.getDensity()).getMesh();
          for( int i = 0; i < mesh.getDimensions().x(); i++)
-            if ( i <= this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
+            if ( i < this->discontinuityPlacement[ 0 ] * mesh.getDimensions().x() )
                {
                   CellType cell(mesh, CoordinatesType(i));
                   cell.refresh();

@@ -10,6 +10,7 @@
 #include "navierStokesBuildConfigTag.h"
 
 #include "RiemannProblemInitialCondition.h"
+#include "1DBoundaryConditions.h"
 
 using namespace TNL;
 
@@ -35,6 +36,9 @@ template< typename ConfigTag >class navierStokesConfig
             config.addEntryEnum< String >( "dirichlet" );
             config.addEntryEnum< String >( "neumann" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
+         config.addEntry< double >( "speed-increment", "This sets increment of input speed.", 0.0 );
+         config.addEntry< double >( "speed-increment-until", "This sets time until input speed will rose", -0.1 );
+         config.addEntry< double >( "cavity-speed", "This sets speed parameter of cavity", 0.0 );
          typedef Meshes::Grid< 3 > Mesh;
          LaxFridrichs< Mesh >::configSetup( config, "inviscid-operators-" );
          RiemannProblemInitialCondition< Mesh >::configSetup( config );
@@ -72,6 +76,12 @@ class navierStokesSetter
           * The following code is for the Dirichlet and the Neumann boundary conditions.
           * Both can be constant or defined as descrete values of Vector.
           */
+
+          typedef Functions::Analytic::Constant< Dimension, Real > Constant;
+          typedef BoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
+          typedef navierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+          SolverStarter solverStarter;
+          return solverStarter.template run< Problem >( parameters );/*
           String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )
           {
@@ -102,7 +112,7 @@ class navierStokesSetter
              typedef navierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
-          }
+          }*/
 
       return true;}
 
@@ -114,4 +124,4 @@ int main( int argc, char* argv[] )
    if( ! solver. run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
-}
+};

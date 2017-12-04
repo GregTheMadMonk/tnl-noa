@@ -68,10 +68,10 @@ class LaxFridrichs
                   const String& prefix = "" )
       {
          this->dynamicalViscosity = parameters.getParameter< double >( prefix + "dynamical-viscosity" );
-         this->momentumXOperatorPointer->setDynamicalViscosity( artificialViscosity );
-         this->momentumYOperatorPointer->setDynamicalViscosity( artificialViscosity );
-         this->momentumZOperatorPointer->setDynamicalViscosity( artificialViscosity );
-         this->energyOperatorPointer->setDynamicalViscosity( artificialViscosity );
+         this->momentumXOperatorPointer->setDynamicalViscosity( dynamicalViscosity );
+         this->momentumYOperatorPointer->setDynamicalViscosity( dynamicalViscosity );
+         this->momentumZOperatorPointer->setDynamicalViscosity( dynamicalViscosity );
+         this->energyOperatorPointer->setDynamicalViscosity( dynamicalViscosity );
          this->artificialViscosity = parameters.getParameter< double >( prefix + "numerical-viscosity" );
          this->continuityOperatorPointer->setArtificialViscosity( artificialViscosity );
          this->momentumXOperatorPointer->setArtificialViscosity( artificialViscosity );

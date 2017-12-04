@@ -125,7 +125,7 @@ class LaxFridrichsEnergy< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, 
          const RealType& velocity_x_west = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ west ];
          return 1.0 / ( 2.0 * this->tau ) * this->artificialViscosity * ( e[ west ] - 2.0 * e[ center ]  + e[ east ] ) 
                 - 0.5 * ( ( e[ east ] + pressure_east ) * velocity_x_east  
-                         - ( e[ west ] + pressure_west ) * velocity_x_west ) * hxInverse;
+                        - ( e[ west ] + pressure_west ) * velocity_x_west ) * hxInverse;
   
       }
 

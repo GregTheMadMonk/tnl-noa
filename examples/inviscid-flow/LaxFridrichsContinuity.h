@@ -119,11 +119,8 @@ class LaxFridrichsContinuity< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Re
          const IndexType& west = neighborEntities.template getEntityIndex< -1 >();
          const RealType& velocity_x_west = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ west ];
          const RealType& velocity_x_east = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ east ];
-//         return 1.0 / ( 2.0 * this->tau ) * this->artificialViscosity * ( u[ west ] - 2.0 * u[ center ]  + u[ east ] ) 
-//               - 0.5 * ( u[ west ] * velocity_x_west - u[ east ] * velocity_x_east ) * hxInverse;
          return 1.0 / ( 2.0 * this->tau ) * this->artificialViscosity * ( u[ west ] - 2.0 * u[ center ]  + u[ east ] ) 
                - 0.5 * ( u[ east ] * velocity_x_east - u[ west ] * velocity_x_west ) * hxInverse;
-
       }
 
       /*template< typename MeshEntity >

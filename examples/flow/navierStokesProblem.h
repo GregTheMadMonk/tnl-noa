@@ -121,7 +121,10 @@ class navierStokesProblem:
       VelocityFieldPointer velocity;
       MeshFunctionPointer pressure;
       
-      RealType gamma;          
+      RealType gamma;
+      RealType speedIncrement;
+      RealType cavitySpeed;
+      RealType speedIncrementUntil;
 };
 
 } // namespace TNL
