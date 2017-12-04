@@ -48,6 +48,9 @@ public:
     MultiPrecision operator++(int);
     MultiPrecision operator--(int);
 
+    /* OPERATORS FOR GOOGLE TEST*/
+    bool operator==(const mpf_t &GMPnumber) const;
+    
     /* METHODS */
     void printMP();
     /// TODO void printNumber(int digits, ostream& str = std::cout );

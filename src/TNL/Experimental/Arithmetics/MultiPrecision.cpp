@@ -123,6 +123,16 @@ bool MultiPrecision::operator<=(const MultiPrecision &mp) const{
         return false;
 }
 
+/* OPERATORS FOR GOOGLE TEST */
+
+bool MultiPrecision::operator==(const mpf_t &GMPnumber) const{
+    MultiPrecision m (*this);
+    if (mpf_cmp(m.number, GMPnumber) == 0)
+        return true;
+    else
+        return false;
+}
+
 /* METHODS */
 
 void MultiPrecision::printMP(){
