@@ -216,34 +216,6 @@ class InitializerLayer< MeshConfig,
       }
 
       using BaseType::findEntitySeedIndex;
-
-      // TODO: this is unused - should be moved to MeshIntegrityChecker
-      bool checkCells()
-      {
-         const GlobalIndexType numberOfVertices( this->getMesh().getVerticesCount() );
-         for( GlobalIndexType cell = 0;
-              cell < this->getMesh().template getEntitiesCount< typename MeshType::Cell >();
-              cell++ )
-            for( LocalIndexType i = 0;
-                 i < this->getMesh().template getEntity< MeshType::getMeshDimension() >( cell ).getVerticesCount();
-                 i++ )
-            {
-               if( this->getMesh().template getEntity< MeshType::getMeshDimension() >( cell ).getVertexIndex( i ) == - 1 )
-               {
-                  std::cerr << "The cell number " << cell << " does not have properly set vertex index number " << i << "." << std::endl;
-                  return false;
-               }
-               if( this->getMesh().template getEntity< MeshType::getMeshDimension() >( cell ).getVertexIndex( i ) >= numberOfVertices )
-               {
-                  std::cerr << "The cell number " << cell << " does not have properly set vertex index number " << i
-                       << ". The index " << this->getMesh().template getEntity< MeshType::getMeshDimension() >( cell ).getVertexIndex( i )
-                       << "is higher than the number of all vertices ( " << numberOfVertices
-                       << " )." << std::endl;
-                  return false;
-               }
-            }
-         return true;
-      }
 };
 
 /****
