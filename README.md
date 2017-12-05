@@ -1,4 +1,4 @@
-[![pipeline status](https://jlk.fjfi.cvut.cz/gitlab/mmg/tnl-dev/badges/mesh/pipeline.svg)](https://jlk.fjfi.cvut.cz/gitlab/mmg/tnl-dev/commits/mesh)
+[![pipeline status](https://jlk.fjfi.cvut.cz/gitlab/mmg/tnl-dev/badges/develop/pipeline.svg)](https://jlk.fjfi.cvut.cz/gitlab/mmg/tnl-dev/commits/develop)
 
 Installation
 ============
