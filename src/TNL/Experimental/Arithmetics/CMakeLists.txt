@@ -5,6 +5,8 @@ set( headers FlopsCounter.h
              Quad_impl.h # Modified by D. Simon  
              Real.h
 	     MultiPrecision.h #Added by D. Simon
+	     Double.h #Added by D. Simon
+	     Double_impl.h #Added by D. Simon
               )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Experimental/Arithmetics )
