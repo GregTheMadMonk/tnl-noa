@@ -12,6 +12,7 @@
 #include <TNL/Experimental/Arithmetics/MultiPrecision.h>
 #include <TNL/Experimental/Arithmetics/Quad.h>
 
+using namespace TNL;
 
 #ifdef HAVE_GTEST 
 TEST( QuadTest, test_1 )

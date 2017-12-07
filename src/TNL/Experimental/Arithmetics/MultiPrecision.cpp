@@ -9,6 +9,8 @@
 
 #include "MultiPrecision.h"
 
+namespace TNL {
+
 /* CONSTRUCTORS */
 
 MultiPrecision::MultiPrecision(){
@@ -144,5 +146,7 @@ void MultiPrecision::printMP(){
 
 MultiPrecision::~MultiPrecision(){
 }
+
+} // namespace TNL
 
 #endif

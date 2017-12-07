@@ -9,10 +9,10 @@
 /* Source: https://gmplib.org/ */
 
 #ifdef HAVE_GMP
-
 #include <gmp.h>
-
 #endif
+
+namespace TNL {
 
 class MultiPrecision{
 public:
@@ -58,3 +58,5 @@ public:
     /* DESTRUCTOR */
     ~MultiPrecision();
 };
+
+} // namespace TNL

@@ -15,6 +15,7 @@
 
 #include <TNL/Experimental/Arithmetics/MultiPrecision.h>
 
+using namespace TNL;
 
 #ifdef HAVE_GTEST 
 TEST( MultiPrecisionTest, test_1 )
