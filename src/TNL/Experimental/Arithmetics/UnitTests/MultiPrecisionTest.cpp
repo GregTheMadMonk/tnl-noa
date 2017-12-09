@@ -18,140 +18,197 @@
 using namespace TNL;
 
 #ifdef HAVE_GTEST 
-TEST( MultiPrecisionTest, test_1 )
+TEST (MultiPrecisionTest, number_assignment)
 {
+    /* GMPLIB */
     mpf_t mpf1;
-    mpf_set_default_prec(300);
-    mpf_init_set_d(mpf1, 0.010203);
-    MultiPrecision (300);
-    MultiPrecision mp (0.010203);
-    EXPECT_EQ (mpf1 , mp);
-}
-
-TEST( MultiPrecisionTest, test_2 )
-{
-    mpf_t mpf1;
-    mpf_set_default_prec(300);
-    mpf_init_set_d(mpf1, 0.010203);
-    mpf_neg(mpf1, mpf1);
-    MultiPrecision (300);
-    MultiPrecision mp (0.010203);
-    MultiPrecision res (-mp);
-    EXPECT_EQ (mpf1 , res);
-}
-
-TEST( MultiPrecisionTest, test_3 )
-{
-    mpf_t mpf1, mpf2;
     mpf_set_default_prec (300);
-    mpf_init_set_d(mpf1, 1.123456);
-    mpf_init(mpf2);
-    mpf_add(mpf2,mpf1,mpf1);
+    mpf_init_set_d (mpf1 , 0.010203);
+    
+    /* MultiPrecision */
     MultiPrecision (300);
-    MultiPrecision mp (1.123456);
-    MultiPrecision res (mp+=mp);
-    EXPECT_EQ (mpf2 , res);
+    MultiPrecision mp1 (0.010203);
+    
+    EXPECT_EQ (mp1 , mpf1);
 }
 
-TEST( MultiPrecisionTest, test_4 )
+
+TEST (MultiPrecisionTest, number_negation)
 {
-    mpf_t mpf1, mpf2;
+    /* GMPLIB */
+    mpf_t mpf1, GMP_res;
     mpf_set_default_prec (300);
-    mpf_init_set_d(mpf1, 1.123456);
-    mpf_init(mpf2);
-    mpf_sub(mpf2,mpf1,mpf1);
+    mpf_init_set_d (mpf1 , 0.010203);
+    mpf_init (GMP_res);
+    mpf_neg (GMP_res , mpf1);
+    
+    /* MultiPrecision */
     MultiPrecision (300);
-    MultiPrecision mp (1.123456);
-    MultiPrecision res (mp-=mp);
-    EXPECT_EQ (mpf2 , res);
+    MultiPrecision mp1 (0.010203);
+    MultiPrecision MP_res (-mp1);
+    
+    EXPECT_EQ (MP_res , GMP_res);
 }
 
-TEST( MultiPrecisionTest, test_5 )
+
+TEST (MultiPrecisionTest, op_plus_equals)
 {
-    mpf_t mpf1, mpf2;
+    /* GMPLIB */
+    mpf_t mpf1, mpf2, GMP_res;
     mpf_set_default_prec (300);
-    mpf_init_set_d(mpf1, 1.123456);
-    mpf_init(mpf2);
-    mpf_mul(mpf2,mpf1,mpf1);
+    mpf_init_set_d (mpf1 , 1.123456);
+    mpf_init_set_d (mpf2 , 0.010203);
+    mpf_init (GMP_res);
+    mpf_add (GMP_res , mpf1 , mpf2);
+    
+    /* MultiPrecision */
     MultiPrecision (300);
-    MultiPrecision mp (1.123456);
-    MultiPrecision res (mp*=mp);
-    EXPECT_EQ (mpf2 , res);
+    MultiPrecision mp1 (1.123456);
+    MultiPrecision mp2 (0.010203);
+    MultiPrecision MP_res (mp1 += mp2);
+    
+    EXPECT_EQ (MP_res , GMP_res);
 }
 
-TEST( MultiPrecisionTest, test_6 )
+
+TEST (MultiPrecisionTest, op_minus_equals)
 {
-    mpf_t mpf1, mpf2;
+    /* GMPLIB */
+    mpf_t mpf1, mpf2, GMP_res;
     mpf_set_default_prec (300);
-    mpf_init_set_d(mpf1, 1.123456);
-    mpf_init(mpf2);
-    mpf_div(mpf2,mpf1,mpf1);
+    mpf_init_set_d (mpf1 , 1.123456);
+    mpf_init_set_d (mpf2 , 0.010203);
+    mpf_init (GMP_res);
+    mpf_sub (GMP_res , mpf1 , mpf2);
+    
+    /* MultiPrecision */
     MultiPrecision (300);
-    MultiPrecision mp (1.123456);
-    MultiPrecision res (mp/=mp);
-    EXPECT_EQ (mpf2 , res);
+    MultiPrecision mp1 (1.123456);
+    MultiPrecision mp2 (0.010203);
+    MultiPrecision MP_res (mp1 -= mp2);
+    
+    EXPECT_EQ (MP_res , GMP_res);
 }
 
-TEST( MultiPrecisionTest, test_7 )
+
+TEST (MultiPrecisionTest, op_mul_equals)
 {
-    mpf_t mpf1, mpf2, mpf3;
-    mpf_set_default_prec(300);
-    mpf_init_set_d(mpf1, 1.123456);
-    mpf_init_set_d(mpf2, 2.123456);
-    mpf_init(mpf3);
-    mpf_add(mpf3, mpf1, mpf2);
+    /* GMPLIB */
+    mpf_t mpf1, mpf2, GMP_res;
+    mpf_set_default_prec (300);
+    mpf_init_set_d (mpf1 , 1.123456);
+    mpf_init_set_d (mpf2 , 0.010203);
+    mpf_init (GMP_res);
+    mpf_mul (GMP_res , mpf1 , mpf2);
+    
+    /* MultiPrecision */
     MultiPrecision (300);
-    MultiPrecision m1 (1.123456);
-    MultiPrecision m2 (2.123456);
-    MultiPrecision res (m1+m2);
-    EXPECT_EQ (mpf3 , res);
+    MultiPrecision mp1 (1.123456);
+    MultiPrecision mp2 (0.010203);
+    MultiPrecision MP_res (mp1 *= mp2);
+    
+    EXPECT_EQ (MP_res , GMP_res);
 }
 
-TEST( MultiPrecisionTest, test_8 )
+
+TEST (MultiPrecisionTest, op_div_equals)
 {
-    mpf_t mpf1, mpf2, mpf3;
-    mpf_set_default_prec(300);
-    mpf_init_set_d(mpf1, 1.123456);
-    mpf_init_set_d(mpf2, 2.123456);
-    mpf_init(mpf3);
-    mpf_sub(mpf3, mpf1, mpf2);
+    /* GMPLIB */
+    mpf_t mpf1, mpf2, GMP_res;
+    mpf_set_default_prec (300);
+    mpf_init_set_d (mpf1 , 1.123456);
+    mpf_init_set_d (mpf2 , 0.010203);
+    mpf_init (GMP_res);
+    mpf_div (GMP_res , mpf1 , mpf2);
+    
+    /* MultiPrecision */
     MultiPrecision (300);
-    MultiPrecision m1 (1.123456);
-    MultiPrecision m2 (2.123456);
-    MultiPrecision res (m1-m2);
-    EXPECT_EQ (mpf3 , res);
+    MultiPrecision mp1 (1.123456);
+    MultiPrecision mp2 (0.010203);
+    MultiPrecision MP_res (mp1 /= mp2);
+    
+    EXPECT_EQ (MP_res , GMP_res);
 }
 
-TEST( MultiPrecisionTest, test_9 )
+
+TEST (MultiPrecisionTest, op_plus)
 {
-    mpf_t mpf1, mpf2, mpf3;
-    mpf_set_default_prec(300);
-    mpf_init_set_d(mpf1, 1.123456);
-    mpf_init_set_d(mpf2, 2.123456);
-    mpf_init(mpf3);
-    mpf_div(mpf3, mpf1, mpf2);
+    /* GMPLIB */
+    mpf_t mpf1, mpf2, GMP_res;
+    mpf_set_default_prec (300);
+    mpf_init_set_d (mpf1 , 1.123456);
+    mpf_init_set_d (mpf2 , 0.010203);
+    mpf_init (GMP_res);
+    mpf_add (GMP_res , mpf1 , mpf2);
+    
+    /* MultiPrecision */
     MultiPrecision (300);
-    MultiPrecision m1 (1.123456);
-    MultiPrecision m2 (2.123456);
-    MultiPrecision res (m1/m2);
-    EXPECT_EQ (mpf3 , res);
+    MultiPrecision mp1 (1.123456);
+    MultiPrecision mp2 (0.010203);
+    MultiPrecision MP_res (mp1 + mp2);
+    
+    EXPECT_EQ (MP_res , GMP_res);
 }
 
-TEST( MultiPrecisionTest, test_10 )
+
+TEST (MultiPrecisionTest, op_minus)
 {
-    mpf_t mpf1, mpf2, mpf3;
-    mpf_set_default_prec(300);
-    mpf_init_set_d(mpf1, 1.123456);
-    mpf_init_set_d(mpf2, 2.123456);
-    mpf_init(mpf3);
-    mpf_mul(mpf3, mpf1, mpf2);
+    /* GMPLIB */
+    mpf_t mpf1, mpf2, GMP_res;
+    mpf_set_default_prec (300);
+    mpf_init_set_d (mpf1 , 1.123456);
+    mpf_init_set_d (mpf2 , 0.010203);
+    mpf_init (GMP_res);
+    mpf_sub (GMP_res , mpf1 , mpf2);
+    
+    /* MultiPrecision */
     MultiPrecision (300);
-    MultiPrecision m1 (1.123456);
-    MultiPrecision m2 (2.123456);
-    MultiPrecision res (m1*m2);
-    EXPECT_EQ (mpf3 , res);
+    MultiPrecision mp1 (1.123456);
+    MultiPrecision mp2 (0.010203);
+    MultiPrecision MP_res (mp1 - mp2);
+    
+    EXPECT_EQ (MP_res , GMP_res);
 }
 
+
+TEST (MultiPrecisionTest, op_div)
+{
+    /* GMPLIB */
+    mpf_t mpf1, mpf2, GMP_res;
+    mpf_set_default_prec (300);
+    mpf_init_set_d (mpf1 , 1.123456);
+    mpf_init_set_d (mpf2 , 0.010203);
+    mpf_init (GMP_res);
+    mpf_div (GMP_res , mpf1 , mpf2);
+    
+    /* MultiPrecision */
+    MultiPrecision (300);
+    MultiPrecision mp1 (1.123456);
+    MultiPrecision mp2 (0.010203);
+    MultiPrecision MP_res (mp1 / mp2);
+    
+    EXPECT_EQ (MP_res , GMP_res);
+}
+
+
+TEST (MultiPrecisionTest, op_mul)
+{
+    /* GMPLIB */
+    mpf_t mpf1, mpf2, GMP_res;
+    mpf_set_default_prec (300);
+    mpf_init_set_d (mpf1 , 1.123456);
+    mpf_init_set_d (mpf2 , 0.010203);
+    mpf_init (GMP_res);
+    mpf_mul (GMP_res , mpf1 , mpf2);
+    
+    /* MultiPrecision */
+    MultiPrecision (300);
+    MultiPrecision mp1 (1.123456);
+    MultiPrecision mp2 (0.010203);
+    MultiPrecision MP_res (mp1 * mp2);
+    
+    EXPECT_EQ (MP_res , GMP_res);
+}
 #endif
 
 
