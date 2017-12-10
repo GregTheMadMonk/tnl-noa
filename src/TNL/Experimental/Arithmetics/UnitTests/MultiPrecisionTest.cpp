@@ -15,6 +15,13 @@
 
 #include <TNL/Experimental/Arithmetics/MultiPrecision.h>
 
+/*
+ INFO:
+ This test compares values from the GMP Library with values from our wrapped GMP Library in MultiPrecision.
+ MP_res -> result from MultiPrecision 
+ GMP_res -> result from GMP Library
+ */
+
 using namespace TNL;
 
 #ifdef HAVE_GTEST 

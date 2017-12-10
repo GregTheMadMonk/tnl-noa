@@ -12,160 +12,253 @@
 #include <TNL/Experimental/Arithmetics/MultiPrecision.h>
 #include <TNL/Experimental/Arithmetics/Quad.h>
 
+/*NUMBERS*/
+#define num_1 2.1230405067890102030405060708096352410708 
+#define num_2 1.2080706050401236549873571590082467951301
+
+/*
+ INFO:
+ This test compares values from MultiPrecision with Quad (Quadruple precision)
+ MP_res -> result from MultiPrecision
+ QD_res -> result from Quad
+ */
+
 using namespace TNL;
 
 #ifdef HAVE_GTEST 
-TEST( QuadTest, test_1 )
+TEST (QuadTest, number_assignment)
 {
-    Quad<double> qd (0.010203040506);
-    MultiPrecision mp (0.010203040506);
-    EXPECT_EQ (mp , qd);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    
+    EXPECT_EQ (mp1 , qd1);
 }
 
-TEST( QuadTest, test_2 )
+
+TEST (QuadTest, op_plus_equals)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (qd1+=qd1);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (mp1+=mp1);
-    EXPECT_EQ (mp2 , qd2);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    Quad<double> QD_res (qd1 += qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    MultiPrecision MP_res (mp1 += mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 
-TEST( QuadTest, test_3 )
+
+TEST (QuadTest, op_minus_equals)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (qd1-=qd1);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (mp1-=mp1);
-    EXPECT_EQ (mp2 , qd2);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    Quad<double> QD_res (qd1 -= qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    MultiPrecision MP_res (mp1 -= mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 
-TEST( QuadTest, test_4 )
+
+TEST (QuadTest, op_mul_equals)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (qd1*=qd1);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (mp1*=mp1);
-    EXPECT_EQ (mp2 , qd2);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    Quad<double> QD_res (qd1 *= qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    MultiPrecision MP_res (mp1 *= mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 
-TEST( QuadTest, test_5 )
+
+TEST (QuadTest, op_div_equals)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (qd1/=qd1);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (mp1/=mp1);
-    EXPECT_EQ (mp2 , qd2);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    Quad<double> QD_res (qd1 /= qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    MultiPrecision MP_res (mp1 /= mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 
-TEST( QuadTest, test_6 )
+
+TEST (QuadTest, op_plus)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (4.102030405060);
-    Quad<double> QDres (qd1+qd2);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (4.102030405060);
-    MultiPrecision MPres (mp1+mp2);
-    EXPECT_EQ (MPres , QDres);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    Quad<double> QD_res (qd1 + qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    MultiPrecision MP_res (mp1 + mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 
-TEST( QuadTest, test_7 )
+
+TEST (QuadTest, op_minus)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (4.102030405060);
-    Quad<double> QDres (qd1-qd2);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (4.102030405060);
-    MultiPrecision MPres (mp1-mp2);
-    EXPECT_EQ (MPres , QDres);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    Quad<double> QD_res (qd1 - qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    MultiPrecision MP_res (mp1 - mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 
-TEST( QuadTest, test_8 )
+
+TEST (QuadTest, op_mul)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (4.102030405060);
-    Quad<double> QDres (qd1*qd2);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (4.102030405060);
-    MultiPrecision MPres (mp1*mp2);
-    EXPECT_EQ (MPres , QDres);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    Quad<double> QD_res (qd1 * qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    MultiPrecision MP_res (mp1 * mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 
-TEST( QuadTest, test_9 )
+
+TEST (QuadTest, op_div)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (4.102030405060);
-    Quad<double> QDres (qd2*qd1);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (4.102030405060);
-    MultiPrecision MPres (mp2*mp1);
-    EXPECT_EQ (MPres , QDres);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    Quad<double> QD_res (qd1 / qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    MultiPrecision MP_res (mp1 / mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 
-TEST( QuadTest, test_10 )
+
+TEST (QuadTest, cmp_equal)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (4.102030405060);
-    bool QDres (qd1==qd2);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (4.102030405060);
-    bool MPres (mp1==mp2);
-    EXPECT_EQ (MPres , QDres);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    bool QD_res (qd1 == qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    bool MP_res (mp1 == mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 
-TEST( QuadTest, test_11 )
+
+TEST (QuadTest, cmp_not_equal)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (4.102030405060);
-    bool QDres (qd1!=qd2);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (4.102030405060);
-    bool MPres (mp1!=mp2);
-    EXPECT_EQ (MPres , QDres);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    bool QD_res (qd1 != qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    bool MP_res (mp1 != mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 
-TEST( QuadTest, test_12 )
+
+TEST (QuadTest, cmp_less)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (4.102030405060);
-    bool QDres (qd1<qd2);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (4.102030405060);
-    bool MPres (mp1<mp2);
-    EXPECT_EQ (MPres , QDres);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    bool QD_res (qd1 < qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    bool MP_res (mp1 < mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 
-TEST( QuadTest, test_13 )
+
+TEST (QuadTest, cmp_greater)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (4.102030405060);
-    bool QDres (qd1>qd2);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (4.102030405060);
-    bool MPres (mp1>mp2);
-    EXPECT_EQ (MPres , QDres);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    bool QD_res (qd1 > qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    bool MP_res (mp1 > mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 
-TEST( QuadTest, test_14 )
+
+TEST (QuadTest, cmp_greater_equal)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (4.102030405060);
-    bool QDres (qd1>=qd2);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (4.102030405060);
-    bool MPres (mp1>=mp2);
-    EXPECT_EQ (MPres , QDres);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    bool QD_res (qd1 >= qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    bool MP_res (mp1 >= mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 
-TEST( QuadTest, test_15 )
+
+TEST (QuadTest, cmp_less_equal)
 {
-    Quad<double> qd1 (0.010203040506);
-    Quad<double> qd2 (4.102030405060);
-    bool QDres (qd1<=qd2);
-    MultiPrecision mp1 (0.010203040506);
-    MultiPrecision mp2 (4.102030405060);
-    bool MPres (mp1<=mp2);
-    EXPECT_EQ (MPres , QDres);
+    /* Quad */
+    Quad<double> qd1 (num_1);
+    Quad<double> qd2 (num_2);
+    bool QD_res (qd1 <= qd2);
+    
+    /* MultiPrecision */
+    MultiPrecision mp1 (num_1);
+    MultiPrecision mp2 (num_2);
+    bool MP_res (mp1 <= mp2);
+    
+    EXPECT_EQ (MP_res , QD_res);
 }
 #endif
 
