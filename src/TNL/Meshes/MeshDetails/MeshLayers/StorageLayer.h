@@ -227,9 +227,9 @@ template< typename MeshConfig,
           typename Device,
           typename DimensionTag >
 class StorageLayer< MeshConfig, Device, DimensionTag, false >
-   : public StorageLayer< MeshConfig, Device, typename DimensionTag::Decrement  >
+   : public StorageLayer< MeshConfig, Device, typename DimensionTag::Increment >
 {
-   using BaseType = StorageLayer< MeshConfig, Device, typename DimensionTag::Decrement >;
+   using BaseType = StorageLayer< MeshConfig, Device, typename DimensionTag::Increment >;
 public:
    // inherit constructors and assignment operators (including templated versions)
    using BaseType::BaseType;
