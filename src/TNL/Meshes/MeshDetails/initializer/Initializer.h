@@ -19,7 +19,6 @@
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/initializer/EntityInitializer.h>
 #include <TNL/Meshes/MeshDetails/initializer/SubentitySeedsCreator.h>
-#include <TNL/Meshes/MeshDetails/initializer/SuperentityStorageInitializer.h>
 #include <TNL/Meshes/MeshDetails/MeshEntityReferenceOrientation.h>
 #include <TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
 
@@ -246,13 +245,14 @@ class InitializerLayer< MeshConfig,
    using PointArrayType        = typename MeshTraitsType::PointArrayType;
    using SeedType              = EntitySeed< MeshConfig, EntityTopology >;
    using SeedIndexedSet        = typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::SeedIndexedSetType;
+   using SeedSet               = typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::SeedSetType;
 
    public:
 
       GlobalIndexType getEntitiesCount( InitializerType& initializer, MeshType& mesh )
       {
          using SubentitySeedsCreator = SubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::getMeshDimension() >, DimensionTag >;
-         std::set< typename SeedIndexedSet::key_type > seedSet;
+         SeedSet seedSet;
 
          for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< MeshType::getMeshDimension() >(); i++ )
          {
@@ -283,8 +283,10 @@ class InitializerLayer< MeshConfig,
             for( LocalIndexType j = 0; j < subentitySeeds.getSize(); j++ )
             {
                auto& seed = subentitySeeds[ j ];
-               if( this->seedsIndexedSet.count( seed ) == 0 ) {
-                  const GlobalIndexType entityIndex = this->seedsIndexedSet.insert( seed );
+               const auto pair = this->seedsIndexedSet.try_insert( seed );
+               const GlobalIndexType& entityIndex = pair.first;
+               if( pair.second ) {
+                  // insertion took place, initialize the entity
                   EntityInitializerType::initEntity( mesh.template getEntity< DimensionTag::value >( entityIndex ), entityIndex, seed, initializer );
                }
             }
@@ -331,6 +333,8 @@ class InitializerLayer< MeshConfig,
    using LocalIndexType                = typename MeshTraitsType::LocalIndexType;
    using PointArrayType                = typename MeshTraitsType::PointArrayType;
    using SeedType                      = EntitySeed< MeshConfig, EntityTopology >;
+   using SeedIndexedSet                = typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::SeedIndexedSetType;
+   using SeedSet                       = typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::SeedSetType;
    using ReferenceOrientationType      = typename EntityTraitsType::ReferenceOrientationType;
    using ReferenceOrientationArrayType = typename EntityTraitsType::ReferenceOrientationArrayType;
 
@@ -339,7 +343,7 @@ class InitializerLayer< MeshConfig,
       GlobalIndexType getEntitiesCount( InitializerType& initializer, MeshType& mesh )
       {
          using SubentitySeedsCreator = SubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::getMeshDimension() >, DimensionTag >;
-         std::set< typename SeedIndexedSet::key_type > seedSet;
+         SeedSet seedSet;
 
          for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< MeshType::getMeshDimension() >(); i++ )
          {
@@ -371,8 +375,10 @@ class InitializerLayer< MeshConfig,
             for( LocalIndexType j = 0; j < subentitySeeds.getSize(); j++ )
             {
                auto& seed = subentitySeeds[ j ];
-               if( this->seedsIndexedSet.count( seed ) == 0 ) {
-                  const GlobalIndexType entityIndex = this->seedsIndexedSet.insert( seed );
+               const auto pair = this->seedsIndexedSet.try_insert( seed );
+               const GlobalIndexType& entityIndex = pair.first;
+               if( pair.second ) {
+                  // insertion took place, initialize the entity
                   EntityInitializerType::initEntity( mesh.template getEntity< DimensionTag::value >( entityIndex ), entityIndex, seed, initializer );
                   this->referenceOrientations[ entityIndex ] = ReferenceOrientationType( seed );
                }
@@ -393,8 +399,6 @@ class InitializerLayer< MeshConfig,
       }
 
    private:
-
-      using SeedIndexedSet = typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::SeedIndexedSetType;
       SeedIndexedSet seedsIndexedSet;
       ReferenceOrientationArrayType referenceOrientations;
 };

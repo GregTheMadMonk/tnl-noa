@@ -1,6 +1,5 @@
 SET( headers EntityInitializer.h
              EntitySeed.h 
-             EntitySeedKey.h
              Initializer.h
              SubentitySeedsCreator.h
              SuperentityStorageInitializer.h

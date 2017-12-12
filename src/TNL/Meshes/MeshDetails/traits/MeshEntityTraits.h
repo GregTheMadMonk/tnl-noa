@@ -17,10 +17,12 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/IndexedSet.h>
+#include <TNL/Containers/UnorderedIndexedSet.h>
 #include <TNL/Meshes/Topologies/SubentityVertexMap.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
+
+#include <unordered_set>
 
 namespace TNL {
 namespace Meshes {
@@ -81,7 +83,8 @@ public:
    using ReferenceOrientationType      = MeshEntityReferenceOrientation< MeshConfig, EntityTopology >;
 
    using StorageArrayType              = Containers::Array< EntityType, Device, GlobalIndexType >;
-   using SeedIndexedSetType            = Containers::IndexedSet< typename SeedType::KeyType, GlobalIndexType >;
+   using SeedIndexedSetType            = Containers::UnorderedIndexedSet< SeedType, GlobalIndexType, typename SeedType::HashType, typename SeedType::KeyEqual >;
+   using SeedSetType                   = std::unordered_set< typename SeedIndexedSetType::key_type, typename SeedIndexedSetType::hasher, typename SeedIndexedSetType::key_equal >;
    using ReferenceOrientationArrayType = Containers::Array< ReferenceOrientationType, Device, GlobalIndexType >;
 
    static constexpr bool storageEnabled = MeshConfig::entityStorage( Dimension );

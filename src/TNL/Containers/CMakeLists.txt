@@ -7,6 +7,8 @@ set( headers Array.h
              IndexedMap_impl.h
              IndexedSet.h
              IndexedSet_impl.h
+             UnorderedIndexedSet.h
+             UnorderedIndexedSet_impl.h
              List.h
              List_impl.h
              MultiArray.h

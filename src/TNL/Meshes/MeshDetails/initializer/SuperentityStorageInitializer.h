@@ -17,7 +17,7 @@
 #pragma once
 
 #include <set>
-#include <map>
+#include <unordered_map>
 
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshSuperentityTraits.h>
@@ -86,7 +86,7 @@ public:
 
 private:
    using DynamicIndexSet = std::set< GlobalIndexType >;
-   std::map< GlobalIndexType, DynamicIndexSet > dynamicStorageNetwork;
+   std::unordered_map< GlobalIndexType, DynamicIndexSet > dynamicStorageNetwork;
 
    GlobalIndexType getMaxSuperentityIndex()
    {

@@ -17,10 +17,14 @@
 #pragma once
 
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDetails/initializer/EntitySeedKey.h>
 
 namespace TNL {
 namespace Meshes {
+
+template< typename EntitySeed >
+struct EntitySeedHash;
+template< typename EntitySeed >
+struct EntitySeedEq;
 
 template< typename MeshConfig,
           typename EntityTopology >
@@ -33,7 +37,8 @@ class EntitySeed
       using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
       using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
       using IdArrayType     = Containers::StaticArray< SubvertexTraits::count, GlobalIndexType >;
-      using KeyType         = EntitySeedKey< MeshConfig, EntityTopology >;
+      using HashType        = EntitySeedHash< EntitySeed >;
+      using KeyEqual        = EntitySeedEq< EntitySeed >;
 
       static String getType() { return String( "EntitySeed<>" ); }
 
@@ -74,7 +79,8 @@ class EntitySeed< MeshConfig, Topologies::Vertex >
       using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
       using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
       using IdArrayType     = Containers::StaticArray< 1, GlobalIndexType >;
-      using KeyType         = EntitySeedKey< MeshConfig, Topologies::Vertex >;
+      using HashType        = EntitySeedHash< EntitySeed >;
+      using KeyEqual        = EntitySeedEq< EntitySeed >;
 
       static String getType() { return String( "EntitySeed<>" ); }
 
@@ -112,6 +118,49 @@ std::ostream& operator<<( std::ostream& str, const EntitySeed< MeshConfig, Entit
    return str;
 };
 
+template< typename EntitySeed >
+struct EntitySeedHash
+{
+   std::size_t operator()( const EntitySeed& seed ) const
+   {
+      using LocalIndexType = typename EntitySeed::LocalIndexType;
+      using GlobalIndexType = typename EntitySeed::GlobalIndexType;
+
+      // Note that we must use an associative function to combine the hashes,
+      // because we *want* to ignore the order of the corner IDs.
+      std::size_t hash = 0;
+      for( LocalIndexType i = 0; i < EntitySeed::getCornersCount(); i++ )
+//         hash ^= std::hash< GlobalIndexType >{}( seed.getCornerIds()[ i ] );
+         hash += std::hash< GlobalIndexType >{}( seed.getCornerIds()[ i ] );
+      return hash;
+   }
+};
+
+template< typename EntitySeed >
+struct EntitySeedEq
+{
+   bool operator()( const EntitySeed& left, const EntitySeed& right ) const
+   {
+      using IdArrayType = typename EntitySeed::IdArrayType;
+
+      IdArrayType sortedLeft( left.getCornerIds() );
+      IdArrayType sortedRight( right.getCornerIds() );
+      sortedLeft.sort();
+      sortedRight.sort();
+      return sortedLeft == sortedRight;
+   }
+};
+
+template< typename MeshConfig >
+struct EntitySeedEq< EntitySeed< MeshConfig, Topologies::Vertex > >
+{
+   using Seed = EntitySeed< MeshConfig, Topologies::Vertex >;
+
+   bool operator()( const Seed& left, const Seed& right ) const
+   {
+      return left.getCornerIds() == right.getCornerIds();
+   }
+};
+
 } // namespace Meshes
 } // namespace TNL
-
