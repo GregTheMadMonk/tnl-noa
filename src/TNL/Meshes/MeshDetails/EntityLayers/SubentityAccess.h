@@ -345,67 +345,38 @@ private:
    SubentityAccessorType subentityIndices;
 };
 
-
-// termination of recursive inheritance (everything is reduced to EntityStorage == false thanks to the WeakSubentityStorageTrait)
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
-class SubentityAccessLayer< MeshConfig,
-                            Device,
-                            EntityTopology,
-                            Meshes::DimensionTag< EntityTopology::dimension >,
-                            false,
-                            true >
-{
-   using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
-
-protected:
-   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
-   using LocalIndexType  = typename MeshConfig::LocalIndexType;
-
-   /***
-    * Necessary because of 'using BaseType::...;' in the derived classes
-    */
-   template< typename SubentityAccessorType >
-   __cuda_callable__
-   void bindSubentitiesStorageNetwork( DimensionTag,
-                                       const SubentityAccessorType& storage ) {}
-   __cuda_callable__
-   void getSubentityIndex( DimensionTag,
-                           const LocalIndexType localIndex ) const {}
-   __cuda_callable__
-   void setSubentityIndex( DimensionTag,
-                           const LocalIndexType& localIndex,
-                           const GlobalIndexType& globalIndex ) {}
-   __cuda_callable__
-   void getSubentityIndices() {}
-
-   template< typename LocalIndexType >
-   __cuda_callable__
-   void getSubentityOrientation( DimensionTag, LocalIndexType index) const {}
-   __cuda_callable__
-	void subentityOrientationsArray( DimensionTag ) {}
-
-   __cuda_callable__
-   bool operator==( const SubentityAccessLayer& other ) const
-   {
-      return true;
-   }
-
-   void print( std::ostream& str ) const {}
-};
-
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
-          typename DimensionTag >
+          typename DimensionTag,
+          bool SubentityOrientationStorage >
 class SubentityAccessLayer< MeshConfig,
                             Device,
                             EntityTopology,
                             DimensionTag,
                             false,
-                            false >
+                            SubentityOrientationStorage >
+   : public SubentityAccessLayer< MeshConfig,
+                                  Device,
+                                  EntityTopology,
+                                  typename DimensionTag::Increment >
 {
+};
+
+// termination of recursive inheritance (everything is reduced to EntityStorage == false thanks to the WeakSubentityStorageTrait)
+template< typename MeshConfig,
+          typename Device,
+          typename EntityTopology,
+          bool SubentityOrientationStorage >
+class SubentityAccessLayer< MeshConfig,
+                            Device,
+                            EntityTopology,
+                            Meshes::DimensionTag< EntityTopology::dimension >,
+                            false,
+                            SubentityOrientationStorage >
+{
+   using DimensionTag = Meshes::DimensionTag< EntityTopology::dimension >;
+
 protected:
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
    using LocalIndexType  = typename MeshConfig::LocalIndexType;
