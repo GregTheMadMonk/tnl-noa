@@ -134,9 +134,15 @@ public:
       std::cout << "libvtk cells: " << mesh_libvtk.template getEntitiesCount< MeshType::getMeshDimension() >() << std::endl;
 #endif
 
+      Timer timer;
+      timer.start();
+
       MeshType mesh;
       if( ! loadMesh( fileName, mesh ) )
          return false;
+
+      timer.stop();
+      std::cout << "Loading took " << timer.getRealTime() << " seconds." << std::endl;
 
       std::cout << "vertices: " << mesh.template getEntitiesCount< 0 >() << std::endl;
       std::cout << "faces: " << mesh.template getEntitiesCount< MeshType::getMeshDimension() - 1 >() << std::endl;
