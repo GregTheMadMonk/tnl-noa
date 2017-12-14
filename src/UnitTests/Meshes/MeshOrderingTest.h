@@ -204,14 +204,14 @@ void testMesh( const Mesh< TestTriangleMeshConfig, Devices::Host >& mesh,
    // test boundary tags
    const std::vector< int > boundaryFaces = {1, 2, 3, 4};
    const std::vector< int > interiorFaces = {0};
-   EXPECT_EQ( mesh.template getBoundaryEntitiesCount< 1 >(), boundaryFaces.size() );
+   EXPECT_EQ( mesh.template getBoundaryEntitiesCount< 1 >(), (int) boundaryFaces.size() );
    for( size_t i = 0; i < boundaryFaces.size(); i++ ) {
       EXPECT_TRUE( mesh.template isBoundaryEntity< 1 >( edgePermutation[ boundaryFaces[ i ] ] ) );
       // boundary indices are always sorted so we can't test this
 //      EXPECT_EQ( mesh.template getBoundaryEntityIndex< 1 >( i ), edgePermutation[ boundaryFaces[ i ] ] );
    }
    // Test interior faces
-   EXPECT_EQ( mesh.template getInteriorEntitiesCount< 1 >(), interiorFaces.size() );
+   EXPECT_EQ( mesh.template getInteriorEntitiesCount< 1 >(), (int) interiorFaces.size() );
    for( size_t i = 0; i < interiorFaces.size(); i++ ) {
       EXPECT_FALSE( mesh.template isBoundaryEntity< 1 >( edgePermutation[ interiorFaces[ i ] ] ) );
       // boundary indices are always sorted so we can't test this
