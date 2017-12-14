@@ -25,12 +25,7 @@ stages:
 .build_template_def: &build_template
     stage: build
     script:
-        - pwd
         - export MAKEFLAGS=-j$(grep "core id" /proc/cpuinfo | wc -l)
-        # hack to set correct g++ for nvcc on jlk.fjfi.cvut.cz
-        - if [[ "$CI_RUNNER_DESCRIPTION" == "jlk.fjfi.cvut.cz" ]]; then
-                export CUDA_HOST_COMPILER="g++-6";
-          fi
         - mkdir -p "./$BUILD_TYPE"
         - pushd "./$BUILD_TYPE"
         - cmake ..
