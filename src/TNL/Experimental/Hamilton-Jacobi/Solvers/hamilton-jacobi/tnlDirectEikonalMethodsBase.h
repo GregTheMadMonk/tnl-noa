@@ -37,7 +37,7 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >
       
       template< typename MeshEntity >
       void updateCell( MeshFunctionType& u,
-                       const MeshEntity& cell );
+                       const MeshEntity& cell);
       
 };
 
@@ -62,7 +62,8 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
       
       template< typename MeshEntity >
       void updateCell( MeshFunctionType& u,
-                       const MeshEntity& cell );
+                       const MeshEntity& cell,
+                       double velocity = 1.0 );
 };
 
 template< typename Real,
@@ -85,7 +86,19 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
       
       template< typename MeshEntity >
       void updateCell( MeshFunctionType& u,
-                       const MeshEntity& cell );      
+                       const MeshEntity& cell,
+                       double velocity = 1.0);
+      
+      Real sort( Real a, Real b, Real c,
+                 const RealType& ha,
+                 const RealType& hb,
+                 const RealType& hc ); 
 };
+
+template < typename T1, typename T2 >
+T1 meet2DCondition( T1 a, T1 b, const T2 ha, const T2 hb, const T1 value, double v = 1);
+
+template < typename T1 >
+T1 sortMinims( T1 a, T1 b, T1 c, T1 ha, T1 hb, T1 hc);
 
 #include "tnlDirectEikonalMethodsBase_impl.h"
