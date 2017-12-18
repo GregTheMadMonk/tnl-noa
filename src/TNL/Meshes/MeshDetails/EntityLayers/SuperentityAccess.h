@@ -143,6 +143,7 @@ public:
 
    SuperentityAccessLayer() = default;
 
+   __cuda_callable__
    explicit SuperentityAccessLayer( const SuperentityAccessLayer& layer )
       : BaseType( layer )
    {

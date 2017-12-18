@@ -58,6 +58,7 @@ class MeshEntity
       // constructors
       MeshEntity() = default;
 
+      __cuda_callable__
       MeshEntity( const MeshEntity& entity );
 
       template< typename Device_ >
@@ -151,6 +152,7 @@ class MeshEntity< MeshConfig, Device, Topologies::Vertex >
       // constructors
       MeshEntity() = default;
 
+      __cuda_callable__
       MeshEntity( const MeshEntity& entity );
 
       template< typename Device_ >

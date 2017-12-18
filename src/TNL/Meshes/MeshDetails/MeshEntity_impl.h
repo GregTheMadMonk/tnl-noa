@@ -24,6 +24,7 @@ namespace Meshes {
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
+__cuda_callable__
 MeshEntity< MeshConfig, Device, EntityTopology >::
 MeshEntity( const MeshEntity& entity )
    : SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology >( entity ),
@@ -192,6 +193,7 @@ getVertexIndex( const LocalIndexType localIndex ) const
  * Vertex entity specialization
  */
 template< typename MeshConfig, typename Device >
+__cuda_callable__
 MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 MeshEntity( const MeshEntity& entity )
    : SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >( entity ),

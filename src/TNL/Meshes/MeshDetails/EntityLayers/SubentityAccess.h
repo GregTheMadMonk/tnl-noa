@@ -147,6 +147,7 @@ protected:
 
    SubentityAccessLayer() = default;
 
+   __cuda_callable__
    explicit SubentityAccessLayer( const SubentityAccessLayer& layer )
       : BaseType( layer )
    {
@@ -269,6 +270,7 @@ protected:
 
    SubentityAccessLayer() = default;
 
+   __cuda_callable__
    explicit SubentityAccessLayer( const SubentityAccessLayer& layer )
       : BaseType( layer )
    {
