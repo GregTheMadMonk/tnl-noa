@@ -49,6 +49,7 @@ INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-init${debugExt}
                tnl-time-series2png
                tnl-err2eoc
                tnl-eoc-test-log
+               tnl-log-to-html.py
                ${PROJECT_TOOLS_PATH}/tnl-compile 
                ${PROJECT_TOOLS_PATH}/tnl-link
                ${PROJECT_TOOLS_PATH}/tnl-bindir
