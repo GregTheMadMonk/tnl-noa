@@ -11,6 +11,15 @@ except ImportError:
     raise ImportError("Please make sure that the python3-pandas package is installed.")
 
 
+def try_numeric(value):
+    try:
+       return int(value)
+    except ValueError:
+        try:
+            return float(value)
+        except ValueError:
+            return value
+
 class TableColumn:
     def __init__(self, level, data, parentPath=None):
         self.subcolumns = []
@@ -165,9 +174,9 @@ class LogParser:
             col_val = {}
             for k, v in row.items():
                 if len(k) == 1 and k[0] in index_names:
-                    idx_itms[k[0]] = v
+                    idx_itms[k[0]] = try_numeric(v)
                 else:
-                    col_val[k] = v
+                    col_val[k] = try_numeric(v)
 
             # construct the index tuple
             idx = []
