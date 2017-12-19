@@ -28,7 +28,9 @@ class TableColumn:
         self.rowspan = 0
 
         self.level = level
-        dataSplit = data.split( ':', 1 )
+        # splitting with spaces around ':' is necessary, because the label can contain ':' too
+        # (e.g. C++ types like Matrices::CSR)
+        dataSplit = data.split( ' : ', 1 )
         self.label = dataSplit[ 0 ].strip()
         if len(dataSplit) == 2:
             self.attributes = dataSplit[1]
