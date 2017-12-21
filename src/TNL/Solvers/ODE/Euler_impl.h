@@ -158,8 +158,8 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
 
 template< typename Problem >
 void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
-                                                       RealType tau,
-                                                       RealType& currentResidue )
+                                              RealType tau,
+                                              RealType& currentResidue )
 {
    RealType localResidue = RealType( 0.0 );
    const IndexType size = k1->getSize();
@@ -227,9 +227,6 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
     }
 #endif
    }
-
-   
-   
    localResidue /= tau * ( RealType ) size;   
    MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this->solver_comm );
 
