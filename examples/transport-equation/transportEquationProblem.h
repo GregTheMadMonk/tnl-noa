@@ -96,11 +96,6 @@ public PDEProblem< Mesh,
                                  DofVectorPointer& rightHandSide,
                                  MeshDependentDataPointer& meshDependentData );
 
-      template< typename Matrix >
-      void saveFailedLinearSystem( const Matrix& matrix,
-                                   const DofVectorType& dofs,
-                                   const DofVectorType& rightHandSide ) const;
-
    protected:
 
       MeshFunctionPointer uPointer;

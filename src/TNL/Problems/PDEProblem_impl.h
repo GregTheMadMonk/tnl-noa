@@ -115,6 +115,22 @@ setExplicitBoundaryConditions( const RealType& time,
 {
 }
 
+template< typename Mesh,
+          typename Real,
+          typename Device,
+          typename Index >
+    template< typename Matrix >
+void
+PDEProblem< Mesh, Real, Device, Index >::
+saveFailedLinearSystem( const Matrix& matrix,
+                        const DofVectorType& dofs,
+                        const DofVectorType& rhs ) const
+{
+    matrix.save( "failed-matrix.tnl" );
+    dofs.save( "failed-dof.vec.tnl" );
+    rhs.save( "failed-rhs.vec.tnl" );
+    std::cerr << "The linear system has been saved to failed-{matrix,dof.vec,rhs.vec}.tnl" << std::endl;
+}
 
 template< typename Mesh,
           typename Real,
