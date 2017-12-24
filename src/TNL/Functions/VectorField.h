@@ -90,6 +90,11 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       typedef typename MeshType::GlobalIndexType IndexType;
       typedef VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, RealType > > ThisType;
       typedef Containers::StaticVector< Size, RealType > VectorType;
+      
+      static constexpr int getEntitiesDimension() { return FunctionType::getEntitiesDimension(); }
+      
+      static constexpr int getMeshDimension() { return MeshType::getMeshDimension(); }
+      
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
@@ -146,6 +151,10 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
          return this->vectorField[ 0 ].template getData< Device >().template getMesh< Device >();
       }
 
+      const MeshPointer& getMeshPointer() const
+      {
+         return this->vectorField[ 0 ]->getMeshPointer();
+      }
       
       bool setup( const MeshPointer& meshPointer,
                   const Config::ParameterContainer& parameters,
@@ -164,6 +173,38 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       {
          return Size * FunctionType::getDofs( meshPointer );
       }
+      
+      void bind( ThisType& vectorField )
+      {
+         for( int i = 0; i < Size; i ++ )
+         {
+            this->vectorField[ i ]->bind( vectorField[ i ] );
+         }
+      };
+ 
+      template< typename Vector >
+      void bind( const MeshPointer& meshPointer,
+                 const Vector& data,
+                 IndexType offset = 0 )
+      {
+         for( int i = 0; i < Size; i ++ )
+         {
+            this->vectorField[ i ].bind( meshPointer, data, offset );
+            offset += this->vectorField[ i ]->getDofs();
+         }
+      };
+      
+      template< typename Vector >
+      void bind( const MeshPointer& meshPointer,
+                 const SharedPointer< Vector >& dataPtr,
+                 IndexType offset = 0 )
+      {
+         for( int i = 0; i < Size; i ++ )
+         {
+            this->vectorField[ i ]->bind( meshPointer, dataPtr, offset );
+            offset += this->vectorField[ i ]->getDofs( meshPointer );
+         }         
+      };
 
       __cuda_callable__ 
       const FunctionPointer& operator[]( int i ) const
@@ -177,13 +218,29 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
          return this->vectorField[ i ];
       }
       
+      __cuda_callable__ 
+      void setElement( const IndexType i, const VectorType& v )
+      {
+         for( int j = 0; j < Size; j++ )
+            ( *this )[ j ]->getData().setElement( i, v[ j ] );
+      }
+      
+      __cuda_callable__
+      VectorType getElement( const IndexType i ) const
+      {
+         VectorType v;
+         for( int j = 0; j < Size; j++ )
+            v[ j ] = ( *this )[ j ]->getData().getElement( i );
+         return v;
+      }
+      
       __cuda_callable__
       VectorType getVector( const IndexType index ) const
       {
          VectorType v;
          for( int i = 0; i < Size; i++ )
-            // FIXME: the dereferencing operator of FunctionPointer is not __cuda_callable__
-            v[ i ] = ( *this->vectorField[ i ] )[ index ];
+            // FIXME: fix the dereferencing operator in smart pointers to be __cuda_callable__
+            v[ i ] = this->vectorField[ i ].template getData< Devices::Cuda >()[ index ];
          return v;
       }
 
@@ -193,8 +250,8 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       {
          VectorType v;
          for( int i = 0; i < Size; i++ )
-            // FIXME: the dereferencing operator of FunctionPointer is not __cuda_callable__
-            v[ i ] = ( *this->vectorField[ i ] )( meshEntity );
+            // FIXME: fix the dereferencing operator in smart pointers to be __cuda_callable__
+            v[ i ] = this->vectorField[ i ].template getData< Devices::Cuda >()( meshEntity );
          return v;
       }
       
