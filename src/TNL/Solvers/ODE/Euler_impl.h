@@ -136,7 +136,7 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
          currentTau = this -> getStopTime() - time; //we don't want to keep such tau
       else this -> tau = currentTau;
 
-      this -> refreshSolverMonitor();
+      this->refreshSolverMonitor();
 
       /****
        * Check stop conditions.

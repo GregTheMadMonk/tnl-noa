@@ -187,24 +187,28 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
                  const Vector& data,
                  IndexType offset = 0 )
       {
+         TNL_ASSERT_GE( data.getSize(), offset + Size * this->vectorField[ 0 ]->getDofs( meshPointer ),
+                        "Attempt to bind vector which is not large enough."  );
          for( int i = 0; i < Size; i ++ )
          {
             this->vectorField[ i ].bind( meshPointer, data, offset );
             offset += this->vectorField[ i ]->getDofs();
          }
-      };
+      }
       
       template< typename Vector >
       void bind( const MeshPointer& meshPointer,
                  const SharedPointer< Vector >& dataPtr,
                  IndexType offset = 0 )
       {
+         TNL_ASSERT_GE( dataPtr->getSize(), offset + Size * this->vectorField[ 0 ]->getDofs( meshPointer ),
+                        "Attempt to bind vector which is not large enough." );
          for( int i = 0; i < Size; i ++ )
          {
             this->vectorField[ i ]->bind( meshPointer, dataPtr, offset );
             offset += this->vectorField[ i ]->getDofs( meshPointer );
          }         
-      };
+      }
 
       __cuda_callable__ 
       const FunctionPointer& operator[]( int i ) const
