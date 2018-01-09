@@ -18,6 +18,10 @@ project( tnl )
 
 set( tnlVersion "0.1" )
 
+# install paths relative to the cmake's prefix
+set( TNL_TARGET_INCLUDE_DIRECTORY "include/TNL" )
+set( TNL_TARGET_DATA_DIRECTORY "share/TNL" )
+
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 include( OptimizeForArchitecture )
@@ -362,11 +366,8 @@ if( OPTIMIZED_VECTOR_HOST_OPERATIONS STREQUAL "yes" )
    AddCompilerFlag( "-DOPTIMIZED_VECTOR_HOST_OPERATIONS " )
 endif()
 
-set( configDirectory \"${CMAKE_INSTALL_PREFIX}/share/tnl-${tnlVersion}/\")
-set( sourceDirectory \"${PROJECT_SOURCE_DIR}/\" )
-set( testsDirectory \"${PROJECT_TESTS_PATH}/\" )
 CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/TNL/tnlConfig.h" )
-INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.h DESTINATION include/tnl-${tnlVersion}/TNL )
+INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.h DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY} )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )

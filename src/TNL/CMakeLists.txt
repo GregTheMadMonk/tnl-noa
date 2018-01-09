@@ -132,6 +132,4 @@ IF( BUILD_MPI )
                                                                 
 ENDIF()
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL )
-
-
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY} )

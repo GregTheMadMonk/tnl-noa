@@ -13,4 +13,4 @@ SET( headers Problem.h
 	     MeanCurvatureFlowProblem_impl.h            
    )
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Problems )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Problems )

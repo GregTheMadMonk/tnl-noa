@@ -19,4 +19,4 @@ INSTALL( TARGETS narrow-band${debugExt}
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
         
 #INSTALL( FILES ${tnl_narrow_band_SOURCES}
-#         DESTINATION share/tnl-${tnlVersion}/examples/narrow-band )
+#         DESTINATION ${TNL_TARGET_DATA_DIRECTORY}/examples/narrow-band )

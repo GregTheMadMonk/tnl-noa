@@ -22,5 +22,5 @@ INSTALL( FILES build-config-tag.h.in
                problem_impl.h.in
                rhs.h.in
                run-script.in
-         DESTINATION share/tnl-${tnlVersion}
+         DESTINATION ${TNL_TARGET_DATA_DIRECTORY}
          PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )

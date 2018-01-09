@@ -20,4 +20,4 @@ INSTALL( TARGETS hamilton-jacobi-parallel-map${debugExt}
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
         
 #INSTALL( FILES ${tnl_hamilton_jacobi_parallel_map_SOURCES}
-#         DESTINATION share/tnl-${tnlVersion}/examples/hamilton-jacobi-parallel-map )
+#         DESTINATION ${TNL_TARGET_DATA_DIRECTORY}/examples/hamilton-jacobi-parallel-map )

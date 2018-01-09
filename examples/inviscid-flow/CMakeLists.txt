@@ -20,5 +20,5 @@ INSTALL( TARGETS tnl-euler${debugExt}
         
 INSTALL( FILES run-euler
                ${tnl_inviscid_flow_SOURCES}
-         DESTINATION share/tnl-${tnlVersion}/examples/inviscid-flow )
+         DESTINATION ${TNL_TARGET_DATA_DIRECTORY}/examples/inviscid-flow )
 

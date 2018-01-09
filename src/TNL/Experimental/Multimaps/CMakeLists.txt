@@ -17,4 +17,4 @@ set( tnl_core_multimaps_SOURCES
      ${common_SOURCES}
      PARENT_SCOPE )
         
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/core/multimaps )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/core/multimaps )

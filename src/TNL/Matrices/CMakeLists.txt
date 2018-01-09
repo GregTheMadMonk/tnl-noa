@@ -47,4 +47,4 @@ if( BUILD_CUDA )
         PARENT_SCOPE )
 endif()
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Matrices )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Matrices )

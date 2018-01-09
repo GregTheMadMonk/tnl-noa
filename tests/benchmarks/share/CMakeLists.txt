@@ -9,7 +9,7 @@ INSTALL( FILES matrix-market
                tnl-run-heat-equation-benchmark
                cuda-profiler.conf
                process-cuda-profile.pl 
-               DESTINATION share/tnl-${tnlVersion}/benchmark-scripts )
+               DESTINATION ${TNL_TARGET_DATA_DIRECTORY}/benchmark-scripts )
 
 INSTALL( FILES tnl-run-spmv-benchmark
          DESTINATION bin

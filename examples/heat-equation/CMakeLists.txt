@@ -26,4 +26,4 @@ INSTALL( TARGETS tnl-heat-equation${debugExt}
 INSTALL( FILES tnl-run-heat-equation-eoc-test
                tnl-run-heat-equation
                ${tnl_heat_equation_SOURCES}
-         DESTINATION share/tnl-${tnlVersion}/examples/heat-equation )
+         DESTINATION ${TNL_TARGET_DATA_DIRECTORY}/examples/heat-equation )

@@ -10,4 +10,4 @@ set( tnl_legacy_SOURCES
      ${tnl_legacy_solvers_SOURCES} 
      PARENT_SCOPE )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/legacy )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/legacy )

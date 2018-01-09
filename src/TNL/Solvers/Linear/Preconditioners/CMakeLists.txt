@@ -5,4 +5,4 @@ SET( headers Dummy.h
              ILU0_impl.h
    )
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Solvers/Linear/Preconditioners )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Solvers/Linear/Preconditioners )

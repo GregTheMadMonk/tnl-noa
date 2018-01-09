@@ -11,4 +11,4 @@ set( tnl_experimental_arithmetics_SOURCES
 
 set( tnl_experimental_arithmetics_CUDA__SOURCES )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Experimental/Arithmetics )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Experimental/Arithmetics )

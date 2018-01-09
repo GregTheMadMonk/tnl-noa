@@ -26,4 +26,4 @@ INSTALL( FILES tnl-run-mean-curvature-flow-eoc-test
                tnl-run-mean-curvature-flow-contour-video
                tnl-run-mean-curvature-flow-videos
                ${tnl_mean_curvature_flow_SOURCES}
-         DESTINATION share/tnl-${tnlVersion}/examples/mean-curvature-flow )
+         DESTINATION ${TNL_TARGET_DATA_DIRECTORY}/examples/mean-curvature-flow )

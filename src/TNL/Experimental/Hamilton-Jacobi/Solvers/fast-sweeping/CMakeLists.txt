@@ -19,4 +19,4 @@ INSTALL( TARGETS fast-sweeping${debugExt}
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
         
 #INSTALL( FILES ${tnl_fast_sweeping_SOURCES}
-#         DESTINATION share/tnl-${tnlVersion}/examples/fast-sweeping )
+#         DESTINATION ${TNL_TARGET_DATA_DIRECTORY}/examples/fast-sweeping )

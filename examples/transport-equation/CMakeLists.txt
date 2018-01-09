@@ -31,4 +31,4 @@ INSTALL( TARGETS tnl-transport-equation${debugExt}
 INSTALL( FILES tnl-run-transport-equation
                ${tnl_transport_equation_SOURCES}
                ${tnl_transport_equation_HEADERS}
-         DESTINATION share/tnl-${tnlVersion}/examples/transport-equation )
+         DESTINATION ${TNL_TARGET_DATA_DIRECTORY}/examples/transport-equation )
