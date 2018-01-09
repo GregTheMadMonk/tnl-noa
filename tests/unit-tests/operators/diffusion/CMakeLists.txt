@@ -1,18 +1,18 @@
 ADD_EXECUTABLE( tnlLinearDiffusionTest${mpiExt}${debugExt} tnlLinearDiffusionTest.cpp )
 TARGET_LINK_LIBRARIES( tnlLinearDiffusionTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-                                                                 tnl${mpiExt}${debugExt}-0.1 )
+                                                                 tnl${mpiExt}${debugExt} )
 ADD_EXECUTABLE( tnlOneSidedMeanCurvatureTest${mpiExt}${debugExt} tnlOneSidedMeanCurvatureTest.cpp )
 TARGET_LINK_LIBRARIES( tnlOneSidedMeanCurvatureTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-                                                                             tnl${mpiExt}${debugExt}-0.1 )
+                                                                             tnl${mpiExt}${debugExt} )
 
 
 if( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnlLinearDiffusionTest-cuda${mpiExt}${debugExt} ${headers} tnlLinearDiffusionTest.cu )
    TARGET_LINK_LIBRARIES( tnlLinearDiffusionTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-                                                                          tnl${mpiExt}${debugExt}-0.1 )
+                                                                          tnl${mpiExt}${debugExt} )
    CUDA_ADD_EXECUTABLE( tnlOneSidedMeanCurvatureTest-cuda${mpiExt}${debugExt} ${headers} tnlOneSidedMeanCurvatureTest.cu )
    TARGET_LINK_LIBRARIES( tnlOneSidedMeanCurvatureTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-                                                                          tnl${mpiExt}${debugExt}-0.1 )
+                                                                          tnl${mpiExt}${debugExt} )
 
 endif()                                                                      
 

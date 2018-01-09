@@ -11,15 +11,15 @@ set( tnl_transport_equation_HEADERS
                
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnl-transport-equation${debugExt} tnl-transport-equation.cu)   
-   target_link_libraries( tnl-transport-equation${debugExt} tnl${debugExt}-${tnlVersion}  ${CUSPARSE_LIBRARY} )
+   target_link_libraries( tnl-transport-equation${debugExt} tnl${debugExt}  ${CUSPARSE_LIBRARY} )
    CUDA_ADD_EXECUTABLE( tnl-transport-equation-eoc${debugExt} tnl-transport-equation-eoc.cu)   
-   target_link_libraries( tnl-transport-equation-eoc${debugExt} tnl${debugExt}-${tnlVersion}  ${CUSPARSE_LIBRARY} )
+   target_link_libraries( tnl-transport-equation-eoc${debugExt} tnl${debugExt}  ${CUSPARSE_LIBRARY} )
 
 ELSE(  BUILD_CUDA )               
    ADD_EXECUTABLE( tnl-transport-equation${debugExt} tnl-transport-equation.cpp)     
-   target_link_libraries( tnl-transport-equation${debugExt} tnl${debugExt}-${tnlVersion} )
+   target_link_libraries( tnl-transport-equation${debugExt} tnl${debugExt} )
    ADD_EXECUTABLE( tnl-transport-equation-eoc${debugExt} tnl-transport-equation-eoc.cpp)     
-   target_link_libraries( tnl-transport-equation-eoc${debugExt} tnl${debugExt}-${tnlVersion} )
+   target_link_libraries( tnl-transport-equation-eoc${debugExt} tnl${debugExt} )
 ENDIF( BUILD_CUDA )
 
 

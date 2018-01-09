@@ -9,7 +9,7 @@ else()
 endif()
 
 TARGET_LINK_LIBRARIES( tnl-test-matrix-formats${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-                                                                   tnl${mpiExt}${debugExt}-0.1 )
+                                                                   tnl${mpiExt}${debugExt} )
 
 
 INSTALL( TARGETS tnl-test-matrix-formats${debugExt}

@@ -12,7 +12,7 @@ IF(  BUILD_CUDA )
 ELSE(  BUILD_CUDA )                
 	ADD_EXECUTABLE(hamilton-jacobi-parallel-map${debugExt} main.cpp)
 ENDIF( BUILD_CUDA )
-target_link_libraries (hamilton-jacobi-parallel-map${debugExt} tnl${debugExt}-${tnlVersion} )
+target_link_libraries (hamilton-jacobi-parallel-map${debugExt} tnl${debugExt} )
 
 
 INSTALL( TARGETS hamilton-jacobi-parallel-map${debugExt}

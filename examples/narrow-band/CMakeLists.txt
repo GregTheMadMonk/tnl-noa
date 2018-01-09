@@ -11,7 +11,7 @@ IF(  BUILD_CUDA )
 ELSE(  BUILD_CUDA )                
 	ADD_EXECUTABLE(narrow-band${debugExt} main.cpp)
 ENDIF( BUILD_CUDA )
-target_link_libraries (narrow-band${debugExt} tnl${debugExt}-${tnlVersion} )
+target_link_libraries (narrow-band${debugExt} tnl${debugExt} )
 
 
 INSTALL( TARGETS narrow-band${debugExt}

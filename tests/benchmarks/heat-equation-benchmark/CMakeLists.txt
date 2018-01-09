@@ -1,19 +1,19 @@
 IF( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( tnl-benchmark-simple-heat-equation${debugExt} tnl-benchmark-simple-heat-equation.cu )
-    TARGET_LINK_LIBRARIES( tnl-benchmark-simple-heat-equation${debugExt} tnl${debugExt}-${tnlVersion} )
+    TARGET_LINK_LIBRARIES( tnl-benchmark-simple-heat-equation${debugExt} tnl${debugExt} )
 
     CUDA_ADD_EXECUTABLE( tnl-benchmark-simple-heat-equation-bug${debugExt} tnl-benchmark-simple-heat-equation-bug.cu )
-    TARGET_LINK_LIBRARIES( tnl-benchmark-simple-heat-equation-bug${debugExt} tnl${debugExt}-${tnlVersion} )
+    TARGET_LINK_LIBRARIES( tnl-benchmark-simple-heat-equation-bug${debugExt} tnl${debugExt} )
 
 
     CUDA_ADD_EXECUTABLE( tnl-benchmark-heat-equation${debugExt} tnl-benchmark-heat-equation.cu )
-    TARGET_LINK_LIBRARIES( tnl-benchmark-heat-equation${debugExt} tnl${debugExt}-${tnlVersion} )
+    TARGET_LINK_LIBRARIES( tnl-benchmark-heat-equation${debugExt} tnl${debugExt} )
 ELSE()
     ADD_EXECUTABLE( tnl-benchmark-heat-equation${debugExt} tnl-benchmark-heat-equation.cpp )    
-    TARGET_LINK_LIBRARIES( tnl-benchmark-heat-equation${debugExt} tnl${debugExt}-${tnlVersion} )
+    TARGET_LINK_LIBRARIES( tnl-benchmark-heat-equation${debugExt} tnl${debugExt} )
 
     ADD_EXECUTABLE( tnl-benchmark-simple-heat-equation${debugExt} tnl-benchmark-simple-heat-equation.cpp )    
-    TARGET_LINK_LIBRARIES( tnl-benchmark-simple-heat-equation${debugExt} tnl${debugExt}-${tnlVersion} )
+    TARGET_LINK_LIBRARIES( tnl-benchmark-simple-heat-equation${debugExt} tnl${debugExt} )
 ENDIF()
 
 

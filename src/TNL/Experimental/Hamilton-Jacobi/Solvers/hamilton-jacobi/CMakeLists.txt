@@ -8,10 +8,10 @@ set( tnl_hamilton_jacobi_SOURCES
      tnl-direct-eikonal-solver.h )
                
 #ADD_EXECUTABLE(tnl-hamilton-jacobi${debugExt} main.cpp)
-#target_link_libraries (tnl-hamilton-jacobi${debugExt} tnl${debugExt}-${tnlVersion} )
+#target_link_libraries (tnl-hamilton-jacobi${debugExt} tnl${debugExt} )
 
 ADD_EXECUTABLE(tnl-direct-eikonal-solver${debugExt} tnl-direct-eikonal-solver.cpp )
-target_link_libraries (tnl-direct-eikonal-solver${debugExt} tnl${debugExt}-${tnlVersion} )
+target_link_libraries (tnl-direct-eikonal-solver${debugExt} tnl${debugExt} )
 
 
 INSTALL( TARGETS #tnl-hamilton-jacobi${debugExt} 

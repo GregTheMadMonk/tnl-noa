@@ -6,11 +6,11 @@ set( headers tnlSolverTest.h
 if( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( SolverTest${mpiExt}${debugExt} ${headers} tnlSolverTest.cu )
     TARGET_LINK_LIBRARIES( SolverTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-                                                              tnl${mpiExt}${debugExt}-0.1 )
+                                                              tnl${mpiExt}${debugExt} )
 else()
     ADD_EXECUTABLE( SolverTest${mpiExt}${debugExt} ${headers} tnlSolverTest.cpp )
     TARGET_LINK_LIBRARIES( SolverTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-                                                              tnl${mpiExt}${debugExt}-0.1 )
+                                                              tnl${mpiExt}${debugExt} )
 endif()
 
 ADD_TEST( SolverTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/SolverTest${mpiExt}${debugExt}  ) 

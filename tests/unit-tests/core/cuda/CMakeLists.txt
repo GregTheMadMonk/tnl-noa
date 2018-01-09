@@ -4,11 +4,11 @@ set( headers tnlCudaTester.h
 if( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( tnlCudaTest${mpiExt}${debugExt} ${headers} tnlCudaTest.cu )
     TARGET_LINK_LIBRARIES( tnlCudaTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-                                                              tnl${mpiExt}${debugExt}-0.1 )
+                                                              tnl${mpiExt}${debugExt} )
 
     CUDA_ADD_EXECUTABLE( tnl-reduction-test${mpiExt}${debugExt} ${headers} reduction-test.cu )
     TARGET_LINK_LIBRARIES( tnl-reduction-test${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-                                                              tnl${mpiExt}${debugExt}-0.1 )
+                                                              tnl${mpiExt}${debugExt} )
 
 
 endif()

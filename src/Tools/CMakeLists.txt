@@ -5,31 +5,31 @@ CONFIGURE_FILE( "tnl-link.in" "${PROJECT_TOOLS_PATH}/tnl-link" @ONLY )
 CONFIGURE_FILE( "tnl-bindir.in" "${PROJECT_TOOLS_PATH}/tnl-bindir" @ONLY )
 
 ADD_EXECUTABLE(tnl-grid-setup${debugExt} tnl-grid-setup.cpp )
-target_link_libraries (tnl-grid-setup${debugExt} tnl${debugExt}-${tnlVersion} )
+target_link_libraries (tnl-grid-setup${debugExt} tnl${debugExt} )
 
 #ADD_EXECUTABLE(tnl-mesh-convert${debugExt} tnl-mesh-convert.cpp )
-#target_link_libraries (tnl-mesh-convert${debugExt} tnl${debugExt}-${tnlVersion} )
+#target_link_libraries (tnl-mesh-convert${debugExt} tnl${debugExt} )
 
 ADD_EXECUTABLE(tnl-init${debugExt} tnl-init.cpp )
-target_link_libraries (tnl-init${debugExt} tnl${debugExt}-${tnlVersion} )
+target_link_libraries (tnl-init${debugExt} tnl${debugExt} )
 
 ADD_EXECUTABLE(tnl-view${debugExt} tnl-view.cpp )
-target_link_libraries (tnl-view${debugExt} tnl${debugExt}-${tnlVersion} )
+target_link_libraries (tnl-view${debugExt} tnl${debugExt} )
 
 ADD_EXECUTABLE(tnl-diff${debugExt} tnl-diff.cpp )
-target_link_libraries (tnl-diff${debugExt} tnl${debugExt}-${tnlVersion} )
+target_link_libraries (tnl-diff${debugExt} tnl${debugExt} )
 
 ADD_EXECUTABLE(tnl-image-converter${debugExt} tnl-image-converter.cpp )
-target_link_libraries (tnl-image-converter${debugExt} tnl${debugExt}-${tnlVersion} ${PNG_LIBRARIES} ${JPEG_LIBRARIES} )
+target_link_libraries (tnl-image-converter${debugExt} tnl${debugExt} ${PNG_LIBRARIES} ${JPEG_LIBRARIES} )
 
 ADD_EXECUTABLE(tnl-dicom-reader${debugExt} tnl-dicom-reader.cpp )
-target_link_libraries (tnl-dicom-reader${debugExt} tnl${debugExt}-${tnlVersion} ${DCMTK_LIBRARIES} )
+target_link_libraries (tnl-dicom-reader${debugExt} tnl${debugExt} ${DCMTK_LIBRARIES} )
 
 ADD_EXECUTABLE( tnl-functions-benchmark${debugExt} functions-benchmark.cpp )
-target_link_libraries( tnl-functions-benchmark${debugExt} tnl${debugExt}-${tnlVersion} )
+target_link_libraries( tnl-functions-benchmark${debugExt} tnl${debugExt} )
 
 ADD_EXECUTABLE(tnl-curve2gnuplot${debugExt} tnlcurve2gnuplot.cpp )
-target_link_libraries (tnl-curve2gnuplot${debugExt} tnl${debugExt}-${tnlVersion} )
+target_link_libraries (tnl-curve2gnuplot${debugExt} tnl${debugExt} )
 
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnl-cuda-arch${debugExt} tnl-cuda-arch.cu )

@@ -11,7 +11,7 @@ IF(  BUILD_CUDA )
 ELSE(  BUILD_CUDA )                
 	ADD_EXECUTABLE(fast-sweeping${debugExt} main.cpp)
 ENDIF( BUILD_CUDA )
-target_link_libraries (fast-sweeping${debugExt} tnl${debugExt}-${tnlVersion} )
+target_link_libraries (fast-sweeping${debugExt} tnl${debugExt} )
 
 
 INSTALL( TARGETS fast-sweeping${debugExt}

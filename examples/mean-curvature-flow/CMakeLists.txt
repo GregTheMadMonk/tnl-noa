@@ -7,13 +7,13 @@ set( tnl_mean_curvature_flow_SOURCES
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE(tnl-mean-curvature-flow${debugExt} tnl-mean-curvature-flow.cu)
    CUDA_ADD_EXECUTABLE(tnl-mean-curvature-flow-eoc-test${debugExt} tnl-mean-curvature-flow-eoc.cu)
-   target_link_libraries (tnl-mean-curvature-flow${debugExt} tnl${debugExt}-${tnlVersion}  ${CUSPARSE_LIBRARY} )
-   target_link_libraries (tnl-mean-curvature-flow-eoc-test${debugExt} tnl${debugExt}-${tnlVersion}  ${CUSPARSE_LIBRARY} )
+   target_link_libraries (tnl-mean-curvature-flow${debugExt} tnl${debugExt}  ${CUSPARSE_LIBRARY} )
+   target_link_libraries (tnl-mean-curvature-flow-eoc-test${debugExt} tnl${debugExt}  ${CUSPARSE_LIBRARY} )
 ELSE(  BUILD_CUDA )               
    ADD_EXECUTABLE(tnl-mean-curvature-flow${debugExt} tnl-mean-curvature-flow.cpp)     
    ADD_EXECUTABLE(tnl-mean-curvature-flow-eoc-test${debugExt} tnl-mean-curvature-flow-eoc.cpp)   
-   target_link_libraries (tnl-mean-curvature-flow${debugExt} tnl${debugExt}-${tnlVersion} )
-   target_link_libraries (tnl-mean-curvature-flow-eoc-test${debugExt} tnl${debugExt}-${tnlVersion} )
+   target_link_libraries (tnl-mean-curvature-flow${debugExt} tnl${debugExt} )
+   target_link_libraries (tnl-mean-curvature-flow-eoc-test${debugExt} tnl${debugExt} )
 ENDIF( BUILD_CUDA )
 
 INSTALL( TARGETS tnl-mean-curvature-flow${debugExt}
