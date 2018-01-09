@@ -212,11 +212,13 @@ endif( WITH_CUDA STREQUAL "yes" )
 ####
 # Check for OpenMP
 #
-find_package( OpenMP ) 
-if( OPENMP_FOUND )
+# FIXME: in cmake 3.10 the OpenMP module is broken - it does not work when CMAKE_EXECUTABLE_SUFFIX
+#        is not empty, see https://www.mail-archive.com/cmake@cmake.org/msg56886.html
+#find_package( OpenMP )
+#if( OPENMP_FOUND )
    message( "Compiler supports OpenMP." )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp" )
-endif()
+#endif()
 #set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp=libgomp" )
 
 ####
