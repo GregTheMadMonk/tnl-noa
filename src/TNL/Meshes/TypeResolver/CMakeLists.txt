@@ -6,4 +6,4 @@ SET( headers GridTypeResolver.h
              TypeResolver_impl.h
 )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Meshes/TypeResolver )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Meshes/TypeResolver )

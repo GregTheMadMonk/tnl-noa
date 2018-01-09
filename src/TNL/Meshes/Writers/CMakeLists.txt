@@ -4,4 +4,4 @@ SET( headers AsymptoteWriter.h
              VTKWriter_impl.h
 )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Meshes/Writers )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Meshes/Writers )

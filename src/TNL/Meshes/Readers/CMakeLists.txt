@@ -4,4 +4,4 @@ SET( headers EntityShape.h
              VTKReader.h
 )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Meshes/Readers )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Meshes/Readers )

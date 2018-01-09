@@ -5,4 +5,4 @@ SET( headers ConfigValidator.h
              Traits.h
 )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Meshes/MeshDetails/MeshLayers/BoundaryTags )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Meshes/MeshDetails/MeshLayers/BoundaryTags )

@@ -1,60 +1,60 @@
-ADD_EXECUTABLE( BoundaryTagsTest${mpiExt}${debugExt} BoundaryTagsTest.cpp )
-TARGET_COMPILE_OPTIONS( BoundaryTagsTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( BoundaryTagsTest${mpiExt}${debugExt}
+ADD_EXECUTABLE( BoundaryTagsTest BoundaryTagsTest.cpp )
+TARGET_COMPILE_OPTIONS( BoundaryTagsTest PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( BoundaryTagsTest
                            ${GTEST_BOTH_LIBRARIES}
-                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+                           tnl )
 
 if( BUILD_CUDA AND ${CMAKE_CXX_COMPILER} MATCHES ".*clang\\+\\+" )
-   CUDA_ADD_EXECUTABLE( MeshTest${mpiExt}${debugExt} MeshTest.cu
+   CUDA_ADD_EXECUTABLE( MeshTest MeshTest.cu
                         OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( MeshTest${mpiExt}${debugExt}
+   TARGET_LINK_LIBRARIES( MeshTest
                            ${GTEST_BOTH_LIBRARIES}
-                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+                           tnl )
 
-   CUDA_ADD_EXECUTABLE( MeshOrderingTest${mpiExt}${debugExt} MeshOrderingTest.cu
+   CUDA_ADD_EXECUTABLE( MeshOrderingTest MeshOrderingTest.cu
                         OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( MeshOrderingTest${mpiExt}${debugExt}
+   TARGET_LINK_LIBRARIES( MeshOrderingTest
                            ${GTEST_BOTH_LIBRARIES}
-                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+                           tnl )
 else()
-   ADD_EXECUTABLE( MeshTest${mpiExt}${debugExt} MeshTest.cpp )
-   TARGET_COMPILE_OPTIONS( MeshTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( MeshTest${mpiExt}${debugExt}
+   ADD_EXECUTABLE( MeshTest MeshTest.cpp )
+   TARGET_COMPILE_OPTIONS( MeshTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( MeshTest
                            ${GTEST_BOTH_LIBRARIES}
-                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+                           tnl )
 
-   ADD_EXECUTABLE( MeshOrderingTest${mpiExt}${debugExt} MeshOrderingTest.cpp )
-   TARGET_COMPILE_OPTIONS( MeshOrderingTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( MeshOrderingTest${mpiExt}${debugExt}
+   ADD_EXECUTABLE( MeshOrderingTest MeshOrderingTest.cpp )
+   TARGET_COMPILE_OPTIONS( MeshOrderingTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( MeshOrderingTest
                            ${GTEST_BOTH_LIBRARIES}
-                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+                           tnl )
 endif()
 
-ADD_EXECUTABLE( MeshEntityTest${mpiExt}${debugExt} MeshEntityTest.cpp )
-TARGET_COMPILE_OPTIONS( MeshEntityTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( MeshEntityTest${mpiExt}${debugExt}
+ADD_EXECUTABLE( MeshEntityTest MeshEntityTest.cpp )
+TARGET_COMPILE_OPTIONS( MeshEntityTest PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( MeshEntityTest
                            ${GTEST_BOTH_LIBRARIES}
-                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+                           tnl )
 
-ADD_EXECUTABLE( MultimapTest${mpiExt}${debugExt} MultimapTest.cpp )
-TARGET_COMPILE_OPTIONS( MultimapTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( MultimapTest${mpiExt}${debugExt}
+ADD_EXECUTABLE( MultimapTest MultimapTest.cpp )
+TARGET_COMPILE_OPTIONS( MultimapTest PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( MultimapTest
                            ${GTEST_BOTH_LIBRARIES}
-                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+                           tnl )
 
-ADD_EXECUTABLE( StaticMultimapTest${mpiExt}${debugExt} StaticMultimapTest.cpp )
-TARGET_COMPILE_OPTIONS( StaticMultimapTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( StaticMultimapTest${mpiExt}${debugExt}
+ADD_EXECUTABLE( StaticMultimapTest StaticMultimapTest.cpp )
+TARGET_COMPILE_OPTIONS( StaticMultimapTest PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( StaticMultimapTest
                            ${GTEST_BOTH_LIBRARIES}
-                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+                           tnl )
 
 
-ADD_TEST( BoundaryTagsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/BoundaryTagsTest${mpiExt}${debugExt} )
-ADD_TEST( MeshTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MeshTest${mpiExt}${debugExt} )
-ADD_TEST( MeshOrderingTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MeshOrderingTest${mpiExt}${debugExt} )
-ADD_TEST( MeshEntityTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MeshEntityTest${mpiExt}${debugExt} )
-ADD_TEST( MultimapTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MultimapTest${mpiExt}${debugExt} )
-ADD_TEST( StaticMultimapTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MultimapTest${mpiExt}${debugExt} )
+ADD_TEST( BoundaryTagsTest ${EXECUTABLE_OUTPUT_PATH}/BoundaryTagsTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( MeshTest ${EXECUTABLE_OUTPUT_PATH}/MeshTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( MeshOrderingTest ${EXECUTABLE_OUTPUT_PATH}/MeshOrderingTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( MeshEntityTest ${EXECUTABLE_OUTPUT_PATH}/MeshEntityTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( MultimapTest ${EXECUTABLE_OUTPUT_PATH}/MultimapTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( StaticMultimapTest ${EXECUTABLE_OUTPUT_PATH}/MultimapTest${CMAKE_EXECUTABLE_SUFFIX} )
 
 
 
@@ -72,17 +72,17 @@ endif( VTK_FOUND )
 
 # FIXME: compilation fails with nvcc (CUDA 9.0)
 #if( BUILD_CUDA AND ${CMAKE_CXX_COMPILER} MATCHES ".*clang\\+\\+" )
-#   CUDA_ADD_EXECUTABLE( MeshReaderTest${mpiExt}${debugExt} MeshReaderTest.cu
+#   CUDA_ADD_EXECUTABLE( MeshReaderTest MeshReaderTest.cu
 #                        OPTIONS ${CXX_TESTS_FLAGS} )
-#   TARGET_LINK_LIBRARIES( MeshReaderTest${mpiExt}${debugExt}
+#   TARGET_LINK_LIBRARIES( MeshReaderTest
 #                           ${GTEST_BOTH_LIBRARIES}
 #                           ${VTK_COMMON_LIBRARIES}
-#                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+#                           tnl )
 #else()
-   ADD_EXECUTABLE( MeshReaderTest${mpiExt}${debugExt} MeshReaderTest.cpp )
-   TARGET_COMPILE_OPTIONS( MeshReaderTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( MeshReaderTest${mpiExt}${debugExt}
+   ADD_EXECUTABLE( MeshReaderTest MeshReaderTest.cpp )
+   TARGET_COMPILE_OPTIONS( MeshReaderTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( MeshReaderTest
                            ${GTEST_BOTH_LIBRARIES}
                            ${VTK_COMMON_LIBRARIES}
-                           tnl${debugExt}-${tnlVersion} )
+                           tnl )
 #endif()

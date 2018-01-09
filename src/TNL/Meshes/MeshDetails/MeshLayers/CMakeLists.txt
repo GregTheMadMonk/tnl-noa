@@ -5,4 +5,4 @@ SET( headers StorageLayer.h
              SuperentityStorageLayer.h
 )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Meshes/MeshDetails/MeshLayers )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Meshes/MeshDetails/MeshLayers )
