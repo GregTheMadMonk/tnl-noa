@@ -34,7 +34,8 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
     set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
-    set( debugExt -dbg )
+    set( CMAKE_EXECUTABLE_SUFFIX "-dbg" )  # suffix for executables
+    set( CMAKE_DEBUG_POSTFIX "-dbg" )      # suffix for libraries
 else()
     set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
     set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Release/bin )

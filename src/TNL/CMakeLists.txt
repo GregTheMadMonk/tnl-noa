@@ -85,48 +85,48 @@ set( tnl_CUDA__SOURCES ${tnl_config_CUDA__SOURCES}
                  
                  
 if( BUILD_CUDA )
-   CUDA_ADD_LIBRARY( tnl${debugExt} SHARED ${tnl_CUDA__SOURCES}
+   CUDA_ADD_LIBRARY( tnl SHARED ${tnl_CUDA__SOURCES}
                                                   OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
     if( HAVE_CUBLAS )
-       CUDA_ADD_CUBLAS_TO_TARGET( tnl${debugExt} )
+       CUDA_ADD_CUBLAS_TO_TARGET( tnl )
     endif( HAVE_CUBLAS )
 else( BUILD_CUDA )
-   ADD_LIBRARY( tnl${debugExt} SHARED 
+   ADD_LIBRARY( tnl SHARED 
                 ${tnl_SOURCES} )
 #ifMIC
-  #TARGET_COMPILE_DEFINITIONS( tnl${debugExt} PUBLIC -DHAVE_MIC )
+  #TARGET_COMPILE_DEFINITIONS( tnl PUBLIC -DHAVE_MIC )
 endif( BUILD_CUDA )                                    
                
-SET_TARGET_PROPERTIES( tnl${debugExt} PROPERTIES 
+SET_TARGET_PROPERTIES( tnl PROPERTIES 
                        VERSION ${tnlVersion} )
-TARGET_LINK_LIBRARIES( tnl${debugExt} 
+TARGET_LINK_LIBRARIES( tnl 
                        ${DCMTK_LIBRARIES})
 
 
-INSTALL( TARGETS tnl${debugExt} DESTINATION lib )
+INSTALL( TARGETS tnl DESTINATION lib )
 
 IF( BUILD_MPI )
    
    if( BUILD_CUDA )
-      CUDA_ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} SHARED ${tnl_CUDA__SOURCES} 
+      CUDA_ADD_LIBRARY( tnl-mpi-${tnlVersion} SHARED ${tnl_CUDA__SOURCES} 
                                                          OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
       if( HAVE_CUBLAS )
-         CUDA_ADD_CUBLAS_TO_TARGET( tnl-mpi${debugExt}-${tnlVersion} )
+         CUDA_ADD_CUBLAS_TO_TARGET( tnl-mpi-${tnlVersion} )
       endif( HAVE_CUBLAS )
    else( BUILD_CUDA )
-         ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} SHARED
+         ADD_LIBRARY( tnl-mpi-${tnlVersion} SHARED
                       ${tnl_SOURCES} )  
    endif( BUILD_CUDA )                        
    
-   SET_TARGET_PROPERTIES( tnl-mpi${debugExt}-${tnlVersion} PROPERTIES
+   SET_TARGET_PROPERTIES( tnl-mpi-${tnlVersion} PROPERTIES
                           VERSION ${tnlVersion} ) 
-#   SET_TARGET_PROPERTIES( tnl-mpi${debugExt}-${tnlVersion} 
+#   SET_TARGET_PROPERTIES( tnl-mpi-${tnlVersion} 
 #                          LINK_INTERFACE_LIBRARIES "")
 
    
-   TARGET_LINK_LIBRARIES( tnl-mpi${debugExt}-${tnlVersion} 
+   TARGET_LINK_LIBRARIES( tnl-mpi-${tnlVersion} 
                           ${MPI_LIBRARIES} )
-   INSTALL( TARGETS tnl-mpi${debugExt}-${tnlVersion} DESTINATION lib )
+   INSTALL( TARGETS tnl-mpi-${tnlVersion} DESTINATION lib )
                                                                 
 ENDIF()
 

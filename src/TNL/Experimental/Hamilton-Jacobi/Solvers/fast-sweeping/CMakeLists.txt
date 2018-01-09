@@ -7,14 +7,14 @@ set( tnl_fast_sweeping_SOURCES
 
 
 IF(  BUILD_CUDA ) 
-	CUDA_ADD_EXECUTABLE(fast-sweeping${debugExt} main.cu)
+	CUDA_ADD_EXECUTABLE(fast-sweeping main.cu)
 ELSE(  BUILD_CUDA )                
-	ADD_EXECUTABLE(fast-sweeping${debugExt} main.cpp)
+	ADD_EXECUTABLE(fast-sweeping main.cpp)
 ENDIF( BUILD_CUDA )
-target_link_libraries (fast-sweeping${debugExt} tnl${debugExt} )
+target_link_libraries (fast-sweeping tnl )
 
 
-INSTALL( TARGETS fast-sweeping${debugExt}
+INSTALL( TARGETS fast-sweeping
          RUNTIME DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
         
