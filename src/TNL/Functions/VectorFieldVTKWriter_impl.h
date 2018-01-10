@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Functions/VectorFieldVTKWriter.h>
+#include <TNL/Functions/VectorField.h>
 
 namespace TNL {
 namespace Functions {   
@@ -18,7 +19,7 @@ namespace Functions {
 template< typename VectorField >
 bool
 VectorFieldVTKWriter< VectorField >::
-write( const VectorField& function,
+write( const VectorField& vectorField,
        std::ostream& str,
        const double& scale )
 {
@@ -33,13 +34,14 @@ write( const VectorField& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 void
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
-writeHeader( const VectorFieldType& function,
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > > >::
+writeHeader( const VectorFieldType& vectorField,
              std::ostream& str )
 {
-    const MeshType& mesh = function.getMesh();
+    const MeshType& mesh = vectorField.getMesh();
     const typename MeshType::PointType& origin = mesh.getOrigin();
     const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
@@ -51,16 +53,17 @@ writeHeader( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
-write( const VectorFieldType& function,
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > > >::
+write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
 {
-   writeHeader(function, str);
+   writeHeader(vectorField, str);
  
-   const MeshType& mesh = function.getMesh();
+   const MeshType& mesh = vectorField.getMesh();
    const RealType origin = mesh.getOrigin().x();
    const RealType spaceStep = mesh.getSpaceSteps().x();
  
@@ -90,7 +93,7 @@ write( const VectorFieldType& function,
    {
       typename MeshType::Cell entity = mesh.template getEntity< typename MeshType::Cell >( i );
       entity.refresh();
-      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
    }
  
    return true;
@@ -103,13 +106,14 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 void
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
-writeHeader( const VectorFieldType& function,
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > > >::
+writeHeader( const VectorFieldType& vectorField,
              std::ostream& str )
 {
-    const MeshType& mesh = function.getMesh();
+    const MeshType& mesh = vectorField.getMesh();
     const typename MeshType::PointType& origin = mesh.getOrigin();
     const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
@@ -118,19 +122,20 @@ writeHeader( const VectorFieldType& function,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< typename MeshReal,
+template< int Size,
+          typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
 bool
 VectorFieldVTKWriter< VectorField< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
-write( const VectorFieldType& function,
+write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
 {
-   writeHeader(function, str);
+   writeHeader(vectorField, str);
  
-   const MeshType& mesh = function.getMesh();
+   const MeshType& mesh = vectorField.getMesh();
    const RealType origin = mesh.getOrigin().x();
    const RealType spaceStep = mesh.getSpaceSteps().x();
  
@@ -160,7 +165,7 @@ write( const VectorFieldType& function,
    {
       typename MeshType::Vertex entity = mesh.template getEntity< typename MeshType::Vertex >( i );
       entity.refresh();
-      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
    }
  
    return true;
@@ -173,13 +178,14 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 void
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
-writeHeader( const VectorFieldType& function,
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > > >::
+writeHeader( const VectorFieldType& vectorField,
              std::ostream& str )
 {
-    const MeshType& mesh = function.getMesh();
+    const MeshType& mesh = vectorField.getMesh();
     const typename MeshType::PointType& origin = mesh.getOrigin();
     const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
@@ -188,19 +194,20 @@ writeHeader( const VectorFieldType& function,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< typename MeshReal,
+template< int Size,
+          typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
 bool
 VectorFieldVTKWriter< VectorField< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
-write( const VectorFieldType& function,
+write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
 {
-   writeHeader(function, str);
+   writeHeader(vectorField, str);
  
-   const MeshType& mesh = function.getMesh();
+   const MeshType& mesh = vectorField.getMesh();
    const RealType originX = mesh.getOrigin().x();
    const RealType spaceStepX = mesh.getSpaceSteps().x();
    const RealType originY = mesh.getOrigin().y();
@@ -241,7 +248,7 @@ write( const VectorFieldType& function,
    {
       typename MeshType::Cell entity = mesh.template getEntity< typename MeshType::Cell >( i );
       entity.refresh();
-      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;
@@ -254,13 +261,14 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 void
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
-writeHeader( const VectorFieldType& function,
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > > >::
+writeHeader( const VectorFieldType& vectorField,
              std::ostream& str )
 {
-    const MeshType& mesh = function.getMesh();
+    const MeshType& mesh = vectorField.getMesh();
     const typename MeshType::PointType& origin = mesh.getOrigin();
     const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
@@ -269,21 +277,22 @@ writeHeader( const VectorFieldType& function,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< typename MeshReal,
+template< int Size,
+          typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
 bool
 VectorFieldVTKWriter< VectorField< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
-write( const VectorFieldType& function,
+write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
 {
    typedef typename MeshType::template EntityType< 0 > Vertex;
    typedef typename MeshType::template EntityType< 1 > Face;
-   writeHeader(function, str);
+   writeHeader(vectorField, str);
  
-   const MeshType& mesh = function.getMesh();
+   const MeshType& mesh = vectorField.getMesh();
    const RealType originX = mesh.getOrigin().x();
    const RealType spaceStepX = mesh.getSpaceSteps().x();
    const RealType originY = mesh.getOrigin().y();
@@ -331,7 +340,7 @@ write( const VectorFieldType& function,
    {
       typename MeshType::Face entity = mesh.template getEntity< typename MeshType::Face >( i );
       entity.refresh();
-      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;
@@ -344,13 +353,14 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 void
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
-writeHeader( const VectorFieldType& function,
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > > >::
+writeHeader( const VectorFieldType& vectorField,
              std::ostream& str )
 {
-    const MeshType& mesh = function.getMesh();
+    const MeshType& mesh = vectorField.getMesh();
     const typename MeshType::PointType& origin = mesh.getOrigin();
     const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
@@ -359,20 +369,21 @@ writeHeader( const VectorFieldType& function,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< typename MeshReal,
+template< int Size,
+          typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
 bool
 VectorFieldVTKWriter< VectorField< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
-write( const VectorFieldType& function,
+write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
 {
    typedef typename MeshType::template EntityType< 0 > Vertex;
-   writeHeader(function, str);
+   writeHeader(vectorField, str);
  
-   const MeshType& mesh = function.getMesh();
+   const MeshType& mesh = vectorField.getMesh();
    const RealType originX = mesh.getOrigin().x();
    const RealType spaceStepX = mesh.getSpaceSteps().x();
    const RealType originY = mesh.getOrigin().y();
@@ -411,7 +422,7 @@ write( const VectorFieldType& function,
    {
       typename MeshType::Vertex entity = mesh.template getEntity< typename MeshType::Vertex >( i );
       entity.refresh();
-      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;
@@ -424,13 +435,14 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 void
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >::
-writeHeader( const VectorFieldType& function,
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > > >::
+writeHeader( const VectorFieldType& vectorField,
              std::ostream& str )
 {
-    const MeshType& mesh = function.getMesh();
+    const MeshType& mesh = vectorField.getMesh();
     const typename MeshType::PointType& origin = mesh.getOrigin();
     const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
@@ -439,19 +451,20 @@ writeHeader( const VectorFieldType& function,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< typename MeshReal,
+template< int Size,
+          typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
 bool
 VectorFieldVTKWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >::
-write( const VectorFieldType& function,
+write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
 {
-   writeHeader(function, str);
+   writeHeader(vectorField, str);
  
-   const MeshType& mesh = function.getMesh();
+   const MeshType& mesh = vectorField.getMesh();
    const RealType originX = mesh.getOrigin().x();
    const RealType spaceStepX = mesh.getSpaceSteps().x();
    const RealType originY = mesh.getOrigin().y();
@@ -508,7 +521,7 @@ write( const VectorFieldType& function,
    {
       typename MeshType::Cell entity = mesh.template getEntity< typename MeshType::Cell >( i );
       entity.refresh();
-      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;
@@ -521,13 +534,14 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 void
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >::
-writeHeader( const VectorFieldType& function,
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > > >::
+writeHeader( const VectorFieldType& vectorField,
              std::ostream& str )
 {
-    const MeshType& mesh = function.getMesh();
+    const MeshType& mesh = vectorField.getMesh();
     const typename MeshType::PointType& origin = mesh.getOrigin();
     const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
@@ -536,19 +550,20 @@ writeHeader( const VectorFieldType& function,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< typename MeshReal,
+template< int Size,
+          typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
 bool
 VectorFieldVTKWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >::
-write( const VectorFieldType& function,
+write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
 {
-   writeHeader(function, str);
+   writeHeader(vectorField, str);
  
-   const MeshType& mesh = function.getMesh();
+   const MeshType& mesh = vectorField.getMesh();
    const RealType originX = mesh.getOrigin().x();
    const RealType spaceStepX = mesh.getSpaceSteps().x();
    const RealType originY = mesh.getOrigin().y();
@@ -628,7 +643,7 @@ write( const VectorFieldType& function,
    {
       typename MeshType::Face entity = mesh.template getEntity< typename MeshType::Face >( i );
       entity.refresh();
-      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;
@@ -641,13 +656,14 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 void
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1, Real > >::
-writeHeader( const VectorFieldType& function,
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1, Real > > >::
+writeHeader( const VectorFieldType& vectorField,
              std::ostream& str )
 {
-    const MeshType& mesh = function.getMesh();
+    const MeshType& mesh = vectorField.getMesh();
     const typename MeshType::PointType& origin = mesh.getOrigin();
     const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
@@ -656,19 +672,20 @@ writeHeader( const VectorFieldType& function,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< typename MeshReal,
+template< int Size,
+          typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
 bool
 VectorFieldVTKWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1, Real > >::
-write( const VectorFieldType& function,
+write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
 {
-   writeHeader(function, str);
+   writeHeader(vectorField, str);
  
-   const MeshType& mesh = function.getMesh();
+   const MeshType& mesh = vectorField.getMesh();
    const RealType originX = mesh.getOrigin().x();
    const RealType spaceStepX = mesh.getSpaceSteps().x();
    const RealType originY = mesh.getOrigin().y();
@@ -742,7 +759,7 @@ write( const VectorFieldType& function,
    {
       typename MeshType::Edge entity = mesh.template getEntity< typename MeshType::Edge >( i );
       entity.refresh();
-      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;
@@ -755,13 +772,14 @@ write( const VectorFieldType& function,
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 void
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >::
-writeHeader( const VectorFieldType& function,
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > > >::
+writeHeader( const VectorFieldType& vectorField,
              std::ostream& str )
 {
-    const MeshType& mesh = function.getMesh();
+    const MeshType& mesh = vectorField.getMesh();
     const typename MeshType::PointType& origin = mesh.getOrigin();
     const typename MeshType::PointType& proportions = mesh.getProportions();
     str << "# vtk DataFile Version 2.0" << std::endl;
@@ -770,19 +788,20 @@ writeHeader( const VectorFieldType& function,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< typename MeshReal,
+template< int Size,
+          typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
 bool
 VectorFieldVTKWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >::
-write( const VectorFieldType& function,
+write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
 {
-   writeHeader(function, str);
+   writeHeader(vectorField, str);
  
-   const MeshType& mesh = function.getMesh();
+   const MeshType& mesh = vectorField.getMesh();
    const RealType originX = mesh.getOrigin().x();
    const RealType spaceStepX = mesh.getSpaceSteps().x();
    const RealType originY = mesh.getOrigin().y();
@@ -830,7 +849,7 @@ write( const VectorFieldType& function,
    {
       typename MeshType::Vertex entity = mesh.template getEntity< typename MeshType::Vertex >( i );
       entity.refresh();
-      str << scale * function.getData().getElement( entity.getIndex() ) << std::endl;
+      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
    }
 
    return true;

@@ -15,6 +15,7 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Functions/VectorFieldGnuplotWriter.h>
+#include <TNL/Functions/VectorFieldVTKWriter.h>
 
 namespace TNL {
 namespace Functions {
@@ -301,7 +302,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
             return false;
          }
          if( format == "vtk" )
-            return false; //MeshFunctionVTKWriter< ThisType >::write( *this, file );
+            return VectorFieldVTKWriter< ThisType >::write( *this, file );
          else if( format == "gnuplot" )
             return VectorFieldGnuplotWriter< ThisType >::write( *this, file, scale );
          else {

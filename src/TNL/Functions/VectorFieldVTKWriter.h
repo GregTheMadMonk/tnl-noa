@@ -22,9 +22,13 @@ class VectorFieldVTKWriter
 {
    public:
 
-      static bool write( const VectorField& function,
+      static bool write( const VectorField& vectorField,
                          std::ostream& str,
                          const double& scale );
+      
+      static void writeHeader( const VectorField& vectorField,
+                               std::ostream& str ){}
+      
 };
 
 /***
@@ -45,6 +49,10 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
                          const double& scale  );
+      
+      static void writeHeader( const VectorFieldType& vectorField,
+                               std::ostream& str );
+      
 };
 
 /***
@@ -65,6 +73,10 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
                          const double& scale  );
+      
+      static void writeHeader( const VectorFieldType& vectorField,
+                               std::ostream& str );
+      
 };
 
 
@@ -86,6 +98,10 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
                          const double& scale  );
+
+      static void writeHeader( const VectorFieldType& vectorField,
+                               std::ostream& str );
+      
 };
 
 /***
@@ -106,6 +122,10 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
                          const double& scale  );
+      
+      static void writeHeader( const VectorFieldType& vectorField,
+                               std::ostream& str );
+      
 };
 
 /***
@@ -126,6 +146,10 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
                          const double& scale  );
+      
+      static void writeHeader( const VectorFieldType& vectorField,
+                               std::ostream& str );
+      
 };
 
 
@@ -147,6 +171,10 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
                          const double& scale  );
+      
+      static void writeHeader( const VectorFieldType& vectorField,
+                               std::ostream& str );
+      
 };
 
 /***
@@ -167,6 +195,10 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
                          const double& scale  );
+      
+      static void writeHeader( const VectorFieldType& vectorField,
+                               std::ostream& str );
+      
 };
 
 /***
@@ -187,6 +219,10 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
                          const double& scale  );
+      
+      static void writeHeader( const VectorFieldType& vectorField,
+                               std::ostream& str );
+      
 };
 
 } // namespace Functions
