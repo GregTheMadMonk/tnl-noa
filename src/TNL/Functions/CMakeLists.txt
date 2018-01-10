@@ -16,6 +16,8 @@ SET( headers Domain.h
              VectorField.h
              VectorFieldGnuplotWriter.h
              VectorFieldGnuplotWriter_impl.h
+             VectorFieldVTKWriter.h
+             VectorFieldVTKWriter_impl.h
  )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Functions )
