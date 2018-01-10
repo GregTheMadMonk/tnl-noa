@@ -26,6 +26,11 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 include( OptimizeForArchitecture )
 
+# Note that in cmake 3.10 the FindOpenMP module is broken - it does not work when
+# CMAKE_EXECUTABLE_SUFFIX is not empty, see https://www.mail-archive.com/cmake@cmake.org/msg56886.html
+# Hence, we find OpenMP before setting CMAKE_EXECUTABLE_SUFFIX.
+find_package( OpenMP )
+
 ####
 # Settings for debug/release version
 #
@@ -34,8 +39,8 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
     set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
-    set( CMAKE_EXECUTABLE_SUFFIX "-dbg" )  # suffix for executables
-    set( CMAKE_DEBUG_POSTFIX "-dbg" )      # suffix for libraries
+    set( CMAKE_EXECUTABLE_SUFFIX "-dbg${CMAKE_EXECUTABLE_SUFFIX}" )  # suffix for executables
+    set( CMAKE_DEBUG_POSTFIX "-dbg" )  # suffix for libraries
 else()
     set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
     set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Release/bin )
@@ -212,14 +217,10 @@ endif( WITH_CUDA STREQUAL "yes" )
 ####
 # Check for OpenMP
 #
-# FIXME: in cmake 3.10 the OpenMP module is broken - it does not work when CMAKE_EXECUTABLE_SUFFIX
-#        is not empty, see https://www.mail-archive.com/cmake@cmake.org/msg56886.html
-#find_package( OpenMP )
-#if( OPENMP_FOUND )
+if( OPENMP_FOUND )
    message( "Compiler supports OpenMP." )
-   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp" )
-#endif()
-#set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp=libgomp" )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP ${OpenMP_CXX_FLAGS}" )
+endif()
 
 ####
 # Check for MPI
