@@ -217,7 +217,7 @@ endif( WITH_CUDA STREQUAL "yes" )
 ####
 # Check for OpenMP
 #
-if( OPENMP_FOUND )
+if( OPENMP_FOUND AND WITH_OPENMP STREQUAL "yes" )
    message( "Compiler supports OpenMP." )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP ${OpenMP_CXX_FLAGS}" )
 endif()
