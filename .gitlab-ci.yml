@@ -14,6 +14,7 @@ stages:
 
 # default flags for cmake
 .default_cmake_flags_def: &default_cmake_flags
+    WITH_OPENMP: "no"
     WITH_CUDA: "no"
     WITH_CUDA_ARCH: "auto"
     WITH_MIC: "no"
@@ -26,11 +27,12 @@ stages:
     stage: build
     script:
         - export MAKEFLAGS=-j$(grep "core id" /proc/cpuinfo | wc -l)
-        - mkdir -p "./$BUILD_TYPE"
-        - pushd "./$BUILD_TYPE"
-        - cmake ..
+        - mkdir -p "./builddir/$CI_JOB_NAME"
+        - pushd "./builddir/$CI_JOB_NAME"
+        - cmake ../..
                 -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
                 -DCMAKE_INSTALL_PREFIX=$(pwd)/${BUILD_TYPE}_install_prefix
+                -DWITH_OPENMP=${WITH_OPENMP}
                 -DWITH_CUDA=${WITH_CUDA}
                 -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH}
                 -DWITH_MIC=${WITH_MIC}
@@ -40,30 +42,14 @@ stages:
         - make
         - make test
         - make install
-        # clean to save disk space on the runner
         - popd
-        - rm -rf "./$BUILD_TYPE"
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Debug
 
-base_Debug:
-    <<: *build_template
+# Cuda builds are specified first because they take more time than host-only builds,
+# which can be allocated on hosts whitout GPUs.
 
-base_Release:
-    <<: *build_template
-    variables:
-        <<: *default_cmake_flags
-        BUILD_TYPE: Release
-
-# TODO
-#openmp:
-#    <<: *build_template
-#    tags:
-#        - openmp
-#    variables:
-#        WITH_OPENMP: "yes"
-        
 cuda_Debug:
     <<: *build_template
     tags:
@@ -72,7 +58,7 @@ cuda_Debug:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
-        
+
 cuda_Release:
     <<: *build_template
     tags:
@@ -81,13 +67,52 @@ cuda_Release:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
-        
-#openmp+cuda:
-#    <<: *build_template
-#    tags:
-#        - openmp
-#        - gpu
-#    variables:
-# TODO
-#        WITH_OPENMP: "yes"
-#        WITH_CUDA: "yes"
+
+cuda+openmp_Debug:
+    <<: *build_template
+    tags:
+        - openmp
+        - gpu
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_CUDA: "yes"
+        BUILD_TYPE: Debug
+
+cuda+openmp_Release:
+    <<: *build_template
+    tags:
+        - openmp
+        - gpu
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_CUDA: "yes"
+        BUILD_TYPE: Release
+
+default_Debug:
+    <<: *build_template
+
+default_Release:
+    <<: *build_template
+    variables:
+        <<: *default_cmake_flags
+        BUILD_TYPE: Release
+
+openmp_Debug:
+    <<: *build_template
+    tags:
+        - openmp
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        BUILD_TYPE: Debug
+
+openmp_Release:
+    <<: *build_template
+    tags:
+        - openmp
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        BUILD_TYPE: Release
