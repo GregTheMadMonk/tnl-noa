@@ -26,7 +26,8 @@ stages:
 .build_template_def: &build_template
     stage: build
     script:
-        - export MAKEFLAGS=-j$(grep "core id" /proc/cpuinfo | wc -l)
+        - export NUM_CORES=$(grep "core id" /proc/cpuinfo | wc -l)
+        - export MAKEFLAGS="-l$(echo 1.5*$NUM_CORES | bc) -j$NUM_CORES"
         - mkdir -p "./builddir/$CI_JOB_NAME"
         - pushd "./builddir/$CI_JOB_NAME"
         - cmake ../..
