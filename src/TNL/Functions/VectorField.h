@@ -302,7 +302,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
             return false;
          }
          if( format == "vtk" )
-            return VectorFieldVTKWriter< ThisType >::write( *this, file );
+            return VectorFieldVTKWriter< ThisType >::write( *this, file, scale );
          else if( format == "gnuplot" )
             return VectorFieldGnuplotWriter< ThisType >::write( *this, file, scale );
          else {

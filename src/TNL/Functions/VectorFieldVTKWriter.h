@@ -45,6 +45,7 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 1, RealType > > VectorFieldType;
+      using VectorType = typename VectorFieldType::VectorType;
 
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
@@ -69,6 +70,7 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 0, RealType > > VectorFieldType;
+      using VectorType = typename VectorFieldType::VectorType;
 
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
@@ -94,6 +96,7 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 2, RealType > > VectorFieldType;
+      using VectorType = typename VectorFieldType::VectorType;
 
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
@@ -118,6 +121,7 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 1, RealType > > VectorFieldType;
+      using VectorType = typename VectorFieldType::VectorType;
 
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
@@ -142,6 +146,7 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 0, RealType > > VectorFieldType;
+      using VectorType = typename VectorFieldType::VectorType;
 
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
@@ -167,6 +172,7 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 3, RealType > > VectorFieldType;
+      using VectorType = typename VectorFieldType::VectorType;
 
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
@@ -191,6 +197,32 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 2, RealType > > VectorFieldType;
+      using VectorType = typename VectorFieldType::VectorType;
+
+      static bool write( const VectorFieldType& function,
+                         std::ostream& str,
+                         const double& scale  );
+      
+      static void writeHeader( const VectorFieldType& vectorField,
+                               std::ostream& str );
+      
+};
+
+/***
+ * 3D grids edges
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          int VectorFieldSize >
+class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1, Real > > >
+{
+   public:
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 1, RealType > > VectorFieldType;
+      using VectorType = typename VectorFieldType::VectorType;
 
       static bool write( const VectorFieldType& function,
                          std::ostream& str,
@@ -215,6 +247,7 @@ class VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 0, RealType > > VectorFieldType;
+      using VectorType = typename VectorFieldType::VectorType;
 
       static bool write( const VectorFieldType& function,
                          std::ostream& str,

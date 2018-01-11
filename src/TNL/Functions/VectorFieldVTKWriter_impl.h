@@ -93,7 +93,9 @@ write( const VectorFieldType& vectorField,
    {
       typename MeshType::Cell entity = mesh.template getEntity< typename MeshType::Cell >( i );
       entity.refresh();
-      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
+      const VectorType v = vectorField.getElement( entity.getIndex() );
+      for( int i = 0; i < 3; i++ )
+         str << scale * ( i < VectorFieldSize ? v[ i ] : 0.0 ) << std::endl;
    }
  
    return true;
@@ -122,13 +124,13 @@ writeHeader( const VectorFieldType& vectorField,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< int Size,
-          typename MeshReal,
+template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > > >::
 write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
@@ -165,7 +167,9 @@ write( const VectorFieldType& vectorField,
    {
       typename MeshType::Vertex entity = mesh.template getEntity< typename MeshType::Vertex >( i );
       entity.refresh();
-      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
+      const VectorType v = vectorField.getElement( entity.getIndex() );
+      for( int i = 0; i < 3; i++ )
+         str << scale * ( i < VectorFieldSize ? v[ i ] : 0.0 ) << std::endl;
    }
  
    return true;
@@ -194,13 +198,13 @@ writeHeader( const VectorFieldType& vectorField,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< int Size,
-          typename MeshReal,
+template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > > >::
 write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
@@ -241,14 +245,16 @@ write( const VectorFieldType& vectorField,
    }
  
    str << std::endl << "CELL_DATA " << entitiesCount << std::endl;
-   str << "VECTORS cellVectorFieldValues float 1" << std::endl;
+   str << "VECTORS cellVectorFieldValues float" << std::endl;
    str << "LOOKUP_TABLE default" << std::endl;
 
    for( MeshIndex i = 0; i < entitiesCount; i++ )
    {
       typename MeshType::Cell entity = mesh.template getEntity< typename MeshType::Cell >( i );
       entity.refresh();
-      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
+      const VectorType v = vectorField.getElement( entity.getIndex() );
+      for( int i = 0; i < 3; i++ )
+         str << scale * ( i < VectorFieldSize ? v[ i ] : 0.0 ) << std::endl;
    }
 
    return true;
@@ -277,13 +283,13 @@ writeHeader( const VectorFieldType& vectorField,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< int Size,
-          typename MeshReal,
+template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > > >::
 write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
@@ -340,7 +346,9 @@ write( const VectorFieldType& vectorField,
    {
       typename MeshType::Face entity = mesh.template getEntity< typename MeshType::Face >( i );
       entity.refresh();
-      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
+      const VectorType v = vectorField.getElement( entity.getIndex() );
+      for( int i = 0; i < 3; i++ )
+         str << scale * ( i < VectorFieldSize ? v[ i ] : 0.0 ) << std::endl;
    }
 
    return true;
@@ -369,13 +377,13 @@ writeHeader( const VectorFieldType& vectorField,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< int Size,
-          typename MeshReal,
+template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > > >::
 write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
@@ -422,7 +430,9 @@ write( const VectorFieldType& vectorField,
    {
       typename MeshType::Vertex entity = mesh.template getEntity< typename MeshType::Vertex >( i );
       entity.refresh();
-      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
+      const VectorType v = vectorField.getElement( entity.getIndex() );
+      for( int i = 0; i < 3; i++ )
+         str << scale * ( i < VectorFieldSize ? v[ i ] : 0.0 ) << std::endl;
    }
 
    return true;
@@ -451,13 +461,13 @@ writeHeader( const VectorFieldType& vectorField,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< int Size,
-          typename MeshReal,
+template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >::
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > > >::
 write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
@@ -521,7 +531,9 @@ write( const VectorFieldType& vectorField,
    {
       typename MeshType::Cell entity = mesh.template getEntity< typename MeshType::Cell >( i );
       entity.refresh();
-      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
+      const VectorType v = vectorField.getElement( entity.getIndex() );
+      for( int i = 0; i < 3; i++ )
+         str << scale * ( i < VectorFieldSize ? v[ i ] : 0.0 ) << std::endl;
    }
 
    return true;
@@ -550,13 +562,13 @@ writeHeader( const VectorFieldType& vectorField,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< int Size,
-          typename MeshReal,
+template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >::
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > > >::
 write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
@@ -643,7 +655,9 @@ write( const VectorFieldType& vectorField,
    {
       typename MeshType::Face entity = mesh.template getEntity< typename MeshType::Face >( i );
       entity.refresh();
-      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
+      const VectorType v = vectorField.getElement( entity.getIndex() );
+      for( int i = 0; i < 3; i++ )
+         str << scale * ( i < VectorFieldSize ? v[ i ] : 0.0 ) << std::endl;
    }
 
    return true;
@@ -672,13 +686,13 @@ writeHeader( const VectorFieldType& vectorField,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< int Size,
-          typename MeshReal,
+template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1, Real > >::
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1, Real > > >::
 write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
@@ -759,7 +773,9 @@ write( const VectorFieldType& vectorField,
    {
       typename MeshType::Edge entity = mesh.template getEntity< typename MeshType::Edge >( i );
       entity.refresh();
-      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
+      const VectorType v = vectorField.getElement( entity.getIndex() );
+      for( int i = 0; i < 3; i++ )
+         str << scale * ( i < VectorFieldSize ? v[ i ] : 0.0 ) << std::endl;
    }
 
    return true;
@@ -788,13 +804,13 @@ writeHeader( const VectorFieldType& vectorField,
     str << "DATASET UNSTRUCTURED_GRID" << std::endl;
 }
 
-template< int Size,
-          typename MeshReal,
+template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Real >
+          typename Real,
+          int VectorFieldSize >
 bool
-VectorFieldVTKWriter< VectorField< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >::
+VectorFieldVTKWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > > >::
 write( const VectorFieldType& vectorField,
        std::ostream& str,
        const double& scale )
@@ -849,7 +865,9 @@ write( const VectorFieldType& vectorField,
    {
       typename MeshType::Vertex entity = mesh.template getEntity< typename MeshType::Vertex >( i );
       entity.refresh();
-      str << scale * vectorField.getData().getElement( entity.getIndex() ) << std::endl;
+      const VectorType v = vectorField.getElement( entity.getIndex() );
+      for( int i = 0; i < 3; i++ )
+         str << scale * ( i < VectorFieldSize ? v[ i ] : 0.0 ) << std::endl;
    }
 
    return true;
