@@ -13,8 +13,8 @@
 #include <TNL/Functions/MeshFunctionGnuplotWriter.h>
 #include <TNL/Functions/MeshFunctionVTKWriter.h>
 #include <TNL/SharedPointer.h>
-#include <TNL/Meshes/DistributedGrid.h>
-#include <TNL/Meshes/DistributedGridSynchronizer.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 #pragma once
 
@@ -39,6 +39,8 @@ class MeshFunction :
       typedef Real RealType;
       typedef Containers::Vector< RealType, DeviceType, IndexType > VectorType;
       typedef Functions::MeshFunction< Mesh, MeshEntityDimension, Real > ThisType;
+      typedef Meshes::DistributedMeshes::DistributedMesh<MeshType> DistributedMeshType;
+      typedef Meshes::DistributedMeshes::DistributedMeshSynchronizer<ThisType> DistributedMeshSynchronizerType;
  
       static constexpr int getEntitiesDimension() { return MeshEntityDimension; }
       
@@ -158,15 +160,13 @@ class MeshFunction :
  
       using Object::boundLoad;
 
-#ifdef USE_MPI
-      void synchronize(void);    
-#endif
+      template< typename Communicator>
+      void Synchronize(Communicator &comm);    
+
  
    protected:
 
-#ifdef USE_MPI
-      Meshes::DistributedGridSynchronizer<Meshes::DistributedGrid<MeshType>,ThisType> synchronizer;    
-#endif
+      DistributedMeshSynchronizerType synchronizer;    
       
       MeshPointer meshPointer;
       
@@ -174,10 +174,9 @@ class MeshFunction :
  
       template< typename, typename > friend class MeshFunctionEvaluator;
 
-#ifdef USE_MPI
    private:
-      void SetupSynchronizer(Meshes::DistributedGrid<Mesh> *distrgrid);
-#endif   
+      void SetupSynchronizer(DistributedMeshType *distrMesh);
+   
 };
 
 } // namespace Functions

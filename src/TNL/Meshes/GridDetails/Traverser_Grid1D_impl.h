@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/GridDetails/GridTraverser.h>
-#include <TNL/Meshes/DistributedGrid.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 
 namespace TNL {
@@ -36,8 +36,8 @@ processBoundaryEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimensions." );
    
-   auto distributedgrid=gridPointer->GetDistGrid();
-   if(distributedgrid==nullptr||!distributedgrid->isMPIUsed())
+   auto distributedgrid=gridPointer->GetDistMesh();
+   if(distributedgrid==nullptr||!distributedgrid->IsDistributed())
    {
         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true >(
            gridPointer,
@@ -47,8 +47,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
    }
    else
    {
-       //MPI
-#ifdef USE_MPI
+       //Distributed
        if(distributedgrid->getLeft()==-1)
        {
           GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
@@ -66,7 +65,6 @@ processBoundaryEntities( const GridPointer& gridPointer,
               gridPointer->getDimensions() - CoordinatesType( 1 ),
               userDataPointer );
        }
-#endif
    }
    
 }
@@ -87,8 +85,8 @@ processInteriorEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimension." );
 
-   auto distributedgrid=gridPointer->GetDistGrid();
-   if(distributedgrid==nullptr||!distributedgrid->isMPIUsed())
+   auto distributedgrid=gridPointer->GetDistMesh();
+   if(distributedgrid==nullptr||!distributedgrid->IsDistributed())
    {
         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
            gridPointer,
@@ -98,8 +96,7 @@ processInteriorEntities( const GridPointer& gridPointer,
    }
    else
    {
-       //MPI
-#ifdef USE_MPI
+       //Distributed
        CoordinatesType begin( distributedgrid->getOverlap().x() );
        CoordinatesType end( gridPointer->getDimensions() - distributedgrid->getOverlap().x()-1 );
        if(distributedgrid->getLeft()==-1)
@@ -117,7 +114,6 @@ processInteriorEntities( const GridPointer& gridPointer,
           begin,
           end,
           userDataPointer );
-#endif
    }
    
 }
@@ -140,8 +136,8 @@ processAllEntities(
 
    static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimensions." );
    
-   auto distributedgrid=gridPointer->GetDistGrid();
-   if(distributedgrid==nullptr||!distributedgrid->isMPIUsed())
+   auto distributedgrid=gridPointer->GetDistMesh();
+   if(distributedgrid==nullptr||!distributedgrid->IsDistributed())
    {
         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
            gridPointer,
@@ -151,8 +147,7 @@ processAllEntities(
    }
    else
    {
-       //MPI
-       #ifdef USE_MPI
+       //Distributed
        CoordinatesType begin( distributedgrid->getOverlap().x() );
        CoordinatesType end( gridPointer->getDimensions() - distributedgrid->getOverlap().x()-1 );
        if(distributedgrid->getLeft()==-1)
@@ -170,7 +165,6 @@ processAllEntities(
           begin,
           end,
           userDataPointer );
-        #endif
    }
 
 }

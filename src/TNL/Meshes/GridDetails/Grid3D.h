@@ -34,6 +34,8 @@ class Grid< 3, Real, Device, Index > : public Object
    typedef Grid< 3, Real, Devices::Host, Index > HostType;
    typedef Grid< 3, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 3, Real, Device, Index > ThisType;
+
+   typedef DistributedMeshes::DistributedMesh <ThisType> DistributedMeshType;
  
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
@@ -99,9 +101,9 @@ class Grid< 3, Real, Device, Index > : public Object
 
    inline void setSpaceSteps(const PointType& steps);
    
-   void SetDistGrid(DistributedGrid <ThisType,3> * distGrid);
+   void SetDistMesh(DistributedMeshType * distGrid);
    
-   DistributedGrid <ThisType,3> * GetDistGrid(void) const;
+   DistributedMeshType * GetDistMesh(void) const;
    
    template< int xPow, int yPow, int zPow >
    __cuda_callable__
@@ -173,7 +175,7 @@ class Grid< 3, Real, Device, Index > : public Object
  
    RealType spaceStepsProducts[ 5 ][ 5 ][ 5 ];
    
-   DistributedGrid <ThisType,3> *distGrid;
+   DistributedMeshType *distGrid;
 
    template< typename, typename, int >
    friend class GridEntityGetter;

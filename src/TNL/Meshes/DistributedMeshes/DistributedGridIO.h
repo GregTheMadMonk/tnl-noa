@@ -11,14 +11,14 @@
 #pragma once
 
 #include <TNL/File.h>
-#include <TNL/Meshes/DistributedGrid.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunction.h>
 
 #include <iostream>
 
 namespace TNL {
 namespace Meshes {   
-
+namespace DistributedMeshes {
 
 template<typename MeshFunctionType,
          int dim=MeshFunctionType::getMeshDimension()>
@@ -73,7 +73,7 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
     
     static bool save(File &file,MeshFunctionType &meshFunction)
     {
-        auto *distrGrid=meshFunction.getMesh().GetDistGrid();
+        auto *distrGrid=meshFunction.getMesh().GetDistMesh();
         
         if(distrGrid==NULL) //not distributed
         {
@@ -108,7 +108,7 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
             
     static bool load(File &file,MeshFunctionType &meshFunction) 
     {
-        auto *distrGrid=meshFunction.getMesh().GetDistGrid();
+        auto *distrGrid=meshFunction.getMesh().GetDistMesh();
         if(distrGrid==NULL) //not distributed
         {
             return meshFunction.boundLoad(file);
@@ -224,5 +224,6 @@ class CopyEntities<MeshFunctionType,3>
 
 };
 
+}
 }
 }

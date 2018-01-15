@@ -1,8 +1,8 @@
     ADD_EXECUTABLE( tnlMeshFuncttionEvaluateTest${debugExt} ${headers} MeshFunctionEvauateTest.cpp )   
     TARGET_LINK_LIBRARIES( tnlMeshFuncttionEvaluateTest${debugExt} ${CPPUNIT_LIBRARIES}
                                                            tnl${mpiExt}${debugExt}-0.1 )
-    TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTest${debugExt} PUBLIC "-DDIMENSION=2" )
-   	TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTest${debugExt} PUBLIC "-DXDISTR -DYDISTR" )
+    #TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTest${debugExt} PUBLIC "-DDIMENSION=2" )
+   	#TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTest${debugExt} PUBLIC "-DXDISTR -DYDISTR" )
 
     ADD_EXECUTABLE( tnlMeshFuncttionEvaluateTestX${debugExt} ${headers} MeshFunctionEvauateTest.cpp )   
     TARGET_LINK_LIBRARIES( tnlMeshFuncttionEvaluateTestX${debugExt} ${CPPUNIT_LIBRARIES}
