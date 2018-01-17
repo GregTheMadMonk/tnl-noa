@@ -1,7 +1,6 @@
 ADD_SUBDIRECTORY( GridDetails )
 ADD_SUBDIRECTORY( MeshDetails )
 ADD_SUBDIRECTORY( DistributedMeshes )
-ADD_SUBDIRECTORY( Readers )
 ADD_SUBDIRECTORY( Topologies )
 
 SET( headers Grid.h
