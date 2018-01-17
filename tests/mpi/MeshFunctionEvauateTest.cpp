@@ -22,10 +22,10 @@ using namespace std;
 #include <TNL/Timer.h>
 #include  <TNL/SharedPointer.h>
 
-#define DIMENSION 3
-#define OUTPUT 
-#define XDISTR
-#define YDISTR
+//#define DIMENSION 3
+//#define OUTPUT 
+//#define XDISTR
+//#define YDISTR
 //#define ZDISTR
 
 #include "../../src/UnitTests/Mpi/Functions.h"
