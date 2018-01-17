@@ -337,6 +337,7 @@ public:
               std::cerr << "The gemv kernel is optimized only for small 'n' and assumes that n <= 256." << std::endl; );
 
 #ifdef HAVE_CUDA
+      // TODO: use static storage, e.g. from the CudaReductionBuffer, to avoid frequent reallocations
       Containers::Vector< RealType, Devices::Cuda, IndexType > xDevice;
       xDevice.setSize( n );
       if( ! Containers::Algorithms::ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< RealType, RealType, IndexType >( xDevice.getData(), x, n ) )

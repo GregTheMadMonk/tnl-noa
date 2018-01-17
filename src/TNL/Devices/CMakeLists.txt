@@ -26,7 +26,4 @@ set( tnl_devices_SOURCES
     
 #SET( libtnlcoreincludedir ${TNL_INCLUDE_DIR}/core )
 #SET( libtnlcoreinclude_HEADERS ${headers} )
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Devices )
-
-
-
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Devices )

@@ -41,4 +41,4 @@ ELSE()
 ENDIF()    
 
         
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Images )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Images )
