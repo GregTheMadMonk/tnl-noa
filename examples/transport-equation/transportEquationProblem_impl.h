@@ -223,17 +223,4 @@ assemblyLinearSystem( const RealType& time,
 {
 }
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
-    template< typename Matrix >
-void
-transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-saveFailedLinearSystem( const Matrix& matrix,
-                        const DofVectorType& dofs,
-                        const DofVectorType& rightHandSide ) const
-{
-}
-
 } // namespace TNL

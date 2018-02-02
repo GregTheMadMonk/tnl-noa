@@ -11,13 +11,10 @@
 #include <gtest/gtest.h>
 
 #ifdef HAVE_MPI    
-   #define USE_MPI
 
-#include <TNL/Meshes/DistributedGrid.h>
-#include <TNL/Meshes/DistributedGridSynchronizer.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunction.h>
-
-#include <mpi.h>
+#include <TNL/Communicators/MpiCommunicator.h>
 
 #include "Functions.h"
 
@@ -26,6 +23,9 @@ using namespace TNL::Containers;
 using namespace TNL::Meshes;
 using namespace TNL::Functions;
 using namespace TNL::Devices;
+using namespace TNL::Communicators;
+using namespace TNL::Meshes::DistributedMeshes;
+
  
 
 template<typename DofType>
@@ -349,19 +349,22 @@ void check_Inner_2D(int rank, GridType grid, DofType dof, typename DofType::Real
  * Light check of 2D distributed grid and its synchronization. 
  * expected 9 processors
  */
+
+typedef MpiCommunicator CommunicatorType;
 typedef Grid<2,double,Host,int> MeshType;
 typedef MeshFunction<MeshType> MeshFunctionType;
 typedef Vector<double,Host,int> DofType;
 typedef typename MeshType::Cell Cell;
 typedef typename MeshType::IndexType IndexType; 
 typedef typename MeshType::PointType PointType; 
-typedef DistributedGrid<MeshType> DistributedGridType;
+typedef DistributedMesh<MeshType> DistributedGridType;
      
+CommunicatorType comm;
+
 class DistributedGirdTest_2D : public ::testing::Test {
  protected:
 
-    static DistributedGrid<MeshType> *distrgrid;
-    //static DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2> *synchronizer;
+    static DistributedGridType *distrgrid;
     static DofType *dof;
 
     static SharedPointer<MeshType> gridptr;
@@ -382,8 +385,8 @@ class DistributedGirdTest_2D : public ::testing::Test {
   static void SetUpTestCase() {
       
     int size=10;
-    rank=MPI::COMM_WORLD.Get_rank();
-    nproc=MPI::COMM_WORLD.Get_size();
+    rank=comm.GetRank();
+    nproc=comm.GetSize();
     
     PointType globalOrigin;
     PointType globalProportions;
@@ -399,14 +402,12 @@ class DistributedGirdTest_2D : public ::testing::Test {
     
     typename DistributedGridType::CoordinatesType overlap;
     overlap.setValue(1);
-    distrgrid=new DistributedGrid<MeshType> (globalGrid,overlap);
+    distrgrid=new DistributedGridType (comm,globalGrid,overlap);
     
     distrgrid->SetupGrid(*gridptr);
     dof=new DofType(gridptr->template getEntitiesCount< Cell >());
     
     meshFunctionptr->bind(gridptr,*dof);
-    
-    //synchronizer=new DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2>(distrgrid);
     
     constFunctionPtr->Number=rank;
     
@@ -417,15 +418,13 @@ class DistributedGirdTest_2D : public ::testing::Test {
   // Can be omitted if not needed.
   static void TearDownTestCase() {
       delete dof;
-      //delete synchronizer;
       delete distrgrid;
 
   }
 
 };
 
-DistributedGrid<MeshType> *DistributedGirdTest_2D::distrgrid=NULL;
-//DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,2> *DistributedGirdTest_2D::synchronizer=NULL;
+DistributedMesh<MeshType> *DistributedGirdTest_2D::distrgrid=NULL;
 DofType *DistributedGirdTest_2D::dof=NULL;
 SharedPointer<MeshType> DistributedGirdTest_2D::gridptr;
 SharedPointer<MeshFunctionType> DistributedGirdTest_2D::meshFunctionptr;
@@ -475,8 +474,7 @@ TEST_F(DistributedGirdTest_2D, LinearFunctionTest)
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_2D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-    //synchronizer->Synchronize(*meshFunctionptr);
-    meshFunctionptr->synchronize();
+    meshFunctionptr->Synchronize(comm);
     
     int count =gridptr->template getEntitiesCount< Cell >();
     for(int i=0;i<count;i++)
@@ -491,8 +489,7 @@ TEST_F(DistributedGirdTest_2D, SynchronizerNeighborTest)
 {
     setDof_2D(*dof,-1);
     constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-    //synchronizer->Synchronize(*meshFunctionptr);
-    meshFunctionptr->synchronize();
+    meshFunctionptr->Synchronize(comm);
     checkNeighbor_2D(rank, *gridptr, *dof);
 }
 
@@ -534,7 +531,7 @@ TEST(NoMPI, NoTest)
     // Called after a test ends.
     virtual void OnTestEnd(const ::testing::TestInfo& test_info) 
     {
-        int rank=MPI::COMM_WORLD.Get_rank();
+        int rank=comm.GetRank();
         sout<< test_info.test_case_name() <<"." << test_info.name() << " End." <<std::endl;
         std::cout << rank << ":" << std::endl << sout.str()<< std::endl;
         sout.str( std::string() );
@@ -556,12 +553,12 @@ int main( int argc, char* argv[] )
        delete listeners.Release(listeners.default_result_printer());
        listeners.Append(new MinimalistBuffredPrinter);
 
-       MPI::Init(argc,argv);
+       comm.Init(argc,argv);
     #endif
        int result= RUN_ALL_TESTS();
 
     #ifdef HAVE_MPI
-       MPI::Finalize();
+       comm.Finalize();
     #endif
        return result;
 #else

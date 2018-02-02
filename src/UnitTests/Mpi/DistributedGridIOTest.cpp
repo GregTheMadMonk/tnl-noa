@@ -11,14 +11,11 @@
 
 #ifdef HAVE_MPI    
 
-#define USE_MPI
 
-#include <TNL/mpi-supp.h>
-
-#include <TNL/Meshes/DistributedGrid.h>
-#include <TNL/Meshes/DistributedGridSynchronizer.h>
-#include <TNL/Meshes/DistributedGridIO.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Communicators/MpiCommunicator.h>
 
 
 
@@ -28,6 +25,8 @@ using namespace TNL::Containers;
 using namespace TNL::Meshes;
 using namespace TNL::Functions;
 using namespace TNL::Devices;
+using namespace TNL::Communicators;
+using namespace TNL::Meshes::DistributedMeshes;
 
 
 //================Parameters===================================
@@ -194,6 +193,9 @@ class ParameterProvider<3>
 
 //------------------------------------------------------------------------------
 
+typedef MpiCommunicator CommunicatorType;
+CommunicatorType comm;
+
 template <int dim>
 class TestDistributedGridIO{
     public:
@@ -204,7 +206,7 @@ class TestDistributedGridIO{
     typedef typename MeshType::Cell Cell;
     typedef typename MeshType::IndexType IndexType; 
     typedef typename MeshType::PointType PointType; 
-    typedef DistributedGrid<MeshType> DistributedGridType;
+    typedef DistributedMesh<MeshType> DistributedGridType;
 
     typedef typename DistributedGridType::CoordinatesType CoordinatesType;
     typedef LinearFunction<double,dim> LinearFunctionType;
@@ -232,7 +234,7 @@ class TestDistributedGridIO{
 
         CoordinatesType overlap;
         overlap.setValue(1);
-        DistributedGridType distrgrid(globalGrid,overlap, distr);
+        DistributedGridType distrgrid(comm,globalGrid,overlap, distr);
         
         SharedPointer<MeshType> gridptr;
         SharedPointer<MeshFunctionType> meshFunctionptr;
@@ -253,8 +255,8 @@ class TestDistributedGridIO{
         file.close();
 
         //create similar local mesh function and evaluate linear function on it
-        PointType localOrigin=parametry.getOrigin(MPI::COMM_WORLD.Get_rank());        
-        PointType localProportions=parametry.getProportions(MPI::COMM_WORLD.Get_rank());;
+        PointType localOrigin=parametry.getOrigin(comm.GetRank());        
+        PointType localProportions=parametry.getProportions(comm.GetRank());;
             
         SharedPointer<MeshType>  localGridptr;
         localGridptr->setDimensions(localProportions);
@@ -278,7 +280,7 @@ class TestDistributedGridIO{
         loadDof.setValue(-1);
         
 
-        file.open( String( "/tmp/test-file.tnl-" )+convertToString(MPI::COMM_WORLD.Get_rank()), IOMode::read );
+        file.open( String( "/tmp/test-file.tnl-" )+convertToString(comm.GetRank()), IOMode::read );
         loadMeshFunctionptr->boundLoad(file);
         file.close();
 
@@ -297,8 +299,8 @@ class TestDistributedGridIO{
         ParameterProvider<dim> parametry;
 
         //save files from local mesh        
-        PointType localOrigin=parametry.getOrigin(MPI::COMM_WORLD.Get_rank());        
-        PointType localProportions=parametry.getProportions(MPI::COMM_WORLD.Get_rank());;
+        PointType localOrigin=parametry.getOrigin(comm.GetRank());        
+        PointType localProportions=parametry.getProportions(comm.GetRank());;
             
         SharedPointer<MeshType> localGridptr;
         localGridptr->setDimensions(localProportions);
@@ -311,7 +313,7 @@ class TestDistributedGridIO{
         linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
 
         File file;
-        file.open( String( "/tmp/test-file.tnl-" )+convertToString(MPI::COMM_WORLD.Get_rank()), IOMode::write );        
+        file.open( String( "/tmp/test-file.tnl-" )+convertToString(comm.GetRank()), IOMode::write );        
         localMeshFunctionptr->save(file);
         file.close();
 
@@ -330,8 +332,7 @@ class TestDistributedGridIO{
 
         CoordinatesType overlap;
         overlap.setValue(1);
-        DistributedGridType distrgrid(globalGrid,overlap, distr);
-        //DistributedGridSynchronizer<DistributedGridType,MeshFunctionType> synchronizer(&distrgrid);
+        DistributedGridType distrgrid(comm,globalGrid,overlap, distr);
 
         //Crete "distributedgrid driven" grid filed by load
         SharedPointer<MeshType> loadGridptr;
@@ -347,7 +348,7 @@ class TestDistributedGridIO{
         DistributedGridIO<MeshFunctionType> ::load(file, *loadMeshFunctionptr );
         file.close();
 
-        loadMeshFunctionptr->synchronize();//need synchronization for overlaps to be filled corectly in loadDof
+        loadMeshFunctionptr->Synchronize(comm);//need synchronization for overlaps to be filled corectly in loadDof
 
 
         //Crete "distributedgrid driven" grid filed by evaluated linear function
@@ -359,9 +360,8 @@ class TestDistributedGridIO{
         dof.setValue(-1);
         meshFunctionptr->bind(gridptr,dof);
         
-        linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
-        //synchronizer.Synchronize(*meshFunctionptr);//need synchronization for overlaps to be filled corectly in dof
-        meshFunctionptr->synchronize();
+        linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);        
+        meshFunctionptr->Synchronize(comm);
 
         for(int i=0;i<localDof.getSize();i++)
         {
@@ -398,7 +398,7 @@ TEST( DistributedGridIO, Load_2D )
 
 TEST( DistributedGridIO, Load_3D )
 {
-    TestDistributedGridIO<2>::TestLoad();
+    TestDistributedGridIO<3>::TestLoad();
 }
 
 #else
@@ -437,7 +437,7 @@ TEST(NoMPI, NoTest)
     // Called after a test ends.
     virtual void OnTestEnd(const ::testing::TestInfo& test_info) 
     {
-        int rank=MPI::COMM_WORLD.Get_rank();
+        int rank=comm.GetRank();
         sout<< test_info.test_case_name() <<"." << test_info.name() << " End." <<std::endl;
         std::cout << rank << ":" << std::endl << sout.str()<< std::endl;
         sout.str( std::string() );
@@ -459,12 +459,12 @@ int main( int argc, char* argv[] )
        delete listeners.Release(listeners.default_result_printer());
        listeners.Append(new MinimalistBuffredPrinter);
 
-       MPI::Init(argc,argv);
+       comm.Init(argc,argv);
     #endif
        int result= RUN_ALL_TESTS();
 
     #ifdef HAVE_MPI
-       MPI::Finalize();
+       comm.Finalize();
     #endif
        return result;
 #else

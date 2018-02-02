@@ -12,4 +12,4 @@ set( tnl_operators_interpolants_SOURCES
      ${common_SOURCES}
      PARENT_SCOPE )   
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/operators/interpolants )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/operators/interpolants )

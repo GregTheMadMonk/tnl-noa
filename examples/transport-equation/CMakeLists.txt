@@ -10,25 +10,25 @@ set( tnl_transport_equation_HEADERS
      
                
 IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( tnl-transport-equation${debugExt} tnl-transport-equation.cu)   
-   target_link_libraries( tnl-transport-equation${debugExt} tnl${debugExt}-${tnlVersion}  ${CUSPARSE_LIBRARY} )
-   CUDA_ADD_EXECUTABLE( tnl-transport-equation-eoc${debugExt} tnl-transport-equation-eoc.cu)   
-   target_link_libraries( tnl-transport-equation-eoc${debugExt} tnl${debugExt}-${tnlVersion}  ${CUSPARSE_LIBRARY} )
+   CUDA_ADD_EXECUTABLE( tnl-transport-equation tnl-transport-equation.cu)   
+   target_link_libraries( tnl-transport-equation tnl  ${CUSPARSE_LIBRARY} )
+   CUDA_ADD_EXECUTABLE( tnl-transport-equation-eoc tnl-transport-equation-eoc.cu)   
+   target_link_libraries( tnl-transport-equation-eoc tnl  ${CUSPARSE_LIBRARY} )
 
 ELSE(  BUILD_CUDA )               
-   ADD_EXECUTABLE( tnl-transport-equation${debugExt} tnl-transport-equation.cpp)     
-   target_link_libraries( tnl-transport-equation${debugExt} tnl${debugExt}-${tnlVersion} )
-   ADD_EXECUTABLE( tnl-transport-equation-eoc${debugExt} tnl-transport-equation-eoc.cpp)     
-   target_link_libraries( tnl-transport-equation-eoc${debugExt} tnl${debugExt}-${tnlVersion} )
+   ADD_EXECUTABLE( tnl-transport-equation tnl-transport-equation.cpp)     
+   target_link_libraries( tnl-transport-equation tnl )
+   ADD_EXECUTABLE( tnl-transport-equation-eoc tnl-transport-equation-eoc.cpp)     
+   target_link_libraries( tnl-transport-equation-eoc tnl )
 ENDIF( BUILD_CUDA )
 
 
-INSTALL( TARGETS tnl-transport-equation${debugExt}
-                 tnl-transport-equation-eoc${debugExt}
+INSTALL( TARGETS tnl-transport-equation
+                 tnl-transport-equation-eoc
          RUNTIME DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
         
 INSTALL( FILES tnl-run-transport-equation
                ${tnl_transport_equation_SOURCES}
                ${tnl_transport_equation_HEADERS}
-         DESTINATION share/tnl-${tnlVersion}/examples/transport-equation )
+         DESTINATION ${TNL_TARGET_DATA_DIRECTORY}/examples/transport-equation )

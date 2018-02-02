@@ -18,9 +18,18 @@ project( tnl )
 
 set( tnlVersion "0.1" )
 
+# install paths relative to the cmake's prefix
+set( TNL_TARGET_INCLUDE_DIRECTORY "include/TNL" )
+set( TNL_TARGET_DATA_DIRECTORY "share/TNL" )
+
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 include( OptimizeForArchitecture )
+
+# Note that in cmake 3.10 the FindOpenMP module is broken - it does not work when
+# CMAKE_EXECUTABLE_SUFFIX is not empty, see https://www.mail-archive.com/cmake@cmake.org/msg56886.html
+# Hence, we find OpenMP before setting CMAKE_EXECUTABLE_SUFFIX.
+find_package( OpenMP )
 
 ####
 # Settings for debug/release version
@@ -30,7 +39,8 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
     set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
-    set( debugExt -dbg )
+    set( CMAKE_EXECUTABLE_SUFFIX "-dbg${CMAKE_EXECUTABLE_SUFFIX}" )  # suffix for executables
+    set( CMAKE_DEBUG_POSTFIX "-dbg" )  # suffix for libraries
 else()
     set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
     set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Release/bin )
@@ -66,6 +76,16 @@ if( CXX_COMPILER_NAME MATCHES "icpc" )
    endif( )	
 endif()
 
+# force colorized output in continuous integration
+if( DEFINED ENV{CI_JOB_NAME} )
+   message(STATUS "Continuous integration detected -- forcing compilers to produce colorized output.")
+   if( CXX_COMPILER_NAME MATCHES "clang" )
+      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics" )
+   else()
+      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color" )
+   endif()
+endif()
+
 #####
 # Check for MPI -- poznej podle vraperu compileru -- da se testovat preklad bez MPI
 #
@@ -98,8 +118,13 @@ if( WITH_CUDA STREQUAL "yes" )
             message( "-- Setting CUDA_HOST_COMPILER to '$ENV{CUDA_HOST_COMPILER}'" )
             set( CUDA_HOST_COMPILER $ENV{CUDA_HOST_COMPILER} )
         else()
-            message( "-- Setting CUDA_HOST_COMPILER to '${CMAKE_CXX_COMPILER}'" )
-            set( CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} )
+            if( EXISTS "${CUDA_TOOLKIT_ROOT_DIR}/bin/g++" )
+               message( "-- Setting CUDA_HOST_COMPILER to '${CUDA_TOOLKIT_ROOT_DIR}/bin/g++'" )
+               set( CUDA_HOST_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/g++" )
+            else()
+               message( "-- Setting CUDA_HOST_COMPILER to '${CMAKE_CXX_COMPILER}'" )
+               set( CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} )
+            endif()
         endif()
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA)
         # disable false compiler warnings
@@ -142,7 +167,11 @@ if( WITH_CUDA STREQUAL "yes" )
                 endif()
                 message( "GPU architecture options:  ${CUDA_ARCH}" )
             else()
-                set( CUDA_ARCH -gencode arch=compute_${WITH_CUDA_ARCH},code=sm_${WITH_CUDA_ARCH} )
+                if( NOT WITH_CUDA_ARCH STREQUAL "" )
+                    set( CUDA_ARCH -gencode arch=compute_${WITH_CUDA_ARCH},code=sm_${WITH_CUDA_ARCH} )
+                else()
+                    message( FATAL_ERROR "\$WITH_CUDA_ARCH cannot be empty." )
+                endif()
             endif()
         endif()
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES )
@@ -205,12 +234,10 @@ endif( WITH_CUDA STREQUAL "yes" )
 ####
 # Check for OpenMP
 #
-find_package( OpenMP ) 
-if( OPENMP_FOUND )
+if( OPENMP_FOUND AND WITH_OPENMP STREQUAL "yes" )
    message( "Compiler supports OpenMP." )
-   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp" )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP ${OpenMP_CXX_FLAGS}" )
 endif()
-#set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp=libgomp" )
 
 find_package( DCMTK )
 if( DCMTK_FOUND )
@@ -295,8 +322,6 @@ if( WITH_TESTS STREQUAL "yes" )
    endif()
 endif( WITH_TESTS STREQUAL "yes" )
 
-find_package( PythonInterp 3 )
-
 #if( BUILD_MPI )
 #   FIND_PATH( PETSC_INCLUDE_DIR petsc.h
 #     /usr/include/petsc
@@ -353,15 +378,8 @@ if( OPTIMIZED_VECTOR_HOST_OPERATIONS STREQUAL "yes" )
    AddCompilerFlag( "-DOPTIMIZED_VECTOR_HOST_OPERATIONS " )
 endif()
 
-set( configDirectory \"${CMAKE_INSTALL_PREFIX}/share/tnl-${tnlVersion}/\")
-set( sourceDirectory \"${PROJECT_SOURCE_DIR}/\" )
-set( testsDirectory \"${PROJECT_TESTS_PATH}/\" )
 CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/TNL/tnlConfig.h" )
-INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.h DESTINATION include/tnl-${tnlVersion}/TNL )
-if( PYTHONINTERP_FOUND )
-    CONFIGURE_FILE( "Config.py.in" "${PROJECT_BUILD_PATH}/TNL/Config.py" )
-    INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/Config.py DESTINATION lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages/TNL )
-endif( PYTHONINTERP_FOUND )
+INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.h DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY} )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )

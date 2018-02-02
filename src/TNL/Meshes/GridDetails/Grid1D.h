@@ -17,7 +17,7 @@
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
 #include <TNL/Meshes/GridEntity.h>
 #include <TNL/Meshes/GridEntityConfig.h>
-#include <TNL/Meshes/DistributedGrid.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace TNL {
 namespace Meshes {
@@ -37,6 +37,8 @@ class Grid< 1, Real, Device, Index > : public Object
    typedef Grid< 1, Real, Devices::Host, Index > HostType;
    typedef Grid< 1, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 1, Real, Device, Index > ThisType;
+
+   typedef DistributedMeshes::DistributedMesh <ThisType> DistributedMeshType;
 
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
@@ -124,9 +126,9 @@ class Grid< 1, Real, Device, Index > : public Object
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const;
    
-   void SetDistGrid(DistributedGrid <ThisType,1> * distGrid);
+   void SetDistMesh(DistributedMeshType * distMesh);
    
-   DistributedGrid <ThisType,1> * GetDistGrid(void) const;
+   DistributedMeshType * GetDistMesh(void) const;
 
    /****
     *  Method for saving the object to a file as a binary data
@@ -170,7 +172,7 @@ class Grid< 1, Real, Device, Index > : public Object
  
    RealType spaceStepsProducts[ 5 ];
    
-   DistributedGrid <ThisType,1> *distGrid;
+   DistributedMeshType *distGrid;
 };
 
 } // namespace Meshes

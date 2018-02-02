@@ -108,11 +108,6 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                                  DofVectorPointer& rightHandSidePointer,
                                  MeshDependentDataPointer& meshDependentData );
 
-      template< typename Matrix >
-      void saveFailedLinearSystem( const Matrix& matrix,
-                                   const DofVectorType& dofs,
-                                   const DofVectorType& rightHandSide ) const;
-
       protected:
          
          MeshFunctionPointer uPointer;

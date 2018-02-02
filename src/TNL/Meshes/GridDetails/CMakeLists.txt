@@ -32,4 +32,4 @@ SET( tnl_mesh_griddetails_SOURCES
      ${CURRENT_DIR}/Grid_impl.cpp
      PARENT_SCOPE )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Meshes/GridDetails )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Meshes/GridDetails )

@@ -10,33 +10,40 @@
 
 #pragma once
 
-
-#include <TNL/Meshes/DistributedGrid.h>
+#include <TNL/Meshes/Grid.h>
 //#include <TNL/Functions/MeshFunction.h>
-#include <TNL/mpi-supp.h>
+
 
 namespace TNL {
-namespace Meshes {   
+namespace Functions{
+template< typename Mesh,
+          int MeshEntityDimension,
+          typename Real  >
+class MeshFunction;
+}//Functions
+}//TNL
 
-template <typename DistributedGridType,
-		typename MeshFunctionType,
-        int dim=DistributedGridType::getMeshDimension()>  
-class DistributedGridSynchronizer
-{
+namespace TNL {
+namespace Meshes { 
+namespace DistributedMeshes { 
 
-};
 
 //=============================================1D==================================
 
-template <typename DistributedGridType,
-		typename MeshFunctionType>  
-class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,1>
+template <typename RealType,
+          int EntityDimension,
+          typename Index,
+          typename Device,
+          typename GridReal>  
+class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, Device, Index >,EntityDimension, RealType>>
 {
 
-#ifdef USE_MPI
 public:
-        typedef typename MeshFunctionType::MeshType::Cell Cell;
-        typedef typename MeshFunctionType::RealType Real;
+        typedef typename Grid< 1, GridReal, Device, Index >::Cell Cell;
+        typedef typename Functions::MeshFunction< Grid< 1, GridReal, Device, Index >,EntityDimension, RealType> MeshFunctionType;
+        typedef typename Grid< 1, GridReal, Device, Index >::DistributedMeshType DistributedGridType; 
+        typedef RealType Real;
+
 
 private:  
         Real * leftsendbuf;
@@ -52,12 +59,12 @@ private:
 
     
     public:
-    DistributedGridSynchronizer()
+    DistributedMeshSynchronizer()
     {
         isSet=false;
     };
 
-    DistributedGridSynchronizer(DistributedGridType *distrgrid)
+    DistributedMeshSynchronizer(DistributedGridType *distrgrid)
     {
         isSet=false;
         SetDistributedGrid(distrgrid);
@@ -81,7 +88,7 @@ private:
         rightrcvbuf=new Real[size];      
     };
 
-    ~DistributedGridSynchronizer()
+    ~DistributedMeshSynchronizer()
     {
         if(isSet)
         {
@@ -89,11 +96,12 @@ private:
         };
     };
 
-    void Synchronize(MeshFunctionType &meshfunction)
+    template<typename Communicator>
+    void Synchronize(Communicator &comm, MeshFunctionType &meshfunction)
     {
         TNL_ASSERT_TRUE(isSet,"Synchronizer is not set, but used to Synchronize");
 
-        if(!distributedgrid->isMPIUsed())
+        if(!distributedgrid->IsDistributed())
                 return;
 
         Cell leftentity(meshfunction.getMesh());
@@ -121,33 +129,33 @@ private:
         }
 
         //async send
-        MPI::Request req[4];
+        typename Communicator::Request req[4];
 
         //send everithing, recieve everything 
         if(left!=-1)
         {
-            req[0]=TNLMPI::ISend(leftsendbuf, size, left);
-            req[2]=TNLMPI::IRecv(leftrcvbuf, size, left);
+            req[0]=comm.ISend(leftsendbuf, size, left);
+            req[2]=comm.IRecv(leftrcvbuf, size, left);
         }
         else
         {
-            req[0]=MPI::REQUEST_NULL;
-            req[2]=MPI::REQUEST_NULL;
+            req[0]=comm.NullRequest;
+            req[2]=comm.NullRequest;
         }        
 
         if(right!=-1)
         {
-            req[1]=TNLMPI::ISend(rightsendbuf, size, right);
-            req[3]=TNLMPI::IRecv(rightrcvbuf, size, right);
+            req[1]=comm.ISend(rightsendbuf, size, right);
+            req[3]=comm.IRecv(rightrcvbuf, size, right);
         }
         else
         {
-            req[1]=MPI::REQUEST_NULL;
-            req[3]=MPI::REQUEST_NULL;
+            req[1]=comm.NullRequest;
+            req[3]=comm.NullRequest;
         }
 
         //wait until send and recv is done
-        MPI::Request::Waitall(4, req);
+        comm.WaitAll(req, 4);
 
         //copy data form rcv buffers
         if(left!=-1)
@@ -179,18 +187,23 @@ private:
         delete [] leftsendbuf;
         delete [] rightsendbuf; 
     };
-#endif
 
 };
 
+
 //=========================2D=================================================
-template <typename DistributedGridType,
-		typename MeshFunctionType>  
-class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,2>
+template <typename RealType,
+          int EntityDimension,
+          typename Index,
+          typename Device,
+          typename GridReal>  
+class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, Device, Index >,EntityDimension, RealType>>
 {
 
-#ifdef USE_MPI
     public:
+        typedef typename Grid< 2, GridReal, Device, Index >::Cell Cell;
+        typedef typename Functions::MeshFunction< Grid< 2, GridReal, Device, Index >,EntityDimension, RealType> MeshFunctionType;
+        typedef typename Grid< 2, GridReal, Device, Index >::DistributedMeshType DistributedGridType; 
         typedef typename MeshFunctionType::RealType Real;
         typedef typename DistributedGridType::CoordinatesType CoordinatesType;
 
@@ -218,12 +231,12 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,2>
         bool isSet;
 
     public:
-    DistributedGridSynchronizer()
+    DistributedMeshSynchronizer()
     {
         isSet=false;
     };
 
-    DistributedGridSynchronizer(DistributedGridType *distrgrid)
+    DistributedMeshSynchronizer(DistributedGridType *distrgrid)
     {
         isSet=false;
         SetDistributedGrid(distrgrid);
@@ -278,18 +291,19 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,2>
         downDst=localgridsize.y()-overlap.y();                       
     }
 
-    ~DistributedGridSynchronizer()
+    ~DistributedMeshSynchronizer()
     {
         if(isSet)
             DeleteBuffers();
     }
         
-    void Synchronize(MeshFunctionType &meshfunction)
+    template<typename Communicator>
+    void Synchronize(Communicator &comm, MeshFunctionType &meshfunction)
     {
 
         TNL_ASSERT_TRUE(isSet,"Synchronizer is not set, but used to Synchronize");
 
-	    if(!distributedgrid->isMPIUsed())
+	    if(!distributedgrid->IsDistributed())
             return;
 
         int *neighbor=distributedgrid->getNeighbors();
@@ -301,23 +315,23 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,2>
             neighbor);
 	
         //async send and rcv
-        MPI::Request req[16];
+        typename Communicator::Request req[16];
 		                
         //send everithing, recieve everything 
         for(int i=0;i<8;i++)	
            if(neighbor[i]!=-1)
            {
-               req[i]=TNLMPI::ISend(sendbuffs[i], sizes[i], neighbor[i]);
-               req[8+i]=TNLMPI::IRecv(rcvbuffs[i], sizes[i], neighbor[i]);
+               req[i]=comm.ISend(sendbuffs[i], sizes[i], neighbor[i]);
+               req[8+i]=comm.IRecv(rcvbuffs[i], sizes[i], neighbor[i]);
            }
 		   else
       	   {
-               req[i]=MPI::REQUEST_NULL;
-               req[8+i]=MPI::REQUEST_NULL;
+               req[i]=comm.NullRequest;
+               req[8+i]=comm.NullRequest;
            }
 
         //wait until send is done
-        MPI::Request::Waitall(16, req);
+        comm.WaitAll(req,16);
         
         //copy data form rcv buffers
         CopyBuffers(meshfunction, rcvbuffs, false,
@@ -381,20 +395,24 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,2>
             delete [] rcvbuffs[i];
         }
     };
-
-#endif
-
 };
 
+
 //=========================3D=================================================
-template <typename DistributedGridType,
-		typename MeshFunctionType>  
-class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
+template <typename RealType,
+          int EntityDimension,
+          typename Index,
+          typename Device,
+          typename GridReal>  
+class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, Device, Index >,EntityDimension, RealType>>
 {
 
-#ifdef USE_MPI
-    typedef typename MeshFunctionType::RealType Real;
-    typedef typename DistributedGridType::CoordinatesType CoordinatesType;
+    public:
+        typedef typename Grid< 3, GridReal, Device, Index >::Cell Cell;
+        typedef typename Functions::MeshFunction< Grid< 3, GridReal, Device, Index >,EntityDimension, RealType> MeshFunctionType;
+        typedef typename Grid< 3, GridReal, Device, Index >::DistributedMeshType DistributedGridType; 
+        typedef typename MeshFunctionType::RealType Real;
+        typedef typename DistributedGridType::CoordinatesType CoordinatesType;
       
     private:
         Real ** sendbuffs=new Real*[26];
@@ -425,12 +443,12 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
     
     public:
     
-    DistributedGridSynchronizer()
+    DistributedMeshSynchronizer()
     {
         isSet=false;
     };
 
-    DistributedGridSynchronizer(DistributedGridType *distrgrid)
+    DistributedMeshSynchronizer(DistributedGridType *distrgrid)
     {
         isSet=false;
         SetDistributedGrid(distrgrid);
@@ -489,7 +507,7 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
         
     }
     
-    ~DistributedGridSynchronizer()
+    ~DistributedMeshSynchronizer()
     {
         if(isSet)
         {
@@ -497,12 +515,13 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
         }
     }
         
-    void Synchronize(MeshFunctionType &meshfunction)
+    template<typename Communicator>
+    void Synchronize(Communicator &comm,MeshFunctionType &meshfunction)
     {
 
         TNL_ASSERT_TRUE(isSet,"Synchronizer is not set, but used to Synchronize");
 
-    	if(!distributedgrid->isMPIUsed())
+    	if(!distributedgrid->IsDistributed())
             return;
         
         int *neighbor=distributedgrid->getNeighbors();
@@ -515,23 +534,23 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
             neighbor);
         
         //async send and rcv
-        MPI::Request req[52];
+        typename Communicator::Request req[52];
 		                
         //send everithing, recieve everything 
         for(int i=0;i<26;i++)	
            if(neighbor[i]!=-1)
            {
-               req[i]=TNLMPI::ISend(sendbuffs[i], sizes[i], neighbor[i]);
-               req[26+i]=TNLMPI::IRecv(rcvbuffs[i], sizes[i], neighbor[i]);
+               req[i]=comm.ISend(sendbuffs[i], sizes[i], neighbor[i]);
+               req[26+i]=comm.IRecv(rcvbuffs[i], sizes[i], neighbor[i]);
            }
 		   else
       	   {
-               req[i]=MPI::REQUEST_NULL;
-               req[26+i]=MPI::REQUEST_NULL;
+               req[i]=comm.NullRequest;
+               req[26+i]=comm.NullRequest;
            }
 
         //wait until send is done
-        MPI::Request::Waitall(52, req);
+        comm.WaitAll(req,52);
 
         //copy data form rcv buffers
         CopyBuffers(meshfunction, rcvbuffs, false,
@@ -644,8 +663,9 @@ class DistributedGridSynchronizer<DistributedGridType,MeshFunctionType,3>
             delete [] rcvbuffs[i];
         }
     };
-#endif
 };
 
+
+} // namespace DistributedMeshes
 } // namespace Meshes
 } // namespace TNL

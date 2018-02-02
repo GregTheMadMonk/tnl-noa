@@ -35,9 +35,9 @@ template< typename Mesh,
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const MeshPointer& meshPointer )
 {
-#ifdef USE_MPI
-    SetupSynchronizer(meshPointer->GetDistGrid());
-#endif
+
+    SetupSynchronizer(meshPointer->GetDistMesh());
+
    this->meshPointer=meshPointer;
    this->data.setSize( getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
    TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
@@ -51,9 +51,9 @@ template< typename Mesh,
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const ThisType& meshFunction )
 {
-#ifdef USE_MPI
-    SetupSynchronizer(meshFunction.meshPointer->GetDistGrid());
-#endif
+
+    SetupSynchronizer(meshFunction.meshPointer->GetDistMesh());
+
    this->meshPointer=meshFunction.meshPointer;
    this->data.bind( meshFunction.getData() );
 }
@@ -68,9 +68,9 @@ MeshFunction( const MeshPointer& meshPointer,
               const IndexType& offset )
 //: meshPointer( meshPointer )
 {
-#ifdef USE_MPI
-    SetupSynchronizer(meshPointer->GetDistGrid());
-#endif
+
+    SetupSynchronizer(meshPointer->GetDistMesh());
+
    this->meshPointer=meshPointer;
    this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
    TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
@@ -89,9 +89,9 @@ MeshFunction( const MeshPointer& meshPointer,
               const IndexType& offset )
 //: meshPointer( meshPointer )
 {
-#ifdef USE_MPI
-    SetupSynchronizer(meshPointer->GetDistGrid());
-#endif
+
+    SetupSynchronizer(meshPointer->GetDistMesh());
+
    this->meshPointer=meshPointer;
    this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
    TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
@@ -190,9 +190,9 @@ void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 bind( ThisType& meshFunction )
 {
-#ifdef USE_MPI
-    SetupSynchronizer(meshFunction.meshPointer->GetDistGrid());
-#endif
+
+    SetupSynchronizer(meshFunction.meshPointer->GetDistMesh());
+
    this->meshPointer=meshFunction.meshPointer;
    this->data.bind( meshFunction.getData() );
 }
@@ -207,9 +207,9 @@ bind( const MeshPointer& meshPointer,
       const Vector& data,
       const IndexType& offset )
 {
-#ifdef USE_MPI
-    SetupSynchronizer(meshPointer->GetDistGrid());
-#endif
+
+    SetupSynchronizer(meshPointer->GetDistMesh());
+
    this->meshPointer=meshPointer;
    this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
    TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
@@ -227,9 +227,9 @@ bind( const MeshPointer& meshPointer,
       const SharedPointer< Vector >& data,
       const IndexType& offset )
 {
-#ifdef USE_MPI
-    SetupSynchronizer(meshPointer->GetDistGrid());
-#endif
+
+    SetupSynchronizer(meshPointer->GetDistMesh());
+
    this->meshPointer=meshPointer;
    this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
    TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
@@ -245,9 +245,9 @@ void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 setMesh( const MeshPointer& meshPointer )
 {
-#ifdef USE_MPI
-    SetupSynchronizer(meshPointer->GetDistGrid());
-#endif
+
+    SetupSynchronizer(meshPointer->GetDistMesh());
+
    this->meshPointer=meshPointer;
    this->data.setSize( getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
    TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
@@ -540,19 +540,18 @@ write( const String& fileName,
    return true;
 }
 
-#ifdef USE_MPI
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
+template< typename Communicator>
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >:: 
-synchronize(void)
+Synchronize(Communicator &comm)
 {
-    //když je synchronizer korektně natavený
-    auto distrgrid = this->getMesh().GetDistGrid();
-    if(distrgrid != NULL && distrgrid->isMPIUsed())
+    auto distrMesh = this->getMesh().GetDistMesh();
+    if(distrMesh != NULL && distrMesh->IsDistributed())
     {
-        this->synchronizer.Synchronize(*this);
+        this->synchronizer.Synchronize(comm,*this);
     }
 }
 
@@ -561,17 +560,17 @@ template< typename Mesh,
           typename Real >
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >:: 
-SetupSynchronizer(Meshes::DistributedGrid<Mesh> *distrgrid)
+SetupSynchronizer(DistributedMeshType *distrMesh )
 {
-    if(distrgrid)//pokud síť kterou se snaží uživatel nastavit je distruibuovaná
+    if(distrMesh)//pokud síť kterou se snaží uživatel nastavit je distruibuovaná
     {
-        if(this->getMesh().GetDistGrid()!=distrgrid)//pokud má nová síť jinou distribuovanou síť než předchozí
+        if(this->getMesh().GetDistMesh()!=distrMesh)//pokud má nová síť jinou distribuovanou síť než předchozí
         {
-            this->synchronizer.SetDistributedGrid(distrgrid);
+            this->synchronizer.SetDistributedGrid(distrMesh);
         }
     }
 }
-#endif
+
  
 } // namespace Functions
 } // namespace TNL

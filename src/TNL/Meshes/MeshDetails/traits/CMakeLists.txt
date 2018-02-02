@@ -4,4 +4,4 @@ SET( headers MeshTraits.h
              MeshSuperentityTraits.h
                )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Meshes/MeshDetails/traits )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Meshes/MeshDetails/traits )

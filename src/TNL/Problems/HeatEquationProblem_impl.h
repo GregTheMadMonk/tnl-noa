@@ -271,18 +271,5 @@ assemblyLinearSystem( const RealType& time,
       bPointer );
 }
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
-    template< typename Matrix >
-void
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-saveFailedLinearSystem( const Matrix& matrix,
-                        const DofVectorType& dofs,
-                        const DofVectorType& rightHandSide ) const
-{
-}
-
 } // namespace Problems
 } // namespace TNL

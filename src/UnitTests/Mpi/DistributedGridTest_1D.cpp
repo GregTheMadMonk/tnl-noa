@@ -11,21 +11,20 @@
 #include <gtest/gtest.h>
 
 #ifdef HAVE_MPI    
-   #define USE_MPI
 
-#include <TNL/Meshes/DistributedGrid.h>
-#include <TNL/Meshes/DistributedGridSynchronizer.h>
+#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunction.h>
-
-#include <mpi.h>
 
 #include "Functions.h"
 
 using namespace TNL;
 using namespace TNL::Containers;
 using namespace TNL::Meshes;
+using namespace TNL::Meshes::DistributedMeshes;
 using namespace TNL::Functions;
 using namespace TNL::Devices;
+using namespace TNL::Communicators;
 
 
 template<typename DofType>
@@ -85,19 +84,22 @@ void check_Inner_1D(int rank, int nproc, DofType dof, typename DofType::RealType
  * Only double is tested as dof Real type -- it may be changed, extend test
  * Global size is hardcoded as 10 -- it can be changed, extend test
  */
+
+typedef MpiCommunicator CommunicatorType;
 typedef Grid<1,double,Host,int> MeshType;
 typedef MeshFunction<MeshType> MeshFunctionType;
 typedef Vector<double,Host,int> DofType;
 typedef typename MeshType::Cell Cell;
 typedef typename MeshType::IndexType IndexType; 
 typedef typename MeshType::PointType PointType; 
-typedef DistributedGrid<MeshType> DistributedGridType;
+typedef DistributedMesh<MeshType> DistributedMeshType;
+
+CommunicatorType comm;    
      
 class DistributedGirdTest_1D : public ::testing::Test {
  protected:
 
-    static DistributedGrid<MeshType> *distrgrid;
-    //static DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,1> *synchronizer;
+    static DistributedMesh<MeshType> *distrgrid;
     static DofType *dof;
 
     static SharedPointer<MeshType> gridptr;
@@ -118,8 +120,8 @@ class DistributedGirdTest_1D : public ::testing::Test {
   static void SetUpTestCase() {
       
     int size=10;
-    rank=MPI::COMM_WORLD.Get_rank();
-    nproc=MPI::COMM_WORLD.Get_size();
+    rank=comm.GetRank();
+    nproc=comm.GetSize();
     
     PointType globalOrigin;
     PointType globalProportions;
@@ -132,16 +134,14 @@ class DistributedGirdTest_1D : public ::testing::Test {
     globalGrid.setDimensions(size);
     globalGrid.setDomain(globalOrigin,globalProportions);
     
-    typename DistributedGridType::CoordinatesType overlap;
+    typename DistributedMeshType::CoordinatesType overlap;
     overlap.setValue(1);
-    distrgrid=new DistributedGrid<MeshType> (globalGrid,overlap);
+    distrgrid=new DistributedMesh<MeshType> (comm,globalGrid,overlap);
     
     distrgrid->SetupGrid(*gridptr);
     dof=new DofType(gridptr->template getEntitiesCount< Cell >());
     
     meshFunctionptr->bind(gridptr,*dof);
-
-    //synchronizer=new DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,1>(distrgrid);
     
     constFunctionPtr->Number=rank;
   }
@@ -151,13 +151,11 @@ class DistributedGirdTest_1D : public ::testing::Test {
   // Can be omitted if not needed.
   static void TearDownTestCase() {
       delete dof;
-      //delete synchronizer;
       delete distrgrid;
   }
 };
 
-DistributedGrid<MeshType> *DistributedGirdTest_1D::distrgrid=NULL;
-//DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType,1> *DistributedGirdTest_1D::synchronizer=NULL;
+DistributedMesh<MeshType> *DistributedGirdTest_1D::distrgrid=NULL;
 DofType *DistributedGirdTest_1D::dof=NULL;
 SharedPointer<MeshType> DistributedGirdTest_1D::gridptr;
 SharedPointer<MeshFunctionType> DistributedGirdTest_1D::meshFunctionptr;
@@ -166,8 +164,7 @@ SharedPointer< ConstFunction<double,1>, Host > DistributedGirdTest_1D::constFunc
 MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,1> > DistributedGirdTest_1D::linearFunctionEvaluator;
 SharedPointer< LinearFunction<double,1>, Host > DistributedGirdTest_1D::linearFunctionPtr;
 int DistributedGirdTest_1D::rank;
-int DistributedGirdTest_1D::nproc;    
-
+int DistributedGirdTest_1D::nproc;
 
 TEST_F(DistributedGirdTest_1D, evaluateAllEntities)
 {
@@ -206,8 +203,7 @@ TEST_F(DistributedGirdTest_1D, LinearFunctionTest)
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_1D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-    //synchronizer->Synchronize(*meshFunctionptr);
-    meshFunctionptr->synchronize();
+    meshFunctionptr->Synchronize(comm);
 
     auto entite= gridptr->template getEntity< Cell >(0);
     entite.refresh();
@@ -222,8 +218,7 @@ TEST_F(DistributedGirdTest_1D, SynchronizerNeighborTest)
 {
     setDof_1D(*dof,-1);
     constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-    //synchronizer->Synchronize(*meshFunctionptr);
-    meshFunctionptr->synchronize();
+    meshFunctionptr->Synchronize(comm);
 
     if(rank!=0)
         EXPECT_EQ((*dof)[0],rank-1)<< "Left Overlap was filled by wrong process.";
@@ -290,12 +285,12 @@ int main( int argc, char* argv[] )
        delete listeners.Release(listeners.default_result_printer());
        listeners.Append(new MinimalistBuffredPrinter);
 
-       MPI::Init(argc,argv);
+       comm.Init(argc,argv);
     #endif
        int result= RUN_ALL_TESTS();
 
     #ifdef HAVE_MPI
-       MPI::Finalize();
+       comm.Finalize();
     #endif
        return result;
 #else

@@ -19,4 +19,4 @@ set( tnl_operators_fdm_SOURCES
      ${common_SOURCES}
      PARENT_SCOPE )   
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/operators/fdm )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/operators/fdm )

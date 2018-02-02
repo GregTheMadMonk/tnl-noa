@@ -26,4 +26,4 @@ SET( headers Blob.h
              Twins_impl.h 
    )
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Functions/Analytic )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Functions/Analytic )

@@ -496,15 +496,16 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-void Grid< 3, Real, Device, Index >:: SetDistGrid(DistributedGrid <ThisType,3> * distGrid)
+void Grid< 3, Real, Device, Index >:: SetDistMesh(DistributedMeshType * distMesh)
 {
-    this->distGrid=distGrid;
+    this->distGrid=distMesh;
 }
    
 template< typename Real,
           typename Device,
           typename Index >
-DistributedGrid <Grid< 3, Real, Device, Index >,3> * Grid< 3, Real, Device, Index >:: GetDistGrid(void) const
+DistributedMeshes::DistributedMesh <Grid< 3, Real, Device, Index >> * 
+Grid< 3, Real, Device, Index >:: GetDistMesh(void) const
 {
     return this->distGrid;
 }

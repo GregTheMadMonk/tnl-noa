@@ -21,4 +21,4 @@ set( headers ArrayOperations.h
              VectorOperationsMIC_impl.h
    )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Containers/Algorithms )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Containers/Algorithms )

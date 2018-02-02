@@ -2,13 +2,10 @@
 #include <gtest/gtest.h>
 
 #ifdef HAVE_MPI    
-   #define USE_MPI
 
-#include <TNL/Meshes/DistributedGrid.h>
-#include <TNL/Meshes/DistributedGridSynchronizer.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunction.h>
-
-#include <mpi.h>
+#include <TNL/Communicators/MpiCommunicator.h>
 
 #include "Functions.h"
 
@@ -17,7 +14,8 @@ using namespace TNL::Containers;
 using namespace TNL::Meshes;
 using namespace TNL::Functions;
 using namespace TNL::Devices;
- 
+using namespace TNL::Communicators;
+using namespace TNL::Meshes::DistributedMeshes; 
 
 template<typename DofType>
 void setDof_3D(DofType &dof, typename DofType::RealType value)
@@ -593,19 +591,21 @@ void check_Inner_3D(int rank, GridType grid, DofType dof, typename DofType::Real
  * Light check of 3D distributed grid and its synchronization. 
  * expected 9 processors
  */
+typedef MpiCommunicator CommunicatorType;
 typedef Grid<3,double,Host,int> MeshType;
 typedef MeshFunction<MeshType> MeshFunctionType;
 typedef Vector<double,Host,int> DofType;
 typedef typename MeshType::Cell Cell;
 typedef typename MeshType::IndexType IndexType; 
 typedef typename MeshType::PointType PointType; 
-typedef DistributedGrid<MeshType> DistributedGridType;
+typedef DistributedMesh<MeshType> DistributedGridType;
+
+CommunicatorType comm;
      
 class DistributedGirdTest_3D : public ::testing::Test {
  protected:
 
-    static DistributedGrid<MeshType> *distrgrid;
-    //static DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType> *synchronizer;
+    static DistributedGridType *distrgrid;
     static DofType *dof;
 
     static SharedPointer<MeshType> gridptr;
@@ -645,15 +645,12 @@ class DistributedGirdTest_3D : public ::testing::Test {
     
     typename DistributedGridType::CoordinatesType overlap;
     overlap.setValue(1);
-    distrgrid=new DistributedGrid<MeshType> (globalGrid,overlap);
+    distrgrid=new DistributedGridType(comm,globalGrid,overlap);
     
     distrgrid->SetupGrid(*gridptr);
     dof=new DofType(gridptr->template getEntitiesCount< Cell >());
     
-    meshFunctionptr->bind(gridptr,*dof);
-    
-    //synchronizer=new DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType>(distrgrid);
-    
+    meshFunctionptr->bind(gridptr,*dof);   
     constFunctionPtr->Number=rank;
     
   }
@@ -663,15 +660,13 @@ class DistributedGirdTest_3D : public ::testing::Test {
   // Can be omitted if not needed.
   static void TearDownTestCase() {
       delete dof;
-      //delete synchronizer;
       delete distrgrid;
 
   }
 
 };
 
-DistributedGrid<MeshType> *DistributedGirdTest_3D::distrgrid=NULL;
-//DistributedGridSynchronizer<DistributedGrid<MeshType>,MeshFunctionType> *DistributedGirdTest_3D::synchronizer=NULL;
+DistributedGridType *DistributedGirdTest_3D::distrgrid=NULL;
 DofType *DistributedGirdTest_3D::dof=NULL;
 SharedPointer<MeshType> DistributedGirdTest_3D::gridptr;
 SharedPointer<MeshFunctionType> DistributedGirdTest_3D::meshFunctionptr;
@@ -720,8 +715,7 @@ TEST_F(DistributedGirdTest_3D, LinearFunctionTest)
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_3D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-    //synchronizer->Synchronize(*meshFunctionptr);
-    meshFunctionptr->synchronize();
+    meshFunctionptr->Synchronize(comm);
     
     int count =gridptr->template getEntitiesCount< Cell >();
     for(int i=0;i<count;i++)
@@ -779,7 +773,7 @@ TEST(NoMPI, NoTest)
     // Called after a test ends.
     virtual void OnTestEnd(const ::testing::TestInfo& test_info) 
     {
-        int rank=MPI::COMM_WORLD.Get_rank();
+        int rank=comm.GetRank();
         sout<< test_info.test_case_name() <<"." << test_info.name() << " End." <<std::endl;
         std::cout << rank << ":" << std::endl << sout.str()<< std::endl;
         sout.str( std::string() );
@@ -801,12 +795,12 @@ int main( int argc, char* argv[] )
        delete listeners.Release(listeners.default_result_printer());
        listeners.Append(new MinimalistBuffredPrinter);
 
-       MPI::Init(argc,argv);
+       comm.Init(argc,argv);
     #endif
        int result= RUN_ALL_TESTS();
 
     #ifdef HAVE_MPI
-       MPI::Finalize();
+       comm.Finalize();
     #endif
        return result;
 #else

@@ -6,7 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-#include <TNL/Meshes/DistributedGridIO.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Functions/MeshFunction.h>
 
 #ifdef HAVE_GTEST 
@@ -18,6 +18,7 @@ using namespace TNL::Containers;
 using namespace TNL::Meshes;
 using namespace TNL::Functions;
 using namespace TNL::Devices;
+using namespace TNL::Meshes::DistributedMeshes;
 
 //================================TEST RESULT============================================
 template <typename MeshFunctionType,

@@ -344,15 +344,16 @@ Grid< 1, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
 template< typename Real,
           typename Device,
           typename Index >
-void Grid< 1, Real, Device, Index >:: SetDistGrid(DistributedGrid <ThisType,1> * distGrid)
+void Grid< 1, Real, Device, Index >:: SetDistMesh(DistributedMeshType * distMesh)
 {
-    this->distGrid=distGrid;
+    this->distGrid=distMesh;
 }
    
 template< typename Real,
           typename Device,
           typename Index >
-DistributedGrid <Grid< 1, Real, Device, Index >,1> * Grid< 1, Real, Device, Index >:: GetDistGrid(void) const
+DistributedMeshes::DistributedMesh <Grid< 1, Real, Device, Index >> * 
+Grid< 1, Real, Device, Index >:: GetDistMesh(void) const
 {
     return this->distGrid;
 }

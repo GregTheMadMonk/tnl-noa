@@ -12,19 +12,17 @@ using namespace std;
 
 #ifdef HAVE_MPI
 
-#define USE_MPI
-#include <TNL/mpi-supp.h> 
- 
-
 #include <TNL/Containers/Array.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/DistributedGrid.h>
-#include <TNL/Meshes/DistributedGridSynchronizer.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Functions/MeshFunction.h>
 
 #include <TNL/Timer.h>
+#include  <TNL/SharedPointer.h>
 
-//#define DIMENSION 2
+//#define DIMENSION 3
 //#define OUTPUT 
 //#define XDISTR
 //#define YDISTR
@@ -35,6 +33,8 @@ using namespace std;
 using namespace TNL;
 using namespace TNL::Containers;
 using namespace TNL::Meshes;
+using namespace TNL::Meshes::DistributedMeshes;
+using namespace TNL::Communicators;
 using namespace TNL::Functions;
 using namespace TNL::Devices;
 #endif
@@ -42,23 +42,27 @@ using namespace TNL::Devices;
 int main ( int argc, char *argv[])
 {
     
-#ifdef USE_MPI
+#ifdef HAVE_MPI
   Timer all,setup,eval,sync;
     
-  MPI::Init(argc,argv);
-  
-  typedef Grid<DIMENSION,double,Host,int> MeshType;
+
+  typedef MpiCommunicator CommType;
+  //typedef NoDistrCommunicator CommType;
+  typedef Grid<DIMENSION, double,Host,int> MeshType;
   typedef MeshFunction<MeshType> MeshFunctionType;
   typedef Vector<double,Host,int> DofType;
   typedef typename MeshType::Cell Cell;
   typedef typename MeshType::IndexType IndexType; 
   typedef typename MeshType::PointType PointType; 
   
-  typedef DistributedGrid<MeshType> DistributedGridType;
+  typedef DistributedMesh<MeshType> DistributedMeshType;
   
   typedef LinearFunction<double,DIMENSION> LinearFunctionType;
   typedef ConstFunction<double,DIMENSION> ConstFunctionType;
   
+  CommType comm;
+  comm.Init(argc,argv);
+
   int size=9;
   int cycles=1;
   if(argc==3)
@@ -68,7 +72,7 @@ int main ( int argc, char *argv[])
       //cout << "size: "<< size <<"cycles: "<< cycles <<endl;
   }
   
-      all.start();
+    all.start();
     setup.start();
   
  PointType globalOrigin;
@@ -81,7 +85,7 @@ int main ( int argc, char *argv[])
  MeshType globalGrid;
  globalGrid.setDimensions(globalProportions);
  globalGrid.setDomain(globalOrigin,globalProportions);
- 
+
  
  int distr[DIMENSION];
  for(int i=0;i<DIMENSION;i++) 
@@ -99,9 +103,9 @@ int main ( int argc, char *argv[])
      distr[2]=0;
  #endif
 
- typename DistributedGridType::CoordinatesType overlap;
+ typename MeshType::CoordinatesType overlap;
  overlap.setValue(1);
- DistributedGridType distrgrid(globalGrid,overlap, distr); 
+ DistributedMeshType distrgrid(comm,globalGrid,overlap, distr); 
    
  SharedPointer<MeshType> gridptr;
  SharedPointer<MeshFunctionType> meshFunctionptr;
@@ -119,26 +123,26 @@ int main ( int argc, char *argv[])
   SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
   SharedPointer< ConstFunctionType, Host > constFunctionPtr; 
    
-  DistributedGridSynchronizer<DistributedGridType,MeshFunctionType> synchronizer(&distrgrid);
+  
   
   setup.stop();
   
   double sum=0.0;
 
-  constFunctionPtr->Number=MPI::COMM_WORLD.Get_rank();
+  constFunctionPtr->Number=comm.GetRank();
   
   for(int i=0;i<cycles;i++)
     {    
         eval.start();
         
-        //constFunctionEvaluator.evaluateBoundaryEntities( meshFunctionptr , constFunctionPtr );
-        linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
-        MPI::COMM_WORLD.Barrier();
+        constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
+        //linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
+        comm.Barrier();
         eval.stop();
 
         sync.start();    
-        synchronizer.Synchronize(*meshFunctionptr);
-        MPI::COMM_WORLD.Barrier();
+        meshFunctionptr->Synchronize(comm);
+        comm.Barrier();
         sync.stop();
 
         sum+=dof[gridptr->getDimensions().x()/2]; //dummy acces to array    
@@ -147,10 +151,10 @@ int main ( int argc, char *argv[])
   
 #ifdef OUTPUT    
   //print local dof
-  Printer<MeshType,DofType>::print_dof(MPI::COMM_WORLD.Get_rank(),*gridptr, dof);
+  Printer<MeshType,DofType>::print_dof(comm.GetRank(),*gridptr, dof);
 #endif
   
-  if(MPI::COMM_WORLD.Get_rank()==0)
+  if(comm.GetRank()==0)
   {
     cout << sum <<endl<<endl;  
     
@@ -167,7 +171,10 @@ int main ( int argc, char *argv[])
   }
   
 
-  MPI::Finalize();
+  comm.Finalize();
+
+
+
 #else
   std::cout<<"MPI not Supported." << std::endl;
 #endif

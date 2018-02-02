@@ -8,4 +8,4 @@ SET( headers Sign.h
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Operators/Analytic )
 
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Operators/Analytic )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Operators/Analytic )

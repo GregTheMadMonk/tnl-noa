@@ -4,4 +4,4 @@ SET( headers
          StackBacktrace.h
 )
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Debugging )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Debugging )

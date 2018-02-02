@@ -73,6 +73,11 @@ class PDEProblem : public Problem< Real, Device, Index >
                                           DofVectorPointer& dofs,
                                           MeshDependentDataPointer& meshDependentData );
 
+      template< typename Matrix >
+      void saveFailedLinearSystem( const Matrix& matrix,
+                                   const DofVectorType& dofs,
+                                   const DofVectorType& rightHandSide ) const;
+
       bool postIterate( const RealType& time,
                         const RealType& tau,
                         const MeshPointer& meshPointer,
