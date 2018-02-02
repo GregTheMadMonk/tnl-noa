@@ -18,32 +18,12 @@
 
 namespace TNL {
 
-template< typename T1, typename T2 >
-using enable_if_same_base = std::enable_if< std::is_same< typename std::decay< T1 >::type, T2 >::value, T2 >;
-
-template< typename T1, typename T2 >
-using both_integral_or_floating = typename std::conditional<
-         ( std::is_integral< T1 >::value && std::is_integral< T2 >::value ) ||
-         ( std::is_floating_point< T1 >::value && std::is_floating_point< T2 >::value ),
-   std::true_type,
-   std::false_type >::type;
-
-// 1. If both types are integral or floating-point, the larger type is selected.
-// 2. If one type is integral and the other floating-point, the floating-point type is selected.
-// Casting both arguments to the same type is necessary because std::min and std::max
-// are implemented as a single-type template.
-template< typename T1, typename T2 >
-using larger_type = typename std::conditional<
-         ( both_integral_or_floating< T1, T2 >::value && sizeof(T1) >= sizeof(T2) ) ||
-         std::is_floating_point<T1>::value,
-   T1, T2 >::type;
-
 /***
  * This function returns minimum of two numbers.
  * GPU device code uses the functions defined in the CUDA's math_functions.h,
  * MIC uses trivial override and host uses the STL functions.
  */
-template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
+template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__ inline
 ResultType min( const T1& a, const T2& b )
 {
@@ -62,7 +42,7 @@ ResultType min( const T1& a, const T2& b )
  * GPU device code uses the functions defined in the CUDA's math_functions.h,
  * MIC uses trivial override and host uses the STL functions.
  */
-template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
+template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__
 ResultType max( const T1& a, const T2& b )
 {
@@ -94,7 +74,7 @@ T abs( const T& n )
 /***
  * This function returns argument of minimum of two numbers.
  */
-template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
+template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__ inline
 ResultType argMin( const T1& a, const T2& b )
 {
@@ -104,7 +84,7 @@ ResultType argMin( const T1& a, const T2& b )
 /***
  * This function returns argument of maximum of two numbers.
  */
-template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
+template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__
 ResultType argMax( const T1& a, const T2& b )
 {
@@ -114,7 +94,7 @@ ResultType argMax( const T1& a, const T2& b )
 /***
  * This function returns argument of minimum of absolute values of two numbers.
  */
-template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
+template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__ inline
 ResultType argAbsMin( const T1& a, const T2& b )
 {
@@ -124,14 +104,14 @@ ResultType argAbsMin( const T1& a, const T2& b )
 /***
  * This function returns argument of maximum of absolute values of two numbers.
  */
-template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
+template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__
 ResultType argAbsMax( const T1& a, const T2& b )
 {
    return ( TNL::abs( a ) > TNL::abs( b ) ) ?  a : b;   
 }
 
-template< typename T1, typename T2, typename ResultType = larger_type< T1, T2 > >
+template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__ inline
 ResultType pow( const T1& base, const T2& exp )
 {
