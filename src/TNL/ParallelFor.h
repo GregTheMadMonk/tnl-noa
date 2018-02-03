@@ -13,6 +13,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Math.h>
 
 /*
  * The implementation of ParallelFor is not meant to provide maximum performance
@@ -72,7 +73,7 @@ struct ParallelFor< Devices::Cuda >
          dim3 blockSize( 256 );
          dim3 gridSize;
          const int desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-         gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( end - start, blockSize.x ) );
+         gridSize.x = TNL::min( desGridSize, Devices::Cuda::getNumberOfBlocks( end - start, blockSize.x ) );
 
          Devices::Cuda::synchronizeDevice();
          ParallelForKernel<<< gridSize, blockSize >>>( start, end, f, args... );
