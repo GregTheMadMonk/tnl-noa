@@ -96,8 +96,8 @@ private:
         };
     };
 
-    template<typename Communicator>
-    void Synchronize(Communicator &comm, MeshFunctionType &meshfunction)
+    template<typename CommunicatorType>
+    void Synchronize(MeshFunctionType &meshfunction)
     {
         TNL_ASSERT_TRUE(isSet,"Synchronizer is not set, but used to Synchronize");
 
@@ -129,33 +129,33 @@ private:
         }
 
         //async send
-        typename Communicator::Request req[4];
+        typename CommunicatorType::Request req[4];
 
         //send everithing, recieve everything 
         if(left!=-1)
         {
-            req[0]=comm.ISend(leftsendbuf, size, left);
-            req[2]=comm.IRecv(leftrcvbuf, size, left);
+            req[0]=CommunicatorType::ISend(leftsendbuf, size, left);
+            req[2]=CommunicatorType::IRecv(leftrcvbuf, size, left);
         }
         else
         {
-            req[0]=comm.NullRequest;
-            req[2]=comm.NullRequest;
+            req[0]=CommunicatorType::NullRequest;
+            req[2]=CommunicatorType::NullRequest;
         }        
 
         if(right!=-1)
         {
-            req[1]=comm.ISend(rightsendbuf, size, right);
-            req[3]=comm.IRecv(rightrcvbuf, size, right);
+            req[1]=CommunicatorType::ISend(rightsendbuf, size, right);
+            req[3]=CommunicatorType::IRecv(rightrcvbuf, size, right);
         }
         else
         {
-            req[1]=comm.NullRequest;
-            req[3]=comm.NullRequest;
+            req[1]=CommunicatorType::NullRequest;
+            req[3]=CommunicatorType::NullRequest;
         }
 
         //wait until send and recv is done
-        comm.WaitAll(req, 4);
+        CommunicatorType::WaitAll(req, 4);
 
         //copy data form rcv buffers
         if(left!=-1)
@@ -297,8 +297,8 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
             DeleteBuffers();
     }
         
-    template<typename Communicator>
-    void Synchronize(Communicator &comm, MeshFunctionType &meshfunction)
+    template<typename CommunicatorType>
+    void Synchronize( MeshFunctionType &meshfunction)
     {
 
         TNL_ASSERT_TRUE(isSet,"Synchronizer is not set, but used to Synchronize");
@@ -315,23 +315,23 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
             neighbor);
 	
         //async send and rcv
-        typename Communicator::Request req[16];
+        typename CommunicatorType::Request req[16];
 		                
         //send everithing, recieve everything 
         for(int i=0;i<8;i++)	
            if(neighbor[i]!=-1)
            {
-               req[i]=comm.ISend(sendbuffs[i], sizes[i], neighbor[i]);
-               req[8+i]=comm.IRecv(rcvbuffs[i], sizes[i], neighbor[i]);
+               req[i]=CommunicatorType::ISend(sendbuffs[i], sizes[i], neighbor[i]);
+               req[8+i]=CommunicatorType::IRecv(rcvbuffs[i], sizes[i], neighbor[i]);
            }
 		   else
       	   {
-               req[i]=comm.NullRequest;
-               req[8+i]=comm.NullRequest;
+               req[i]=CommunicatorType::NullRequest;
+               req[8+i]=CommunicatorType::NullRequest;
            }
 
         //wait until send is done
-        comm.WaitAll(req,16);
+        CommunicatorType::WaitAll(req,16);
         
         //copy data form rcv buffers
         CopyBuffers(meshfunction, rcvbuffs, false,
@@ -515,8 +515,8 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
         }
     }
         
-    template<typename Communicator>
-    void Synchronize(Communicator &comm,MeshFunctionType &meshfunction)
+    template<typename CommunicatorType>
+    void Synchronize(MeshFunctionType &meshfunction)
     {
 
         TNL_ASSERT_TRUE(isSet,"Synchronizer is not set, but used to Synchronize");
@@ -534,23 +534,23 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
             neighbor);
         
         //async send and rcv
-        typename Communicator::Request req[52];
+        typename CommunicatorType::Request req[52];
 		                
         //send everithing, recieve everything 
         for(int i=0;i<26;i++)	
            if(neighbor[i]!=-1)
            {
-               req[i]=comm.ISend(sendbuffs[i], sizes[i], neighbor[i]);
-               req[26+i]=comm.IRecv(rcvbuffs[i], sizes[i], neighbor[i]);
+               req[i]=CommunicatorType::ISend(sendbuffs[i], sizes[i], neighbor[i]);
+               req[26+i]=CommunicatorType::IRecv(rcvbuffs[i], sizes[i], neighbor[i]);
            }
 		   else
       	   {
-               req[i]=comm.NullRequest;
-               req[26+i]=comm.NullRequest;
+               req[i]=CommunicatorType::NullRequest;
+               req[26+i]=CommunicatorType::NullRequest;
            }
 
         //wait until send is done
-        comm.WaitAll(req,52);
+        CommunicatorType::WaitAll(req,52);
 
         //copy data form rcv buffers
         CopyBuffers(meshfunction, rcvbuffs, false,

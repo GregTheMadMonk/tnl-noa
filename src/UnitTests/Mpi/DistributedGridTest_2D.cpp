@@ -358,8 +358,6 @@ typedef typename MeshType::Cell Cell;
 typedef typename MeshType::IndexType IndexType; 
 typedef typename MeshType::PointType PointType; 
 typedef DistributedMesh<MeshType> DistributedGridType;
-     
-CommunicatorType comm;
 
 class DistributedGirdTest_2D : public ::testing::Test {
  protected:
@@ -385,8 +383,8 @@ class DistributedGirdTest_2D : public ::testing::Test {
   static void SetUpTestCase() {
       
     int size=10;
-    rank=comm.GetRank();
-    nproc=comm.GetSize();
+    rank=CommunicatorType::GetRank();
+    nproc=CommunicatorType::GetSize();
     
     PointType globalOrigin;
     PointType globalProportions;
@@ -402,7 +400,8 @@ class DistributedGirdTest_2D : public ::testing::Test {
     
     typename DistributedGridType::CoordinatesType overlap;
     overlap.setValue(1);
-    distrgrid=new DistributedGridType (comm,globalGrid,overlap);
+    distrgrid=new DistributedGridType();
+    distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
     
     distrgrid->SetupGrid(*gridptr);
     dof=new DofType(gridptr->template getEntitiesCount< Cell >());
@@ -474,7 +473,7 @@ TEST_F(DistributedGirdTest_2D, LinearFunctionTest)
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_2D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-    meshFunctionptr->Synchronize(comm);
+    meshFunctionptr->template Synchronize<CommunicatorType>();
     
     int count =gridptr->template getEntitiesCount< Cell >();
     for(int i=0;i<count;i++)
@@ -489,7 +488,7 @@ TEST_F(DistributedGirdTest_2D, SynchronizerNeighborTest)
 {
     setDof_2D(*dof,-1);
     constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-    meshFunctionptr->Synchronize(comm);
+    meshFunctionptr->template Synchronize<CommunicatorType>();
     checkNeighbor_2D(rank, *gridptr, *dof);
 }
 
@@ -531,7 +530,7 @@ TEST(NoMPI, NoTest)
     // Called after a test ends.
     virtual void OnTestEnd(const ::testing::TestInfo& test_info) 
     {
-        int rank=comm.GetRank();
+        int rank=CommunicatorType::GetRank();
         sout<< test_info.test_case_name() <<"." << test_info.name() << " End." <<std::endl;
         std::cout << rank << ":" << std::endl << sout.str()<< std::endl;
         sout.str( std::string() );
@@ -553,12 +552,12 @@ int main( int argc, char* argv[] )
        delete listeners.Release(listeners.default_result_printer());
        listeners.Append(new MinimalistBuffredPrinter);
 
-       comm.Init(argc,argv);
+       CommunicatorType::Init(argc,argv);
     #endif
        int result= RUN_ALL_TESTS();
 
     #ifdef HAVE_MPI
-       comm.Finalize();
+       CommunicatorType::Finalize();
     #endif
        return result;
 #else

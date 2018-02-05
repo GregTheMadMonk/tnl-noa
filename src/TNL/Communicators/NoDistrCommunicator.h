@@ -20,32 +20,33 @@ namespace Communicators {
         public:
 
         typedef int Request;
-        Request NullRequest;
+        static Request NullRequest;
 
-        void Init(int argc, char **argv)
+        static void Init(int argc, char **argv)
+        {
+            NullRequest=-1;
+        };
+
+        static void Finalize()
         {
         };
 
-        void Finalize()
-        {
-        };
-
-        bool IsInitialized()
+        static bool IsInitialized()
         {   
             return true;
         };
 
-        int GetRank()
+        static int GetRank()
         {
             return 0;
         };
 
-        int GetSize()
+        static int GetSize()
         {
             return 1;
         };
 
-        void DimsCreate(int nproc, int dim, int *distr)
+        static void DimsCreate(int nproc, int dim, int *distr)
         {
             for(int i=0;i<dim;i++)
             {
@@ -53,33 +54,33 @@ namespace Communicators {
             }
         };
 
-        void Barrier()
+        static void Barrier()
         {
         };
 
         template <typename T>
-        Request ISend( const T *data, int count, int dest)
+        static Request ISend( const T *data, int count, int dest)
         {
             return 1;
         };    
 
         template <typename T>
-        Request IRecv( const T *data, int count, int src)
+        static Request IRecv( const T *data, int count, int src)
         {
             return 1;
         };
 
-        void WaitAll(Request *reqs, int length)
+        static void WaitAll(Request *reqs, int length)
         {
         };
 
         template< typename T > 
-        void Bcast(  T& data, int count, int root)
+        static void Bcast(  T& data, int count, int root)
         {
         };
 
        /* template< typename T >
-        void Allreduce( T& data,
+        static void Allreduce( T& data,
                      T& reduced_data,
                      int count,
                      const MPI_Op &op)
@@ -88,7 +89,7 @@ namespace Communicators {
         };
 
         template< typename T >
-        void Reduce( T& data,
+        static void Reduce( T& data,
                     T& reduced_data,
                     int count,
                     MPI_Op &op,
@@ -97,6 +98,8 @@ namespace Communicators {
              MPI::COMM_WORLD.Reduce((void*) &data, (void*) &reduced_data,count,MPIDataType(data),op,root);
         };*/
     };
+
+    int NoDistrCommunicator::NullRequest;
 
 } // namespace Communicators
 } // namespace TNL
