@@ -8,6 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
+
 #include <TNL/Meshes/Grid.h>
 
 namespace TNL {
@@ -59,14 +61,8 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
        };
 
        //compute everithing 
-       template<typename Communicator>
-       DistributedMesh(Communicator &comm,GridType globalGrid, CoordinatesType overlap, int *distribution=NULL)
-       {      
-           SetGlobalGrid(comm,globalGrid,overlap,distribution);      
-       };
-
-       template<typename Communicator>
-       void SetGlobalGrid(Communicator comm, GridType globalGrid, CoordinatesType overlap, int *distribution=NULL)
+       template<typename CommunicatorType>
+       void setGlobalGrid(GridType globalGrid, CoordinatesType overlap, int *distribution=NULL)
        {
            isSet=true;
 
@@ -79,10 +75,10 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
            spaceSteps=globalGrid.getSpaceSteps();
 
            isDistributed=false;
-           if(comm.IsInitialized())
+           if(CommunicatorType::IsInitialized())
            {
-               rank=comm.GetRank();
-               this->nproc=comm.GetSize();
+               rank=CommunicatorType::GetRank();
+               this->nproc=CommunicatorType::GetSize();
                //use only if have more than one process
                if(this->nproc>1)
                {

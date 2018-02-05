@@ -46,7 +46,7 @@ int main ( int argc, char *argv[])
   Timer all,setup,eval,sync;
     
 
-  typedef MpiCommunicator CommType;
+  typedef MpiCommunicator CommunicatorType;
   //typedef NoDistrCommunicator CommType;
   typedef Grid<DIMENSION, double,Host,int> MeshType;
   typedef MeshFunction<MeshType> MeshFunctionType;
@@ -60,8 +60,7 @@ int main ( int argc, char *argv[])
   typedef LinearFunction<double,DIMENSION> LinearFunctionType;
   typedef ConstFunction<double,DIMENSION> ConstFunctionType;
   
-  CommType comm;
-  comm.Init(argc,argv);
+  CommunicatorType::Init(argc,argv);
 
   int size=9;
   int cycles=1;
@@ -105,7 +104,8 @@ int main ( int argc, char *argv[])
 
  typename MeshType::CoordinatesType overlap;
  overlap.setValue(1);
- DistributedMeshType distrgrid(comm,globalGrid,overlap, distr); 
+ DistributedMeshType distrgrid;
+ distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap, distr); 
    
  SharedPointer<MeshType> gridptr;
  SharedPointer<MeshFunctionType> meshFunctionptr;
@@ -129,7 +129,7 @@ int main ( int argc, char *argv[])
   
   double sum=0.0;
 
-  constFunctionPtr->Number=comm.GetRank();
+  constFunctionPtr->Number=CommunicatorType::GetRank();
   
   for(int i=0;i<cycles;i++)
     {    
@@ -137,12 +137,12 @@ int main ( int argc, char *argv[])
         
         constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
         //linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
-        comm.Barrier();
+        CommunicatorType::Barrier();
         eval.stop();
 
         sync.start();    
-        meshFunctionptr->Synchronize(comm);
-        comm.Barrier();
+        meshFunctionptr->template Synchronize<CommunicatorType>();
+        CommunicatorType::Barrier();
         sync.stop();
 
         sum+=dof[gridptr->getDimensions().x()/2]; //dummy acces to array    
@@ -151,10 +151,10 @@ int main ( int argc, char *argv[])
   
 #ifdef OUTPUT    
   //print local dof
-  Printer<MeshType,DofType>::print_dof(comm.GetRank(),*gridptr, dof);
+  Printer<MeshType,DofType>::print_dof(CommunicatorType::GetRank(),*gridptr, dof);
 #endif
   
-  if(comm.GetRank()==0)
+  if(CommunicatorType::GetRank()==0)
   {
     cout << sum <<endl<<endl;  
     
@@ -171,7 +171,7 @@ int main ( int argc, char *argv[])
   }
   
 
-  comm.Finalize();
+  CommunicatorType::Finalize();
 
 
 

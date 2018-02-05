@@ -8,6 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
+
 #include <TNL/Meshes/Grid.h>
 
 namespace TNL {
@@ -67,14 +69,8 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
        };
 
        //compute everithing 
-       template<typename Communicator> 
-       DistributedMesh(Communicator &comm,GridType &globalGrid, CoordinatesType overlap, int *distribution=NULL)
-       {      
-           SetGlobalGrid(comm,globalGrid,overlap,distribution);      
-       };
-
-       template<typename Communicator> 
-       void SetGlobalGrid(Communicator &comm, GridType &globalGrid, CoordinatesType overlap, int *distribution=NULL)
+       template<typename CommunicatorType> 
+       void setGlobalGrid(GridType &globalGrid, CoordinatesType overlap, int *distribution=NULL)
        {
 
            isSet=true;           
@@ -91,10 +87,10 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
            
            
            
-           if(comm.IsInitialized())
+           if(CommunicatorType::IsInitialized())
            {
-               rank=comm.GetRank();
-               this->nproc=comm.GetSize();
+               rank=CommunicatorType::GetRank();
+               this->nproc=CommunicatorType::GetSize();
                //use MPI only if have more than one process
                if(this->nproc>1)
                {
@@ -134,7 +130,7 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
                   procsdistr[1]=0;
                   procsdistr[2]=0;
                }
-               comm.DimsCreate(nproc, 3, procsdistr);
+               CommunicatorType::DimsCreate(nproc, 3, procsdistr);
                myproccoord[2]=rank/(procsdistr[0]*procsdistr[1]);
                myproccoord[1]=(rank%(procsdistr[0]*procsdistr[1]))/procsdistr[0];
                myproccoord[0]=(rank%(procsdistr[0]*procsdistr[1]))%procsdistr[0];

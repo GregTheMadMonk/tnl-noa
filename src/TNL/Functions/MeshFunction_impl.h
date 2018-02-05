@@ -543,15 +543,15 @@ write( const String& fileName,
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
-template< typename Communicator>
+template< typename CommunicatorType>
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >:: 
-Synchronize(Communicator &comm)
+Synchronize()
 {
     auto distrMesh = this->getMesh().GetDistMesh();
     if(distrMesh != NULL && distrMesh->IsDistributed())
     {
-        this->synchronizer.Synchronize(comm,*this);
+        this->synchronizer.Synchronize<CommunicatorType>(*this);
     }
 }
 

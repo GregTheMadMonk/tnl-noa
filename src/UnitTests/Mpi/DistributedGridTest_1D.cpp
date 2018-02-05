@@ -93,8 +93,6 @@ typedef typename MeshType::Cell Cell;
 typedef typename MeshType::IndexType IndexType; 
 typedef typename MeshType::PointType PointType; 
 typedef DistributedMesh<MeshType> DistributedMeshType;
-
-CommunicatorType comm;    
      
 class DistributedGirdTest_1D : public ::testing::Test {
  protected:
@@ -120,8 +118,8 @@ class DistributedGirdTest_1D : public ::testing::Test {
   static void SetUpTestCase() {
       
     int size=10;
-    rank=comm.GetRank();
-    nproc=comm.GetSize();
+    rank=CommunicatorType::GetRank();
+    nproc=CommunicatorType::GetSize();
     
     PointType globalOrigin;
     PointType globalProportions;
@@ -136,7 +134,8 @@ class DistributedGirdTest_1D : public ::testing::Test {
     
     typename DistributedMeshType::CoordinatesType overlap;
     overlap.setValue(1);
-    distrgrid=new DistributedMesh<MeshType> (comm,globalGrid,overlap);
+    distrgrid=new DistributedMeshType();
+    distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
     
     distrgrid->SetupGrid(*gridptr);
     dof=new DofType(gridptr->template getEntitiesCount< Cell >());
@@ -203,7 +202,7 @@ TEST_F(DistributedGirdTest_1D, LinearFunctionTest)
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_1D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-    meshFunctionptr->Synchronize(comm);
+    meshFunctionptr->template Synchronize<CommunicatorType>();
 
     auto entite= gridptr->template getEntity< Cell >(0);
     entite.refresh();
@@ -218,7 +217,7 @@ TEST_F(DistributedGirdTest_1D, SynchronizerNeighborTest)
 {
     setDof_1D(*dof,-1);
     constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-    meshFunctionptr->Synchronize(comm);
+    meshFunctionptr->template Synchronize<CommunicatorType>();
 
     if(rank!=0)
         EXPECT_EQ((*dof)[0],rank-1)<< "Left Overlap was filled by wrong process.";
@@ -285,12 +284,12 @@ int main( int argc, char* argv[] )
        delete listeners.Release(listeners.default_result_printer());
        listeners.Append(new MinimalistBuffredPrinter);
 
-       comm.Init(argc,argv);
+       CommunicatorType::Init(argc,argv);
     #endif
        int result= RUN_ALL_TESTS();
 
     #ifdef HAVE_MPI
-       comm.Finalize();
+       CommunicatorType::Finalize();
     #endif
        return result;
 #else
