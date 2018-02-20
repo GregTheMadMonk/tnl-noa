@@ -40,7 +40,6 @@ initInterface( const MeshFunctionType& input,
              c >= 0 ? ( h * c )/( c - input[ e ] ) :
                       - ( h * c )/( c - input[ e ] );
              interfaceMap[ cell.getIndex() ] = true;
-             continue;
          }
          if( c * input[ w ] <=0 )
          {
@@ -48,7 +47,6 @@ initInterface( const MeshFunctionType& input,
              c >= 0 ? ( h * c )/( c - input[ w ] ) :
                       - ( h * c )/( c - input[ w ] );
              interfaceMap[ cell.getIndex() ] = true;
-             continue;
          }
       }
       output[ cell.getIndex() ] =
@@ -88,9 +86,12 @@ initInterface( const MeshFunctionType& input,
         for( cell.getCoordinates().x() = 0;
              cell.getCoordinates().x() < mesh.getDimensions().x();
              cell.getCoordinates().x() ++ )
+        {
             output[ cell.getIndex() ] =
                 input( cell ) >= 0 ? TypeInfo< RealType >::getMaxValue() :
                                    - TypeInfo< RealType >::getMaxValue();
+            interfaceMap[ cell.getIndex() ] = false;
+        }
    
    const RealType& hx = mesh.getSpaceSteps().x();
    const RealType& hy = mesh.getSpaceSteps().y();     
@@ -153,12 +154,11 @@ initInterface( const MeshFunctionType& input,
                 interfaceMap[ cell.getIndex() ] = true;
                 interfaceMap[ e ] = true;
             }
-            continue;
          }
-         output[ cell.getIndex() ] =
+         /*output[ cell.getIndex() ] =
             c > 0 ? TypeInfo< RealType >::getMaxValue() :
-                   -TypeInfo< RealType >::getMaxValue();  
-         interfaceMap[ cell.getIndex() ] = false;
+                   -TypeInfo< RealType >::getMaxValue();*/  
+         //interfaceMap[ cell.getIndex() ] = false; //is on line 90
       }
 }
 
@@ -210,7 +210,7 @@ updateCell( MeshFunctionType& u,
         fabs( a ) >= fabs( b ) ? b + TNL::sign( value ) * hy :
                                  a + TNL::sign( value ) * hx;
    }*/
-   tmp = meet2DCondition( a, b, hx, hy, value);
+   tmp = meet2DCondition( a, b, hx, hy, value, v);
    if( tmp == 0 )
       tmp = 
           fabs( a ) >= fabs( b ) ? fabs( b ) + TNL::sign( value ) * hy :
@@ -241,9 +241,12 @@ initInterface( const MeshFunctionType& input,
             for( cell.getCoordinates().x() = 0;
                  cell.getCoordinates().x() < mesh.getDimensions().x();
                  cell.getCoordinates().x() ++ )
-                    output[ cell.getIndex() ] =
-                    input( cell ) >= 0 ? TypeInfo< RealType >::getMaxValue() :
-                                       - TypeInfo< RealType >::getMaxValue();
+            {
+                output[ cell.getIndex() ] =
+                input( cell ) >= 0 ? TypeInfo< RealType >::getMaxValue() :
+                                   - TypeInfo< RealType >::getMaxValue();
+                interfaceMap[ cell.getIndex() ] = false;
+            }
     
    const RealType& hx = mesh.getSpaceSteps().x();
    const RealType& hy = mesh.getSpaceSteps().y();
@@ -298,7 +301,6 @@ initInterface( const MeshFunctionType& input,
                    }
                interfaceMap[ cell.getIndex() ] = true;
                interfaceMap[ n ] = true;
-               continue;
                }
                if( c * input[ e ] <= 0 )
                {
@@ -323,7 +325,6 @@ initInterface( const MeshFunctionType& input,
                    }
                interfaceMap[ cell.getIndex() ] = true;
                interfaceMap[ e ] = true;
-               continue;
                }
                if( c * input[ t ] <= 0 )
                {
@@ -348,13 +349,12 @@ initInterface( const MeshFunctionType& input,
                    }
                interfaceMap[ cell.getIndex() ] = true;
                interfaceMap[ t ] = true;
-               continue;
+               }           
             }
-            output[ cell.getIndex() ] =
+            /*output[ cell.getIndex() ] =
                c > 0 ? TypeInfo< RealType >::getMaxValue() :
                       -TypeInfo< RealType >::getMaxValue();
-            interfaceMap[ cell.getIndex() ] = false;
-            }
+            interfaceMap[ cell.getIndex() ] = false;*/ //is on line 245
          }
 }
 
@@ -448,7 +448,7 @@ updateCell( MeshFunctionType& u,
                 ( b - c ) * ( b - c ) ) )/( hy * hy + hz * hz );
        }*/
        Real pom = sortMinims( a, b, c, (Real)hx, (Real)hy, (Real)hz);
-       tmp = meet2DCondition( pom[0], pom[1], pom[3], pom[4]);
+       tmp = meet2DCondition( pom[0], pom[1], pom[3], pom[4], value, v);
        
        if( tmp == 0 )
            tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 3 ]; 
@@ -468,8 +468,8 @@ template < typename T1, typename T2 >
 T1 meet2DCondition( T1 a, T1 b, const T2 ha, const T2 hb, const T1 value, double v)
 {
    T1 tmp;
-   if( fabs( a ) == TypeInfo< T1 >::getMaxValue() &&
-       fabs( b ) == TypeInfo< T1 >::getMaxValue() &&
+   if( fabs( a ) != TypeInfo< T1 >::getMaxValue() &&
+       fabs( b ) != TypeInfo< T1 >::getMaxValue() &&
        fabs( a - b ) <= TNL::sqrt( (ha * ha + hb * hb)/v ) )
    {
       tmp = ( ha * ha * a + hb * hb * b + 
