@@ -21,6 +21,7 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 class transportEquationProblem:
 public PDEProblem< Mesh,
@@ -41,6 +42,8 @@ public PDEProblem< Mesh,
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       typedef typename DifferentialOperator::VelocityFieldType VelocityFieldType;
       typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
+
+      typedef CommType CommunicatorType;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;

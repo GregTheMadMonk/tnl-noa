@@ -27,7 +27,7 @@ namespace Communicators {
             return true;
         }
 
-        static void Init(int argc, char **argv, bool redirect)
+        static void Init(int argc, char **argv, bool redirect=false)
         {
             NullRequest=-1;
         };

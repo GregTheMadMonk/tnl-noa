@@ -25,13 +25,14 @@ namespace Problems {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator = Operators::LinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
-class HeatEquationEocProblem : public HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
+class HeatEquationEocProblem : public HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >
 {
    public:
       
-      typedef HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator > BaseType;
+      typedef HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator > BaseType;
       
       using typename BaseType::MeshPointer;
 

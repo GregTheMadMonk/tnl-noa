@@ -58,7 +58,7 @@ namespace Communicators {
         static std::streambuf *backup;
         static std::ofstream filestr;
 
-        static void Init(int argc, char **argv, bool redirect)
+        static void Init(int argc, char **argv, bool redirect=false)
         {
             MPI::Init(argc,argv);
             NullRequest=MPI::REQUEST_NULL;
