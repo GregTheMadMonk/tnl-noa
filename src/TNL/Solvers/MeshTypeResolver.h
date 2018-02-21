@@ -15,7 +15,7 @@
 namespace TNL {
 namespace Solvers {   
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
@@ -25,7 +25,7 @@ class MeshTypeResolver
 {
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
@@ -37,7 +37,7 @@ class MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >
    static bool run( const Config::ParameterContainer& parameters );
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,

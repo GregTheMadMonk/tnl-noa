@@ -324,6 +324,8 @@ class TestDistributedGridIO{
         PointType globalProportions;
         globalProportions.setValue(20);
 
+        int a;
+
         MeshType globalGrid;
         globalGrid.setDimensions(globalProportions);
         globalGrid.setDomain(globalOrigin,globalProportions);
@@ -460,7 +462,7 @@ int main( int argc, char* argv[] )
        delete listeners.Release(listeners.default_result_printer());
        listeners.Append(new MinimalistBuffredPrinter);
 
-       CommunicatorType::Init(argc,argv);
+       CommunicatorType::Init(argc,argv, false);
     #endif
        int result= RUN_ALL_TESTS();
 

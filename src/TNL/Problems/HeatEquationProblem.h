@@ -31,6 +31,7 @@ namespace Problems {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator = Operators::LinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
 class HeatEquationProblem : public PDEProblem< Mesh,
@@ -57,6 +58,8 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       using typename BaseType::DofVectorPointer;
       using typename BaseType::MeshDependentDataType;
       using typename BaseType::MeshDependentDataPointer;
+
+      typedef CommType CommunicatorType;
 
       static String getTypeStatic();
 

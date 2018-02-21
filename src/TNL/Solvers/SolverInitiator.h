@@ -17,7 +17,7 @@
 namespace TNL {
 namespace Solvers {   
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
           typename MeshConfig >
 class SolverInitiator : public Object
 {

@@ -22,7 +22,12 @@ namespace Communicators {
         typedef int Request;
         static Request NullRequest;
 
-        static void Init(int argc, char **argv)
+        static bool isAvailable()
+        {
+            return true;
+        }
+
+        static void Init(int argc, char **argv, bool redirect)
         {
             NullRequest=-1;
         };
@@ -34,6 +39,11 @@ namespace Communicators {
         static bool IsInitialized()
         {   
             return true;
+        };
+
+        static bool isDistributed()
+        {
+            return false;
         };
 
         static int GetRank()

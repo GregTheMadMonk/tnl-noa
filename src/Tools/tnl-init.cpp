@@ -8,10 +8,6 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifdef HAVE_MPI
-	#define USE_MPI
-#endif
-
 #include "tnl-init.h"
 
 #include <TNL/File.h>
@@ -21,7 +17,9 @@
 #include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Meshes/Grid.h>
 
-#include <TNL/mpi-supp.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Communicators/MpiCommunicator.h>
+
 
 using namespace TNL;
 
@@ -49,16 +47,21 @@ void setupConfig( Config::ConfigDescription& config )
    Functions::TestFunction< 1 >::configSetup( config );
 }
 
+
+
 int main( int argc, char* argv[] )
 {
-#ifdef USE_MPI
-   MPI::Init(argc,argv);
-#endif
 
    Config::ParameterContainer parameters;
    Config::ConfigDescription conf_desc;
 
    setupConfig( conf_desc );
+
+    //iniicialization needs argc and argc-> needs to be close to main
+       Communicators::NoDistrCommunicator::Init(argc,argv, true);
+#ifdef HAVE_MPI
+       Communicators::MpiCommunicator::Init(argc,argv,true);
+#endif
  
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
@@ -79,10 +82,6 @@ int main( int argc, char* argv[] )
    }
    if( ! resolveMeshType( parsedMeshType, parameters ) )
       return EXIT_FAILURE;
-
-#ifdef USE_MPI
-   MPI::Finalize();
-#endif
 
    return EXIT_SUCCESS;
 }

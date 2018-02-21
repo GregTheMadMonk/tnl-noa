@@ -16,9 +16,8 @@
 #include <TNL/SharedPointer.h>
 #include <TNL/Solvers/PDE/PDESolver.h>
 
-#ifdef USE_MPI
-    #include <TNL/Meshes/DistributedGrid.h>
-#endif
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+
 
 namespace TNL {
 namespace Solvers {
@@ -88,11 +87,10 @@ class TimeDependentPDESolver : public PDESolver< typename Problem::RealType,
 
       MeshPointer meshPointer;
 
-#ifdef USE_MPI
       MeshPointer globalMeshPointer;
 
-      Meshes::DistributedGrid<MeshType> distrGrid;
-#endif
+      Meshes::DistributedMeshes::DistributedMesh<MeshType> distrMesh;
+
 
       DofVectorPointer dofsPointer;
 

@@ -14,13 +14,13 @@
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Solvers/SolverConfig.h>
 #include <TNL/Devices/Cuda.h>
-
-#include <TNL/mpi-supp.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Communicators/MpiCommunicator.h>
 
 namespace TNL {
 namespace Solvers {
    
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
           template< typename MeshConfig > class ProblemConfig,
           typename MeshConfig >
 bool
@@ -35,22 +35,10 @@ run( int argc, char* argv[] )
    Devices::Host::configSetup( configDescription );
    Devices::Cuda::configSetup( configDescription );
 
-#ifdef USE_MPI
-	MPI::Init(argc,argv);
-    //redirect all stdout to files, only 0 take to go to console
-    std::streambuf *psbuf, *backup;
-    std::ofstream filestr;
-    backup=std::cout.rdbuf();
-
-    //redirect output to files...
-    if(MPI::COMM_WORLD.Get_rank()!=0)
-    {
-        String stdoutfile;
-        stdoutfile=String( "./stdout-")+convertToString(MPI::COMM_WORLD.Get_rank())+String(".txt");
-        filestr.open (stdoutfile.getString()); 
-        psbuf = filestr.rdbuf(); 
-        std::cout.rdbuf(psbuf);
-    }
+    //iniicialization needs argc and argc-> needs to be close to main
+       Communicators::NoDistrCommunicator::Init(argc,argv, true);
+#ifdef HAVE_MPI
+       Communicators::MpiCommunicator::Init(argc,argv, true);
 #endif
 
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
@@ -59,15 +47,6 @@ run( int argc, char* argv[] )
    SolverInitiator< ProblemSetter, MeshConfig > solverInitiator;
    bool ret= solverInitiator.run( parameters );
 
-#ifdef USE_MPI
-    //redirect output to files...
-    if(MPI::COMM_WORLD.Get_rank()!=0)
-    { 
-        std::cout.rdbuf(backup);
-        filestr.close(); 
-    }
-	MPI::Finalize();
-#endif
 	return ret;
 };
 

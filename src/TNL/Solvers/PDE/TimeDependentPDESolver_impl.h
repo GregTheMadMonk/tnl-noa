@@ -63,31 +63,35 @@ setup( const Config::ParameterContainer& parameters,
     * Load the mesh from the mesh file
     */
    const String& meshFile = parameters.getParameter< String >( "mesh" );
-#ifdef USE_MPI
-   std::cout << "Loading a global mesh from the file " << meshFile << "...";
-   if( ! this->globalMeshPointer->load( meshFile ) )
-   {
-      std::cerr << std::endl;
-      std::cerr << "I am not able to load the global mesh from the file " << meshFile << "." << std::endl;
-      return false;
-   }
-   std::cout << " [ OK ] " << std::endl;
 
-   typename Meshes::DistributedGrid<MeshType>::CoordinatesType overlap;
-   overlap.setValue(1);
-   this->distrGrid.SetGlobalGrid(*globalMeshPointer,overlap);
-   distrGrid.SetupGrid(*meshPointer);
-#else
-   std::cout << "Loading a mesh from the file " << meshFile << "...";
-   if( ! this->meshPointer->load( meshFile ) )
+   if(Problem::CommunicatorType::isDistributed())
    {
-      std::cerr << std::endl;
-      std::cerr << "I am not able to load the mesh from the file " << meshFile << "." << std::endl;
-      std::cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << std::endl;
-      return false;
+        std::cout << "Loading a global mesh from the file " << meshFile << "...";
+        if( ! this->globalMeshPointer->load( meshFile ) )
+        {
+          std::cerr << std::endl;
+          std::cerr << "I am not able to load the global mesh from the file " << meshFile << "." << std::endl;
+          return false;
+        }
+        std::cout << " [ OK ] " << std::endl;
+  
+       typename Meshes::DistributedMeshes::DistributedMesh<MeshType>::CoordinatesType overlap;
+       overlap.setValue(1);
+       this->distrMesh.template setGlobalGrid<typename Problem::CommunicatorType>(*globalMeshPointer,overlap);
+       distrMesh.SetupGrid(*meshPointer);
    }
-  std::cout << " [ OK ] " << std::endl;
-#endif
+   else
+   {
+       std::cout << "Loading a mesh from the file " << meshFile << "...";
+       if( ! this->meshPointer->load( meshFile ) )
+       {
+          std::cerr << std::endl;
+          std::cerr << "I am not able to load the mesh from the file " << meshFile << "." << std::endl;
+          std::cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << std::endl;
+          return false;
+       }
+       std::cout << " [ OK ] " << std::endl;
+    }
 
    /****
     * Setup the problem

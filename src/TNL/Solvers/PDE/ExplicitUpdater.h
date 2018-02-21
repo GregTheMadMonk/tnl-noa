@@ -113,7 +113,8 @@ class ExplicitUpdater
          this->userDataPointer->rightHandSide = &rightHandSidePointer.template getData< DeviceType >();
       }
             
-      template< typename EntityType >
+      template< typename EntityType,
+                typename CommunicatorType >
       void update( const RealType& time,
                    const RealType& tau,
                    const MeshPointer& meshPointer,
@@ -147,9 +148,10 @@ class ExplicitUpdater
                                              TraverserBoundaryEntitiesProcessor >
                                            ( meshPointer,
                                              userDataPointer );
-#ifdef USE_MPI
-         uPointer->synchronize();
-#endif
+
+         if(CommunicatorType::isDistributed())
+            uPointer->template Synchronize<CommunicatorType>();
+
       }
       
          
