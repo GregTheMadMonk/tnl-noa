@@ -148,7 +148,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    if(CommunicatorType::isDistributed())
    {
         File file;
-        file.open( initialConditionFile+convertToString(MPI::COMM_WORLD.Get_rank()), IOMode::read );
+        file.open( initialConditionFile+convertToString(CommunicatorType::GetRank()), IOMode::read );
         Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::load(file, *uPointer );
         file.close();
     }
@@ -218,8 +218,8 @@ makeSnapshot( const RealType& time,
     {
        File file;
        File meshFile;
-       meshFile.open( convertToString(MPI::COMM_WORLD.Get_rank())+String("mesh.tnl"),IOMode::write);
-       file.open( convertToString(MPI::COMM_WORLD.Get_rank())+fileName.getFileName(), IOMode::write );
+       meshFile.open( convertToString(CommunicatorType::GetRank())+String("mesh.tnl"),IOMode::write);
+       file.open( convertToString(CommunicatorType::GetRank())+fileName.getFileName(), IOMode::write );
        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(file,meshFile, *uPointer );
        meshFile.close();
        file.close();
