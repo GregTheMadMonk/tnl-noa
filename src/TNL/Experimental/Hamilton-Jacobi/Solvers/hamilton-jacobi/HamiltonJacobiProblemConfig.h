@@ -17,7 +17,7 @@
 
 #pragma once 
 
-#include <config/tnlConfigDescription.h>
+#include <TNL/Config/ConfigDescription.h>
 
 template< typename ConfigTag >
 class HamiltonJacobiProblemConfig

@@ -4,4 +4,4 @@ SET( headers CudaBadAlloc.h
              MICBadAlloc.h
              MICSupportMissing.h )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Exceptions )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Exceptions )

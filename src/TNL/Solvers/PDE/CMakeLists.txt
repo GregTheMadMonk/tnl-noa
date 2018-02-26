@@ -5,6 +5,9 @@ SET( headers BackwardTimeDiscretisation.h
              ExplicitUpdater.h
              LinearSystemAssembler.h
              NoTimeDiscretisation.h
+             PDESolver.h
+             PDESolver_impl.h
+             PDESolverTypeResolver.h
              TimeDependentPDESolver.h
              TimeDependentPDESolver_impl.h
              TimeIndependentPDESolver.h
@@ -13,4 +16,4 @@ SET( headers BackwardTimeDiscretisation.h
              SemiImplicitTimeStepper_impl.h )
 
              
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Solvers/PDE )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Solvers/PDE )

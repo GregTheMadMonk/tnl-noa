@@ -30,7 +30,12 @@ class DummyProblem
       typedef Containers::Vector< Real, Device, Index > DofVectorType;
       typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
       typedef DofVectorType MeshDependentDataType;
+      
+      static constexpr bool isTimeDependent(){ return true; };      
 };
+
+class DummySolver
+{};
 
 } // namespace Solvers
 } // namespace TNL

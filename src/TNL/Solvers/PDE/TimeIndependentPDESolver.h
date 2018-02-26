@@ -17,14 +17,21 @@
 
 #pragma once
 
-#include <core/tnlObject.h>
-#include <config/tnlConfigDescription.h>
+#include <TNL/Object.h>
+#include <TNL/Logger.h>
+#include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <solvers/tnlSolverMonitor.h>
-#include <core/tnlLogger.h>
+#include <TNL/Solvers/PDE/PDESolver.h>
 
-template< typename Problem >
-class tnlTimeIndependentPDESolver : public tnlObject
+
+namespace TNL {
+namespace Solvers {   
+namespace PDE {
+
+template< typename Problem,
+          typename DiscreteSolver >
+class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType,
+                                                   typename Problem::IndexType >
 {
    public:
 
@@ -34,42 +41,46 @@ class tnlTimeIndependentPDESolver : public tnlObject
       typedef typename ProblemType::IndexType IndexType;
       typedef typename ProblemType::MeshType MeshType;
       typedef typename ProblemType::DofVectorType DofVectorType;
-      typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;      
+      typedef typename ProblemType::MeshDependentDataType MeshDependentDataType; 
+      typedef SharedPointer< MeshType, DeviceType > MeshPointer;
+      typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+      typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
 
-      tnlTimeIndependentPDESolver();
+      TimeIndependentPDESolver();
 
-      static void configSetup( tnlConfigDescription& config,
+      static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" );
 
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" );
 
-      bool writeProlog( tnlLogger& logger,
+      bool writeProlog( Logger& logger,
                         const Config::ParameterContainer& parameters );
 
 
       void setProblem( ProblemType& problem );
 
-      void setComputeTimer( tnlTimer& computeTimer );
-      
-      void setIoTimer( tnlTimer& ioTimer );
-
       bool solve();
 
-      bool writeEpilog( tnlLogger& logger ) const;
+      bool writeEpilog( Logger& logger ) const;
 
    protected:
 
-      MeshType mesh;
+      MeshPointer mesh;
 
-      DofVectorType dofs;
+      DofVectorPointer dofs;
 
-      MeshDependentDataType meshDependentData;
+      MeshDependentDataPointer meshDependentData;
+      
+      DiscreteSolver discreteSolver;
 
       ProblemType* problem;
-
-      tnlTimer *computeTimer;
 };
 
-#include <solvers/pde/tnlTimeIndependentPDESolver_impl.h>
+
+} // namespace PDE
+} // namespace Solvers
+} // namespace TNL
+
+#include <TNL/Solvers/PDE/TimeIndependentPDESolver_impl.h>
 

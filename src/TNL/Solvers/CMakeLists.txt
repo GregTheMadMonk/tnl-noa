@@ -41,4 +41,4 @@ set( tnl_solvers_SOURCES
      ${common_SOURCES}
      PARENT_SCOPE )
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Solvers )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Solvers )

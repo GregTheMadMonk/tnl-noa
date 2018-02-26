@@ -3,41 +3,41 @@ if( WITH_TESTS STREQUAL "yes" )
 ADD_SUBDIRECTORY( Containers )
 ADD_SUBDIRECTORY( Matrices )
 
-ADD_EXECUTABLE( UniquePointerTest${mpiExt}${debugExt} UniquePointerTest.cpp )
-TARGET_COMPILE_OPTIONS( UniquePointerTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( UniquePointerTest${mpiExt}${debugExt}
+ADD_EXECUTABLE( UniquePointerTest UniquePointerTest.cpp )
+TARGET_COMPILE_OPTIONS( UniquePointerTest PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( UniquePointerTest
                            ${GTEST_BOTH_LIBRARIES}
-                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+                           tnl )
 
 IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( FileTest${mpiExt}${debugExt} FileTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( FileTest${mpiExt}${debugExt}
+   CUDA_ADD_EXECUTABLE( FileTest FileTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( FileTest
                               ${GTEST_BOTH_LIBRARIES}
-                              tnl${mpiExt}${debugExt}-${tnlVersion} )
+                              tnl )
 ELSE(  BUILD_CUDA )               
-   ADD_EXECUTABLE( FileTest${mpiExt}${debugExt} FileTest.cpp )
-   TARGET_COMPILE_OPTIONS( FileTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( FileTest${mpiExt}${debugExt}
+   ADD_EXECUTABLE( FileTest FileTest.cpp )
+   TARGET_COMPILE_OPTIONS( FileTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( FileTest
                               ${GTEST_BOTH_LIBRARIES}
-                              tnl${mpiExt}${debugExt}-${tnlVersion} )
+                              tnl )
 ENDIF( BUILD_CUDA )
 
-ADD_EXECUTABLE( StringTest${mpiExt}${debugExt} StringTest.cpp )
-TARGET_COMPILE_OPTIONS( StringTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( StringTest${mpiExt}${debugExt}
+ADD_EXECUTABLE( StringTest StringTest.cpp )
+TARGET_COMPILE_OPTIONS( StringTest PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( StringTest
                            ${GTEST_BOTH_LIBRARIES}
-                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+                           tnl )
 
-ADD_EXECUTABLE( ObjectTest${mpiExt}${debugExt} ObjectTest.cpp )
-TARGET_COMPILE_OPTIONS( ObjectTest${mpiExt}${debugExt} PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( ObjectTest${mpiExt}${debugExt}
+ADD_EXECUTABLE( ObjectTest ObjectTest.cpp )
+TARGET_COMPILE_OPTIONS( ObjectTest PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( ObjectTest
                            ${GTEST_BOTH_LIBRARIES} 
-                           tnl${mpiExt}${debugExt}-${tnlVersion} )
+                           tnl )
 
 
-ADD_TEST( FileTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/FileTest${mpiExt}${debugExt} )
-ADD_TEST( StringTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/StringTest${mpiExt}${debugExt} )
-ADD_TEST( ObjectTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/ObjectTest${mpiExt}${debugExt} )
-ADD_TEST( UniquePointerTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/UniquePointerTest${mpiExt}${debugExt} )
+ADD_TEST( FileTest ${EXECUTABLE_OUTPUT_PATH}/FileTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( StringTest ${EXECUTABLE_OUTPUT_PATH}/StringTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( ObjectTest ${EXECUTABLE_OUTPUT_PATH}/ObjectTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( UniquePointerTest ${EXECUTABLE_OUTPUT_PATH}/UniquePointerTest${CMAKE_EXECUTABLE_SUFFIX} )
 
 endif( WITH_TESTS STREQUAL "yes" )

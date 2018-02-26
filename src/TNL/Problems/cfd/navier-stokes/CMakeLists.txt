@@ -13,4 +13,4 @@ set( tnl_solvers_cfd_navier_stokes_SOURCES
      ${common_SOURCES}
      PARENT_SCOPE )
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/solvers/cfd/navier-stokes )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/solvers/cfd/navier-stokes )

@@ -9,4 +9,4 @@ do
     esac
 done
 
-echo -L@CMAKE_INSTALL_PREFIX@/lib -ltnl${DEBUG}-@tnlVersion@ @CUSPARSE_LIBRARY@
+echo -L@CMAKE_INSTALL_PREFIX@/lib -ltnl${DEBUG} @CUSPARSE_LIBRARY@

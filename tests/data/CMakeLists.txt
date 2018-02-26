@@ -1,2 +1,2 @@
 INSTALL( FILES tnl-test-matrix-formats.cfg.desc
-         DESTINATION share/tnl-${tnlVersion} )
+         DESTINATION ${TNL_TARGET_DATA_DIRECTORY} )
