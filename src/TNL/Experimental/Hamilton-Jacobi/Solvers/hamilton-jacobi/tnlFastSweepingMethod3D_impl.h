@@ -65,5 +65,180 @@ solve( const MeshPointer& mesh,
    std::cout << "Initiating the interface cells ..." << std::endl;
    BaseType::initInterface( u, aux, interfaceMap );
    aux.save( "aux-ini.tnl" );   
+   
+   typename MeshType::Cell cell( *mesh );
+   
+   IndexType iteration( 0 );
+   while( iteration < this->maxIterations )
+   {
+      for( cell.getCoordinates().z() = 0;
+           cell.getCoordinates().z() < mesh->getDimensions().z();
+           cell.getCoordinates().z()++ )
+      {
+         for( cell.getCoordinates().y() = 0;
+              cell.getCoordinates().y() < mesh->getDimensions().y();
+              cell.getCoordinates().y()++ )
+         {
+            for( cell.getCoordinates().x() = 0;
+                 cell.getCoordinates().x() < mesh->getDimensions().x();
+                 cell.getCoordinates().x()++ )
+            {
+               cell.refresh();
+               if( ! interfaceMap( cell ) )
+                  this->updateCell( aux, cell );
+            }
+         }
+      }
+      aux.save( "aux-1.tnl" );
+
+      for( cell.getCoordinates().z() = 0;
+           cell.getCoordinates().z() < mesh->getDimensions().z();
+           cell.getCoordinates().z()++ )
+      {
+         for( cell.getCoordinates().y() = 0;
+              cell.getCoordinates().y() < mesh->getDimensions().y();
+              cell.getCoordinates().y()++ )
+         {
+            for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
+                 cell.getCoordinates().x() >= 0 ;
+                 cell.getCoordinates().x()-- )		
+            {
+               //std::cerr << "2 -> ";
+               cell.refresh();
+               if( ! interfaceMap( cell ) )            
+                  this->updateCell( aux, cell );
+            }
+         }
+      }
+      aux.save( "aux-2.tnl" );
+      for( cell.getCoordinates().z() = 0;
+           cell.getCoordinates().z() < mesh->getDimensions().z();
+           cell.getCoordinates().z()++ )
+      {
+         for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
+              cell.getCoordinates().y() >= 0 ;
+              cell.getCoordinates().y()-- )
+         {
+            for( cell.getCoordinates().x() = 0;
+                 cell.getCoordinates().x() < mesh->getDimensions().x();
+                 cell.getCoordinates().x()++ )
+            {
+               //std::cerr << "3 -> ";
+               cell.refresh();
+               if( ! interfaceMap( cell ) )            
+                  this->updateCell( aux, cell );
+            }
+         }
+      }
+      aux.save( "aux-3.tnl" );
+      
+      for( cell.getCoordinates().z() = 0;
+           cell.getCoordinates().z() < mesh->getDimensions().z();
+           cell.getCoordinates().z()++ )
+      {
+         for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
+              cell.getCoordinates().y() >= 0;
+              cell.getCoordinates().y()-- )
+         {
+            for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
+                 cell.getCoordinates().x() >= 0 ;
+                 cell.getCoordinates().x()-- )		
+            {
+               //std::cerr << "4 -> ";
+               cell.refresh();
+               if( ! interfaceMap( cell ) )            
+                  this->updateCell( aux, cell );
+            }
+         }
+      }     
+      aux.save( "aux-4.tnl" );
+      
+      for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
+           cell.getCoordinates().z() >= 0;
+           cell.getCoordinates().z()-- )
+      {
+         for( cell.getCoordinates().y() = 0;
+              cell.getCoordinates().y() < mesh->getDimensions().y();
+              cell.getCoordinates().y()++ )
+         {
+            for( cell.getCoordinates().x() = 0;
+                 cell.getCoordinates().x() < mesh->getDimensions().x();
+                 cell.getCoordinates().x()++ )
+            {
+               //std::cerr << "5 -> ";
+               cell.refresh();
+               if( ! interfaceMap( cell ) )
+                  this->updateCell( aux, cell );
+            }
+         }
+      }
+      aux.save( "aux-5.tnl" );
+
+      for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
+           cell.getCoordinates().z() >= 0;
+           cell.getCoordinates().z()-- )
+      {
+         for( cell.getCoordinates().y() = 0;
+              cell.getCoordinates().y() < mesh->getDimensions().y();
+              cell.getCoordinates().y()++ )
+         {
+            for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
+                 cell.getCoordinates().x() >= 0 ;
+                 cell.getCoordinates().x()-- )		
+            {
+               //std::cerr << "6 -> ";
+               cell.refresh();
+               if( ! interfaceMap( cell ) )            
+                  this->updateCell( aux, cell );
+            }
+         }
+      }
+      aux.save( "aux-6.tnl" );
+      
+      for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
+           cell.getCoordinates().z() >= 0;
+           cell.getCoordinates().z()-- )
+      {
+         for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
+              cell.getCoordinates().y() >= 0 ;
+              cell.getCoordinates().y()-- )
+         {
+            for( cell.getCoordinates().x() = 0;
+                 cell.getCoordinates().x() < mesh->getDimensions().x();
+                 cell.getCoordinates().x()++ )
+            {
+               //std::cerr << "7 -> ";
+               cell.refresh();
+               if( ! interfaceMap( cell ) )            
+                  this->updateCell( aux, cell );
+            }
+         }
+      }
+      aux.save( "aux-7.tnl" );
+
+      for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
+           cell.getCoordinates().z() >= 0;
+           cell.getCoordinates().z()-- )
+      {
+         for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
+              cell.getCoordinates().y() >= 0;
+              cell.getCoordinates().y()-- )
+         {
+            for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
+                 cell.getCoordinates().x() >= 0 ;
+                 cell.getCoordinates().x()-- )		
+            {
+               //std::cerr << "8 -> ";
+               cell.refresh();
+               if( ! interfaceMap( cell ) )            
+                  this->updateCell( aux, cell );
+            }
+         }
+      }
+      aux.save( "aux-8.tnl" );
+      iteration++;
+      
+   }
+   aux.save("aux-final.tnl");
 }
 

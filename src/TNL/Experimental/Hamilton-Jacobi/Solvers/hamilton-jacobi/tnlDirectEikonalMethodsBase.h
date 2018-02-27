@@ -99,6 +99,6 @@ template < typename T1, typename T2 >
 T1 meet2DCondition( T1 a, T1 b, const T2 ha, const T2 hb, const T1 value, double v = 1);
 
 template < typename T1 >
-T1 sortMinims( T1 a, T1 b, T1 c, T1 ha, T1 hb, T1 hc);
+void sortMinims( T1 pom[] );
 
 #include "tnlDirectEikonalMethodsBase_impl.h"

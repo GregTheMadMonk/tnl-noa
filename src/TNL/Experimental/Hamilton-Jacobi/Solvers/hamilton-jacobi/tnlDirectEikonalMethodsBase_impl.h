@@ -86,12 +86,13 @@ initInterface( const MeshFunctionType& input,
         for( cell.getCoordinates().x() = 0;
              cell.getCoordinates().x() < mesh.getDimensions().x();
              cell.getCoordinates().x() ++ )
-        {
-            output[ cell.getIndex() ] =
+            {
+                cell.refresh();
+                output[ cell.getIndex() ] =
                 input( cell ) >= 0 ? TypeInfo< RealType >::getMaxValue() :
                                    - TypeInfo< RealType >::getMaxValue();
-            interfaceMap[ cell.getIndex() ] = false;
-        }
+                interfaceMap[ cell.getIndex() ] = false;
+            }
    
    const RealType& hx = mesh.getSpaceSteps().x();
    const RealType& hy = mesh.getSpaceSteps().y();     
@@ -117,15 +118,15 @@ initInterface( const MeshFunctionType& input,
                     pom = ( hy * c )/( c - input[ n ]);
                     if( output[ cell.getIndex() ] > pom ) 
                         output[ cell.getIndex() ] = pom;
-                    
-                    output[ n ] = ( hy * c )/( c - input[ n ]) - hy;
+                    if( output[ n ] < pom-hx )
+                        output[ n ] = pom - hy; //( hy * c )/( c - input[ n ]) - hy;
                 }else
                 {
                     pom = - ( hy * c )/( c - input[ n ]);
                     if( output[ cell.getIndex() ] < pom )
                         output[ cell.getIndex() ] = pom;
-                    
-                    output[ n ] = hy - ( hy * c )/( c - input[ n ]);
+                    if( output[ n ] > hy + pom )
+                        output[ n ] = hy + pom; //hy - ( hy * c )/( c - input[ n ]);
                 }
                 interfaceMap[ cell.getIndex() ] = true;
                 interfaceMap[ n ] = true;
@@ -139,7 +140,7 @@ initInterface( const MeshFunctionType& input,
                         output[ cell.getIndex() ] = pom;
                    
                     pom = pom - hx; //output[ e ] = (hx * c)/( c - input[ e ]) - hx;
-                    if( output[ e ] >= pom )
+                    if( output[ e ] < pom )
                         output[ e ] = pom;                         
                 }else
                 {
@@ -148,7 +149,7 @@ initInterface( const MeshFunctionType& input,
                         output[ cell.getIndex() ] = pom;
                     
                     pom = pom + hx; //output[ e ] = hx - (hx * c)/( c - input[ e ]);
-                    if( output[ e ] < pom )
+                    if( output[ e ] > pom )
                         output[ e ] = pom;
                 }
                 interfaceMap[ cell.getIndex() ] = true;
@@ -157,7 +158,7 @@ initInterface( const MeshFunctionType& input,
          }
          /*output[ cell.getIndex() ] =
             c > 0 ? TypeInfo< RealType >::getMaxValue() :
-                   -TypeInfo< RealType >::getMaxValue();*/  
+                   -TypeInfo< RealType >::getMaxValue(); */
          //interfaceMap[ cell.getIndex() ] = false; //is on line 90
       }
 }
@@ -178,7 +179,7 @@ updateCell( MeshFunctionType& u,
    const RealType& hx = mesh.getSpaceSteps().x();
    const RealType& hy = mesh.getSpaceSteps().y();
    const RealType value = u( cell );
-   Real a, b, tmp;
+   Real a, b, tmp = TypeInfo< Real >::getMaxValue();
    
    if( cell.getCoordinates().x() == 0 )
       a = u[ neighborEntities.template getEntityIndex< 1,  0 >() ];
@@ -211,10 +212,10 @@ updateCell( MeshFunctionType& u,
                                  a + TNL::sign( value ) * hx;
    }*/
    tmp = meet2DCondition( a, b, hx, hy, value, v);
-   if( tmp == 0 )
+   if( tmp == TypeInfo< Real >::getMaxValue() )
       tmp = 
-          fabs( a ) >= fabs( b ) ? fabs( b ) + TNL::sign( value ) * hy :
-                    fabs( a ) + TNL::sign( value ) * hx;
+          fabs( a ) >= fabs( b ) ? b + TNL::sign( value ) * hy :
+                                   a + TNL::sign( value ) * hx;
             
    
    u[ cell.getIndex() ] = argAbsMin( value, tmp );
@@ -242,6 +243,7 @@ initInterface( const MeshFunctionType& input,
                  cell.getCoordinates().x() < mesh.getDimensions().x();
                  cell.getCoordinates().x() ++ )
             {
+                cell.refresh();
                 output[ cell.getIndex() ] =
                 input( cell ) >= 0 ? TypeInfo< RealType >::getMaxValue() :
                                    - TypeInfo< RealType >::getMaxValue();
@@ -288,16 +290,19 @@ initInterface( const MeshFunctionType& input,
                    {
                    pom = ( hy * c )/( c - input[ n ]);
                    if( output[ cell.getIndex() ] > pom ) 
-                   output[ cell.getIndex() ] = pom;
+                       output[ cell.getIndex() ] = pom;
                     
-                   output[ n ] = ( hy * c )/( c - input[ n ]) - hy;
+                   if ( output[ n ] < pom - hy)
+                        output[ n ] = pom - hy; // ( hy * c )/( c - input[ n ]) - hy;
+                   
                    }else
                    {
                      pom = - ( hy * c )/( c - input[ n ]);
                      if( output[ cell.getIndex() ] < pom )
                          output[ cell.getIndex() ] = pom;
-                    
-                     output[ n ] = hy - ( hy * c )/( c - input[ n ]);
+                     if( output[ n ] > hy + pom )
+                         output[ n ] = hy + pom; //hy - ( hy * c )/( c - input[ n ]);
+                   
                    }
                interfaceMap[ cell.getIndex() ] = true;
                interfaceMap[ n ] = true;
@@ -308,11 +313,12 @@ initInterface( const MeshFunctionType& input,
                    {
                        pom = ( hx * c )/( c - input[ e ]);
                        if( output[ cell.getIndex() ] > pom )
-                       output[ cell.getIndex() ] = pom;
+                           output[ cell.getIndex() ] = pom;
                    
                        pom = pom - hx; //output[ e ] = (hx * c)/( c - input[ e ]) - hx;
-                       if( output[ e ] >= pom )
-                           output[ e ] = pom;                         
+                       if( output[ e ] < pom )
+                           output[ e ] = pom;      
+                       
                    }else
                    {
                        pom = - (hx * c)/( c - input[ e ]);
@@ -320,7 +326,7 @@ initInterface( const MeshFunctionType& input,
                            output[ cell.getIndex() ] = pom;
                     
                        pom = pom + hx; //output[ e ] = hx - (hx * c)/( c - input[ e ]);
-                       if( output[ e ] < pom )
+                       if( output[ e ] > pom )
                            output[ e ] = pom;
                    }
                interfaceMap[ cell.getIndex() ] = true;
@@ -335,8 +341,9 @@ initInterface( const MeshFunctionType& input,
                            output[ cell.getIndex() ] = pom;
                    
                        pom = pom - hz; //output[ e ] = (hx * c)/( c - input[ e ]) - hx;
-                       if( output[ t ] >= pom )
-                           output[ t ] = pom;                         
+                       if( output[ t ] < pom )
+                           output[ t ] = pom; 
+                       
                    }else
                    {
                        pom = - (hz * c)/( c - input[ t ]);
@@ -344,8 +351,9 @@ initInterface( const MeshFunctionType& input,
                            output[ cell.getIndex() ] = pom;
                     
                        pom = pom + hz; //output[ e ] = hx - (hx * c)/( c - input[ e ]);
-                       if( output[ t ] < pom )
+                       if( output[ t ] > pom )
                            output[ t ] = pom;
+                       
                    }
                interfaceMap[ cell.getIndex() ] = true;
                interfaceMap[ t ] = true;
@@ -368,24 +376,15 @@ updateCell( MeshFunctionType& u,
             const MeshEntity& cell, 
             double v )
 {
-   const auto& neighborEntities = cell.template getNeighborEntities< 2 >();
+   const auto& neighborEntities = cell.template getNeighborEntities< 3 >();
    const MeshType& mesh = cell.getMesh();
   
    const RealType& hx = mesh.getSpaceSteps().x();
    const RealType& hy = mesh.getSpaceSteps().y();
    const RealType& hz = mesh.getSpaceSteps().z();
    const RealType value = u( cell );
-   Real a, b, c, tmp = 0;
+   Real a, b, c, tmp = TypeInfo< Real >::getMaxValue();
    
-   if( cell.getCoordinates().x() == 0 )
-      a = u[ neighborEntities.template getEntityIndex< 1,  0 >() ];
-   else if( cell.getCoordinates().x() == mesh.getDimensions().x() - 1 )
-      a = u[ neighborEntities.template getEntityIndex< -1,  0 >() ];
-   else
-   {
-      a = TNL::argAbsMin( u[ neighborEntities.template getEntityIndex< -1,  0 >() ],
-                     u[ neighborEntities.template getEntityIndex<  1,  0 >() ] );
-   }
    
    if( cell.getCoordinates().x() == 0 )
       a = u[ neighborEntities.template getEntityIndex< 1, 0, 0 >() ];
@@ -396,17 +395,17 @@ updateCell( MeshFunctionType& u,
       a = TNL::argAbsMin( u[ neighborEntities.template getEntityIndex< -1, 0, 0 >() ],
                         u[ neighborEntities.template getEntityIndex< 1, 0, 0 >() ] );
    }
-   if( cell.getCoordinates().x() == 0 )
+   if( cell.getCoordinates().y() == 0 )
       b = u[ neighborEntities.template getEntityIndex< 0, 1, 0 >() ];
-   else if( cell.getCoordinates().x() == mesh.getDimensions().x() - 1 )
+   else if( cell.getCoordinates().y() == mesh.getDimensions().y() - 1 )
       b = u[ neighborEntities.template getEntityIndex< 0, -1, 0 >() ];
    else
    {
       b = TNL::argAbsMin( u[ neighborEntities.template getEntityIndex< 0, -1, 0 >() ],
                         u[ neighborEntities.template getEntityIndex< 0, 1, 0 >() ] );
-   }if( cell.getCoordinates().x() == 0 )
+   }if( cell.getCoordinates().z() == 0 )
       c = u[ neighborEntities.template getEntityIndex< 0, 0, 1 >() ];
-   else if( cell.getCoordinates().x() == mesh.getDimensions().x() - 1 )
+   else if( cell.getCoordinates().z() == mesh.getDimensions().z() - 1 )
       c = u[ neighborEntities.template getEntityIndex< 0, 0, -1 >() ];
    else
    {
@@ -447,11 +446,12 @@ updateCell( MeshFunctionType& u,
                 sign( value ) * hy * hz * sqrt( ( hy * hy + hz * hz )/v - 
                 ( b - c ) * ( b - c ) ) )/( hy * hy + hz * hz );
        }*/
-       Real pom = sortMinims( a, b, c, (Real)hx, (Real)hy, (Real)hz);
-       tmp = meet2DCondition( pom[0], pom[1], pom[3], pom[4], value, v);
+       Real pom[6] = { a, b, c, (Real)hx, (Real)hy, (Real)hz};
+       sortMinims( pom );
+       tmp = meet2DCondition( pom[0], pom[1], pom[2], pom[3], value, v);
        
-       if( tmp == 0 )
-           tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 3 ]; 
+       if( tmp == TypeInfo< Real >::getMaxValue() )
+           tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 2 ]; 
         
    }
    else
@@ -477,33 +477,64 @@ T1 meet2DCondition( T1 a, T1 b, const T2 ha, const T2 hb, const T1 value, double
             ( a - b ) * ( a - b ) ) )/( ha * ha + hb * hb );
    }
    else
-       tmp = 0;
+   {
+       tmp = TypeInfo< T1 >::getMaxValue();
+   }
    
    return tmp;
 }
 
 template < typename T1 >
-T1 sortMinims( T1 a, T1 b, T1 c, T1 ha, T1 hb, T1 hc)
+void sortMinims( T1 pom[])
 {
-    T1 tmp[6];
+    T1 tmp[6]; 
+    if( pom[0] <= pom[1] && pom[1] <= pom[2]){
+        tmp[0] = pom[0]; tmp[1] = pom[1]; tmp[2] = pom[3]; tmp[3] = pom[4];
+    }
+    else if( pom[0] <= pom[2] && pom[2] <= pom[1] ){
+        tmp[0] = pom[0]; tmp[1] = pom[2]; tmp[2] = pom[3]; tmp[3] = pom[5];
+    }
+    else if( pom[1]<=pom[0] && pom[0] <= pom[2] ){
+        tmp[0] = pom[1]; tmp[1] = pom[0]; tmp[2] = pom[4]; tmp[3] = pom[3];
+    }
+    else if( pom[1] <= pom[2] && pom[2] <= pom[0] ){
+        tmp[0] = pom[1]; tmp[1] = pom[2]; tmp[2] = pom[4]; tmp[3] = pom[5];
+    }
+    else if( pom[2] <= pom[0] && pom[0] <= pom[1] ){
+        tmp[0] = pom[2]; tmp[1] = pom[0]; tmp[2] = pom[5]; tmp[3] = pom[3];
+    }
+    else if( pom[2] <= pom[1] && pom[1] <= pom[0] ){
+        tmp[0] = pom[2]; tmp[1] = pom[1]; tmp[2] = pom[5]; tmp[3] = pom[4];
+    }
+    for( int i = 0; i < 6; i++ )
+        pom[ i ] = tmp[ i ];
+        
+}
+
+/*template < typename T1 >
+T1* sortMinims( T1 pom[], T1 a, T1 b, T1 c, T1 ha, T1 hb, T1 hc)
+{
+    T1 tmp[6] = pom; 
     if( a <= b && b <= c){
-        tmp = {a,b,c,ha,hb,hc};
+        tmp[0] = a; tmp[1] = b; tmp[2] = ha; tmp[3] = hb;
     }
     else if( a <= c && c <= b ){
-        tmp = {a,c,b,ha,hc,hb};
+        tmp[0] = a; tmp[1] = c; tmp[2] = ha; tmp[3] = hc;
     }
     else if( b<=a && a<=c ){
-        tmp = {b,a,c,hb,ha,hc};
+        tmp[0] = b; tmp[1] = a; tmp[2] = hb; tmp[3] = ha;
     }
     else if( b <= c && c <= a ){
-        tmp = {b,c,a,hb,hc,ha};
+        tmp[0] = b; tmp[1] = c; tmp[2] = hb; tmp[3] = hc;
     }
     else if( c <= a && a <= b ){
-        tmp = {c,a,b,hc,ha,hb};
+        tmp[0] = c; tmp[1] = a; tmp[2] = hc; tmp[3] = ha;
     }
     else if( c <=b && b <= a ){
-        tmp = {c,b,a,hc,hb,ha};
+        tmp[0] = c; tmp[1] = b; tmp[2] = hc; tmp[3] = hb;
     }
+    for( int i = 0; i < 6; i++ )
+        pom[ i ] = tmp[ i ];
         
-    return tmp;
-}
+    return pom;
+}*/

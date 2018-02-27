@@ -64,7 +64,7 @@ solve( const MeshPointer& mesh,
    interfaceMap.setMesh( mesh );
    std::cout << "Initiating the interface cells ..." << std::endl;
    BaseType::initInterface( u, aux, interfaceMap );
-   //aux.save( "aux-ini.tnl" );
+   aux.save( "aux-ini.tnl" );
 
    typename MeshType::Cell cell( *mesh );
    
@@ -85,7 +85,7 @@ solve( const MeshPointer& mesh,
                   this->updateCell( aux, cell );
             }
       }
-      //aux.save( "aux-1.tnl" );
+      aux.save( "aux-1.tnl" );
 
       for( cell.getCoordinates().y() = 0;
            cell.getCoordinates().y() < mesh->getDimensions().y();
@@ -101,7 +101,7 @@ solve( const MeshPointer& mesh,
                   this->updateCell( aux, cell );
             }
       }
-      //aux.save( "aux-2.tnl" );
+      aux.save( "aux-2.tnl" );
 
       for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
            cell.getCoordinates().y() >= 0 ;
@@ -117,7 +117,7 @@ solve( const MeshPointer& mesh,
                   this->updateCell( aux, cell );
             }
          }
-      //aux.save( "aux-3.tnl" );
+      aux.save( "aux-3.tnl" );
 
 
       for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
@@ -134,8 +134,9 @@ solve( const MeshPointer& mesh,
                   this->updateCell( aux, cell );
             }
          }   
-      //aux.save( "aux-4.tnl" );
+      aux.save( "aux-4.tnl" );
       iteration++;
    }
+   aux.save("aux-final.tnl");
 }
 

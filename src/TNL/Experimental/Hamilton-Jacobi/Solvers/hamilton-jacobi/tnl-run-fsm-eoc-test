@@ -2,7 +2,7 @@
 
 device="host"
 dimensions="2D 3D"
-dimensions="2D"
+#dimensions="3D"
 sizes1D="16 32 64 128 256 512 1024 2048 4096"
 #sizes1D="256"
 sizes2D="16 32 64 128 256 512 1024"
@@ -12,7 +12,7 @@ testFunctions="paraboloid"
 snapshotPeriod=0.1
 finalTime=1.5
 solverName="tnl-direct-eikonal-solver"
-#solverName="gdb --args tnl-direct-eikonal-solver-dbg"
+#solverName="gdb --args tnl-direct-eikonal-solver-dbg --catch-exceptions no"
 #
 
 setupTestFunction()
@@ -59,7 +59,7 @@ setupGrid()
 setInitialCondition()
 {
    testFunction=$1
-   tnl-init --test-function ${testFunction}-sdf \
+   tnl-init --test-function ${testFunction} \
             --output-file initial-u.tnl \
             --amplitude ${amplitude} \
             --wave-length ${waveLength} \
@@ -78,7 +78,7 @@ setInitialCondition()
             --radius ${radius}
    
     tnl-init --test-function ${testFunction}-sdf \
-            --output-file final-u.tnl \
+            --output-file exact-u.tnl \
             --amplitude ${amplitude} \
             --wave-length ${waveLength} \
             --wave-length-x ${waveLengthX} \
@@ -108,7 +108,6 @@ solve()
                  --time-step 10 \
                  --time-step-order 2 \
                  --discrete-solver ${discreteSolver} \
-                 --merson-adaptivity 1.0e-5 \
                  --min-iterations 20 \
                  --convergence-residue 1.0e-12 \
                  --snapshot-period ${snapshotPeriod} \
@@ -118,7 +117,7 @@ solve()
 computeError()
 {
    tnl-diff --mesh mesh.tnl \
-            --input-files final-u.tnl u-*.tnl \
+            --input-files aux-final.tnl exact-u.tnl \
             --mode sequence \
             --snapshot-period ${snapshotPeriod} \
             --output-file errors.txt \
