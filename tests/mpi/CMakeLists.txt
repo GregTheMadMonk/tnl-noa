@@ -28,3 +28,8 @@
 	#TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTestXY PUBLIC "-DDIMENSION=3" )
 	#TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTestXY PUBLIC "-DXDISTR -DYDISTR" )
 
+IF( BUILD_CUDA )
+    CUDA_ADD_EXECUTABLE( mpi-gpu-test ${headers} mpi-gpu.cu )
+    #TARGET_LINK_LIBRARIES( mpi-gpu-test ${CPPUNIT_LIBRARIES}
+     #                                               tnl )   
+ENDIF( BUILD_CUDA )    
