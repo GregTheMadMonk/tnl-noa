@@ -87,7 +87,6 @@ write( const VectorFieldType& vectorField,
  
    str << std::endl << "CELL_DATA " << mesh.getDimensions().x() << std::endl;
    str << "VECTORS cellVectorFieldValues " << getType< typename VectorFieldType::RealType >() << std::endl;
-   str << "LOOKUP_TABLE default" << std::endl;
 
    for( MeshIndex i = 0; i < mesh.template getEntitiesCount< typename MeshType::Cell >(); i++ )
    {
@@ -162,7 +161,6 @@ write( const VectorFieldType& vectorField,
  
    str << std::endl << "CELL_DATA " << mesh.getDimensions().x() + 1 << std::endl;
    str << "VECTORS VerticesVectorFieldValues " << getType< typename VectorFieldType::RealType >() << std::endl;
-   str << "LOOKUP_TABLE default" << std::endl;
 
    for( MeshIndex i = 0; i < mesh.template getEntitiesCount< typename MeshType::Vertex >(); i++ )
    {
@@ -220,7 +218,7 @@ write( const VectorFieldType& vectorField,
    const RealType spaceStepY = mesh.getSpaceSteps().y();
    const MeshIndex verticesCount = mesh.template getEntitiesCount< typename MeshType::Vertex >();
    const MeshIndex entitiesCount = mesh.template getEntitiesCount< typename MeshType::Cell >();
- 
+
    str << "POINTS " << verticesCount << " " << getType< RealType >() << std::endl;
    for (int j = 0; j < mesh.getDimensions().y() + 1; j++)
    {
@@ -248,7 +246,6 @@ write( const VectorFieldType& vectorField,
  
    str << std::endl << "CELL_DATA " << entitiesCount << std::endl;
    str << "VECTORS cellVectorFieldValues " << getType< RealType >() << std::endl;
-   str << "LOOKUP_TABLE default" << std::endl;
 
    for( MeshIndex i = 0; i < entitiesCount; i++ )
    {
@@ -347,7 +344,6 @@ write( const VectorFieldType& vectorField,
  
    str << std::endl << "CELL_DATA " << entitiesCount << std::endl;
    str << "VECTORS FaceslVectorFieldValues " << getType< typename VectorFieldType::RealType >() << std::endl;
-   str << "LOOKUP_TABLE default" << std::endl;
 
    for( MeshIndex i = 0; i < entitiesCount; i++ )
    {
@@ -432,7 +428,6 @@ write( const VectorFieldType& vectorField,
  
    str << std::endl << "CELL_DATA " << verticesCount << std::endl;
    str << "VECTORS VerticesVectorFieldValues " << getType< typename VectorFieldType::RealType >() << std::endl;
-   str << "LOOKUP_TABLE default" << std::endl;
 
    for( MeshIndex i = 0; i < verticesCount; i++ )
    {
@@ -534,7 +529,6 @@ write( const VectorFieldType& vectorField,
  
    str << std::endl << "CELL_DATA " << entitiesCount << std::endl;
    str << "VECTORS cellVectorFieldValues " << getType< typename VectorFieldType::RealType >() << std::endl;
-   str << "LOOKUP_TABLE default" << std::endl;
 
    for( MeshIndex i = 0; i < entitiesCount; i++ )
    {
@@ -659,7 +653,6 @@ write( const VectorFieldType& vectorField,
  
    str << std::endl << "CELL_DATA " << entitiesCount << std::endl;
    str << "VECTORS facesVectorFieldValues " << getType< typename VectorFieldType::RealType >() << std::endl;
-   str << "LOOKUP_TABLE default" << std::endl;
 
    for( MeshIndex i = 0; i < entitiesCount; i++ )
    {
@@ -778,7 +771,6 @@ write( const VectorFieldType& vectorField,
  
    str << std::endl << "CELL_DATA " << entitiesCount << std::endl;
    str << "VECTORS edgesVectorFieldValues " << getType< typename VectorFieldType::RealType >() << std::endl;
-   str << "LOOKUP_TABLE default" << std::endl;
 
    for( MeshIndex i = 0; i < entitiesCount; i++ )
    {
@@ -871,7 +863,6 @@ write( const VectorFieldType& vectorField,
  
    str << std::endl << "CELL_DATA " << verticesCount << std::endl;
    str << "VECTORS verticesVectorFieldValues " << getType< typename VectorFieldType::RealType >() << std::endl;
-   str << "LOOKUP_TABLE default" << std::endl;
 
    for( MeshIndex i = 0; i < verticesCount; i++ )
    {
@@ -888,4 +879,3 @@ write( const VectorFieldType& vectorField,
 
 } // namespace Functions
 } // namespace TNL
-
