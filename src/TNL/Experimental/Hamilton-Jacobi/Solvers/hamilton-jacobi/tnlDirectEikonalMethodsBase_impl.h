@@ -1,4 +1,4 @@
-/* 
+ /* 
  * File:   tnlDirectEikonalMethodsBase_impl.h
  * Author: oberhuber
  *
@@ -118,7 +118,7 @@ initInterface( const MeshFunctionType& input,
                     pom = ( hy * c )/( c - input[ n ]);
                     if( output[ cell.getIndex() ] > pom ) 
                         output[ cell.getIndex() ] = pom;
-                    if( output[ n ] < pom-hx )
+                    if( output[ n ] < pom - hy )
                         output[ n ] = pom - hy; //( hy * c )/( c - input[ n ]) - hy;
                 }else
                 {
@@ -214,8 +214,8 @@ updateCell( MeshFunctionType& u,
    tmp = meet2DCondition( a, b, hx, hy, value, v);
    if( tmp == TypeInfo< Real >::getMaxValue() )
       tmp = 
-          fabs( a ) >= fabs( b ) ? b + TNL::sign( value ) * hy :
-                                   a + TNL::sign( value ) * hx;
+          fabs( a ) >= fabs( b ) ? b + TNL::sign( value ) * hy/v :
+                                   a + TNL::sign( value ) * hx/v;
             
    
    u[ cell.getIndex() ] = argAbsMin( value, tmp );
@@ -357,7 +357,7 @@ initInterface( const MeshFunctionType& input,
                    }
                interfaceMap[ cell.getIndex() ] = true;
                interfaceMap[ t ] = true;
-               }           
+               }        
             }
             /*output[ cell.getIndex() ] =
                c > 0 ? TypeInfo< RealType >::getMaxValue() :
@@ -383,7 +383,7 @@ updateCell( MeshFunctionType& u,
    const RealType& hy = mesh.getSpaceSteps().y();
    const RealType& hz = mesh.getSpaceSteps().z();
    const RealType value = u( cell );
-   Real a, b, c, tmp = TypeInfo< Real >::getMaxValue();
+   Real a, b, c, tmp = TypeInfo< RealType >::getMaxValue();
    
    
    if( cell.getCoordinates().x() == 0 )
@@ -451,7 +451,7 @@ updateCell( MeshFunctionType& u,
        tmp = meet2DCondition( pom[0], pom[1], pom[2], pom[3], value, v);
        
        if( tmp == TypeInfo< Real >::getMaxValue() )
-           tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 2 ]; 
+           tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 2 ]/v; 
         
    }
    else
@@ -488,53 +488,25 @@ template < typename T1 >
 void sortMinims( T1 pom[])
 {
     T1 tmp[6]; 
-    if( pom[0] <= pom[1] && pom[1] <= pom[2]){
+    if( fabs(pom[0]) <= fabs(pom[1]) && fabs(pom[1]) <= fabs(pom[2])){
         tmp[0] = pom[0]; tmp[1] = pom[1]; tmp[2] = pom[3]; tmp[3] = pom[4];
     }
-    else if( pom[0] <= pom[2] && pom[2] <= pom[1] ){
+    else if( fabs(pom[0]) <= fabs(pom[2]) && fabs(pom[2]) <= fabs(pom[1]) ){
         tmp[0] = pom[0]; tmp[1] = pom[2]; tmp[2] = pom[3]; tmp[3] = pom[5];
     }
-    else if( pom[1]<=pom[0] && pom[0] <= pom[2] ){
+    else if( fabs(pom[1]) <= fabs(pom[0]) && fabs(pom[0]) <= fabs(pom[2]) ){
         tmp[0] = pom[1]; tmp[1] = pom[0]; tmp[2] = pom[4]; tmp[3] = pom[3];
     }
-    else if( pom[1] <= pom[2] && pom[2] <= pom[0] ){
+    else if( fabs(pom[1]) <= fabs(pom[2]) && fabs(pom[2]) <= fabs(pom[0]) ){
         tmp[0] = pom[1]; tmp[1] = pom[2]; tmp[2] = pom[4]; tmp[3] = pom[5];
     }
-    else if( pom[2] <= pom[0] && pom[0] <= pom[1] ){
+    else if( fabs(pom[2]) <= fabs(pom[0]) && fabs(pom[0]) <= fabs(pom[1]) ){
         tmp[0] = pom[2]; tmp[1] = pom[0]; tmp[2] = pom[5]; tmp[3] = pom[3];
     }
-    else if( pom[2] <= pom[1] && pom[1] <= pom[0] ){
+    else if( fabs(pom[2]) <= fabs(pom[1]) && fabs(pom[1]) <= fabs(pom[0]) ){
         tmp[0] = pom[2]; tmp[1] = pom[1]; tmp[2] = pom[5]; tmp[3] = pom[4];
     }
     for( int i = 0; i < 6; i++ )
         pom[ i ] = tmp[ i ];
         
 }
-
-/*template < typename T1 >
-T1* sortMinims( T1 pom[], T1 a, T1 b, T1 c, T1 ha, T1 hb, T1 hc)
-{
-    T1 tmp[6] = pom; 
-    if( a <= b && b <= c){
-        tmp[0] = a; tmp[1] = b; tmp[2] = ha; tmp[3] = hb;
-    }
-    else if( a <= c && c <= b ){
-        tmp[0] = a; tmp[1] = c; tmp[2] = ha; tmp[3] = hc;
-    }
-    else if( b<=a && a<=c ){
-        tmp[0] = b; tmp[1] = a; tmp[2] = hb; tmp[3] = ha;
-    }
-    else if( b <= c && c <= a ){
-        tmp[0] = b; tmp[1] = c; tmp[2] = hb; tmp[3] = hc;
-    }
-    else if( c <= a && a <= b ){
-        tmp[0] = c; tmp[1] = a; tmp[2] = hc; tmp[3] = ha;
-    }
-    else if( c <=b && b <= a ){
-        tmp[0] = c; tmp[1] = b; tmp[2] = hc; tmp[3] = hb;
-    }
-    for( int i = 0; i < 6; i++ )
-        pom[ i ] = tmp[ i ];
-        
-    return pom;
-}*/
