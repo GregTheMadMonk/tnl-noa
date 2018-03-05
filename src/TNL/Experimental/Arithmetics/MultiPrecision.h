@@ -22,8 +22,8 @@ public:
 
     /* CONSTRUCTORS */
     MultiPrecision(); // initialize number to 0
-    explicit MultiPrecision(int precision); // sets the default precision
-    explicit MultiPrecision(double d); // initialize number
+    explicit MultiPrecision(int); // assignment of signed long integer
+    explicit MultiPrecision(double d); // assignment of double
     /// TODO Constructor for Quad
 
     /* OPERATORS */
@@ -54,6 +54,7 @@ public:
     
     /* METHODS */
     void printMP();
+    static MultiPrecision setPrecision(int); // sets the default precision
     /// TODO void printNumber(int digits, ostream& str = std::cout );
 
     /* DESTRUCTOR */

@@ -15,15 +15,16 @@ namespace Arithmetics {
 /* CONSTRUCTORS */
 
 MultiPrecision::MultiPrecision(){
-    mpf_init(number);
+    mpf_init (number);
 }
 
-MultiPrecision::MultiPrecision(int precision) {
-    mpf_set_default_prec(precision);
+MultiPrecision::MultiPrecision(int i){
+    signed long int sli = i;
+    mpf_init_set_si (number, sli);
 }
 
 MultiPrecision::MultiPrecision(double d){
-    mpf_init_set_d(number, d);
+    mpf_init_set_d (number, d);
 }
 
 /* OPERATORS IMPLEMENTATION */
@@ -137,6 +138,10 @@ bool MultiPrecision::operator==(const mpf_t &GMPnumber) const{
 }
 
 /* METHODS */
+
+MultiPrecision MultiPrecision::setPrecision(int precision){
+    mpf_set_default_prec (precision);
+}
 
 void MultiPrecision::printMP(){
     int precision = mpf_get_default_prec();
