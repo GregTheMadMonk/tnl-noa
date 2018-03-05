@@ -13,7 +13,8 @@
 #endif
 
 namespace TNL {
-
+namespace Arithmetics {
+    
 class MultiPrecision{
 public:
     /* NUMBER */
@@ -59,4 +60,5 @@ public:
     ~MultiPrecision();
 };
 
+} // namespace Arithmetics
 } // namespace TNL

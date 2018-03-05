@@ -10,6 +10,7 @@
 #include "MultiPrecision.h"
 
 namespace TNL {
+namespace Arithmetics {
 
 /* CONSTRUCTORS */
 
@@ -147,6 +148,8 @@ void MultiPrecision::printMP(){
 MultiPrecision::~MultiPrecision(){
 }
 
+} // namespace Arithmetics
 } // namespace TNL
+
 
 #endif

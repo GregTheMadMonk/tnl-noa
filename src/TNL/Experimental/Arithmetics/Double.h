@@ -6,6 +6,7 @@
 ***************************************************/
 
 namespace TNL {
+namespace Arithmetics {
     
 template <class T>
 class Double
@@ -58,4 +59,5 @@ void doubleMul(const T *a, const T *b, T *s);
 template <typename T>
 void printDouble(T *d);
 
+} // namespace Arithmetics
 } // namespace TNL

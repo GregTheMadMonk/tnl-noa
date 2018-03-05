@@ -24,6 +24,7 @@
  */
 
 using namespace TNL;
+using namespace TNL::Arithmetics;
 
 #ifdef HAVE_GTEST 
 TEST (QuadTest, number_assignment)

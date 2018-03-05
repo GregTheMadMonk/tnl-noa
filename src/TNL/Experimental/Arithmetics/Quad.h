@@ -11,6 +11,7 @@
  */
 
 namespace TNL {
+namespace Arithmetics {    
 
 template <class T>
 class Quad
@@ -104,4 +105,5 @@ void zeroQuad(T *a); // Reset quad-double
 template <typename T>
 void printQuad(T *a); // Print of quad-double
 
+} // namespace Arithmetics
 } //namespace TNL

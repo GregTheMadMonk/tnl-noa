@@ -16,6 +16,7 @@
 #define ABS(n) ((n) > 0 ? (n): -(n))
 
 namespace TNL {
+namespace Arithmetics {
 
 template <class T>
 Quad<T>::Quad() {
@@ -627,4 +628,5 @@ void printQuad(T *a) {
     printf("%.15le + %.15le + %.15le + %.15le\n", a[0], a[1], a[2], a[3]);
 }
 
+} // namespace Arithmetics
 } // namespace TNL
