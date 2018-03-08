@@ -62,13 +62,13 @@ namespace Communicators {
         static Request ISend( const T *data, int count, int dest)
         {
             return 1;
-        };    
+        }    
 
         template <typename T>
         static Request IRecv( const T *data, int count, int src)
         {
             return 1;
-        };
+        }
 
         static void WaitAll(Request *reqs, int length)
         {
@@ -77,7 +77,7 @@ namespace Communicators {
         template< typename T > 
         static void Bcast(  T& data, int count, int root)
         {
-        };
+        }
 
        /* template< typename T >
         static void Allreduce( T& data,

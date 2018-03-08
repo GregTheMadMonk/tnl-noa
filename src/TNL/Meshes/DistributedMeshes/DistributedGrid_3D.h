@@ -272,7 +272,7 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
                    localgridsize.z()+=overlap.z();
                
            }                     
-       };
+       }
        
        void SetupGrid( GridType& grid)
        {

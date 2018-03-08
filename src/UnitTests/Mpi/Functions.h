@@ -42,7 +42,7 @@ class LinearFunction<Real,1> : public Functions::Domain< 1, Functions::MeshDomai
       {};
 
       template< typename EntityType >
-      RealType operator()( const EntityType& meshEntity,
+      __cuda_callable__ RealType operator()( const EntityType& meshEntity,
                                   const RealType& time = 0.0 ) const
       {
          return meshEntity.getCenter().x();
@@ -62,7 +62,7 @@ class ConstFunction<Real,1> : public Functions::Domain< 1, Functions::MeshDomain
       {};
 
       template< typename EntityType >
-      RealType operator()( const EntityType& meshEntity,
+      __cuda_callable__ RealType operator()( const EntityType& meshEntity,
                                   const RealType& time = 0.0 ) const
       {
          return Number;
@@ -95,7 +95,7 @@ class LinearFunction<Real,2> : public Functions::Domain< 2, Functions::MeshDomai
       {};
 
       template< typename EntityType >
-      RealType operator()( const EntityType& meshEntity,
+      __cuda_callable__ RealType operator()( const EntityType& meshEntity,
                                   const RealType& time = 0.0 ) const
       {
          //return meshEntity.getCoordinates().y()*10+meshEntity.getCoordinates().x();
@@ -114,7 +114,7 @@ class ConstFunction<Real,2> : public Functions::Domain< 2, Functions::MeshDomain
       {};
           
       template< typename EntityType >
-      RealType operator()( const EntityType& meshEntity,
+      __cuda_callable__ RealType operator()( const EntityType& meshEntity,
                                   const RealType& time = 0.0 ) const
       {
          //return meshEntity.getCoordinates().y()*10+meshEntity.getCoordinates().x();
@@ -153,7 +153,7 @@ class LinearFunction<Real,3> : public Functions::Domain< 3, Functions::MeshDomai
       {};
 
       template< typename EntityType >
-      RealType operator()( const EntityType& meshEntity,
+      __cuda_callable__ RealType operator()( const EntityType& meshEntity,
                                   const RealType& time = 0.0 ) const
       {
          //return meshEntity.getCoordinates().y()*10+meshEntity.getCoordinates().x();
@@ -172,7 +172,7 @@ class ConstFunction<Real,3> : public Functions::Domain< 3, Functions::MeshDomain
       {};
           
       template< typename EntityType >
-      RealType operator()( const EntityType& meshEntity,
+      __cuda_callable__ RealType operator()( const EntityType& meshEntity,
                                   const RealType& time = 0.0 ) const
       {
          //return meshEntity.getCoordinates().y()*10+meshEntity.getCoordinates().x();

@@ -30,6 +30,10 @@
 
 IF( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( mpi-gpu-test ${headers} mpi-gpu.cu )
-    #TARGET_LINK_LIBRARIES( mpi-gpu-test ${CPPUNIT_LIBRARIES}
-     #                                               tnl )   
+    TARGET_LINK_LIBRARIES( mpi-gpu-test ${CPPUNIT_LIBRARIES}
+                                                   tnl )   
+
+    CUDA_ADD_EXECUTABLE( GPUmeshFunctionEvaluateTest ${headers} GPUmeshFuncitonEvaluateTest.cu )
+    TARGET_LINK_LIBRARIES( GPUmeshFunctionEvaluateTest ${CPPUNIT_LIBRARIES}
+                                           tnl )   
 ENDIF( BUILD_CUDA )    
