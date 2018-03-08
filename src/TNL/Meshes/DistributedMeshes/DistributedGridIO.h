@@ -12,25 +12,15 @@
 
 #include <TNL/File.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <TNL/Meshes/DistributedMeshes/CopyEntitiesHelper.h>
 #include <TNL/Functions/MeshFunction.h>
+
 
 #include <iostream>
 
 namespace TNL {
 namespace Meshes {   
 namespace DistributedMeshes {
-
-template<typename MeshFunctionType,
-         int dim=MeshFunctionType::getMeshDimension()>
-class CopyEntities
-{
-    public:
-    typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
-    static void Copy(MeshFunctionType &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
-    {
-    }
-
-};
 
 enum DistrGridIOTypes { Dummy = 0 , LocalCopy = 1 };
     
@@ -101,7 +91,7 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
         CoordinatesType zeroCoord;
         zeroCoord.setValue(0);
 
-        CopyEntities<MeshFunctionType> ::Copy(meshFunction,newMeshFunction,localBegin,zeroCoord,localSize);
+        CopyEntitiesHelper<MeshFunctionType>::Copy(meshFunction,newMeshFunction,localBegin,zeroCoord,localSize);
         return newMeshFunction.save(file);
         
     };
@@ -135,93 +125,11 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
         zeroCoord.setValue(0);        
 
         bool result=newMeshFunction.boundLoad(file);
-        CopyEntities<MeshFunctionType> ::Copy(newMeshFunction,meshFunction,zeroCoord,localBegin,localSize);
+        CopyEntitiesHelper<MeshFunctionType>::Copy(newMeshFunction,meshFunction,zeroCoord,localBegin,localSize);
         
         return result;
     };
     
-};
-
-
-//==================================Copy Entities=========================================================
-template<typename MeshFunctionType>
-class CopyEntities<MeshFunctionType,1>
-{
-    public:
-    typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
-    typedef typename MeshFunctionType::MeshType::Cell Cell;
-
-    static void Copy(MeshFunctionType &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
-    {        
-        Cell fromEntity(from.getMesh());
-        Cell toEntity(to.getMesh());
-        for(int i=0;i<size.x();i++)
-        {
-                        toEntity.getCoordinates().x()=toBegin.x()+i;            
-                        toEntity.refresh();
-                        fromEntity.getCoordinates().x()=fromBegin.x()+i;            
-                        fromEntity.refresh();
-            to.getData()[toEntity.getIndex()]=from.getData()[fromEntity.getIndex()];
-        }
-    }
-
-};
-
-template<typename MeshFunctionType>
-
-class CopyEntities<MeshFunctionType,2>
-{
-    public:
-    typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
-    typedef typename MeshFunctionType::MeshType::Cell Cell;
-
-    static void Copy(MeshFunctionType &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
-    {
-        Cell fromEntity(from.getMesh());
-        Cell toEntity(to.getMesh());
-        for(int j=0;j<size.y();j++)
-            for(int i=0;i<size.x();i++)
-            {
-                toEntity.getCoordinates().x()=toBegin.x()+i;
-                toEntity.getCoordinates().y()=toBegin.y()+j;            
-                toEntity.refresh();
-                fromEntity.getCoordinates().x()=fromBegin.x()+i;
-                fromEntity.getCoordinates().y()=fromBegin.y()+j;            
-                fromEntity.refresh();
-                to.getData()[toEntity.getIndex()]=from.getData()[fromEntity.getIndex()];
-            }
-    }
-
-};
-
-template<typename MeshFunctionType>
-class CopyEntities<MeshFunctionType,3>
-{
-    public:
-    typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
-    typedef typename MeshFunctionType::MeshType::Cell Cell;
-
-    static void Copy(MeshFunctionType &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
-    {
-        Cell fromEntity(from.getMesh());
-        Cell toEntity(to.getMesh());
-        for(int k=0;k<size.z();k++)
-            for(int j=0;j<size.y();j++)
-                for(int i=0;i<size.x();i++)
-                {
-                    toEntity.getCoordinates().x()=toBegin.x()+i;
-                                    toEntity.getCoordinates().y()=toBegin.y()+j;
-                                    toEntity.getCoordinates().z()=toBegin.z()+k;                                
-                    toEntity.refresh();
-                    fromEntity.getCoordinates().x()=fromBegin.x()+i;
-                    fromEntity.getCoordinates().y()=fromBegin.y()+j;
-                    fromEntity.getCoordinates().z()=fromBegin.z()+k;            
-                    fromEntity.refresh();
-                    to.getData()[toEntity.getIndex()]=from.getData()[fromEntity.getIndex()];
-                }
-
-    }
-
 };
 
 }

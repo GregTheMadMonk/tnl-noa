@@ -6,8 +6,9 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+#include <TNL/Meshes/DistributedMeshes/CopyEntitiesHelper.h>
 #include <TNL/Functions/MeshFunction.h>
+
 
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
@@ -199,7 +200,7 @@ class TestCopyEntities
 			CoordinatesType size;
 			size.setValue(8);
 
-			CopyEntities< MeshFunctionType >::Copy(inputMeshFunction,outputMeshFunction, begin,zero, size);
+			CopyEntitiesHelper< MeshFunctionType >::Copy(inputMeshFunction,outputMeshFunction, begin,zero, size);
 
 			TestMovedMeshfunction<MeshFunctionType>::Test(outputMeshFunction);
 		};
@@ -210,7 +211,7 @@ TEST( CopyEntitiesTest, 1D )
 	TestCopyEntities<1>::Test();
 }
 
-TEST( CopyEntitiesTest, 2D )
+/*TEST( CopyEntitiesTest, 2D )
 {
 	TestCopyEntities<2>::Test();
 }
@@ -218,7 +219,7 @@ TEST( CopyEntitiesTest, 2D )
 TEST( CopyEntitiesTest, 3D )
 {
 	TestCopyEntities<3>::Test();
-}
+}*/
 
 
 #endif
