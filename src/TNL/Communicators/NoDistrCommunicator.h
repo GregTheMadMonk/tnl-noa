@@ -22,7 +22,12 @@ namespace Communicators {
         typedef int Request;
         static Request NullRequest;
 
-        static void Init(int argc, char **argv)
+        static bool isAvailable()
+        {
+            return true;
+        }
+
+        static void Init(int argc, char **argv, bool redirect=false)
         {
             NullRequest=-1;
         };
@@ -34,6 +39,11 @@ namespace Communicators {
         static bool IsInitialized()
         {   
             return true;
+        };
+
+        static bool isDistributed()
+        {
+            return false;
         };
 
         static int GetRank()
@@ -62,13 +72,13 @@ namespace Communicators {
         static Request ISend( const T *data, int count, int dest)
         {
             return 1;
-        }    
+        };    
 
         template <typename T>
         static Request IRecv( const T *data, int count, int src)
         {
             return 1;
-        }
+        };
 
         static void WaitAll(Request *reqs, int length)
         {
@@ -77,7 +87,7 @@ namespace Communicators {
         template< typename T > 
         static void Bcast(  T& data, int count, int root)
         {
-        }
+        };
 
        /* template< typename T >
         static void Allreduce( T& data,
