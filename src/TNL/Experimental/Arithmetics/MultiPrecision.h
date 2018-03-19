@@ -61,7 +61,7 @@ public:
 
 MultiPrecision abs(const MultiPrecision);
 MultiPrecision sqrt(const MultiPrecision);
-MultiPrecision cqrt(const MultiPrecision;
+MultiPrecision cqrt(const MultiPrecision);
 
 } // namespace Arithmetics
 } // namespace TNL
