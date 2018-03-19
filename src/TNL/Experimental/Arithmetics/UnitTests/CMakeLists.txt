@@ -1,4 +1,4 @@
-ADD_EXECUTABLE( MultiPrecisionTest MultiPrecisionTest.cpp )
+ADD_EXECUTABLE( MultiPrecisionTest MultiPrecisionTest.cpp ../MultiPrecision.cpp )
 TARGET_COMPILE_OPTIONS( MultiPrecisionTest PRIVATE ${CXX_TESTS_FLAGS} )
 TARGET_LINK_LIBRARIES( MultiPrecisionTest
                            ${GTEST_BOTH_LIBRARIES}
