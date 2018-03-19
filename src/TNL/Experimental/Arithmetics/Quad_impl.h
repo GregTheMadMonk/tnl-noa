@@ -414,7 +414,7 @@ void quickTwoSum(T a, T b, T *s, T *e) {
 template <typename T>
 void twoSum(T a, T b, T *s, T *e) {
     *s = a + b;
-    double v = *s - a;
+    T v = *s - a;
     *e = (a - (*s - v)) + (b - v);
 }
 

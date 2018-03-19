@@ -24,7 +24,6 @@ public:
     MultiPrecision(); // initialize number to 0
     explicit MultiPrecision(int); // assignment of signed long integer
     explicit MultiPrecision(double d); // assignment of double
-    /// TODO Constructor for Quad
 
     /* OPERATORS */
     MultiPrecision& operator=(const MultiPrecision& mp);
@@ -38,7 +37,6 @@ public:
     MultiPrecision operator*(const MultiPrecision& mp) const;
     MultiPrecision operator/(const MultiPrecision& mp) const;
     bool operator==(const MultiPrecision &mp) const;
-    /// TODO Operator for comparing Quad and MultiPrecision
     bool operator!=(const MultiPrecision &mp) const;
     bool operator<(const MultiPrecision &mp) const;
     bool operator>(const MultiPrecision &mp) const;
@@ -60,6 +58,10 @@ public:
     /* DESTRUCTOR */
     ~MultiPrecision();
 };
+
+MultiPrecision abs(const MultiPrecision);
+MultiPrecision sqrt(const MultiPrecision);
+MultiPrecision cqrt(const MultiPrecision;
 
 } // namespace Arithmetics
 } // namespace TNL
