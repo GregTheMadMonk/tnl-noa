@@ -26,7 +26,7 @@ namespace BuildConfigTags {
 /****
  * Turn off support for float and long double.
  */
-template<> struct GridRealTag< TNLViewBuildConfigTag, float > { enum { enabled = false }; };
+//template<> struct GridRealTag< TNLViewBuildConfigTag, float > { enum { enabled = false }; };
 template<> struct GridRealTag< TNLViewBuildConfigTag, long double > { enum { enabled = false }; };
 
 /****
