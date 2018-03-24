@@ -84,13 +84,17 @@ set( tnl_CUDA__SOURCES ${tnl_config_CUDA__SOURCES}
                        ${common_SOURCES} )
 
 
+ADD_LIBRARY( tnl_static STATIC ${tnl_SOURCES} )
+INSTALL( TARGETS tnl_static DESTINATION lib )
+
 if( BUILD_CUDA )
    CUDA_ADD_LIBRARY( tnl SHARED ${tnl_CUDA__SOURCES}
                      OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
-   CUDA_ADD_LIBRARY( tnl_static STATIC ${tnl_CUDA__SOURCES} )
+   # the static library with CUDA support has to be built separately
+   CUDA_ADD_LIBRARY( tnl-cuda_static STATIC ${tnl_CUDA__SOURCES} )
+   INSTALL( TARGETS tnl-cuda_static DESTINATION lib )
 else( BUILD_CUDA )
    ADD_LIBRARY( tnl SHARED ${tnl_SOURCES} )
-   ADD_LIBRARY( tnl_static STATIC ${tnl_SOURCES} )
 #ifMIC
   #TARGET_COMPILE_DEFINITIONS( tnl PUBLIC -DHAVE_MIC )
 endif( BUILD_CUDA )
@@ -101,17 +105,21 @@ TARGET_LINK_LIBRARIES( tnl
                        ${DCMTK_LIBRARIES} )
 
 
-INSTALL( TARGETS tnl tnl_static DESTINATION lib )
+INSTALL( TARGETS tnl DESTINATION lib )
 
 IF( BUILD_MPI )
+
+   ADD_LIBRARY( tnl-mpi_static STATIC ${tnl_SOURCES} )
+   INSTALL( TARGETS tnl-mpi_static DESTINATION lib )
 
    if( BUILD_CUDA )
       CUDA_ADD_LIBRARY( tnl-mpi SHARED ${tnl_CUDA__SOURCES}
                         OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
-      CUDA_ADD_LIBRARY( tnl-mpi_static STATIC ${tnl_CUDA__SOURCES} )
+      # the static library with CUDA support has to be built separately
+      CUDA_ADD_LIBRARY( tnl-mpi-cuda_static STATIC ${tnl_CUDA__SOURCES} )
+      INSTALL( TARGETS tnl-mpi-cuda_static DESTINATION lib )
    else( BUILD_CUDA )
       ADD_LIBRARY( tnl-mpi SHARED ${tnl_SOURCES} )
-      ADD_LIBRARY( tnl-mpi_static STATIC ${tnl_SOURCES} )
    endif( BUILD_CUDA )
 
    SET_TARGET_PROPERTIES( tnl-mpi PROPERTIES
@@ -122,7 +130,7 @@ IF( BUILD_MPI )
 
    TARGET_LINK_LIBRARIES( tnl-mpi
                           ${MPI_LIBRARIES} )
-   INSTALL( TARGETS tnl-mpi tnl-mpi_static DESTINATION lib )
+   INSTALL( TARGETS tnl-mpi DESTINATION lib )
 
 endif()
 
