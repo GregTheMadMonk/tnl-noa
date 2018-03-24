@@ -18,7 +18,7 @@
 
 #include <TNL/Containers/Vector.h>
 
-#ifdef HAVE_CUBLAS
+#ifdef HAVE_CUDA
 #include "cublasWrappers.h"
 #endif
 
@@ -51,7 +51,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
 
     Real resultHost, resultDevice;
 
-#ifdef HAVE_CUBLAS
+#ifdef HAVE_CUDA
     cublasHandle_t cublasHandle;
     cublasCreate( &cublasHandle );
 #endif
@@ -153,7 +153,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto absMaxCuda = [&]() {
         resultDevice = deviceVector.absMax();
     };
-#ifdef HAVE_CUBLAS
+#ifdef HAVE_CUDA
     auto absMaxCublas = [&]() {
         int index = 0;
         cublasIgamax( cublasHandle, size,
@@ -167,9 +167,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.time( reset1, "CPU (general)", absMaxHostGeneral );
 #ifdef HAVE_CUDA
     benchmark.time( reset1, "GPU", absMaxCuda );
-#ifdef HAVE_CUBLAS
     benchmark.time( reset1, "cuBLAS", absMaxCublas );
-#endif
 #endif
 
 
@@ -190,7 +188,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto absMinCuda = [&]() {
         resultDevice = deviceVector.absMin();
     };
-#ifdef HAVE_CUBLAS
+#ifdef HAVE_CUDA
     auto absMinCublas = [&]() {
         int index = 0;
         cublasIgamin( cublasHandle, size,
@@ -204,9 +202,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.time( reset1, "CPU (general)", absMinHostGeneral );
 #ifdef HAVE_CUDA
     benchmark.time( reset1, "GPU", absMinCuda );
-#ifdef HAVE_CUBLAS
     benchmark.time( reset1, "cuBLAS", absMinCublas );
-#endif
 #endif
 
 
@@ -252,7 +248,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto l1normCuda = [&]() {
         resultDevice = deviceVector.lpNorm( 1.0 );
     };
-#ifdef HAVE_CUBLAS
+#ifdef HAVE_CUDA
     auto l1normCublas = [&]() {
         cublasGasum( cublasHandle, size,
                      deviceVector.getData(), 1,
@@ -264,9 +260,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.time( reset1, "CPU (general)", l1normHostGeneral );
 #ifdef HAVE_CUDA
     benchmark.time( reset1, "GPU", l1normCuda );
-#ifdef HAVE_CUBLAS
     benchmark.time( reset1, "cuBLAS", l1normCublas );
-#endif
 #endif
 
 
@@ -287,7 +281,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto l2normCuda = [&]() {
         resultDevice = deviceVector.lpNorm( 2.0 );
     };
-#ifdef HAVE_CUBLAS
+#ifdef HAVE_CUDA
     auto l2normCublas = [&]() {
         cublasGnrm2( cublasHandle, size,
                      deviceVector.getData(), 1,
@@ -299,9 +293,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.time( reset1, "CPU (general)", l2normHostGeneral );
 #ifdef HAVE_CUDA
     benchmark.time( reset1, "GPU", l2normCuda );
-#ifdef HAVE_CUBLAS
     benchmark.time( reset1, "cuBLAS", l2normCublas );
-#endif
 #endif
 
 
@@ -348,7 +340,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto scalarProductCuda = [&]() {
         resultDevice = deviceVector.scalarProduct( deviceVector2 );
     };
-#ifdef HAVE_CUBLAS
+#ifdef HAVE_CUDA
     auto scalarProductCublas = [&]() {
         cublasGdot( cublasHandle, size,
                     deviceVector.getData(), 1,
@@ -361,9 +353,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.time( reset1, "CPU (general)", scalarProductHostGeneral );
 #ifdef HAVE_CUDA
     benchmark.time( reset1, "GPU", scalarProductCuda );
-#ifdef HAVE_CUBLAS
     benchmark.time( reset1, "cuBLAS", scalarProductCublas );
-#endif
 #endif
 
     /*
@@ -402,7 +392,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto multiplyCuda = [&]() {
         deviceVector *= 0.5;
     };
-#ifdef HAVE_CUBLAS
+#ifdef HAVE_CUDA
     auto multiplyCublas = [&]() {
         const Real alpha = 0.5;
         cublasGscal( cublasHandle, size,
@@ -414,9 +404,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.time( reset1, "CPU", multiplyHost );
 #ifdef HAVE_CUDA
     benchmark.time( reset1, "GPU", multiplyCuda );
-#ifdef HAVE_CUBLAS
     benchmark.time( reset1, "cuBLAS", multiplyCublas );
-#endif
 #endif
 
 
@@ -426,7 +414,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto addVectorCuda = [&]() {
         deviceVector.addVector( deviceVector2 );
     };
-#ifdef HAVE_CUBLAS
+#ifdef HAVE_CUDA
     auto addVectorCublas = [&]() {
         const Real alpha = 1.0;
         cublasGaxpy( cublasHandle, size,
@@ -439,13 +427,11 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.time( reset1, "CPU", addVectorHost );
 #ifdef HAVE_CUDA
     benchmark.time( reset1, "GPU", addVectorCuda );
-#ifdef HAVE_CUBLAS
     benchmark.time( reset1, "cuBLAS", addVectorCublas );
 #endif
-#endif
 
 
-#ifdef HAVE_CUBLAS
+#ifdef HAVE_CUDA
     cublasDestroy( cublasHandle );
 #endif
 

@@ -14,7 +14,6 @@
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/VectorOperations.h>
 #include <TNL/Containers/Algorithms/cuda-prefix-sum.h>
-#include <TNL/Containers/Algorithms/CublasWrapper.h>
 
 namespace TNL {
 namespace Containers {   
@@ -426,12 +425,6 @@ getScalarProduct( const Vector1& v1,
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
    Real result( 0 );
-/*#if defined HAVE_CUBLAS && defined HAVE_CUDA
-   if( CublasWraper< typename Vector1::RealType,
-                         typename Vector2::RealType,
-                         typename Vector1::IndexType >::dot( v1.getData(), v1.getData(), v1.getSize(), result ) )
-       return result;
-#endif*/
    Algorithms::ParallelReductionScalarProduct< typename Vector1::RealType, typename Vector2::RealType > operation;
    Reduction< Devices::Cuda >::reduce( operation,
                                        v1.getSize(),

@@ -3,9 +3,7 @@ ADD_SUBDIRECTORY( heat-equation-benchmark )
 
 IF( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( tnl-benchmark-blas tnl-benchmark-blas.cu )
-    if( HAVE_CUBLAS STREQUAL "yes" )
-        CUDA_ADD_CUBLAS_TO_TARGET( tnl-benchmark-blas )
-    endif()
+    CUDA_ADD_CUBLAS_TO_TARGET( tnl-benchmark-blas )
     TARGET_LINK_LIBRARIES( tnl-benchmark-blas tnl ${CUSPARSE_LIBRARY} )
 
     CUDA_ADD_EXECUTABLE( tnl-benchmark-spmv tnl-benchmark-spmv.cu )
