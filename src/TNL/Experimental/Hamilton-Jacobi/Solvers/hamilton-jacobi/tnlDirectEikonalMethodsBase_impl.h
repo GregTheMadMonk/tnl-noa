@@ -8,7 +8,7 @@
 #pragma once
 
 #include <TNL/TypeInfo.h>
-
+#include <iostream>
 template< typename Real,
           typename Device,
           typename Index >
@@ -111,7 +111,22 @@ initInterface( const MeshFunctionType& input,
             Real pom = 0;
             const IndexType e = neighbors.template getEntityIndex<  1,  0 >();
             const IndexType n = neighbors.template getEntityIndex<  0,  1 >();
+            //Try init with exact data:
             if( c * input[ n ] <= 0 )
+            {
+                output[ cell.getIndex() ] = c;
+                output[ n ] = input[ n ];
+                interfaceMap[ cell.getIndex() ] = true;
+                interfaceMap[ n ] = true;
+            }   
+            if( c * input[ e ] <= 0 )
+            {   
+                output[ cell.getIndex() ] = c;
+                output[ e ] = input[ e ];
+                interfaceMap[ cell.getIndex() ] = true;
+                interfaceMap[ e ] = true;
+            }
+            /*if( c * input[ n ] <= 0 )
             {
                 if( c >= 0 )
                 {
@@ -154,12 +169,8 @@ initInterface( const MeshFunctionType& input,
                 }
                 interfaceMap[ cell.getIndex() ] = true;
                 interfaceMap[ e ] = true;
-            }
+            }*/
          }
-         /*output[ cell.getIndex() ] =
-            c > 0 ? TypeInfo< RealType >::getMaxValue() :
-                   -TypeInfo< RealType >::getMaxValue(); */
-         //interfaceMap[ cell.getIndex() ] = false; //is on line 90
       }
 }
 
@@ -170,8 +181,8 @@ template< typename Real,
 void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
 updateCell( MeshFunctionType& u,
-            const MeshEntity& cell,
-            double v)
+            const MeshEntity& cell,   
+            const RealType v)
 {
    const auto& neighborEntities = cell.template getNeighborEntities< 2 >();
    const MeshType& mesh = cell.getMesh();
@@ -179,7 +190,7 @@ updateCell( MeshFunctionType& u,
    const RealType& hx = mesh.getSpaceSteps().x();
    const RealType& hy = mesh.getSpaceSteps().y();
    const RealType value = u( cell );
-   Real a, b, tmp = TypeInfo< Real >::getMaxValue();
+   RealType a, b, tmp1, tmp = TypeInfo< RealType >::getMaxValue();
    
    if( cell.getCoordinates().x() == 0 )
       a = u[ neighborEntities.template getEntityIndex< 1,  0 >() ];
@@ -188,7 +199,7 @@ updateCell( MeshFunctionType& u,
    else
    {
       a = TNL::argAbsMin( u[ neighborEntities.template getEntityIndex< -1,  0 >() ],
-                     u[ neighborEntities.template getEntityIndex<  1,  0 >() ] );
+                          u[ neighborEntities.template getEntityIndex<  1,  0 >() ] );
    }
 
    if( cell.getCoordinates().y() == 0 )
@@ -198,10 +209,10 @@ updateCell( MeshFunctionType& u,
    else
    {
       b = TNL::argAbsMin( u[ neighborEntities.template getEntityIndex< 0,  -1 >() ],
-                     u[ neighborEntities.template getEntityIndex< 0,   1 >() ] );
+                          u[ neighborEntities.template getEntityIndex< 0,   1 >() ] );
    }
-   if( fabs( a ) == TypeInfo< Real >::getMaxValue() && 
-       fabs( b ) == TypeInfo< Real >::getMaxValue() )
+   if( fabs( a ) == TypeInfo< RealType >::getMaxValue() && 
+       fabs( b ) == TypeInfo< RealType >::getMaxValue() )
       return;
    /*if( fabs( a ) == TypeInfo< Real >::getMaxValue() ||
        fabs( b ) == TypeInfo< Real >::getMaxValue() ||
@@ -211,14 +222,37 @@ updateCell( MeshFunctionType& u,
         fabs( a ) >= fabs( b ) ? b + TNL::sign( value ) * hy :
                                  a + TNL::sign( value ) * hx;
    }*/
-   tmp = meet2DCondition( a, b, hx, hy, value, v);
-   if( tmp == TypeInfo< Real >::getMaxValue() )
-      tmp = 
-          fabs( a ) >= fabs( b ) ? b + TNL::sign( value ) * hy/v :
+   /*if( fabs( a ) != TypeInfo< Real >::getMaxValue() &&
+       fabs( b ) != TypeInfo< Real >::getMaxValue() &&
+       fabs( a - b ) < TNL::sqrt( (hx * hx + hy * hy)/v ) )
+   {
+       tmp = ( hx * hx * b + hy * hy * a + 
+            sign( value ) * hx * hy * TNL::sqrt( ( hx * hx + hy * hy )/v - 
+            ( a - b ) * ( a - b ) ) )/( hx * hx + hy * hy );
+       u[ cell.getIndex() ] =  tmp;
+   }
+   else
+   {
+       tmp = 
+          fabs( a ) > fabs( b ) ? b + TNL::sign( value ) * hy/v :
                                    a + TNL::sign( value ) * hx/v;
-            
-   
-   u[ cell.getIndex() ] = argAbsMin( value, tmp );
+       u[ cell.getIndex() ] = argAbsMin( value, tmp );
+       //tmp = TypeInfo< RealType >::getMaxValue();
+   }*/
+    RealType pom[6] = { a, b, TypeInfo< Real >::getMaxValue(), (RealType)hx, (RealType)hy, 0.0 };
+    sortMinims( pom );
+    tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 3 ]/v;
+    
+                                
+    if( fabs( tmp ) < fabs( pom[ 1 ] ) ) 
+        u[ cell.getIndex() ] = argAbsMin( value, tmp );
+    else
+    {
+        tmp = ( pom[ 3 ] * pom[ 3 ] * pom[ 1 ] + pom[ 4 ] * pom[ 4 ] * pom[ 0 ] + 
+            TNL::sign( value ) * pom[ 3 ] * pom[ 4 ] * TNL::sqrt( ( pom[ 3 ] * pom[ 3 ] +  pom[ 4 ] *  pom[ 4 ] )/( v * v ) - 
+            ( pom[ 1 ] - pom[ 0 ] ) * ( pom[ 1 ] - pom[ 0 ] ) ) )/( pom[ 3 ] * pom[ 3 ] + pom[ 4 ] * pom[ 4 ] );
+        u[ cell.getIndex() ] = argAbsMin( value, tmp );
+    }
 }
 
 template< typename Real,
@@ -245,7 +279,7 @@ initInterface( const MeshFunctionType& input,
             {
                 cell.refresh();
                 output[ cell.getIndex() ] =
-                input( cell ) >= 0 ? TypeInfo< RealType >::getMaxValue() :
+                input( cell ) > 0 ? TypeInfo< RealType >::getMaxValue() :
                                    - TypeInfo< RealType >::getMaxValue();
                 interfaceMap[ cell.getIndex() ] = false;
             }
@@ -269,20 +303,33 @@ initInterface( const MeshFunctionType& input,
             {
                auto neighbors = cell.getNeighborEntities();
                Real pom = 0;
-               //const IndexType& c = cell.getIndex();
                const IndexType e = neighbors.template getEntityIndex<  1,  0,  0 >();
-               //const IndexType w = neighbors.template getEntityIndex< -1,  0,  0 >();
                const IndexType n = neighbors.template getEntityIndex<  0,  1,  0 >();
-               //const IndexType s = neighbors.template getEntityIndex<  0, -1,  0 >();
                const IndexType t = neighbors.template getEntityIndex<  0,  0,  1 >();
-               //const IndexType b = neighbors.template getEntityIndex<  0,  0, -1 >();
-               /*if( c * input[ e ] <= 0 || c * input[ w ] <= 0 ||
-                   c * input[ n ] <= 0 || c * input[ s ] <= 0 ||
-                   c * input[ t ] <= 0 || c * input[ b ] <= 0 )
+               //Try exact initiation
+               /*const IndexType w = neighbors.template getEntityIndex< -1,  0,  0 >();
+               const IndexType s = neighbors.template getEntityIndex<  0, -1,  0 >();
+               const IndexType b = neighbors.template getEntityIndex<  0,  0, -1 >();
+               if( c * input[ e ] <= 0 )
                {
                   output[ cell.getIndex() ] = c;
+                  output[ e ] = input[ e ];
+                  interfaceMap[ e ] = true;   
                   interfaceMap[ cell.getIndex() ] = true;
-                  continue;
+               }
+               else if( c * input[ n ] <= 0 )
+               {
+                  output[ cell.getIndex() ] = c;
+                  output[ n ] = input[ n ];
+                  interfaceMap[ n ] = true;   
+                  interfaceMap[ cell.getIndex() ] = true;
+               }
+               else if( c * input[ t ] <= 0 )
+               {
+                  output[ cell.getIndex() ] = c;
+                  output[ t ] = input[ t ];
+                  interfaceMap[ t ] = true;   
+                  interfaceMap[ cell.getIndex() ] = true;
                }*/
                if( c * input[ n ] <= 0 )
                {
@@ -357,7 +404,7 @@ initInterface( const MeshFunctionType& input,
                    }
                interfaceMap[ cell.getIndex() ] = true;
                interfaceMap[ t ] = true;
-               }        
+               }    
             }
             /*output[ cell.getIndex() ] =
                c > 0 ? TypeInfo< RealType >::getMaxValue() :
@@ -374,7 +421,7 @@ void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
 updateCell( MeshFunctionType& u,
             const MeshEntity& cell, 
-            double v )
+            const RealType v )
 {
    const auto& neighborEntities = cell.template getNeighborEntities< 3 >();
    const MeshType& mesh = cell.getMesh();
@@ -383,7 +430,8 @@ updateCell( MeshFunctionType& u,
    const RealType& hy = mesh.getSpaceSteps().y();
    const RealType& hz = mesh.getSpaceSteps().z();
    const RealType value = u( cell );
-   Real a, b, c, tmp = TypeInfo< RealType >::getMaxValue();
+   //std::cout << value << std::endl;
+   RealType a, b, c, tmp = TypeInfo< RealType >::getMaxValue();
    
    
    if( cell.getCoordinates().x() == 0 )
@@ -412,16 +460,12 @@ updateCell( MeshFunctionType& u,
       c = TNL::argAbsMin( u[ neighborEntities.template getEntityIndex< 0, 0, -1 >() ],
                          u[ neighborEntities.template getEntityIndex< 0, 0, 1 >() ] );
    }
-   if( fabs( a ) == TypeInfo< Real >::getMaxValue() && 
-       fabs( b ) == TypeInfo< Real >::getMaxValue() &&
-       fabs( c ) == TypeInfo< Real >::getMaxValue() )
+   if( fabs( a ) == TypeInfo< RealType >::getMaxValue() && 
+       fabs( b ) == TypeInfo< RealType >::getMaxValue() &&
+       fabs( c ) == TypeInfo< RealType >::getMaxValue() )
       return;
-   if( fabs( a ) == TypeInfo< Real >::getMaxValue() ||
-       fabs( b ) == TypeInfo< Real >::getMaxValue() ||
-       fabs( c ) == TypeInfo< Real >::getMaxValue() ||
-       hz * hz * fabs( a - b ) * fabs( a - b ) + hy * hy * fabs( a - c ) * fabs( a - c ) +
-           hx * hx * fabs( b - c ) * fabs( b - c ) >=  ( hx * hx * hy * hy + hx * hx * hz * hz + hy * hy * hz * hz )/v )
-   {
+   
+   
        /*if( fabs( a ) != TypeInfo< Real >::getMaxValue() &&
            fabs( b ) != TypeInfo< Real >::getMaxValue() &&
            fabs( a - b ) >= TNL::sqrt( (hx * hx + hy * hy)/v ) )
@@ -446,22 +490,31 @@ updateCell( MeshFunctionType& u,
                 sign( value ) * hy * hz * sqrt( ( hy * hy + hz * hz )/v - 
                 ( b - c ) * ( b - c ) ) )/( hy * hy + hz * hz );
        }*/
-       Real pom[6] = { a, b, c, (Real)hx, (Real)hy, (Real)hz};
-       sortMinims( pom );
-       tmp = meet2DCondition( pom[0], pom[1], pom[2], pom[3], value, v);
-       
-       if( tmp == TypeInfo< Real >::getMaxValue() )
-           tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 2 ]/v; 
-        
-   }
-   else
-      tmp = ( hx * hx * a + hy * hy * b + hz * hz * c +
-            sign( value ) * hx * hy * hz * sqrt( ( hx * hx + hy * hy + hz * hz)/v - 
-            hz * hz * ( a - b ) * ( a - b ) + hy * hy * ( a - c ) * ( a - c ) +
-            hx * hx * ( b - c ) * ( b - c ) ) )/( hx * hx + hy * hy + hz * hz );
-            
-   
-   u[ cell.getIndex() ] = argAbsMin( value, tmp );
+    RealType pom[6] = { a, b, c, (RealType)hx, (RealType)hy, (RealType)hz};
+    sortMinims( pom );   
+    tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 3 ];
+    if( fabs( tmp ) < fabs( pom[ 1 ] ) )
+    {
+        u[ cell.getIndex() ] = argAbsMin( value, tmp ); 
+    }
+    else
+    {
+        tmp = ( pom[ 3 ] * pom[ 3 ] * pom[ 1 ] + pom[ 4 ] * pom[ 4 ] * pom[ 0 ] + 
+            TNL::sign( value ) * pom[ 3 ] * pom[ 4 ] * TNL::sqrt( ( pom[ 3 ] * pom[ 3 ] +  pom[ 4 ] *  pom[ 4 ] )/( v * v ) - 
+            ( pom[ 1 ] - pom[ 0 ] ) * ( pom[ 1 ] - pom[ 0 ] ) ) )/( pom[ 3 ] * pom[ 3 ] + pom[ 4 ] * pom[ 4 ] );
+        if( fabs( tmp ) < fabs( pom[ 2 ]) ) 
+        {
+            u[ cell.getIndex() ] = argAbsMin( value, tmp );
+        }
+        else
+        {
+            tmp = ( hy * hy * hz * hz * a + hx * hx * hz * hz * b + hx * hx * hy * hy * c +
+                TNL::sign( value ) * hx * hy * hz * TNL::sqrt( ( hx * hx * hz * hz + hy * hy * hz * hz + hx * hx * hy * hy)/( v * v ) - 
+                hz * hz * ( a - b ) * ( a - b ) - hy * hy * ( a - c ) * ( a - c ) -
+                hx * hx * ( b - c ) * ( b - c ) ) )/( hx * hx * hy * hy + hy * hy * hz * hz + hz * hz * hx *hx );
+            u[ cell.getIndex() ] = argAbsMin( value, tmp );
+        }
+    }
 }
 
 template < typename T1, typename T2 >
@@ -470,10 +523,10 @@ T1 meet2DCondition( T1 a, T1 b, const T2 ha, const T2 hb, const T1 value, double
    T1 tmp;
    if( fabs( a ) != TypeInfo< T1 >::getMaxValue() &&
        fabs( b ) != TypeInfo< T1 >::getMaxValue() &&
-       fabs( a - b ) <= TNL::sqrt( (ha * ha + hb * hb)/v ) )
+       fabs( a - b ) < ha/v )//TNL::sqrt( (ha * ha + hb * hb)/2 )/v )
    {
-      tmp = ( ha * ha * a + hb * hb * b + 
-            sign( value ) * hb * hb * sqrt( ( ha * ha + hb * hb )/v - 
+      tmp = ( ha * ha * b + hb * hb * a + 
+            TNL::sign( value ) * ha * hb * TNL::sqrt( ( ha * ha + hb * hb )/( v * v ) - 
             ( a - b ) * ( a - b ) ) )/( ha * ha + hb * hb );
    }
    else
@@ -487,26 +540,35 @@ T1 meet2DCondition( T1 a, T1 b, const T2 ha, const T2 hb, const T1 value, double
 template < typename T1 >
 void sortMinims( T1 pom[])
 {
-    T1 tmp[6]; 
+    T1 tmp[6] = {0.0,0.0,0.0,0.0,0.0,0.0}; 
     if( fabs(pom[0]) <= fabs(pom[1]) && fabs(pom[1]) <= fabs(pom[2])){
-        tmp[0] = pom[0]; tmp[1] = pom[1]; tmp[2] = pom[3]; tmp[3] = pom[4];
+        tmp[0] = pom[0]; tmp[1] = pom[1]; tmp[2] = pom[2];
+        tmp[3] = pom[3]; tmp[4] = pom[4]; tmp[5] = pom[5];
+        
     }
     else if( fabs(pom[0]) <= fabs(pom[2]) && fabs(pom[2]) <= fabs(pom[1]) ){
-        tmp[0] = pom[0]; tmp[1] = pom[2]; tmp[2] = pom[3]; tmp[3] = pom[5];
+        tmp[0] = pom[0]; tmp[1] = pom[2]; tmp[2] = pom[1];
+        tmp[3] = pom[3]; tmp[4] = pom[5]; tmp[5] = pom[4];
     }
     else if( fabs(pom[1]) <= fabs(pom[0]) && fabs(pom[0]) <= fabs(pom[2]) ){
-        tmp[0] = pom[1]; tmp[1] = pom[0]; tmp[2] = pom[4]; tmp[3] = pom[3];
+        tmp[0] = pom[1]; tmp[1] = pom[0]; tmp[2] = pom[2];
+        tmp[3] = pom[4]; tmp[4] = pom[3]; tmp[5] = pom[5];
     }
     else if( fabs(pom[1]) <= fabs(pom[2]) && fabs(pom[2]) <= fabs(pom[0]) ){
-        tmp[0] = pom[1]; tmp[1] = pom[2]; tmp[2] = pom[4]; tmp[3] = pom[5];
+        tmp[0] = pom[1]; tmp[1] = pom[2]; tmp[2] = pom[0];
+        tmp[3] = pom[4]; tmp[4] = pom[5]; tmp[5] = pom[3];
     }
     else if( fabs(pom[2]) <= fabs(pom[0]) && fabs(pom[0]) <= fabs(pom[1]) ){
-        tmp[0] = pom[2]; tmp[1] = pom[0]; tmp[2] = pom[5]; tmp[3] = pom[3];
+        tmp[0] = pom[2]; tmp[1] = pom[0]; tmp[2] = pom[1];
+        tmp[3] = pom[5]; tmp[4] = pom[3]; tmp[5] = pom[4];
     }
     else if( fabs(pom[2]) <= fabs(pom[1]) && fabs(pom[1]) <= fabs(pom[0]) ){
-        tmp[0] = pom[2]; tmp[1] = pom[1]; tmp[2] = pom[5]; tmp[3] = pom[4];
+        tmp[0] = pom[2]; tmp[1] = pom[1]; tmp[2] = pom[0];
+        tmp[3] = pom[5]; tmp[4] = pom[4]; tmp[5] = pom[3];
     }
+    
     for( int i = 0; i < 6; i++ )
+    {
         pom[ i ] = tmp[ i ];
-        
+    }   
 }

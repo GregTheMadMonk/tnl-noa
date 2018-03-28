@@ -37,7 +37,7 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >
       
       template< typename MeshEntity >
       void updateCell( MeshFunctionType& u,
-                       const MeshEntity& cell);
+                       const MeshEntity& cell );
       
 };
 
@@ -63,7 +63,7 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
       template< typename MeshEntity >
       void updateCell( MeshFunctionType& u,
                        const MeshEntity& cell,
-                       double velocity = 1.0 );
+                       const RealType velocity = 1.0 );
 };
 
 template< typename Real,
@@ -87,12 +87,12 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
       template< typename MeshEntity >
       void updateCell( MeshFunctionType& u,
                        const MeshEntity& cell,
-                       double velocity = 1.0);
+                       const RealType velocity = 1.0);
       
-      Real sort( Real a, Real b, Real c,
+      /*Real sort( Real a, Real b, Real c,
                  const RealType& ha,
                  const RealType& hb,
-                 const RealType& hc ); 
+                 const RealType& hc ); */
 };
 
 template < typename T1, typename T2 >

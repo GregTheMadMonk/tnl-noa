@@ -89,7 +89,7 @@ solve( const MeshPointer& mesh,
             }
          }
       }
-      aux.save( "aux-1.tnl" );
+      //aux.save( "aux-1.tnl" );
 
       for( cell.getCoordinates().z() = 0;
            cell.getCoordinates().z() < mesh->getDimensions().z();
@@ -110,7 +110,7 @@ solve( const MeshPointer& mesh,
             }
          }
       }
-      aux.save( "aux-2.tnl" );
+      //aux.save( "aux-2.tnl" );
       for( cell.getCoordinates().z() = 0;
            cell.getCoordinates().z() < mesh->getDimensions().z();
            cell.getCoordinates().z()++ )
@@ -130,7 +130,7 @@ solve( const MeshPointer& mesh,
             }
          }
       }
-      aux.save( "aux-3.tnl" );
+      //aux.save( "aux-3.tnl" );
       
       for( cell.getCoordinates().z() = 0;
            cell.getCoordinates().z() < mesh->getDimensions().z();
@@ -151,7 +151,7 @@ solve( const MeshPointer& mesh,
             }
          }
       }     
-      aux.save( "aux-4.tnl" );
+      //aux.save( "aux-4.tnl" );
       
       for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
            cell.getCoordinates().z() >= 0;
@@ -172,7 +172,7 @@ solve( const MeshPointer& mesh,
             }
          }
       }
-      aux.save( "aux-5.tnl" );
+      //aux.save( "aux-5.tnl" );
 
       for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
            cell.getCoordinates().z() >= 0;
@@ -193,7 +193,7 @@ solve( const MeshPointer& mesh,
             }
          }
       }
-      aux.save( "aux-6.tnl" );
+      //aux.save( "aux-6.tnl" );
       
       for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
            cell.getCoordinates().z() >= 0;
@@ -214,7 +214,7 @@ solve( const MeshPointer& mesh,
             }
          }
       }
-      aux.save( "aux-7.tnl" );
+      //aux.save( "aux-7.tnl" );
 
       for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
            cell.getCoordinates().z() >= 0;
@@ -235,7 +235,7 @@ solve( const MeshPointer& mesh,
             }
          }
       }
-      aux.save( "aux-8.tnl" );
+      //aux.save( "aux-8.tnl" );
       iteration++;
       
    }
