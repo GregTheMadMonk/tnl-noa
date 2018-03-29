@@ -197,7 +197,7 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
                      
            
                       
-       };
+       }
        
        void SetupGrid( GridType& grid)
        {

@@ -26,17 +26,17 @@ namespace Communicators {
     {
 
         private:
-        inline static MPI_Datatype MPIDataType( const signed char ) { return MPI_CHAR; };
-        inline static MPI_Datatype MPIDataType( const signed short int ) { return MPI_SHORT; };
-        inline static MPI_Datatype MPIDataType( const signed int ) { return MPI_INT; };
-        inline static MPI_Datatype MPIDataType( const signed long int ) { return MPI_LONG; };
-        inline static MPI_Datatype MPIDataType( const unsigned char ) { return MPI_UNSIGNED_CHAR; };
-        inline static MPI_Datatype MPIDataType( const unsigned short int ) { return MPI_UNSIGNED_SHORT; };
-        inline static MPI_Datatype MPIDataType( const unsigned int ) { return MPI_UNSIGNED; };
-        inline static MPI_Datatype MPIDataType( const unsigned long int ) { return MPI_UNSIGNED_LONG; };
-        inline static MPI_Datatype MPIDataType( const float ) { return MPI_FLOAT; };
-        inline static MPI_Datatype MPIDataType( const double ) { return MPI_DOUBLE; };
-        inline static MPI_Datatype MPIDataType( const long double ) { return MPI_LONG_DOUBLE; };
+        inline static MPI_Datatype MPIDataType( const signed char* ) { return MPI_CHAR; };
+        inline static MPI_Datatype MPIDataType( const signed short int* ) { return MPI_SHORT; };
+        inline static MPI_Datatype MPIDataType( const signed int* ) { return MPI_INT; };
+        inline static MPI_Datatype MPIDataType( const signed long int* ) { return MPI_LONG; };
+        inline static MPI_Datatype MPIDataType( const unsigned char *) { return MPI_UNSIGNED_CHAR; };
+        inline static MPI_Datatype MPIDataType( const unsigned short int* ) { return MPI_UNSIGNED_SHORT; };
+        inline static MPI_Datatype MPIDataType( const unsigned int* ) { return MPI_UNSIGNED; };
+        inline static MPI_Datatype MPIDataType( const unsigned long int* ) { return MPI_UNSIGNED_LONG; };
+        inline static MPI_Datatype MPIDataType( const float* ) { return MPI_FLOAT; };
+        inline static MPI_Datatype MPIDataType( const double* ) { return MPI_DOUBLE; };
+        inline static MPI_Datatype MPIDataType( const long double* ) { return MPI_LONG_DOUBLE; };
         
         public:
 
@@ -58,7 +58,7 @@ namespace Communicators {
         static std::streambuf *backup;
         static std::ofstream filestr;
 
-        static void Init(int argc, char **argv, bool redirect=false)
+        static void Init(int argc, char **argv,bool redirect=false)
         {
             MPI::Init(argc,argv);
             NullRequest=MPI::REQUEST_NULL;
@@ -79,7 +79,6 @@ namespace Communicators {
                     std::cout.rdbuf(psbuf);
                 }
             }
-
         };
 
         static void Finalize()
@@ -126,14 +125,14 @@ namespace Communicators {
         template <typename T>
         static Request ISend( const T *data, int count, int dest)
         {
-                return MPI::COMM_WORLD.Isend((void*) data, count, MPIDataType(*data) , dest, 0);
-        };    
+                return MPI::COMM_WORLD.Isend((void*) data, count, MPIDataType(data) , dest, 0);
+        }    
 
         template <typename T>
         static Request IRecv( const T *data, int count, int src)
         {
-                return MPI::COMM_WORLD.Irecv((void*) data, count, MPIDataType(*data) , src, 0);
-        };
+                return MPI::COMM_WORLD.Irecv((void*) data, count, MPIDataType(data) , src, 0);
+        }
 
         static void WaitAll(Request *reqs, int length)
         {
@@ -144,7 +143,7 @@ namespace Communicators {
         static void Bcast(  T& data, int count, int root)
         {
                 MPI::COMM_WORLD.Bcast((void*) &data, count,  MPIDataType(data), root);
-        };
+        }
 
       /*  template< typename T >
         static void Allreduce( T& data,

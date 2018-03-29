@@ -43,5 +43,12 @@ ADD_TEST( CopyEntitesTest ${EXECUTABLE_OUTPUT_PATH}/CopyEntitesTest )
 SET (mpi_test_parameters_IO -np 4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridIOTest")
 ADD_TEST( NAME DistributedGridIOTest COMMAND "mpirun" ${mpi_test_parameters_IO})
 
+IF( BUILD_CUDA )
+    CUDA_ADD_EXECUTABLE( GPUDistributedGridIOTest GPUDistributedGridIOTest.cu OPTIONS ${CXX_TESTS_FLAGS})
+    TARGET_LINK_LIBRARIES( GPUDistributedGridIOTest 
+                                    ${GTEST_BOTH_LIBRARIES}
+                                    tnl )   
+ENDIF( BUILD_CUDA )  
+
 endif()
 

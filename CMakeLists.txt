@@ -92,15 +92,19 @@ endif()
 if( ${CXX_COMPILER_NAME} STREQUAL "mpic++" )
    message( "MPI compiler detected."    )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
+   set( CUDA_HOST_COMPILER "mpic++" )
+
 endif()
 
 ####
-# Check for MPI
+# Check for MPI -- not working
 #
 #find_package( MPI )
 #if( MPI_CXX_FOUND )
-#    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
-#    message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
+   # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
+   # message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
+   # message( "MPI link flags  -- ${MPI_CXX_LINK_FLAGS}")
+   # message( "MPI libraries-- ${MPI_CXX_LIBRARIES}")
 #endif()
 
 #####
