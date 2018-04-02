@@ -14,6 +14,8 @@ SET( headers Domain.h
              TestFunction.h             
              TestFunction_impl.h
              VectorField.h
+             VectorFieldEvaluator.h
+             VectorFieldEvaluator_impl.h
              VectorFieldGnuplotWriter.h
              VectorFieldGnuplotWriter_impl.h
              VectorFieldVTKWriter.h
