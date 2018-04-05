@@ -9,6 +9,7 @@
 
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Devices/Cuda.h>
 
 using namespace TNL;
 
@@ -36,8 +37,8 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >
                           InterfaceMapType& interfaceMap );
       
       template< typename MeshEntity >
-      void updateCell( MeshFunctionType& u,
-                       const MeshEntity& cell );
+      __cuda_callable__ void updateCell( MeshFunctionType& u,
+                                         const MeshEntity& cell );
       
 };
 
@@ -61,9 +62,9 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
                           InterfaceMapType& interfaceMap );
       
       template< typename MeshEntity >
-      void updateCell( MeshFunctionType& u,
-                       const MeshEntity& cell,
-                       const RealType velocity = 1.0 );
+      __cuda_callable__ void updateCell( MeshFunctionType& u,
+                                         const MeshEntity& cell,
+                                         const RealType velocity = 1.0 );
 };
 
 template< typename Real,
@@ -85,9 +86,9 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
                           InterfaceMapType& interfaceMap );
       
       template< typename MeshEntity >
-      void updateCell( MeshFunctionType& u,
-                       const MeshEntity& cell,
-                       const RealType velocity = 1.0);
+      __cuda_callable__ void updateCell( MeshFunctionType& u,
+                                         const MeshEntity& cell,
+                                         const RealType velocity = 1.0);
       
       /*Real sort( Real a, Real b, Real c,
                  const RealType& ha,
