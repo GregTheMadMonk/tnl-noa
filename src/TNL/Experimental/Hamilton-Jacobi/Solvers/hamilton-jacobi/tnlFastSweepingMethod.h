@@ -28,7 +28,7 @@ template< typename Real,
 class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >
    : public tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >
 {
-   static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
+   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
    
    public:
       
@@ -66,7 +66,7 @@ template< typename Real,
 class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >
    : public tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
 {
-   static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
+   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
    
    public:
       
@@ -104,7 +104,7 @@ template< typename Real,
 class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >
    : public tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
 {
-   static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
+   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
    
    public:
       
