@@ -49,7 +49,6 @@ template< typename Real,
 class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
 {
    public:
-      
       typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
       typedef Real RealType;
       typedef Device DevcieType;
@@ -65,6 +64,8 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
       __cuda_callable__ void updateCell( MeshFunctionType& u,
                                          const MeshEntity& cell,
                                          const RealType velocity = 1.0 );
+   protected:
+       
 };
 
 template< typename Real,
@@ -100,6 +101,16 @@ template < typename T1, typename T2 >
 T1 meet2DCondition( T1 a, T1 b, const T2 ha, const T2 hb, const T1 value, double v = 1);
 
 template < typename T1 >
-void sortMinims( T1 pom[] );
+__cuda_callable__ void sortMinims( T1 pom[] );
+
+
+template < typename Real, typename Device, typename Index >
+__global__ void CudaUpdateCellCaller( Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
+                                      Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux );
+
+template < typename Real, typename Device, typename Index >
+__global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
+                                Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& output,
+                                Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap );
 
 #include "tnlDirectEikonalMethodsBase_impl.h"

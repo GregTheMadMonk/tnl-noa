@@ -64,7 +64,17 @@ solve( const MeshPointer& mesh,
    interfaceMap.setMesh( mesh );
    std::cout << "Initiating the interface cells ..." << std::endl;
    BaseType::initInterface( u, aux, interfaceMap );
-   aux.save( "aux-ini.tnl" );
+   
+   //if( std::is_same< DeviceType, Devices::Cuda >::value )
+   //{
+   //    Functions::MeshFunction< Meshes::Grid< 2, Real, TNL::Devices::Host, Index > > h_aux;
+       //cudaMemcpy( h_aux, aux, sizeof(MeshFunctionType), cudaMemcpyDeviceToHost );
+       //h_aux->save("aux-init-cuda.tnl");
+   //}
+   //if( std::is_same< DeviceType, Devices::Host >::value )
+   {
+       aux.save( "aux-ini.tnl" );
+   }
 
    typename MeshType::Cell cell( *mesh );
    
@@ -207,10 +217,45 @@ solve( const MeshPointer& mesh,
       if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
          // TODO: CUDA code
+          int numBlocks = 2;
+          int threadsPerBlock;
+          if( mesh->getDimensions().x() >= mesh->getDimensions().y() )
+               threadsPerBlock = (int)( mesh->getDimensions().x() );
+          else
+               threadsPerBlock = (int)( mesh->getDimensions().y() );
+          
+          CudaUpdateCellCaller< Real, Device, Index ><<< numBlocks, threadsPerBlock >>>( interfaceMap, aux );
+          cudaDeviceSynchronize(); //copak dela?
       }
-      
       iteration++;
    }
    aux.save("aux-final.tnl");
 }
 
+template < typename Real, typename Device, typename Index >
+__global__ void CudaUpdateCellCaller( Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
+                                      Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux )
+{
+    int i = threadIdx.x + blockDim.x*blockIdx.x;
+    int j = threadIdx.y + blockDim.y*blockIdx.y;
+    const Meshes::Grid< 2, Real, Device, Index >& mesh = aux.getMesh();
+    
+    if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
+    {
+        //make cell of aux from index
+        typedef typename Meshes::Grid< 2, Real, Device, Index >::Cell Cell;
+        Cell cell( mesh );
+        cell.getCoordinates().x() = i; cell.getCoordinates().y() = j;
+        cell.refresh();
+
+        //update cell value few times 
+        //for( int i = 0; i < mesh.getDimensions() ; i++ )
+        //{
+            cell.refresh();
+            if( ! interfaceMap( cell ) )
+            {
+        //        tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::updateCell( aux, cell );
+            }
+        //}
+    }
+}
