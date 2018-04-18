@@ -64,17 +64,9 @@ solve( const MeshPointer& mesh,
    interfaceMap.setMesh( mesh );
    std::cout << "Initiating the interface cells ..." << std::endl;
    BaseType::initInterface( u, aux, interfaceMap );
-   
-   //if( std::is_same< DeviceType, Devices::Cuda >::value )
-   //{
-   //    Functions::MeshFunction< Meshes::Grid< 2, Real, TNL::Devices::Host, Index > > h_aux;
-       //cudaMemcpy( h_aux, aux, sizeof(MeshFunctionType), cudaMemcpyDeviceToHost );
-       //h_aux->save("aux-init-cuda.tnl");
-   //}
-   //if( std::is_same< DeviceType, Devices::Host >::value )
-   {
-       aux.save( "aux-ini.tnl" );
-   }
+   cudaDeviceSynchronize();
+        
+   aux.save( "aux-ini.tnl" );
 
    typename MeshType::Cell cell( *mesh );
    
@@ -217,7 +209,8 @@ solve( const MeshPointer& mesh,
       if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
          // TODO: CUDA code
-          int numBlocks = 2;
+#ifdef HAVE_CUDA
+          /*int numBlocks = 2;
           int threadsPerBlock;
           if( mesh->getDimensions().x() >= mesh->getDimensions().y() )
                threadsPerBlock = (int)( mesh->getDimensions().x() );
@@ -225,7 +218,8 @@ solve( const MeshPointer& mesh,
                threadsPerBlock = (int)( mesh->getDimensions().y() );
           
           CudaUpdateCellCaller< Real, Device, Index ><<< numBlocks, threadsPerBlock >>>( interfaceMap, aux );
-          cudaDeviceSynchronize(); //copak dela?
+          cudaDeviceSynchronize(); //copak dela?*/
+#endif
       }
       iteration++;
    }

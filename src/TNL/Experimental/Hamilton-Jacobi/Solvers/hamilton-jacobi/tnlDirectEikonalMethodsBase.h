@@ -104,13 +104,17 @@ template < typename T1 >
 __cuda_callable__ void sortMinims( T1 pom[] );
 
 
+#ifdef HAVE_CUDA
 template < typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
                                       Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux );
 
-template < typename Real, typename Device, typename Index >
+/*template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
                                 Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& output,
-                                Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap );
+                                Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap );*/
+
+__global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, double, TNL::Devices::Cuda, int > >& input );
+#endif
 
 #include "tnlDirectEikonalMethodsBase_impl.h"

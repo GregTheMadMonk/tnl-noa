@@ -83,25 +83,30 @@ initInterface( const MeshFunctionType& input,
      * overit is_same device
      * na kazdy bod jedno cuda vlakno
      */
-    const MeshType& mesh = input.getMesh();
-    typedef typename MeshType::Cell Cell;
-    Cell cell( mesh );
     
+        
     if( std::is_same< Device, Devices::Cuda >::value )
     {
 #ifdef HAVE_CUDA
+        const MeshType& mesh = input.getMesh();
+        
         const int cudaBlockSize( 16 );
         int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().x(), cudaBlockSize );
         int numBlocksY = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().y(), cudaBlockSize );
         dim3 blockSize( cudaBlockSize, cudaBlockSize );
         dim3 gridSize( numBlocksX, numBlocksY );
         Devices::Cuda::synchronizeDevice();
-        CudaInitCaller< Real, Device, Index ><<< gridSize, blockSize >>>( input, output, interfaceMap );
+        //CudaInitCaller< Real, Device, Index ><<< gridSize, blockSize >>>( input, output, interfaceMap );
+        CudaInitCaller<<< gridSize, blockSize >>>( input );
+        cudaDeviceSynchronize();
         TNL_CHECK_CUDA_DEVICE;
 #endif
     }
     if( std::is_same< Device, Devices::Host >::value )
     {
+        const MeshType& mesh = input.getMesh();
+        typedef typename MeshType::Cell Cell;
+        Cell cell( mesh );
         for( cell.getCoordinates().y() = 0;
              cell.getCoordinates().y() < mesh.getDimensions().y();
              cell.getCoordinates().y() ++ )
@@ -597,7 +602,7 @@ __cuda_callable__ void sortMinims( T1 pom[])
     }   
 }
 
-template < typename Real, typename Device, typename Index >
+/*template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
                                 Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& output,
                                 Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap ) 
@@ -606,7 +611,7 @@ __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, 
     int j = blockDim.y*blockIdx.y + threadIdx.y;
     const Meshes::Grid< 2, Real, Device, Index >& mesh = input.getMesh();
     
-    if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
+    //if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
     {
         typedef typename Meshes::Grid< 2, Real, Device, Index >::Cell Cell;
         Cell cell( mesh );
@@ -666,4 +671,13 @@ __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, 
            }
         }
     }
+}*/
+
+
+__global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, double, TNL::Devices::Cuda, int > >& input )
+{
+    int i = threadIdx.x + blockDim.x*blockIdx.x;
+    int j = blockDim.y*blockIdx.y + threadIdx.y;
+    //const Meshes::Grid< 2, double, TNL::Devices::Cuda, int >& mesh = input.getMesh();
+    
 }
