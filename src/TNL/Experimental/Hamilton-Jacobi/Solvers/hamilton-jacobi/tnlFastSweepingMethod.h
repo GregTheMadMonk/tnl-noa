@@ -34,14 +34,18 @@ class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >
       
       typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
       typedef Real RealType;
-      typedef TNL::Devices::Host DeviceType;
+      typedef Device DeviceType;
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
       typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > > BaseType;
       using MeshPointer = SharedPointer< MeshType >;
+      using AnisotropyPointer = SharedPointer< AnisotropyType, DeviceType >;
       
       using typename BaseType::InterfaceMapType;
       using typename BaseType::MeshFunctionType;
+      using typename BaseType::InterfaceMapPointer;
+      using typename BaseType::MeshFunctionPointer;
+      
       
       FastSweepingMethod();
       
@@ -50,8 +54,8 @@ class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >
       void setMaxIterations( const IndexType& maxIterations );
       
       void solve( const MeshPointer& mesh,
-                  const AnisotropyType& anisotropy,
-                  MeshFunctionType& u );
+                  const AnisotropyPointer& anisotropy,
+                  MeshFunctionPointer& u );
       
       
    protected:
@@ -72,14 +76,17 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >
       
       typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
       typedef Real RealType;
-      typedef TNL::Devices::Host DeviceType;
+      typedef Device DeviceType;
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
       typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > BaseType;
       using MeshPointer = SharedPointer< MeshType >;
+      using AnisotropyPointer = SharedPointer< AnisotropyType, DeviceType >;
 
       using typename BaseType::InterfaceMapType;
       using typename BaseType::MeshFunctionType;
+      using typename BaseType::InterfaceMapPointer;
+      using typename BaseType::MeshFunctionPointer;      
 
       FastSweepingMethod();
       
@@ -88,8 +95,8 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >
       void setMaxIterations( const IndexType& maxIterations );
       
       void solve( const MeshPointer& mesh,
-                  const AnisotropyType& anisotropy,
-                  MeshFunctionType& u );
+                  const AnisotropyPointer& anisotropy,
+                  MeshFunctionPointer& u );
       
       
    protected:
@@ -110,14 +117,17 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >
       
       typedef Meshes::Grid< 3, Real, Device, Index > MeshType;
       typedef Real RealType;
-      typedef TNL::Devices::Host DeviceType;
+      typedef Device DeviceType;
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
       typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > BaseType;
       using MeshPointer = SharedPointer< MeshType >;
+      using AnisotropyPointer = SharedPointer< AnisotropyType, DeviceType >;
       
       using typename BaseType::InterfaceMapType;
       using typename BaseType::MeshFunctionType;
+      using typename BaseType::InterfaceMapPointer;
+      using typename BaseType::MeshFunctionPointer;      
       
       FastSweepingMethod();
       
@@ -126,16 +136,14 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >
       void setMaxIterations( const IndexType& maxIterations );
       
       void solve( const MeshPointer& mesh,
-                  const AnisotropyType& anisotropy,
-                  MeshFunctionType& u );
+                  const AnisotropyPointer& anisotropy,
+                  MeshFunctionPointer& u );
       
       
    protected:
       
       const IndexType maxIterations;
 };
-
-
 
 #include "tnlFastSweepingMethod1D_impl.h"
 #include "tnlFastSweepingMethod2D_impl.h"

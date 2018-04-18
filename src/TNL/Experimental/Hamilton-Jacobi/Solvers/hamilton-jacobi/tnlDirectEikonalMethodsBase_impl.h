@@ -16,12 +16,15 @@ template< typename Real,
           typename Index >
 void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >::
-initInterface( const MeshFunctionType& input,
-               MeshFunctionType& output,
-               InterfaceMapType& interfaceMap  )
+initInterface( const MeshFunctionPointer& _input,
+               MeshFunctionPointer& _output,
+               InterfaceMapPointer& _interfaceMap  )
 {
-   const MeshType& mesh = input.getMesh();
+   const MeshType& mesh = _input->getMesh();
    typedef typename MeshType::Cell Cell;
+   const MeshFunctionType& input = _input.getData();
+   MeshFunctionType& output = _output.modifyData();
+   InterfaceMapType& interfaceMap = _interfaceMap.modifyData();
    Cell cell( mesh );
    for( cell.getCoordinates().x() = 1;
         cell.getCoordinates().x() < mesh.getDimensions().x() - 1;
@@ -74,9 +77,9 @@ template< typename Real,
           typename Index >
 void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
-initInterface( const MeshFunctionType& input,
-               MeshFunctionType& output,
-               InterfaceMapType& interfaceMap )
+initInterface( const MeshFunctionPointer& _input,
+               MeshFunctionPointer& _output,
+               InterfaceMapPointer& _interfaceMap )
 {
     /*
      doplnit přepočty pro cudu:
@@ -88,7 +91,7 @@ initInterface( const MeshFunctionType& input,
     if( std::is_same< Device, Devices::Cuda >::value )
     {
 #ifdef HAVE_CUDA
-        const MeshType& mesh = input.getMesh();
+        const MeshType& mesh = _input->getMesh();
         
         const int cudaBlockSize( 16 );
         int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().x(), cudaBlockSize );
@@ -96,14 +99,19 @@ initInterface( const MeshFunctionType& input,
         dim3 blockSize( cudaBlockSize, cudaBlockSize );
         dim3 gridSize( numBlocksX, numBlocksY );
         Devices::Cuda::synchronizeDevice();
-        //CudaInitCaller< Real, Device, Index ><<< gridSize, blockSize >>>( input, output, interfaceMap );
-        CudaInitCaller<<< gridSize, blockSize >>>( input );
+        CudaInitCaller<<< gridSize, blockSize >>>( _input.template getData< Device >(),
+                                                   _output.template modifyData< Device >(),
+                                                   _interfaceMap.template modifyData< Device >() );
+        //CudaInitCaller<<< gridSize, blockSize >>>( input );
         cudaDeviceSynchronize();
         TNL_CHECK_CUDA_DEVICE;
 #endif
     }
     if( std::is_same< Device, Devices::Host >::value )
     {
+         const MeshFunctionType& input = _input.getData();
+         MeshFunctionType& output = _output.modifyData();
+         InterfaceMapType& interfaceMap = _interfaceMap.modifyData();
         const MeshType& mesh = input.getMesh();
         typedef typename MeshType::Cell Cell;
         Cell cell( mesh );
@@ -289,10 +297,13 @@ template< typename Real,
           typename Index >
 void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
-initInterface( const MeshFunctionType& input,
-               MeshFunctionType& output,
-               InterfaceMapType& interfaceMap  )
+initInterface( const MeshFunctionPointer& _input,
+               MeshFunctionPointer& _output,
+               InterfaceMapPointer& _interfaceMap  )
 {
+   const MeshFunctionType& input =  _input.getData();
+   MeshFunctionType& output =  _output.modifyData();
+   InterfaceMapType& interfaceMap =  _interfaceMap.modifyData();
    const MeshType& mesh = input.getMesh();
    typedef typename MeshType::Cell Cell;
    Cell cell( mesh );
@@ -602,16 +613,16 @@ __cuda_callable__ void sortMinims( T1 pom[])
     }   
 }
 
-/*template < typename Real, typename Device, typename Index >
+template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
                                 Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& output,
                                 Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap ) 
 {
     int i = threadIdx.x + blockDim.x*blockIdx.x;
     int j = blockDim.y*blockIdx.y + threadIdx.y;
-    const Meshes::Grid< 2, Real, Device, Index >& mesh = input.getMesh();
+    const Meshes::Grid< 2, Real, Device, Index >& mesh = input.template getMesh< Devices::Cuda >();
     
-    //if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
+    if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
     {
         typedef typename Meshes::Grid< 2, Real, Device, Index >::Cell Cell;
         Cell cell( mesh );
@@ -671,13 +682,13 @@ __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, 
            }
         }
     }
-}*/
+}
 
 
-__global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, double, TNL::Devices::Cuda, int > >& input )
+/*__global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, double, TNL::Devices::Cuda, int > >& input )
 {
     int i = threadIdx.x + blockDim.x*blockIdx.x;
     int j = blockDim.y*blockIdx.y + threadIdx.y;
     //const Meshes::Grid< 2, double, TNL::Devices::Cuda, int >& mesh = input.getMesh();
     
-}
+}*/

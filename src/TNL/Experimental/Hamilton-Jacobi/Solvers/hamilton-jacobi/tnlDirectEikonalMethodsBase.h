@@ -31,10 +31,12 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef Functions::MeshFunction< MeshType, 1, bool > InterfaceMapType;
+      using MeshFunctionPointer = SharedPointer< MeshFunctionType >;
+      using InterfaceMapPointer = SharedPointer< InterfaceMapType >;
       
-      void initInterface( const MeshFunctionType& input,
-                          MeshFunctionType& output,
-                          InterfaceMapType& interfaceMap );
+      void initInterface( const MeshFunctionPointer& input,
+                          MeshFunctionPointer& output,
+                          InterfaceMapPointer& interfaceMap );
       
       template< typename MeshEntity >
       __cuda_callable__ void updateCell( MeshFunctionType& u,
@@ -55,10 +57,12 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef Functions::MeshFunction< MeshType, 2, bool > InterfaceMapType;
+      using MeshFunctionPointer = SharedPointer< MeshFunctionType >;
+      using InterfaceMapPointer = SharedPointer< InterfaceMapType >;      
 
-      void initInterface( const MeshFunctionType& input,
-                          MeshFunctionType& output,
-                          InterfaceMapType& interfaceMap );
+      void initInterface( const MeshFunctionPointer& input,
+                          MeshFunctionPointer& output,
+                          InterfaceMapPointer& interfaceMap );
       
       template< typename MeshEntity >
       __cuda_callable__ void updateCell( MeshFunctionType& u,
@@ -81,10 +85,12 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef Functions::MeshFunction< MeshType, 3, bool > InterfaceMapType;
+      using MeshFunctionPointer = SharedPointer< MeshFunctionType >;
+      using InterfaceMapPointer = SharedPointer< InterfaceMapType >;      
 
-      void initInterface( const MeshFunctionType& input,
-                          MeshFunctionType& output,
-                          InterfaceMapType& interfaceMap );
+      void initInterface( const MeshFunctionPointer& input,
+                          MeshFunctionPointer& output,
+                          InterfaceMapPointer& interfaceMap );
       
       template< typename MeshEntity >
       __cuda_callable__ void updateCell( MeshFunctionType& u,
@@ -109,12 +115,12 @@ template < typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
                                       Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux );
 
-/*template < typename Real, typename Device, typename Index >
+template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
                                 Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& output,
-                                Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap );*/
+                                Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap );
 
-__global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, double, TNL::Devices::Cuda, int > >& input );
+//__global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, double, TNL::Devices::Cuda, int > >& input );
 #endif
 
 #include "tnlDirectEikonalMethodsBase_impl.h"

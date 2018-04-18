@@ -36,6 +36,8 @@ class tnlDirectEikonalProblem
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef Problems::PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       using AnisotropyType = Anisotropy;
+      using AnisotropyPointer = SharedPointer< AnisotropyType, DeviceType >;
+      using MeshFunctionPointer = SharedPointer< MeshFunctionType >;
 
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
@@ -76,11 +78,11 @@ class tnlDirectEikonalProblem
 
       protected:
          
-         MeshFunctionType u;
+         MeshFunctionPointer u;
          
-         MeshFunctionType initialData;
+         MeshFunctionPointer initialData;
          
-         AnisotropyType anisotropy;
+         AnisotropyPointer anisotropy;
 
 };
 

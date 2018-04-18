@@ -55,22 +55,24 @@ template< typename Real,
 void
 FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
 solve( const MeshPointer& mesh,
-       const AnisotropyType& anisotropy,
-       MeshFunctionType& u )
+       const AnisotropyPointer& anisotropy,
+       MeshFunctionPointer& u )
 {
-   MeshFunctionType aux;
-   InterfaceMapType interfaceMap;
-   aux.setMesh( mesh );
-   interfaceMap.setMesh( mesh );
+   MeshFunctionPointer auxPtr;
+   InterfaceMapPointer interfaceMapPtr;
+   auxPtr->setMesh( mesh );
+   interfaceMapPtr->setMesh( mesh );
    std::cout << "Initiating the interface cells ..." << std::endl;
-   BaseType::initInterface( u, aux, interfaceMap );
+   BaseType::initInterface( u, auxPtr, interfaceMapPtr );
    cudaDeviceSynchronize();
         
-   aux.save( "aux-ini.tnl" );
+   auxPtr->save( "aux-ini.tnl" );
 
    typename MeshType::Cell cell( *mesh );
    
    IndexType iteration( 0 );
+   InterfaceMapType interfaceMap = *interfaceMapPtr;
+   MeshFunctionType aux = *auxPtr;
    while( iteration < this->maxIterations )
    {
       if( std::is_same< DeviceType, Devices::Host >::value )

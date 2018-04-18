@@ -55,20 +55,22 @@ template< typename Real,
 void
 FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >::
 solve( const MeshPointer& mesh,
-       const AnisotropyType& anisotropy,
-       MeshFunctionType& u )
+       const AnisotropyPointer& anisotropy,
+       MeshFunctionPointer& u )
 {
-   MeshFunctionType aux;
-   InterfaceMapType interfaceMap;
-   aux.setMesh( mesh );
-   interfaceMap.setMesh( mesh );
+   MeshFunctionPointer auxPtr;
+   InterfaceMapPointer interfaceMapPtr;
+   auxPtr->setMesh( mesh );
+   interfaceMapPtr->setMesh( mesh );
    std::cout << "Initiating the interface cells ..." << std::endl;
-   BaseType::initInterface( u, aux, interfaceMap );
-   aux.save( "aux-ini.tnl" );   
+   BaseType::initInterface( u, auxPtr, interfaceMapPtr );
+   auxPtr->save( "aux-ini.tnl" );   
    
    typename MeshType::Cell cell( *mesh );
    
    IndexType iteration( 0 );
+   MeshFunctionType aux = *auxPtr;
+   InterfaceMapType interfaceMap = * interfaceMapPtr;
    while( iteration < this->maxIterations )
    {
       for( cell.getCoordinates().z() = 0;

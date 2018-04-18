@@ -55,16 +55,16 @@ template< typename Real,
 void
 FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >::
 solve( const MeshPointer& mesh,
-       const AnisotropyType& anisotropy,
-       MeshFunctionType& u )
+       const AnisotropyPointer& anisotropy,
+       MeshFunctionPointer& u )
 {
-   MeshFunctionType aux;
-   InterfaceMapType interfaceMap;
-   aux.setMesh( mesh );
-   interfaceMap.setMesh( mesh );
+   MeshFunctionPointer aux;
+   InterfaceMapPointer interfaceMap;
+   aux->setMesh( mesh );
+   interfaceMap->setMesh( mesh );
    std::cout << "Initiating the interface cells ..." << std::endl;
    BaseType::initInterface( u, aux, interfaceMap );
-   aux.save( "aux-ini.tnl" );
+   aux->save( "aux-ini.tnl" );
 
 }
 
