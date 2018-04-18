@@ -153,6 +153,8 @@ class LaxFridrichsMomentumY< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Rea
          const RealType& velocity_x_northWest = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ northWest ];         
          const RealType& velocity_y_north = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ north ];
          const RealType& velocity_y_south = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];
+         const RealType& velocity_y_east = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ east ];
+         const RealType& velocity_y_west = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ west ];
          const RealType& velocity_y_center = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ center ];
          const RealType& velocity_y_southEast = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ southEast ];
          const RealType& velocity_y_southWest = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ southWest ];
@@ -166,16 +168,16 @@ class LaxFridrichsMomentumY< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Rea
                         + ( ( rho_v[ north ] * velocity_y_north + pressure_north )
                           - ( rho_v[ south ] * velocity_y_south + pressure_south ) )* hyInverse )
 // 2D T_22_y
-                - ( 4.0 / 3.0 * ( velocity_y_north - 2 * velocity_y_center + velocity_y_south
-                                ) * hySquareInverse * 4
+                + ( 4.0 / 3.0 * ( velocity_y_north - 2 * velocity_y_center + velocity_y_south
+                                ) * hySquareInverse
                   - 2.0 / 3.0 * ( velocity_x_northEast - velocity_x_southEast - velocity_x_northWest + velocity_x_southWest
-                                ) * hxInverse * hyInverse * 4
+                                ) * hxInverse * hyInverse / 4
                   ) * this->dynamicalViscosity
-// T_12_y
-                - ( ( velocity_x_northEast - velocity_x_southEast - velocity_x_northWest + velocity_x_southWest
-                    ) * hxInverse * hyInverse * 4
-                  + ( velocity_y_north - 2 * velocity_y_center + velocity_y_south
-                    ) * hySquareInverse * 4
+// T_12_x
+                + ( ( velocity_x_northEast - velocity_x_southEast - velocity_x_northWest + velocity_x_southWest
+                    ) * hxInverse * hyInverse / 4
+                  + ( velocity_y_west - 2 * velocity_y_center + velocity_y_east
+                    ) * hxSquareInverse
                   ) * this->dynamicalViscosity;
       }
 

@@ -20,7 +20,7 @@ template< typename Mesh,
           typename Function,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::GlobalIndexType >
-class MomentumXBoundaryConditions
+class MomentumZBoundaryConditionsBoiler
 {
 
 };
@@ -29,7 +29,7 @@ class MomentumXBoundaryConditions
  * Base
  */
 template< typename Function >
-class MomentumXBoundaryConditionsBase
+class MomentumZBoundaryConditionsBoilerBase
 {
    public:
       
@@ -91,8 +91,8 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-class MomentumXBoundaryConditions< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >
-   : public MomentumXBoundaryConditionsBase< Function >,
+class MomentumZBoundaryConditionsBoiler< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >
+   : public MomentumZBoundaryConditionsBoilerBase< Function >,
      public Operator< Meshes::Grid< 1, MeshReal, Device, MeshIndex >,
                          Functions::MeshBoundaryDomain,
                          1, 1,
@@ -111,8 +111,8 @@ class MomentumXBoundaryConditions< Meshes::Grid< 1, MeshReal, Device, MeshIndex 
    typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
    typedef Containers::StaticVector< 1, RealType > PointType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef MomentumXBoundaryConditions< MeshType, Function, Real, Index > ThisType;
-   typedef MomentumXBoundaryConditionsBase< Function > BaseType;
+   typedef MomentumZBoundaryConditionsBoiler< MeshType, Function, Real, Index > ThisType;
+   typedef MomentumZBoundaryConditionsBoilerBase< Function > BaseType;
    typedef CompressibleConservativeVariables< MeshType > CompressibleConservativeVariablesType;
    typedef SharedPointer< CompressibleConservativeVariablesType > CompressibleConservativeVariablesPointer;
    typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
@@ -221,8 +221,8 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-class MomentumXBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >
-   : public MomentumXBoundaryConditionsBase< Function >,
+class MomentumZBoundaryConditionsBoiler< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >
+   : public MomentumZBoundaryConditionsBoilerBase< Function >,
      public Operator< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
                          Functions::MeshBoundaryDomain,
                          2, 2,
@@ -242,8 +242,8 @@ class MomentumXBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex 
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef Containers::StaticVector< 2, RealType > PointType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef MomentumXBoundaryConditions< MeshType, Function, Real, Index > ThisType;
-      typedef MomentumXBoundaryConditionsBase< Function > BaseType;
+      typedef MomentumZBoundaryConditionsBoiler< MeshType, Function, Real, Index > ThisType;
+      typedef MomentumZBoundaryConditionsBoilerBase< Function > BaseType;
       typedef CompressibleConservativeVariables< MeshType > CompressibleConservativeVariablesType;
       typedef SharedPointer< CompressibleConservativeVariablesType > CompressibleConservativeVariablesPointer;
       typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
@@ -274,10 +274,7 @@ class MomentumXBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex 
          // The following line is commented to avoid compiler warning
          //if( entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 )
          {
-            return (* this->compressibleConservativeVariables->getDensity())[neighborEntities.template getEntityIndex< 0, 0 >()] 
-              * ( 
-                   this->cavitySpeed
-                );
+            return u[ neighborEntities.template getEntityIndex< 0, 0 >() ];
          }         
       }
 
@@ -377,8 +374,8 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-class MomentumXBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >
-   : public MomentumXBoundaryConditionsBase< Function >,
+class MomentumZBoundaryConditionsBoiler< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >
+   : public MomentumZBoundaryConditionsBoilerBase< Function >,
      public Operator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
                          Functions::MeshBoundaryDomain,
                          3, 3,
@@ -397,8 +394,8 @@ class MomentumXBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex 
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef Containers::StaticVector< 3, RealType > PointType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef MomentumXBoundaryConditions< MeshType, Function, Real, Index > ThisType;
-      typedef MomentumXBoundaryConditionsBase< Function > BaseType;  
+      typedef MomentumZBoundaryConditionsBoiler< MeshType, Function, Real, Index > ThisType;
+      typedef MomentumZBoundaryConditionsBoilerBase< Function > BaseType;  
       typedef CompressibleConservativeVariables< MeshType > CompressibleConservativeVariablesType;
       typedef SharedPointer< CompressibleConservativeVariablesType > CompressibleConservativeVariablesPointer; 
       typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
@@ -415,34 +412,37 @@ class MomentumXBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex 
          const IndexType& index = entity.getIndex();
          if( entity.getCoordinates().x() == 0 )
          {
-            return u[ neighborEntities.template getEntityIndex< 1, 0, 0 >() ] + entity.getMesh().getSpaceSteps().x() *
-               Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
+            return u[ neighborEntities.template getEntityIndex< 0, 0, 0 >() ];
          }
          if( entity.getCoordinates().x() == entity.getMesh().getDimensions().x() - 1 )
          {
-            return u[ neighborEntities.template getEntityIndex< -1, 0, 0 >() ] + entity.getMesh().getSpaceSteps().x() *
-               Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
+            if( entity.getCoordinates().y() >0.8 * ( entity.getMesh().getDimensions().y() - 1 ) )
+               return u[ neighborEntities.template getEntityIndex< -1, 0, 0 >() ];
+            else
+               return u[ neighborEntities.template getEntityIndex< 0, 0, 0 >() ];
          }
          if( entity.getCoordinates().y() == 0 )
          {
-            return u[ neighborEntities.template getEntityIndex< 0, 1, 0 >() ] + entity.getMesh().getSpaceSteps().y() *
-               Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
+            return u[ neighborEntities.template getEntityIndex< 0, 0, 0 >() ];
          }
          if( entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 )
          {
-            return u[ neighborEntities.template getEntityIndex< 0, -1, 0 >() ] + entity.getMesh().getSpaceSteps().y() *
-               Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
+            return u[ neighborEntities.template getEntityIndex< 0, 0, 0 >() ];
          }
          if( entity.getCoordinates().z() == 0 )
          {
-            return u[ neighborEntities.template getEntityIndex< 0, 0, 1 >() ] + entity.getMesh().getSpaceSteps().z() *
-               Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
+            if( ( entity.getCoordinates().x() < 0.6 * ( entity.getMesh().getDimensions().y() - 1 ) ) && ( entity.getCoordinates().y() > 0.4 * ( entity.getMesh().getDimensions().y() - 1 ) )
+              &&( entity.getCoordinates().y() < 0.6 * ( entity.getMesh().getDimensions().z() - 1 ) ) && ( entity.getCoordinates().z() > 0.4 * ( entity.getMesh().getDimensions().z() - 1 ) ) )
+               return (* this->compressibleConservativeVariables->getDensity())[neighborEntities.template getEntityIndex< 0, 0, 0 >()] 
+              * ( 
+                   this->cavitySpeed
+                );
+            else return u[ neighborEntities.template getEntityIndex< 0, 0, 0 >() ];
          }
          // The following line is commented to avoid compiler warning
          //if( entity.getCoordinates().z() == entity.getMesh().getDimensions().z() - 1 )
          {
-            return u[ neighborEntities.template getEntityIndex< 0, 0, -1 >() ] + entity.getMesh().getSpaceSteps().z() *
-               Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
+            return u[ neighborEntities.template getEntityIndex< 0, 0, 0 >() ];
          }   
       }
 
@@ -552,9 +552,9 @@ template< typename Mesh,
           typename Function,
           typename Real,
           typename Index >
-std::ostream& operator << ( std::ostream& str, const MomentumXBoundaryConditions< Mesh, Function, Real, Index >& bc )
+std::ostream& operator << ( std::ostream& str, const MomentumZBoundaryConditionsBoiler< Mesh, Function, Real, Index >& bc )
 {
-   str << "Neumann boundary conditions: function = " << bc.getFunction();
+   str << "Neumann boundary ConditionsBoiler: function = " << bc.getFunction();
    return str;
 }
 

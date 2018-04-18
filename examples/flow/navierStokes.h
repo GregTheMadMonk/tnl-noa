@@ -10,7 +10,8 @@
 #include "navierStokesBuildConfigTag.h"
 
 #include "RiemannProblemInitialCondition.h"
-#include "1DBoundaryConditions.h"
+#include "BoundaryConditionsCavity.h"
+#include "BoundaryConditionsBoiler.h"
 
 using namespace TNL;
 
@@ -32,9 +33,9 @@ template< typename ConfigTag >class navierStokesConfig
       static void configSetup( Config::ConfigDescription & config )
       {
          config.addDelimiter( "Inviscid flow settings:" );
-         config.addEntry< String >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
-            config.addEntryEnum< String >( "dirichlet" );
-            config.addEntryEnum< String >( "neumann" );
+         config.addEntry< String >( "boundary-conditions-type", "Choose the boundary conditions type.", "cavity");
+            config.addEntryEnum< String >( "boiler" );
+            config.addEntryEnum< String >( "cavity" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< double >( "speed-increment", "This sets increment of input speed.", 0.0 );
          config.addEntry< double >( "speed-increment-until", "This sets time until input speed will rose", -0.1 );
@@ -78,41 +79,21 @@ class navierStokesSetter
           */
 
           typedef Functions::Analytic::Constant< Dimension, Real > Constant;
-          typedef BoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
-          typedef navierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
-          SolverStarter solverStarter;
-          return solverStarter.template run< Problem >( parameters );/*
           String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
-          if( parameters.checkParameter( "boundary-conditions-constant" ) )
-          {
-             typedef Functions::Analytic::Constant< Dimension, Real > Constant;
-             if( boundaryConditionsType == "dirichlet" )
+          if( boundaryConditionsType == "cavity" )
              {
-                typedef Operators::DirichletBoundaryConditions< MeshType, Constant, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
+                typedef BoundaryConditionsCavity< MeshType, Constant, Real, Index > BoundaryConditions;
                 typedef navierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
              }
-             typedef Operators::NeumannBoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
-             typedef navierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
-             SolverStarter solverStarter;
-             return solverStarter.template run< Problem >( parameters );
-          }
-          typedef Functions::MeshFunction< MeshType > MeshFunction;
-          if( boundaryConditionsType == "dirichlet" )
-          {
-             typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-             typedef navierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
-             SolverStarter solverStarter;
-             return solverStarter.template run< Problem >( parameters );
-          }
-          if( boundaryConditionsType == "neumann" )
-          {
-             typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
-             typedef navierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
-             SolverStarter solverStarter;
-             return solverStarter.template run< Problem >( parameters );
-          }*/
+           if( boundaryConditionsType == "boiler" )
+             {
+                typedef BoundaryConditionsBoiler< MeshType, Constant, Real, Index > BoundaryConditions;
+                typedef navierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+                SolverStarter solverStarter;
+                return solverStarter.template run< Problem >( parameters );
+             }       
 
       return true;}
 

@@ -233,36 +233,36 @@ class LaxFridrichsEnergy< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, 
                         + ( ( ( e[ north ] + pressure_north ) * velocity_y_north )
                           -( ( e[ south ] + pressure_south ) * velocity_y_south ) ) * hyInverse )
 // 2D uT_11_x
-                - ( 4.0 / 3.0 * ( velocity_x_east * velocity_x_center - velocity_x_center * velocity_x_west
+                + ( 4.0 / 3.0 * ( velocity_x_east * velocity_x_center - velocity_x_center * velocity_x_west
                                 - velocity_x_center * velocity_x_center + velocity_x_west * velocity_x_west
-                                ) * hxSquareInverse * 4
+                                ) * hxSquareInverse
                   - 2.0 / 3.0 * ( velocity_y_northEast * velocity_x_east - velocity_y_southEast * velocity_x_east
                                 - velocity_y_northWest * velocity_x_west + velocity_y_southWest * velocity_x_west
-                                ) * hxInverse * hyInverse  * 4
+                                ) * hxInverse * hyInverse  / 4
                   ) * this->dynamicalViscosity 
 // vT_21_x
-                - ( ( velocity_y_northEast * velocity_y_east - velocity_y_southEast * velocity_y_east
+                + ( ( velocity_y_northEast * velocity_y_east - velocity_y_southEast * velocity_y_east
                     - velocity_y_northWest * velocity_y_west + velocity_y_southWest * velocity_y_west
-                    ) * hxInverse * hyInverse * 4
+                    ) * hxInverse * hyInverse / 4
                   + ( velocity_x_east * velocity_y_center - velocity_x_center * velocity_y_west
                     - velocity_x_center * velocity_y_center + velocity_x_west * velocity_y_west
-                    ) * hxSquareInverse * 4
+                    ) * hxSquareInverse
                   ) * this->dynamicalViscosity
 // uT_12_y
-                - ( ( velocity_x_northEast * velocity_x_north - velocity_x_southEast * velocity_x_south 
+                + ( ( velocity_x_northEast * velocity_x_north - velocity_x_southEast * velocity_x_south 
                     - velocity_x_northWest * velocity_x_north + velocity_x_southWest * velocity_x_south 
-                    ) * hxInverse * hyInverse  * 4
+                    ) * hxInverse * hyInverse  / 4
                   + ( velocity_y_north * velocity_x_center - velocity_y_center * velocity_x_south
                     - velocity_y_center * velocity_x_center + velocity_y_south * velocity_x_south
-                    ) * hySquareInverse * 4
+                    ) * hySquareInverse
                 ) * this->dynamicalViscosity
 // 2D vT_22_y
-                - ( 4.0 / 3.0 * ( velocity_y_north * velocity_y_center - velocity_y_center * velocity_y_south
+                + ( 4.0 / 3.0 * ( velocity_y_north * velocity_y_center - velocity_y_center * velocity_y_south
                                 - velocity_y_center * velocity_y_center + velocity_y_south * velocity_y_south
-                                ) * hySquareInverse * 4
+                                ) * hySquareInverse
                   - 2.0 / 3.0 * ( velocity_x_northEast * velocity_y_north - velocity_x_southEast * velocity_y_east 
                                 - velocity_x_northWest * velocity_y_north + velocity_x_southWest * velocity_y_west
-                                ) * hxInverse * hyInverse * 4
+                                ) * hxInverse * hyInverse / 4
                 ) * this->dynamicalViscosity;
       }
 

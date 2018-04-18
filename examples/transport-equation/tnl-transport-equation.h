@@ -14,6 +14,7 @@
 #include <TNL/Operators/DirichletBoundaryConditions.h>
 #include <TNL/Operators/NeumannBoundaryConditions.h>
 #include <TNL/Operators/Advection/LaxFridrichs.h>
+#include <TNL/Operators/Advection/Upwind.h>
 #include <TNL/Functions/Analytic/Constant.h>
 #include <TNL/Functions/VectorField.h>
 #include <TNL/Meshes/Grid.h>
@@ -51,6 +52,9 @@ template< typename ConfigTag >class advectionConfig
             config.addEntryEnum< String >( "dirichlet" );
             config.addEntryEnum< String >( "neumann" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
+         config.addEntry< String >( "differential-operator-type", "Choose the differential operator type.", "lax-friedrichs");
+            config.addEntryEnum< String >( "lax-friedrichs" );
+            config.addEntryEnum< String >( "upwind" );
       }
 };
 
@@ -101,6 +105,11 @@ class advectionSetter
       template< typename VelocityFieldType >
       static bool setDifferentialOperatorType( const Config::ParameterContainer& parameters )
       {
+         String differentialOperatorType = parameters.getParameter< String >( "differential-operator-type" );
+         if( differentialOperatorType == "upwind" )
+         {
+            typedef Operators::Advection::Upwind< MeshType, Real, Index, VelocityFieldType > DifferentialOperatorType;
+         }
          typedef Operators::Advection::LaxFridrichs< MeshType, Real, Index, VelocityFieldType > DifferentialOperatorType;
          return setBoundaryConditionsType< DifferentialOperatorType >( parameters );
       }

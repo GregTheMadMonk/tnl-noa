@@ -1,9 +1,10 @@
 #include <TNL/Functions/FunctionAdapter.h>
 
-#include "1DDensityBoundaryCondition.h"
-#include "1DMomentumXBoundaryCondition.h"
-#include "1DMomentumYBoundaryCondition.h"
-#include "1DEnergyBoundaryCondition.h"
+#include "DensityBoundaryConditionBoiler.h"
+#include "MomentumXBoundaryConditionBoiler.h"
+#include "MomentumYBoundaryConditionBoiler.h"
+#include "MomentumZBoundaryConditionBoiler.h"
+#include "EnergyBoundaryConditionBoiler.h"
 
 namespace TNL {
 
@@ -11,7 +12,7 @@ template< typename Mesh,
           typename Function,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class BoundaryConditions
+class BoundaryConditionsBoiler
 {
    public:
       typedef Mesh MeshType;
@@ -21,15 +22,17 @@ class BoundaryConditions
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef typename Mesh::DeviceType DeviceType;
 
-      typedef TNL::Operators::DensityBoundaryConditions< MeshType, FunctionType, RealType, IndexType > DensityBoundaryConditionsType;
-      typedef TNL::Operators::MomentumXBoundaryConditions< MeshType, FunctionType, RealType, IndexType > MomentumXBoundaryConditionsType;
-      typedef TNL::Operators::MomentumYBoundaryConditions< MeshType, FunctionType, RealType, IndexType > MomentumYBoundaryConditionsType;
-      typedef TNL::Operators::EnergyBoundaryConditions< MeshType, FunctionType, RealType, IndexType > EnergyBoundaryConditionsType;
+      typedef TNL::Operators::DensityBoundaryConditionsBoiler< MeshType, FunctionType, RealType, IndexType > DensityBoundaryConditionsType;
+      typedef TNL::Operators::MomentumXBoundaryConditionsBoiler< MeshType, FunctionType, RealType, IndexType > MomentumXBoundaryConditionsType;
+      typedef TNL::Operators::MomentumYBoundaryConditionsBoiler< MeshType, FunctionType, RealType, IndexType > MomentumYBoundaryConditionsType;
+      typedef TNL::Operators::MomentumZBoundaryConditionsBoiler< MeshType, FunctionType, RealType, IndexType > MomentumZBoundaryConditionsType;
+      typedef TNL::Operators::EnergyBoundaryConditionsBoiler< MeshType, FunctionType, RealType, IndexType > EnergyBoundaryConditionsType;
       typedef CompressibleConservativeVariables< MeshType > CompressibleConservativeVariablesType;
 
       typedef SharedPointer< DensityBoundaryConditionsType > DensityBoundaryConditionsTypePointer;
       typedef SharedPointer< MomentumXBoundaryConditionsType > MomentumXBoundaryConditionsTypePointer;
       typedef SharedPointer< MomentumYBoundaryConditionsType > MomentumYBoundaryConditionsTypePointer;
+      typedef SharedPointer< MomentumZBoundaryConditionsType > MomentumZBoundaryConditionsTypePointer;
       typedef SharedPointer< EnergyBoundaryConditionsType > EnergyBoundaryConditionsTypePointer;
       typedef SharedPointer< CompressibleConservativeVariablesType > CompressibleConservativeVariablesPointer;
       typedef SharedPointer< MeshType > MeshPointer;
@@ -47,6 +50,7 @@ class BoundaryConditions
          this->densityBoundaryConditionsPointer->setup( meshPointer, parameters, prefix);
          this->momentumXBoundaryConditionsPointer->setup( meshPointer, parameters, prefix);
          this->momentumYBoundaryConditionsPointer->setup( meshPointer, parameters, prefix);
+         this->momentumZBoundaryConditionsPointer->setup( meshPointer, parameters, prefix);
          this->energyBoundaryConditionsPointer->setup( meshPointer, parameters, prefix);
          return true;
       }
@@ -56,6 +60,7 @@ class BoundaryConditions
          this->densityBoundaryConditionsPointer->setCompressibleConservativeVariables(compressibleConservativeVariables);
          this->momentumXBoundaryConditionsPointer->setCompressibleConservativeVariables(compressibleConservativeVariables);
          this->momentumYBoundaryConditionsPointer->setCompressibleConservativeVariables(compressibleConservativeVariables);
+         this->momentumZBoundaryConditionsPointer->setCompressibleConservativeVariables(compressibleConservativeVariables);
          this->energyBoundaryConditionsPointer->setCompressibleConservativeVariables(compressibleConservativeVariables);
       }
 
@@ -64,6 +69,7 @@ class BoundaryConditions
          this->densityBoundaryConditionsPointer->setTimestep(timestep);
          this->momentumXBoundaryConditionsPointer->setTimestep(timestep);
          this->momentumYBoundaryConditionsPointer->setTimestep(timestep);
+         this->momentumZBoundaryConditionsPointer->setTimestep(timestep);
          this->energyBoundaryConditionsPointer->setTimestep(timestep);   
       }
 
@@ -72,6 +78,7 @@ class BoundaryConditions
          this->densityBoundaryConditionsPointer->setGamma(gamma);
          this->momentumXBoundaryConditionsPointer->setGamma(gamma);
          this->momentumYBoundaryConditionsPointer->setGamma(gamma);
+         this->momentumZBoundaryConditionsPointer->setGamma(gamma);
          this->energyBoundaryConditionsPointer->setGamma(gamma);
       }
 
@@ -80,13 +87,15 @@ class BoundaryConditions
          this->densityBoundaryConditionsPointer->setPressure(pressure);
          this->momentumXBoundaryConditionsPointer->setPressure(pressure);
          this->momentumYBoundaryConditionsPointer->setPressure(pressure);
+         this->momentumZBoundaryConditionsPointer->setPressure(pressure);
          this->energyBoundaryConditionsPointer->setPressure(pressure);
       }
 
-      void setCavitySpeed(const RealType cavitySpeed)
+      void setSpeed(const RealType cavitySpeed)
       {
          this->momentumXBoundaryConditionsPointer->setCavitySpeed(cavitySpeed);
          this->momentumYBoundaryConditionsPointer->setCavitySpeed(cavitySpeed);
+         this->momentumZBoundaryConditionsPointer->setCavitySpeed(cavitySpeed);
          this->energyBoundaryConditionsPointer->setCavitySpeed(cavitySpeed);
       }
 
@@ -105,6 +114,11 @@ class BoundaryConditions
          return this->momentumYBoundaryConditionsPointer;
       }
 
+      MomentumZBoundaryConditionsTypePointer& getMomentumZBoundaryCondition()
+      {
+         return this->momentumZBoundaryConditionsPointer;
+      }
+
       EnergyBoundaryConditionsTypePointer& getEnergyBoundaryCondition()
       {
          return this->energyBoundaryConditionsPointer;
@@ -115,6 +129,7 @@ class BoundaryConditions
       DensityBoundaryConditionsTypePointer densityBoundaryConditionsPointer;
       MomentumXBoundaryConditionsTypePointer momentumXBoundaryConditionsPointer;
       MomentumYBoundaryConditionsTypePointer momentumYBoundaryConditionsPointer;
+      MomentumZBoundaryConditionsTypePointer momentumZBoundaryConditionsPointer;
       EnergyBoundaryConditionsTypePointer energyBoundaryConditionsPointer;
 
 };

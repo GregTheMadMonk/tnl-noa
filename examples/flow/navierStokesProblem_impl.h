@@ -27,12 +27,19 @@
 #include "LaxFridrichsMomentumX.h"
 #include "LaxFridrichsMomentumY.h"
 #include "LaxFridrichsMomentumZ.h"
+/*
+#include "DensityBoundaryConditionCavity.h"
+#include "MomentumXBoundaryConditionCavity.h"
+#include "MomentumYBoundaryConditionCavity.h"
+#include "MomentumZBoundaryConditionCavity.h"
+#include "EnergyBoundaryConditionCavity.h"
 
-#include "1DDensityBoundaryCondition.h"
-#include "1DMomentumXBoundaryCondition.h"
-#include "1DMomentumYBoundaryCondition.h"
-#include "1DEnergyBoundaryCondition.h"
-
+#include "DensityBoundaryConditionBoiler.h"
+#include "MomentumXBoundaryConditionBoiler.h"
+#include "MomentumYBoundaryConditionBoiler.h"
+#include "MomentumZBoundaryConditionBoiler.h"
+#include "EnergyBoundaryConditionBoiler.h"
+*/
 namespace TNL {
 
 template< typename Mesh,
@@ -196,23 +203,24 @@ makeSnapshot( const RealType& time,
    fileName.setExtension( "tnl" );
    fileName.setIndex( step );
    fileName.setFileNameBase( "density-" );
-   if( ! this->conservativeVariables->getDensity()->save( fileName.getFileName() ) )
-      return false;
+//   if( ! this->conservativeVariables->getDensity()->save( fileName.getFileName() ) )
+//      return false;
    
    fileName.setFileNameBase( "velocity-" );
    if( ! this->velocity->save( fileName.getFileName() ) )
       return false;
 
-   fileName.setFileNameBase( "pressure-" );
-   if( ! this->pressure->save( fileName.getFileName() ) )
-      return false;
+//   fileName.setFileNameBase( "pressure-" );
+//   if( ! this->pressure->save( fileName.getFileName() ) )
+//      return false;
 
-   fileName.setFileNameBase( "energy-" );
-   if( ! this->conservativeVariables->getEnergy()->save( fileName.getFileName() ) )
-      return false;
-   fileName.setFileNameBase( "momentum-" );
-   if( ! this->conservativeVariables->getMomentum()->save( fileName.getFileName() ) )
-      return false;
+//   fileName.setFileNameBase( "energy-" );
+//   if( ! this->conservativeVariables->getEnergy()->save( fileName.getFileName() ) )
+//      return false;
+
+//   fileName.setFileNameBase( "momentum-" );
+//   if( ! this->conservativeVariables->getMomentum()->save( fileName.getFileName() ) )
+//      return false;
    
    return true;
 }
@@ -267,6 +275,7 @@ getExplicitUpdate( const RealType& time,
    typedef typename BoundaryCondition::DensityBoundaryConditionsType DensityBoundaryConditionsType;
    typedef typename BoundaryCondition::MomentumXBoundaryConditionsType MomentumXBoundaryConditionsType;
    typedef typename BoundaryCondition::MomentumYBoundaryConditionsType MomentumYBoundaryConditionsType;
+   typedef typename BoundaryCondition::MomentumZBoundaryConditionsType MomentumZBoundaryConditionsType;
    typedef typename BoundaryCondition::EnergyBoundaryConditionsType EnergyBoundaryConditionsType;
 
    /****
@@ -280,7 +289,7 @@ getExplicitUpdate( const RealType& time,
    {
       this->boundaryConditionPointer->setTimestep(0);
    }
-   this->boundaryConditionPointer->setCavitySpeed(this->cavitySpeed);
+   this->boundaryConditionPointer->setSpeed(this->cavitySpeed);
    this->boundaryConditionPointer->setCompressibleConservativeVariables(this->conservativeVariables);
    this->boundaryConditionPointer->setGamma(this->gamma);
    this->boundaryConditionPointer->setPressure(this->pressure);
@@ -319,9 +328,9 @@ getExplicitUpdate( const RealType& time,
    
    if( Dimensions > 2 )
    {
-      Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumZOperatorType, MomentumXBoundaryConditionsType, RightHandSide > explicitUpdaterMomentumZ;
+      Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumZOperatorType, MomentumZBoundaryConditionsType, RightHandSide > explicitUpdaterMomentumZ;
       explicitUpdaterMomentumZ.setDifferentialOperator( this->inviscidOperatorsPointer->getMomentumZOperator() );
-      explicitUpdaterMomentumZ.setBoundaryConditions( this->boundaryConditionPointer->getMomentumXBoundaryCondition() );
+      explicitUpdaterMomentumZ.setBoundaryConditions( this->boundaryConditionPointer->getMomentumZBoundaryCondition() );
       explicitUpdaterMomentumZ.setRightHandSide( this->rightHandSidePointer );               
       explicitUpdaterMomentumZ.template update< typename Mesh::Cell >( time, tau, mesh,
                                                               ( *this->conservativeVariables->getMomentum() )[ 2 ], // uRhoVelocityX,
@@ -339,10 +348,12 @@ getExplicitUpdate( const RealType& time,
                                                            this->conservativeVariables->getEnergy(), // uRhoVelocityX,
                                                            this->conservativeVariablesRHS->getEnergy() ); //, fuRhoVelocityX );
    
-   /*this->conservativeVariablesRHS->getDensity()->write( "density", "gnuplot" );
+   /*
+   this->conservativeVariablesRHS->getDensity()->write( "density", "gnuplot" );
    this->conservativeVariablesRHS->getEnergy()->write( "energy", "gnuplot" );
    this->conservativeVariablesRHS->getMomentum()->write( "momentum", "gnuplot", 0.05 );
-   getchar();*/
+   getchar();
+   */
 
 }
 
