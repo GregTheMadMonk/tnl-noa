@@ -15,6 +15,7 @@
 #include <TNL/SharedPointer.h>
 #include "tnlDirectEikonalMethodsBase.h"
 
+
 template< typename Mesh,
           typename Anisotropy = Functions::Analytic::Constant< Mesh::getMeshDimension(), typename Mesh::RealType > >
 class FastSweepingMethod
@@ -144,6 +145,7 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >
       
       const IndexType maxIterations;
 };
+
 
 #include "tnlFastSweepingMethod1D_impl.h"
 #include "tnlFastSweepingMethod2D_impl.h"

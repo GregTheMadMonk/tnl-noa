@@ -14,6 +14,9 @@
 #pragma once
 
 #include "tnlFastSweepingMethod.h"
+#include <TNL/TypeInfo.h>
+#include <TNL/Devices/Cuda.h>
+
 
 template< typename Real,
           typename Device,
@@ -212,15 +215,23 @@ solve( const MeshPointer& mesh,
       {
          // TODO: CUDA code
 #ifdef HAVE_CUDA
-          /*int numBlocks = 2;
-          int threadsPerBlock;
-          if( mesh->getDimensions().x() >= mesh->getDimensions().y() )
-               threadsPerBlock = (int)( mesh->getDimensions().x() );
-          else
-               threadsPerBlock = (int)( mesh->getDimensions().y() );
+          const int cudaBlockSize( 16 );
+          int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().x(), cudaBlockSize );
+          int numBlocksY = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().y(), cudaBlockSize );
+          dim3 blockSize( cudaBlockSize, cudaBlockSize );
+          dim3 gridSize( numBlocksX, numBlocksY );
+          Devices::Cuda::synchronizeDevice();
+          int DIM = mesh->getDimensions().x();
           
-          CudaUpdateCellCaller< Real, Device, Index ><<< numBlocks, threadsPerBlock >>>( interfaceMap, aux );
-          cudaDeviceSynchronize(); //copak dela?*/
+          tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr;
+          for( int k = 0; k < numBlocksX; k++)
+            CudaUpdateCellCaller< Real, Device, Index ><<< gridSize, blockSize >>>( ptr,
+                                                                                    interfaceMapPtr.template getData< Device >(),
+                                                                                    auxPtr.template modifyData< Device>() );
+          cudaDeviceSynchronize();
+          TNL_CHECK_CUDA_DEVICE;
+          aux = *auxPtr;
+          interfaceMap = *interfaceMapPtr;
 #endif
       }
       iteration++;
@@ -228,30 +239,30 @@ solve( const MeshPointer& mesh,
    aux.save("aux-final.tnl");
 }
 
+//#ifdef HAVE_CUDA
 template < typename Real, typename Device, typename Index >
-__global__ void CudaUpdateCellCaller( Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
+__global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr,
+                                      const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
                                       Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux )
 {
     int i = threadIdx.x + blockDim.x*blockIdx.x;
-    int j = threadIdx.y + blockDim.y*blockIdx.y;
-    const Meshes::Grid< 2, Real, Device, Index >& mesh = aux.getMesh();
+    int j = blockDim.y*blockIdx.y + threadIdx.y;
+    const Meshes::Grid< 2, Real, Device, Index >& mesh = interfaceMap.template getMesh< Devices::Cuda >();
     
     if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
     {
-        //make cell of aux from index
         typedef typename Meshes::Grid< 2, Real, Device, Index >::Cell Cell;
         Cell cell( mesh );
         cell.getCoordinates().x() = i; cell.getCoordinates().y() = j;
         cell.refresh();
-
-        //update cell value few times 
-        //for( int i = 0; i < mesh.getDimensions() ; i++ )
-        //{
-            cell.refresh();
+        //tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr;
+        for( int k = 0; k < 16; k++ )
+        {
             if( ! interfaceMap( cell ) )
             {
-        //        tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::updateCell( aux, cell );
+               ptr.updateCell( aux, cell );
             }
-        //}
+        }
     }
 }
+//#endif

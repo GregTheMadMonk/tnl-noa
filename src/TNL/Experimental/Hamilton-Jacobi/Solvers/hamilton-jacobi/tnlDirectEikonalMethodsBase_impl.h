@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include "tnlFastSweepingMethod.h"
+
 template< typename Real,
           typename Device,
           typename Index >
@@ -81,13 +82,7 @@ initInterface( const MeshFunctionPointer& _input,
                MeshFunctionPointer& _output,
                InterfaceMapPointer& _interfaceMap )
 {
-    /*
-     doplnit přepočty pro cudu:
-     * overit is_same device
-     * na kazdy bod jedno cuda vlakno
-     */
-    
-        
+            
     if( std::is_same< Device, Devices::Cuda >::value )
     {
 #ifdef HAVE_CUDA
@@ -102,7 +97,6 @@ initInterface( const MeshFunctionPointer& _input,
         CudaInitCaller<<< gridSize, blockSize >>>( _input.template getData< Device >(),
                                                    _output.template modifyData< Device >(),
                                                    _interfaceMap.template modifyData< Device >() );
-        //CudaInitCaller<<< gridSize, blockSize >>>( input );
         cudaDeviceSynchronize();
         TNL_CHECK_CUDA_DEVICE;
 #endif
@@ -215,6 +209,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename MeshEntity >
+__cuda_callable__
 void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
 updateCell( MeshFunctionType& u,
@@ -301,162 +296,187 @@ initInterface( const MeshFunctionPointer& _input,
                MeshFunctionPointer& _output,
                InterfaceMapPointer& _interfaceMap  )
 {
-   const MeshFunctionType& input =  _input.getData();
-   MeshFunctionType& output =  _output.modifyData();
-   InterfaceMapType& interfaceMap =  _interfaceMap.modifyData();
-   const MeshType& mesh = input.getMesh();
-   typedef typename MeshType::Cell Cell;
-   Cell cell( mesh );
-   for( cell.getCoordinates().z() = 0;
-        cell.getCoordinates().z() < mesh.getDimensions().z();
-        cell.getCoordinates().z() ++ )
-        for( cell.getCoordinates().y() = 0;
-             cell.getCoordinates().y() < mesh.getDimensions().y();
-             cell.getCoordinates().y() ++ )
-            for( cell.getCoordinates().x() = 0;
-                 cell.getCoordinates().x() < mesh.getDimensions().x();
-                 cell.getCoordinates().x() ++ )
-            {
-                cell.refresh();
-                output[ cell.getIndex() ] =
-                input( cell ) > 0 ? TypeInfo< RealType >::getMaxValue() :
-                                   - TypeInfo< RealType >::getMaxValue();
-                interfaceMap[ cell.getIndex() ] = false;
-            }
-    
-   const RealType& hx = mesh.getSpaceSteps().x();
-   const RealType& hy = mesh.getSpaceSteps().y();
-   const RealType& hz = mesh.getSpaceSteps().z();
-   for( cell.getCoordinates().z() = 0;
-        cell.getCoordinates().z() < mesh.getDimensions().z();
-        cell.getCoordinates().z() ++ )   
-      for( cell.getCoordinates().y() = 0;
-           cell.getCoordinates().y() < mesh.getDimensions().y();
-           cell.getCoordinates().y() ++ )
-         for( cell.getCoordinates().x() = 0;
-              cell.getCoordinates().x() < mesh.getDimensions().x();
-              cell.getCoordinates().x() ++ )
-         {
-            cell.refresh();
-            const RealType& c = input( cell );
-            if( ! cell.isBoundaryEntity() )
-            {
-               auto neighbors = cell.getNeighborEntities();
-               Real pom = 0;
-               const IndexType e = neighbors.template getEntityIndex<  1,  0,  0 >();
-               const IndexType n = neighbors.template getEntityIndex<  0,  1,  0 >();
-               const IndexType t = neighbors.template getEntityIndex<  0,  0,  1 >();
-               //Try exact initiation
-               /*const IndexType w = neighbors.template getEntityIndex< -1,  0,  0 >();
-               const IndexType s = neighbors.template getEntityIndex<  0, -1,  0 >();
-               const IndexType b = neighbors.template getEntityIndex<  0,  0, -1 >();
-               if( c * input[ e ] <= 0 )
-               {
-                  output[ cell.getIndex() ] = c;
-                  output[ e ] = input[ e ];
-                  interfaceMap[ e ] = true;   
-                  interfaceMap[ cell.getIndex() ] = true;
-               }
-               else if( c * input[ n ] <= 0 )
-               {
-                  output[ cell.getIndex() ] = c;
-                  output[ n ] = input[ n ];
-                  interfaceMap[ n ] = true;   
-                  interfaceMap[ cell.getIndex() ] = true;
-               }
-               else if( c * input[ t ] <= 0 )
-               {
-                  output[ cell.getIndex() ] = c;
-                  output[ t ] = input[ t ];
-                  interfaceMap[ t ] = true;   
-                  interfaceMap[ cell.getIndex() ] = true;
-               }*/
-               if( c * input[ n ] <= 0 )
-               {
-                   if( c >= 0 )
-                   {
-                   pom = ( hy * c )/( c - input[ n ]);
-                   if( output[ cell.getIndex() ] > pom ) 
-                       output[ cell.getIndex() ] = pom;
-                    
-                   if ( output[ n ] < pom - hy)
-                        output[ n ] = pom - hy; // ( hy * c )/( c - input[ n ]) - hy;
-                   
-                   }else
-                   {
-                     pom = - ( hy * c )/( c - input[ n ]);
-                     if( output[ cell.getIndex() ] < pom )
-                         output[ cell.getIndex() ] = pom;
-                     if( output[ n ] > hy + pom )
-                         output[ n ] = hy + pom; //hy - ( hy * c )/( c - input[ n ]);
-                   
-                   }
-               interfaceMap[ cell.getIndex() ] = true;
-               interfaceMap[ n ] = true;
-               }
-               if( c * input[ e ] <= 0 )
-               {
-                   if( c >= 0 )
-                   {
-                       pom = ( hx * c )/( c - input[ e ]);
-                       if( output[ cell.getIndex() ] > pom )
-                           output[ cell.getIndex() ] = pom;
-                   
-                       pom = pom - hx; //output[ e ] = (hx * c)/( c - input[ e ]) - hx;
-                       if( output[ e ] < pom )
-                           output[ e ] = pom;      
-                       
-                   }else
-                   {
-                       pom = - (hx * c)/( c - input[ e ]);
-                       if( output[ cell.getIndex() ] < pom )
-                           output[ cell.getIndex() ] = pom;
-                    
-                       pom = pom + hx; //output[ e ] = hx - (hx * c)/( c - input[ e ]);
-                       if( output[ e ] > pom )
-                           output[ e ] = pom;
-                   }
-               interfaceMap[ cell.getIndex() ] = true;
-               interfaceMap[ e ] = true;
-               }
-               if( c * input[ t ] <= 0 )
-               {
-                   if( c >= 0 )
-                   {
-                       pom = ( hz * c )/( c - input[ t ]);
-                       if( output[ cell.getIndex() ] > pom )
-                           output[ cell.getIndex() ] = pom;
-                   
-                       pom = pom - hz; //output[ e ] = (hx * c)/( c - input[ e ]) - hx;
-                       if( output[ t ] < pom )
-                           output[ t ] = pom; 
-                       
-                   }else
-                   {
-                       pom = - (hz * c)/( c - input[ t ]);
-                       if( output[ cell.getIndex() ] < pom )
-                           output[ cell.getIndex() ] = pom;
-                    
-                       pom = pom + hz; //output[ e ] = hx - (hx * c)/( c - input[ e ]);
-                       if( output[ t ] > pom )
-                           output[ t ] = pom;
-                       
-                   }
-               interfaceMap[ cell.getIndex() ] = true;
-               interfaceMap[ t ] = true;
-               }    
-            }
-            /*output[ cell.getIndex() ] =
-               c > 0 ? TypeInfo< RealType >::getMaxValue() :
-                      -TypeInfo< RealType >::getMaxValue();
-            interfaceMap[ cell.getIndex() ] = false;*/ //is on line 245
-         }
+    if( std::is_same< Device, Devices::Cuda >::value )
+    {
+#ifdef HAVE_CUDA
+        const MeshType& mesh = _input->getMesh();
+        
+        const int cudaBlockSize( 8 );
+        int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().x(), cudaBlockSize );
+        int numBlocksY = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().y(), cudaBlockSize );
+        int numBlocksZ = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().z(), cudaBlockSize );
+        if( cudaBlockSize * cudaBlockSize * cudaBlockSize > 1024 || numBlocksX > 1024 || numBlocksY > 1024 || numBlocksZ > 64 )
+            std::cout << "Invalid kernel call. Dimensions of grid are max: [1024,1024,64], and maximum threads per block are 1024!" << std::endl;
+        dim3 blockSize( cudaBlockSize, cudaBlockSize, cudaBlockSize );
+        dim3 gridSize( numBlocksX, numBlocksY, numBlocksZ );
+        Devices::Cuda::synchronizeDevice();
+        CudaInitCaller3d<<< gridSize, blockSize >>>( _input.template getData< Device >(),
+                                                     _output.template modifyData< Device >(),
+                                                     _interfaceMap.template modifyData< Device >() );
+        cudaDeviceSynchronize();
+        TNL_CHECK_CUDA_DEVICE;
+#endif
+    }
+    if( std::is_same< Device, Devices::Host >::value )
+    {
+        const MeshFunctionType& input =  _input.getData();
+        MeshFunctionType& output =  _output.modifyData();
+        InterfaceMapType& interfaceMap =  _interfaceMap.modifyData();
+        const MeshType& mesh = input.getMesh();
+        typedef typename MeshType::Cell Cell;
+        Cell cell( mesh );
+        for( cell.getCoordinates().z() = 0;
+             cell.getCoordinates().z() < mesh.getDimensions().z();
+             cell.getCoordinates().z() ++ )
+             for( cell.getCoordinates().y() = 0;
+                  cell.getCoordinates().y() < mesh.getDimensions().y();
+                  cell.getCoordinates().y() ++ )
+                 for( cell.getCoordinates().x() = 0;
+                      cell.getCoordinates().x() < mesh.getDimensions().x();
+                      cell.getCoordinates().x() ++ )
+                 {
+                     cell.refresh();
+                     output[ cell.getIndex() ] =
+                     input( cell ) > 0 ? TypeInfo< RealType >::getMaxValue() :
+                                        - TypeInfo< RealType >::getMaxValue();
+                     interfaceMap[ cell.getIndex() ] = false;
+                 }
+
+        const RealType& hx = mesh.getSpaceSteps().x();
+        const RealType& hy = mesh.getSpaceSteps().y();
+        const RealType& hz = mesh.getSpaceSteps().z();
+        for( cell.getCoordinates().z() = 0;
+             cell.getCoordinates().z() < mesh.getDimensions().z();
+             cell.getCoordinates().z() ++ )   
+           for( cell.getCoordinates().y() = 0;
+                cell.getCoordinates().y() < mesh.getDimensions().y();
+                cell.getCoordinates().y() ++ )
+              for( cell.getCoordinates().x() = 0;
+                   cell.getCoordinates().x() < mesh.getDimensions().x();
+                   cell.getCoordinates().x() ++ )
+              {
+                 cell.refresh();
+                 const RealType& c = input( cell );
+                 if( ! cell.isBoundaryEntity() )
+                 {
+                    auto neighbors = cell.getNeighborEntities();
+                    Real pom = 0;
+                    const IndexType e = neighbors.template getEntityIndex<  1,  0,  0 >();
+                    const IndexType n = neighbors.template getEntityIndex<  0,  1,  0 >();
+                    const IndexType t = neighbors.template getEntityIndex<  0,  0,  1 >();
+                    //Try exact initiation
+                    /*const IndexType w = neighbors.template getEntityIndex< -1,  0,  0 >();
+                    const IndexType s = neighbors.template getEntityIndex<  0, -1,  0 >();
+                    const IndexType b = neighbors.template getEntityIndex<  0,  0, -1 >();
+                    if( c * input[ e ] <= 0 )
+                    {
+                       output[ cell.getIndex() ] = c;
+                       output[ e ] = input[ e ];
+                       interfaceMap[ e ] = true;   
+                       interfaceMap[ cell.getIndex() ] = true;
+                    }
+                    else if( c * input[ n ] <= 0 )
+                    {
+                       output[ cell.getIndex() ] = c;
+                       output[ n ] = input[ n ];
+                       interfaceMap[ n ] = true;   
+                       interfaceMap[ cell.getIndex() ] = true;
+                    }
+                    else if( c * input[ t ] <= 0 )
+                    {
+                       output[ cell.getIndex() ] = c;
+                       output[ t ] = input[ t ];
+                       interfaceMap[ t ] = true;   
+                       interfaceMap[ cell.getIndex() ] = true;
+                    }*/
+                    if( c * input[ n ] <= 0 )
+                    {
+                        if( c >= 0 )
+                        {
+                        pom = ( hy * c )/( c - input[ n ]);
+                        if( output[ cell.getIndex() ] > pom ) 
+                            output[ cell.getIndex() ] = pom;
+
+                        if ( output[ n ] < pom - hy)
+                             output[ n ] = pom - hy; // ( hy * c )/( c - input[ n ]) - hy;
+
+                        }else
+                        {
+                          pom = - ( hy * c )/( c - input[ n ]);
+                          if( output[ cell.getIndex() ] < pom )
+                              output[ cell.getIndex() ] = pom;
+                          if( output[ n ] > hy + pom )
+                              output[ n ] = hy + pom; //hy - ( hy * c )/( c - input[ n ]);
+
+                        }
+                    interfaceMap[ cell.getIndex() ] = true;
+                    interfaceMap[ n ] = true;
+                    }
+                    if( c * input[ e ] <= 0 )
+                    {
+                        if( c >= 0 )
+                        {
+                            pom = ( hx * c )/( c - input[ e ]);
+                            if( output[ cell.getIndex() ] > pom )
+                                output[ cell.getIndex() ] = pom;
+
+                            pom = pom - hx; //output[ e ] = (hx * c)/( c - input[ e ]) - hx;
+                            if( output[ e ] < pom )
+                                output[ e ] = pom;      
+
+                        }else
+                        {
+                            pom = - (hx * c)/( c - input[ e ]);
+                            if( output[ cell.getIndex() ] < pom )
+                                output[ cell.getIndex() ] = pom;
+
+                            pom = pom + hx; //output[ e ] = hx - (hx * c)/( c - input[ e ]);
+                            if( output[ e ] > pom )
+                                output[ e ] = pom;
+                        }
+                    interfaceMap[ cell.getIndex() ] = true;
+                    interfaceMap[ e ] = true;
+                    }
+                    if( c * input[ t ] <= 0 )
+                    {
+                        if( c >= 0 )
+                        {
+                            pom = ( hz * c )/( c - input[ t ]);
+                            if( output[ cell.getIndex() ] > pom )
+                                output[ cell.getIndex() ] = pom;
+
+                            pom = pom - hz; //output[ e ] = (hx * c)/( c - input[ e ]) - hx;
+                            if( output[ t ] < pom )
+                                output[ t ] = pom; 
+
+                        }else
+                        {
+                            pom = - (hz * c)/( c - input[ t ]);
+                            if( output[ cell.getIndex() ] < pom )
+                                output[ cell.getIndex() ] = pom;
+
+                            pom = pom + hz; //output[ e ] = hx - (hx * c)/( c - input[ e ]);
+                            if( output[ t ] > pom )
+                                output[ t ] = pom;
+
+                        }
+                    interfaceMap[ cell.getIndex() ] = true;
+                    interfaceMap[ t ] = true;
+                    }    
+                 }
+                 /*output[ cell.getIndex() ] =
+                    c > 0 ? TypeInfo< RealType >::getMaxValue() :
+                           -TypeInfo< RealType >::getMaxValue();
+                 interfaceMap[ cell.getIndex() ] = false;*/ //is on line 245
+              }
+    }
 }
 
 template< typename Real,
           typename Device,
           typename Index >
    template< typename MeshEntity >
+__cuda_callable__
 void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
 updateCell( MeshFunctionType& u,
@@ -628,12 +648,13 @@ __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, 
         Cell cell( mesh );
         cell.getCoordinates().x() = i; cell.getCoordinates().y() = j;
         cell.refresh();
+        const Index cind = cell.getIndex();
 
 
-        output[ cell.getIndex() ] =
+        output[ cind ] =
                input( cell ) >= 0 ? TypeInfo< Real >::getMaxValue() :
                                     - TypeInfo< Real >::getMaxValue();
-        interfaceMap[ cell.getIndex() ] = false; 
+        interfaceMap[ cind ] = false; 
 
         const Real& hx = mesh.getSpaceSteps().x();
         const Real& hy = mesh.getSpaceSteps().y();
@@ -647,48 +668,131 @@ __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, 
            const Index w = neighbors.template getEntityIndex<  -1,  0 >();
            const Index n = neighbors.template getEntityIndex<  0,  1 >();
            const Index s = neighbors.template getEntityIndex<  0,  -1 >();
-          
+           
            if( c * input[ n ] <= 0 )
            {
                pom = TNL::sign( c )*( hy * c )/( c - input[ n ]);
-               if( TNL::abs( output[ cell.getIndex() ] ) > TNL::abs( pom ) ) 
-                   output[ cell.getIndex() ] = pom;
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
 
                interfaceMap[ cell.getIndex() ] = true;
            }
            if( c * input[ e ] <= 0 )
            {
                pom = TNL::sign( c )*( hx * c )/( c - input[ e ]);
-               if( TNL::abs( output[ cell.getIndex() ] ) > TNL::abs( pom ) )
-                   output[ cell.getIndex() ] = pom;                       
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) )
+                   output[ cind ] = pom;                       
 
-               interfaceMap[ cell.getIndex() ] = true;
+               interfaceMap[ cind ] = true;
            }
            if( c * input[ w ] <= 0 )
            {
                pom = TNL::sign( c )*( hx * c )/( c - input[ w ]);
-               if( TNL::abs( output[ cell.getIndex() ] ) > TNL::abs( pom ) ) 
-                   output[ cell.getIndex() ] = pom;
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
 
-               interfaceMap[ cell.getIndex() ] = true;
+               interfaceMap[ cind ] = true;
            }
            if( c * input[ s ] <= 0 )
            {
                pom = TNL::sign( c )*( hy * c )/( c - input[ s ]);
-               if( TNL::abs( output[ cell.getIndex() ] ) > TNL::abs( pom ) ) 
-                   output[ cell.getIndex() ] = pom;
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
 
-               interfaceMap[ cell.getIndex() ] = true;
+               interfaceMap[ cind ] = true;
            }
         }
     }
 }
 
-
-/*__global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, double, TNL::Devices::Cuda, int > >& input )
+template < typename Real, typename Device, typename Index >
+__global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& input, 
+                                  Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& output,
+                                  Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap )
 {
     int i = threadIdx.x + blockDim.x*blockIdx.x;
     int j = blockDim.y*blockIdx.y + threadIdx.y;
-    //const Meshes::Grid< 2, double, TNL::Devices::Cuda, int >& mesh = input.getMesh();
+    int k = blockDim.z*blockIdx.z + threadIdx.z;
+    const Meshes::Grid< 3, Real, Device, Index >& mesh = input.template getMesh< Devices::Cuda >();
     
-}*/
+    if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() && k < mesh.getDimensions().z() )
+    {
+        typedef typename Meshes::Grid< 3, Real, Device, Index >::Cell Cell;
+        Cell cell( mesh );
+        cell.getCoordinates().x() = i; cell.getCoordinates().y() = j; cell.getCoordinates().z() = k;
+        cell.refresh();
+        const Index cind = cell.getIndex();
+
+
+        output[ cind ] =
+               input( cell ) >= 0 ? TypeInfo< Real >::getMaxValue() :
+                                    - TypeInfo< Real >::getMaxValue();
+        interfaceMap[ cind ] = false; 
+        cell.refresh();
+
+        const Real& hx = mesh.getSpaceSteps().x();
+        const Real& hy = mesh.getSpaceSteps().y();
+        const Real& hz = mesh.getSpaceSteps().z();
+        const Real& c = input( cell );
+        if( ! cell.isBoundaryEntity()  )
+        {
+           auto neighbors = cell.getNeighborEntities();
+           Real pom = 0;
+           const Index e = neighbors.template getEntityIndex<  1, 0, 0 >();
+           const Index w = neighbors.template getEntityIndex<  -1, 0, 0 >();
+           const Index n = neighbors.template getEntityIndex<  0, 1, 0 >();
+           const Index s = neighbors.template getEntityIndex<  0, -1, 0 >();
+           const Index t = neighbors.template getEntityIndex<  0, 0, 1 >();
+           const Index b = neighbors.template getEntityIndex<  0, 0, -1 >();
+           
+           if( c * input[ n ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hy * c )/( c - input[ n ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cind ] = true;
+           }
+           if( c * input[ e ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hx * c )/( c - input[ e ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) )
+                   output[ cind ] = pom;                       
+
+               interfaceMap[ cind ] = true;
+           }
+           if( c * input[ w ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hx * c )/( c - input[ w ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cind ] = true;
+           }
+           if( c * input[ s ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hy * c )/( c - input[ s ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cind ] = true;
+           }
+           if( c * input[ b ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hz * c )/( c - input[ b ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cind ] = true;
+           }
+           if( c * input[ t ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hz * c )/( c - input[ t ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cind ] = true;
+           }
+        }
+    }
+}
