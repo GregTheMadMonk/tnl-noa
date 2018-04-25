@@ -39,7 +39,8 @@ Grid< 3, Real, Device, Index > :: Grid()
   numberOfDzEdges( 0 ),
   numberOfDxAndDyEdges( 0 ),
   numberOfEdges( 0 ),
-  numberOfVertices( 0 )
+  numberOfVertices( 0 ),
+  distGrid(nullptr)
 {
 }
 

@@ -188,7 +188,7 @@ if( WITH_CUDA STREQUAL "yes" )
         if( NOT WITH_CUBLAS STREQUAL "no" )
             find_path( CUBLAS_INCLUDE_DIR cublas_v2.h
                        /usr/local/cuda/include
-                       ${CUDA_INCLUDE_DIR}
+                       ${CUDA_INCLUDE_DIRS}
                        DOC "CUBLAS headers." )
             if( ${CUBLAS_INCLUDE_DIR} STREQUAL "CUBLAS_INCLUDE_DIR-NOTFOUND" )
                 message( "CUBLAS not found." )
@@ -219,7 +219,7 @@ if( WITH_CUDA STREQUAL "yes" )
         if( NOT WITH_CUSPARSE STREQUAL "no" )
            find_path( CUSPARSE_INCLUDE_DIR cusparse.h
                       /usr/local/cuda/include                   
-                      ${CUDA_INCLUDE_DIR}  
+                      ${CUDA_INCLUDE_DIRS}  
                       DOC "CUSPARSE headers." )
            if( ${CUSPARSE_INCLUDE_DIR} STREQUAL "CUSPARSE_INCLUDE_DIR-NOTFOUND" )
                message( "CUSPARSE not found." )
