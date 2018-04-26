@@ -148,6 +148,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    std::cout<<"setInitialCondition" <<std::endl; 
    if(CommunicatorType::isDistributed())
     {
+        std::cout<<"Nodes Distribution: " << uPointer->getMesh().GetDistMesh()->printProcessDistr() << std::endl;
         Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(initialConditionFile, *uPointer );
         uPointer->template Synchronize<CommunicatorType>();
     }
