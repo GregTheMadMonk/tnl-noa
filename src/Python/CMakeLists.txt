@@ -11,18 +11,25 @@ if( PYTHONINTERP_FOUND )
 endif()
 
 if( PYTHONLIBS_FOUND )
-   include(ExternalProject)
-   ExternalProject_Add(pybind11_project
-     GIT_REPOSITORY    https://github.com/pybind/pybind11.git
-     GIT_TAG           master
-     SOURCE_DIR        "${CMAKE_BINARY_DIR}/pybind11-src"
-     BINARY_DIR        "${CMAKE_BINARY_DIR}/pybind11-build"
-     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DPYBIND11_TEST=FALSE
-   )
-   add_subdirectory(${CMAKE_BINARY_DIR}/pybind11-src ${CMAKE_BINARY_DIR}/pybind11-build)
-#   find_package(pybind11 REQUIRED
-#                PATHS ${CMAKE_INSTALL_PREFIX})
+   # download and build pybind11 at configure time
+   configure_file(pybind11.cmake.in ${CMAKE_BINARY_DIR}/pybind11-download/CMakeLists.txt)
+   execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+      RESULT_VARIABLE result
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/pybind11-download )
+   if(result)
+      message(FATAL_ERROR "CMake step for pybind11 failed: ${result}")
+   endif()
+   execute_process(COMMAND ${CMAKE_COMMAND} --build .
+      RESULT_VARIABLE result
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/pybind11-download )
+   if(result)
+      message(FATAL_ERROR "Build step for pybind11 failed: ${result}")
+   endif()
 
+   # add the pybind11 subdirectory to provide the pybind11_add_module macro
+   add_subdirectory(${CMAKE_BINARY_DIR}/pybind11-src ${CMAKE_BINARY_DIR}/pybind11-build)
+
+   # add the subdirectory with our bindings
    add_subdirectory(pytnl)
 else()
    message( "The Python.h header file was not found, Python bindings will not be builg." )
