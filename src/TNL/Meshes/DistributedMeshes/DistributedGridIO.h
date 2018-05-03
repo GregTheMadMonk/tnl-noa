@@ -88,7 +88,7 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
         newMesh->setOrigin(origin+TNL::Containers::tnlDotProduct(spaceSteps,localBegin));
         
         File meshFile;
-        meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords(),IOMode::write);
+        meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords()+String(".tnl"),IOMode::write);
         newMesh->save( meshFile );
         meshFile.close();
 
@@ -103,7 +103,7 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
         CopyEntitiesHelper<MeshFunctionType>::Copy(meshFunction,newMeshFunction,localBegin,zeroCoord,localSize);
 
         File file;
-        file.open( fileName+String("-")+distrGrid->printProcessCoords(), IOMode::write );
+        file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), IOMode::write );
         bool ret=newMeshFunction.save(file);
         file.close();
 
@@ -140,7 +140,7 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
         zeroCoord.setValue(0);        
 
         File file;
-        file.open( fileName+String("-")+distrGrid->printProcessCoords(), IOMode::read );
+        file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), IOMode::read );
         bool result=newMeshFunction.boundLoad(file);
         file.close();
         CopyEntitiesHelper<MeshFunctionType>::Copy(newMeshFunction,meshFunction,zeroCoord,localBegin,localSize);

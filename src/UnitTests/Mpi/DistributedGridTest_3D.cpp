@@ -589,7 +589,7 @@ void check_Inner_3D(int rank, GridType grid, DofType dof, typename DofType::Real
 
 /*
  * Light check of 3D distributed grid and its synchronization. 
- * expected 9 processors
+ * expected 27 processors
  */
 typedef MpiCommunicator CommunicatorType;
 typedef Grid<3,double,Host,int> MeshType;
@@ -644,7 +644,11 @@ class DistributedGirdTest_3D : public ::testing::Test {
     typename DistributedGridType::CoordinatesType overlap;
     overlap.setValue(1);
     distrgrid=new DistributedGridType();
-    distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
+    int distr[2];
+    distr[0]=3;
+    distr[1]=3;
+    distr[2]=3;
+    distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap,distr);
     
     distrgrid->SetupGrid(*gridptr);
     dof=new DofType(gridptr->template getEntitiesCount< Cell >());

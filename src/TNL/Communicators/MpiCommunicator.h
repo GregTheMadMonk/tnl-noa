@@ -114,6 +114,21 @@ namespace Communicators {
         //more information in MPI documentation
         static void DimsCreate(int nproc, int dim, int *distr)
         {
+            /***HACK for linear distribution***/
+           int sum=0;
+           for(int i=0;i<dim;i++)
+                sum+=distr[i];
+           if(sum==0) //uživatel neovlivňuje distribuci
+           {
+               std::cout << "vynucuji distribuci" <<std::endl;
+               for(int i=0;i<dim-1;i++)
+               {
+                    distr[i]=1;
+               }
+               distr[dim-1]=0;
+            }
+            /***END OF HACK***/
+
             MPI_Dims_create(nproc, dim, distr);
         };
 
