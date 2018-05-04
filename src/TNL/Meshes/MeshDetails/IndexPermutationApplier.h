@@ -12,7 +12,7 @@
 
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/Mesh.h>
-#include <TNL/Experimental/Multimaps/MultimapPermutationApplier.h>
+#include <TNL/Containers/Multimaps/MultimapPermutationApplier.h>
 
 namespace TNL {
 namespace Meshes {

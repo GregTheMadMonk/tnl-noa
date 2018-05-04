@@ -8,4 +8,4 @@ SET( headers EllpackIndexMultimap.h
              StaticEllpackIndexMultimapValues_impl.h
              MultimapPermutationApplier.h )
 
-INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Experimental/Multimaps )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Containers/Multimaps )

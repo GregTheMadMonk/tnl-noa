@@ -1,5 +1,5 @@
 /***************************************************************************
-                          EllpackIndexMultimap.h  -  description
+                          StaticEllpackIndexMultimap.h  -  description
                              -------------------
     begin                : Sep 9, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -11,44 +11,44 @@
 #pragma once
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Experimental/Multimaps/EllpackIndexMultimapValues.h>
+#include <TNL/Containers/Multimaps/StaticEllpackIndexMultimapValues.h>
 
 namespace TNL {
 
 template< typename Device >
-struct EllpackIndexMultimapSliceSizeGetter
+struct StaticEllpackIndexMultimapSliceSizeGetter
 {
    static constexpr int SliceSize = 1;
 };
 
 template<>
-struct EllpackIndexMultimapSliceSizeGetter< Devices::Cuda >
+struct StaticEllpackIndexMultimapSliceSizeGetter< Devices::Cuda >
 {
    static constexpr int SliceSize = 32;
 };
 
-template< typename Index = int,
+template< int ValuesCount,
+          typename Index = int,
           typename Device = Devices::Host,
           typename LocalIndex = Index,
-          int SliceSize = EllpackIndexMultimapSliceSizeGetter< Device >::SliceSize >
-class EllpackIndexMultimap
+          int SliceSize = StaticEllpackIndexMultimapSliceSizeGetter< Device >::SliceSize >
+class StaticEllpackIndexMultimap
    : public Object
 {
    public:
       using DeviceType                 = Device;
       using IndexType                  = Index;
       using LocalIndexType             = LocalIndex;
-      using ValuesAccessorType         = EllpackIndexMultimapValues< IndexType, DeviceType, LocalIndexType, SliceSize >;
-      using ConstValuesAccessorType    = EllpackIndexMultimapValues< const IndexType, DeviceType, LocalIndexType, SliceSize >;
-      using ValuesAllocationVectorType = Containers::Vector< LocalIndexType, DeviceType, IndexType >;
+      using ValuesAccessorType         = StaticEllpackIndexMultimapValues< ValuesCount, IndexType, DeviceType, LocalIndexType, SliceSize >;
+      using ConstValuesAccessorType    = StaticEllpackIndexMultimapValues< ValuesCount, const IndexType, DeviceType, LocalIndexType, SliceSize >;
 
-      EllpackIndexMultimap() = default;
-
-      template< typename Device_ >
-      EllpackIndexMultimap( const EllpackIndexMultimap< Index, Device_, LocalIndex, SliceSize >& other );
+      StaticEllpackIndexMultimap() = default;
 
       template< typename Device_ >
-      EllpackIndexMultimap& operator=( const EllpackIndexMultimap< Index, Device_, LocalIndex, SliceSize >& other );
+      StaticEllpackIndexMultimap( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex, SliceSize >& other );
+
+      template< typename Device_ >
+      StaticEllpackIndexMultimap& operator=( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex, SliceSize >& other );
 
       static String getType();
 
@@ -59,12 +59,10 @@ class EllpackIndexMultimap
       __cuda_callable__
       const IndexType getKeysRange() const;
 
-      void allocate( const LocalIndexType& maxValuesCount );
+      void allocate();
 
-      void allocate( const ValuesAllocationVectorType& valuesCounts );
-
-      template< typename Device_, int SliceSize_ >
-      void setLike( const EllpackIndexMultimap< Index, Device_, LocalIndex, SliceSize_ >& other );
+      template< typename Device_ >
+      void setLike( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalIndex, SliceSize >& other );
 
       __cuda_callable__
       ValuesAccessorType getValues( const IndexType& inputIndex );
@@ -72,7 +70,7 @@ class EllpackIndexMultimap
       __cuda_callable__
       ConstValuesAccessorType getValues( const IndexType& inputIndex ) const;
 
-      bool operator==( const EllpackIndexMultimap& other ) const;
+      bool operator==( const StaticEllpackIndexMultimap& other ) const;
 
       bool save( File& file ) const;
 
@@ -86,26 +84,25 @@ class EllpackIndexMultimap
 
    protected:
       Containers::Vector< IndexType, DeviceType, IndexType > values;
-      ValuesAllocationVectorType valuesCounts;
 
       IndexType keysRange = 0;
-      LocalIndexType maxValuesCount = 0;
 
       __cuda_callable__
       IndexType getAllocationKeysRange( IndexType keysRange ) const;
 
       // friend class is needed for templated assignment operators
-      template< typename Index_, typename Device_, typename LocalIndex_, int SliceSize_ >
-      friend class EllpackIndexMultimap;
+      template< int ValuesCount_, typename Index_, typename Device_, typename LocalIndex_, int SliceSize_ >
+      friend class StaticEllpackIndexMultimap;
 };
 
-template< typename Index,
+template< int ValuesCount,
+          typename Index,
           typename Device,
           typename LocalIndex,
           int SliceSize >
-std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimap< Index, Device, LocalIndex, SliceSize >& multimap );
+std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >& multimap );
 
 } // namespace TNL
 
-#include <TNL/Experimental/Multimaps/EllpackIndexMultimap_impl.h>
+#include <TNL/Containers/Multimaps/StaticEllpackIndexMultimap_impl.h>
 
