@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Meshes/MeshDimensionTag.h>
+#include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/GridEntityConfig.h>
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
 
@@ -44,7 +44,7 @@ class NeighborGridEntityLayer< GridEntity, NeighborEntityDimension, GridEntityCo
       {}
  
       __cuda_callable__
-      const NeighborEntityGetterType& getNeighborEntities( const MeshDimensionTag< NeighborEntityDimension>& tag ) const
+      const NeighborEntityGetterType& getNeighborEntities( const DimensionTag< NeighborEntityDimension>& tag ) const
       {
          return this->neighborEntities;
       }
@@ -76,7 +76,7 @@ class NeighborGridEntityLayer< GridEntity, 0, GridEntityConfig, true >
       {}
 
       __cuda_callable__
-      const NeighborEntityGetterType& getNeighborEntities( const MeshDimensionTag< 0 >& tag ) const
+      const NeighborEntityGetterType& getNeighborEntities( const DimensionTag< 0 >& tag ) const
       {
          return this->neighborEntities;
       }
@@ -112,7 +112,7 @@ class NeighborGridEntityLayer< GridEntity, NeighborEntityDimension, GridEntityCo
       {}
 
       __cuda_callable__
-      const NeighborEntityGetterType& getNeighborEntities( const MeshDimensionTag< NeighborEntityDimension >& tag ) const {}
+      const NeighborEntityGetterType& getNeighborEntities( const DimensionTag< NeighborEntityDimension >& tag ) const {}
  
       __cuda_callable__
       void refresh( const typename GridEntity::GridType& grid,
@@ -131,7 +131,7 @@ class NeighborGridEntityLayer< GridEntity, 0, GridEntityConfig, false >
       NeighborGridEntityLayer( const GridEntity& entity ){}
 
       __cuda_callable__
-      const NeighborEntityGetterType& getNeighborEntities( const MeshDimensionTag< 0 >& tag ) const {}
+      const NeighborEntityGetterType& getNeighborEntities( const DimensionTag< 0 >& tag ) const {}
  
       __cuda_callable__
       void refresh( const typename GridEntity::GridType& grid,
@@ -163,7 +163,7 @@ class NeighborGridEntitiesStorage
       const NeighborGridEntityGetter< GridEntity, EntityDimension >&
       getNeighborEntities() const
       {
-         return BaseType::getNeighborEntities( MeshDimensionTag< EntityDimension >() );
+         return BaseType::getNeighborEntities( DimensionTag< EntityDimension >() );
       }
 };
 

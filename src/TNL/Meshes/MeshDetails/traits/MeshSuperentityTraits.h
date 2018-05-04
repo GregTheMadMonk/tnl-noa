@@ -2,7 +2,7 @@
                           MeshSuperentityTraits.h  -  description
                              -------------------
     begin                : Feb 13, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -16,58 +16,37 @@
 
 #pragma once
 
-#include <TNL/Containers/Array.h>
-#include <TNL/Containers/ConstSharedArray.h>
-#include <TNL/Containers/List.h>
 #include <TNL/Meshes/MeshEntity.h>
-#include <TNL/Meshes/MeshConfigBase.h>
-#include <TNL/Meshes/Topologies/MeshEntityTopology.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 #include <TNL/Experimental/Multimaps/EllpackIndexMultimap.h>
-#include <TNL/Meshes/MeshDetails/layers/MeshSuperentityAccessor.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
           int Dimension >
 class MeshSuperentityTraits
 {
-   public:
- 
-   typedef typename MeshConfig::GlobalIndexType                              GlobalIndexType;
-   typedef typename MeshConfig::LocalIndexType                               LocalIndexType;
+   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType  = typename MeshConfig::LocalIndexType;
 
+public:
+   static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
+   static_assert( EntityTopology::dimension < Dimension, "Superentity dimension must be higher than the entity dimension." );
 
-   static const bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimension );
-   //typedef tnlStorageTraits< storageEnabled >                               SuperentityStorageTag;
-   typedef MeshEntity< MeshConfig, EntityTopology >                            EntityType;
-   typedef MeshEntityTraits< MeshConfig, Dimension >                     EntityTraits;
-   typedef typename EntityTraits::EntityTopology                             SuperentityTopology;
-   typedef typename EntityTraits::EntityType                                 SuperentityType;
+   static constexpr bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimension );
 
+   using SuperentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
+   using SuperentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
 
    /****
-    * Type of container for storing of the superentities indecis.
+    * Type of container for storing of the superentities indices.
     */
-   typedef Containers::Array< GlobalIndexType, Devices::Host, LocalIndexType >             StorageArrayType;
- 
-   typedef EllpackIndexMultimap< GlobalIndexType, Devices::Host >                        StorageNetworkType;
-   typedef MeshSuperentityAccessor< typename StorageNetworkType::ValuesAccessorType > SuperentityAccessorType;
- 
-   /****
-    * Type for passing the superentities indecis by the getSuperentitiesIndices()
-    * method. We introduce it because of the compatibility with the subentities
-    * which are usually stored in static array.
-    */
-   typedef Containers::SharedArray< GlobalIndexType, Devices::Host, LocalIndexType >       AccessArrayType;
-
-   /****
-    * This is used by the mesh initializer.
-    */
-   typedef Containers::List< GlobalIndexType >                                       GrowableContainerType;
-
+   // TODO: write general operator= for different SliceSize and remove the '32' here
+   using StorageNetworkType      = EllpackIndexMultimap< GlobalIndexType, Device, LocalIndexType, 32 >;
+   using SuperentityAccessorType = typename StorageNetworkType::ValuesAccessorType;
 };
 
 } // namespace Meshes

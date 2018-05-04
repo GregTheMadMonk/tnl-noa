@@ -506,71 +506,8 @@ bool Grid< 3, Real, Device, Index > :: load( const String& fileName )
 };
 
 template< typename Real,
-           typename Device,
-           typename Index >
-bool Grid< 3, Real, Device, Index >::writeMesh( const String& fileName,
-                                                   const String& format ) const
-{
-   /*****
-    * TODO: implement this
-    */
-   return true;
-}
-
-template< typename Real,
           typename Device,
           typename Index >
-   template< typename MeshFunction >
-bool Grid< 3, Real, Device, Index > :: write( const MeshFunction& function,
-                                                 const String& fileName,
-                                                 const String& format ) const
-{
-   if( this->template getEntitiesCount< Cell >() != function. getSize() )
-   {
-      std::cerr << "The size ( " << function. getSize()
-           << " ) of a mesh function does not agree with the DOFs ( " << this->template getEntitiesCount< Cell >() << " ) of a mesh." << std::endl;
-      return false;
-   }
-   std::fstream file;
-   file. open( fileName. getString(), std::ios::out );
-   if( ! file )
-   {
-      std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
-      return false;
-   }
-   file << std::setprecision( 12 );
-   if( format == "gnuplot" )
-   {
-      Cell cell( *this );
-      for( cell.getCoordinates().z() = 0;
-           cell.getCoordinates().z() < getDimensions().z();
-           cell.getCoordinates().z()++ )
-      {
-         for( cell.getCoordinates().y() = 0;
-              cell.getCoordinates().y() < getDimensions().y();
-              cell.getCoordinates().y()++ )
-         {
-            for( cell.getCoordinates().x() = 0;
-                 cell.getCoordinates().x() < getDimensions().x();
-                 cell.getCoordinates().x()++ )
-            {
-               PointType v = cell.getCenter();
-               GnuplotWriter::write( file, v );
-               GnuplotWriter::write( file, function[ this->template getEntityIndex( cell ) ] );
-               file << std::endl;
-            }
-         }
-         file << std::endl;
-      }
-   }
-
-   file. close();
-   return true;
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
 void
 Grid< 3, Real, Device, Index >::
 writeProlog( Logger& logger ) const

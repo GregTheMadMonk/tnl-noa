@@ -10,52 +10,107 @@
 
 #pragma once
 
+#include <type_traits>
 #include <ostream>
-#include <TNL/Experimental/Multimaps/EllpackIndexMultimap.h>
+
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 
 template< typename Index,
-          typename Device >
+          typename Device,
+          typename LocalIndex,
+          int SliceSize >
+class EllpackIndexMultimap;
+
+template< typename Index,
+          typename Device,
+          typename LocalIndex,
+          int step = 1 >
 class EllpackIndexMultimapValues
 {
    public:
- 
-      typedef Device                                     DeviceType;
-      typedef Index                                      IndexType;
-      typedef EllpackIndexMultimap< IndexType, DeviceType > NetworkType;
- 
+      using DeviceType     = Device;
+      using IndexType      = Index;
+      using LocalIndexType = LocalIndex;
+      using NetworkType    = EllpackIndexMultimap< IndexType, DeviceType, LocalIndexType, step >;
+
+      __cuda_callable__
       EllpackIndexMultimapValues();
- 
-      IndexType getPortsCount() const;
- 
-      void setOutput( const IndexType portIndex,
-                      const IndexType output );
- 
-      IndexType getOutput( const IndexType portIndex ) const;
- 
-      IndexType& operator[]( const IndexType portIndex );
- 
-      const IndexType& operator[]( const IndexType portIndex ) const;
- 
+
+      __cuda_callable__
+      EllpackIndexMultimapValues( EllpackIndexMultimapValues&& other );
+
+      __cuda_callable__
+      EllpackIndexMultimapValues& operator=( const EllpackIndexMultimapValues& );
+
+      // converting assignment, needed for 'const int' -> 'int' etc.
+      template< typename Index_, typename LocalIndex_, int step_ >
+      __cuda_callable__
+      EllpackIndexMultimapValues& operator=( const EllpackIndexMultimapValues< Index_, Device, LocalIndex_, step_ >& other );
+
+      __cuda_callable__
+      EllpackIndexMultimapValues& operator=( EllpackIndexMultimapValues&& other );
+
+      __cuda_callable__
+      void bind( const EllpackIndexMultimapValues& other );
+
+      __cuda_callable__
+      void setSize( const LocalIndexType& portsCount );
+
+      __cuda_callable__
+      LocalIndexType getSize() const;
+
+      __cuda_callable__
+      LocalIndexType getAllocatedSize() const;
+
+      __cuda_callable__
+      void setValue( const LocalIndexType& portIndex,
+                     const IndexType& value );
+
+      __cuda_callable__
+      IndexType getValue( const LocalIndexType& portIndex ) const;
+
+      __cuda_callable__
+      IndexType& operator[]( const LocalIndexType& portIndex );
+
+      __cuda_callable__
+      const IndexType& operator[]( const LocalIndexType& portIndex ) const;
+
+      __cuda_callable__
+      bool operator==( const EllpackIndexMultimapValues& other ) const;
+
+      __cuda_callable__
+      bool operator!=( const EllpackIndexMultimapValues& other ) const;
+
       void print( std::ostream& str ) const;
- 
+
    protected:
- 
-      EllpackIndexMultimapValues( IndexType* ports,
-                              const IndexType input,
-                              const IndexType portsMaxCount );
- 
-      IndexType* ports;
- 
-      IndexType step, portsMaxCount;
- 
-      friend EllpackIndexMultimap< IndexType, DeviceType >;
+      using ValuesCountType = typename std::conditional< std::is_const< IndexType >::value,
+                                                         typename std::add_const< LocalIndexType >::type,
+                                                         LocalIndexType >::type;
+
+      __cuda_callable__
+      EllpackIndexMultimapValues( IndexType* values,
+                                  ValuesCountType* valuesCount,
+                                  const LocalIndexType& allocatedSize );
+
+      IndexType* values;
+
+      ValuesCountType* valuesCount;
+
+      // TODO: this is useless for a const-accessor (without setSize etc.)
+      LocalIndexType allocatedSize;
+
+      friend EllpackIndexMultimap< IndexType, DeviceType, LocalIndexType, step >;
+      friend EllpackIndexMultimap< typename std::remove_const< IndexType >::type, DeviceType, LocalIndexType, step >;
 };
 
 template< typename Index,
-          typename Device >
-std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimapValues< Index, Device>& ports );
+          typename Device,
+          typename LocalIndex,
+          int step >
+std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimapValues< Index, Device, LocalIndex, step >& ports );
 
 } // namespace TNL
 
