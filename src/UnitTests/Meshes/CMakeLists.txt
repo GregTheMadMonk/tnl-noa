@@ -36,25 +36,11 @@ TARGET_LINK_LIBRARIES( MeshEntityTest
                            ${GTEST_BOTH_LIBRARIES}
                            tnl )
 
-ADD_EXECUTABLE( MultimapTest MultimapTest.cpp )
-TARGET_COMPILE_OPTIONS( MultimapTest PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( MultimapTest
-                           ${GTEST_BOTH_LIBRARIES}
-                           tnl )
-
-ADD_EXECUTABLE( StaticMultimapTest StaticMultimapTest.cpp )
-TARGET_COMPILE_OPTIONS( StaticMultimapTest PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( StaticMultimapTest
-                           ${GTEST_BOTH_LIBRARIES}
-                           tnl )
-
 
 ADD_TEST( BoundaryTagsTest ${EXECUTABLE_OUTPUT_PATH}/BoundaryTagsTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( MeshTest ${EXECUTABLE_OUTPUT_PATH}/MeshTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( MeshOrderingTest ${EXECUTABLE_OUTPUT_PATH}/MeshOrderingTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( MeshEntityTest ${EXECUTABLE_OUTPUT_PATH}/MeshEntityTest${CMAKE_EXECUTABLE_SUFFIX} )
-ADD_TEST( MultimapTest ${EXECUTABLE_OUTPUT_PATH}/MultimapTest${CMAKE_EXECUTABLE_SUFFIX} )
-ADD_TEST( StaticMultimapTest ${EXECUTABLE_OUTPUT_PATH}/MultimapTest${CMAKE_EXECUTABLE_SUFFIX} )
 
 
 

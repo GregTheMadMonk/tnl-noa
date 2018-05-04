@@ -1,4 +1,4 @@
-#include <TNL/Experimental/Multimaps/EllpackIndexMultimap.h>
+#include <TNL/Containers/Multimaps/StaticEllpackIndexMultimap.h>
 
 using namespace TNL;
 
@@ -11,7 +11,7 @@ using LocalIndexType = short;
 
 TEST( MultimapTest, TestTypedefs )
 {
-   using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
+   using MultimapType = TNL::StaticEllpackIndexMultimap< 4, IndexType, Device, LocalIndexType >;
    const bool same_index = std::is_same< typename MultimapType::IndexType, IndexType >::value;
    ASSERT_TRUE( same_index );
    const bool same_device = std::is_same< typename MultimapType::DeviceType, Device >::value;
@@ -20,66 +20,21 @@ TEST( MultimapTest, TestTypedefs )
    ASSERT_TRUE( same_localindex );
 }
 
-TEST( MultimapTest, TestSettingSizes )
-{
-   using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
-
-   IndexType inputs = 10;
-   LocalIndexType valuesGlobalMax = 3;
-   LocalIndexType valuesLocalMax = 2;
-
-   MultimapType map;
-   map.setKeysRange( inputs );
-   ASSERT_EQ( map.getKeysRange(), inputs );
-
-   typename MultimapType::ValuesAllocationVectorType allocationRanges;
-   allocationRanges.setSize( inputs );
-   allocationRanges.setValue( valuesGlobalMax );
-   allocationRanges[ 0 ] = 0;
-   allocationRanges[ 1 ] = 1;
-   map.allocate( allocationRanges );
-
-   for( IndexType i = 0; i < inputs; i++ ) {
-      auto values = map.getValues( i );
-      const auto constValues = ( (const MultimapType) map ).getValues( i );
-
-      // uninitialized should be equal to the value from the allocation vector
-      ASSERT_EQ( values.getSize(), allocationRanges[ i ] );
-      ASSERT_EQ( constValues.getSize(), allocationRanges[ i ] );
-
-      // setting lower sizes
-      values.setSize( valuesLocalMax );
-      ASSERT_EQ( values.getSize(), valuesLocalMax );
-      ASSERT_EQ( constValues.getSize(), valuesLocalMax );
-
-      // setting global max
-      values.setSize( valuesGlobalMax );
-      ASSERT_EQ( values.getSize(), valuesGlobalMax );
-      ASSERT_EQ( constValues.getSize(), valuesGlobalMax );
-   }
-}
-
 TEST( MultimapTest, TestSettingValues )
 {
-   using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
+   using MultimapType = TNL::StaticEllpackIndexMultimap< 4, IndexType, Device, LocalIndexType >;
 
-   IndexType inputs = 10;
-   LocalIndexType allocatedValues = 2;
+   const IndexType inputs = 10;
+   const LocalIndexType allocatedValues = 4;
 
    MultimapType map;
    map.setKeysRange( inputs );
    ASSERT_EQ( map.getKeysRange(), inputs );
-
-   typename MultimapType::ValuesAllocationVectorType allocationRanges;
-   allocationRanges.setSize( inputs );
-   allocationRanges.setValue( allocatedValues );
-   map.allocate( allocationRanges );
+   map.allocate();
 
    for( IndexType i = 0; i < inputs; i++ ) {
       auto values = map.getValues( i );
       const auto constValues = ( (const MultimapType) map ).getValues( i );
-
-      values.setSize( allocatedValues );
 
       for( LocalIndexType o = 0; o < allocatedValues; o++ )
          values.setValue( o, i + o );
@@ -105,19 +60,15 @@ TEST( MultimapTest, TestSettingValues )
 
 TEST( MultimapTest, TestSaveAndLoad )
 {
-   using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
+   using MultimapType = TNL::StaticEllpackIndexMultimap< 4, IndexType, Device, LocalIndexType >;
 
-   IndexType inputs = 10;
-   LocalIndexType allocatedValues = 2;
+   const IndexType inputs = 10;
+   const LocalIndexType allocatedValues = 4;
 
    MultimapType map, map2;
    map.setKeysRange( inputs );
    ASSERT_EQ( map.getKeysRange(), inputs );
-
-   typename MultimapType::ValuesAllocationVectorType allocationRanges;
-   allocationRanges.setSize( inputs );
-   allocationRanges.setValue( allocatedValues );
-   map.allocate( allocationRanges );
+   map.allocate();
 
    for( IndexType i = 0; i < inputs; i++ ) {
       auto values = map.getValues( i );
