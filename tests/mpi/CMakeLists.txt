@@ -16,9 +16,15 @@
    	TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTestY PUBLIC "-DDIMENSION=2" )
    	TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTestY PUBLIC "-DYDISTR" )
 
+
     ADD_EXECUTABLE( mpiio-save-test ${headers} mpiio-save-test.cpp )   
-    TARGET_LINK_LIBRARIES( tnlMeshFuncttionEvaluateTestY ${CPPUNIT_LIBRARIES}
+    TARGET_LINK_LIBRARIES(  mpiio-save-test ${CPPUNIT_LIBRARIES}
                                                            tnl )
+
+    ADD_EXECUTABLE( mpiio-save-load-test ${headers} mpiio-save-load-test.cpp )   
+    TARGET_LINK_LIBRARIES(  mpiio-save-load-test ${CPPUNIT_LIBRARIES}
+                                                           tnl )
+
 
     #ADD_EXECUTABLE( tnlMeshFuncttionEvaluateTestZ ${headers} MeshFunctionEvauateTest.cpp )   
     #TARGET_LINK_LIBRARIES( tnlMeshFuncttionEvaluateTestZ ${CPPUNIT_LIBRARIES}
@@ -40,4 +46,8 @@ IF( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( GPUmeshFunctionEvaluateTest ${headers} GPUmeshFuncitonEvaluateTest.cu )
     TARGET_LINK_LIBRARIES( GPUmeshFunctionEvaluateTest ${CPPUNIT_LIBRARIES}
                                            tnl )   
+
+    CUDA_ADD_EXECUTABLE( mpiio-save-test-gpu ${headers} mpiio-save-test.cu )   
+    TARGET_LINK_LIBRARIES(  mpiio-save-test-gpu ${CPPUNIT_LIBRARIES}
+                                                           tnl )
 ENDIF( BUILD_CUDA )    

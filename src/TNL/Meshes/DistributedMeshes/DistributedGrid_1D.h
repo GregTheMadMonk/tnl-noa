@@ -36,6 +36,8 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
         CoordinatesType localsize;
         CoordinatesType localgridsize;
         CoordinatesType overlap;
+        CoordinatesType globalsize;
+        CoordinatesType globalbegin;
         PointType spaceSteps;
         
         
@@ -95,6 +97,8 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
                localorigin=globalGrid.getOrigin();
                localsize=globalGrid.getDimensions();
                localgridsize=globalGrid.getDimensions();
+               globalsize=globalGrid.getDimensions();
+               globalbegin=CoordinatesType(0);
                
                localbegin=CoordinatesType(0);
                return;
@@ -106,21 +110,28 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
                    left=rank-1;
                if(rank!=nproc-1)
                    right=rank+1;
-                  
+
+               globalsize=globalGrid.getDimensions();                 
+
                //compute local mesh size               
                numberoflarger=globalGrid.getDimensions().x()%nproc;
-                 
+
                localsize.x()=(globalGrid.getDimensions().x()/nproc);               
                if(numberoflarger>rank)
                     localsize.x()+=1;                      
                                   
                if(numberoflarger>rank)
+               {
+                   globalbegin.x()=rank*localsize.x();
                    localorigin.x()=globalGrid.getOrigin().x()
-                                +(rank*localsize.x()-overlap.x())*globalGrid.getSpaceSteps().x();
+                                +(globalbegin.x()-overlap.x())*globalGrid.getSpaceSteps().x();
+               }
                else
-                   localorigin.x()=globalGrid.getOrigin().x()
-                                +(numberoflarger*(localsize.x()+1)+(rank-numberoflarger)*localsize.x()-overlap.x())
-                                *globalGrid.getSpaceSteps().x();
+               {
+                   globalbegin.x()=numberoflarger*(localsize.x()+1)+(rank-numberoflarger)*localsize.x();
+                   localorigin.x()=(globalGrid.getOrigin().x()-overlap.x())
+                                +globalbegin.x()*globalGrid.getSpaceSteps().x();
+               }
               
               localbegin=overlap;
                
@@ -151,14 +162,14 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
            grid.SetDistMesh(this);
        };
        
-       void printcoords(std::ostream& out)
+       String printProcessCoords()
        {
-           out<<rank<<":";
+           return convertToString(rank);
        };
 
-       void printdistr(std::ostream& out)
+       String printProcessDistr()
        {
-           out<<"("<<nproc<<"):";
+           return convertToString(nproc);
        };       
 
        bool IsDistributed(void)
@@ -183,17 +194,31 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
            return this->overlap;
        };
 
+       //number of elemnts of local sub domain WITHOUT overlap
        CoordinatesType getLocalSize()
        {
            return this->localsize;
        }
 
+       //number of elements of global grid
+       CoordinatesType getGlobalSize()
+       {
+           return this->globalsize;
+       }
+
+       //coordinates of begin of local subdomain without overlaps in global grid
+       CoordinatesType getGlobalBegin()
+       {
+           return this->globalbegin;
+       }
+
+       //number of elemnts of local sub domain WITH overlap
        CoordinatesType getLocalGridSize()
        {
            return this->localgridsize;
        }
        
-              
+       //coordinates of begin of local subdomain without overlaps in local grid       
        CoordinatesType getLocalBegin()
        {
            return this->localbegin;

@@ -117,13 +117,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
 
       if(CommunicatorType::isDistributed())
       {
-        File file;
-        file.open( outputFile+convertToString(CommunicatorType::GetRank()), IOMode::write );
-        File meshFile;
-        meshFile.open(convertToString(CommunicatorType::GetRank())+String("mesh.tnl"),IOMode::write);
-        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(file,meshFile, *meshFunction );
-        meshFile.close();
-        file.close();
+        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(outputFile, *meshFunction );
       }
       else
       {

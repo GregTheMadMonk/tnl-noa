@@ -28,19 +28,19 @@ ADD_EXECUTABLE( DistributedGridIOTest DistributedGridIOTest.cpp )
    TARGET_LINK_LIBRARIES( DistributedGridIOTest
                               ${GTEST_BOTH_LIBRARIES}
                               tnl )
+
+ADD_TEST( NAME CopyEntitesTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/CopyEntitesTest${CMAKE_EXECUTABLE_SUFFIX} )
    
-SET (mpi_test_parameters_1d -np 4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_1D")
+SET (mpi_test_parameters_1d -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_1D${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridTest_1D COMMAND "mpirun" ${mpi_test_parameters_1d})
 
-SET (mpi_test_parameters_2d -np 9 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_2D")
+SET (mpi_test_parameters_2d -np 9 -H localhost:9 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_2D${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridTest_2D COMMAND "mpirun" ${mpi_test_parameters_2d})
 
-SET (mpi_test_parameters_3d -np 27 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_3D")
+SET (mpi_test_parameters_3d -np 27 -H localhost:27 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_3D${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridTest_3D COMMAND "mpirun" ${mpi_test_parameters_3d})
 
-ADD_TEST( CopyEntitesTest ${EXECUTABLE_OUTPUT_PATH}/CopyEntitesTest )
-
-SET (mpi_test_parameters_IO -np 4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridIOTest")
+SET (mpi_test_parameters_IO -np 4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridIOTest${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridIOTest COMMAND "mpirun" ${mpi_test_parameters_IO})
 
 IF( BUILD_CUDA )
