@@ -24,6 +24,7 @@
 
 #include "HeatEquationProblem.h"
 
+#define MPIIO
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 
 
@@ -146,11 +147,8 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    std::cout<<"setInitialCondition" <<std::endl; 
    if(CommunicatorType::isDistributed())
-   {
-        File file;
-        file.open( initialConditionFile+convertToString(CommunicatorType::GetRank()), IOMode::read );
-        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::load(file, *uPointer );
-        file.close();
+    {
+        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(initialConditionFile, *uPointer );
     }
     else
     {
@@ -216,13 +214,7 @@ makeSnapshot( const RealType& time,
 
     if(CommunicatorType::isDistributed())
     {
-       File file;
-       File meshFile;
-       meshFile.open( convertToString(CommunicatorType::GetRank())+String("mesh.tnl"),IOMode::write);
-       file.open( convertToString(CommunicatorType::GetRank())+fileName.getFileName(), IOMode::write );
-       Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(file,meshFile, *uPointer );
-       meshFile.close();
-       file.close();
+       Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::save(fileName.getFileName(), *uPointer );
     }
     else
     {
