@@ -2,6 +2,8 @@
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunction.h>
 
+#ifdef HAVE_MPI
+
 #define MPIIO
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 
@@ -92,3 +94,9 @@ int main(int argc, char **argv)
         CommunicatorType::Finalize();
 
 }
+
+#else
+
+main(){}
+#endif
+
