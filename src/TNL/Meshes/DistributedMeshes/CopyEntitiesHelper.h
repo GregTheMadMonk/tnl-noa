@@ -37,6 +37,7 @@ class CopyEntitiesHelper<MeshFunctionType, 1>
     public:
     typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
     typedef typename MeshFunctionType::MeshType::Cell Cell;
+    typedef typename MeshFunctionType::MeshType::GlobalIndexType Index;
 
     static void Copy(MeshFunctionType &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
     {        
@@ -44,7 +45,7 @@ class CopyEntitiesHelper<MeshFunctionType, 1>
         auto fromData=from.getData().getData();
         auto fromMesh=from.getMesh();
         auto toMesh=to.getMesh();
-        auto kernel = [fromData,toData, fromMesh, toMesh, fromBegin, toBegin] __cuda_callable__ ( int i )
+        auto kernel = [fromData,toData, fromMesh, toMesh, fromBegin, toBegin] __cuda_callable__ ( Index i )
         {
             Cell fromEntity(fromMesh);
             Cell toEntity(toMesh);
@@ -54,7 +55,7 @@ class CopyEntitiesHelper<MeshFunctionType, 1>
             fromEntity.refresh();
             toData[toEntity.getIndex()]=fromData[fromEntity.getIndex()];
         };
-        ParallelFor< typename MeshFunctionType::MeshType::DeviceType >::exec( 0, size.x(), kernel );
+        ParallelFor< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0, (Index)size.x(), kernel );
 
     }
 
@@ -68,6 +69,7 @@ class CopyEntitiesHelper<MeshFunctionType,2>
     public:
     typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
     typedef typename MeshFunctionType::MeshType::Cell Cell;
+    typedef typename MeshFunctionType::MeshType::GlobalIndexType Index;
 
     static void Copy(MeshFunctionType &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
     {
@@ -75,7 +77,7 @@ class CopyEntitiesHelper<MeshFunctionType,2>
         auto fromData=from.getData().getData();
         auto fromMesh=from.getMesh();
         auto toMesh=to.getMesh();
-        auto kernel = [fromData,toData, fromMesh, toMesh, fromBegin, toBegin] __cuda_callable__ ( int j, int i )
+        auto kernel = [fromData,toData, fromMesh, toMesh, fromBegin, toBegin] __cuda_callable__ ( Index j, Index i )
         {
             Cell fromEntity(fromMesh);
             Cell toEntity(toMesh);
@@ -87,7 +89,7 @@ class CopyEntitiesHelper<MeshFunctionType,2>
             fromEntity.refresh();
             toData[toEntity.getIndex()]=fromData[fromEntity.getIndex()];
         };
-        ParallelFor2D< typename MeshFunctionType::MeshType::DeviceType >::exec( 0,0,size.y(), size.x(), kernel );
+        ParallelFor2D< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0,(Index)0,(Index)size.y(), (Index)size.x(), kernel );
 
     }
 
@@ -100,6 +102,7 @@ class CopyEntitiesHelper<MeshFunctionType,3>
     public:
     typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
     typedef typename MeshFunctionType::MeshType::Cell Cell;
+    typedef typename MeshFunctionType::MeshType::GlobalIndexType Index;
 
     static void Copy(MeshFunctionType &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
     {
@@ -107,7 +110,7 @@ class CopyEntitiesHelper<MeshFunctionType,3>
         auto fromData=from.getData().getData();
         auto fromMesh=from.getMesh();
         auto toMesh=to.getMesh();
-        auto kernel = [fromData,toData, fromMesh, toMesh, fromBegin, toBegin] __cuda_callable__ ( int k,int j, int i )
+        auto kernel = [fromData,toData, fromMesh, toMesh, fromBegin, toBegin] __cuda_callable__ ( Index k, Index j, Index i )
         {
             Cell fromEntity(fromMesh);
             Cell toEntity(toMesh);
@@ -121,7 +124,7 @@ class CopyEntitiesHelper<MeshFunctionType,3>
             fromEntity.refresh();
             toData[toEntity.getIndex()]=fromData[fromEntity.getIndex()];
         };
-        ParallelFor3D< typename MeshFunctionType::MeshType::DeviceType >::exec( 0,0,0,size.z() ,size.y(), size.x(), kernel );
+        ParallelFor3D< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0,(Index)0,(Index)0,(Index)size.z() ,(Index)size.y(), (Index)size.x(), kernel );
     }
 };
 

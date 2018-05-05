@@ -38,6 +38,8 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
         CoordinatesType localbegin;//souradnice zacatku zpracovavane vypoctove oblasi
         CoordinatesType localgridsize;//velikost lokálního gridu včetně překryvů
         CoordinatesType overlap;
+        CoordinatesType globalsize;//velikost celé sítě
+        CoordinatesType globalbegin;
         
         
         IndexType Dimensions;        
@@ -99,6 +101,8 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
                localorigin=globalGrid.getOrigin();
                localgridsize=globalGrid.getDimensions();
                localsize=globalGrid.getDimensions();
+               globalsize=globalGrid.getDimensions();
+               globalbegin=CoordinatesType(0);
                localbegin.x()=0;
                localbegin.y()=0;
                
@@ -119,10 +123,12 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
                   procsdistr[1]=0;
                }
                CommunicatorType::DimsCreate(nproc, 2, procsdistr);
+
                myproccoord[0]=rank%procsdistr[0];
                myproccoord[1]=rank/procsdistr[0];        
 
-               //compute local mesh size              
+               //compute local mesh size
+               globalsize=globalGrid.getDimensions();              
                numberoflarger[0]=globalGrid.getDimensions().x()%procsdistr[0];
                numberoflarger[1]=globalGrid.getDimensions().y()%procsdistr[1];
 
@@ -135,20 +141,17 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
                    localsize.y()+=1;
 
                if(numberoflarger[0]>myproccoord[0])
-                   localorigin.x()=globalGrid.getOrigin().x()
-                                +(myproccoord[0]*localsize.x()-overlap.x())*globalGrid.getSpaceSteps().x();
+                   globalbegin.x()=myproccoord[0]*localsize.x();
                else
-                   localorigin.x()=globalGrid.getOrigin().x()
-                                +(numberoflarger[0]*(localsize.x()+1)+(myproccoord[0]-numberoflarger[0])*localsize.x()-overlap.x())
-                                *globalGrid.getSpaceSteps().x();
-               
+                   globalbegin.x()=numberoflarger[0]*(localsize.x()+1)+(myproccoord[0]-numberoflarger[0])*localsize.x();
+
                if(numberoflarger[1]>myproccoord[1])
-                   localorigin.y()=globalGrid.getOrigin().y()
-                                +(myproccoord[1]*localsize.y()-overlap.y())*globalGrid.getSpaceSteps().y();
+                   globalbegin.y()=myproccoord[1]*localsize.y();
+
                else
-                   localorigin.y()=globalGrid.getOrigin().y()
-                                +(numberoflarger[1]*(localsize.y()+1)+(myproccoord[1]-numberoflarger[1])*localsize.y()-overlap.y())
-                                *globalGrid.getSpaceSteps().y();
+                   globalbegin.y()=numberoflarger[1]*(localsize.y()+1)+(myproccoord[1]-numberoflarger[1])*localsize.y();
+
+               localorigin=globalGrid.getOrigin()+TNL::Containers::tnlDotProduct(globalGrid.getSpaceSteps(),globalbegin-overlap);
 
                //nearnodes
                if(myproccoord[0]>0)
@@ -209,15 +212,15 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
            grid.SetDistMesh(this);
        };
        
-       void printcoords(std::ostream& out)
+       String printProcessCoords()
        {
-           out<<"("<<myproccoord[0]<<","<<myproccoord[1]<<"):";
+           return convertToString(myproccoord[0])+String("-")+convertToString(myproccoord[1]);
        };
 
-       void printdistr(std::ostream& out)
+       String printProcessDistr()
        {
-           out<<"("<<procsdistr[0]<<","<<procsdistr[1]<<"):";
-       };
+           return convertToString(procsdistr[0])+String("-")+convertToString(procsdistr[1]);
+       };  
        
        bool IsDistributed(void)
        {
@@ -238,6 +241,18 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
        CoordinatesType getLocalSize()
        {
            return this->localsize;
+       }
+
+       //number of elements of global grid
+       CoordinatesType getGlobalSize()
+       {
+           return this->globalsize;
+       }
+
+       //coordinates of begin of local subdomain without overlaps in global grid
+       CoordinatesType getGlobalBegin()
+       {
+           return this->globalbegin;
        }
 
        CoordinatesType getLocalGridSize()

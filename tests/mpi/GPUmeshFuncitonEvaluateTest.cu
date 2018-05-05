@@ -151,7 +151,7 @@ int main ( int argc, char *argv[])
     cout << sum <<endl<<endl;  
     
     cout<<"distr: ";
-    distrgrid.printdistr(cout);
+    cout << distrgrid.printProcessDistr().getString();
     cout << endl;
   
     cout<<"setup: "<<setup.getRealTime() <<endl;

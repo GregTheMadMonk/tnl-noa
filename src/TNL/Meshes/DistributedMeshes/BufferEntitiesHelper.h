@@ -21,8 +21,9 @@ namespace DistributedMeshes {
 
 template < typename MeshFunctionType,
            int dim,
-           typename RealType,
-           typename Device >
+           typename RealType=typename MeshFunctionType::MeshType::RealType,
+           typename Device=typename MeshFunctionType::MeshType::DeviceType,
+           typename Index=typename MeshFunctionType::MeshType::GlobalIndexType >
 class BufferEntitiesHelper
 {
 };
@@ -30,15 +31,15 @@ class BufferEntitiesHelper
 //======================================== 1D ====================================================
 
 //host
-template < typename MeshFunctionType, typename RealType, typename Device >
-class BufferEntitiesHelper<MeshFunctionType,1,RealType,Device>
+template < typename MeshFunctionType, typename RealType, typename Device, typename Index >
+class BufferEntitiesHelper<MeshFunctionType,1,RealType,Device,Index>
 {
     public:
-    static void BufferEntities(MeshFunctionType meshFunction, RealType * buffer, int beginx, int sizex,bool tobuffer)
+    static void BufferEntities(MeshFunctionType meshFunction, RealType * buffer, Index beginx, Index sizex, bool tobuffer)
     {
         auto mesh = meshFunction.getMesh();
         RealType* meshFunctionData = meshFunction.getData().getData();
-        auto kernel = [tobuffer, mesh, buffer, meshFunctionData, beginx] __cuda_callable__ ( int j )
+        auto kernel = [tobuffer, mesh, buffer, meshFunctionData, beginx] __cuda_callable__ ( Index j )
         {
             typename MeshFunctionType::MeshType::Cell entity(mesh);
             entity.getCoordinates().x()=beginx+j;
@@ -54,15 +55,15 @@ class BufferEntitiesHelper<MeshFunctionType,1,RealType,Device>
 
 
 //======================================== 2D ====================================================
-template <typename MeshFunctionType, typename RealType, typename Device > 
-class BufferEntitiesHelper<MeshFunctionType,2,RealType,Device>
+template <typename MeshFunctionType, typename RealType, typename Device, typename Index  > 
+class BufferEntitiesHelper<MeshFunctionType,2,RealType,Device,Index>
 {
     public:
-    static void BufferEntities(MeshFunctionType meshFunction, RealType * buffer, int beginx, int beginy, int sizex, int sizey,bool tobuffer)
+    static void BufferEntities(MeshFunctionType meshFunction, RealType * buffer, Index beginx, Index beginy, Index sizex, Index sizey,bool tobuffer)
     {
         auto mesh=meshFunction.getMesh();
         RealType *meshFunctionData=meshFunction.getData().getData();
-        auto kernel = [tobuffer, mesh, buffer, meshFunctionData, beginx, sizex, beginy] __cuda_callable__ ( int i, int j )
+        auto kernel = [tobuffer, mesh, buffer, meshFunctionData, beginx, sizex, beginy] __cuda_callable__ ( Index i, Index j )
         {
             typename MeshFunctionType::MeshType::Cell entity(mesh);
             entity.getCoordinates().x()=beginx+j;
@@ -81,16 +82,16 @@ class BufferEntitiesHelper<MeshFunctionType,2,RealType,Device>
 
 
 //======================================== 3D ====================================================
-template <typename MeshFunctionType, typename RealType, typename Device>
-class BufferEntitiesHelper<MeshFunctionType,3,RealType,Device>
+template <typename MeshFunctionType, typename RealType, typename Device, typename Index >
+class BufferEntitiesHelper<MeshFunctionType,3,RealType,Device,Index>
 {
     public:
-    static void BufferEntities(MeshFunctionType meshFunction, RealType * buffer, int beginx, int beginy, int beginz, int sizex, int sizey, int sizez, bool tobuffer)
+    static void BufferEntities(MeshFunctionType meshFunction, RealType * buffer, Index beginx, Index beginy, Index beginz, Index sizex, Index sizey, Index sizez, bool tobuffer)
     {
 
         auto mesh=meshFunction.getMesh();
         RealType * meshFunctionData=meshFunction.getData().getData();
-        auto kernel = [tobuffer, mesh, buffer, meshFunctionData, beginx, sizex, beginy, sizey, beginz] __cuda_callable__ ( int k, int i, int j )
+        auto kernel = [tobuffer, mesh, buffer, meshFunctionData, beginx, sizex, beginy, sizey, beginz] __cuda_callable__ ( Index k, Index i, Index j )
         {
             typename MeshFunctionType::MeshType::Cell entity(mesh);
             entity.getCoordinates().x()=beginx+j;

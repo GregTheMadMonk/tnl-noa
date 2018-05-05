@@ -238,13 +238,10 @@ class TestDistributedGridIO{
         meshFunctionptr->bind(gridptr,dof);
             
         linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
-        
-         File file;
-        file.open( String( "/tmp/test-file.tnl-" )+convertToString(CommunicatorType::GetRank()), IOMode::write );
-        
-        DistributedGridIO<MeshFunctionType> ::save(file, *meshFunctionptr );
-        
-        file.close();
+ 
+        String FileName=String("/tmp/test-file.tnl");
+        DistributedGridIO<MeshFunctionType> ::save(FileName, *meshFunctionptr );
+
 
        //create similar local mesh function and evaluate linear function on it
         PointType localOrigin=parametry.getOrigin(CommunicatorType::GetRank());        
@@ -271,8 +268,8 @@ class TestDistributedGridIO{
 
         loadDof.setValue(-1);
         
-
-        file.open( String( "/tmp/test-file.tnl-" )+convertToString(CommunicatorType::GetRank()), IOMode::read );
+        File file;
+        file.open( FileName+String("-")+distrgrid.printProcessCoords(), IOMode::read );
         loadMeshFunctionptr->boundLoad(file);
         file.close();
 
@@ -288,25 +285,6 @@ class TestDistributedGridIO{
         MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
         
         ParameterProvider<dim,Device> parametry;
-
-        //save files from local mesh        
-        PointType localOrigin=parametry.getOrigin(CommunicatorType::GetRank());        
-        PointType localProportions=parametry.getProportions(CommunicatorType::GetRank());;
-            
-        SharedPointer<MeshType> localGridptr;
-        localGridptr->setDimensions(localProportions);
-        localGridptr->setDomain(localOrigin,localProportions);
-
-        DofType localDof(localGridptr->template getEntitiesCount< Cell >());
-
-        SharedPointer<MeshFunctionType> localMeshFunctionptr;
-        localMeshFunctionptr->bind(localGridptr,localDof);
-        linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
-
-        File file;
-        file.open( String( "/tmp/test-file.tnl-" )+convertToString(CommunicatorType::GetRank()), IOMode::write );        
-        localMeshFunctionptr->save(file);
-        file.close();
 
         //Crete distributed grid            
         PointType globalOrigin;
@@ -326,6 +304,29 @@ class TestDistributedGridIO{
         DistributedGridType distrgrid;
         distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap, distr);
 
+        //save files from local mesh        
+        PointType localOrigin=parametry.getOrigin(CommunicatorType::GetRank());        
+        PointType localProportions=parametry.getProportions(CommunicatorType::GetRank());;
+            
+        SharedPointer<MeshType> localGridptr;
+        localGridptr->setDimensions(localProportions);
+        localGridptr->setDomain(localOrigin,localProportions);
+
+        DofType localDof(localGridptr->template getEntitiesCount< Cell >());
+
+        SharedPointer<MeshFunctionType> localMeshFunctionptr;
+        localMeshFunctionptr->bind(localGridptr,localDof);
+        linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
+
+
+        String FileName=String("/tmp/test-file.tnl");
+        File file;
+        file.open( FileName+String("-")+distrgrid.printProcessCoords(), IOMode::write );        
+        localMeshFunctionptr->save(file);
+        file.close();
+
+
+
         //Crete "distributedgrid driven" grid filed by load
         SharedPointer<MeshType> loadGridptr;
         SharedPointer<MeshFunctionType> loadMeshFunctionptr;
@@ -335,10 +336,7 @@ class TestDistributedGridIO{
         loadDof.setValue(0);
         loadMeshFunctionptr->bind(loadGridptr,loadDof);
 
-            
-        file.open( String( "/tmp/test-file.tnl-" )+convertToString(CommunicatorType::GetRank()), IOMode::read );    
-        DistributedGridIO<MeshFunctionType> ::load(file, *loadMeshFunctionptr );
-        file.close();
+        DistributedGridIO<MeshFunctionType> ::load(FileName, *loadMeshFunctionptr );
 
         loadMeshFunctionptr->template Synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
 
