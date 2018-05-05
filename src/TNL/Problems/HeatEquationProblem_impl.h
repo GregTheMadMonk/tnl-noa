@@ -149,6 +149,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    if(CommunicatorType::isDistributed())
     {
         Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(initialConditionFile, *uPointer );
+        uPointer->template Synchronize<CommunicatorType>();
     }
     else
     {
@@ -253,6 +254,7 @@ getExplicitUpdate( const RealType& time,
    this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer ),
    this->explicitUpdater.setRightHandSide( this->rightHandSidePointer ),
    this->explicitUpdater.template update< typename Mesh::Cell, CommType >( time, tau, meshPointer, this->uPointer, fuPointer );
+
 }
 
 template< typename Mesh,
