@@ -551,7 +551,7 @@ Synchronize()
     auto distrMesh = this->getMesh().GetDistMesh();
     if(distrMesh != NULL && distrMesh->IsDistributed())
     {
-        this->synchronizer.Synchronize<CommunicatorType>(*this);
+        this->synchronizer.template Synchronize<CommunicatorType>(*this);
     }
 }
 
