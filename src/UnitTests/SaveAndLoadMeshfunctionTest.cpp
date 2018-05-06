@@ -55,8 +55,6 @@ class TestSaveAndLoadMeshfunction
 
             DofType localDof(localGridptr->template getEntitiesCount< Cell >());
 
-            std::cout << localGridptr->GetDistMesh() <<std::endl;
-
             SharedPointer<MeshFunctionType> localMeshFunctionptr;
             localMeshFunctionptr->bind(localGridptr,localDof);
             linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
