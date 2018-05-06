@@ -13,6 +13,8 @@
 
 #include "Mpi/Functions.h"
 
+#include <iostream>
+
 using namespace TNL::Containers;
 using namespace TNL::Meshes;
 using namespace TNL::Functions;
@@ -53,12 +55,14 @@ class TestSaveAndLoadMeshfunction
 
             DofType localDof(localGridptr->template getEntitiesCount< Cell >());
 
+            std::cout << localGridptr->GetDistMesh() <<std::endl;
+
             SharedPointer<MeshFunctionType> localMeshFunctionptr;
             localMeshFunctionptr->bind(localGridptr,localDof);
             linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
 
             File file;
-            file.open( String( "/tmp/test-file.tnl"), IOMode::write );        
+            file.open( String( "./test-file.tnl"), IOMode::write );        
             localMeshFunctionptr->save(file);        
             file.close();
 
@@ -76,7 +80,7 @@ class TestSaveAndLoadMeshfunction
                 loadDof[i]=-1;
             }
 
-            file.open( String( "/tmp/test-file.tnl" ), IOMode::read );
+            file.open( String( "./test-file.tnl" ), IOMode::read );
             loadMeshFunctionptr->boundLoad(file);
             file.close();
 
