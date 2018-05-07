@@ -101,7 +101,18 @@ copyMemory( DestinationElement* destination,
    if( std::is_same< DestinationElement, SourceElement >::value &&
        ( std::is_fundamental< DestinationElement >::value ||
          std::is_pointer< DestinationElement >::value ) )
+   {
+      // GCC 8.1 complains that we bypass a non-trivial copy-constructor
+      // (in C++17 we could use constexpr if to avoid compiling this branch in that case)
+      #if defined(__GNUC__) && !defined(__clang__) && !defined(__NVCC__)
+         #pragma GCC diagnostic push
+         #pragma GCC diagnostic ignored "-Wclass-memaccess"
+      #endif
       memcpy( destination, source, size * sizeof( DestinationElement ) );
+      #if defined(__GNUC__) && !defined(__clang__) && !defined(__NVCC__)
+         #pragma GCC diagnostic pop
+      #endif
+   }
    else
       for( Index i = 0; i < size; i ++ )
          destination[ i ] = ( DestinationElement ) source[ i ];
