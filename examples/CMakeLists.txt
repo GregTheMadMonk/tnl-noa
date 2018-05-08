@@ -11,5 +11,6 @@ add_subdirectory( navier-stokes )
 #add_subdirectory( narrow-band )
 
 add_subdirectory( inviscid-flow )
+add_subdirectory( inviscid-flow-sw )
 #add_subdirectory( mean-curvature-flow )
 add_subdirectory( flow )

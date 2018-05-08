@@ -279,7 +279,7 @@ class MomentumXBoundaryConditionsCavity< Meshes::Grid< 2, MeshReal, Device, Mesh
          // The following line is commented to avoid compiler warning
          //if( entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 )
          {
-            return (* this->compressibleConservativeVariables->getDensity())[neighborEntities.template getEntityIndex< 0, 0 >()] 
+            return (* this->compressibleConservativeVariables->getDensity())[neighborEntities.template getEntityIndex< 0, -1 >()] 
               * ( 
                    ( this->cavitySpeed/* 
                     * (
