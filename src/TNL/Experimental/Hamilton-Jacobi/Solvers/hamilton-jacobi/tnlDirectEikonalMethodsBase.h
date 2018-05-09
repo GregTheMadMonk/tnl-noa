@@ -67,7 +67,17 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
       template< typename MeshEntity >
       __cuda_callable__ void updateCell( MeshFunctionType& u,
                                          const MeshEntity& cell,
-                                         const RealType velocity = 1.0 );      
+                                         const RealType velocity = 1.0 );
+      
+      __cuda_callable__ void updateCell( Real sArray[18][18],
+                                         int thri, int thrj, const Real hx, const Real hy,
+                                         const Real velocity = 1.0 );
+      
+      __cuda_callable__ void setsArray( MeshFunctionType& aux, Real sArray[18][18],
+                                            int dimX, int dimY, int i, int j );
+      
+      /*__cuda_callable__ void getsArray( MeshFunctionType& aux, Real sArray[18][18],
+                                            int dimX, int dimY, int i, int j );*/
 };
 
 template< typename Real,

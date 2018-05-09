@@ -218,7 +218,6 @@ updateCell( MeshFunctionType& u,
 {
    const auto& neighborEntities = cell.template getNeighborEntities< 2 >();
    const MeshType& mesh = cell.getMesh();
-  
    const RealType& hx = mesh.getSpaceSteps().x();
    const RealType& hy = mesh.getSpaceSteps().y();
    const RealType value = u( cell );
@@ -598,7 +597,7 @@ T1 meet2DCondition( T1 a, T1 b, const T2 ha, const T2 hb, const T1 value, double
 }
 
 template < typename T1 >
-__cuda_callable__ void sortMinims( T1 pom[])
+__cuda_callable__ void sortMinims( T1 pom[] )
 {
     T1 tmp[6] = {0.0,0.0,0.0,0.0,0.0,0.0}; 
     if( fabs(pom[0]) <= fabs(pom[1]) && fabs(pom[1]) <= fabs(pom[2])){
@@ -794,5 +793,233 @@ __global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3
                interfaceMap[ cind ] = true;
            }
         }
+    }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__ void
+tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
+setsArray( MeshFunctionType& aux, Real sArray[18][18], int dimX, int dimY, int blockIdx, int blockIdy )
+{
+    int numOfBlockx = dimX/16 + ((dimX%16 != 0) ? 1:0);
+    int numOfBlocky = dimY/16 + ((dimY%16 != 0) ? 1:0);
+    int xkolik = 18;
+    int ykolik = 18;
+    int xOd = 0;
+    int yOd = 0;
+    
+    if( blockIdx == 0 )
+        xOd = 1;
+    if( blockIdy == 0 )
+        yOd = 1;
+    
+    if( numOfBlockx - 1 == blockIdx )
+        xkolik = dimX - (numOfBlockx-1)*16+1;
+
+    if( numOfBlocky -1 == blockIdy )
+        ykolik = dimY - (numOfBlocky-1)*16+1;
+    
+    if( dimX > (blockIdx+1) * 16 )
+    {
+        for( int i = yOd; i < ykolik; i++ )
+        {
+            sArray[i][17] = aux[ blockIdy*16*dimX - dimX + blockIdx*16 - 1 + i*dimX + 17 ];
+        }
+    }
+    if( blockIdx != 0 )
+    {
+        for( int i = yOd; i < ykolik; i++ )
+        {
+            sArray[i][0] = aux[ blockIdy*16*dimX - dimX + blockIdx*16 - 1 + i*dimX + 0];
+        }
+    } 
+    if( dimY > (blockIdy+1) * 16 )
+    {
+        for( int i = xOd; i < xkolik; i++ )
+        {
+            sArray[17][i] = aux[ blockIdy*16*dimX - dimX + blockIdx*16 - 1 + 17*dimX + i ];
+        }
+    }
+    if( blockIdy != 0 )
+    {
+        for( int i = xOd; i < xkolik; i++ )
+        {
+            sArray[0][i] = aux[ blockIdy*16*dimX - dimX + blockIdx*16 - 1 + 0*dimX + i ];
+        }
+    }
+    
+    /*int numOfBlockx = dimX/16 + ((dimX%16 != 0) ? 1:0);
+    int numOfBlocky = dimY/16 + ((dimY%16 != 0) ? 1:0);
+    int xkolik = 18;
+    int ykolik = 18;
+
+    if( numOfBlockx - 1 == blockIdx )
+        xkolik = dimX - (numOfBlockx-1)*16+1;
+
+    if( numOfBlocky -1 == blockIdy )
+        ykolik = dimY - (numOfBlocky-1)*16+1;
+
+
+    if( numOfBlockx == 0 || numOfBlocky == 0 )
+        return;
+    else
+    {
+        if( blockIdx == 0 )
+        {
+            if( blockIdy == 0 )
+            {
+                for( int j = 0; j < ykolik-1; j++ )
+                  for( int i = 0; i < xkolik-1; i++ )
+                    {
+                      sArray[ j+1 ][ i+1 ] = aux[ j*dimX + i ];
+                    }
+
+                //vypis( *sArray );
+            }
+            else
+            {
+                for( int j = 0; j < ykolik; j++ )
+                  for( int i = 0; i < xkolik-1; i++ )
+                    {
+                      sArray[ j ][ i+1 ] = aux[ blockIdy*16*dimX - dimX + j*dimX + i ];
+                    }
+            }
+        }
+        else if( blockIdy == 0 )
+        {
+            for( int j = 0; j < ykolik-1; j++ )
+              for( int i = 0; i < xkolik; i++ )
+                 {
+                   sArray[ j+1 ][ i ] = aux[ blockIdx*16 - 1 + j*dimX + i ];
+                 }
+        }
+        else
+        {
+           for( int j = 0; j < ykolik; j++ )
+              for( int i = 0; i < xkolik; i++ )
+                {
+                  //if( dimX*dimY-1 >  blockIdy*16*dimX - dimX + blockIdx*16 - 1 + j*dimX + i )
+                    sArray[ j ][ i ] = aux[ blockIdy*16*dimX - dimX + blockIdx*16 - 1 + j*dimX + i ];
+                }
+        }
+    }*/
+}
+
+/*template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__ void
+tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
+getsArray( MeshFunctionType& aux, Real sArray[18][18], int dimX, int dimY, int blockIdx, int blockIdy )
+{
+    int numOfBlockx = dimX/16 + ((dimX%16 != 0) ? 1:0);
+    int numOfBlocky = dimY/16 + ((dimY%16 != 0) ? 1:0);
+    int xkolik = 18;
+    int ykolik = 18;
+    
+    if( numOfBlockx - 1 == blockIdx )
+        xkolik = dimX - (numOfBlockx-1)*16+2;
+
+    if( numOfBlocky -1 == blockIdy )
+        ykolik = dimY - (numOfBlocky-1)*16+2;
+
+    if( numOfBlockx == 0 || numOfBlocky == 0 )
+        return;
+    else
+    {
+        if( blockIdx == 0 )
+        {
+            if( blockIdy == 0 )
+            {
+               for( int j = 0; j < ykolik-2; j++ )
+                  for( int i = 0; i < xkolik-2; i++ )
+                    {
+                      aux[ j*dimX + i ] = sArray[ j+1 ][ i+1 ];
+                    }
+            }
+            else
+            {
+               for( int j = 1; j < ykolik-1; j++ )
+                  for( int i = 0; i < xkolik-2; i++ )
+                    {
+                      aux[ blockIdy*16*dimX - dimX + j*dimX + i ] = sArray[ j ][ i+1 ];
+                    }
+            }
+        }
+        else if( blockIdy == 0 )
+        {
+            for( int j = 0; j < ykolik-2; j++ )
+               for( int i = 1; i < xkolik-1; i++ )
+                 {
+                   aux[ blockIdx*16 - 1 + j*dimX + i ] = sArray[ j+1 ][ i ];
+                 }
+        }
+        else
+        {
+            for( int j = 1; j < ykolik-1; j++ )    
+              for( int i = 1; i < xkolik-1; i++ )
+                {
+                    aux[ blockIdy*16*dimX - dimX + blockIdx*16 - 1 + j*dimX + i ] = sArray[ j ][ i ];
+                }
+        }
+    }
+}*/
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+void
+tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
+updateCell( Real sArray[18][18], int thri, int thrj, const Real hx, const Real hy,
+            const Real v )
+{
+   
+   //const Meshes::Grid< 2, Real, Device, Index >& mesh = u.template getMesh< Devices::Cuda >();
+   /*typedef typename Meshes::Grid< 2, Real, Device, Index >::Cell Cell;
+   Cell cell( mesh );
+   cell.getCoordinates().x() = i; cell.getCoordinates().y() = j;
+   cell.refresh();
+   
+   const auto& neighborEntities = cell.template getNeighborEntities< 2 >();
+   const RealType& hx = mesh.getSpaceSteps().x();
+   const RealType& hy = mesh.getSpaceSteps().y();*/
+   const RealType value = sArray[ thrj ][ thri ];//u( cell );
+   RealType a, b, tmp = TypeInfo< RealType >::getMaxValue();
+   
+   /*if( value != u[ cell.getIndex() ] )
+       return;*/
+   
+   b = TNL::argAbsMin( sArray[ thrj+1 ][ thri ],
+                        sArray[ thrj-1 ][ thri ] );
+    
+   a = TNL::argAbsMin( sArray[ thrj ][ thri+1 ],
+                        sArray[ thrj ][ thri-1 ] );
+
+
+    
+    if( fabs( a ) == TypeInfo< RealType >::getMaxValue() && 
+        fabs( b ) == TypeInfo< RealType >::getMaxValue() )
+       return;
+   
+    RealType pom[6] = { a, b, TypeInfo< Real >::getMaxValue(), (RealType)hx, (RealType)hy, 0.0 };
+    sortMinims( pom );
+    tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 3 ]/v;
+    
+                                
+    if( fabs( tmp ) < fabs( pom[ 1 ] ) ) 
+    {
+        //u[ cell.getIndex() ]= argAbsMin( value, tmp );
+        sArray[ thrj ][ thri ] = argAbsMin( value, tmp );
+    }
+    else
+    {
+        tmp = ( pom[ 3 ] * pom[ 3 ] * pom[ 1 ] + pom[ 4 ] * pom[ 4 ] * pom[ 0 ] + 
+            TNL::sign( value ) * pom[ 3 ] * pom[ 4 ] * TNL::sqrt( ( pom[ 3 ] * pom[ 3 ] +  pom[ 4 ] *  pom[ 4 ] )/( v * v ) - 
+            ( pom[ 1 ] - pom[ 0 ] ) * ( pom[ 1 ] - pom[ 0 ] ) ) )/( pom[ 3 ] * pom[ 3 ] + pom[ 4 ] * pom[ 4 ] );
+        //u[ cell.getIndex() ]= argAbsMin( value, tmp );
+        sArray[ thrj ][ thri ] = argAbsMin( value, tmp );
     }
 }

@@ -221,11 +221,12 @@ solve( const MeshPointer& mesh,
           dim3 blockSize( cudaBlockSize, cudaBlockSize );
           dim3 gridSize( numBlocksX, numBlocksY );
           Devices::Cuda::synchronizeDevice();
-          int DIM = mesh->getDimensions().x();
           
           tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr;
-          for( int k = 0; k < numBlocksX; k++)
-            CudaUpdateCellCaller< Real, Device, Index ><<< gridSize, blockSize >>>( ptr,
+          int nBlockIter = numBlocksX > numBlocksY ? numBlocksX : numBlocksY;
+          nBlockIter = numBlocksX == numBlocksY ? nBlockIter + 1 : nBlockIter;
+          for( int k = 0; k < nBlockIter; k++)
+            CudaUpdateCellCaller<<< gridSize, blockSize, 18 * 18 * sizeof( Real ) >>>( ptr,
                                                                                     interfaceMapPtr.template getData< Device >(),
                                                                                     auxPtr.template modifyData< Device>() );
           cudaDeviceSynchronize();
@@ -245,24 +246,44 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
                                       const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
                                       Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux )
 {
-    int i = threadIdx.x + blockDim.x*blockIdx.x;
-    int j = blockDim.y*blockIdx.y + threadIdx.y;
+    int thri = threadIdx.x; int thrj = threadIdx.y; // nelze ke stejnym pristupovat znovu pres threadIdx (vzdy da jine hodnoty)
+    int blIdx = blockIdx.x; int blIdy = blockIdx.y;
+    int i = thri + blockDim.x*blIdx;
+    int j = blockDim.y*blIdy + thrj;
     const Meshes::Grid< 2, Real, Device, Index >& mesh = interfaceMap.template getMesh< Devices::Cuda >();
+    const Real hx = mesh.getSpaceSteps().x();
+    const Real hy = mesh.getSpaceSteps().y();
+    
+    __shared__ Real sArray[ 18 ][ 18 ];
+    for( int k = 0; k < 18; k++ )
+        for( int l = 0; l < 18; l++ )
+            sArray[ k ][ l ] = TypeInfo< Real >::getMaxValue();
+    __syncthreads();
+    /*//filling shared array
+    ptr.setsArray( aux, sArray, mesh.getDimensions().x(), mesh.getDimensions().y(), blIdx, blIdy );
+    __syncthreads();*/
     
     if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
     {
-        typedef typename Meshes::Grid< 2, Real, Device, Index >::Cell Cell;
-        Cell cell( mesh );
-        cell.getCoordinates().x() = i; cell.getCoordinates().y() = j;
-        cell.refresh();
-        //tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr;
-        for( int k = 0; k < 16; k++ )
+        sArray[thrj+1][thri+1] = aux[ j*mesh.getDimensions().x() + i ];
+        ptr.setsArray( aux, sArray, mesh.getDimensions().x(), mesh.getDimensions().y(), blIdx, blIdy ); //fill edges of sArray
+        __syncthreads();
+            
+        
+        if( ! interfaceMap[ j*mesh.getDimensions().x() + i ] ) 
         {
-            if( ! interfaceMap( cell ) )
+            for( int k = 0; k < 17; k++ )
             {
-               ptr.updateCell( aux, cell );
+                ptr.updateCell( sArray, thri+1, thrj+1, hx, hy );
+                __syncthreads();
             }
         }
+        /*for( int k = 0; k < mesh.getDimensions().x(); k++)
+            for( int l = 0; l < mesh.getDimensions().y(); l++)
+                aux[ k*mesh.getDimensions().x() + l ] = TypeInfo< Real >::getMaxValue();*/
+        aux[j*mesh.getDimensions().x() + i] = sArray[thrj+1][thri+1];
+        __syncthreads();
     }
+    //ptr.getsArray( aux, sArray, mesh.getDimensions().x(), mesh.getDimensions().y(), blIdx, blIdy );
 }
 //#endif

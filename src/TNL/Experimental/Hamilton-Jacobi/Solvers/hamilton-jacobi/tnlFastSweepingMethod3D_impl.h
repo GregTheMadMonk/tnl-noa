@@ -21,7 +21,7 @@ template< typename Real,
           typename Anisotropy >
 FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >::
 FastSweepingMethod()
-: maxIterations( 2 )
+: maxIterations( 1 )
 {
    
 }
@@ -257,7 +257,7 @@ solve( const MeshPointer& mesh,
           
           tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > ptr;
           for( int k = 0; k < numBlocksX; k++)
-          CudaUpdateCellCaller< Real, Device, Index ><<< gridSize, blockSize >>>( ptr,
+          CudaUpdateCellCaller<<< gridSize, blockSize >>>( ptr,
                                                                                   interfaceMapPtr.template getData< Device >(),
                                                                                   auxPtr.template modifyData< Device>() );
           cudaDeviceSynchronize();
@@ -291,7 +291,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         cell.getCoordinates().x() = i; cell.getCoordinates().y() = j; cell.getCoordinates().z() = k;
         cell.refresh();
         //tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > ptr;
-        for( int l = 0; l < 8; l++ )
+        for( int l = 0; l < 10; l++ )
         {
             if( ! interfaceMap( cell ) )
             {

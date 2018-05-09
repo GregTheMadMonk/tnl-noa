@@ -99,7 +99,6 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >
                   const AnisotropyPointer& anisotropy,
                   MeshFunctionPointer& u );
       
-      
    protected:
       
       const IndexType maxIterations;
