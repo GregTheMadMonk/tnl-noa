@@ -64,6 +64,34 @@ class UpwindContinuityBase
       {
           this->velocity = velocity;
       };
+
+      const RealType& positiveDensityFlux( const RealType& density, const RealType& velocity, const RealType& pressure )
+      {
+         const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
+         const RealType& machNumber = velocity / speedOfSound;
+         if ( machNumber <= -1.0 )
+            return 0.0;
+        else if ( machNumber <= 0.0 )
+            return density * speedOfSound / ( 2 * this->gamma ) * ( machNumber + 1.0 );
+        else if ( machNumber <= 1.0 )
+            return density * speedOfSound / ( 2 * this->gamma ) * ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 );
+        else 
+            return density * velocity;
+      }
+
+      const RealType& negativeDensityFlux( const RealType& density, const RealType& velocity, const RealType& pressure )
+      {
+         const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
+         const RealType& machNumber = velocity / speedOfSound;
+         if ( machNumber <= -1.0 )
+            return density * velocity;
+        else if ( machNumber <= 0.0 )
+            return density * speedOfSound / ( 2 * this->gamma ) * ( ( 2.0 * this->gamma - 1.0 ) * machNumber - 1.0 );
+        else if ( machNumber <= 1.0 )
+            return density * speedOfSound / ( 2 * this->gamma ) * ( machNumber - 1.0 );
+        else 
+            return 0.0;
+      }
       
 
       protected:
@@ -133,11 +161,15 @@ class UpwindContinuity< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, In
          const RealType& velocity_x_west   = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ west ];
          const RealType& velocity_x_east   = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ east ];
 
-         return -hxInverse * ( 
+         return -hxInverse * (
+                                   UpwindContinuity::positiveDensityFlux( u[ center ], velocity_x_center, pressure_center )
+                                -  UpwindContinuity::positiveDensityFlux( u[ west   ], velocity_x_west  , pressure_west   )
+                                -  UpwindContinuity::negativeDensityFlux( u[ center ], velocity_x_center, pressure_center )
+                                +  UpwindContinuity::negativeDensityFlux( u[ east   ], velocity_x_east  , pressure_east   )
 //                                  u[ center ] / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
 //                                - u[ west   ] / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_x_west   + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
-                                - u[ center ] / ( 2 * this->gamma ) * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) ) 
-                                + u[ east   ] / ( 2 * this->gamma ) * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east / u[ east   ] ) )
+//                                - u[ center ] / ( 2 * this->gamma ) * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) ) 
+//                                + u[ east   ] / ( 2 * this->gamma ) * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east   / u[ east   ] ) )
                              );
       }
 
@@ -217,14 +249,14 @@ class UpwindContinuity< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, In
          return -hxInverse * ( 
                                   u[ center ] / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
                                 - u[ west   ] / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_x_west   + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
-                                - u[ center ] * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) ) / ( 2 * this->gamma )
-                                + u[ east   ] * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east / u[ east   ] ) ) / ( 2 * this->gamma )
+                                - u[ center ] / ( 2 * this->gamma ) * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
+                                + u[ east   ] / ( 2 * this->gamma ) * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east   / u[ east   ] ) )
                              )
                 -hyInverse * ( 
                                   u[ center ] / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_y_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
                                 - u[ south  ] / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_y_south  + std::sqrt( this->gamma * pressure_south  / u[ south ]  ) )
-                                - u[ center ] * ( velocity_y_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) ) / ( 2 * this->gamma )
-                                + u[ north  ] * ( velocity_y_north  - std::sqrt( this->gamma * pressure_north / u[ north ]  ) ) / ( 2 * this->gamma )
+                                - u[ center ] / ( 2 * this->gamma ) * ( velocity_y_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
+                                + u[ north  ] / ( 2 * this->gamma ) * ( velocity_y_north  - std::sqrt( this->gamma * pressure_north  / u[ north ]  ) ) 
                              ); 
       }
 
@@ -313,20 +345,20 @@ class UpwindContinuity< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, In
          return -hxInverse * ( 
                                   u[ center ] / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
                                 - u[ west ]   / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_x_west   + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
-                                - u[ center ] * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) ) / ( 2 * this->gamma )
-                                + u[ east ]   * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east / u[ east   ] ) ) / ( 2 * this->gamma )
+                                - u[ center ] / ( 2 * this->gamma ) * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
+                                + u[ east ]   / ( 2 * this->gamma ) * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east   / u[ east   ] ) )
                              )
                 -hyInverse * ( 
                                   u[ center ] / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_y_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
                                 - u[ south ]  / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_y_south  + std::sqrt( this->gamma * pressure_south  / u[ south ]  ) )
-                                - u[ center ] * ( velocity_y_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) ) / ( 2 * this->gamma )
-                                + u[ north ]  * ( velocity_y_north  - std::sqrt( this->gamma * pressure_north  / u[ north ]  ) ) / ( 2 * this->gamma )
+                                - u[ center ] / ( 2 * this->gamma ) * ( velocity_y_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
+                                + u[ north ]  / ( 2 * this->gamma ) * ( velocity_y_north  - std::sqrt( this->gamma * pressure_north  / u[ north ]  ) )
                              )
                 -hzInverse * ( 
                                   u[ center ] / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_z_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
                                 - u[ down ]   / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_z_down   + std::sqrt( this->gamma * pressure_down   / u[ down ]   ) )
-                                - u[ center ] * ( velocity_z_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) ) / ( 2 * this->gamma )
-                                + u[ up ]     * ( velocity_z_up     - std::sqrt( this->gamma * pressure_up     / u[ up ]     ) ) / ( 2 * this->gamma )
+                                - u[ center ] / ( 2 * this->gamma ) * ( velocity_z_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) ) 
+                                + u[ up ]     / ( 2 * this->gamma ) * ( velocity_z_up     - std::sqrt( this->gamma * pressure_up     / u[ up ]     ) ) 
                              );
          
       }

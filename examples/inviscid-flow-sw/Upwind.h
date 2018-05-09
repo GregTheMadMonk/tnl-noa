@@ -56,7 +56,6 @@ class Upwind
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
       {
-         config.addEntry< double >( prefix + "numerical-viscosity", "Value of artificial (numerical) viscosity in the Lax-Fridrichs scheme", 1.0 );
       }
       
       Upwind()
@@ -66,7 +65,6 @@ class Upwind
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
-         this->artificialViscosity = parameters.getParameter< double >( prefix + "numerical-viscosity" );
          return true;
       }
       
@@ -77,6 +75,15 @@ class Upwind
          this->momentumYOperatorPointer->setTau( tau );
          this->momentumZOperatorPointer->setTau( tau );
          this->energyOperatorPointer->setTau( tau );
+      }
+
+      void setGamma( const RealType& gamma )
+      {
+         this->continuityOperatorPointer->setGamma( gamma );
+         this->momentumXOperatorPointer->setGamma( gamma );
+         this->momentumYOperatorPointer->setGamma( gamma );
+         this->momentumZOperatorPointer->setGamma( gamma );
+         this->energyOperatorPointer->setGamma( gamma );
       }
       
       void setPressure( const MeshFunctionPointer& pressure )

@@ -199,9 +199,13 @@ makeSnapshot( const RealType& time,
    if( ! this->pressure->save( fileName.getFileName() ) )
       return false;
 
-//   fileName.setFileNameBase( "energy-" );
-//   if( ! this->conservativeVariables->getEnergy()->save( fileName.getFileName() ) )
-//      return false;
+   fileName.setFileNameBase( "energy-" );
+   if( ! this->conservativeVariables->getEnergy()->save( fileName.getFileName() ) )
+      return false;
+
+   fileName.setFileNameBase( "momentum-" );
+   if( ! this->conservativeVariables->getMomentum()->save( fileName.getFileName() ) )
+      return false;
    
    return true;
 }
@@ -228,7 +232,9 @@ getExplicitUpdate( const RealType& time,
     this->conservativeVariablesRHS->bind( mesh, _fu );
     this->velocity->setMesh( mesh );
     this->pressure->setMesh( mesh );
-    
+
+//   this->pressure->write( "pressure1", "gnuplot" );
+//   getchar();
     /****
      * Resolve the physical variables
      */
@@ -248,7 +254,10 @@ getExplicitUpdate( const RealType& time,
     this->inviscidOperatorsPointer->setTau( tau );
     this->inviscidOperatorsPointer->setVelocity( this->velocity );
     this->inviscidOperatorsPointer->setPressure( this->pressure );
+    this->inviscidOperatorsPointer->setGamma( this->gamma );
 
+//   this->pressure->write( "pressure2", "gnuplot" );
+//   getchar();
    /****
     * Continuity equation
     */ 
@@ -304,8 +313,10 @@ getExplicitUpdate( const RealType& time,
    explicitUpdaterEnergy.template update< typename Mesh::Cell >( time, tau, mesh,
                                                            this->conservativeVariables->getDensity(), // uRhoVelocityX,
                                                            this->conservativeVariablesRHS->getEnergy() ); //, fuRhoVelocityX );
-   
-   /*this->conservativeVariablesRHS->getDensity()->write( "density", "gnuplot" );
+
+/*   this->pressure->write( "pressure3", "gnuplot" );
+   getchar();   
+   this->conservativeVariablesRHS->getDensity()->write( "density", "gnuplot" );
    this->conservativeVariablesRHS->getEnergy()->write( "energy", "gnuplot" );
    this->conservativeVariablesRHS->getMomentum()->write( "momentum", "gnuplot", 0.05 );
    getchar();*/

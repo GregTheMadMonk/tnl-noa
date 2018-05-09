@@ -90,12 +90,12 @@ class UpwindMomentumX< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Ind
                                       + ( velocity_x_west    + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
                                       * ( velocity_x_west    + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
                                       )  
-                                - u[ center ] 
-                                  * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) ) / ( 2 * this->gamma )
-                                  * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) ) / ( 2 * this->gamma )
-                                + u[ east   ] 
-                                  * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east / u[ east   ] ) ) / ( 2 * this->gamma )
-                                  * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east / u[ east   ] ) ) / ( 2 * this->gamma )
+/*                                - ( u[ center ] / ( 2 * this->gamma ) )
+                                    * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) ) 
+                                    * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
+                                + ( u[ east   ] / ( 2 * this->gamma ) )
+                                    * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east / u[ east   ] ) )
+                                    * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east / u[ east   ] ) )*/
                              );
       }
 
