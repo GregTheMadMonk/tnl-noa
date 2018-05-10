@@ -21,6 +21,8 @@ using namespace TNL::Functions;
 using namespace TNL::Devices;
 
 
+#define FILENAME "./test-file.tnl"
+
 //=====================================TEST CLASS==============================================
 
 template <int dim>
@@ -60,9 +62,9 @@ class TestSaveAndLoadMeshfunction
             linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
 
             File file;
-            file.open( String( "./test-file.tnl"), IOMode::write );        
-            localMeshFunctionptr->save(file);        
-            file.close();
+            ASSERT_TRUE( file.open( String( FILENAME), IOMode::write ));        
+            ASSERT_TRUE( localMeshFunctionptr->save(file));        
+            ASSERT_TRUE( file.close() );
 
             //load other meshfunction on same localgrid from created file
             SharedPointer<MeshType>  loadGridptr;
@@ -78,14 +80,16 @@ class TestSaveAndLoadMeshfunction
                 loadDof[i]=-1;
             }
 
-            file.open( String( "./test-file.tnl" ), IOMode::read );
-            loadMeshFunctionptr->boundLoad(file);
-            file.close();
+            ASSERT_TRUE(  file.open( String( FILENAME ), IOMode::read ));
+            ASSERT_TRUE( loadMeshFunctionptr->boundLoad(file));
+            ASSERT_TRUE( file.close());
 
             for(int i=0;i<localDof.getSize();i++)
             {
                 EXPECT_EQ( localDof[i], loadDof[i]) << "Compare Loaded and evaluated Dof Failed for: "<< i;
             }
+
+            EXPECT_EQ( std::remove( FILENAME ), 0 );
 
         };
 };

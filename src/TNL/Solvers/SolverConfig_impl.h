@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/tnlConfig.h>
+#include <TNL/Solvers/SolverConfig.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>

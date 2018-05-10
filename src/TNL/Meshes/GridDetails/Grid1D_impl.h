@@ -411,61 +411,8 @@ bool Grid< 1, Real, Device, Index >::load( const String& fileName )
 }
 
 template< typename Real,
-           typename Device,
-           typename Index >
-bool Grid< 1, Real, Device, Index >::writeMesh( const String& fileName,
-                                                   const String& format ) const
-{
-   /*****
-    * TODO: implement this
-    */
-   return true;
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
-   template< typename MeshFunction >
-bool Grid< 1, Real, Device, Index >::write( const MeshFunction& function,
-                                                 const String& fileName,
-                                                 const String& format ) const
-{
-   if( this->template getEntitiesCount< Cell >() != function. getSize() )
-   {
-      std::cerr << "The size ( " << function. getSize()
-           << " ) of the mesh function does not agree with the DOFs ( "
-           << this->template getEntitiesCount< Cell >() << " ) of a mesh." << std::endl;
-      return false;
-   }
-   std::fstream file;
-   file. open( fileName. getString(), std::ios::out );
-   if( ! file )
-   {
-      std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
-      return false;
-   }
-   file << std::setprecision( 12 );
-   const RealType hx = getSpaceSteps(). x();
-   if( format == "gnuplot" )
-   {
-      typename ThisType::template EntityType< getMeshDimension() > entity( *this );
-      for( entity.getCoordinates().x() = 0;
-           entity.getCoordinates().x() < getDimensions(). x();
-           entity.getCoordinates().x() ++ )
-      {
-         PointType v = entity.getCenter();
-         GnuplotWriter::write( file,  v );
-         GnuplotWriter::write( file,  function[ this->getEntityIndex( entity ) ] );
-         file << std::endl;
-      }
-   }
-   file. close();
-   return true;
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 void
 Grid< 1, Real, Device, Index >::
 writeProlog( Logger& logger ) const

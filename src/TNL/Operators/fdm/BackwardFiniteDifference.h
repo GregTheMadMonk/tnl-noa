@@ -48,7 +48,7 @@ class BackwardFiniteDifference< Meshes::Grid< Dimension, MeshReal, MeshDevice, M
       typedef Index IndexType;
       typedef ExactDifference< Dimension, XDifference, YDifference, ZDifference > ExactOperatorType;
  
-      static constexpr int getDimension() { return Dimension; }
+      static constexpr int getMeshDimension() { return Dimension; }
  
       static String getType()
       {

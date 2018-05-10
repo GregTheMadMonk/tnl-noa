@@ -16,6 +16,10 @@
 
 #pragma once
 
+#include <map>
+
+#include <TNL/Meshes/MeshDetails/MeshEntityOrientation.h>
+
 namespace TNL {
 namespace Meshes {
 
@@ -26,8 +30,8 @@ class MeshEntityReferenceOrientation
 	typedef typename MeshTraits< MeshConfig >::GlobalIndexType GlobalIndexType;
 
    public:
-      typedef MeshEntitySeed< MeshConfig, EntityTopology >         SeedType;
-      typedef MeshEntityOrientation< MeshConfig, EntityTopology >         EntityOrientation;
+      typedef EntitySeed< MeshConfig, EntityTopology >            SeedType;
+      typedef MeshEntityOrientation< MeshConfig, EntityTopology > EntityOrientation;
 
       MeshEntityReferenceOrientation() = default;
 
@@ -36,7 +40,8 @@ class MeshEntityReferenceOrientation
          auto referenceCornerIds = referenceSeed.getCornerIds();
          for( LocalIndexType i = 0; i < referenceCornerIds.getSize(); i++ )
          {
-            TNL_ASSERT( this->cornerIdsMap.find( referenceCornerIds[i]) == this->cornerIdsMap.end(), );
+            TNL_ASSERT_TRUE( this->cornerIdsMap.find( referenceCornerIds[ i ] ) == this->cornerIdsMap.end(),
+                             "detected duplicate index in the reference seed" );
             this->cornerIdsMap.insert( std::make_pair( referenceCornerIds[i], i ) );
          }
       }
@@ -49,7 +54,8 @@ class MeshEntityReferenceOrientation
          auto cornerIds = seed.getCornerIds();
          for( LocalIndexType i = 0; i < cornerIds.getSize(); i++ )
          {
-            TNL_ASSERT( this->cornerIdsMap.find( cornerIds[ i ] ) != this->cornerIdsMap.end(), );
+            TNL_ASSERT_TRUE( this->cornerIdsMap.find( cornerIds[ i ] ) != this->cornerIdsMap.end(),
+                             "unable to find index for entity orientation" );
             result.setPermutationValue( i, this->cornerIdsMap.find( cornerIds[ i ])->second );
          }
          return result;
