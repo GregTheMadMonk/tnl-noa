@@ -632,170 +632,6 @@ __cuda_callable__ void sortMinims( T1 pom[] )
     }   
 }
 
-template < typename Real, typename Device, typename Index >
-__global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
-                                Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& output,
-                                Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap ) 
-{
-    int i = threadIdx.x + blockDim.x*blockIdx.x;
-    int j = blockDim.y*blockIdx.y + threadIdx.y;
-    const Meshes::Grid< 2, Real, Device, Index >& mesh = input.template getMesh< Devices::Cuda >();
-    
-    if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
-    {
-        typedef typename Meshes::Grid< 2, Real, Device, Index >::Cell Cell;
-        Cell cell( mesh );
-        cell.getCoordinates().x() = i; cell.getCoordinates().y() = j;
-        cell.refresh();
-        const Index cind = cell.getIndex();
-
-
-        output[ cind ] =
-               input( cell ) >= 0 ? TypeInfo< Real >::getMaxValue() :
-                                    - TypeInfo< Real >::getMaxValue();
-        interfaceMap[ cind ] = false; 
-
-        const Real& hx = mesh.getSpaceSteps().x();
-        const Real& hy = mesh.getSpaceSteps().y();
-        cell.refresh();
-        const Real& c = input( cell );
-        if( ! cell.isBoundaryEntity()  )
-        {
-           auto neighbors = cell.getNeighborEntities();
-           Real pom = 0;
-           const Index e = neighbors.template getEntityIndex<  1,  0 >();
-           const Index w = neighbors.template getEntityIndex<  -1,  0 >();
-           const Index n = neighbors.template getEntityIndex<  0,  1 >();
-           const Index s = neighbors.template getEntityIndex<  0,  -1 >();
-           
-           if( c * input[ n ] <= 0 )
-           {
-               pom = TNL::sign( c )*( hy * c )/( c - input[ n ]);
-               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
-                   output[ cind ] = pom;
-
-               interfaceMap[ cell.getIndex() ] = true;
-           }
-           if( c * input[ e ] <= 0 )
-           {
-               pom = TNL::sign( c )*( hx * c )/( c - input[ e ]);
-               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) )
-                   output[ cind ] = pom;                       
-
-               interfaceMap[ cind ] = true;
-           }
-           if( c * input[ w ] <= 0 )
-           {
-               pom = TNL::sign( c )*( hx * c )/( c - input[ w ]);
-               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
-                   output[ cind ] = pom;
-
-               interfaceMap[ cind ] = true;
-           }
-           if( c * input[ s ] <= 0 )
-           {
-               pom = TNL::sign( c )*( hy * c )/( c - input[ s ]);
-               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
-                   output[ cind ] = pom;
-
-               interfaceMap[ cind ] = true;
-           }
-        }
-    }
-}
-
-template < typename Real, typename Device, typename Index >
-__global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& input, 
-                                  Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& output,
-                                  Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap )
-{
-    int i = threadIdx.x + blockDim.x*blockIdx.x;
-    int j = blockDim.y*blockIdx.y + threadIdx.y;
-    int k = blockDim.z*blockIdx.z + threadIdx.z;
-    const Meshes::Grid< 3, Real, Device, Index >& mesh = input.template getMesh< Devices::Cuda >();
-    
-    if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() && k < mesh.getDimensions().z() )
-    {
-        typedef typename Meshes::Grid< 3, Real, Device, Index >::Cell Cell;
-        Cell cell( mesh );
-        cell.getCoordinates().x() = i; cell.getCoordinates().y() = j; cell.getCoordinates().z() = k;
-        cell.refresh();
-        const Index cind = cell.getIndex();
-
-
-        output[ cind ] =
-               input( cell ) >= 0 ? TypeInfo< Real >::getMaxValue() :
-                                    - TypeInfo< Real >::getMaxValue();
-        interfaceMap[ cind ] = false; 
-        cell.refresh();
-
-        const Real& hx = mesh.getSpaceSteps().x();
-        const Real& hy = mesh.getSpaceSteps().y();
-        const Real& hz = mesh.getSpaceSteps().z();
-        const Real& c = input( cell );
-        if( ! cell.isBoundaryEntity()  )
-        {
-           auto neighbors = cell.getNeighborEntities();
-           Real pom = 0;
-           const Index e = neighbors.template getEntityIndex<  1, 0, 0 >();
-           const Index w = neighbors.template getEntityIndex<  -1, 0, 0 >();
-           const Index n = neighbors.template getEntityIndex<  0, 1, 0 >();
-           const Index s = neighbors.template getEntityIndex<  0, -1, 0 >();
-           const Index t = neighbors.template getEntityIndex<  0, 0, 1 >();
-           const Index b = neighbors.template getEntityIndex<  0, 0, -1 >();
-           
-           if( c * input[ n ] <= 0 )
-           {
-               pom = TNL::sign( c )*( hy * c )/( c - input[ n ]);
-               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
-                   output[ cind ] = pom;
-
-               interfaceMap[ cind ] = true;
-           }
-           if( c * input[ e ] <= 0 )
-           {
-               pom = TNL::sign( c )*( hx * c )/( c - input[ e ]);
-               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) )
-                   output[ cind ] = pom;                       
-
-               interfaceMap[ cind ] = true;
-           }
-           if( c * input[ w ] <= 0 )
-           {
-               pom = TNL::sign( c )*( hx * c )/( c - input[ w ]);
-               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
-                   output[ cind ] = pom;
-
-               interfaceMap[ cind ] = true;
-           }
-           if( c * input[ s ] <= 0 )
-           {
-               pom = TNL::sign( c )*( hy * c )/( c - input[ s ]);
-               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
-                   output[ cind ] = pom;
-
-               interfaceMap[ cind ] = true;
-           }
-           if( c * input[ b ] <= 0 )
-           {
-               pom = TNL::sign( c )*( hz * c )/( c - input[ b ]);
-               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
-                   output[ cind ] = pom;
-
-               interfaceMap[ cind ] = true;
-           }
-           if( c * input[ t ] <= 0 )
-           {
-               pom = TNL::sign( c )*( hz * c )/( c - input[ t ]);
-               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
-                   output[ cind ] = pom;
-
-               interfaceMap[ cind ] = true;
-           }
-        }
-    }
-}
-
 template< typename Real,
           typename Device,
           typename Index >
@@ -967,6 +803,173 @@ getsArray( MeshFunctionType& aux, Real sArray[18][18], int dimX, int dimY, int b
     }
 }*/
 
+
+#ifdef HAVE_CUDA
+template < typename Real, typename Device, typename Index >
+__global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
+                                Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& output,
+                                Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap ) 
+{
+    int i = threadIdx.x + blockDim.x*blockIdx.x;
+    int j = blockDim.y*blockIdx.y + threadIdx.y;
+    const Meshes::Grid< 2, Real, Device, Index >& mesh = input.template getMesh< Devices::Cuda >();
+    
+    if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
+    {
+        typedef typename Meshes::Grid< 2, Real, Device, Index >::Cell Cell;
+        Cell cell( mesh );
+        cell.getCoordinates().x() = i; cell.getCoordinates().y() = j;
+        cell.refresh();
+        const Index cind = cell.getIndex();
+
+
+        output[ cind ] =
+               input( cell ) >= 0 ? TypeInfo< Real >::getMaxValue() :
+                                    - TypeInfo< Real >::getMaxValue();
+        interfaceMap[ cind ] = false; 
+
+        const Real& hx = mesh.getSpaceSteps().x();
+        const Real& hy = mesh.getSpaceSteps().y();
+        cell.refresh();
+        const Real& c = input( cell );
+        if( ! cell.isBoundaryEntity()  )
+        {
+           auto neighbors = cell.getNeighborEntities();
+           Real pom = 0;
+           const Index e = neighbors.template getEntityIndex<  1,  0 >();
+           const Index w = neighbors.template getEntityIndex<  -1,  0 >();
+           const Index n = neighbors.template getEntityIndex<  0,  1 >();
+           const Index s = neighbors.template getEntityIndex<  0,  -1 >();
+           
+           if( c * input[ n ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hy * c )/( c - input[ n ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cell.getIndex() ] = true;
+           }
+           if( c * input[ e ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hx * c )/( c - input[ e ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) )
+                   output[ cind ] = pom;                       
+
+               interfaceMap[ cind ] = true;
+           }
+           if( c * input[ w ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hx * c )/( c - input[ w ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cind ] = true;
+           }
+           if( c * input[ s ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hy * c )/( c - input[ s ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cind ] = true;
+           }
+        }
+    }
+}
+
+template < typename Real, typename Device, typename Index >
+__global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& input, 
+                                  Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& output,
+                                  Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap )
+{
+    int i = threadIdx.x + blockDim.x*blockIdx.x;
+    int j = blockDim.y*blockIdx.y + threadIdx.y;
+    int k = blockDim.z*blockIdx.z + threadIdx.z;
+    const Meshes::Grid< 3, Real, Device, Index >& mesh = input.template getMesh< Devices::Cuda >();
+    
+    if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() && k < mesh.getDimensions().z() )
+    {
+        typedef typename Meshes::Grid< 3, Real, Device, Index >::Cell Cell;
+        Cell cell( mesh );
+        cell.getCoordinates().x() = i; cell.getCoordinates().y() = j; cell.getCoordinates().z() = k;
+        cell.refresh();
+        const Index cind = cell.getIndex();
+
+
+        output[ cind ] =
+               input( cell ) >= 0 ? TypeInfo< Real >::getMaxValue() :
+                                    - TypeInfo< Real >::getMaxValue();
+        interfaceMap[ cind ] = false; 
+        cell.refresh();
+
+        const Real& hx = mesh.getSpaceSteps().x();
+        const Real& hy = mesh.getSpaceSteps().y();
+        const Real& hz = mesh.getSpaceSteps().z();
+        const Real& c = input( cell );
+        if( ! cell.isBoundaryEntity()  )
+        {
+           auto neighbors = cell.getNeighborEntities();
+           Real pom = 0;
+           const Index e = neighbors.template getEntityIndex<  1, 0, 0 >();
+           const Index w = neighbors.template getEntityIndex<  -1, 0, 0 >();
+           const Index n = neighbors.template getEntityIndex<  0, 1, 0 >();
+           const Index s = neighbors.template getEntityIndex<  0, -1, 0 >();
+           const Index t = neighbors.template getEntityIndex<  0, 0, 1 >();
+           const Index b = neighbors.template getEntityIndex<  0, 0, -1 >();
+           
+           if( c * input[ n ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hy * c )/( c - input[ n ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cind ] = true;
+           }
+           if( c * input[ e ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hx * c )/( c - input[ e ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) )
+                   output[ cind ] = pom;                       
+
+               interfaceMap[ cind ] = true;
+           }
+           if( c * input[ w ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hx * c )/( c - input[ w ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cind ] = true;
+           }
+           if( c * input[ s ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hy * c )/( c - input[ s ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cind ] = true;
+           }
+           if( c * input[ b ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hz * c )/( c - input[ b ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cind ] = true;
+           }
+           if( c * input[ t ] <= 0 )
+           {
+               pom = TNL::sign( c )*( hz * c )/( c - input[ t ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cind ] = true;
+           }
+        }
+    }
+}
+
+
 template< typename Real,
           typename Device,
           typename Index >
@@ -1023,3 +1026,4 @@ updateCell( Real sArray[18][18], int thri, int thrj, const Real hx, const Real h
         sArray[ thrj ][ thri ] = argAbsMin( value, tmp );
     }
 }
+#endif

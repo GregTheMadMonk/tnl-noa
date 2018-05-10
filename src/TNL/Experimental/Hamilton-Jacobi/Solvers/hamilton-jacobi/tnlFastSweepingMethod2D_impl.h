@@ -67,7 +67,9 @@ solve( const MeshPointer& mesh,
    interfaceMapPtr->setMesh( mesh );
    std::cout << "Initiating the interface cells ..." << std::endl;
    BaseType::initInterface( u, auxPtr, interfaceMapPtr );
+#ifdef HAVE_CUDA
    cudaDeviceSynchronize();
+#endif
         
    auxPtr->save( "aux-ini.tnl" );
 
@@ -240,7 +242,7 @@ solve( const MeshPointer& mesh,
    aux.save("aux-final.tnl");
 }
 
-//#ifdef HAVE_CUDA
+#ifdef HAVE_CUDA
 template < typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr,
                                       const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
@@ -286,4 +288,4 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
     }
     //ptr.getsArray( aux, sArray, mesh.getDimensions().x(), mesh.getDimensions().y(), blIdx, blIdy );
 }
-//#endif
+#endif
