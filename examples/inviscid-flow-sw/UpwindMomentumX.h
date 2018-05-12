@@ -172,36 +172,16 @@ class UpwindMomentumX< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Ind
          const RealType& velocity_y_south  = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];          
          
          return -hxInverse * ( 
-                                 u[ center ] / ( 2 * this->gamma )
-                                 * ( 2 * ( this->gamma - 1 ) * velocity_x_center * velocity_x_center
-                                   + ( velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) ) 
-                                   * ( velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                   )
-                               - u[ west   ] / ( 2 * this->gamma )
-                                   * ( 2 * ( this->gamma - 1 ) * velocity_x_west    * velocity_x_west
-                                     + ( velocity_x_west    + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
-                                     * ( velocity_x_west    + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
-                                     )  
-                                - u[ center ] / ( 2 * this->gamma )
-                                  * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                  * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                + u[ east   ] / ( 2 * this->gamma )
-                                  * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east / u[ east   ] ) )
-                                  * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east / u[ east   ] ) )
+                                 this->positiveMainMomentumFlux( u[ center ], velocity_x_center, pressure_center )
+                               - this->positiveMainMomentumFlux( u[ west   ], velocity_x_west  , pressure_west   )
+                               - this->negativeMainMomentumFlux( u[ center ], velocity_x_center, pressure_center )
+                               + this->negativeMainMomentumFlux( u[ east   ], velocity_x_east  , pressure_east   )
                              )
                 -hyInverse * ( 
-                               u[ center ] / ( 2 * this->gamma )
-                               * ( ( 2 * this->gamma - 1 ) * velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                               * velocity_y_center
-                             - u[ south ] / ( 2 * this->gamma )
-                               * ( ( 2 * this->gamma - 1 ) * velocity_x_south + std::sqrt( this->gamma * pressure_south / u[ south ] ) )
-                               * velocity_y_south
-                             - u[ center ] / ( 2 * this->gamma )
-                               * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                               * velocity_y_center
-                             + u[ north ] / ( 2 * this->gamma )
-                               * ( velocity_x_north - std::sqrt( this->gamma * pressure_north / u[ north ] ) )
-                               * velocity_y_north
+                                 this->positiveOtherMomentumFlux( u[ center ], velocity_x_center, velocity_y_center, pressure_center )
+                               - this->positiveOtherMomentumFlux( u[ south  ], velocity_x_south , velocity_y_south , pressure_south  )
+                               - this->negativeOtherMomentumFlux( u[ center ], velocity_x_center, velocity_y_center, pressure_center )
+                               + this->negativeOtherMomentumFlux( u[ north  ], velocity_x_north , velocity_y_north , pressure_north  )
                              );
 
                                       

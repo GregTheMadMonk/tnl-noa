@@ -87,9 +87,9 @@ class UpwindMomentumBase
          if ( machNumber <= -1.0 )
             return 0;
         else if ( machNumber <= 0.0 )
-            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( machNumber + 1.0 ) * velocity_other / speedOfSound;
+            return density * speedOfSound / ( 2 * this->gamma ) * ( machNumber + 1.0 ) * velocity_other;
         else if ( machNumber <= 1.0 )
-            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 ) * velocity_other / speedOfSound;
+            return density * speedOfSound / ( 2 * this->gamma ) * ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 ) * velocity_other;
         else 
             return density * velocity_main * velocity_other;
       };

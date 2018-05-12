@@ -271,89 +271,17 @@ class UpwindEnergy< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index 
          const RealType& velocity_y_north  = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ north ];
          const RealType& velocity_y_south  = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];         
          
-         return -hxInverse * (
-                               ( u[ center ] / ( 2 * this->gamma ) )
-                               * (
-                                   ( ( 2 * this->gamma - 1 ) * velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                 * ( velocity_x_center * velocity_x_center + velocity_y_center * velocity_y_center ) / 2
-                                 + velocity_x_center * std::sqrt( this->gamma * pressure_center / u[ center ] )
-                                 * ( velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                 + this->gamma * pressure_center / u[ center ] 
-                                 * ( velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                 / ( this->gamma - 1 )
-                                 )
-                             - ( u[ west ] / ( 2 * this->gamma ) )
-                               * ( 
-                                   ( ( 2 * this->gamma - 1 ) * velocity_x_west + std::sqrt( this->gamma * pressure_west / u[ west ] ) )
-                                 * ( velocity_x_west * velocity_x_west + velocity_y_west * velocity_y_west ) / 2
-                                 + velocity_x_west * std::sqrt( this->gamma * pressure_west / u[ west ] )
-                                 * ( velocity_x_west + std::sqrt( this->gamma * pressure_west / u[ west ] ) )
-                                 + this->gamma * pressure_west / u[ west ]
-                                 * ( velocity_x_west + std::sqrt( this->gamma * pressure_west / u[ west ] ) )
-                                 / ( this->gamma - 1 )
-                                 )
-                             - ( u[ center ] / ( 2 * this->gamma ) )
-                               * ( 
-                                   ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                 * ( velocity_x_center * velocity_x_center + velocity_y_center * velocity_y_center ) / 2
-                                 + velocity_x_center * std::sqrt( this->gamma * pressure_center / u[ center ] )
-                                 * ( std::sqrt( this->gamma * pressure_center / u[ center ] ) - velocity_x_center )
-                                 + this->gamma * pressure_center / u[ center ]
-                                 * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                 / ( this->gamma - 1 )
-                                 )
-                             + ( u[ east  ] / ( 2 * this->gamma ) )
-                               * ( 
-                                   ( velocity_x_east  - std::sqrt( this->gamma * pressure_east  / u[ east  ] ) )
-                                 * ( velocity_x_east  * velocity_x_east  + velocity_y_east  * velocity_y_east  ) / 2
-                                 + velocity_x_east  * std::sqrt( this->gamma * pressure_east  / u[ east  ] )
-                                 * ( std::sqrt( this->gamma * pressure_east  / u[ east  ] ) - velocity_x_east  )
-                                 + this->gamma * pressure_east  / u[ east  ]
-                                 * ( velocity_x_east  - std::sqrt( this->gamma * pressure_east  / u[ east  ] ) )
-                                 / ( this->gamma - 1 )
-                                 )
+         return -hxInverse * ( 
+                                   this->positiveEnergyFlux( u[ center ], velocity_x_center, velocity_y_center, 0, pressure_center)
+                                 - this->positiveEnergyFlux( u[ west   ], velocity_x_west  , velocity_y_west  , 0, pressure_west  )
+                                 - this->negativeEnergyFlux( u[ center ], velocity_x_center, velocity_y_center, 0, pressure_center)
+                                 + this->negativeEnergyFlux( u[ east   ], velocity_x_east  , velocity_y_east  , 0, pressure_east  ) 
                              ) 
-                -hyInverse * (
-                               ( u[ center ] / ( 2 * this->gamma ) )
-                               * ( 
-                                   ( ( 2 * this->gamma - 1 ) * velocity_y_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                 * ( velocity_x_center * velocity_x_center + velocity_y_center * velocity_y_center ) / 2
-                                 + velocity_y_center * std::sqrt( this->gamma * pressure_center / u[ center ] )
-                                 * ( velocity_y_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                 + this->gamma * pressure_center / u[ center ] 
-                                 * ( velocity_y_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                 / ( this->gamma - 1 )
-                                 )
-                             - ( u[ south ] / ( 2 * this->gamma ) )
-                               * ( 
-                                   ( ( 2 * this->gamma - 1 ) * velocity_y_south + std::sqrt( this->gamma * pressure_south / u[ south ] ) )
-                                 * ( velocity_x_south * velocity_x_south + velocity_y_south * velocity_y_south ) / 2
-                                 + velocity_y_south * std::sqrt( this->gamma * pressure_south / u[ south ] )
-                                 * ( velocity_y_south + std::sqrt( this->gamma * pressure_south / u[ south ] ) )
-                                 + this->gamma * pressure_south / u[ south ]
-                                 * ( velocity_y_south + std::sqrt( this->gamma * pressure_south / u[ south ] ) )
-                                 / ( this->gamma - 1 )
-                                 )
-                             - ( u[ center ] / ( 2 * this->gamma ) )
-                               * ( 
-                                   ( velocity_y_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                 * ( velocity_x_center * velocity_x_center + velocity_y_center * velocity_y_center ) / 2
-                                 + velocity_y_center * std::sqrt( this->gamma * pressure_center / u[ center ] )
-                                 * ( std::sqrt( this->gamma * pressure_center / u[ center ] ) - velocity_y_center )
-                                 + this->gamma * pressure_center / u[ center ]
-                                 * ( velocity_y_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                 / ( this->gamma - 1 )
-                                 )
-                             + ( u[ north ] / ( 2 * this->gamma ) )
-                               * ( 
-                                   ( velocity_y_north - std::sqrt( this->gamma * pressure_north / u[ north ] ) )
-                                 * ( velocity_x_north * velocity_x_north + velocity_y_north * velocity_y_north ) / 2
-                                 + velocity_y_north * std::sqrt( this->gamma * pressure_north / u[ north ] )
-                                 * ( std::sqrt( this->gamma * pressure_north / u[ north ] ) - velocity_y_north )
-                                 + this->gamma * pressure_north / u[ north ]
-                                 * ( velocity_y_north - std::sqrt( this->gamma * pressure_north / u[ north ] ) )
-                                 / ( this->gamma - 1 )
-                                 )
+                -hyInverse * ( 
+                                   this->positiveEnergyFlux( u[ center ], velocity_y_center, velocity_x_center, 0, pressure_center)
+                                 - this->positiveEnergyFlux( u[ south  ], velocity_y_south , velocity_x_south , 0, pressure_south )
+                                 - this->negativeEnergyFlux( u[ center ], velocity_y_center, velocity_x_center, 0, pressure_center)
+                                 + this->negativeEnergyFlux( u[ north  ], velocity_y_north , velocity_x_north , 0, pressure_north ) 
                              );     
       }
 
