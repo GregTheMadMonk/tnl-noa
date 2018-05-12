@@ -59,26 +59,26 @@ class UpwindMomentumBase
          if ( machNumber <= -1.0 )
             return 0;
         else if ( machNumber <= 0.0 )
-            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( machNumber + 1.0 ) * machNumber + ( - machNumber - 1.0 );
+            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( machNumber + 1.0 ) * machNumber + ( - machNumber - 1.0 ) );
         else if ( machNumber <= 1.0 )
-            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 ) * machNumber + (machNumber + 1.0 );
+            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 ) * machNumber + (machNumber + 1.0 ) );
         else 
             return density * velocity * velocity + pressure;
-      }
+      };
 
       const RealType& negativeMainMomentumFlux( const RealType& density, const RealType& velocity, const RealType& pressure )
       {
          const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
          const RealType& machNumber = velocity / speedOfSound;
          if ( machNumber <= -1.0 )
-            return density * velocity;
-        else if ( machNumber <= 0.0 )
-            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( ( 2.0 * this->gamma - 1.0 ) * machNumber - 1.0 ) * machNumber + (machNumber - 1.0 );
-        else if ( machNumber <= 1.0 )
-            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( machNumber - 1.0 ) * machNumber + ( - machNumber + 1.0 );
-        else 
             return density * velocity * velocity + pressure;
-      }
+        else if ( machNumber <= 0.0 )
+            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( ( 2.0 * this->gamma - 1.0 ) * machNumber - 1.0 ) * machNumber + (machNumber - 1.0 ) );
+        else if ( machNumber <= 1.0 )
+            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( machNumber - 1.0 ) * machNumber + ( - machNumber + 1.0 ) );
+        else 
+            return 0; 
+      };
 
       const RealType& positiveOtherMomentumFlux( const RealType& density, const RealType& velocity_main, const RealType& velocity_other, const RealType& pressure )
       {
@@ -92,7 +92,7 @@ class UpwindMomentumBase
             return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 ) * velocity_other / speedOfSound;
         else 
             return density * velocity_main * velocity_other;
-      }
+      };
 
       const RealType& negativeOtherMomentumFlux( const RealType& density, const RealType& velocity_main, const RealType& velocity_other, const RealType& pressure )
       {
@@ -101,12 +101,12 @@ class UpwindMomentumBase
          if ( machNumber <= -1.0 )
             return density * velocity_main * velocity_other;
         else if ( machNumber <= 0.0 )
-            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 ) * velocity_other / speedOfSound;
+            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( 2.0 * this->gamma - 1.0 ) * machNumber - 1.0 ) * velocity_other / speedOfSound;
         else if ( machNumber <= 1.0 )
-            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( machNumber + 1.0 ) * velocity_other / speedOfSound;
+            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( machNumber - 1.0 ) * velocity_other / speedOfSound;
         else 
             return 0;
-      }
+      };
 
       protected:
          

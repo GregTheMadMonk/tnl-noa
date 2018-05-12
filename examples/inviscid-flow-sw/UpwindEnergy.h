@@ -67,7 +67,7 @@ class UpwindEnergyBase
       void setArtificialViscosity( const RealType& artificialViscosity )
       {
          this->artificialViscosity = artificialViscosity;
-      }
+      };
 
       const RealType& positiveEnergyFlux( const RealType& density, const RealType& velocity_main, const RealType& velocity_other1, const RealType& velocity_other2, const RealType& pressure )
       {
@@ -78,44 +78,44 @@ class UpwindEnergyBase
         else if ( machNumber <= 0.0 )
             return density * speedOfSound / ( 2 * this->gamma ) 
                  * ( 
-                     ( speedOfSound * ( machNumber + 1.0 ) * speedOfSound * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) );
-                   + ( speedOfSound * speedOfSound * machNumber * ( - 1.0 - machNumber )
+                     ( speedOfSound * ( machNumber + 1.0 ) * speedOfSound * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) )
+                   + ( speedOfSound * speedOfSound * machNumber * ( - 1.0 - machNumber ) )
                    + ( speedOfSound * speedOfSound * ( machNumber + 1.0 ) / ( this->gamma - 1.0 ) )
                    );
         else if ( machNumber <= 1.0 )
             return density * speedOfSound / ( 2 * this->gamma ) 
                  * ( 
-                     ( speedOfSound * ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 ) ) * speedOfSound * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) );
-                   + ( speedOfSound * speedOfSound * machNumber * ( machNumber + 1.0 )
+                     ( speedOfSound * ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 ) * speedOfSound * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) )
+                   + ( speedOfSound * speedOfSound * machNumber * ( machNumber + 1.0 ) )
                    + ( speedOfSound * speedOfSound * ( machNumber + 1.0 ) / ( this->gamma - 1.0 ) )
                    );
         else   
-            return ( pressure / ( this->gamma - 1.0 ) + 0.5 * density * ( velocity_main * velocity_main + velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 );
-      }
+            return ( pressure / ( this->gamma - 1.0 ) + 0.5 * density * ( velocity_main * velocity_main + velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) );
+      };
 
-      const RealType& negativeEnergyFlux( const RealType& density, const RealType& velocity, const RealType& pressure )
+      const RealType& negativeEnergyFlux( const RealType& density, const RealType& velocity_main, const RealType& velocity_other1, const RealType& velocity_other2, const RealType& pressure )
       {
          const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
          const RealType& machNumber = velocity / speedOfSound;
          if ( machNumber <= -1.0 )
-            return ( pressure / ( this->gamma - 1.0 ) + 0.5 * density * ( velocity_main * velocity_main + velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 );
+            return ( pressure / ( this->gamma - 1.0 ) + 0.5 * density * ( velocity_main * velocity_main + velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) );
         else if ( machNumber <= 0.0 )
             return density * speedOfSound / ( 2 * this->gamma ) 
                  * ( 
-                     ( speedOfSound * ( ( 2.0 * this->gamma - 1.0 ) * machNumber - 1.0 )  * speedOfSound * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) );
-                   + ( speedOfSound * speedOfSound * machNumber * ( machNumber - 1.0 )
+                     ( speedOfSound * ( ( 2.0 * this->gamma - 1.0 ) * machNumber - 1.0 )  * speedOfSound * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) )
+                   + ( speedOfSound * speedOfSound * machNumber * ( machNumber - 1.0 ) )
                    + ( speedOfSound * speedOfSound * ( machNumber - 1.0 ) / ( this->gamma - 1.0 ) )
-                   )
+                   );
         else if ( machNumber <= 1.0 )
             return density * speedOfSound / ( 2 * this->gamma ) 
                  * ( 
-                     ( speedOfSound * ( machNumber - 1.0 ) * speedOfSound * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) );
-                   + ( speedOfSound * speedOfSound * machNumber * ( 1.0 - machNumber )
+                     ( speedOfSound * ( machNumber - 1.0 ) * speedOfSound * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) )
+                   + ( speedOfSound * speedOfSound * machNumber * ( 1.0 - machNumber ) )
                    + ( speedOfSound * speedOfSound * ( machNumber - 1.0 ) / ( this->gamma - 1.0 ) )
                    );
         else 
             return 0.0;
-      }      
+      };      
 
       protected:
          

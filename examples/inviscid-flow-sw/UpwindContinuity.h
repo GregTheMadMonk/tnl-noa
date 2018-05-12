@@ -65,7 +65,7 @@ class UpwindContinuityBase
           this->velocity = velocity;
       };
 
-      const RealType& positiveDensityFlux( const RealType& density, const RealType& velocity, const RealType& pressure )
+      RealType positiveDensityFlux( const RealType& density, const RealType& velocity, const RealType& pressure ) const
       {
          const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
          const RealType& machNumber = velocity / speedOfSound;
@@ -77,9 +77,9 @@ class UpwindContinuityBase
             return density * speedOfSound / ( 2 * this->gamma ) * ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 );
         else 
             return density * velocity;
-      }
+      };
 
-      const RealType& negativeDensityFlux( const RealType& density, const RealType& velocity, const RealType& pressure )
+      RealType negativeDensityFlux( const RealType& density, const RealType& velocity, const RealType& pressure ) const
       {
          const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
          const RealType& machNumber = velocity / speedOfSound;
@@ -91,7 +91,12 @@ class UpwindContinuityBase
             return density * speedOfSound / ( 2 * this->gamma ) * ( machNumber - 1.0 );
         else 
             return 0.0;
-      }
+      };
+      
+      RealType multiply (const RealType& a, const RealType& b ) const
+      {
+         return a * b;
+      };
       
 
       protected:
@@ -162,11 +167,11 @@ class UpwindContinuity< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, In
          const RealType& velocity_x_east   = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ east ];
 
          return -hxInverse * (
-                                   UpwindContinuity::positiveDensityFlux( u[ center ], velocity_x_center, pressure_center )
-                                -  UpwindContinuity::positiveDensityFlux( u[ west   ], velocity_x_west  , pressure_west   )
-                                -  UpwindContinuity::negativeDensityFlux( u[ center ], velocity_x_center, pressure_center )
-                                +  UpwindContinuity::negativeDensityFlux( u[ east   ], velocity_x_east  , pressure_east   )
-//                                  u[ center ] / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
+                                   this->positiveDensityFlux( u[ center ], velocity_x_center, pressure_center )
+                                -  this->positiveDensityFlux( u[ west   ], velocity_x_west  , pressure_west   )
+                                -  this->negativeDensityFlux( u[ center ], velocity_x_center, pressure_center )
+                                +  this->negativeDensityFlux( u[ east   ], velocity_x_east  , pressure_east   )
+//                                  u[ center ] / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_x_center + std::sqrt( this->multiply( this->gamma, pressure_center ) / u[ center ] ) )
 //                                - u[ west   ] / ( 2 * this->gamma ) * ( ( 2 * this->gamma - 1 ) * velocity_x_west   + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
 //                                - u[ center ] / ( 2 * this->gamma ) * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) ) 
 //                                + u[ east   ] / ( 2 * this->gamma ) * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east   / u[ east   ] ) )
