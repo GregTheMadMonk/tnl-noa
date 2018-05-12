@@ -69,49 +69,49 @@ class UpwindEnergyBase
          this->artificialViscosity = artificialViscosity;
       };
 
-      const RealType& positiveEnergyFlux( const RealType& density, const RealType& velocity_main, const RealType& velocity_other1, const RealType& velocity_other2, const RealType& pressure )
+      RealType positiveEnergyFlux( const RealType& density, const RealType& velocity_main, const RealType& velocity_other1, const RealType& velocity_other2, const RealType& pressure ) const
       {
          const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
          const RealType& machNumber = velocity_main / speedOfSound;
          if ( machNumber <= -1.0 )
             return 0.0;
         else if ( machNumber <= 0.0 )
-            return density * speedOfSound / ( 2 * this->gamma ) 
+            return density * speedOfSound * speedOfSound * speedOfSound / ( 2.0 * this->gamma ) 
                  * ( 
-                     ( speedOfSound * ( machNumber + 1.0 ) * speedOfSound * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) )
-                   + ( speedOfSound * speedOfSound * machNumber * ( - 1.0 - machNumber ) )
-                   + ( speedOfSound * speedOfSound * ( machNumber + 1.0 ) / ( this->gamma - 1.0 ) )
+                     ( ( machNumber + 1.0 ) * 0.5 *  ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) )
+                   + ( machNumber * ( machNumber + 1.0 ) )
+                   + ( ( machNumber + 1.0 ) / ( this->gamma - 1.0 ) )
                    );
         else if ( machNumber <= 1.0 )
-            return density * speedOfSound / ( 2 * this->gamma ) 
+            return density * speedOfSound * speedOfSound * speedOfSound / ( 2.0 * this->gamma ) 
                  * ( 
-                     ( speedOfSound * ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 ) * speedOfSound * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) )
-                   + ( speedOfSound * speedOfSound * machNumber * ( machNumber + 1.0 ) )
-                   + ( speedOfSound * speedOfSound * ( machNumber + 1.0 ) / ( this->gamma - 1.0 ) )
+                     ( ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 ) * 0.5 * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) )
+                   + ( machNumber * ( machNumber + 1.0 ) )
+                   + ( ( machNumber + 1.0 ) / ( this->gamma - 1.0 ) )
                    );
         else   
-            return ( pressure / ( this->gamma - 1.0 ) + 0.5 * density * ( velocity_main * velocity_main + velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) );
+            return velocity_main * ( pressure + pressure / ( this->gamma - 1.0 ) + 0.5 * density * ( velocity_main * velocity_main + velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) );
       };
 
-      const RealType& negativeEnergyFlux( const RealType& density, const RealType& velocity_main, const RealType& velocity_other1, const RealType& velocity_other2, const RealType& pressure )
+      RealType negativeEnergyFlux( const RealType& density, const RealType& velocity_main, const RealType& velocity_other1, const RealType& velocity_other2, const RealType& pressure ) const
       {
          const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
-         const RealType& machNumber = velocity / speedOfSound;
+         const RealType& machNumber = velocity_main / speedOfSound;
          if ( machNumber <= -1.0 )
-            return ( pressure / ( this->gamma - 1.0 ) + 0.5 * density * ( velocity_main * velocity_main + velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) );
+            return velocity_main * ( pressure + pressure / ( this->gamma - 1.0 ) + 0.5 * density * ( velocity_main * velocity_main + velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) );
         else if ( machNumber <= 0.0 )
-            return density * speedOfSound / ( 2 * this->gamma ) 
+            return density * speedOfSound * speedOfSound * speedOfSound / ( 2.0 * this->gamma ) 
                  * ( 
-                     ( speedOfSound * ( ( 2.0 * this->gamma - 1.0 ) * machNumber - 1.0 )  * speedOfSound * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) )
-                   + ( speedOfSound * speedOfSound * machNumber * ( machNumber - 1.0 ) )
-                   + ( speedOfSound * speedOfSound * ( machNumber - 1.0 ) / ( this->gamma - 1.0 ) )
+                     ( ( ( 2.0 * this->gamma - 1.0 ) * machNumber - 1.0 ) * 0.5 * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) )
+                   - ( machNumber * ( machNumber - 1.0 ) )
+                   + ( ( machNumber - 1.0 ) / ( this->gamma - 1.0 ) )
                    );
         else if ( machNumber <= 1.0 )
-            return density * speedOfSound / ( 2 * this->gamma ) 
+            return density * speedOfSound * speedOfSound * speedOfSound / ( 2.0 * this->gamma ) 
                  * ( 
-                     ( speedOfSound * ( machNumber - 1.0 ) * speedOfSound * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) )
-                   + ( speedOfSound * speedOfSound * machNumber * ( 1.0 - machNumber ) )
-                   + ( speedOfSound * speedOfSound * ( machNumber - 1.0 ) / ( this->gamma - 1.0 ) )
+                     ( ( machNumber - 1.0 ) * 0.5 * ( machNumber * machNumber + ( velocity_other1 * velocity_other1 + velocity_other2 * velocity_other2 ) / ( speedOfSound * speedOfSound ) ) )
+                   - ( machNumber * ( machNumber - 1.0 ) )
+                   + ( ( machNumber - 1.0 ) / ( this->gamma - 1.0 ) )
                    );
         else 
             return 0.0;
@@ -185,52 +185,10 @@ class UpwindEnergy< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index 
          const RealType& velocity_x_west   = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ west ];
 
          return -hxInverse * ( 
-                                   ( u[ center ] / ( 2 * this->gamma ) ) 
-                                     * ( 
-                                         ( this->gamma - 1 ) * velocity_x_center * velocity_x_center * velocity_x_center
-                                       + ( velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) ) 
-                                       * ( velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                       * ( velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                       / 2
-                                       + ( 3 - this->gamma )
-                                       / ( 2 * ( this->gamma - 1 ) )
-                                       * ( velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                       * ( this->gamma * pressure_center / u[ center ] )      
-                                       )
-                                - ( u[ west   ] / ( 2 * this->gamma ) ) 
-                                    * ( 
-                                        ( this->gamma - 1 ) * velocity_x_west * velocity_x_west * velocity_x_west
-                                      + ( velocity_x_west    + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
-                                      * ( velocity_x_west    + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
-                                      * ( velocity_x_west    + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
-                                       / 2
-                                       + ( 3 - this->gamma )
-                                       / ( 2 * ( this->gamma - 1 ) )
-                                       * ( velocity_x_west   + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
-                                       * ( this->gamma * pressure_west   / u[ west   ] ) 
-                                      )  
-/*                                - u[ center ] / ( 2 * this->gamma )
-                                  * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                  * ( 
-                                      ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                    * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                    / 2
-                                    + ( 3 - this->gamma )
-                                    / ( this->gamma - 1 )
-                                    * ( this->gamma * pressure_center / u[ center ] )
-                                    / 2
-                                    ) 
-                                + u[ east   ] / ( 2 * this->gamma )
-                                  * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east / u[ east   ] ) )
-                                  * (
-                                      ( velocity_x_east   - std::sqrt( this->gamma * pressure_east / u[ east   ] ) )
-                                    * ( velocity_x_east   - std::sqrt( this->gamma * pressure_east / u[ east   ] ) )
-                                    / 2
-                                    + ( 3 - this->gamma )
-                                    / ( this->gamma - 1 )
-                                    * ( this->gamma * pressure_east   / u[ east ]   )
-                                    / 2
-                                    )*/
+                                   this->positiveEnergyFlux( u[ center ], velocity_x_center, 0, 0, pressure_center)
+                                 - this->positiveEnergyFlux( u[ west   ], velocity_x_west  , 0, 0, pressure_west  )
+                                 - this->negativeEnergyFlux( u[ center ], velocity_x_center, 0, 0, pressure_center)
+                                 + this->negativeEnergyFlux( u[ east   ], velocity_x_east  , 0, 0, pressure_east  ) 
                              );  
   
       }

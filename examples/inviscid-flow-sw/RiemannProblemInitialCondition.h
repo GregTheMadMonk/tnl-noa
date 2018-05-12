@@ -949,7 +949,7 @@ class RiemannProblemInitialCondition
                                        0.0, 0.0, 0.0, //double preNEUVelocityX, double preNEUVelocityY,double preNEUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSEUVelocityX, double preSEUVelocityY,double preSEUVelocityZ,
                                        0.0, 0.0, 0.0, //double preNEDVelocityX, double preNEDVelocityY,double preNEDVelocityZ,
-                                       -19.57945, 0.0, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
+                                       -19.59745, 0.0, 0.0 //double preSEDVelocityX, double preSEDVelocityY,double preSEDVelocityZ
                                        );
       if(initial == prefix + "1D_4")
            predefinedInitialCondition( 1.666, 0.4, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
