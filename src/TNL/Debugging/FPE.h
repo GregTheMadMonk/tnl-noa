@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshConfigBase.h  -  description
+                          FPE.h  -  description
                              -------------------
     begin                : Nov 6, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.

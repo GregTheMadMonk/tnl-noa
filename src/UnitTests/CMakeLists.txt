@@ -3,6 +3,7 @@ if( WITH_TESTS STREQUAL "yes" )
 ADD_SUBDIRECTORY( Containers )
 ADD_SUBDIRECTORY( Matrices )
 ADD_SUBDIRECTORY( Mpi )
+ADD_SUBDIRECTORY( Meshes )
 
 ADD_EXECUTABLE( UniquePointerTest UniquePointerTest.cpp )
 TARGET_COMPILE_OPTIONS( UniquePointerTest PRIVATE ${CXX_TESTS_FLAGS} )

@@ -24,7 +24,7 @@
 using namespace TNL;
 
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
-typedef Solvers::FastBuildConfig BuildConfig;
+typedef Solvers::FastBuildConfigTag BuildConfig;
 
 template< typename MeshConfig >
 class tnlDirectEikonalSolverConfig

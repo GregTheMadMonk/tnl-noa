@@ -12,7 +12,7 @@
 #include <TNL/Devices/Host.h>
 #include <cstdlib>
 
-#include <TNL/Experimental/Multimaps/EllpackIndexMultimap.h>
+#include <TNL/Containers/Multimaps/EllpackIndexMultimap.h>
 #include "tnlIndexMultimapTester.h"
 #include "../../tnlUnitTestStarter.h"
 

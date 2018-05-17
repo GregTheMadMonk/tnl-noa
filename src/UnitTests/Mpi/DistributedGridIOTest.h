@@ -227,7 +227,9 @@ class TestDistributedGridIO{
         CoordinatesType overlap;
         overlap.setValue(1);
         DistributedGridType distrgrid;
-        distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
+        distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap,distr);
+
+        std::cout << distrgrid.printProcessDistr() <<std::endl;
 
         SharedPointer<MeshType> gridptr;
         SharedPointer<MeshFunctionType> meshFunctionptr;
