@@ -51,7 +51,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
        typename Meshes::DistributedMeshes::DistributedMesh<MeshType>::CoordinatesType overlap;
        overlap.setValue(1);
        distributedMesh.template setGlobalGrid<CommunicatorType>(globalMesh,overlap); 
-       distributedMesh.SetupGrid(*meshPointer);
+       distributedMesh.setupGrid(*meshPointer);
     }
     else
     {

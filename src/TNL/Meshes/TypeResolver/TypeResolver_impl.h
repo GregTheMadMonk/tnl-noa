@@ -111,29 +111,33 @@ bool resolveMeshType( const String& fileName_,
 }
 
 // TODO: reorganize
-template< typename CommunicatorType, typename MeshConfig, typename Device >
+template< typename CommunicatorType,
+          typename MeshConfig,
+          typename Device >
 bool
-loadMesh( const String& fileName_, Mesh< MeshConfig, Device >& mesh, DistributedMeshes::DistributedMesh<Mesh< MeshConfig, Device >> &distributedMesh )
+loadMesh( const String& fileName,
+          Mesh< MeshConfig, Device >& mesh,
+          DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > > &distributedMesh )
 {
    if(CommunicatorType::isDistributed())
    {
-       std::cerr << "Distributed Mesh si not suported yet, only Distributed Grid is supported.";
+       std::cerr << "Distributed Mesh is not supported yet, only Distributed Grid is supported.";
        return false;
    }
 
-   std::cout << "Loading mesh from file " << fileName_ << " ..." << std::endl;
-   std::string fileName( fileName_.getString() );
+   std::cout << "Loading mesh from file " << fileName << " ..." << std::endl;
+   std::string fileName_( fileName.getString() );
    bool status = true;
 
-   if( ends_with( fileName, ".tnl" ) )
-      status = mesh.load( fileName_ );
-   else if( ends_with( fileName, ".ng" ) ) {
+   if( ends_with( fileName_, ".tnl" ) )
+      status = mesh.load( fileName );
+   else if( ends_with( fileName_, ".ng" ) ) {
       Readers::NetgenReader reader;
-      status = reader.readMesh( fileName_, mesh );
+      status = reader.readMesh( fileName, mesh );
    }
-   else if( ends_with( fileName, ".vtk" ) ) {
+   else if( ends_with( fileName_, ".vtk" ) ) {
       Readers::VTKReader reader;
-      status = reader.readMesh( fileName_, mesh );
+      status = reader.readMesh( fileName, mesh );
    }
    else {
       std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk' and '.ng'." << std::endl;
@@ -142,7 +146,7 @@ loadMesh( const String& fileName_, Mesh< MeshConfig, Device >& mesh, Distributed
 
    if( ! status )
    {
-      std::cerr << "I am not able to load the mesh from the file " << fileName_ << ". "
+      std::cerr << "I am not able to load the mesh from the file " << fileName << ". "
                    "Perhaps the mesh stored in the file is not supported by the mesh "
                    "passed to the loadMesh function? The mesh type is "
                 << mesh.getType() << std::endl;
@@ -151,13 +155,16 @@ loadMesh( const String& fileName_, Mesh< MeshConfig, Device >& mesh, Distributed
    return true;
 }
 
-template<typename CommunicatorType, typename MeshConfig >
+template< typename CommunicatorType,
+          typename MeshConfig >
 bool
-loadMesh( const String& fileName, Mesh< MeshConfig, Devices::Cuda >& mesh, DistributedMeshes::DistributedMesh<Mesh< MeshConfig, Devices::Cuda >> &distributedMesh )
+loadMesh( const String& fileName,
+          Mesh< MeshConfig, Devices::Cuda >& mesh,
+          DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Devices::Cuda > >& distributedMesh )
 {
    if(CommunicatorType::isDistributed())
    {
-       std::cerr << "Distributed Mesh si not suported yet, only Distributed Grid is supported.";
+       std::cerr << "Distributed Mesh is not supported yet, only Distributed Grid is supported.";
        return false;
    }
 
@@ -168,12 +175,18 @@ loadMesh( const String& fileName, Mesh< MeshConfig, Devices::Cuda >& mesh, Distr
    return true;
 }
 
-template<typename CommunicatorType, int Dimension, typename Real, typename Device, typename Index >
+template< typename CommunicatorType,
+          int Dimension,
+          typename Real,
+          typename Device,
+          typename Index >
 bool
-loadMesh( const String& fileName, Grid< Dimension, Real, Device, Index >& mesh, DistributedMeshes::DistributedMesh<Grid< Dimension, Real, Device, Index >> &distributedMesh)
+loadMesh( const String& fileName,
+          Grid< Dimension, Real, Device, Index >& mesh,
+          DistributedMeshes::DistributedMesh< Grid< Dimension, Real, Device, Index > > &distributedMesh )
 {
 
-   if(CommunicatorType::isDistributed())
+   if( CommunicatorType::isDistributed() )
    {
         std::cout << "Loading a global mesh from the file " << fileName << "...";
         Grid< Dimension, Real, Device, Index > globalGrid;
@@ -188,7 +201,7 @@ loadMesh( const String& fileName, Grid< Dimension, Real, Device, Index >& mesh, 
        typename Meshes::DistributedMeshes::DistributedMesh<Grid< Dimension, Real, Device, Index >>::CoordinatesType overlap;
        overlap.setValue(1);
        distributedMesh.template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
-       distributedMesh.SetupGrid(mesh);
+       distributedMesh.setupGrid(mesh);
        return true;
    }
    else

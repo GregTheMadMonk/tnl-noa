@@ -152,7 +152,7 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
            }  
        } 
        
-       void SetupGrid( GridType& grid)
+       void setupGrid( GridType& grid)
        {
            TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by SetupGrid");
            grid.setOrigin(localorigin);
