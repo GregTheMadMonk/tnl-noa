@@ -65,6 +65,7 @@ setup( const Config::ParameterContainer& parameters,
    const String& meshFile = parameters.getParameter< String >( "mesh" );
    if( ! Meshes::loadMesh<typename Problem::CommunicatorType>( meshFile, *meshPointer, distrMesh ) )
       return false;
+   
    /****
     * Setup the problem
     */
