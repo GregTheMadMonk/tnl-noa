@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 
         SharedPointer<MeshType> gridptr;
         SharedPointer<MeshFunctionType> meshFunctionptr;
-        distrgrid.SetupGrid(*gridptr);
+        distrgrid.setupGrid(*gridptr);
        
         DofType dofsave(gridptr->template getEntitiesCount< Cell >());
         dofsave.setValue(0);
