@@ -68,15 +68,11 @@ MeshFunction( const MeshPointer& meshPointer,
               const IndexType& offset )
 //: meshPointer( meshPointer )
 {
-<<<<<<< HEAD
    TNL_ASSERT_GE( data.getSize(), meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
                   "The input vector is not large enough for binding to the mesh function." );      
-=======
-
     SetupSynchronizer(meshPointer->GetDistMesh());
 
    this->meshPointer=meshPointer;
->>>>>>> origin/mpi-explosive
    this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
 
@@ -91,15 +87,12 @@ MeshFunction( const MeshPointer& meshPointer,
               const IndexType& offset )
 //: meshPointer( meshPointer )
 {
-<<<<<<< HEAD
    TNL_ASSERT_GE( data->getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
                   "The input vector is not large enough for binding to the mesh function." );      
-=======
 
     SetupSynchronizer(meshPointer->GetDistMesh());
 
    this->meshPointer=meshPointer;
->>>>>>> origin/mpi-explosive
    this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
 
@@ -211,16 +204,13 @@ bind( const MeshPointer& meshPointer,
       const Vector& data,
       const IndexType& offset )
 {
-<<<<<<< HEAD
    TNL_ASSERT_GE( data.getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
                   "The input vector is not large enough for binding to the mesh function." );      
    this->meshPointer = meshPointer;
-=======
 
     SetupSynchronizer(meshPointer->GetDistMesh());
 
    this->meshPointer=meshPointer;
->>>>>>> origin/mpi-explosive
    this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
 
@@ -234,16 +224,13 @@ bind( const MeshPointer& meshPointer,
       const SharedPointer< Vector >& data,
       const IndexType& offset )
 {
-<<<<<<< HEAD
    TNL_ASSERT_GE( data->getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
                    "The input vector is not large enough for binding to the mesh function." );      
    this->meshPointer = meshPointer;
-=======
 
     SetupSynchronizer(meshPointer->GetDistMesh());
 
    this->meshPointer=meshPointer;
->>>>>>> origin/mpi-explosive
    this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
 
