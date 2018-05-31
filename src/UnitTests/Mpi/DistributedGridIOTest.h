@@ -233,7 +233,7 @@ class TestDistributedGridIO{
 
         SharedPointer<MeshType> gridptr;
         SharedPointer<MeshFunctionType> meshFunctionptr;
-        distrgrid.SetupGrid(*gridptr);
+        distrgrid.setupGrid(*gridptr);
        
         DofType dof(gridptr->template getEntitiesCount< Cell >());
         dof.setValue(0);
@@ -332,7 +332,7 @@ class TestDistributedGridIO{
         //Crete "distributedgrid driven" grid filed by load
         SharedPointer<MeshType> loadGridptr;
         SharedPointer<MeshFunctionType> loadMeshFunctionptr;
-        distrgrid.SetupGrid(*loadGridptr);
+        distrgrid.setupGrid(*loadGridptr);
         
         DofType loadDof(loadGridptr->template getEntitiesCount< Cell >());
         loadDof.setValue(0);
@@ -346,7 +346,7 @@ class TestDistributedGridIO{
         //Crete "distributedgrid driven" grid filed by evaluated linear function
         SharedPointer<MeshType> gridptr;
         SharedPointer<MeshFunctionType> meshFunctionptr;
-        distrgrid.SetupGrid(*gridptr);
+        distrgrid.setupGrid(*gridptr);
         
         DofType dof(gridptr->template getEntitiesCount< Cell >());
         dof.setValue(-1);
