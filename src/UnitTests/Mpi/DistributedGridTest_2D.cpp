@@ -406,7 +406,7 @@ class DistributedGirdTest_2D : public ::testing::Test {
     distr[1]=3;
     distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap, distr);
     
-    distrgrid->SetupGrid(*gridptr);
+    distrgrid->setupGrid(*gridptr);
     dof=new DofType(gridptr->template getEntitiesCount< Cell >());
     
     meshFunctionptr->bind(gridptr,*dof);

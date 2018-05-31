@@ -137,7 +137,7 @@ class DistributedGirdTest_1D : public ::testing::Test {
     distrgrid=new DistributedMeshType();
     distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
     
-    distrgrid->SetupGrid(*gridptr);
+    distrgrid->setupGrid(*gridptr);
     dof=new DofType(gridptr->template getEntitiesCount< Cell >());
     
     meshFunctionptr->bind(gridptr,*dof);
