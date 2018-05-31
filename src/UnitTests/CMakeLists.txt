@@ -2,6 +2,7 @@ if( WITH_TESTS STREQUAL "yes" )
 
 ADD_SUBDIRECTORY( Containers )
 ADD_SUBDIRECTORY( Matrices )
+ADD_SUBDIRECTORY( Mpi )
 ADD_SUBDIRECTORY( Meshes )
 
 ADD_EXECUTABLE( UniquePointerTest UniquePointerTest.cpp )
@@ -35,10 +36,16 @@ TARGET_LINK_LIBRARIES( ObjectTest
                            ${GTEST_BOTH_LIBRARIES} 
                            tnl )
 
+ADD_EXECUTABLE( SaveAndLoadMeshfunctionTest SaveAndLoadMeshfunctionTest.cpp )
+TARGET_COMPILE_OPTIONS( SaveAndLoadMeshfunctionTest PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( SaveAndLoadMeshfunctionTest
+                           ${GTEST_BOTH_LIBRARIES} 
+                           tnl )
 
 ADD_TEST( FileTest ${EXECUTABLE_OUTPUT_PATH}/FileTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( StringTest ${EXECUTABLE_OUTPUT_PATH}/StringTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( ObjectTest ${EXECUTABLE_OUTPUT_PATH}/ObjectTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( UniquePointerTest ${EXECUTABLE_OUTPUT_PATH}/UniquePointerTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( SaveAndLoadMeshfunctionTest ${EXECUTABLE_OUTPUT_PATH}/SaveAndLoadMeshfunctionTest${CMAKE_EXECUTABLE_SUFFIX} )
 
 endif( WITH_TESTS STREQUAL "yes" )

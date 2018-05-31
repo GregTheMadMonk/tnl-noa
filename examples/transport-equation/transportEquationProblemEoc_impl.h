@@ -26,9 +26,10 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 String
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 getTypeStatic()
 {
    return String( "transportEquationProblemEoc< " ) + Mesh :: getTypeStatic() + " >";
@@ -37,9 +38,10 @@ getTypeStatic()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 String
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 getPrologHeader() const
 {
    return String( "Transport Equation EOC" );
@@ -49,9 +51,10 @@ getPrologHeader() const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 bool
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
@@ -126,9 +129,10 @@ setup( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 bool
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshPointer& meshPointer,
                      DofVectorPointer& dofs,

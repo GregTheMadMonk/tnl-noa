@@ -30,6 +30,7 @@ TimeDependentPDESolver()
 {
 }
 
+
 template< typename Problem,
           typename DiscreteSolver,   
           typename TimeStepper >
@@ -62,9 +63,8 @@ setup( const Config::ParameterContainer& parameters,
     * Load the mesh from the mesh file
     */
    const String& meshFile = parameters.getParameter< String >( "mesh" );
-   if( ! Meshes::loadMesh( meshFile, *meshPointer ) )
+   if( ! Meshes::loadMesh<typename Problem::CommunicatorType>( meshFile, *meshPointer, distrMesh ) )
       return false;
-
    /****
     * Setup the problem
     */

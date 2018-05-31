@@ -162,7 +162,7 @@ fi
 
 if test ${WITH_TESTS} = "yes";
 then
-    make test
+    make test CTEST_OUTPUT_ON_FAILURE=1
     if test $? != 0; then
         echo "Error: Some test did not pass successfuly."
     fi

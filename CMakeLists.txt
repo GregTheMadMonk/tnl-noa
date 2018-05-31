@@ -50,7 +50,7 @@ endif()
 
 # set Debug/Release options
 set( CMAKE_CXX_FLAGS "-std=c++11 -pthread -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
-set( CMAKE_CXX_FLAGS_DEBUG "-g" )
+set( CMAKE_CXX_FLAGS_DEBUG "-g -rdynamic -ftemplate-backtrace-limit=0" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG" )
 #set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
 # pass -rdynamic only in Debug mode
@@ -63,7 +63,7 @@ if( CXX_COMPILER_NAME MATCHES "icpc" )
    message( "Intel compiler detected..."    )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_ICPC -wd2568 -wd2571 -wd2570")
    #####
-   #  Ckeck for MIC 
+   #  Check for MIC 
    #
    if( WITH_MIC STREQUAL "yes" )
        message( "Compile MIC support..."    )
@@ -85,6 +85,27 @@ if( DEFINED ENV{CI_JOB_NAME} )
       set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color" )
    endif()
 endif()
+
+#####
+# Check for MPI -- poznej podle vraperu compileru -- da se testovat preklad bez MPI
+#
+if( ${CXX_COMPILER_NAME} STREQUAL "mpic++" )
+   message( "MPI compiler detected."    )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
+   set( CUDA_HOST_COMPILER "mpic++" )
+
+endif()
+
+####
+# Check for MPI -- not working
+#
+#find_package( MPI )
+#if( MPI_CXX_FOUND )
+   # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
+   # message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
+   # message( "MPI link flags  -- ${MPI_CXX_LINK_FLAGS}")
+   # message( "MPI libraries-- ${MPI_CXX_LIBRARIES}")
+#endif()
 
 #####
 # Check for CUDA
@@ -181,7 +202,7 @@ if( WITH_CUDA STREQUAL "yes" )
         if( NOT WITH_CUSPARSE STREQUAL "no" )
            find_path( CUSPARSE_INCLUDE_DIR cusparse.h
                       /usr/local/cuda/include                   
-                      ${CUDA_INCLUDE_DIR}  
+                      ${CUDA_INCLUDE_DIRS}  
                       DOC "CUSPARSE headers." )
            if( ${CUSPARSE_INCLUDE_DIR} STREQUAL "CUSPARSE_INCLUDE_DIR-NOTFOUND" )
                message( "CUSPARSE not found." )
@@ -204,15 +225,6 @@ if( OPENMP_FOUND AND WITH_OPENMP STREQUAL "yes" )
    message( "Compiler supports OpenMP." )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP ${OpenMP_CXX_FLAGS}" )
 endif()
-
-####
-# Check for MPI
-#
-#find_package( MPI )
-#if( MPI_CXX_FOUND )
-#    set( BUILD_MPI TRUE )
-#    message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
-#endif()
 
 find_package( DCMTK )
 if( DCMTK_FOUND )

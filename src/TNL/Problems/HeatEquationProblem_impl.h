@@ -24,15 +24,20 @@
 
 #include "HeatEquationProblem.h"
 
+//#define MPIIO
+#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+
+
 namespace TNL {
 namespace Problems {
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 String
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 getTypeStatic()
 {
    return String( "HeatEquationProblem< " ) + Mesh :: getTypeStatic() + " >";
@@ -41,9 +46,10 @@ getTypeStatic()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 String
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 getPrologHeader() const
 {
    return String( "Heat equation" );
@@ -52,9 +58,10 @@ getPrologHeader() const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 void
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
 }
@@ -62,9 +69,10 @@ writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) cons
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 bool
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 writeEpilog( Logger& logger )
 {
    return true;
@@ -73,9 +81,10 @@ writeEpilog( Logger& logger )
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 bool
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
@@ -96,9 +105,10 @@ setup( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
-typename HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+typename HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::IndexType
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 getDofs( const MeshPointer& meshPointer ) const
 {
    /****
@@ -110,9 +120,10 @@ getDofs( const MeshPointer& meshPointer ) const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 void
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 bindDofs( const MeshPointer& meshPointer,
           const DofVectorPointer& dofVector )
 {
@@ -123,9 +134,10 @@ bindDofs( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 bool
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshPointer& meshPointer,
                      DofVectorPointer& dofs,
@@ -133,21 +145,32 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 {
    this->bindDofs( meshPointer, dofs );
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-   if( ! this->uPointer->boundLoad( initialConditionFile ) )
-   {
-      std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
-      return false;
-   }
+   std::cout<<"setInitialCondition" <<std::endl; 
+   if(CommunicatorType::isDistributed())
+    {
+        std::cout<<"Nodes Distribution: " << uPointer->getMesh().GetDistMesh()->printProcessDistr() << std::endl;
+        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(initialConditionFile, *uPointer );
+        uPointer->template Synchronize<CommunicatorType>();
+    }
+    else
+    {
+       if( ! this->uPointer->boundLoad( initialConditionFile ) )
+       {
+          std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
+          return false;
+       }
+    }
    return true;
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
    template< typename MatrixPointer >          
 bool
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 setupLinearSystem( const MeshPointer& meshPointer,
                    MatrixPointer& matrixPointer )
 {
@@ -170,9 +193,10 @@ setupLinearSystem( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 bool
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshPointer& meshPointer,
@@ -187,17 +211,28 @@ makeSnapshot( const RealType& time,
    fileName.setFileNameBase( "u-" );
    fileName.setExtension( "tnl" );
    fileName.setIndex( step );
-   if( ! this->uPointer->save( fileName.getFileName() ) )
-      return false;
+
+   std::cout<<"Make snapshot" <<std::endl; 
+
+    if(CommunicatorType::isDistributed())
+    {
+       Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::save(fileName.getFileName(), *uPointer );
+    }
+    else
+    {
+       if( ! this->uPointer->save( fileName.getFileName() ) )
+          return false;
+    }
    return true;
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 void
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 getExplicitUpdate( const RealType& time,
                 const RealType& tau,
                 const MeshPointer& meshPointer,
@@ -219,16 +254,18 @@ getExplicitUpdate( const RealType& time,
    this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer ),
    this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer ),
    this->explicitUpdater.setRightHandSide( this->rightHandSidePointer ),
-   this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, meshPointer, this->uPointer, fuPointer );
+   this->explicitUpdater.template update< typename Mesh::Cell, CommType >( time, tau, meshPointer, this->uPointer, fuPointer );
+
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
     template< typename MatrixPointer >          
 void
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshPointer& meshPointer,

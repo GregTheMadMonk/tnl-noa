@@ -22,6 +22,7 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename InviscidOperators >
 class eulerProblem:
    public PDEProblem< Mesh,
@@ -35,6 +36,8 @@ class eulerProblem:
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename InviscidOperators::IndexType IndexType;
       typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+
+      typedef CommType CommunicatorType;
       
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;

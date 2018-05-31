@@ -477,6 +477,39 @@ Real tnlScalarProduct( const StaticVector< 3, Real >& u,
    return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ] + u[ 2 ] * v[ 2 ];
 }
 
+template< typename T1,
+          typename T2>
+StaticVector<1, T1> tnlDotProduct( const StaticVector< 1, T1 >& u,
+                       const StaticVector< 1, T2 >& v )
+{
+   StaticVector<1, T1> ret;
+   ret[0]=u[0]*v[0];
+   return ret;
+}
+
+template< typename T1,
+          typename T2>
+StaticVector<2, T1> tnlDotProduct( const StaticVector< 2, T1 >& u,
+                       const StaticVector< 2, T2 >& v )
+{
+   StaticVector<2, T1> ret;
+   ret[0]=u[0]*v[0];
+   ret[1]=u[1]*v[1];
+   return ret;
+}
+
+template< typename T1,
+          typename T2>
+StaticVector<3, T1> tnlDotProduct( const StaticVector< 3, T1 >& u,
+                       const StaticVector< 3, T2 >& v )
+{
+   StaticVector<3, T1> ret;
+   ret[0]=u[0]*v[0];
+   ret[1]=u[1]*v[1];
+   ret[2]=u[2]*v[2];
+   return ret;
+}
+
 template< typename Real >
 Real tnlTriangleArea( const StaticVector< 2, Real >& a,
                       const StaticVector< 2, Real >& b,

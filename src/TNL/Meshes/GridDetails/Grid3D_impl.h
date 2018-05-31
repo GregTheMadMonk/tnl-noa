@@ -39,7 +39,8 @@ Grid< 3, Real, Device, Index > :: Grid()
   numberOfDzEdges( 0 ),
   numberOfDxAndDyEdges( 0 ),
   numberOfEdges( 0 ),
-  numberOfVertices( 0 )
+  numberOfVertices( 0 ),
+  distGrid(nullptr)
 {
 }
 
@@ -91,6 +92,17 @@ void Grid< 3, Real, Device, Index > :: computeSpaceSteps()
       this->spaceSteps.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
       this->spaceSteps.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
       this->spaceSteps.z() = this->proportions.z() / ( Real ) this->getDimensions().z();
+      
+      this->computeSpaceStepPowers();
+      
+   }
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 3, Real, Device, Index > :: computeSpaceStepPowers()
+{      
       const RealType& hx = this->spaceSteps.x();
       const RealType& hy = this->spaceSteps.y();
       const RealType& hz = this->spaceSteps.z();
@@ -160,8 +172,37 @@ void Grid< 3, Real, Device, Index > :: computeSpaceSteps()
             }
          }
       }
-   }
 }
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 3, Real, Device, Index > :: computeProportions()
+{
+    this->proportions.x()=this->dimensions.x()*this->spaceSteps.x();
+    this->proportions.y()=this->dimensions.y()*this->spaceSteps.y();
+    this->proportions.z()=this->dimensions.z()*this->spaceSteps.z();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 3, Real, Device, Index > :: setOrigin( const PointType& origin)
+{
+    this->origin=origin;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 3, Real, Device, Index > :: setSpaceSteps(const PointType& steps)
+{
+     this->spaceSteps=steps;    
+     computeSpaceStepPowers();
+     computeProportions(); 
+}
+
 
 template< typename Real,
           typename Device,
@@ -451,6 +492,23 @@ template< typename Real,
          }
    lpNorm *= this->getSpaceSteps().x() * this->getSpaceSteps().y() * this->getSpaceSteps().z();
    return ::pow( lpNorm, 1.0 / p );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 3, Real, Device, Index >:: SetDistMesh(DistributedMeshType * distMesh)
+{
+    this->distGrid=distMesh;
+}
+   
+template< typename Real,
+          typename Device,
+          typename Index >
+DistributedMeshes::DistributedMesh <Grid< 3, Real, Device, Index >> * 
+Grid< 3, Real, Device, Index >:: GetDistMesh(void) const
+{
+    return this->distGrid;
 }
 
 template< typename Real,

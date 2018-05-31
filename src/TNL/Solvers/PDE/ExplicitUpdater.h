@@ -19,6 +19,10 @@
 #include <TNL/Meshes/GridDetails/Traverser_Grid3D.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 
+#ifdef USE_MPI
+    #include <TNL/Meshes/DistributedGridSynchronizer.h>
+#endif
+
 
 namespace TNL {
 namespace Solvers {
@@ -109,7 +113,8 @@ class ExplicitUpdater
          this->userDataPointer->rightHandSide = &rightHandSidePointer.template getData< DeviceType >();
       }
             
-      template< typename EntityType >
+      template< typename EntityType,
+                typename CommunicatorType >
       void update( const RealType& time,
                    const RealType& tau,
                    const MeshPointer& meshPointer,
@@ -143,7 +148,10 @@ class ExplicitUpdater
                                              TraverserBoundaryEntitiesProcessor >
                                            ( meshPointer,
                                              userDataPointer );
-         
+
+         if(CommunicatorType::isDistributed())
+            fuPointer->template Synchronize<CommunicatorType>();
+
       }
       
          

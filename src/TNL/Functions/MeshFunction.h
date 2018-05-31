@@ -13,6 +13,8 @@
 #include <TNL/Functions/MeshFunctionGnuplotWriter.h>
 #include <TNL/Functions/MeshFunctionVTKWriter.h>
 #include <TNL/SharedPointer.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 #pragma once
 
@@ -37,6 +39,8 @@ class MeshFunction :
       typedef Real RealType;
       typedef Containers::Vector< RealType, DeviceType, IndexType > VectorType;
       typedef Functions::MeshFunction< Mesh, MeshEntityDimension, Real > ThisType;
+      typedef Meshes::DistributedMeshes::DistributedMesh<MeshType> DistributedMeshType;
+      typedef Meshes::DistributedMeshes::DistributedMeshSynchronizer<ThisType> DistributedMeshSynchronizerType;
  
       static constexpr int getEntitiesDimension() { return MeshEntityDimension; }
       
@@ -155,14 +159,24 @@ class MeshFunction :
       using Object::load;
  
       using Object::boundLoad;
+
+      template< typename CommunicatorType>
+      void Synchronize();    
+
  
    protected:
+
+      DistributedMeshSynchronizerType synchronizer;    
       
       MeshPointer meshPointer;
       
       VectorType data;
  
       template< typename, typename > friend class MeshFunctionEvaluator;
+
+   private:
+      void SetupSynchronizer(DistributedMeshType *distrMesh);
+   
 };
 
 } // namespace Functions

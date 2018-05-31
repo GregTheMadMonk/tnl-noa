@@ -34,8 +34,11 @@ template< typename Mesh,
           typename Real >
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const MeshPointer& meshPointer )
-: meshPointer( meshPointer )
 {
+
+    SetupSynchronizer(meshPointer->GetDistMesh());
+
+   this->meshPointer=meshPointer;
    this->data.setSize( getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
    TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
                std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
@@ -47,8 +50,11 @@ template< typename Mesh,
           typename Real >
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const ThisType& meshFunction )
-: meshPointer( meshFunction.meshPointer )
 {
+
+    SetupSynchronizer(meshFunction.meshPointer->GetDistMesh());
+
+   this->meshPointer=meshFunction.meshPointer;
    this->data.bind( meshFunction.getData() );
 }
 
@@ -60,10 +66,17 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const MeshPointer& meshPointer,
               Vector& data,
               const IndexType& offset )
-: meshPointer( meshPointer )
+//: meshPointer( meshPointer )
 {
+<<<<<<< HEAD
    TNL_ASSERT_GE( data.getSize(), meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
                   "The input vector is not large enough for binding to the mesh function." );      
+=======
+
+    SetupSynchronizer(meshPointer->GetDistMesh());
+
+   this->meshPointer=meshPointer;
+>>>>>>> origin/mpi-explosive
    this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
 
@@ -76,10 +89,17 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const MeshPointer& meshPointer,
               SharedPointer< Vector >& data,
               const IndexType& offset )
-: meshPointer( meshPointer )
+//: meshPointer( meshPointer )
 {
+<<<<<<< HEAD
    TNL_ASSERT_GE( data->getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
                   "The input vector is not large enough for binding to the mesh function." );      
+=======
+
+    SetupSynchronizer(meshPointer->GetDistMesh());
+
+   this->meshPointer=meshPointer;
+>>>>>>> origin/mpi-explosive
    this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
 
@@ -174,7 +194,10 @@ void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 bind( ThisType& meshFunction )
 {
-   this->meshPointer = meshFunction.getMeshPointer();
+
+    SetupSynchronizer(meshFunction.meshPointer->GetDistMesh());
+
+   this->meshPointer=meshFunction.meshPointer;
    this->data.bind( meshFunction.getData() );
 }
 
@@ -188,9 +211,16 @@ bind( const MeshPointer& meshPointer,
       const Vector& data,
       const IndexType& offset )
 {
+<<<<<<< HEAD
    TNL_ASSERT_GE( data.getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
                   "The input vector is not large enough for binding to the mesh function." );      
    this->meshPointer = meshPointer;
+=======
+
+    SetupSynchronizer(meshPointer->GetDistMesh());
+
+   this->meshPointer=meshPointer;
+>>>>>>> origin/mpi-explosive
    this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
 
@@ -204,9 +234,16 @@ bind( const MeshPointer& meshPointer,
       const SharedPointer< Vector >& data,
       const IndexType& offset )
 {
+<<<<<<< HEAD
    TNL_ASSERT_GE( data->getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
                    "The input vector is not large enough for binding to the mesh function." );      
    this->meshPointer = meshPointer;
+=======
+
+    SetupSynchronizer(meshPointer->GetDistMesh());
+
+   this->meshPointer=meshPointer;
+>>>>>>> origin/mpi-explosive
    this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
 
@@ -218,7 +255,10 @@ void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 setMesh( const MeshPointer& meshPointer )
 {
-   this->meshPointer = meshPointer;
+
+    SetupSynchronizer(meshPointer->GetDistMesh());
+
+   this->meshPointer=meshPointer;
    this->data.setSize( getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
 
@@ -444,7 +484,7 @@ save( File& file ) const
                std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
                          << "this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() );
    if( ! Object::save( file ) )
-      return false;
+      return false;              
    return this->data.save( file );
 }
 
@@ -456,7 +496,7 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 load( File& file )
 {
    if( ! Object::load( file ) )
-      return false;
+      return false;   
    if( ! this->data.load( file ) )
       return false;
    const IndexType meshSize = this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >();
@@ -506,6 +546,38 @@ write( const String& fileName,
    }
    return true;
 }
+
+template< typename Mesh,
+          int MeshEntityDimension,
+          typename Real >
+template< typename CommunicatorType>
+void
+MeshFunction< Mesh, MeshEntityDimension, Real >:: 
+Synchronize()
+{
+    auto distrMesh = this->getMesh().GetDistMesh();
+    if(distrMesh != NULL && distrMesh->IsDistributed())
+    {
+        this->synchronizer.template Synchronize<CommunicatorType>(*this);
+    }
+}
+
+template< typename Mesh,
+          int MeshEntityDimension,
+          typename Real >
+void
+MeshFunction< Mesh, MeshEntityDimension, Real >:: 
+SetupSynchronizer(DistributedMeshType *distrMesh )
+{
+    if(distrMesh)//pokud síť kterou se snaží uživatel nastavit je distruibuovaná
+    {
+        if(this->getMesh().GetDistMesh()!=distrMesh)//pokud má nová síť jinou distribuovanou síť než předchozí
+        {
+            this->synchronizer.SetDistributedGrid(distrMesh);
+        }
+    }
+}
+
  
 } // namespace Functions
 } // namespace TNL

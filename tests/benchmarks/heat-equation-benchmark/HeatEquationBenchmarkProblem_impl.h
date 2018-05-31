@@ -10,9 +10,10 @@
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 String
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 getTypeStatic()
 {
    return String( "HeatEquationBenchmarkProblem< " ) + Mesh :: getTypeStatic() + " >";
@@ -21,8 +22,9 @@ getTypeStatic()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 HeatEquationBenchmarkProblem()
 : cudaMesh( 0 ),
   cudaBoundaryConditions( 0 ),
@@ -34,9 +36,10 @@ HeatEquationBenchmarkProblem()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 String
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 getPrologHeader() const
 {
    return String( "Heat Equation Benchmark" );
@@ -45,9 +48,10 @@ getPrologHeader() const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 void
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
@@ -59,9 +63,10 @@ writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) cons
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 bool
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
@@ -84,9 +89,10 @@ setup( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
-typename HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+typename HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::IndexType
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 getDofs( const MeshPointer& meshPointer ) const
 {
    /****
@@ -99,9 +105,10 @@ getDofs( const MeshPointer& meshPointer ) const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 void
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 bindDofs( const MeshPointer& meshPointer,
           DofVectorPointer& dofsPointer )
 {
@@ -110,9 +117,10 @@ bindDofs( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 bool
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshPointer& meshPointer,
                      DofVectorPointer& dofsPointer,
@@ -131,10 +139,11 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
    template< typename Matrix >
 bool
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 setupLinearSystem( const MeshType& mesh,
                    Matrix& matrix )
 {
@@ -157,9 +166,10 @@ setupLinearSystem( const MeshType& mesh,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 bool
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshPointer& meshPointer,
@@ -324,6 +334,7 @@ template< typename GridType,
           typename GridEntity,
           typename DifferentialOperator,
           typename RightHandSide,
+          typename CommType,
           typename MeshFunction >
 __global__ void 
 heatEquationTemplatedCompact( const GridType* grid,
@@ -372,9 +383,10 @@ heatEquationTemplatedCompact( const GridType* grid,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 void
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 getExplicitUpdate( const RealType& time,
                 const RealType& tau,
                 const MeshPointer& mesh,
@@ -528,7 +540,7 @@ getExplicitUpdate( const RealType& time,
          explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
          explicitUpdater.setRightHandSide( this->rightHandSidePointer );
          
-         this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, this->u, this->fu );
+         this->explicitUpdater.template update< typename Mesh::Cell, CommunicatorType >( time, tau, mesh, this->u, this->fu );
       }
    }
 }
@@ -536,10 +548,11 @@ getExplicitUpdate( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
    template< typename MatrixPointer >
 void
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshPointer& mesh,
@@ -569,8 +582,9 @@ assemblyLinearSystem( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 ~HeatEquationBenchmarkProblem()
 {
    if( this->cudaMesh ) Devices::Cuda::freeFromDevice( this->cudaMesh );

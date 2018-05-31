@@ -111,10 +111,16 @@ bool resolveMeshType( const String& fileName_,
 }
 
 // TODO: reorganize
-template< typename MeshConfig, typename Device >
+template< typename CommunicatorType, typename MeshConfig, typename Device >
 bool
-loadMesh( const String& fileName_, Mesh< MeshConfig, Device >& mesh )
+loadMesh( const String& fileName_, Mesh< MeshConfig, Device >& mesh, DistributedMeshes::DistributedMesh<Mesh< MeshConfig, Device >> &distributedMesh )
 {
+   if(CommunicatorType::isDistributed())
+   {
+       std::cerr << "Distributed Mesh si not suported yet, only Distributed Grid is supported.";
+       return false;
+   }
+
    std::cout << "Loading mesh from file " << fileName_ << " ..." << std::endl;
    std::string fileName( fileName_.getString() );
    bool status = true;
@@ -145,10 +151,16 @@ loadMesh( const String& fileName_, Mesh< MeshConfig, Device >& mesh )
    return true;
 }
 
-template< typename MeshConfig >
+template<typename CommunicatorType, typename MeshConfig >
 bool
-loadMesh( const String& fileName, Mesh< MeshConfig, Devices::Cuda >& mesh )
+loadMesh( const String& fileName, Mesh< MeshConfig, Devices::Cuda >& mesh, DistributedMeshes::DistributedMesh<Mesh< MeshConfig, Devices::Cuda >> &distributedMesh )
 {
+   if(CommunicatorType::isDistributed())
+   {
+       std::cerr << "Distributed Mesh si not suported yet, only Distributed Grid is supported.";
+       return false;
+   }
+
    Mesh< MeshConfig, Devices::Host > hostMesh;
    if( ! loadMesh( fileName, hostMesh ) )
       return false;
@@ -156,11 +168,46 @@ loadMesh( const String& fileName, Mesh< MeshConfig, Devices::Cuda >& mesh )
    return true;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >
+template<typename CommunicatorType, int Dimension, typename Real, typename Device, typename Index >
 bool
-loadMesh( const String& fileName, Grid< Dimension, Real, Device, Index >& mesh )
+loadMesh( const String& fileName, Grid< Dimension, Real, Device, Index >& mesh, DistributedMeshes::DistributedMesh<Grid< Dimension, Real, Device, Index >> &distributedMesh)
 {
-   std::cout << "Loading mesh from file " << fileName << " ..." << std::endl;
+
+   if(CommunicatorType::isDistributed())
+   {
+        std::cout << "Loading a global mesh from the file " << fileName << "...";
+        Grid< Dimension, Real, Device, Index > globalGrid;
+        if( ! globalGrid.load( fileName ) )
+        {
+          std::cerr << std::endl;
+          std::cerr << "I am not able to load the global mesh from the file " << fileName << "." << std::endl;
+          return false;
+        }
+        std::cout << " [ OK ] " << std::endl;
+  
+       typename Meshes::DistributedMeshes::DistributedMesh<Grid< Dimension, Real, Device, Index >>::CoordinatesType overlap;
+       overlap.setValue(1);
+       distributedMesh.template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
+       distributedMesh.SetupGrid(mesh);
+       return true;
+   }
+   else
+   {
+       std::cout << "Loading a mesh from the file " << fileName << "...";
+       if( ! mesh.load( fileName ) )
+       {
+          std::cerr << std::endl;
+          std::cerr << "I am not able to load the mesh from the file " << fileName << "." << std::endl;
+          std::cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << std::endl;
+          return false;
+       }
+       std::cout << " [ OK ] " << std::endl;
+       return true;
+    }
+
+
+
+  /* std::cout << "Loading mesh from file " << fileName << " ..." << std::endl;
    if( ! mesh.load( fileName ) )
    {
       std::cerr << "I am not able to load the grid from the file " << fileName << ". "
@@ -168,7 +215,7 @@ loadMesh( const String& fileName, Grid< Dimension, Real, Device, Index >& mesh )
                 << std::endl;
       return false;
    }
-   return true;
+   return true;*/
 }
 
 } // namespace Meshes

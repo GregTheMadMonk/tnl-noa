@@ -93,9 +93,9 @@ ParameterContainer::
    parameters. DeepEraseAll();
 }
 
-void ParameterContainer::MPIBcast( int root, MPI_Comm mpi_comm )
+/*void ParameterContainer::MPIBcast( int root, MPI_Comm mpi_comm )
 {
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    int i;
    int size = parameters. getSize();
    :: MPIBcast( size, 1, root, mpi_comm );
@@ -161,7 +161,7 @@ void ParameterContainer::MPIBcast( int root, MPI_Comm mpi_comm )
    }
 #endif
 }
-
+*/
 bool
 parseCommandLine( int argc, char* argv[],
                   const Config::ConfigDescription& config_description,

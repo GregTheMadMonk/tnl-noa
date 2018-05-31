@@ -42,7 +42,8 @@ template< typename Real,
           typename Index,
           typename MeshType,
           typename MeshConfig,
-          typename SolverStarter >
+          typename SolverStarter,
+          typename CommunicatorType>
 class tnlDirectEikonalSolverSetter
 {
    public:
