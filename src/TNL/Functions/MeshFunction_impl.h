@@ -547,7 +547,7 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 Synchronize()
 {
     auto distrMesh = this->getMesh().GetDistMesh();
-    if(distrMesh != NULL && distrMesh->IsDistributed())
+    if(distrMesh != NULL && distrMesh->isDistributed())
     {
         this->synchronizer.template Synchronize<CommunicatorType>(*this);
     }

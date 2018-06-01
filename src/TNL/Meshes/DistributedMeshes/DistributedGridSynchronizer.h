@@ -87,7 +87,7 @@ private:
     {
         TNL_ASSERT_TRUE(isSet,"Synchronizer is not set, but used to Synchronize");
 
-        if(!distributedgrid->IsDistributed())
+        if(!distributedgrid->isDistributed())
                 return;
 
         int leftN=distributedgrid->getLeft();
@@ -250,7 +250,7 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
 
         TNL_ASSERT_TRUE(isSet,"Synchronizer is not set, but used to Synchronize");
 
-	    if(!distributedgrid->IsDistributed())
+	    if(!distributedgrid->isDistributed())
             return;
 
         int *neighbor=distributedgrid->getNeighbors();
@@ -427,7 +427,7 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
 
         TNL_ASSERT_TRUE(isSet,"Synchronizer is not set, but used to Synchronize");
 
-    	if(!distributedgrid->IsDistributed())
+    	if(!distributedgrid->isDistributed())
             return;
         
         int *neighbor=distributedgrid->getNeighbors();
