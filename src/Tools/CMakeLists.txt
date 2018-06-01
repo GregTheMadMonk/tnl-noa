@@ -36,9 +36,10 @@ target_link_libraries (tnl-curve2gnuplot tnl )
 
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnl-cuda-arch tnl-cuda-arch.cu )
-   INSTALL( TARGETS tnl-cuda-arch
-            RUNTIME DESTINATION bin
-            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+# TODO: Fix this -- https://cmake.org/pipermail/cmake/2013-September/055755.html
+#   INSTALL( TARGETS tnl-cuda-arch
+#            RUNTIME DESTINATION bin
+#            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 ENDIF()
 
 INSTALL( TARGETS tnl-init
@@ -50,7 +51,7 @@ INSTALL( TARGETS tnl-init
                  tnl-dicom-reader
                  tnl-image-converter
                  tnl-curve2gnuplot
-         DESTINATION bin )
+         RUNTIME DESTINATION bin )
 
 INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-bindir
                ${PROJECT_TOOLS_PATH}/tnl-compile
