@@ -136,7 +136,7 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
          currentTau = this -> getStopTime() - time; //we don't want to keep such tau
       else this -> tau = currentTau;
 
-      this -> refreshSolverMonitor();
+      this->refreshSolverMonitor();
 
       /****
        * Check stop conditions.
@@ -158,8 +158,8 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
 
 template< typename Problem >
 void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
-                                                       RealType tau,
-                                                       RealType& currentResidue )
+                                              RealType tau,
+                                              RealType& currentResidue )
 {
    RealType localResidue = RealType( 0.0 );
    const IndexType size = k1->getSize();

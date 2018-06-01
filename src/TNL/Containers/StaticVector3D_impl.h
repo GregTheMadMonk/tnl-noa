@@ -103,6 +103,17 @@ StaticVector< 3, Real >& StaticVector< 3, Real >::operator *= ( const Real& c )
 
 template< typename Real >
 __cuda_callable__
+StaticVector< 3, Real >& StaticVector< 3, Real >::operator /= ( const Real& c )
+{
+   const RealType d = 1.0 / c;
+   this->data[ 0 ] *= d;
+   this->data[ 1 ] *= d;
+   this->data[ 2 ] *= d;
+   return *this;
+}
+
+template< typename Real >
+__cuda_callable__
 StaticVector< 3, Real > StaticVector< 3, Real >::operator + ( const StaticVector& u ) const
 {
    StaticVector< 3, Real > res;

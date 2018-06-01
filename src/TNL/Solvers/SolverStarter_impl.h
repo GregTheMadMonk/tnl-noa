@@ -135,7 +135,8 @@ class UserDefinedTimeDiscretisationSetter
             return false;
          }
          SolverStarter< ConfigTag > solverStarter;
-         return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters, timeStepper );
+         // TODO: Solve the set-up of the DiscreteSOlver type in some better way
+         return solverStarter.template runPDESolver< Problem, TimeStepper, typename Problem::DiscreteSolver >( problem, parameters );
       }
 };
 

@@ -81,10 +81,12 @@ class ArrayOperations< Devices::Cuda >
    static void freeMemory( Element* data );
 
    template< typename Element >
+   __cuda_callable__
    static void setMemoryElement( Element* data,
                                  const Element& value );
 
    template< typename Element >
+   __cuda_callable__
    static Element getMemoryElement( const Element* data );
 
    // TODO: does not make sense for CUDA - remove?
