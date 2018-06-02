@@ -186,9 +186,11 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
 
        //write 
        MPI_File file;
-       MPI_File_open(MPI_COMM_WORLD,fileName.getString(),
-        	   MPI_MODE_CREATE|MPI_MODE_WRONLY,
-               MPI_INFO_NULL, &file);
+       MPI_File_open( MPI_COMM_WORLD,
+                      const_cast< char* >( fileName.getString() ),
+                      MPI_MODE_CREATE | MPI_MODE_WRONLY,
+                      MPI_INFO_NULL,
+                      &file);
 
        int headerSize=0;
 
@@ -280,7 +282,7 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
         MPI_Status wstatus;
 
         //Magic
-        MPI_File_write(file,"TNLMN",5,MPI_CHAR,&wstatus);
+        MPI_File_write( file, const_cast< void* >( ( const void* ) "TNLMN" ), 5, MPI_CHAR,&wstatus );
         MPI_Get_count(&wstatus,MPI_CHAR,&count);
         size+=count*sizeof(char);
 
@@ -295,7 +297,7 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
         size+=count*sizeof(char);
 
         //Magic
-        MPI_File_write(file,"TNLMN",5,MPI_CHAR,&wstatus);
+        MPI_File_write( file, const_cast< void* >( ( const void* ) "TNLMN" ),5,MPI_CHAR,&wstatus);
         MPI_Get_count(&wstatus,MPI_CHAR,&count);
         size+=count*sizeof(char);
         //Vector Type
@@ -332,9 +334,11 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
 
        //write 
        MPI_File file;
-       MPI_File_open(MPI_COMM_WORLD,fileName.getString(),
-        	   MPI_MODE_RDONLY,
-               MPI_INFO_NULL, &file);
+       MPI_File_open( MPI_COMM_WORLD,
+                      const_cast< char* >( fileName.getString() ),
+                      MPI_MODE_RDONLY,
+                      MPI_INFO_NULL,
+                      &file );
        
        int headerSize=0;
 
