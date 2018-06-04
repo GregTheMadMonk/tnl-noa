@@ -1,4 +1,5 @@
-SET( headers DistributedMesh.h
+SET( headers BufferEntitiesHelper.h
+             DistributedMesh.h
              DistributedMeshSynchronizer.h
              DistributedGrid_1D.h
              DistributedGrid_2D.h
