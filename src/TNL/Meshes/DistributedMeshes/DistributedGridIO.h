@@ -50,8 +50,8 @@ class DistributedGridIO<MeshFunctionType,Dummy>
 
 
 /*
- * This variant cerate copy of MeshFunction but smaler, reduced to local entites, without overlap. 
- * It slow and has high RAM consupation
+ * This variant cerate copy of MeshFunction but smaller, reduced to local entities, without overlap. 
+ * It is slow and has high RAM consumption
  */
 template<typename MeshFunctionType> 
 class DistributedGridIO<MeshFunctionType,LocalCopy>

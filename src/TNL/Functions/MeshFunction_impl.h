@@ -544,7 +544,7 @@ template< typename Mesh,
 template< typename CommunicatorType>
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >:: 
-Synchronize()
+synchronize()
 {
     auto distrMesh = this->getMesh().GetDistMesh();
     if(distrMesh != NULL && distrMesh->isDistributed())

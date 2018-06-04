@@ -22,21 +22,22 @@
 namespace TNL {
 namespace Communicators {
 
-    class MpiCommunicator
-    {
+   class MpiCommunicator
+   {
 
-        private:
-        inline static MPI_Datatype MPIDataType( const signed char* ) { return MPI_CHAR; };
-        inline static MPI_Datatype MPIDataType( const signed short int* ) { return MPI_SHORT; };
-        inline static MPI_Datatype MPIDataType( const signed int* ) { return MPI_INT; };
-        inline static MPI_Datatype MPIDataType( const signed long int* ) { return MPI_LONG; };
-        inline static MPI_Datatype MPIDataType( const unsigned char *) { return MPI_UNSIGNED_CHAR; };
-        inline static MPI_Datatype MPIDataType( const unsigned short int* ) { return MPI_UNSIGNED_SHORT; };
-        inline static MPI_Datatype MPIDataType( const unsigned int* ) { return MPI_UNSIGNED; };
-        inline static MPI_Datatype MPIDataType( const unsigned long int* ) { return MPI_UNSIGNED_LONG; };
-        inline static MPI_Datatype MPIDataType( const float* ) { return MPI_FLOAT; };
-        inline static MPI_Datatype MPIDataType( const double* ) { return MPI_DOUBLE; };
-        inline static MPI_Datatype MPIDataType( const long double* ) { return MPI_LONG_DOUBLE; };
+   public: // TODO: this was private
+
+         inline static MPI_Datatype MPIDataType( const signed char* ) { return MPI_CHAR; };
+         inline static MPI_Datatype MPIDataType( const signed short int* ) { return MPI_SHORT; };
+         inline static MPI_Datatype MPIDataType( const signed int* ) { return MPI_INT; };
+         inline static MPI_Datatype MPIDataType( const signed long int* ) { return MPI_LONG; };
+         inline static MPI_Datatype MPIDataType( const unsigned char *) { return MPI_UNSIGNED_CHAR; };
+         inline static MPI_Datatype MPIDataType( const unsigned short int* ) { return MPI_UNSIGNED_SHORT; };
+         inline static MPI_Datatype MPIDataType( const unsigned int* ) { return MPI_UNSIGNED; };
+         inline static MPI_Datatype MPIDataType( const unsigned long int* ) { return MPI_UNSIGNED_LONG; };
+         inline static MPI_Datatype MPIDataType( const float* ) { return MPI_FLOAT; };
+         inline static MPI_Datatype MPIDataType( const double* ) { return MPI_DOUBLE; };
+         inline static MPI_Datatype MPIDataType( const long double* ) { return MPI_LONG_DOUBLE; };
         
         public:
 

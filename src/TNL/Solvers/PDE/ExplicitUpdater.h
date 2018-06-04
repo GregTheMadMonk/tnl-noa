@@ -150,7 +150,7 @@ class ExplicitUpdater
                                              userDataPointer );
 
          if(CommunicatorType::isDistributed())
-            fuPointer->template Synchronize<CommunicatorType>();
+            fuPointer->template synchronize<CommunicatorType>();
 
       }
       
