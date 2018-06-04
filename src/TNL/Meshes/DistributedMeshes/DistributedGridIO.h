@@ -17,6 +17,7 @@
 
 
 #include <iostream>
+#include <mpi.h>
 
 #ifdef MPIIO
 #include <TNL/Communicators/MpiCommunicator.h>
@@ -67,7 +68,7 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
     
     static bool save(const String& fileName, MeshFunctionType &meshFunction)
     {
-        auto *distrGrid=meshFunction.getMesh().GetDistMesh();
+        auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
         
         if(distrGrid==NULL) //not distributed
         {
@@ -113,7 +114,7 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
             
     static bool load(const String& fileName,MeshFunctionType &meshFunction) 
     {
-        auto *distrGrid=meshFunction.getMesh().GetDistMesh();
+        auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
         if(distrGrid==NULL) //not distributed
         {
             return meshFunction.boundLoad(fileName);
@@ -171,7 +172,7 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
     
     static bool save(const String& fileName, MeshFunctionType &meshFunction)
     {
-        auto *distrGrid=meshFunction.getMesh().GetDistMesh();
+        auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
         
         if(distrGrid==NULL) //not distributed
         {
@@ -320,7 +321,7 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
     /* Funky bomb - no checks - only dirty load */
     static bool load(const String& fileName,MeshFunctionType &meshFunction) 
     {
-        auto *distrGrid=meshFunction.getMesh().GetDistMesh();
+        auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
         if(distrGrid==NULL) //not distributed
         {
             return meshFunction.boundLoad(fileName);

@@ -202,7 +202,7 @@ TEST_F(DistributedGirdTest_1D, LinearFunctionTest)
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_1D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-    meshFunctionptr->template Synchronize<CommunicatorType>();
+    meshFunctionptr->template synchronize<CommunicatorType>();
 
     auto entite= gridptr->template getEntity< Cell >(0);
     entite.refresh();
@@ -217,7 +217,7 @@ TEST_F(DistributedGirdTest_1D, SynchronizerNeighborTest)
 {
     setDof_1D(*dof,-1);
     constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-    meshFunctionptr->template Synchronize<CommunicatorType>();
+    meshFunctionptr->template synchronize<CommunicatorType>();
 
     if(rank!=0)
         EXPECT_EQ((*dof)[0],rank-1)<< "Left Overlap was filled by wrong process.";

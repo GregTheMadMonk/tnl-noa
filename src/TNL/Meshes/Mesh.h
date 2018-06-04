@@ -172,7 +172,7 @@ class Mesh
 
       void writeProlog( Logger& logger ) const;
 
-      DistributedMeshes::DistributedMesh< Mesh<MeshConfig,Device> >* GetDistMesh(void) const
+      DistributedMeshes::DistributedMesh< Mesh<MeshConfig,Device> >* getDistributedMesh(void) const
       {
             return NULL;
       };

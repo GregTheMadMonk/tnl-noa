@@ -139,7 +139,7 @@ class Grid< 2, Real, Device, Index > : public Object
    
    void SetDistMesh(DistributedMeshType * distGrid);
    
-   DistributedMeshType * GetDistMesh(void) const;
+   DistributedMeshType * getDistributedMesh(void) const;
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;

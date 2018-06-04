@@ -718,7 +718,7 @@ TEST_F(DistributedGirdTest_3D, LinearFunctionTest)
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_3D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-    meshFunctionptr->template Synchronize<CommunicatorType>();
+    meshFunctionptr->template synchronize<CommunicatorType>();
     
     int count =gridptr->template getEntitiesCount< Cell >();
     for(int i=0;i<count;i++)

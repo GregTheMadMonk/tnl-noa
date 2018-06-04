@@ -340,7 +340,7 @@ class TestDistributedGridIO{
 
         DistributedGridIO<MeshFunctionType> ::load(FileName, *loadMeshFunctionptr );
 
-        loadMeshFunctionptr->template Synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
+        loadMeshFunctionptr->template synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
 
 
         //Crete "distributedgrid driven" grid filed by evaluated linear function
@@ -353,7 +353,7 @@ class TestDistributedGridIO{
         meshFunctionptr->bind(gridptr,dof);
         
         linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);        
-        meshFunctionptr->template Synchronize<CommunicatorType>();
+        meshFunctionptr->template synchronize<CommunicatorType>();
 
         for(int i=0;i<dof.getSize();i++)
         {

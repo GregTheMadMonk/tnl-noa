@@ -141,7 +141,7 @@ int main ( int argc, char *argv[])
         eval.stop();
 
         sync.start();    
-        meshFunctionptr->template Synchronize<CommunicatorType>();
+        meshFunctionptr->template synchronize<CommunicatorType>();
         CommunicatorType::Barrier();
         sync.stop();
 

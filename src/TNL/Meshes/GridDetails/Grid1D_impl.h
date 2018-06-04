@@ -353,7 +353,7 @@ template< typename Real,
           typename Device,
           typename Index >
 DistributedMeshes::DistributedMesh <Grid< 1, Real, Device, Index >> * 
-Grid< 1, Real, Device, Index >:: GetDistMesh(void) const
+Grid< 1, Real, Device, Index >:: getDistributedMesh(void) const
 {
     return this->distGrid;
 }

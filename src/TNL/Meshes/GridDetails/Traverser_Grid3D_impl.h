@@ -36,7 +36,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::getEntityDimension() == 3, "The entity has wrong dimension." );
 
-      auto distributedgrid=gridPointer->GetDistMesh();
+      auto distributedgrid=gridPointer->getDistributedMesh();
    if(distributedgrid==nullptr||!distributedgrid->isDistributed())
    {
         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 1, 1, 1 >(
@@ -127,7 +127,7 @@ processInteriorEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::getEntityDimension() == 3, "The entity has wrong dimension." );
    
-   auto distributedgrid=gridPointer->GetDistMesh();
+   auto distributedgrid=gridPointer->getDistributedMesh();
    if(distributedgrid==nullptr||!distributedgrid->isDistributed())
    { 
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
@@ -198,7 +198,7 @@ processAllEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::getEntityDimension() == 3, "The entity has wrong dimension." );
  
-   auto distributedgrid=gridPointer->GetDistMesh();
+   auto distributedgrid=gridPointer->getDistributedMesh();
    if(distributedgrid==nullptr||!distributedgrid->isDistributed())
    { 
     GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
