@@ -65,6 +65,7 @@ getSolverMonitor()
 
 template< typename Real,
           typename Index >
+   template< typename Communicator >
 bool
 PDESolver< Real, Index >::
 writeProlog( Logger& logger,
@@ -83,6 +84,7 @@ writeProlog( Logger& logger,
       else
          logger.writeParameter< String >( "OMP enabled:", "no", 1 );
    }
+   Communicator::writeProlog( logger );
    logger.writeSeparator();
    logger.writeSystemInformation( parameters );
    logger.writeSeparator();

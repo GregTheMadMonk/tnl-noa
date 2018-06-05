@@ -10,105 +10,99 @@
 
 #pragma once
 
-
-
 #ifdef HAVE_MPI
 
-#include <mpi.h>
-#include <TNL/String.h>
 #include <iostream>
 #include <fstream>
+#include <mpi.h>
+#include <TNL/String.h>
+#include <TNL/Logger.h>
+
 
 namespace TNL {
 namespace Communicators {
 
-   class MpiCommunicator
-   {
+class MpiCommunicator
+{
 
    public: // TODO: this was private
 
-         inline static MPI_Datatype MPIDataType( const signed char* ) { return MPI_CHAR; };
-         inline static MPI_Datatype MPIDataType( const signed short int* ) { return MPI_SHORT; };
-         inline static MPI_Datatype MPIDataType( const signed int* ) { return MPI_INT; };
-         inline static MPI_Datatype MPIDataType( const signed long int* ) { return MPI_LONG; };
-         inline static MPI_Datatype MPIDataType( const unsigned char *) { return MPI_UNSIGNED_CHAR; };
-         inline static MPI_Datatype MPIDataType( const unsigned short int* ) { return MPI_UNSIGNED_SHORT; };
-         inline static MPI_Datatype MPIDataType( const unsigned int* ) { return MPI_UNSIGNED; };
-         inline static MPI_Datatype MPIDataType( const unsigned long int* ) { return MPI_UNSIGNED_LONG; };
-         inline static MPI_Datatype MPIDataType( const float* ) { return MPI_FLOAT; };
-         inline static MPI_Datatype MPIDataType( const double* ) { return MPI_DOUBLE; };
-         inline static MPI_Datatype MPIDataType( const long double* ) { return MPI_LONG_DOUBLE; };
-        
-        public:
-
-        //can be call before init
-        static bool isAvailable()
-        {
-            return true;
-        }
-
-        //can be called only after init 
-        static bool isDistributed()
-        {
-            return GetSize()>1;
-        };
-
-        typedef MPI::Request Request;
+      inline static MPI_Datatype MPIDataType( const signed char* ) { return MPI_CHAR; };
+      inline static MPI_Datatype MPIDataType( const signed short int* ) { return MPI_SHORT; };
+      inline static MPI_Datatype MPIDataType( const signed int* ) { return MPI_INT; };
+      inline static MPI_Datatype MPIDataType( const signed long int* ) { return MPI_LONG; };
+      inline static MPI_Datatype MPIDataType( const unsigned char *) { return MPI_UNSIGNED_CHAR; };
+      inline static MPI_Datatype MPIDataType( const unsigned short int* ) { return MPI_UNSIGNED_SHORT; };
+      inline static MPI_Datatype MPIDataType( const unsigned int* ) { return MPI_UNSIGNED; };
+      inline static MPI_Datatype MPIDataType( const unsigned long int* ) { return MPI_UNSIGNED_LONG; };
+      inline static MPI_Datatype MPIDataType( const float* ) { return MPI_FLOAT; };
+      inline static MPI_Datatype MPIDataType( const double* ) { return MPI_DOUBLE; };
+      inline static MPI_Datatype MPIDataType( const long double* ) { return MPI_LONG_DOUBLE; };
+   
+           typedef MPI::Request Request;
         static MPI::Request NullRequest;
         static std::streambuf *psbuf;
         static std::streambuf *backup;
         static std::ofstream filestr;
+        
+   public:
 
-        static void Init(int argc, char **argv,bool redirect=false)
-        {
-            MPI::Init(argc,argv);
-            NullRequest=MPI::REQUEST_NULL;
+      static bool isDistributed()
+      {
+         return GetSize()>1;
+      };
 
-            if(isDistributed() && redirect)
+
+      static void Init(int argc, char **argv,bool redirect=false)
+      {
+         MPI::Init(argc,argv);
+         NullRequest=MPI::REQUEST_NULL;
+
+         if(isDistributed() && redirect)
+         {
+            //redirect all stdout to files, only 0 take to go to console
+            backup=std::cout.rdbuf();
+
+            //redirect output to files...
+            if(MPI::COMM_WORLD.Get_rank()!=0)
             {
-                //redirect all stdout to files, only 0 take to go to console
-                backup=std::cout.rdbuf();
-
-                //redirect output to files...
-                if(MPI::COMM_WORLD.Get_rank()!=0)
-                {
-                    std::cout<< GetRank() <<": Redirecting std::out to file" <<std::endl;
-                    String stdoutfile;
-                    stdoutfile=String( "./stdout-")+convertToString(MPI::COMM_WORLD.Get_rank())+String(".txt");
-                    filestr.open (stdoutfile.getString()); 
-                    psbuf = filestr.rdbuf(); 
-                    std::cout.rdbuf(psbuf);
-                }
+               std::cout<< GetRank() <<": Redirecting std::out to file" <<std::endl;
+               String stdoutfile;
+               stdoutfile=String( "./stdout-")+convertToString(MPI::COMM_WORLD.Get_rank())+String(".txt");
+               filestr.open (stdoutfile.getString()); 
+               psbuf = filestr.rdbuf(); 
+               std::cout.rdbuf(psbuf);
             }
-        };
+         }
+      };
 
-        static void Finalize()
-        {
-            if(isDistributed())
-            {
-                if(MPI::COMM_WORLD.Get_rank()!=0)
-                { 
-                    std::cout.rdbuf(backup);
-                    filestr.close(); 
-                }
+      static void Finalize()
+      {
+         if(isDistributed())
+         {
+            if(MPI::COMM_WORLD.Get_rank()!=0)
+            { 
+               std::cout.rdbuf(backup);
+               filestr.close(); 
             }
-            MPI::Finalize();
-        };
+         }
+         MPI::Finalize();
+      };
 
-        static bool IsInitialized()
-        {
-            return MPI::Is_initialized();
-        };
+      static bool IsInitialized()
+      {
+         return MPI::Is_initialized();
+      };
 
-        static int GetRank()
-        {
-            return MPI::COMM_WORLD.Get_rank();
-        };
+      static int GetRank()
+      {
+         return MPI::COMM_WORLD.Get_rank();
+      };
 
-        static int GetSize()
-        {
-            return MPI::COMM_WORLD.Get_size();
-        };
+      static int GetSize()
+      {
+         return MPI::COMM_WORLD.Get_size();
+      };
 
         //dim-number of dimesions, distr array of guess distr - 0 for computation
         //distr array will be filled by computed distribution
@@ -179,8 +173,18 @@ namespace Communicators {
         {
              MPI::COMM_WORLD.Reduce((void*) &data, (void*) &reduced_data,count,MPIDataType(data),op,root);
         };*/
-    };
 
+      static void writeProlog( Logger& logger ) 
+      {
+         if( isDistributed() )
+         {
+            logger.writeParameter( "MPI processes:", GetSize() );
+         }
+      }
+   
+
+    };
+    
     MPI::Request MpiCommunicator::NullRequest;
     std::streambuf *MpiCommunicator::psbuf;
     std::streambuf *MpiCommunicator::backup;

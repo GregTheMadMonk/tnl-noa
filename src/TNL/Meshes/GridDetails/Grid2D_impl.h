@@ -504,6 +504,9 @@ writeProlog( Logger& logger ) const
    logger.writeParameter( "Number of cells:", getEntitiesCount< Cell >() );
    logger.writeParameter( "Number of faces:", getEntitiesCount< Face >() );
    logger.writeParameter( "Number of vertices:", getEntitiesCount< Vertex >() );
+   if( this->getDistributedMesh() )
+      this->getDistributedMesh()->writeProlog( logger );
+
 }
 
 } // namespace Meshes

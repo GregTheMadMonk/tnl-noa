@@ -10,18 +10,23 @@
 
 #pragma once
 
+#include <iostream>
+#include <mpi.h>
+
+//#ifdef MPIIO
+#include <TNL/Communicators/MpiCommunicator.h>
+//#endif
+
 #include <TNL/File.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/CopyEntitiesHelper.h>
 #include <TNL/Functions/MeshFunction.h>
 
 
-#include <iostream>
-#include <mpi.h>
 
-#ifdef MPIIO
-#include <TNL/Communicators/MpiCommunicator.h>
-#endif
+
+
+
 
 namespace TNL {
 namespace Meshes {   
@@ -195,7 +200,8 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
 
        int headerSize=0;
 
-       if(Communicators::MpiCommunicator::GetRank()==0)
+       using Comm = typename TNL::Communicators::MpiCommunicator;
+       if(Comm::GetRank()==0)
        {
             headerSize=writeMeshFunctionHeader(file,meshFunction,dataCount);
        }

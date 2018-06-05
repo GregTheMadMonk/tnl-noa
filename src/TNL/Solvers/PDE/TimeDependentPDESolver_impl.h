@@ -161,7 +161,7 @@ writeProlog( Logger& logger,
    logger.writeParameter< int >( "Maximal number of iterations:", "max-iterations", parameters );
    logger.writeParameter< int >( "Minimal number of iterations:", "min-iterations", parameters );
    logger.writeSeparator();
-   return BaseType::writeProlog( logger, parameters );
+   return BaseType::template writeProlog< typename Problem::CommunicatorType >( logger, parameters );
 }
 
 template< typename Problem,

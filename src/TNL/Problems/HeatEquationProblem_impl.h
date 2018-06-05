@@ -212,8 +212,6 @@ makeSnapshot( const RealType& time,
    fileName.setExtension( "tnl" );
    fileName.setIndex( step );
 
-   std::cout<<"Make snapshot" <<std::endl; 
-
     if(CommunicatorType::isDistributed())
     {
        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::save(fileName.getFileName(), *uPointer );

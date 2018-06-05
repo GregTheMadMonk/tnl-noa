@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Logger.h>
 
 namespace TNL {
 namespace Meshes { 
@@ -29,13 +30,14 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
 
       static constexpr int getMeshDimension() { return 1; };    
 
-     
       DistributedMesh()
-      {
-         isSet=false;
-      };
+      : isSet(false ){};
 
-      //compute everithing 
+      const CoordinatesType& getDomainDecomposition()
+      {
+         return this->rank;
+      }
+      
       template<typename CommunicatorType>
       void setGlobalGrid(GridType globalGrid, CoordinatesType overlap, int *distribution=NULL)
       {
@@ -195,6 +197,11 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
       CoordinatesType getLocalBegin()
       {
          return this->localBegin;
+      }
+      
+      void writeProlog( Logger& logger )
+      {
+         logger.writeParameter( "Domain decomposition:", this->getDomainDecomposition() );
       }
        
        
