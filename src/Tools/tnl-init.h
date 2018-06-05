@@ -117,7 +117,8 @@ bool renderFunction( const Config::ParameterContainer& parameters )
 
       if(CommunicatorType::isDistributed())
       {
-        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(outputFile, *meshFunction );
+         if( ! Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(outputFile, *meshFunction ) )
+            return false;
       }
       else
       {
@@ -142,8 +143,7 @@ bool resolvCommunicator( const Config::ParameterContainer& parameters )
     if(Communicators::MpiCommunicator::isDistributed())
     {
         Communicators::NoDistrCommunicator::Finalize();
-        bool ret=renderFunction<MeshType,RealType, Communicators::MpiCommunicator,xDiff,yDiff,zDiff>(parameters); 
-        Communicators::MpiCommunicator::Finalize();
+        bool ret=renderFunction<MeshType,RealType, Communicators::MpiCommunicator,xDiff,yDiff,zDiff>(parameters);
         return ret;
     }
 #endif

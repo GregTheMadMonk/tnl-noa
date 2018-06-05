@@ -182,7 +182,6 @@ class MpiCommunicator
          }
       }
    
-
     };
     
     MPI::Request MpiCommunicator::NullRequest;

@@ -83,5 +83,9 @@ int main( int argc, char* argv[] )
    if( ! resolveMeshType( parsedMeshType, parameters ) )
       return EXIT_FAILURE;
 
+#ifdef HAVE_MPI
+   Communicators::MpiCommunicator::Finalize();
+#endif
+      
    return EXIT_SUCCESS;
 }
