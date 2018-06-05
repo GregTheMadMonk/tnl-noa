@@ -22,12 +22,6 @@
 #include <TNL/Meshes/DistributedMeshes/CopyEntitiesHelper.h>
 #include <TNL/Functions/MeshFunction.h>
 
-
-
-
-
-
-
 namespace TNL {
 namespace Meshes {   
 namespace DistributedMeshes {
@@ -166,14 +160,14 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
 template<typename MeshFunctionType> 
 class DistributedGridIO<MeshFunctionType,MpiIO>
 {
+   public:
 
-    public:
-
-    typedef typename MeshFunctionType::MeshType MeshType;
-    typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
-    typedef typename MeshFunctionType::MeshType::PointType PointType;
-    typedef typename MeshFunctionType::VectorType VectorType;
-    //typedef DistributedGrid< MeshType,MeshFunctionType::getMeshDimension()> DistributedGridType;
+      using RealType = typename MeshFunctionType::RealType;
+      typedef typename MeshFunctionType::MeshType MeshType;
+      typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
+      typedef typename MeshFunctionType::MeshType::PointType PointType;
+      typedef typename MeshFunctionType::VectorType VectorType;
+      //typedef DistributedGrid< MeshType,MeshFunctionType::getMeshDimension()> DistributedGridType;
     
     static bool save(const String& fileName, MeshFunctionType &meshFunction)
     {
@@ -188,7 +182,7 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
        MPI_Datatype atype;
        int dataCount=CreateDataTypes(distrGrid,&ftype,&atype);
 
-       double * data=meshFunction.getData().getData();//TYP
+       RealType* data=meshFunction.getData().getData();
 
        //write 
        MPI_File file;
@@ -207,7 +201,11 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
        }
        MPI_Bcast(&headerSize, 1, MPI_INT,0, MPI_COMM_WORLD);
 
-       MPI_File_set_view(file,headerSize,MPI_DOUBLE,ftype,"native",MPI_INFO_NULL);//TYP
+       if( std::is_same< RealType, double >::value)
+         MPI_File_set_view(file,headerSize,MPI_DOUBLE,ftype,"native",MPI_INFO_NULL);
+       if( std::is_same< RealType, float >::value)
+         MPI_File_set_view(file,headerSize,MPI_FLOAT,ftype,"native",MPI_INFO_NULL);
+       
        MPI_Status wstatus;
 
        MPI_File_write(file,data,1,atype,&wstatus);

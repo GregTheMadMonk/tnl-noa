@@ -214,7 +214,7 @@ makeSnapshot( const RealType& time,
 
     if(CommunicatorType::isDistributed())
     {
-       Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::save(fileName.getFileName(), *uPointer );
+       Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::save(fileName.getFileName(), *uPointer );
     }
     else
     {
