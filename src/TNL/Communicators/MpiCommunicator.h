@@ -10,8 +10,6 @@
 
 #pragma once
 
-#ifdef HAVE_MPI
-
 #include <iostream>
 #include <fstream>
 #include <mpi.h>
@@ -77,9 +75,10 @@ class MpiCommunicator
       {
          redirect = redirect_;
       }
-      
+
       static void setupRedirection()
       {
+#ifdef HAVE_MPI         
          if(isDistributed() && redirect )
          {
             //redirect all stdout to files, only 0 take to go to console
@@ -96,10 +95,12 @@ class MpiCommunicator
                std::cout.rdbuf(psbuf);
             }
          }
+#endif         
       };
 
       static void Finalize()
       {
+#ifdef HAVE_MPI         
          if(isDistributed())
          {
             if(MPI::COMM_WORLD.Get_rank()!=0)
@@ -109,8 +110,10 @@ class MpiCommunicator
             }
          }
          MPI::Finalize();
+#endif         
       };
 
+#ifdef HAVE_MPI      
       static bool IsInitialized()
       {
          return MPI::Is_initialized();
@@ -205,6 +208,7 @@ class MpiCommunicator
       }
       
       static MPI::Request NullRequest;
+#endif      
       static std::streambuf *psbuf;
       static std::streambuf *backup;
       static std::ofstream filestr;
@@ -220,6 +224,5 @@ bool MpiCommunicator::redirect;
 
 }//namespace Communicators
 } // namespace TNL
-#endif
 
 
