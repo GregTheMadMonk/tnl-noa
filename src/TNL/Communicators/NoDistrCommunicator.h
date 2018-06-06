@@ -24,6 +24,14 @@ class NoDistrCommunicator
       typedef int Request;
       static Request NullRequest;
 
+      static void configSetup( Config::ConfigDescription& config, const String& prefix = "" ){};
+ 
+      static bool setup( const Config::ParameterContainer& parameters,
+                         const String& prefix = "" )
+      {
+         return true;
+      }
+      
       static void Init(int argc, char **argv, bool redirect=false)
       {
           NullRequest=-1;
