@@ -16,6 +16,7 @@
 #include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedGrid_3D.h>
 
 namespace TNL {
 namespace Solvers {
@@ -83,7 +84,11 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
     */
    config.addDelimiter( " === Space discretisation parameters ==== " );
    config.addEntry< String >( "mesh", "A file which contains the numerical mesh. You may create it with tools like tnl-grid-setup or tnl-mesh-convert.", "mesh.tnl" );
-
+   
+   /****
+    * Domain decomposition
+    */
+   Meshes::DistributedMeshes::DistributedMesh< Meshes::Grid< 3 > >::configSetup( config );
 
    /****
     * Time discretisation

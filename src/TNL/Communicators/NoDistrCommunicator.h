@@ -35,11 +35,13 @@ class NoDistrCommunicator
       static void Init(int argc, char **argv, bool redirect=false)
       {
           NullRequest=-1;
-      };
+      }
+      
+      static void setRedirection( bool redirect_ ) {}
+      
+      static void setupRedirection(){}
 
-      static void Finalize()
-      {
-      };
+      static void Finalize(){}
 
       static bool IsInitialized()
       {   

@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <TNL/Config/ConfigDescription.h>
 #include <TNL/Meshes/Grid.h>
 
 namespace TNL {
@@ -41,6 +42,27 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
       DistributedMesh()
       : isSet( false ) {};
       
+      static void configSetup( Config::ConfigDescription& config )
+      {
+         config.addEntry< int >( "grid-domain-decomposition-x", "Number of grid subdomains along x-axis.", 0 );
+         config.addEntry< int >( "grid-domain-decomposition-y", "Number of grid subdomains along y-axis.", 0 );
+         config.addEntry< int >( "grid-domain-decomposition-z", "Number of grid subdomains along z-axis.", 0 );
+      }
+      
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix )
+      {
+         this->domainDecomposition.x() = parameters.getParameter< int >( "grid-domain-decomposition-x" );
+         this->domainDecomposition.y() = parameters.getParameter< int >( "grid-domain-decomposition-y" );
+         this->domainDecomposition.z() = parameters.getParameter< int >( "grid-domain-decomposition-z" );
+         return true;
+      }      
+      
+      void setDomainDecomposition( const CoordinatesType& domainDecomposition )
+      {
+         this->domainDecomposition = domainDecomposition;
+      }      
+      
       const CoordinatesType& getDomainDecomposition()
       {
          return this->domainDecomposition;
@@ -48,8 +70,7 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
 
       template< typename CommunicatorType > 
       void setGlobalGrid( GridType &globalGrid,
-                          CoordinatesType overlap,
-                           int *distribution=NULL )
+                          CoordinatesType overlap )
       {
          isSet=true;           
 
@@ -99,18 +120,9 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
             //With MPI
             //compute node distribution
             int dims[ 3 ];
-            if(distribution!=NULL)
-            {
-               dims[ 0 ] = distribution[ 0 ];
-               dims[ 1 ] = distribution[ 1 ];
-               dims[ 2 ] = distribution[ 2 ];
-            }
-            else
-            {
-               dims[ 0 ] = 0;
-               dims[ 1 ] = 0;
-               dims[ 2 ] = 0;
-            }
+            dims[ 0 ] = domainDecomposition[ 0 ];
+            dims[ 1 ] = domainDecomposition[ 1 ];
+            dims[ 2 ] = domainDecomposition[ 2 ];
             
             CommunicatorType::DimsCreate( nproc, 3, dims );
             domainDecomposition[ 0 ] = dims[ 0 ];
@@ -258,7 +270,7 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
          TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by SetupGrid");
          grid.setOrigin(localOrigin);
          grid.setDimensions(localGridSize);
-         //compute local proporions by sideefect
+         //compute local proportions by side efect
          grid.setSpaceSteps(spaceSteps);
          grid.SetDistMesh(this);
       };

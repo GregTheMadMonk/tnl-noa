@@ -401,10 +401,8 @@ class DistributedGirdTest_2D : public ::testing::Test {
     typename DistributedGridType::CoordinatesType overlap;
     overlap.setValue(1);
     distrgrid=new DistributedGridType();
-    int distr[2];
-    distr[0]=3;
-    distr[1]=3;
-    distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap, distr);
+    distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3 ) );
+    distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap );
     
     distrgrid->setupGrid(*gridptr);
     dof=new DofType(gridptr->template getEntitiesCount< Cell >());

@@ -33,17 +33,30 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
      
    public:
       DistributedMesh()
-      : isSet( false ) {};
-       
+      : isSet( false ), domainDecomposition( 0 ) {};
+      
+      void setDomainDecomposition( const CoordinatesType& domainDecomposition )
+      {
+         this->domainDecomposition = domainDecomposition;
+      }
+      
       const CoordinatesType getDomainDecomposition()
       {
          return this->domainDecomposition;
       }
 
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix )
+      {
+         this->domainDecomposition.x() = parameters.getParameter< int >( "grid-domain-decomposition-x" );
+         this->domainDecomposition.y() = parameters.getParameter< int >( "grid-domain-decomposition-y" );
+         return true;
+      }      
+
+      
       template< typename CommunicatorType >
       void setGlobalGrid( GridType &globalGrid,
-                          CoordinatesType overlap,
-                          int *distribution=NULL )
+                          CoordinatesType overlap )
       {
          isSet=true;
 
@@ -85,17 +98,10 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
          }
          else
          {
+            //compute node distribution
             int dims[ 2 ];
-            if(distribution!=NULL)
-            {
-               dims[0]=distribution[0];
-               dims[1]=distribution[1];
-            }
-            else
-            {
-               dims[0]=0;
-               dims[1]=0;
-            }
+            dims[ 0 ] = domainDecomposition[ 0 ];
+            dims[ 1 ] = domainDecomposition[ 1 ];
 
             CommunicatorType::DimsCreate( nproc, 2, dims );
             domainDecomposition[ 0 ] = dims[ 0 ];

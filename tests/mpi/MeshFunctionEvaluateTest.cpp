@@ -53,7 +53,8 @@ int main ( int argc, char *argv[])
   typedef Vector<double,Host,int> DofType;
   typedef typename MeshType::Cell Cell;
   typedef typename MeshType::IndexType IndexType; 
-  typedef typename MeshType::PointType PointType; 
+  typedef typename MeshType::PointType PointType;
+  using CoordinatesType = typename MeshType::CoordinatesType;
   
   typedef DistributedMesh<MeshType> DistributedMeshType;
   
@@ -86,7 +87,7 @@ int main ( int argc, char *argv[])
  globalGrid.setDomain(globalOrigin,globalProportions);
 
  
- int distr[DIMENSION];
+ CoordinatesType distr;
  for(int i=0;i<DIMENSION;i++) 
     distr[i]=1;
 
@@ -105,7 +106,8 @@ int main ( int argc, char *argv[])
  typename MeshType::CoordinatesType overlap;
  overlap.setValue(1);
  DistributedMeshType distrgrid;
- distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap, distr); 
+ distrgrid.setDomainDecomposition( distr );
+ distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid, overlap ); 
    
  SharedPointer<MeshType> gridptr;
  SharedPointer<MeshFunctionType> meshFunctionptr;

@@ -1,16 +1,16 @@
-    ADD_EXECUTABLE( MeshFunctionEvaluateTest ${headers} MeshFunctionEvauateTest.cpp )   
+    ADD_EXECUTABLE( MeshFunctionEvaluateTest ${headers} MeshFunctionEvaluateTest.cpp )   
     TARGET_LINK_LIBRARIES( MeshFunctionEvaluateTest ${CPPUNIT_LIBRARIES}
                                                            tnl )
     TARGET_COMPILE_DEFINITIONS( MeshFunctionEvaluateTest PUBLIC "-DDIMENSION=2" )
    	TARGET_COMPILE_DEFINITIONS( MeshFunctionEvaluateTest PUBLIC "-DXDISTR -DYDISTR" )
 
-    ADD_EXECUTABLE( MeshFunctionEvaluateTestX ${headers} MeshFunctionEvauateTest.cpp )   
+    ADD_EXECUTABLE( MeshFunctionEvaluateTestX ${headers} MeshFunctionEvaluateTest.cpp )   
     TARGET_LINK_LIBRARIES( MeshFunctionEvaluateTestX ${CPPUNIT_LIBRARIES}
                                                            tnl )
    	TARGET_COMPILE_DEFINITIONS( MeshFunctionEvaluateTestX PUBLIC "-DDIMENSION=2" )
    	TARGET_COMPILE_DEFINITIONS( MeshFunctionEvaluateTestX PUBLIC "-DXDISTR" )
 
-    ADD_EXECUTABLE( MeshFunctionEvaluateTestY ${headers} MeshFunctionEvauateTest.cpp )   
+    ADD_EXECUTABLE( MeshFunctionEvaluateTestY ${headers} MeshFunctionEvaluateTest.cpp )   
     TARGET_LINK_LIBRARIES( MeshFunctionEvaluateTestY ${CPPUNIT_LIBRARIES}
                                                            tnl )
    	TARGET_COMPILE_DEFINITIONS( MeshFunctionEvaluateTestY PUBLIC "-DDIMENSION=2" )
@@ -43,7 +43,7 @@ IF( BUILD_CUDA )
     TARGET_LINK_LIBRARIES( mpi-gpu-test ${CPPUNIT_LIBRARIES}
                                                    tnl )   
 
-    CUDA_ADD_EXECUTABLE( GPUmeshFunctionEvaluateTest ${headers} GPUmeshFuncitonEvaluateTest.cu )
+    CUDA_ADD_EXECUTABLE( GPUmeshFunctionEvaluateTest ${headers} GPUmeshFunctionEvaluateTest.cu )
     TARGET_LINK_LIBRARIES( GPUmeshFunctionEvaluateTest ${CPPUNIT_LIBRARIES}
                                            tnl )   
 

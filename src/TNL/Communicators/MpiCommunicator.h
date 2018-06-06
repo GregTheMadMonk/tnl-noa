@@ -73,6 +73,11 @@ class MpiCommunicator
 #endif         
       }
       
+      static void setRedirection( bool redirect_ )
+      {
+         redirect = redirect_;
+      }
+      
       static void setupRedirection()
       {
          if(isDistributed() && redirect )

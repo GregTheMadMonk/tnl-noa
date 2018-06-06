@@ -33,9 +33,21 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
       DistributedMesh()
       : isSet(false ){};
 
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix )
+      {
+         this->domainDecomposition.x() = parameters.getParameter< int >( "grid-domain-decomposition-x" );
+         return true;
+      }      
+      
+      void setDomainDecomposition( const CoordinatesType& domainDecomposition )
+      {
+         this->domainDecomposition = domainDecomposition;
+      }
+      
       const CoordinatesType& getDomainDecomposition()
       {
-         return this->rank;
+         return this->domainDecomposition;
       }
       
       template<typename CommunicatorType>
@@ -79,12 +91,14 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
              return;
          }
          else
-         { 
+         {            
              //nearnodes
              if(rank!=0)
                  left=rank-1;
              if(rank!=nproc-1)
                  right=rank+1;
+             
+             this->domainDecomposition[ 0 ] = rank;
 
              globalSize=globalGrid.getDimensions();                 
 
@@ -222,6 +236,9 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
         
       int rank;
       int nproc;
+      
+      CoordinatesType domainDecomposition;
+      CoordinatesType subdomainCoordinates;      
         
       int numberOfLarger;
         
