@@ -238,6 +238,11 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
       {
          this->free();
       }
+      
+      void swap( ThisType& ptr2 )
+      {
+         std::swap( this->pd, ptr2.pd );
+      }
 
       ~SharedPointer()
       {
@@ -531,7 +536,13 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       void clear()
       {
          this->free();
-      }      
+      }
+      
+      void swap( ThisType& ptr2 )
+      {
+         std::swap( this->pd, ptr2.pd );
+         std::swap( this->cuda_pointer, ptr2.cuda_pointer );
+      }
 
       ~SharedPointer()
       {
@@ -852,6 +863,12 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       void clear()
       {
          this->free();
+      }
+
+      void swap( ThisType& ptr2 )
+      {
+         std::swap( this->pd, ptr2.pd );
+         std::swap( this->mic_pointer, ptr2.mic_pointer );
       }
 
       ~SharedPointer()

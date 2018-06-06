@@ -106,7 +106,7 @@ int main ( int argc, char *argv[])
  MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
  MeshFunctionEvaluator< MeshFunctionType, ConstFunctionType > constFunctionEvaluator;
  
-  distrgrid.SetupGrid(*gridptr);
+  distrgrid.setupGrid(*gridptr);
   
   DofType dof(gridptr->template getEntitiesCount< Cell >());
 

@@ -57,7 +57,11 @@ class StaticVector : public StaticArray< Size, Real >
    //! Multiplication with number
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
-
+   
+   //! Division by number
+   __cuda_callable__
+   StaticVector& operator /= ( const Real& c );
+   
    //! Addition operator
    __cuda_callable__
    StaticVector operator + ( const StaticVector& u ) const;
@@ -155,6 +159,10 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    //! Multiplication with number
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
+   
+   //! Division by number
+   __cuda_callable__
+   StaticVector& operator /= ( const Real& c );   
 
    //! Addition operator
    __cuda_callable__
@@ -257,6 +265,10 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
 
+   //! Division by number
+   __cuda_callable__
+   StaticVector& operator /= ( const Real& c );   
+
    //! Adding operator
    __cuda_callable__
    StaticVector operator + ( const StaticVector& u ) const;
@@ -357,6 +369,11 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    //! Multiplication with number
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
+   
+   //! Division by number
+   __cuda_callable__
+   StaticVector& operator /= ( const Real& c );
+   
 
    //! Addition operator
    __cuda_callable__

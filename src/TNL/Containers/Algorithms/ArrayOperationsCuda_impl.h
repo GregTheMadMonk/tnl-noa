@@ -60,24 +60,32 @@ freeMemory( Element* data )
 }
 
 template< typename Element >
-void
+__cuda_callable__ void
 ArrayOperations< Devices::Cuda >::
 setMemoryElement( Element* data,
                   const Element& value )
 {
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
+#ifdef __CUDAARCH__
+   *data = value;
+#else   
    ArrayOperations< Devices::Cuda >::setMemory( data, value, 1 );
+#endif   
 }
 
 template< typename Element >
-Element
+__cuda_callable__ Element
 ArrayOperations< Devices::Cuda >::
 getMemoryElement( const Element* data )
 {
    TNL_ASSERT_TRUE( data, "Attempted to get data through a nullptr." );
+#ifdef __CUDAARCH__
+   return *data;
+#else   
    Element result;
    ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< Element, Element, int >( &result, data, 1 );
    return result;
+#endif   
 }
 
 template< typename Element, typename Index >

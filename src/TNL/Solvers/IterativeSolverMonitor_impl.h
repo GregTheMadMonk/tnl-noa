@@ -37,9 +37,12 @@ IterativeSolverMonitor< Real, Index > :: IterativeSolverMonitor()
   saved_timeStep( 0.0 ),
   residue( 0.0 ),
   saved_residue( 0.0 ),
+  elapsed_time_before_refresh( 0.0 ),
   iterations( 0 ),
   saved_iterations( 0 ),
-  verbose( 1 )
+  iterations_before_refresh( 0 ),
+  verbose( 1 ),
+  nodesPerIteration( 0 )
 {
 }
 
@@ -94,6 +97,12 @@ void IterativeSolverMonitor< Real, Index > :: setVerbose( const Index& verbose )
 }
 
 template< typename Real, typename Index>
+void IterativeSolverMonitor< Real, Index > :: setNodesPerIteration( const IndexType& nodes )
+{
+   this->nodesPerIteration = nodes;
+}
+
+template< typename Real, typename Index>
 void IterativeSolverMonitor< Real, Index > :: refresh()
 {
    if( this->verbose > 0 )
@@ -133,7 +142,7 @@ void IterativeSolverMonitor< Real, Index > :: refresh()
       if( (saved) ? saved_timeStep : timeStep > 0 ) {
 //         print_item( " TAU:" );
          print_item( " TAU:", 0 );
-         print_item( real_to_string( (saved) ? saved_timeStep : timeStep, 5 ), 8 );
+         print_item( real_to_string( (saved) ? saved_timeStep : timeStep, 5 ), 10 );
       }
 
       const std::string displayed_stage = (saved) ? saved_stage : stage;
@@ -158,6 +167,14 @@ void IterativeSolverMonitor< Real, Index > :: refresh()
          print_item( " RES:", 0 );
          print_item( real_to_string( (saved) ? saved_residue : residue, 5 ), 12 );
       }
+
+      if( nodesPerIteration ) {
+         const RealType mlups = nodesPerIteration * (iterations - iterations_before_refresh) / (getElapsedTime() - elapsed_time_before_refresh) * 1e-6;
+         print_item( " MLUPS:", 0 );
+         print_item( real_to_string( mlups, 5 ), 7 );
+      }
+      iterations_before_refresh = iterations;
+      elapsed_time_before_refresh = getElapsedTime();
 
       // return to the beginning of the line
       std::cout << "\r" << std::flush;

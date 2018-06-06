@@ -23,38 +23,13 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
 {
     public:
 
-    typedef Index IndexType;
-    typedef Grid< 2, RealType, Device, IndexType > GridType;
-    typedef typename GridType::PointType PointType;
-    typedef Containers::StaticVector< 2, IndexType > CoordinatesType;
-    
-    static constexpr int getMeshDimension() { return 2; };
-    
-    private : 
-        
-        PointType spaceSteps;
-        PointType localorigin;
-        CoordinatesType localsize;//velikost gridu zpracovavane danym uzlem bez prekryvu
-        CoordinatesType localbegin;//souradnice zacatku zpracovavane vypoctove oblasi
-        CoordinatesType localgridsize;//velikost lokálního gridu včetně překryvů
-        CoordinatesType overlap;
-        CoordinatesType globalsize;//velikost celé sítě
-        CoordinatesType globalbegin;
-        
-        
-        IndexType Dimensions;        
-        bool isDistributed;
-        
-        int rank;
-        int nproc;
-        
-        int procsdistr[2];
-        int myproccoord[2];
-        int numberoflarger[2];
-        
-        int neighbors[8];
+      typedef Index IndexType;
+      typedef Grid< 2, RealType, Device, IndexType > GridType;
+      typedef typename GridType::PointType PointType;
+      typedef Containers::StaticVector< 2, IndexType > CoordinatesType;
 
-        bool isSet;
+      static constexpr int getMeshDimension() { return 2; };
+    
      
    public:
        DistributedMesh()
@@ -62,9 +37,10 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
             isSet=false;
        };
 
-       //compute everithing
-       template<typename CommunicatorType>
-       void setGlobalGrid(GridType &globalGrid, CoordinatesType overlap, int *distribution=NULL)
+       template< typename CommunicatorType >
+       void setGlobalGrid( GridType &globalGrid,
+                           CoordinatesType overlap,
+                           int *distribution=NULL )
        {
            isSet=true;
 
@@ -76,35 +52,33 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
            Dimensions= GridType::getMeshDimension();
            spaceSteps=globalGrid.getSpaceSteps();
            //Detect MPI and number of process
-           isDistributed=false;
+           distributed=false;
            
-           
-           
-           if(CommunicatorType::IsInitialized())
+           if( CommunicatorType::IsInitialized() )
            {
                rank=CommunicatorType::GetRank();
                this->nproc=CommunicatorType::GetSize();
                //use MPI only if have more than one process
                if(this->nproc>1)
                {
-                   isDistributed=true;
+                   distributed=true;
                }
            }
            
-           if(!isDistributed)
+           if( !distributed )
            {
                //Without MPI
-               myproccoord[0]=0;
-               myproccoord[1]=0;
+               processesCoordinates[0]=0;
+               processesCoordinates[1]=0;
                procsdistr[0]=1;
                procsdistr[1]=1;
-               localorigin=globalGrid.getOrigin();
-               localgridsize=globalGrid.getDimensions();
-               localsize=globalGrid.getDimensions();
-               globalsize=globalGrid.getDimensions();
-               globalbegin=CoordinatesType(0);
-               localbegin.x()=0;
-               localbegin.y()=0;
+               localOrigin=globalGrid.getOrigin();
+               localGridSize=globalGrid.getDimensions();
+               localSize=globalGrid.getDimensions();
+               globalSize=globalGrid.getDimensions();
+               globalBegin=CoordinatesType(0);
+               localBegin.x()=0;
+               localBegin.y()=0;
                
                return;
            }
@@ -124,97 +98,94 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
                }
                CommunicatorType::DimsCreate(nproc, 2, procsdistr);
 
-               myproccoord[0]=rank%procsdistr[0];
-               myproccoord[1]=rank/procsdistr[0];        
+               processesCoordinates[0]=rank%procsdistr[0];
+               processesCoordinates[1]=rank/procsdistr[0];        
 
                //compute local mesh size
-               globalsize=globalGrid.getDimensions();              
-               numberoflarger[0]=globalGrid.getDimensions().x()%procsdistr[0];
-               numberoflarger[1]=globalGrid.getDimensions().y()%procsdistr[1];
+               globalSize=globalGrid.getDimensions();              
+               numberOfLarger[0]=globalGrid.getDimensions().x()%procsdistr[0];
+               numberOfLarger[1]=globalGrid.getDimensions().y()%procsdistr[1];
 
-               localsize.x()=(globalGrid.getDimensions().x()/procsdistr[0]);
-               localsize.y()=(globalGrid.getDimensions().y()/procsdistr[1]);
+               localSize.x()=(globalGrid.getDimensions().x()/procsdistr[0]);
+               localSize.y()=(globalGrid.getDimensions().y()/procsdistr[1]);
 
-               if(numberoflarger[0]>myproccoord[0])
-                    localsize.x()+=1;               
-               if(numberoflarger[1]>myproccoord[1])
-                   localsize.y()+=1;
+               if(numberOfLarger[0]>processesCoordinates[0])
+                    localSize.x()+=1;               
+               if(numberOfLarger[1]>processesCoordinates[1])
+                   localSize.y()+=1;
 
-               if(numberoflarger[0]>myproccoord[0])
-                   globalbegin.x()=myproccoord[0]*localsize.x();
+               if(numberOfLarger[0]>processesCoordinates[0])
+                   globalBegin.x()=processesCoordinates[0]*localSize.x();
                else
-                   globalbegin.x()=numberoflarger[0]*(localsize.x()+1)+(myproccoord[0]-numberoflarger[0])*localsize.x();
+                   globalBegin.x()=numberOfLarger[0]*(localSize.x()+1)+(processesCoordinates[0]-numberOfLarger[0])*localSize.x();
 
-               if(numberoflarger[1]>myproccoord[1])
-                   globalbegin.y()=myproccoord[1]*localsize.y();
+               if(numberOfLarger[1]>processesCoordinates[1])
+                   globalBegin.y()=processesCoordinates[1]*localSize.y();
 
                else
-                   globalbegin.y()=numberoflarger[1]*(localsize.y()+1)+(myproccoord[1]-numberoflarger[1])*localsize.y();
+                   globalBegin.y()=numberOfLarger[1]*(localSize.y()+1)+(processesCoordinates[1]-numberOfLarger[1])*localSize.y();
 
-               localorigin=globalGrid.getOrigin()+TNL::Containers::tnlDotProduct(globalGrid.getSpaceSteps(),globalbegin-overlap);
+               localOrigin=globalGrid.getOrigin()+TNL::Containers::tnlDotProduct(globalGrid.getSpaceSteps(),globalBegin-overlap);
 
                //nearnodes
-               if(myproccoord[0]>0)
-                   neighbors[Left]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]);
-               if(myproccoord[0]<procsdistr[0]-1)
-                   neighbors[Right]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1]);
-               if(myproccoord[1]>0)
-                   neighbors[Up]=getRankOfProcCoord(myproccoord[0],myproccoord[1]-1);
-               if(myproccoord[1]<procsdistr[1]-1)
-                   neighbors[Down]=getRankOfProcCoord(myproccoord[0],myproccoord[1]+1);
-               if(myproccoord[0]>0 && myproccoord[1]>0)
-                   neighbors[UpLeft]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]-1);
-               if(myproccoord[0]>0 && myproccoord[1]<procsdistr[1]-1)
-                   neighbors[DownLeft]=getRankOfProcCoord(myproccoord[0]-1,myproccoord[1]+1);
-               if(myproccoord[0]<procsdistr[0]-1 && myproccoord[1]>0)
-                   neighbors[UpRight]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1]-1);
-               if(myproccoord[0]<procsdistr[0]-1 && myproccoord[1]<procsdistr[1]-1)
-                   neighbors[DownRight]=getRankOfProcCoord(myproccoord[0]+1,myproccoord[1]+1);
+               if(processesCoordinates[0]>0)
+                   neighbors[Left]=getRankOfProcCoord(processesCoordinates[0]-1,processesCoordinates[1]);
+               if(processesCoordinates[0]<procsdistr[0]-1)
+                   neighbors[Right]=getRankOfProcCoord(processesCoordinates[0]+1,processesCoordinates[1]);
+               if(processesCoordinates[1]>0)
+                   neighbors[Up]=getRankOfProcCoord(processesCoordinates[0],processesCoordinates[1]-1);
+               if(processesCoordinates[1]<procsdistr[1]-1)
+                   neighbors[Down]=getRankOfProcCoord(processesCoordinates[0],processesCoordinates[1]+1);
+               if(processesCoordinates[0]>0 && processesCoordinates[1]>0)
+                   neighbors[UpLeft]=getRankOfProcCoord(processesCoordinates[0]-1,processesCoordinates[1]-1);
+               if(processesCoordinates[0]>0 && processesCoordinates[1]<procsdistr[1]-1)
+                   neighbors[DownLeft]=getRankOfProcCoord(processesCoordinates[0]-1,processesCoordinates[1]+1);
+               if(processesCoordinates[0]<procsdistr[0]-1 && processesCoordinates[1]>0)
+                   neighbors[UpRight]=getRankOfProcCoord(processesCoordinates[0]+1,processesCoordinates[1]-1);
+               if(processesCoordinates[0]<procsdistr[0]-1 && processesCoordinates[1]<procsdistr[1]-1)
+                   neighbors[DownRight]=getRankOfProcCoord(processesCoordinates[0]+1,processesCoordinates[1]+1);
                
-               localbegin=overlap;
+               localBegin=overlap;
 
                if(neighbors[Left]==-1)
                {
-                    localorigin.x()+=overlap.x()*globalGrid.getSpaceSteps().x();
-                    localbegin.x()=0;
+                    localOrigin.x()+=overlap.x()*globalGrid.getSpaceSteps().x();
+                    localBegin.x()=0;
                }
 
                if(neighbors[Up]==-1)
                {
-                   localorigin.y()+=overlap.y()*globalGrid.getSpaceSteps().y();
-                   localbegin.y()=0;
+                   localOrigin.y()+=overlap.y()*globalGrid.getSpaceSteps().y();
+                   localBegin.y()=0;
                }
 
-               localgridsize=localsize;
+               localGridSize=localSize;
                //Add Overlaps
                if(neighbors[Left]!=-1)
-                   localgridsize.x()+=overlap.x();
+                   localGridSize.x()+=overlap.x();
                if(neighbors[Right]!=-1)
-                   localgridsize.x()+=overlap.x();
+                   localGridSize.x()+=overlap.x();
 
                if(neighbors[Up]!=-1)
-                   localgridsize.y()+=overlap.y();
+                   localGridSize.y()+=overlap.y();
                if(neighbors[Down]!=-1)
-                   localgridsize.y()+=overlap.y();
+                   localGridSize.y()+=overlap.y();
            }
-                     
-           
-                      
        }
        
        void setupGrid( GridType& grid)
        {
            TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by SetupGrid");
-           grid.setOrigin(localorigin);
-           grid.setDimensions(localgridsize);
+           grid.setOrigin( localOrigin );
+           grid.setDimensions( localGridSize );
            //compute local proporions by sideefect
-           grid.setSpaceSteps(spaceSteps);
+           grid.setSpaceSteps( spaceSteps );
            grid.SetDistMesh(this);
        };
        
        String printProcessCoords()
        {
-           return convertToString(myproccoord[0])+String("-")+convertToString(myproccoord[1]);
+           return convertToString(processesCoordinates[0])+String("-")+convertToString(processesCoordinates[1]);
        };
 
        String printProcessDistr()
@@ -222,9 +193,9 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
            return convertToString(procsdistr[0])+String("-")+convertToString(procsdistr[1]);
        };  
        
-       bool IsDistributed(void)
+       bool isDistributed()
        {
-           return this->isDistributed;
+           return this->distributed;
        };
        
        CoordinatesType getOverlap()
@@ -240,39 +211,63 @@ class DistributedMesh<Grid< 2, RealType, Device, Index >>
        
        CoordinatesType getLocalSize()
        {
-           return this->localsize;
+           return this->localSize;
        }
 
        //number of elements of global grid
        CoordinatesType getGlobalSize()
        {
-           return this->globalsize;
+           return this->globalSize;
        }
 
        //coordinates of begin of local subdomain without overlaps in global grid
        CoordinatesType getGlobalBegin()
        {
-           return this->globalbegin;
+           return this->globalBegin;
        }
 
        CoordinatesType getLocalGridSize()
        {
-           return this->localgridsize;
+           return this->localGridSize;
        }
        
               
        CoordinatesType getLocalBegin()
        {
-           return this->localbegin;
+           return this->localBegin;
        }
+        
+    private : 
        
-       private:
-           
         int getRankOfProcCoord(int x, int y)
         {
             return y*procsdistr[0]+x;
         }
+        
+        PointType spaceSteps;
+        PointType localOrigin;
+        CoordinatesType localSize;//velikost gridu zpracovavane danym uzlem bez prekryvu
+        CoordinatesType localBegin;//souradnice zacatku zpracovavane vypoctove oblasi
+        CoordinatesType localGridSize;//velikost lokálního gridu včetně překryvů
+        CoordinatesType overlap;
+        CoordinatesType globalSize;//velikost celé sítě
+        CoordinatesType globalBegin;
+        
+        
+        IndexType Dimensions;        
+        bool distributed;
+        
+        int rank;
+        int nproc;
+        
+        int procsdistr[2];
+        CoordinatesType processesCoordinates;
+        int numberOfLarger[2];
+        
+        int neighbors[8];
 
+        bool isSet;
+        
 
 };
 
