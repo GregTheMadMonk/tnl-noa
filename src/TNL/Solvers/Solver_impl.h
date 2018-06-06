@@ -34,12 +34,11 @@ run( int argc, char* argv[] )
    configDescription.addDelimiter( "Parallelization setup:" );
    Devices::Host::configSetup( configDescription );
    Devices::Cuda::configSetup( configDescription );
-
-    //iniicialization needs argc and argc-> needs to be close to main
-       Communicators::NoDistrCommunicator::Init(argc,argv, true);
-#ifdef HAVE_MPI
-       Communicators::MpiCommunicator::Init(argc,argv, true);
-#endif
+   Communicators::NoDistrCommunicator::configSetup( configDescription );
+   Communicators::MpiCommunicator::configSetup( configDescription );
+   
+   Communicators::NoDistrCommunicator::Init(argc,argv);
+   Communicators::MpiCommunicator::Init(argc,argv);
 
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return false;

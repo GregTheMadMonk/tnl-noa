@@ -644,11 +644,8 @@ class DistributedGirdTest_3D : public ::testing::Test {
     typename DistributedGridType::CoordinatesType overlap;
     overlap.setValue(1);
     distrgrid=new DistributedGridType();
-    int distr[2];
-    distr[0]=3;
-    distr[1]=3;
-    distr[2]=3;
-    distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap,distr);
+    distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3, 3 ) );
+    distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid, overlap );
     
     distrgrid->setupGrid(*gridptr);
     dof=new DofType(gridptr->template getEntitiesCount< Cell >());
@@ -718,7 +715,7 @@ TEST_F(DistributedGirdTest_3D, LinearFunctionTest)
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_3D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-    meshFunctionptr->template Synchronize<CommunicatorType>();
+    meshFunctionptr->template synchronize<CommunicatorType>();
     
     int count =gridptr->template getEntitiesCount< Cell >();
     for(int i=0;i<count;i++)

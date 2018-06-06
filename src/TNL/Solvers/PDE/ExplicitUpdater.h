@@ -149,8 +149,10 @@ class ExplicitUpdater
                                            ( meshPointer,
                                              userDataPointer );
 
+         std::cerr << __FILE__ << ":" << __LINE__ << "Starting synchronization..." << std::endl;
          if(CommunicatorType::isDistributed())
-            fuPointer->template Synchronize<CommunicatorType>();
+            fuPointer->template synchronize<CommunicatorType>();
+         std::cerr << __FILE__ << ":" << __LINE__ << "Synchronization done..." << std::endl;
 
       }
       

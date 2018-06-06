@@ -14,6 +14,9 @@
 #include <TNL/Logger.h>
 #include <TNL/String.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/ODE/Merson.h>
@@ -87,7 +90,9 @@ bool SolverStarter< ConfigTag > :: run( const Config::ParameterContainer& parame
     * Create and set-up the problem
     */
    if( ! Devices::Host::setup( parameters ) ||
-       ! Devices::Cuda::setup( parameters ) )
+       ! Devices::Cuda::setup( parameters ) ||
+       ! Communicators::NoDistrCommunicator::setup( parameters ) ||
+       ! Communicators::MpiCommunicator::setup( parameters ) )
       return false;
    Problem problem;
    //return UserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );

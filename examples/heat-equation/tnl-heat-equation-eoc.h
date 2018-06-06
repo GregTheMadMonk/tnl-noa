@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNL_HEAT_EQUATION_EOC_H_
-#define TNL_HEAT_EQUATION_EOC_H_
+#pragma once
+
+#define MPIIO
 
 #include <TNL/Solvers/Solver.h>
 #include <TNL/Solvers/FastBuildConfigTag.h>
@@ -78,5 +79,3 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }
-
-#endif /* TNL_HEAT_EQUATION_EOC_H_ */

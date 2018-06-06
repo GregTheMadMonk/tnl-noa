@@ -37,8 +37,9 @@ class PDESolver : public Object
                                const String& prefix = "" );
 
       bool setup( const Config::ParameterContainer& parameters,
-                 const String& prefix = "" );
+                  const String& prefix = "" );
 
+      template< typename Communicator >
       bool writeProlog( Logger& logger,
                         const Config::ParameterContainer& parameters );
       

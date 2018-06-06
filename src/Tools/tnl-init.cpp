@@ -53,17 +53,17 @@ int main( int argc, char* argv[] )
 {
 
    Config::ParameterContainer parameters;
-   Config::ConfigDescription conf_desc;
+   Config::ConfigDescription configDescription;
 
-   setupConfig( conf_desc );
-
-    //iniicialization needs argc and argc-> needs to be close to main
-       Communicators::NoDistrCommunicator::Init(argc,argv, true);
-#ifdef HAVE_MPI
-       Communicators::MpiCommunicator::Init(argc,argv,true);
-#endif
+   setupConfig( configDescription );
+   
+   Communicators::NoDistrCommunicator::configSetup( configDescription );
+   Communicators::MpiCommunicator::configSetup( configDescription );
+   
+   Communicators::NoDistrCommunicator::Init(argc,argv);
+   Communicators::MpiCommunicator::Init(argc,argv);   
  
-   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return EXIT_FAILURE;
 
    String meshFile = parameters. getParameter< String >( "mesh" );
@@ -83,5 +83,9 @@ int main( int argc, char* argv[] )
    if( ! resolveMeshType( parsedMeshType, parameters ) )
       return EXIT_FAILURE;
 
+#ifdef HAVE_MPI
+   Communicators::MpiCommunicator::Finalize();
+#endif
+      
    return EXIT_SUCCESS;
 }

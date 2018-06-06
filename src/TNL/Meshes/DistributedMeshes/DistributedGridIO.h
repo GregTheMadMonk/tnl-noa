@@ -10,17 +10,14 @@
 
 #pragma once
 
+#include <iostream>
+#include <mpi.h>
+
 #include <TNL/File.h>
+#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/CopyEntitiesHelper.h>
 #include <TNL/Functions/MeshFunction.h>
-
-
-#include <iostream>
-
-#ifdef MPIIO
-#include <TNL/Communicators/MpiCommunicator.h>
-#endif
 
 namespace TNL {
 namespace Meshes {   
@@ -50,8 +47,8 @@ class DistributedGridIO<MeshFunctionType,Dummy>
 
 
 /*
- * This variant cerate copy of MeshFunction but smaler, reduced to local entites, without overlap. 
- * It slow and has high RAM consupation
+ * This variant cerate copy of MeshFunction but smaller, reduced to local entities, without overlap. 
+ * It is slow and has high RAM consumption
  */
 template<typename MeshFunctionType> 
 class DistributedGridIO<MeshFunctionType,LocalCopy>
@@ -67,7 +64,7 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
     
     static bool save(const String& fileName, MeshFunctionType &meshFunction)
     {
-        auto *distrGrid=meshFunction.getMesh().GetDistMesh();
+        auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
         
         if(distrGrid==NULL) //not distributed
         {
@@ -113,7 +110,7 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
             
     static bool load(const String& fileName,MeshFunctionType &meshFunction) 
     {
-        auto *distrGrid=meshFunction.getMesh().GetDistMesh();
+        auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
         if(distrGrid==NULL) //not distributed
         {
             return meshFunction.boundLoad(fileName);
@@ -156,22 +153,22 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
  * BAD IMPLEMENTTION creating MPI-Types at every save! -- I dont want contamine more places by MPI..
  */
 
-#ifdef MPIIO
 template<typename MeshFunctionType> 
 class DistributedGridIO<MeshFunctionType,MpiIO>
 {
+   public:
 
-    public:
-
-    typedef typename MeshFunctionType::MeshType MeshType;
-    typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
-    typedef typename MeshFunctionType::MeshType::PointType PointType;
-    typedef typename MeshFunctionType::VectorType VectorType;
-    //typedef DistributedGrid< MeshType,MeshFunctionType::getMeshDimension()> DistributedGridType;
+      using RealType = typename MeshFunctionType::RealType;
+      typedef typename MeshFunctionType::MeshType MeshType;
+      typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
+      typedef typename MeshFunctionType::MeshType::PointType PointType;
+      typedef typename MeshFunctionType::VectorType VectorType;
+      //typedef DistributedGrid< MeshType,MeshFunctionType::getMeshDimension()> DistributedGridType;
     
     static bool save(const String& fileName, MeshFunctionType &meshFunction)
     {
-        auto *distrGrid=meshFunction.getMesh().GetDistMesh();
+#ifdef MPIIO       
+        auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
         
         if(distrGrid==NULL) //not distributed
         {
@@ -182,7 +179,7 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
        MPI_Datatype atype;
        int dataCount=CreateDataTypes(distrGrid,&ftype,&atype);
 
-       double * data=meshFunction.getData().getData();//TYP
+       RealType* data=meshFunction.getData().getData();
 
        //write 
        MPI_File file;
@@ -194,13 +191,18 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
 
        int headerSize=0;
 
-       if(Communicators::MpiCommunicator::GetRank()==0)
+       using Comm = typename TNL::Communicators::MpiCommunicator;
+       if(Comm::GetRank()==0)
        {
             headerSize=writeMeshFunctionHeader(file,meshFunction,dataCount);
        }
        MPI_Bcast(&headerSize, 1, MPI_INT,0, MPI_COMM_WORLD);
 
-       MPI_File_set_view(file,headerSize,MPI_DOUBLE,ftype,"native",MPI_INFO_NULL);//TYP
+       if( std::is_same< RealType, double >::value)
+         MPI_File_set_view(file,headerSize,MPI_DOUBLE,ftype,"native",MPI_INFO_NULL);
+       if( std::is_same< RealType, float >::value)
+         MPI_File_set_view(file,headerSize,MPI_FLOAT,ftype,"native",MPI_INFO_NULL);
+       
        MPI_Status wstatus;
 
        MPI_File_write(file,data,1,atype,&wstatus);
@@ -209,8 +211,11 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
 
        MPI_Type_free(&atype);
        MPI_Type_free(&ftype);
-
        return true;
+#else
+       std::cerr << "MPI-IO is not supported by your system." << std::endl;
+       return false;
+#endif       
     };
 
     template<typename DitsributedGridType>
@@ -320,7 +325,7 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
     /* Funky bomb - no checks - only dirty load */
     static bool load(const String& fileName,MeshFunctionType &meshFunction) 
     {
-        auto *distrGrid=meshFunction.getMesh().GetDistMesh();
+        auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
         if(distrGrid==NULL) //not distributed
         {
             return meshFunction.boundLoad(fileName);
@@ -396,9 +401,6 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
     };
     
 };
-
-#endif
-
 
 }
 }

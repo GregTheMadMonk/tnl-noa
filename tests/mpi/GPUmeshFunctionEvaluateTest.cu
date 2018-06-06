@@ -1,16 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 #include <iostream>
-#include <sstream>
-
-using namespace std;
 
 
-#ifdef HAVE_MPI
+#if defined(HAVE_MPI) && defined(HAVE_CUDA)
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Meshes/Grid.h>
@@ -22,9 +13,11 @@ using namespace std;
 #include <TNL/Timer.h>
 #include  <TNL/SharedPointer.h>
 
-//#define DIMENSION 3
+using namespace std;
+
+#define DIMENSION 3
 //#define OUTPUT 
-//#define XDISTR
+#define XDISTR
 //#define YDISTR
 //#define ZDISTR
 
@@ -37,20 +30,21 @@ using namespace TNL::Meshes::DistributedMeshes;
 using namespace TNL::Communicators;
 using namespace TNL::Functions;
 using namespace TNL::Devices;
-#endif
+
  
 int main ( int argc, char *argv[])
 {
     
-#ifdef HAVE_MPI
   Timer all,setup,eval,sync;
-    
+  
+  typedef Cuda Device;  
+  //typedef Host Device;  
 
   typedef MpiCommunicator CommunicatorType;
   //typedef NoDistrCommunicator CommType;
-  typedef Grid<DIMENSION, double,Host,int> MeshType;
+  typedef Grid<DIMENSION, double,Device,int> MeshType;
   typedef MeshFunction<MeshType> MeshFunctionType;
-  typedef Vector<double,Host,int> DofType;
+  typedef Vector<double,Device,int> DofType;
   typedef typename MeshType::Cell Cell;
   typedef typename MeshType::IndexType IndexType; 
   typedef typename MeshType::PointType PointType; 
@@ -62,7 +56,7 @@ int main ( int argc, char *argv[])
   
   CommunicatorType::Init(argc,argv);
 
-  int size=9;
+  int size=10;
   int cycles=1;
   if(argc==3)
   {
@@ -120,11 +114,9 @@ int main ( int argc, char *argv[])
   
   meshFunctionptr->bind(gridptr,dof);  
   
-  SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
-  SharedPointer< ConstFunctionType, Host > constFunctionPtr; 
+  SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
+  SharedPointer< ConstFunctionType, Device > constFunctionPtr; 
    
-  
-  
   setup.stop();
   
   double sum=0.0;
@@ -141,11 +133,11 @@ int main ( int argc, char *argv[])
         eval.stop();
 
         sync.start();    
-        meshFunctionptr->template Synchronize<CommunicatorType>();
+        meshFunctionptr->template synchronize<CommunicatorType>();
         CommunicatorType::Barrier();
         sync.stop();
 
-        sum+=dof[gridptr->getDimensions().x()/2]; //dummy acces to array    
+        ///sum+=dof[gridptr->getDimensions().x()/2]; //dummy acces to array    
     }
   all.stop();
   
@@ -173,11 +165,18 @@ int main ( int argc, char *argv[])
 
   CommunicatorType::Finalize();
 
-
-
-#else
-  std::cout<<"MPI not Supported." << std::endl;
-#endif
   return 0;
 
 }
+
+#else
+
+using namespace std;
+
+int main(void)
+{
+    cout << "MPI or Cuda missing...." <<endl;
+}
+#endif
+
+

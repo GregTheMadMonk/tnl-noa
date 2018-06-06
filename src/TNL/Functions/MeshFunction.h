@@ -161,7 +161,7 @@ class MeshFunction :
       using Object::boundLoad;
 
       template< typename CommunicatorType>
-      void Synchronize();    
+      void synchronize();    
 
  
    protected:

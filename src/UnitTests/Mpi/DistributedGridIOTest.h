@@ -51,8 +51,6 @@ class ParameterProvider<1,Device>
 {
     public:
 
-    int distr[1];
-
     typedef Grid<1,double,Device,int> MeshType;
     typedef typename MeshType::CoordinatesType CoordinatesType;
     typedef typename MeshType::PointType PointType;
@@ -84,19 +82,19 @@ class ParameterProvider<1,Device>
         return PointType(0);
     };
 
-    int* getDistr()
+    const CoordinatesType& getDistr()
     {
         distr[0]=4;
         return distr;
     };
+    
+    CoordinatesType distr;
 };
 
 template<typename Device>
 class ParameterProvider<2,Device>
 {
     public:
-
-    int distr[2];
 
     typedef Grid<2,double,Device,int> MeshType;
     typedef typename MeshType::CoordinatesType CoordinatesType;
@@ -129,20 +127,20 @@ class ParameterProvider<2,Device>
         return PointType(0,0);
     };
 
-    int* getDistr()
+    const CoordinatesType& getDistr()
     {
         distr[0]=2;
         distr[1]=2;
         return distr;
     };
+    
+    CoordinatesType distr;
 };
 
 template<typename Device>
 class ParameterProvider<3,Device>
 {
     public:
-
-    int distr[3];
 
     typedef Grid<3,double,Device,int> MeshType;
     typedef typename MeshType::CoordinatesType CoordinatesType;
@@ -175,13 +173,15 @@ class ParameterProvider<3,Device>
         return PointType(0,0,0);
     };
 
-    int* getDistr()
+    const CoordinatesType& getDistr()
     {
         distr[0]=2;
         distr[1]=2;
         distr[2]=1;
         return distr;
     };
+    
+    CoordinatesType distr;
 };
 
 //------------------------------------------------------------------------------
@@ -208,7 +208,7 @@ class TestDistributedGridIO{
         SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
         MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
         
-        ParameterProvider<dim,Device> parametry;
+        ParameterProvider<dim,Device> parameters;
         
         //save distributed meshfunction into files
         PointType globalOrigin;
@@ -222,12 +222,11 @@ class TestDistributedGridIO{
         globalGrid.setDimensions(globalProportions);
         globalGrid.setDomain(globalOrigin,globalProportions);
         
-        int *distr=parametry.getDistr();
-
         CoordinatesType overlap;
         overlap.setValue(1);
         DistributedGridType distrgrid;
-        distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap,distr);
+        distrgrid.setDomainDecomposition( parameters.getDistr() );
+        distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid, overlap );
 
         std::cout << distrgrid.printProcessDistr() <<std::endl;
 
@@ -246,8 +245,8 @@ class TestDistributedGridIO{
 
 
        //create similar local mesh function and evaluate linear function on it
-        PointType localOrigin=parametry.getOrigin(CommunicatorType::GetRank());        
-        PointType localProportions=parametry.getProportions(CommunicatorType::GetRank());;
+        PointType localOrigin=parameters.getOrigin(CommunicatorType::GetRank());        
+        PointType localProportions=parameters.getProportions(CommunicatorType::GetRank());;
             
         SharedPointer<MeshType>  localGridptr;
         localGridptr->setDimensions(localProportions);
@@ -286,7 +285,7 @@ class TestDistributedGridIO{
         SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
         MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
         
-        ParameterProvider<dim,Device> parametry;
+        ParameterProvider<dim,Device> parameters;
 
         //Crete distributed grid            
         PointType globalOrigin;
@@ -298,17 +297,16 @@ class TestDistributedGridIO{
         MeshType globalGrid;
         globalGrid.setDimensions(globalProportions);
         globalGrid.setDomain(globalOrigin,globalProportions);
-        
-        int *distr=parametry.getDistr();
 
         CoordinatesType overlap;
         overlap.setValue(1);
         DistributedGridType distrgrid;
-        distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap, distr);
+        distrgrid.setDomainDecomposition( parameters.getDistr() );
+        distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
 
         //save files from local mesh        
-        PointType localOrigin=parametry.getOrigin(CommunicatorType::GetRank());        
-        PointType localProportions=parametry.getProportions(CommunicatorType::GetRank());;
+        PointType localOrigin=parameters.getOrigin(CommunicatorType::GetRank());        
+        PointType localProportions=parameters.getProportions(CommunicatorType::GetRank());;
             
         SharedPointer<MeshType> localGridptr;
         localGridptr->setDimensions(localProportions);
@@ -340,7 +338,7 @@ class TestDistributedGridIO{
 
         DistributedGridIO<MeshFunctionType> ::load(FileName, *loadMeshFunctionptr );
 
-        loadMeshFunctionptr->template Synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
+        loadMeshFunctionptr->template synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
 
 
         //Crete "distributedgrid driven" grid filed by evaluated linear function
@@ -353,7 +351,7 @@ class TestDistributedGridIO{
         meshFunctionptr->bind(gridptr,dof);
         
         linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);        
-        meshFunctionptr->template Synchronize<CommunicatorType>();
+        meshFunctionptr->template synchronize<CommunicatorType>();
 
         for(int i=0;i<dof.getSize();i++)
         {

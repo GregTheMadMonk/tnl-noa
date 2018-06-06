@@ -148,9 +148,9 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    std::cout<<"setInitialCondition" <<std::endl; 
    if(CommunicatorType::isDistributed())
     {
-        std::cout<<"Nodes Distribution: " << uPointer->getMesh().GetDistMesh()->printProcessDistr() << std::endl;
+        std::cout<<"Nodes Distribution: " << uPointer->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
         Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(initialConditionFile, *uPointer );
-        uPointer->template Synchronize<CommunicatorType>();
+        uPointer->template synchronize<CommunicatorType>();
     }
     else
     {
@@ -212,17 +212,15 @@ makeSnapshot( const RealType& time,
    fileName.setExtension( "tnl" );
    fileName.setIndex( step );
 
-   std::cout<<"Make snapshot" <<std::endl; 
-
-    if(CommunicatorType::isDistributed())
-    {
-       Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::save(fileName.getFileName(), *uPointer );
-    }
-    else
-    {
-       if( ! this->uPointer->save( fileName.getFileName() ) )
-          return false;
-    }
+   if(CommunicatorType::isDistributed())
+   {
+      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::save(fileName.getFileName(), *uPointer );
+   }
+   else
+   {
+      if( ! this->uPointer->save( fileName.getFileName() ) )
+         return false;
+   }
    return true;
 }
 
@@ -251,10 +249,12 @@ getExplicitUpdate( const RealType& time,
    
    this->bindDofs( meshPointer, uDofs );
    MeshFunctionPointer fuPointer( meshPointer, fuDofs );
-   this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer ),
-   this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer ),
-   this->explicitUpdater.setRightHandSide( this->rightHandSidePointer ),
+   this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
+   this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
+   this->explicitUpdater.setRightHandSide( this->rightHandSidePointer );
+   std::cerr << "Starting updater ... " << std::endl;
    this->explicitUpdater.template update< typename Mesh::Cell, CommType >( time, tau, meshPointer, this->uPointer, fuPointer );
+   std::cerr << "Updater done ... " << std::endl;
 
 }
 

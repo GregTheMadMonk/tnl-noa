@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <TNL/Config/ConfigDescription.h>
 #include <TNL/Meshes/Grid.h>
 
 namespace TNL {
@@ -38,16 +39,38 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
 
       static constexpr int getMeshDimension() { return 3; };    
 
-     
-
       DistributedMesh()
       : isSet( false ) {};
-
+      
+      static void configSetup( Config::ConfigDescription& config )
+      {
+         config.addEntry< int >( "grid-domain-decomposition-x", "Number of grid subdomains along x-axis.", 0 );
+         config.addEntry< int >( "grid-domain-decomposition-y", "Number of grid subdomains along y-axis.", 0 );
+         config.addEntry< int >( "grid-domain-decomposition-z", "Number of grid subdomains along z-axis.", 0 );
+      }
+      
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix )
+      {
+         this->domainDecomposition.x() = parameters.getParameter< int >( "grid-domain-decomposition-x" );
+         this->domainDecomposition.y() = parameters.getParameter< int >( "grid-domain-decomposition-y" );
+         this->domainDecomposition.z() = parameters.getParameter< int >( "grid-domain-decomposition-z" );
+         return true;
+      }      
+      
+      void setDomainDecomposition( const CoordinatesType& domainDecomposition )
+      {
+         this->domainDecomposition = domainDecomposition;
+      }      
+      
+      const CoordinatesType& getDomainDecomposition()
+      {
+         return this->domainDecomposition;
+      }      
 
       template< typename CommunicatorType > 
       void setGlobalGrid( GridType &globalGrid,
-                          CoordinatesType overlap,
-                           int *distribution=NULL )
+                          CoordinatesType overlap )
       {
          isSet=true;           
 
@@ -77,13 +100,13 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
          if(!distributed)
          {
             //Without MPI
-            processesCoordinates[0]=0;
-            processesCoordinates[1]=0;
-            processesCoordinates[2]=0;
+            subdomainCoordinates[0]=0;
+            subdomainCoordinates[1]=0;
+            subdomainCoordinates[2]=0;
 
-            procsdistr[0]=1;
-            procsdistr[1]=1;
-            procsdistr[2]=1;               
+            domainDecomposition[0]=1;
+            domainDecomposition[1]=1;
+            domainDecomposition[2]=1;               
 
             localOrigin=globalGrid.getOrigin();
             localSize=globalGrid.getDimensions();
@@ -96,116 +119,113 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
          {
             //With MPI
             //compute node distribution
-            if(distribution!=NULL)
-            {
-               procsdistr[0]=distribution[0];
-               procsdistr[1]=distribution[1];
-               procsdistr[2]=distribution[2];
-            }
-            else
-            {
-               procsdistr[0]=0;
-               procsdistr[1]=0;
-               procsdistr[2]=0;
-            }
-            CommunicatorType::DimsCreate(nproc, 3, procsdistr);
-            processesCoordinates[2]=rank/(procsdistr[0]*procsdistr[1]);
-            processesCoordinates[1]=(rank%(procsdistr[0]*procsdistr[1]))/procsdistr[0];
-            processesCoordinates[0]=(rank%(procsdistr[0]*procsdistr[1]))%procsdistr[0];
+            int dims[ 3 ];
+            dims[ 0 ] = domainDecomposition[ 0 ];
+            dims[ 1 ] = domainDecomposition[ 1 ];
+            dims[ 2 ] = domainDecomposition[ 2 ];
+            
+            CommunicatorType::DimsCreate( nproc, 3, dims );
+            domainDecomposition[ 0 ] = dims[ 0 ];
+            domainDecomposition[ 1 ] = dims[ 1 ];
+            domainDecomposition[ 2 ] = dims[ 2 ];
+            
+            subdomainCoordinates[ 2 ] =   rank / ( domainDecomposition[0] * domainDecomposition[1] );
+            subdomainCoordinates[ 1 ] = ( rank % ( domainDecomposition[0] * domainDecomposition[1] ) ) / domainDecomposition[0];
+            subdomainCoordinates[ 0 ] = ( rank % ( domainDecomposition[0] * domainDecomposition[1] ) ) % domainDecomposition[0];
 
             //compute local mesh size 
             globalSize=globalGrid.getDimensions();                
-            numberoflarger[0]=globalGrid.getDimensions().x()%procsdistr[0];
-            numberoflarger[1]=globalGrid.getDimensions().y()%procsdistr[1];
-            numberoflarger[2]=globalGrid.getDimensions().z()%procsdistr[2];
+            numberOfLarger[0]=globalGrid.getDimensions().x()%domainDecomposition[0];
+            numberOfLarger[1]=globalGrid.getDimensions().y()%domainDecomposition[1];
+            numberOfLarger[2]=globalGrid.getDimensions().z()%domainDecomposition[2];
 
-            localSize.x()=(globalGrid.getDimensions().x()/procsdistr[0]);
-            localSize.y()=(globalGrid.getDimensions().y()/procsdistr[1]);
-            localSize.z()=(globalGrid.getDimensions().z()/procsdistr[2]);
+            localSize.x()=(globalGrid.getDimensions().x()/domainDecomposition[0]);
+            localSize.y()=(globalGrid.getDimensions().y()/domainDecomposition[1]);
+            localSize.z()=(globalGrid.getDimensions().z()/domainDecomposition[2]);
 
-            if(numberoflarger[0]>processesCoordinates[0])
+            if(numberOfLarger[0]>subdomainCoordinates[0])
                localSize.x()+=1;               
-            if(numberoflarger[1]>processesCoordinates[1])
+            if(numberOfLarger[1]>subdomainCoordinates[1])
                localSize.y()+=1;
-            if(numberoflarger[2]>processesCoordinates[2])
+            if(numberOfLarger[2]>subdomainCoordinates[2])
                localSize.z()+=1;
 
-            if(numberoflarger[0]>processesCoordinates[0])
-               globalBegin.x()=processesCoordinates[0]*localSize.x();
+            if(numberOfLarger[0]>subdomainCoordinates[0])
+               globalBegin.x()=subdomainCoordinates[0]*localSize.x();
             else
-               globalBegin.x()=numberoflarger[0]*(localSize.x()+1)+(processesCoordinates[0]-numberoflarger[0])*localSize.x();
+               globalBegin.x()=numberOfLarger[0]*(localSize.x()+1)+(subdomainCoordinates[0]-numberOfLarger[0])*localSize.x();
 
-            if(numberoflarger[1]>processesCoordinates[1])
-               globalBegin.y()=processesCoordinates[1]*localSize.y();
+            if(numberOfLarger[1]>subdomainCoordinates[1])
+               globalBegin.y()=subdomainCoordinates[1]*localSize.y();
             else
-               globalBegin.y()=numberoflarger[1]*(localSize.y()+1)+(processesCoordinates[1]-numberoflarger[1])*localSize.y();
+               globalBegin.y()=numberOfLarger[1]*(localSize.y()+1)+(subdomainCoordinates[1]-numberOfLarger[1])*localSize.y();
 
-            if(numberoflarger[2]>processesCoordinates[2])
-               globalBegin.z()=processesCoordinates[2]*localSize.z();
+            if(numberOfLarger[2]>subdomainCoordinates[2])
+               globalBegin.z()=subdomainCoordinates[2]*localSize.z();
             else
-               globalBegin.z()=numberoflarger[2]*(localSize.z()+1)+(processesCoordinates[2]-numberoflarger[2])*localSize.z();
+               globalBegin.z()=numberOfLarger[2]*(localSize.z()+1)+(subdomainCoordinates[2]-numberOfLarger[2])*localSize.z();
 
             localOrigin=globalGrid.getOrigin()+TNL::Containers::tnlDotProduct(globalGrid.getSpaceSteps(),globalBegin-overlap);
 
             //nearnodes
             //X Y Z
-            if(processesCoordinates[0]>0)
-               neighbors[West]=getRankOfProcCoord(processesCoordinates[0]-1,processesCoordinates[1],processesCoordinates[2]);               
-            if(processesCoordinates[0]<procsdistr[0]-1)
-               neighbors[East]=getRankOfProcCoord(processesCoordinates[0]+1,processesCoordinates[1],processesCoordinates[2]);
-            if(processesCoordinates[1]>0)
-               neighbors[Nord]=getRankOfProcCoord(processesCoordinates[0],processesCoordinates[1]-1,processesCoordinates[2]);
-            if(processesCoordinates[1]<procsdistr[1]-1)
-               neighbors[South]=getRankOfProcCoord(processesCoordinates[0],processesCoordinates[1]+1,processesCoordinates[2]);
-            if(processesCoordinates[2]>0)
-               neighbors[Bottom]=getRankOfProcCoord(processesCoordinates[0],processesCoordinates[1],processesCoordinates[2]-1);
-            if(processesCoordinates[2]<procsdistr[2]-1)
-               neighbors[Top]=getRankOfProcCoord(processesCoordinates[0],processesCoordinates[1],processesCoordinates[2]+1);
+            if(subdomainCoordinates[0]>0)
+               neighbors[West]=getRankOfProcCoord(subdomainCoordinates[0]-1,subdomainCoordinates[1],subdomainCoordinates[2]);               
+            if(subdomainCoordinates[0]<domainDecomposition[0]-1)
+               neighbors[East]=getRankOfProcCoord(subdomainCoordinates[0]+1,subdomainCoordinates[1],subdomainCoordinates[2]);
+            if(subdomainCoordinates[1]>0)
+               neighbors[Nord]=getRankOfProcCoord(subdomainCoordinates[0],subdomainCoordinates[1]-1,subdomainCoordinates[2]);
+            if(subdomainCoordinates[1]<domainDecomposition[1]-1)
+               neighbors[South]=getRankOfProcCoord(subdomainCoordinates[0],subdomainCoordinates[1]+1,subdomainCoordinates[2]);
+            if(subdomainCoordinates[2]>0)
+               neighbors[Bottom]=getRankOfProcCoord(subdomainCoordinates[0],subdomainCoordinates[1],subdomainCoordinates[2]-1);
+            if(subdomainCoordinates[2]<domainDecomposition[2]-1)
+               neighbors[Top]=getRankOfProcCoord(subdomainCoordinates[0],subdomainCoordinates[1],subdomainCoordinates[2]+1);
 
             //XY
-            if(processesCoordinates[0]>0 && processesCoordinates[1]>0)
-               neighbors[NordWest]=getRankOfProcCoord(processesCoordinates[0]-1,processesCoordinates[1]-1,processesCoordinates[2]);
-            if(processesCoordinates[0]<procsdistr[0]-1 && processesCoordinates[1]>0)
-               neighbors[NordEast]=getRankOfProcCoord(processesCoordinates[0]+1,processesCoordinates[1]-1,processesCoordinates[2]);
-            if(processesCoordinates[0]>0 && processesCoordinates[1]<procsdistr[1]-1)
-               neighbors[SouthWest]=getRankOfProcCoord(processesCoordinates[0]-1,processesCoordinates[1]+1,processesCoordinates[2]);
-            if(processesCoordinates[0]<procsdistr[0]-1 && processesCoordinates[1]<procsdistr[1]-1)
-               neighbors[SouthEast]=getRankOfProcCoord(processesCoordinates[0]+1,processesCoordinates[1]+1,processesCoordinates[2]);             
+            if(subdomainCoordinates[0]>0 && subdomainCoordinates[1]>0)
+               neighbors[NordWest]=getRankOfProcCoord(subdomainCoordinates[0]-1,subdomainCoordinates[1]-1,subdomainCoordinates[2]);
+            if(subdomainCoordinates[0]<domainDecomposition[0]-1 && subdomainCoordinates[1]>0)
+               neighbors[NordEast]=getRankOfProcCoord(subdomainCoordinates[0]+1,subdomainCoordinates[1]-1,subdomainCoordinates[2]);
+            if(subdomainCoordinates[0]>0 && subdomainCoordinates[1]<domainDecomposition[1]-1)
+               neighbors[SouthWest]=getRankOfProcCoord(subdomainCoordinates[0]-1,subdomainCoordinates[1]+1,subdomainCoordinates[2]);
+            if(subdomainCoordinates[0]<domainDecomposition[0]-1 && subdomainCoordinates[1]<domainDecomposition[1]-1)
+               neighbors[SouthEast]=getRankOfProcCoord(subdomainCoordinates[0]+1,subdomainCoordinates[1]+1,subdomainCoordinates[2]);             
             //XZ
-            if(processesCoordinates[0]>0 && processesCoordinates[2]>0)
-               neighbors[BottomWest]=getRankOfProcCoord(processesCoordinates[0]-1,processesCoordinates[1],processesCoordinates[2]-1);
-            if(processesCoordinates[0]<procsdistr[0]-1 && processesCoordinates[2]>0)
-               neighbors[BottomEast]=getRankOfProcCoord(processesCoordinates[0]+1,processesCoordinates[1],processesCoordinates[2]-1); 
-            if(processesCoordinates[0]>0 && processesCoordinates[2]<procsdistr[2]-1)
-               neighbors[TopWest]=getRankOfProcCoord(processesCoordinates[0]-1,processesCoordinates[1],processesCoordinates[2]+1);
-            if(processesCoordinates[0]<procsdistr[0]-1 && processesCoordinates[2]<procsdistr[2]-1)
-               neighbors[TopEast]=getRankOfProcCoord(processesCoordinates[0]+1,processesCoordinates[1],processesCoordinates[2]+1);
+            if(subdomainCoordinates[0]>0 && subdomainCoordinates[2]>0)
+               neighbors[BottomWest]=getRankOfProcCoord(subdomainCoordinates[0]-1,subdomainCoordinates[1],subdomainCoordinates[2]-1);
+            if(subdomainCoordinates[0]<domainDecomposition[0]-1 && subdomainCoordinates[2]>0)
+               neighbors[BottomEast]=getRankOfProcCoord(subdomainCoordinates[0]+1,subdomainCoordinates[1],subdomainCoordinates[2]-1); 
+            if(subdomainCoordinates[0]>0 && subdomainCoordinates[2]<domainDecomposition[2]-1)
+               neighbors[TopWest]=getRankOfProcCoord(subdomainCoordinates[0]-1,subdomainCoordinates[1],subdomainCoordinates[2]+1);
+            if(subdomainCoordinates[0]<domainDecomposition[0]-1 && subdomainCoordinates[2]<domainDecomposition[2]-1)
+               neighbors[TopEast]=getRankOfProcCoord(subdomainCoordinates[0]+1,subdomainCoordinates[1],subdomainCoordinates[2]+1);
             //YZ
-            if(processesCoordinates[1]>0 && processesCoordinates[2]>0)
-               neighbors[BottomNord]=getRankOfProcCoord(processesCoordinates[0],processesCoordinates[1]-1,processesCoordinates[2]-1);
-            if(processesCoordinates[1]<procsdistr[1]-1 && processesCoordinates[2]>0)
-               neighbors[BottomSouth]=getRankOfProcCoord(processesCoordinates[0],processesCoordinates[1]+1,processesCoordinates[2]-1);
-            if(processesCoordinates[1]>0 && processesCoordinates[2]<procsdistr[2]-1)
-               neighbors[TopNord]=getRankOfProcCoord(processesCoordinates[0],processesCoordinates[1]-1,processesCoordinates[2]+1);               
-            if(processesCoordinates[1]<procsdistr[1]-1 && processesCoordinates[2]<procsdistr[2]-1)
-               neighbors[TopSouth]=getRankOfProcCoord(processesCoordinates[0],processesCoordinates[1]+1,processesCoordinates[2]+1);
+            if(subdomainCoordinates[1]>0 && subdomainCoordinates[2]>0)
+               neighbors[BottomNord]=getRankOfProcCoord(subdomainCoordinates[0],subdomainCoordinates[1]-1,subdomainCoordinates[2]-1);
+            if(subdomainCoordinates[1]<domainDecomposition[1]-1 && subdomainCoordinates[2]>0)
+               neighbors[BottomSouth]=getRankOfProcCoord(subdomainCoordinates[0],subdomainCoordinates[1]+1,subdomainCoordinates[2]-1);
+            if(subdomainCoordinates[1]>0 && subdomainCoordinates[2]<domainDecomposition[2]-1)
+               neighbors[TopNord]=getRankOfProcCoord(subdomainCoordinates[0],subdomainCoordinates[1]-1,subdomainCoordinates[2]+1);               
+            if(subdomainCoordinates[1]<domainDecomposition[1]-1 && subdomainCoordinates[2]<domainDecomposition[2]-1)
+               neighbors[TopSouth]=getRankOfProcCoord(subdomainCoordinates[0],subdomainCoordinates[1]+1,subdomainCoordinates[2]+1);
             //XYZ
-            if(processesCoordinates[0]>0 && processesCoordinates[1]>0 && processesCoordinates[2]>0 )
-               neighbors[BottomNordWest]=getRankOfProcCoord(processesCoordinates[0]-1,processesCoordinates[1]-1,processesCoordinates[2]-1);
-            if(processesCoordinates[0]<procsdistr[0]-1 && processesCoordinates[1]>0 && processesCoordinates[2]>0 )
-               neighbors[BottomNordEast]=getRankOfProcCoord(processesCoordinates[0]+1,processesCoordinates[1]-1,processesCoordinates[2]-1);
-            if(processesCoordinates[0]>0 && processesCoordinates[1]<procsdistr[1]-1 && processesCoordinates[2]>0 )
-               neighbors[BottomSouthWest]=getRankOfProcCoord(processesCoordinates[0]-1,processesCoordinates[1]+1,processesCoordinates[2]-1);
-            if(processesCoordinates[0]<procsdistr[0]-1 && processesCoordinates[1]<procsdistr[1]-1 && processesCoordinates[2]>0 )
-               neighbors[BottomSouthEast]=getRankOfProcCoord(processesCoordinates[0]+1,processesCoordinates[1]+1,processesCoordinates[2]-1);
-            if(processesCoordinates[0]>0 && processesCoordinates[1]>0 && processesCoordinates[2]<procsdistr[2]-1 )
-               neighbors[TopNordWest]=getRankOfProcCoord(processesCoordinates[0]-1,processesCoordinates[1]-1,processesCoordinates[2]+1);
-            if(processesCoordinates[0]<procsdistr[0]-1 && processesCoordinates[1]>0 && processesCoordinates[2]<procsdistr[2]-1 )
-               neighbors[TopNordEast]=getRankOfProcCoord(processesCoordinates[0]+1,processesCoordinates[1]-1,processesCoordinates[2]+1);
-            if(processesCoordinates[0]>0 && processesCoordinates[1]<procsdistr[1]-1 && processesCoordinates[2]<procsdistr[2]-1 )
-               neighbors[TopSouthWest]=getRankOfProcCoord(processesCoordinates[0]-1,processesCoordinates[1]+1,processesCoordinates[2]+1);
-            if(processesCoordinates[0]<procsdistr[0]-1 && processesCoordinates[1]<procsdistr[1]-1 && processesCoordinates[2]<procsdistr[2]-1 )
-               neighbors[TopSouthEast]=getRankOfProcCoord(processesCoordinates[0]+1,processesCoordinates[1]+1,processesCoordinates[2]+1);   
+            if(subdomainCoordinates[0]>0 && subdomainCoordinates[1]>0 && subdomainCoordinates[2]>0 )
+               neighbors[BottomNordWest]=getRankOfProcCoord(subdomainCoordinates[0]-1,subdomainCoordinates[1]-1,subdomainCoordinates[2]-1);
+            if(subdomainCoordinates[0]<domainDecomposition[0]-1 && subdomainCoordinates[1]>0 && subdomainCoordinates[2]>0 )
+               neighbors[BottomNordEast]=getRankOfProcCoord(subdomainCoordinates[0]+1,subdomainCoordinates[1]-1,subdomainCoordinates[2]-1);
+            if(subdomainCoordinates[0]>0 && subdomainCoordinates[1]<domainDecomposition[1]-1 && subdomainCoordinates[2]>0 )
+               neighbors[BottomSouthWest]=getRankOfProcCoord(subdomainCoordinates[0]-1,subdomainCoordinates[1]+1,subdomainCoordinates[2]-1);
+            if(subdomainCoordinates[0]<domainDecomposition[0]-1 && subdomainCoordinates[1]<domainDecomposition[1]-1 && subdomainCoordinates[2]>0 )
+               neighbors[BottomSouthEast]=getRankOfProcCoord(subdomainCoordinates[0]+1,subdomainCoordinates[1]+1,subdomainCoordinates[2]-1);
+            if(subdomainCoordinates[0]>0 && subdomainCoordinates[1]>0 && subdomainCoordinates[2]<domainDecomposition[2]-1 )
+               neighbors[TopNordWest]=getRankOfProcCoord(subdomainCoordinates[0]-1,subdomainCoordinates[1]-1,subdomainCoordinates[2]+1);
+            if(subdomainCoordinates[0]<domainDecomposition[0]-1 && subdomainCoordinates[1]>0 && subdomainCoordinates[2]<domainDecomposition[2]-1 )
+               neighbors[TopNordEast]=getRankOfProcCoord(subdomainCoordinates[0]+1,subdomainCoordinates[1]-1,subdomainCoordinates[2]+1);
+            if(subdomainCoordinates[0]>0 && subdomainCoordinates[1]<domainDecomposition[1]-1 && subdomainCoordinates[2]<domainDecomposition[2]-1 )
+               neighbors[TopSouthWest]=getRankOfProcCoord(subdomainCoordinates[0]-1,subdomainCoordinates[1]+1,subdomainCoordinates[2]+1);
+            if(subdomainCoordinates[0]<domainDecomposition[0]-1 && subdomainCoordinates[1]<domainDecomposition[1]-1 && subdomainCoordinates[2]<domainDecomposition[2]-1 )
+               neighbors[TopSouthEast]=getRankOfProcCoord(subdomainCoordinates[0]+1,subdomainCoordinates[1]+1,subdomainCoordinates[2]+1);   
 
 
             localBegin=overlap;
@@ -250,19 +270,19 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
          TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by SetupGrid");
          grid.setOrigin(localOrigin);
          grid.setDimensions(localGridSize);
-         //compute local proporions by sideefect
+         //compute local proportions by side efect
          grid.setSpaceSteps(spaceSteps);
          grid.SetDistMesh(this);
       };
        
       String printProcessCoords()
       {
-         return convertToString(processesCoordinates[0])+String("-")+convertToString(processesCoordinates[1])+String("-")+convertToString(processesCoordinates[2]);
+         return convertToString(subdomainCoordinates[0])+String("-")+convertToString(subdomainCoordinates[1])+String("-")+convertToString(subdomainCoordinates[2]);
       };
 
       String printProcessDistr()
       {
-         return convertToString(procsdistr[0])+String("-")+convertToString(procsdistr[1])+String("-")+convertToString(procsdistr[2]);
+         return convertToString(domainDecomposition[0])+String("-")+convertToString(domainDecomposition[1])+String("-")+convertToString(domainDecomposition[2]);
       };  
 
       bool isDistributed(void)
@@ -308,13 +328,16 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
          return this->globalBegin;
       }
        
-           
+      void writeProlog( Logger& logger )
+      {
+         logger.writeParameter( "Domain decomposition:", this->getDomainDecomposition() );
+      }           
 
    private:
 
       int getRankOfProcCoord(int x, int y, int z)
       {
-         return z*procsdistr[0]*procsdistr[1]+y*procsdistr[0]+x;
+         return z*domainDecomposition[0]*domainDecomposition[1]+y*domainDecomposition[0]+x;
       }
         
       PointType spaceSteps;
@@ -332,9 +355,9 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
       int rank;
       int nproc;
         
-      int procsdistr[3];
-      CoordinatesType processesCoordinates;
-      int numberoflarger[3];
+      CoordinatesType domainDecomposition;
+      CoordinatesType subdomainCoordinates;
+      int numberOfLarger[3];
         
       int neighbors[26];
 

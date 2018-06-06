@@ -353,7 +353,7 @@ template< typename Real,
           typename Device,
           typename Index >
 DistributedMeshes::DistributedMesh <Grid< 1, Real, Device, Index >> * 
-Grid< 1, Real, Device, Index >:: GetDistMesh(void) const
+Grid< 1, Real, Device, Index >:: getDistributedMesh(void) const
 {
     return this->distGrid;
 }
@@ -424,6 +424,8 @@ writeProlog( Logger& logger ) const
    logger.writeParameter( "Space steps:", this->getSpaceSteps() );
    logger.writeParameter( "Number of cells:", getEntitiesCount< Cell >() );
    logger.writeParameter( "Number of vertices:", getEntitiesCount< Vertex >() );
+   if( this->getDistributedMesh() )
+      this->getDistributedMesh()->writeProlog( logger );
 }
 
 } // namespace Meshes

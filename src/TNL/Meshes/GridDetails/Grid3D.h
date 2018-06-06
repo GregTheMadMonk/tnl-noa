@@ -103,7 +103,7 @@ class Grid< 3, Real, Device, Index > : public Object
    
    void SetDistMesh(DistributedMeshType * distGrid);
    
-   DistributedMeshType * GetDistMesh(void) const;
+   DistributedMeshType * getDistributedMesh(void) const;
    
    template< int xPow, int yPow, int zPow >
    __cuda_callable__

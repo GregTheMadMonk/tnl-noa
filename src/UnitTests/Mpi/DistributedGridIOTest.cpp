@@ -95,7 +95,9 @@ int main( int argc, char* argv[] )
        delete listeners.Release(listeners.default_result_printer());
        listeners.Append(new MinimalistBuffredPrinter);
 
-       CommunicatorType::Init(argc,argv, false);
+       CommunicatorType::Init(argc,argv );
+       CommunicatorType::setRedirection( false );
+       CommunicatorType::setupRedirection();
     #endif
        int result= RUN_ALL_TESTS();
 

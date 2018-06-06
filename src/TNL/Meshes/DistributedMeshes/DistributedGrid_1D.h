@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Logger.h>
 
 namespace TNL {
 namespace Meshes { 
@@ -29,13 +30,26 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
 
       static constexpr int getMeshDimension() { return 1; };    
 
-     
       DistributedMesh()
-      {
-         isSet=false;
-      };
+      : isSet(false ){};
 
-      //compute everithing 
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix )
+      {
+         this->domainDecomposition.x() = parameters.getParameter< int >( "grid-domain-decomposition-x" );
+         return true;
+      }      
+      
+      void setDomainDecomposition( const CoordinatesType& domainDecomposition )
+      {
+         this->domainDecomposition = domainDecomposition;
+      }
+      
+      const CoordinatesType& getDomainDecomposition()
+      {
+         return this->domainDecomposition;
+      }
+      
       template<typename CommunicatorType>
       void setGlobalGrid(GridType globalGrid, CoordinatesType overlap, int *distribution=NULL)
       {
@@ -77,12 +91,14 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
              return;
          }
          else
-         { 
+         {            
              //nearnodes
              if(rank!=0)
                  left=rank-1;
              if(rank!=nproc-1)
                  right=rank+1;
+             
+             this->domainDecomposition[ 0 ] = rank;
 
              globalSize=globalGrid.getDimensions();                 
 
@@ -196,6 +212,11 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
       {
          return this->localBegin;
       }
+      
+      void writeProlog( Logger& logger )
+      {
+         logger.writeParameter( "Domain decomposition:", this->getDomainDecomposition() );
+      }
        
        
     private : 
@@ -215,6 +236,9 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
         
       int rank;
       int nproc;
+      
+      CoordinatesType domainDecomposition;
+      CoordinatesType subdomainCoordinates;      
         
       int numberOfLarger;
         
