@@ -24,7 +24,7 @@
 
 #include "HeatEquationProblem.h"
 
-//#define MPIIO
+#define MPIIO
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 
 
@@ -149,7 +149,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    if(CommunicatorType::isDistributed())
     {
         std::cout<<"Nodes Distribution: " << uPointer->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
-        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(initialConditionFile, *uPointer );
+        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(initialConditionFile, *uPointer );
         uPointer->template synchronize<CommunicatorType>();
     }
     else
@@ -252,9 +252,7 @@ getExplicitUpdate( const RealType& time,
    this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
    this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
    this->explicitUpdater.setRightHandSide( this->rightHandSidePointer );
-   std::cerr << "Starting updater ... " << std::endl;
    this->explicitUpdater.template update< typename Mesh::Cell, CommType >( time, tau, meshPointer, this->uPointer, fuPointer );
-   std::cerr << "Updater done ... " << std::endl;
 
 }
 

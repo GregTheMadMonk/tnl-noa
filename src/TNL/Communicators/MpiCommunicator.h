@@ -10,15 +10,16 @@
 
 #pragma once
 
-#ifdef HAVE_MPI
-
 #include <iostream>
 #include <fstream>
-#include <mpi.h>
+
+#ifdef HAVE_MPI
+#include <mpi.h>   
+#endif
+
 #include <TNL/String.h>
 #include <TNL/Logger.h>
 #include <TNL/Config/ConfigDescription.h>
-
 
 namespace TNL {
 namespace Communicators {
@@ -27,7 +28,7 @@ class MpiCommunicator
 {
 
    public: // TODO: this was private
-
+#ifdef HAVE_MPI
       inline static MPI_Datatype MPIDataType( const signed char* ) { return MPI_CHAR; };
       inline static MPI_Datatype MPIDataType( const signed short int* ) { return MPI_SHORT; };
       inline static MPI_Datatype MPIDataType( const signed int* ) { return MPI_INT; };
@@ -39,8 +40,11 @@ class MpiCommunicator
       inline static MPI_Datatype MPIDataType( const float* ) { return MPI_FLOAT; };
       inline static MPI_Datatype MPIDataType( const double* ) { return MPI_DOUBLE; };
       inline static MPI_Datatype MPIDataType( const long double* ) { return MPI_LONG_DOUBLE; };
-   
+
       using Request = MPI::Request;
+#else
+      using Request = int;
+#endif
 
       static bool isDistributed()
       {
@@ -57,9 +61,12 @@ class MpiCommunicator
       static bool setup( const Config::ParameterContainer& parameters,
                          const String& prefix = "" )
       {
-#ifdef HAVE_MPI         
-         redirect = parameters.getParameter< bool >( "redirect-mpi-output" );
-         setupRedirection();
+#ifdef HAVE_MPI 
+         if(IsInitialized())     //i.e. - isUsed
+         {
+            redirect = parameters.getParameter< bool >( "redirect-mpi-output" );
+            setupRedirection();
+         }
 #endif         
          return true;
       }
@@ -80,6 +87,7 @@ class MpiCommunicator
       
       static void setupRedirection()
       {
+#ifdef HAVE_MPI 
          if(isDistributed() && redirect )
          {
             //redirect all stdout to files, only 0 take to go to console
@@ -96,10 +104,12 @@ class MpiCommunicator
                std::cout.rdbuf(psbuf);
             }
          }
+#endif  
       };
 
       static void Finalize()
       {
+#ifdef HAVE_MPI 
          if(isDistributed())
          {
             if(MPI::COMM_WORLD.Get_rank()!=0)
@@ -109,21 +119,39 @@ class MpiCommunicator
             }
          }
          MPI::Finalize();
+#endif
       };
 
       static bool IsInitialized()
       {
-         return MPI::Is_initialized();
+#ifdef HAVE_MPI 
+         return MPI::Is_initialized() && !MPI::Is_finalized();
+#else
+        return false;
+#endif
       };
 
       static int GetRank()
       {
-         return MPI::COMM_WORLD.Get_rank();
+         //CHECK_INICIALIZED_RET(MPI::COMM_WORLD.Get_rank());
+#ifdef HAVE_MPI
+        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+        return MPI::COMM_WORLD.Get_rank();
+#else
+        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
+        return 0;
+#endif
       };
 
       static int GetSize()
       {
-         return MPI::COMM_WORLD.Get_size();
+#ifdef HAVE_MPI
+        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+        return MPI::COMM_WORLD.Get_size();
+#else
+        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
+        return 0;
+#endif
       };
 
         //dim-number of dimesions, distr array of guess distr - 0 for computation
@@ -131,6 +159,7 @@ class MpiCommunicator
         //more information in MPI documentation
         static void DimsCreate(int nproc, int dim, int *distr)
         {
+#ifdef HAVE_MPI
             /***HACK for linear distribution***/
            int sum=0;
            for(int i=0;i<dim;i++)
@@ -147,34 +176,63 @@ class MpiCommunicator
             /***END OF HACK***/
 
             MPI_Dims_create(nproc, dim, distr);
+#endif
         };
 
         static void Barrier()
         {
-            MPI::COMM_WORLD.Barrier();
+#ifdef HAVE_MPI
+        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+        MPI::COMM_WORLD.Barrier();;
+#else
+        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
+#endif     
         };
 
         template <typename T>
         static Request ISend( const T *data, int count, int dest)
         {
-                return MPI::COMM_WORLD.Isend((void*) data, count, MPIDataType(data) , dest, 0);
+#ifdef HAVE_MPI
+        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+        return MPI::COMM_WORLD.Isend((void*) data, count, MPIDataType(data) , dest, 0);
+#else
+        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
+        return 0;
+#endif  
         }    
 
         template <typename T>
         static Request IRecv( const T *data, int count, int src)
         {
-                return MPI::COMM_WORLD.Irecv((void*) data, count, MPIDataType(data) , src, 0);
+#ifdef HAVE_MPI
+        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+        return MPI::COMM_WORLD.Irecv((void*) data, count, MPIDataType(data) , src, 0);
+#else
+        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
+        return 0;
+#endif  
         }
 
         static void WaitAll(Request *reqs, int length)
         {
-                MPI::Request::Waitall(length, reqs);
+#ifdef HAVE_MPI
+        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+        MPI::Request::Waitall(length, reqs);
+#else
+        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
+#endif  
+
         };
 
         template< typename T > 
         static void Bcast(  T& data, int count, int root)
         {
-                MPI::COMM_WORLD.Bcast((void*) &data, count,  MPIDataType(data), root);
+#ifdef HAVE_MPI
+        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+        MPI::COMM_WORLD.Bcast((void*) &data, count,  MPIDataType(data), root);
+#else
+        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
+#endif  
         }
 
       /*  template< typename T >
@@ -204,22 +262,32 @@ class MpiCommunicator
          }
       }
       
+#ifdef HAVE_MPI
       static MPI::Request NullRequest;
+#else
+      static int NullRequest;
+#endif
       static std::streambuf *psbuf;
       static std::streambuf *backup;
       static std::ofstream filestr;
       static bool redirect;
+      static bool inited;
    
 };
-    
+   
+#ifdef HAVE_MPI 
 MPI::Request MpiCommunicator::NullRequest;
+#else
+int MpiCommunicator::NullRequest;
+#endif
 std::streambuf *MpiCommunicator::psbuf;
 std::streambuf *MpiCommunicator::backup;
 std::ofstream MpiCommunicator::filestr;
 bool MpiCommunicator::redirect;
+bool MpiCommunicator::inited;
 
 }//namespace Communicators
 } // namespace TNL
-#endif
+
 
 

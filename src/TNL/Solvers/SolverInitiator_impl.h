@@ -197,7 +197,6 @@ class CommunicatorTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, t
    public:
       static bool run( const Config::ParameterContainer& parameters )
       {
-#ifdef HAVE_MPI
          if(Communicators::MpiCommunicator::isDistributed())
          {     
                bool ret=SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, Communicators::MpiCommunicator >::run( parameters );
@@ -205,7 +204,6 @@ class CommunicatorTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, t
                return ret;
          }
          Communicators::MpiCommunicator::Finalize();
-#endif
          return SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, Communicators::NoDistrCommunicator >::run( parameters );
          
       }

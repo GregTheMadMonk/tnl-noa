@@ -92,7 +92,8 @@ bool SolverStarter< ConfigTag > :: run( const Config::ParameterContainer& parame
    if( ! Devices::Host::setup( parameters ) ||
        ! Devices::Cuda::setup( parameters ) ||
        ! Communicators::NoDistrCommunicator::setup( parameters ) ||
-       ! Communicators::MpiCommunicator::setup( parameters ) )
+       ! Communicators::MpiCommunicator::setup( parameters ) 
+    )
       return false;
    Problem problem;
    //return UserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );

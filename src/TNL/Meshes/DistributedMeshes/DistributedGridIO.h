@@ -11,7 +11,12 @@
 #pragma once
 
 #include <iostream>
-#include <mpi.h>
+
+#ifdef HAVE_MPI
+    #ifdef MPIIO
+        #include <mpi.h>
+    #endif
+#endif
 
 #include <TNL/File.h>
 #include <TNL/Communicators/MpiCommunicator.h>
@@ -153,6 +158,8 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
  * BAD IMPLEMENTTION creating MPI-Types at every save! -- I dont want contamine more places by MPI..
  */
 
+#ifdef HAVE_MPI
+#ifdef MPIIO  
 template<typename MeshFunctionType> 
 class DistributedGridIO<MeshFunctionType,MpiIO>
 {
@@ -167,7 +174,7 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
     
     static bool save(const String& fileName, MeshFunctionType &meshFunction)
     {
-#ifdef MPIIO       
+     
         auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
         
         if(distrGrid==NULL) //not distributed
@@ -191,8 +198,7 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
 
        int headerSize=0;
 
-       using Comm = typename TNL::Communicators::MpiCommunicator;
-       if(Comm::GetRank()==0)
+       if(Communicators::MpiCommunicator::GetRank()==0)
        {
             headerSize=writeMeshFunctionHeader(file,meshFunction,dataCount);
        }
@@ -212,10 +218,6 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
        MPI_Type_free(&atype);
        MPI_Type_free(&ftype);
        return true;
-#else
-       std::cerr << "MPI-IO is not supported by your system." << std::endl;
-       return false;
-#endif       
     };
 
     template<typename DitsributedGridType>
@@ -401,7 +403,8 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
     };
     
 };
-
+#endif
+#endif
 }
 }
 }
