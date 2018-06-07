@@ -62,7 +62,7 @@ class MpiCommunicator
                          const String& prefix = "" )
       {
 #ifdef HAVE_MPI 
-         if(IsInitialized())     //i.e. - isUsed
+         if(IsInitialized())//i.e. - isUsed
          {
             redirect = parameters.getParameter< bool >( "redirect-mpi-output" );
             setupRedirection();
@@ -84,7 +84,7 @@ class MpiCommunicator
       {
          redirect = redirect_;
       }
-      
+
       static void setupRedirection()
       {
 #ifdef HAVE_MPI 
@@ -104,12 +104,12 @@ class MpiCommunicator
                std::cout.rdbuf(psbuf);
             }
          }
-#endif  
+#endif
       };
 
       static void Finalize()
       {
-#ifdef HAVE_MPI 
+#ifdef HAVE_MPI
          if(isDistributed())
          {
             if(MPI::COMM_WORLD.Get_rank()!=0)
@@ -267,6 +267,7 @@ class MpiCommunicator
 #else
       static int NullRequest;
 #endif
+
       static std::streambuf *psbuf;
       static std::streambuf *backup;
       static std::ofstream filestr;
