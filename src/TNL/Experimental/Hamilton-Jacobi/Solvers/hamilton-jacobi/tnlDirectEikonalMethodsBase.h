@@ -69,7 +69,7 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
                                          const MeshEntity& cell,
                                          const RealType velocity = 1.0 );
       
-      __cuda_callable__ bool updateCell( volatile Real sArray[18][18],
+      __cuda_callable__ double updateCell( volatile Real sArray[18][18],
                                          int thri, int thrj, const Real hx, const Real hy,
                                          const Real velocity = 1.0 );
       
@@ -117,7 +117,7 @@ template < typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr,
                                       const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
                                       Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
-                                      bool *BlockIterDevice );
+                                      Real *BlockIterDevice );
 
 template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 

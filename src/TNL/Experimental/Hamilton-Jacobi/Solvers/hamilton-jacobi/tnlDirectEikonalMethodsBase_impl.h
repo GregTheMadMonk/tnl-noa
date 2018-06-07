@@ -859,7 +859,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool
+double
 tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
 updateCell( volatile Real sArray[18][18], int thri, int thrj, const Real hx, const Real hy,
             const Real v )
@@ -885,9 +885,9 @@ updateCell( volatile Real sArray[18][18], int thri, int thrj, const Real hx, con
 
     if( fabs( a ) == TypeInfo< RealType >::getMaxValue() && 
         fabs( b ) == TypeInfo< RealType >::getMaxValue() )
-       return false;
+       return 0;
    
-    RealType pom[6] = { a, b, TypeInfo< Real >::getMaxValue(), (RealType)hx, (RealType)hy, TypeInfo< Real >::getMaxValue() };
+    RealType pom[6] = { a, b, TypeInfo< Real >::getMaxValue(), (RealType)hx, (RealType)hy, 0.0 };
     sortMinims( pom );
     tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 3 ]/v;
     
@@ -895,9 +895,11 @@ updateCell( volatile Real sArray[18][18], int thri, int thrj, const Real hx, con
     if( fabs( tmp ) < fabs( pom[ 1 ] ) ) 
     {
         sArray[ thrj ][ thri ] = argAbsMin( value, tmp );
-        if ( fabs( value - sArray[ thrj ][ thri ] ) >  0.001 )
-            return true;
-        return false;
+        tmp = value - sArray[ thrj ][ thri ];
+        if ( fabs( tmp ) >  0.1 )
+            return 10;
+        else
+            return 0;
     }
     else
     {
@@ -905,10 +907,13 @@ updateCell( volatile Real sArray[18][18], int thri, int thrj, const Real hx, con
             TNL::sign( value ) * pom[ 3 ] * pom[ 4 ] * TNL::sqrt( ( pom[ 3 ] * pom[ 3 ] +  pom[ 4 ] *  pom[ 4 ] )/( v * v ) - 
             ( pom[ 1 ] - pom[ 0 ] ) * ( pom[ 1 ] - pom[ 0 ] ) ) )/( pom[ 3 ] * pom[ 3 ] + pom[ 4 ] * pom[ 4 ] );
         sArray[ thrj ][ thri ] = argAbsMin( value, tmp );
-        if ( fabs( value - sArray[ thrj ][ thri ] ) > 0.001 )
-            return true;
-        return false;
+        tmp = value - sArray[ thrj ][ thri ];
+        if ( fabs( tmp ) > 0.1 )
+            return 10;
+        else
+            return 0;
     }
-    return false;
+    
+    return 0;
 }
 #endif
