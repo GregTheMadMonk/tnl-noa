@@ -464,4 +464,27 @@ bool processFiles( const Config::ParameterContainer& parameters )
    return true;
 }
 
+template< int Dim, typename Real >
+bool resolveGridIndexType( const Containers::List< String >& parsedMeshType,
+                           const Config::ParameterContainer& parameters )
+{
+   if( parsedMeshType[ 4 ] == "int" )
+      return processFiles< Meshes::Grid< Dim, Real, Devices::Host, int > >( parameters );
+   if( parsedMeshType[ 4 ] == "long int" )
+      return processFiles< Meshes::Grid< Dim, Real, Devices::Host, long int > >( parameters );   
+}
+
+template< int Dim >
+bool resolveGridRealType( const Containers::List< String >& parsedMeshType,
+                          const Config::ParameterContainer& parameters )
+{
+   if( parsedMeshType[ 2 ] == "float" )
+      return resolveGridIndexType< Dim, float >( parsedMeshType, parameters );
+   if( parsedMeshType[ 2 ] == "double" )
+      return resolveGridIndexType< Dim, double >( parsedMeshType, parameters );
+   if( parsedMeshType[ 2 ] == "long double" )
+      return resolveGridIndexType< Dim, long double >( parsedMeshType, parameters );
+   
+}
+
 #endif /* TNL_DIFF_H_ */
