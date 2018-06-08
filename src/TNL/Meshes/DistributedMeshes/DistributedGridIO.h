@@ -23,6 +23,8 @@
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/CopyEntitiesHelper.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 namespace Meshes {   
@@ -31,13 +33,15 @@ namespace DistributedMeshes {
 enum DistrGridIOTypes { Dummy = 0 , LocalCopy = 1, MpiIO=2 };
     
 template<typename MeshFunctionType,
-         DistrGridIOTypes type = LocalCopy> 
+         DistrGridIOTypes type = LocalCopy,
+         typename Device=typename MeshFunctionType::DeviceType> 
 class DistributedGridIO
 {
 };
 
-template<typename MeshFunctionType> 
-class DistributedGridIO<MeshFunctionType,Dummy>
+template<typename MeshFunctionType,
+         typename Device> 
+class DistributedGridIO<MeshFunctionType,Dummy,Device>
 {
     bool save(const String& fileName, MeshFunctionType &meshFunction)
     {
@@ -55,8 +59,9 @@ class DistributedGridIO<MeshFunctionType,Dummy>
  * This variant cerate copy of MeshFunction but smaller, reduced to local entities, without overlap. 
  * It is slow and has high RAM consumption
  */
-template<typename MeshFunctionType> 
-class DistributedGridIO<MeshFunctionType,LocalCopy>
+template<typename MeshFunctionType,
+         typename Device> 
+class DistributedGridIO<MeshFunctionType,LocalCopy,Device>
 {
 
     public:
@@ -161,7 +166,7 @@ class DistributedGridIO<MeshFunctionType,LocalCopy>
 #ifdef HAVE_MPI
 #ifdef MPIIO  
 template<typename MeshFunctionType> 
-class DistributedGridIO<MeshFunctionType,MpiIO>
+class DistributedGridIO_MPIIOBase
 {
    public:
 
@@ -172,7 +177,7 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
       typedef typename MeshFunctionType::VectorType VectorType;
       //typedef DistributedGrid< MeshType,MeshFunctionType::getMeshDimension()> DistributedGridType;
     
-    static bool save(const String& fileName, MeshFunctionType &meshFunction)
+    static bool save(const String& fileName, MeshFunctionType &meshFunction, RealType *data)
     {
      
         auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
@@ -185,8 +190,6 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
        MPI_Datatype ftype;
        MPI_Datatype atype;
        int dataCount=CreateDataTypes(distrGrid,&ftype,&atype);
-
-       RealType* data=meshFunction.getData().getData();
 
        //write 
        MPI_File file;
@@ -325,7 +328,7 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
     };
             
     /* Funky bomb - no checks - only dirty load */
-    static bool load(const String& fileName,MeshFunctionType &meshFunction) 
+    static bool load(const String& fileName,MeshFunctionType &meshFunction, double *data ) 
     {
         auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
         if(distrGrid==NULL) //not distributed
@@ -336,8 +339,6 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
        MPI_Datatype ftype;
        MPI_Datatype atype;
        int dataCount=CreateDataTypes(distrGrid,&ftype,&atype);
-
-       double * data=meshFunction.getData().getData();//TYP
 
        //write 
        MPI_File file;
@@ -403,6 +404,51 @@ class DistributedGridIO<MeshFunctionType,MpiIO>
     };
     
 };
+
+template<typename MeshFunctionType> 
+class DistributedGridIO<MeshFunctionType,MpiIO,TNL::Devices::Cuda>
+{
+    public:
+    static bool save(const String& fileName, MeshFunctionType &meshFunction)
+    {
+        using HostVectorType = Containers::Vector<typename MeshFunctionType::RealType, Devices::Host, typename MeshFunctionType::IndexType >; 
+        HostVectorType hostVector;
+        hostVector=meshFunction.getData();
+        typename MeshFunctionType::RealType * data=hostVector.getData();  
+        return DistributedGridIO_MPIIOBase<MeshFunctionType>::save(fileName,meshFunction,data);
+    };
+
+    static bool load(const String& fileName,MeshFunctionType &meshFunction) 
+    {
+        using HostVectorType = Containers::Vector<typename MeshFunctionType::RealType, Devices::Host, typename MeshFunctionType::IndexType >; 
+        HostVectorType hostVector;
+        hostVector.setLike(meshFunction.getData());
+        double * data=hostVector.getData();
+        DistributedGridIO_MPIIOBase<MeshFunctionType>::load(fileName,meshFunction,data);
+        meshFunction.getData()=hostVector;
+        return true;
+    };
+
+};
+
+template<typename MeshFunctionType> 
+class DistributedGridIO<MeshFunctionType,MpiIO,TNL::Devices::Host>
+{
+    public:
+    static bool save(const String& fileName, MeshFunctionType &meshFunction)
+    {
+        typename MeshFunctionType::RealType * data=meshFunction.getData().getData();      
+        return DistributedGridIO_MPIIOBase<MeshFunctionType>::save(fileName,meshFunction,data);
+    };
+
+    static bool load(const String& fileName,MeshFunctionType &meshFunction) 
+    {
+        double * data=meshFunction.getData().getData();      
+        return DistributedGridIO_MPIIOBase<MeshFunctionType>::load(fileName,meshFunction,data);
+    };
+
+};
+
 #endif
 #endif
 }
