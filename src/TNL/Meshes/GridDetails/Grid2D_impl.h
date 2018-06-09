@@ -496,6 +496,8 @@ void
 Grid< 2, Real, Device, Index >::
 writeProlog( Logger& logger ) const
 {
+   if( this->getDistributedMesh() )
+      return this->getDistributedMesh()->writeProlog( logger );
    logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
@@ -504,9 +506,6 @@ writeProlog( Logger& logger ) const
    logger.writeParameter( "Number of cells:", getEntitiesCount< Cell >() );
    logger.writeParameter( "Number of faces:", getEntitiesCount< Face >() );
    logger.writeParameter( "Number of vertices:", getEntitiesCount< Vertex >() );
-   if( this->getDistributedMesh() )
-      this->getDistributedMesh()->writeProlog( logger );
-
 }
 
 } // namespace Meshes

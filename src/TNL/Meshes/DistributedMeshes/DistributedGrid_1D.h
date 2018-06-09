@@ -17,8 +17,8 @@ namespace TNL {
 namespace Meshes { 
 namespace DistributedMeshes {
 
-template<typename RealType, typename Device, typename Index >     
-class DistributedMesh<Grid< 1, RealType, Device, Index >>
+template< typename RealType, typename Device, typename Index >     
+class DistributedMesh< Grid< 1, RealType, Device, Index > >
 {
 
     public:
@@ -30,206 +30,60 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
 
       static constexpr int getMeshDimension() { return 1; };    
 
-      DistributedMesh()
-      : isSet(false ){};
+      DistributedMesh();
 
       bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix )
-      {
-         this->domainDecomposition.x() = parameters.getParameter< int >( "grid-domain-decomposition-x" );
-         return true;
-      }      
+                  const String& prefix );
       
-      void setDomainDecomposition( const CoordinatesType& domainDecomposition )
-      {
-         this->domainDecomposition = domainDecomposition;
-      }
+      void setDomainDecomposition( const CoordinatesType& domainDecomposition );
       
-      const CoordinatesType& getDomainDecomposition()
-      {
-         return this->domainDecomposition;
-      }
+      const CoordinatesType& getDomainDecomposition() const;
       
       template<typename CommunicatorType>
-      void setGlobalGrid(GridType globalGrid, CoordinatesType overlap, int *distribution=NULL)
-      {
-         isSet=true;
-
-         this->overlap=overlap;
-
-         left=-1;
-         right=-1;
-
-         Dimensions= GridType::getMeshDimension();
-         spaceSteps=globalGrid.getSpaceSteps();
-
-         distributed=false;
-         if(CommunicatorType::IsInitialized())
-         {
-             rank=CommunicatorType::GetRank();
-             this->nproc=CommunicatorType::GetSize();
-             //use only if have more than one process
-             if(this->nproc>1)
-             {
-                 distributed=true;
-             }
-         }
-
-         if(!distributed)
-         {
-             //Without distribution
-
-             std::cout <<"BEZ Distribuce"<<std::endl;
-             rank=0;
-             localOrigin=globalGrid.getOrigin();
-             localSize=globalGrid.getDimensions();
-             localGridSize=globalGrid.getDimensions();
-             globalSize=globalGrid.getDimensions();
-             globalBegin=CoordinatesType(0);
-
-             localBegin=CoordinatesType(0);
-             return;
-         }
-         else
-         {            
-             //nearnodes
-             if(rank!=0)
-                 left=rank-1;
-             if(rank!=nproc-1)
-                 right=rank+1;
-             
-             this->domainDecomposition[ 0 ] = rank;
-
-             globalSize=globalGrid.getDimensions();                 
-
-             //compute local mesh size               
-             numberOfLarger=globalGrid.getDimensions().x()%nproc;
-
-             localSize.x()=(globalGrid.getDimensions().x()/nproc);               
-             if(numberOfLarger>rank)
-                  localSize.x()+=1;                      
-
-             if(numberOfLarger>rank)
-             {
-                 globalBegin.x()=rank*localSize.x();
-                 localOrigin.x()=globalGrid.getOrigin().x()
-                              +(globalBegin.x()-overlap.x())*globalGrid.getSpaceSteps().x();
-             }
-             else
-             {
-                 globalBegin.x()=numberOfLarger*(localSize.x()+1)+(rank-numberOfLarger)*localSize.x();
-                 localOrigin.x()=(globalGrid.getOrigin().x()-overlap.x())
-                              +globalBegin.x()*globalGrid.getSpaceSteps().x();
-             }
-
-            localBegin=overlap;
-
-             //vlevo neni prekryv
-             if(left==-1)
-             {
-                 localOrigin.x()+=overlap.x()*globalGrid.getSpaceSteps().x();
-                 localBegin.x()=0;
-             }
-
-             localGridSize=localSize;
-             //add overlaps
-             if(left==-1||right==-1)
-                 localGridSize.x()+=overlap.x();
-             else
-                 localGridSize.x()+=2*overlap.x();
-
-         }  
-      } 
+      void setGlobalGrid( const GridType& globalGrid, const CoordinatesType& overlap );
        
-      void setupGrid( GridType& grid)
-      {
-         TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by SetupGrid");
-         grid.setOrigin(localOrigin);
-         grid.setDimensions(localGridSize);
-         //compute local proporions by sideefect
-         grid.setSpaceSteps(spaceSteps);
-         grid.SetDistMesh(this);
-      };
+      void setupGrid( GridType& grid );
        
-      String printProcessCoords()
-      {
-         return convertToString(rank);
-      };
+      String printProcessCoords() const;
 
-      String printProcessDistr()
-      {
-         return convertToString(nproc);
-      };       
+      String printProcessDistr() const;
 
-      bool isDistributed()
-      {
-         return this->distributed;
-      };
+      bool isDistributed() const;
        
-      int getLeft()
-      {
-         TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by getLeft");
-         return this->left;
-      };
+      int getLeft() const;
        
-      int getRight()
-      {
-         TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by getRight");
-         return this->right;
-      };
+      int getRight() const;
        
-      CoordinatesType getOverlap()
-      {
-         return this->overlap;
-      };
+      const CoordinatesType& getOverlap() const;
 
       //number of elements of local sub domain WITHOUT overlap
-      CoordinatesType getLocalSize()
-      {
-         return this->localSize;
-      }
+      const CoordinatesType& getLocalSize() const;
 
-      //number of elements of global grid
-      CoordinatesType getGlobalSize()
-      {
-         return this->globalSize;
-      }
+      //dimensions of global grid
+      const CoordinatesType& getGlobalSize() const;
 
       //coordinates of begin of local subdomain without overlaps in global grid
-      CoordinatesType getGlobalBegin()
-      {
-         return this->globalBegin;
-      }
+      const CoordinatesType& getGlobalBegin() const;
 
-      //number of elemnts of local sub domain WITH overlap
-      CoordinatesType getLocalGridSize()
-      {
-         return this->localGridSize;
-      }
+      //number of elements of local sub domain WITH overlap
+      const CoordinatesType& getLocalGridSize() const;
        
       //coordinates of begin of local subdomain without overlaps in local grid       
-      CoordinatesType getLocalBegin()
-      {
-         return this->localBegin;
-      }
+      const CoordinatesType& getLocalBegin() const;
       
-      void writeProlog( Logger& logger )
-      {
-         logger.writeParameter( "Domain decomposition:", this->getDomainDecomposition() );
-      }
+      void writeProlog( Logger& logger ) const;       
        
-       
-    private : 
+   private : 
 
+      GridType globalGrid;
       PointType localOrigin;
       CoordinatesType localBegin;
       CoordinatesType localSize;
       CoordinatesType localGridSize;
       CoordinatesType overlap;
-      CoordinatesType globalSize;
+      CoordinatesType globalDimensions;
       CoordinatesType globalBegin;
       PointType spaceSteps;
-        
         
       IndexType Dimensions;        
       bool distributed;
@@ -246,12 +100,10 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
       int right;
 
       bool isSet;
-        
-       
 };
-
-
 
 } // namespace DistributedMeshes
 } // namespace Meshes
 } // namespace TNL
+
+#include <TNL/Meshes/DistributedMeshes/DistributedGrid_1D.hpp>

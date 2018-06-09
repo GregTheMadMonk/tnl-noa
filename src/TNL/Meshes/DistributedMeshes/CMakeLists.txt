@@ -3,6 +3,7 @@ SET( headers BufferEntitiesHelper.h
              DistributedMesh.h
              DistributedMeshSynchronizer.h
              DistributedGrid_1D.h
+             DistributedGrid_1D.hpp
              DistributedGrid_2D.h
              DistributedGrid_3D.h
              DistributedGridSynchronizer.h
