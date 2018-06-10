@@ -89,22 +89,17 @@ setGlobalGrid( const GridType& globalGrid,
    else
    {            
        //nearnodes
-       if(rank!=0)
-           left=rank-1;
-       if(rank!=nproc-1)
-           right=rank+1;
+       if( rank != 0 ) left=rank-1;
+       if( rank != nproc-1 ) right=rank+1;
 
-       this->domainDecomposition[ 0 ] = rank;
-       std::cerr << "setting domain decomposition to " << this->domainDecomposition << std::endl;
-
+       this->domainDecomposition[ 0 ] = nproc;
        globalDimensions=globalGrid.getDimensions();                 
 
        //compute local mesh size               
-       numberOfLarger=globalGrid.getDimensions().x()%nproc;
+       numberOfLarger = globalGrid.getDimensions().x() % nproc;
 
-       localSize.x()=(globalGrid.getDimensions().x()/nproc);               
-       if(numberOfLarger>rank)
-            localSize.x()+=1;                      
+       localSize.x() = globalGrid.getDimensions().x() / nproc;
+       if(numberOfLarger>rank) localSize.x() += 1;
 
        if(numberOfLarger>rank)
        {
@@ -128,13 +123,12 @@ setGlobalGrid( const GridType& globalGrid,
            localBegin.x()=0;
        }
 
-       localGridSize=localSize;
+       localGridSize = localSize;
        //add overlaps
-       if(left==-1||right==-1)
-           localGridSize.x()+=overlap.x();
+       if( left == -1 || right == -1 )
+           localGridSize.x() += overlap.x();
        else
-           localGridSize.x()+=2*overlap.x();
-
+           localGridSize.x() += 2*overlap.x();
    }  
 } 
 
@@ -146,7 +140,7 @@ setupGrid( GridType& grid)
    TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by SetupGrid");
    grid.setOrigin(localOrigin);
    grid.setDimensions(localGridSize);
-   //compute local proporions by sideefect
+   //compute local proportions by sideefect
    grid.setSpaceSteps(spaceSteps);
    grid.SetDistMesh(this);
 };

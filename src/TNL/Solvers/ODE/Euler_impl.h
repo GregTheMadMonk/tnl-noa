@@ -231,6 +231,7 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
    }
    localResidue /= tau * ( RealType ) size;
    Problem::CommunicatorType::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM );
+   //std::cerr << "Local residue = " << localResidue << " - globalResidue = " << currentResidue << std::endl;
 }
 
 #ifdef HAVE_CUDA
