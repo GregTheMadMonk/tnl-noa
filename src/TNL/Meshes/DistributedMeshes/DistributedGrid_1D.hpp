@@ -51,7 +51,8 @@ template< typename RealType, typename Device, typename Index >
    template< typename CommunicatorType>
 void
 DistributedMesh< Grid< 1, RealType, Device, Index > >::
-setGlobalGrid( const GridType& globalGrid, const CoordinatesType& overlap )
+setGlobalGrid( const GridType& globalGrid,
+               const CoordinatesType& overlap )
 {
    this->globalGrid = globalGrid;
    this->isSet = true;
@@ -82,6 +83,7 @@ setGlobalGrid( const GridType& globalGrid, const CoordinatesType& overlap )
        globalDimensions = globalGrid.getDimensions();
        globalBegin = CoordinatesType(0);
        localBegin = CoordinatesType(0);
+       this->domainDecomposition[ 0 ];
        return;
    }
    else
@@ -93,6 +95,7 @@ setGlobalGrid( const GridType& globalGrid, const CoordinatesType& overlap )
            right=rank+1;
 
        this->domainDecomposition[ 0 ] = rank;
+       std::cerr << "setting domain decomposition to " << this->domainDecomposition << std::endl;
 
        globalDimensions=globalGrid.getDimensions();                 
 

@@ -11,7 +11,7 @@ using namespace TNL::Problems;
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 class HeatEquationBenchmarkProblem:
    public PDEProblem< Mesh,
@@ -31,7 +31,7 @@ class HeatEquationBenchmarkProblem:
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       
-      typedef CommType CommunicatorType;
+      typedef Communicator CommunicatorType;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;

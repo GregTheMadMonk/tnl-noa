@@ -12,6 +12,12 @@
 
 #include <TNL/Logger.h>
 
+#ifdef HAVE_MPI
+#include <mpi.h>
+#else
+enum MPI_Op { MPI_SUM, MPI_MAX };
+#endif
+
 namespace TNL {
 namespace Communicators {
         
@@ -96,24 +102,24 @@ class NoDistrCommunicator
       {
       }
 
-     /* template< typename T >
-      static void Allreduce( T& data,
-                   T& reduced_data,
-                   int count,
-                   const MPI_Op &op)
+      template< typename T >
+      static void Allreduce( T* data,
+                             T* reduced_data,
+                             int count,
+                             const MPI_Op &op )
       {
-              MPI::COMM_WORLD.Allreduce((void*) &data, (void*) &reduced_data,count,MPIDataType(data),op);
+         memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
       };
 
       template< typename T >
-      static void Reduce( T& data,
-                  T& reduced_data,
-                  int count,
-                  MPI_Op &op,
-                  int root)
+      static void Reduce( T* data,
+                          T* reduced_data,
+                          int count,
+                          MPI_Op &op,
+                          int root )
       {
-           MPI::COMM_WORLD.Reduce((void*) &data, (void*) &reduced_data,count,MPIDataType(data),op,root);
-      };*/
+         memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
+      };
 
       static void writeProlog( Logger& logger ){};
 };

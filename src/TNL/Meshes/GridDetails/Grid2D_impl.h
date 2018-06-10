@@ -496,7 +496,7 @@ void
 Grid< 2, Real, Device, Index >::
 writeProlog( Logger& logger ) const
 {
-   if( this->getDistributedMesh() )
+   if( this->getDistributedMesh() && this->getDistributedMesh()->isDistributed() )
       return this->getDistributedMesh()->writeProlog( logger );
    logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );

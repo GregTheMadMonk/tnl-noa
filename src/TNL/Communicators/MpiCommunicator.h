@@ -235,24 +235,24 @@ class MpiCommunicator
 #endif  
         }
 
-      /*  template< typename T >
-        static void Allreduce( T& data,
-                     T& reduced_data,
-                     int count,
-                     const MPI_Op &op)
+        template< typename T >
+        static void Allreduce( T* data,
+                               T* reduced_data,
+                               int count,
+                               const MPI_Op &op )
         {
-                MPI::COMM_WORLD.Allreduce((void*) &data, (void*) &reduced_data,count,MPIDataType(data),op);
+            MPI::COMM_WORLD.Allreduce( (void*) data, (void*) reduced_data,count,MPIDataType(data),op);
         };
 
         template< typename T >
-        static void Reduce( T& data,
-                    T& reduced_data,
+        static void Reduce( T* data,
+                    T* reduced_data,
                     int count,
                     MPI_Op &op,
                     int root)
         {
-             MPI::COMM_WORLD.Reduce((void*) &data, (void*) &reduced_data,count,MPIDataType(data),op,root);
-        };*/
+             MPI::COMM_WORLD.Reduce( (void*) data, (void*) reduced_data,count,MPIDataType(data),op,root);
+        };
 
       static void writeProlog( Logger& logger ) 
       {
