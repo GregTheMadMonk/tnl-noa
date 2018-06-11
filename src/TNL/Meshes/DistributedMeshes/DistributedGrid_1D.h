@@ -39,6 +39,12 @@ class DistributedMesh< Grid< 1, RealType, Device, Index > >
       
       const CoordinatesType& getDomainDecomposition() const;
       
+      template< int EntityDimension >
+      IndexType getEntitiesCount() const;
+
+      template< typename Entity >
+      IndexType getEntitiesCount() const;      
+      
       template<typename CommunicatorType>
       void setGlobalGrid( const GridType& globalGrid, const CoordinatesType& overlap );
        

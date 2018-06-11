@@ -49,6 +49,12 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
       void setDomainDecomposition( const CoordinatesType& domainDecomposition );
       
       const CoordinatesType& getDomainDecomposition() const;
+            
+      template< int EntityDimension >
+      IndexType getEntitiesCount() const;
+
+      template< typename Entity >
+      IndexType getEntitiesCount() const;      
 
       template< typename CommunicatorType > 
       void setGlobalGrid( const GridType& globalGrid,
@@ -84,6 +90,8 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
 
       int getRankOfProcCoord(int x, int y, int z) const;
         
+      GridType globalGrid;
+      
       PointType spaceSteps;
       PointType localOrigin;
       CoordinatesType localSize;

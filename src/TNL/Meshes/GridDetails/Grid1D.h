@@ -82,8 +82,7 @@ class Grid< 1, Real, Device, Index > : public Object
    __cuda_callable__
    inline const PointType& getProportions() const;
  
-
-   template< int EntiytDimension >
+   template< int EntityDimension >
    __cuda_callable__
    IndexType getEntitiesCount() const;
 

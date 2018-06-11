@@ -11,11 +11,10 @@
 #pragma once
 
 #include <TNL/Logger.h>
+#include <TNL/Communicators/MpiDefs.h>
 
 #ifdef HAVE_MPI
 #include <mpi.h>
-#else
-enum MPI_Op { MPI_SUM, MPI_MAX };
 #endif
 
 namespace TNL {

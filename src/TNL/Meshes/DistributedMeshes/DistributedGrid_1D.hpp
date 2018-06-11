@@ -46,6 +46,24 @@ getDomainDecomposition() const
 {
    return this->domainDecomposition;
 }
+      
+template< typename RealType, typename Device, typename Index >     
+   template< int EntityDimension >
+Index
+DistributedMesh< Grid< 1, RealType, Device, Index > >::
+getEntitiesCount() const
+{
+   return this->globalGrid. template getEntitiesCount< EntityDimension >();
+}
+
+template< typename RealType, typename Device, typename Index >     
+   template< typename Entity >
+Index
+DistributedMesh< Grid< 1, RealType, Device, Index > >::
+getEntitiesCount() const
+{
+   return this->globalGrid. template getEntitiesCount< Entity >();
+}
 
 template< typename RealType, typename Device, typename Index >     
    template< typename CommunicatorType>

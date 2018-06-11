@@ -60,14 +60,32 @@ getDomainDecomposition() const
 }      
 
 template< typename RealType, typename Device, typename Index >     
+   template< int EntityDimension >
+Index
+DistributedMesh< Grid< 3, RealType, Device, Index > >::
+getEntitiesCount() const
+{
+   return this->globalGrid. template getEntitiesCount< EntityDimension >();
+}
+
+template< typename RealType, typename Device, typename Index >     
+   template< typename Entity >
+Index
+DistributedMesh< Grid< 3, RealType, Device, Index > >::
+getEntitiesCount() const
+{
+   return this->globalGrid. template getEntitiesCount< Entity >();
+}
+
+template< typename RealType, typename Device, typename Index >     
    template< typename CommunicatorType >
 void
 DistributedMesh< Grid< 3, RealType, Device, Index > >::
 setGlobalGrid( const GridType &globalGrid,
                const CoordinatesType& overlap )
 {
+   this->globalGrid = globalGrid;
    isSet=true;           
-
    this->overlap=overlap;
 
    for (int i=0;i<26;i++)
