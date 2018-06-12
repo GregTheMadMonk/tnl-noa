@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CopyEntitiesTest.cpp  -  description
+                          DistributedGridIO.h  -  description
                              -------------------
     begin                : Nov 1, 2017
     copyright            : (C) 2017 by Tomas Oberhuber et al.

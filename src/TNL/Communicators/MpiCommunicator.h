@@ -161,7 +161,7 @@ class MpiCommunicator
         {
 #ifdef HAVE_MPI
             /***HACK for linear distribution***/
-           int sum=0;
+      /*     int sum=0;
            for(int i=0;i<dim;i++)
                 sum+=distr[i];
            if(sum==0) //uživatel neovlivňuje distribuci
@@ -172,7 +172,7 @@ class MpiCommunicator
                     distr[i]=1;
                }
                distr[dim-1]=0;
-            }
+            }*/
             /***END OF HACK***/
 
             MPI_Dims_create(nproc, dim, distr);

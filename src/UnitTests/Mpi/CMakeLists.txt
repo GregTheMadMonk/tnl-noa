@@ -23,12 +23,29 @@ ADD_EXECUTABLE( CopyEntitesTest CopyEntitiesTest.cpp )
                               ${GTEST_BOTH_LIBRARIES}
                               tnl )
 
-ADD_EXECUTABLE( DistributedGridIOTest DistributedGridIOTest.cpp )
-   TARGET_COMPILE_OPTIONS( DistributedGridIOTest PRIVATE ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( DistributedGridIOTest
-                              ${GTEST_BOTH_LIBRARIES}
-                              tnl )
+IF( BUILD_CUDA )
+    CUDA_ADD_EXECUTABLE( DistributedGridIOTest DistributedGridIOTest.cu OPTIONS ${CXX_TESTS_FLAGS})
+       TARGET_LINK_LIBRARIES( DistributedGridIOTest
+                                  ${GTEST_BOTH_LIBRARIES}
+                                  tnl )
 
+    CUDA_ADD_EXECUTABLE( DistributedGridIO_MPIIOTest DistributedGridIO_MPIIOTest.cu OPTIONS ${CXX_TESTS_FLAGS})
+    TARGET_LINK_LIBRARIES( DistributedGridIO_MPIIOTest 
+                                    ${GTEST_BOTH_LIBRARIES}
+                                    tnl )
+ELSE(  BUILD_CUDA )               
+    ADD_EXECUTABLE( DistributedGridIOTest DistributedGridIOTest.cpp OPTIONS ${CXX_TESTS_FLAGS})
+       TARGET_LINK_LIBRARIES( DistributedGridIOTest
+                                  ${GTEST_BOTH_LIBRARIES}
+                                  tnl )
+
+    ADD_EXECUTABLE( DistributedGridIO_MPIIOTest DistributedGridIO_MPIIOTest.cpp OPTIONS ${CXX_TESTS_FLAGS})
+       TARGET_LINK_LIBRARIES( DistributedGridIO_MPIIOTest
+                                  ${GTEST_BOTH_LIBRARIES}
+                                  tnl )
+ENDIF( BUILD_CUDA )
+
+ 
 ADD_TEST( NAME CopyEntitesTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/CopyEntitesTest${CMAKE_EXECUTABLE_SUFFIX} )
    
 SET (mpi_test_parameters_1d -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_1D${CMAKE_EXECUTABLE_SUFFIX}")
@@ -43,12 +60,11 @@ ADD_TEST( NAME DistributedGridTest_3D COMMAND "mpirun" ${mpi_test_parameters_3d}
 SET (mpi_test_parameters_IO -np 4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridIOTest${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridIOTest COMMAND "mpirun" ${mpi_test_parameters_IO})
 
-IF( BUILD_CUDA )
-    CUDA_ADD_EXECUTABLE( GPUDistributedGridIOTest GPUDistributedGridIOTest.cu OPTIONS ${CXX_TESTS_FLAGS})
-    TARGET_LINK_LIBRARIES( GPUDistributedGridIOTest 
-                                    ${GTEST_BOTH_LIBRARIES}
-                                    tnl )   
-ENDIF( BUILD_CUDA )  
+SET (mpi_test_parameters_IOMPIIO -np 4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridIO_MPIIOTest${CMAKE_EXECUTABLE_SUFFIX}")
+ADD_TEST( NAME DistributedGridIO_MPIIOTest COMMAND "mpirun" ${mpi_test_parameters_IOMPIIO})
+
+
+
 
 endif()
 

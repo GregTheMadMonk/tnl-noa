@@ -31,7 +31,10 @@ class DistributedMesh<Grid< 1, RealType, Device, Index >>
       static constexpr int getMeshDimension() { return 1; };    
 
       DistributedMesh()
-      : isSet(false ){};
+      : isSet(false )
+      {
+           domainDecomposition.setValue(0);
+      };
 
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix )

@@ -40,7 +40,10 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
       static constexpr int getMeshDimension() { return 3; };    
 
       DistributedMesh()
-      : isSet( false ) {};
+      : isSet( false )
+      {
+           domainDecomposition.setValue(0);
+      };
       
       static void configSetup( Config::ConfigDescription& config )
       {
