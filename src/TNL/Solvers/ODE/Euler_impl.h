@@ -11,6 +11,8 @@
 #pragma once
 
 #include <TNL/Devices/MIC.h>
+#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
 
 namespace TNL {
 namespace Solvers {
@@ -227,16 +229,9 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
     }
 #endif
    }
-
-   
-   
    localResidue /= tau * ( RealType ) size;
-#ifdef USE_MPI   
-   TNLMPI::Allreduce( localResidue, currentResidue, 1, MPI_SUM);
-#else
-   currentResidue=localResidue;
-#endif
-
+   Problem::CommunicatorType::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM );
+   //std::cerr << "Local residue = " << localResidue << " - globalResidue = " << currentResidue << std::endl;
 }
 
 #ifdef HAVE_CUDA

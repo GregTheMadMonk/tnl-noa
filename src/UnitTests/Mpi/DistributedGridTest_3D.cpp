@@ -114,7 +114,7 @@ Expected 27 process
 template<typename DofType,typename GridType>
 void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType::RealType expectedValue)
 {
-    if(rank==0)//Bottom Nord West
+    if(rank==0)//Bottom North West
     {
         checkConner(grid,dof,true, true, true, expectedValue );
         checkXDirectionEdge(grid,dof,true,true,expectedValue);
@@ -125,14 +125,14 @@ void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType:
         checkZFace(grid, dof, true, expectedValue);
     }    
 
-    if(rank==1)//Bottom Nord Center
+    if(rank==1)//Bottom North Center
     {
         checkXDirectionEdge(grid,dof,true,true,expectedValue);
         checkYFace(grid, dof, true, expectedValue);
         checkZFace(grid, dof, true, expectedValue);
     }
 
-    if(rank==2)//Bottom Nord East
+    if(rank==2)//Bottom North East
     {
         checkConner(grid,dof,true, true, false, expectedValue );
         checkXDirectionEdge(grid,dof,true,true,expectedValue);
@@ -192,19 +192,19 @@ void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType:
         checkZFace(grid, dof, true, expectedValue);
     }
 
-    if(rank==9)//Center Nord West
+    if(rank==9)//Center North West
     {
         checkZDirectionEdge(grid,dof,true,true,expectedValue);
         checkXFace(grid, dof, true, expectedValue);
         checkYFace(grid, dof, true, expectedValue);
     }    
 
-    if(rank==10)//Center Nord Center
+    if(rank==10)//Center North Center
     {
         checkYFace(grid, dof, true, expectedValue);
     }
 
-    if(rank==11)//Center Nord East
+    if(rank==11)//Center North East
     {
         checkZDirectionEdge(grid,dof,true,false,expectedValue);
         checkXFace(grid, dof, false, expectedValue);
@@ -246,7 +246,7 @@ void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType:
         checkYFace(grid, dof, false, expectedValue);
     }
 
-    if(rank==18)//Top Nord West
+    if(rank==18)//Top North West
     {
         checkConner(grid,dof,false, true, true, expectedValue );
         checkXDirectionEdge(grid,dof,false,true,expectedValue);
@@ -257,14 +257,14 @@ void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType:
         checkZFace(grid, dof, false, expectedValue);
     }    
 
-    if(rank==19)//Top Nord Center
+    if(rank==19)//Top North Center
     {
         checkXDirectionEdge(grid,dof,false,true,expectedValue);
         checkYFace(grid, dof, true, expectedValue);
         checkZFace(grid, dof, false, expectedValue);
     }
 
-    if(rank==20)//Top Nord East
+    if(rank==20)//Top North East
     {
         checkConner(grid,dof,false, true, false, expectedValue );
         checkXDirectionEdge(grid,dof,false,true,expectedValue);

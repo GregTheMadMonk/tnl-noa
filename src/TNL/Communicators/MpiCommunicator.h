@@ -19,7 +19,9 @@
 
 #include <TNL/String.h>
 #include <TNL/Logger.h>
+#include <TNL/Communicators/MpiDefs.h>
 #include <TNL/Config/ConfigDescription.h>
+#include <TNL/Exceptions/MPISupportMissing.h>
 
 namespace TNL {
 namespace Communicators {
@@ -138,8 +140,7 @@ class MpiCommunicator
         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
         return MPI::COMM_WORLD.Get_rank();
 #else
-        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
-        return 0;
+        throw Exceptions::MPISupportMissing();
 #endif
       };
 
@@ -149,8 +150,7 @@ class MpiCommunicator
         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
         return MPI::COMM_WORLD.Get_size();
 #else
-        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
-        return 0;
+        throw Exceptions::MPISupportMissing();
 #endif
       };
 
@@ -179,49 +179,46 @@ class MpiCommunicator
 #endif
         };
 
-        static void Barrier()
-        {
+         static void Barrier()
+         {
 #ifdef HAVE_MPI
-        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
-        MPI::COMM_WORLD.Barrier();;
+            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+            MPI::COMM_WORLD.Barrier();;
 #else
-        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
+            throw Exceptions::MPISupportMissing();
 #endif     
         };
 
-        template <typename T>
-        static Request ISend( const T *data, int count, int dest)
-        {
+         template <typename T>
+         static Request ISend( const T *data, int count, int dest)
+         {
 #ifdef HAVE_MPI
-        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
-        return MPI::COMM_WORLD.Isend((void*) data, count, MPIDataType(data) , dest, 0);
+            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+            return MPI::COMM_WORLD.Isend((void*) data, count, MPIDataType(data) , dest, 0);
 #else
-        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
-        return 0;
+            throw Exceptions::MPISupportMissing();
 #endif  
         }    
 
-        template <typename T>
-        static Request IRecv( const T *data, int count, int src)
-        {
+         template <typename T>
+         static Request IRecv( const T *data, int count, int src)
+         {
 #ifdef HAVE_MPI
-        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
-        return MPI::COMM_WORLD.Irecv((void*) data, count, MPIDataType(data) , src, 0);
+            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+            return MPI::COMM_WORLD.Irecv((void*) data, count, MPIDataType(data) , src, 0);
 #else
-        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
-        return 0;
+            throw Exceptions::MPISupportMissing();
 #endif  
         }
 
-        static void WaitAll(Request *reqs, int length)
-        {
+         static void WaitAll(Request *reqs, int length)
+         {
 #ifdef HAVE_MPI
-        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
-        MPI::Request::Waitall(length, reqs);
+            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+            MPI::Request::Waitall(length, reqs);
 #else
-        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
-#endif  
-
+            throw Exceptions::MPISupportMissing();
+#endif
         };
 
         template< typename T > 
@@ -231,28 +228,38 @@ class MpiCommunicator
         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
         MPI::COMM_WORLD.Bcast((void*) &data, count,  MPIDataType(data), root);
 #else
-        TNL_ASSERT_TRUE(false, "Fatal Error - MPI in not compiled");
+        throw Exceptions::MPISupportMissing();
 #endif  
         }
 
-      /*  template< typename T >
-        static void Allreduce( T& data,
-                     T& reduced_data,
-                     int count,
-                     const MPI_Op &op)
+        template< typename T >
+        static void Allreduce( T* data,
+                               T* reduced_data,
+                               int count,
+                               const MPI_Op &op )
         {
-                MPI::COMM_WORLD.Allreduce((void*) &data, (void*) &reduced_data,count,MPIDataType(data),op);
+#ifdef HAVE_MPI
+            MPI::COMM_WORLD.Allreduce( (void*) data, (void*) reduced_data,count,MPIDataType(data),op);
+#else
+            throw Exceptions::MPISupportMissing();
+#endif            
         };
 
-        template< typename T >
-        static void Reduce( T& data,
-                    T& reduced_data,
+
+         template< typename T >
+         static void Reduce( T* data,
+                    T* reduced_data,
                     int count,
                     MPI_Op &op,
                     int root)
-        {
-             MPI::COMM_WORLD.Reduce((void*) &data, (void*) &reduced_data,count,MPIDataType(data),op,root);
-        };*/
+         {
+#ifdef HAVE_MPI
+            MPI::COMM_WORLD.Reduce( (void*) data, (void*) reduced_data,count,MPIDataType(data),op,root);
+#else
+            throw Exceptions::MPISupportMissing();
+#endif
+        };
+
 
       static void writeProlog( Logger& logger ) 
       {

@@ -33,16 +33,20 @@ IF( BUILD_CUDA )
     TARGET_LINK_LIBRARIES( DistributedGridIO_MPIIOTest 
                                     ${GTEST_BOTH_LIBRARIES}
                                     tnl )
-ELSE(  BUILD_CUDA )               
-    ADD_EXECUTABLE( DistributedGridIOTest DistributedGridIOTest.cpp OPTIONS ${CXX_TESTS_FLAGS})
+ELSE(  BUILD_CUDA )   
+
+    ADD_EXECUTABLE( DistributedGridIO_MPIIOTest DistributedGridIO_MPIIOTest.cpp )
+       TARGET_COMPILE_OPTIONS( DistributedGridIO_MPIIOTest PRIVATE ${CXX_TESTS_FLAGS} )
+       TARGET_LINK_LIBRARIES( DistributedGridIO_MPIIOTest
+                                  ${GTEST_BOTH_LIBRARIES}
+                                  tnl )
+            
+    ADD_EXECUTABLE( DistributedGridIOTest DistributedGridIOTest.cpp )
+       TARGET_COMPILE_OPTIONS( DistributedGridIOTest PRIVATE ${CXX_TESTS_FLAGS} )
        TARGET_LINK_LIBRARIES( DistributedGridIOTest
                                   ${GTEST_BOTH_LIBRARIES}
                                   tnl )
 
-    ADD_EXECUTABLE( DistributedGridIO_MPIIOTest DistributedGridIO_MPIIOTest.cpp OPTIONS ${CXX_TESTS_FLAGS})
-       TARGET_LINK_LIBRARIES( DistributedGridIO_MPIIOTest
-                                  ${GTEST_BOTH_LIBRARIES}
-                                  tnl )
 ENDIF( BUILD_CUDA )
 
  

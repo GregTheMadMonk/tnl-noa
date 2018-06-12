@@ -39,6 +39,7 @@ class ExplicitTimeStepper
       typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
       typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
       typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
+      using CommunicatorType = typename Problem::CommunicatorType;
 
       static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
 
