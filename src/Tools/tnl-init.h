@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNL_INIT_H_
-#define TNL_INIT_H_
+#pragma once 
 
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Containers/Vector.h>
@@ -323,6 +322,3 @@ bool resolveMeshType( const Containers::List< String >& parsedMeshType,
 
    return false;
 }
-
-
-#endif /* TNL_INIT_H_ */

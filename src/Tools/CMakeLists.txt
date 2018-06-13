@@ -28,6 +28,9 @@ target_link_libraries (tnl-image-converter tnl ${PNG_LIBRARIES} ${JPEG_LIBRARIES
 ADD_EXECUTABLE(tnl-dicom-reader tnl-dicom-reader.cpp )
 target_link_libraries (tnl-dicom-reader tnl ${DCMTK_LIBRARIES} )
 
+ADD_EXECUTABLE(tnl-lattice-init tnl-lattice-init.cpp )
+target_link_libraries (tnl-lattice-init tnl )
+
 ADD_EXECUTABLE( tnl-functions-benchmark functions-benchmark.cpp )
 target_link_libraries( tnl-functions-benchmark tnl )
 
