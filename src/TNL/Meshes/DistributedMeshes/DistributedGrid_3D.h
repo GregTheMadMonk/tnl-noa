@@ -40,7 +40,7 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
       static constexpr int getMeshDimension() { return 3; };    
 
       DistributedMesh();
-      
+    
       static void configSetup( Config::ConfigDescription& config );
       
       bool setup( const Config::ParameterContainer& parameters,

@@ -32,7 +32,7 @@ class DistributedMesh< Grid< 2, RealType, Device, Index > >
     
      
    public:
-      
+     
       DistributedMesh();
       
       void setDomainDecomposition( const CoordinatesType& domainDecomposition );

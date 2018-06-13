@@ -19,7 +19,7 @@ namespace TNL {
 template< typename RealType, typename Device, typename Index >
 DistributedMesh< Grid< 2, RealType, Device, Index > >::
 DistributedMesh()
-: domainDecomposition( 0 ), isSet( false ) {};
+: domainDecomposition( 0 ), isSet( false ) {}
 
 template< typename RealType, typename Device, typename Index >
 void

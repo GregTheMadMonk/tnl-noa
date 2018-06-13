@@ -1,41 +1,77 @@
-
+/***************************************************************************
+                          DistributedGridIO_MPIIO  -  description
+                             -------------------
+    begin                : Nov 1, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 #ifdef HAVE_GTEST
-  
-#include <gtest/gtest.h>
-
+      #include <gtest/gtest.h>
 #ifdef HAVE_MPI
 
-#include "DistributedGridIOTest.h"
+#include "DistributedGridIO_MPIIOTest.h"
 
-TEST( DistributedGridIO, Save_1D )
+TEST( DistributedGridMPIIO, Save_1D )
 {
-    TestDistributedGridIO<1,Cuda>::TestSave();
+    TestDistributedGridMPIIO<1,Host>::TestSave();
 }
 
-TEST( DistributedGridIO, Save_2D )
+TEST( DistributedGridMPIIO, Save_2D )
 {
-    TestDistributedGridIO<2,Cuda>::TestSave();
+    TestDistributedGridMPIIO<2,Host>::TestSave();
 }
 
-TEST( DistributedGridIO, Save_3D )
+TEST( DistributedGridMPIIO, Save_3D )
 {
-    TestDistributedGridIO<3,Cuda>::TestSave();
+    TestDistributedGridMPIIO<3,Host>::TestSave();
 }
 
-TEST( DistributedGridIO, Load_1D )
+TEST( DistributedGridMPIIO, Load_1D )
 {
-    TestDistributedGridIO<1,Cuda>::TestLoad();
+    TestDistributedGridMPIIO<1,Host>::TestLoad();
 }
 
-TEST( DistributedGridIO, Load_2D )
+TEST( DistributedGridMPIIO, Load_2D )
 {
-    TestDistributedGridIO<2,Cuda>::TestLoad();
+    TestDistributedGridMPIIO<2,Host>::TestLoad();
 }
 
-TEST( DistributedGridIO, Load_3D )
+TEST( DistributedGridMPIIO, Load_3D )
 {
-    TestDistributedGridIO<3,Cuda>::TestLoad();
+    TestDistributedGridMPIIO<3,Host>::TestLoad();
 }
+
+#ifdef HAVE_CUDA
+    TEST( DistributedGridMPIIO, Save_1D_GPU )
+    {
+        TestDistributedGridMPIIO<1,Cuda>::TestSave();
+    }
+
+    TEST( DistributedGridMPIIO, Save_2D_GPU )
+    {
+        TestDistributedGridMPIIO<2,Cuda>::TestSave();
+    }
+
+    TEST( DistributedGridMPIIO, Save_3D_GPU )
+    {
+        TestDistributedGridMPIIO<3,Cuda>::TestSave();
+    }
+
+    TEST( DistributedGridMPIIO, Load_1D_GPU )
+    {
+        TestDistributedGridMPIIO<1,Cuda>::TestLoad();
+    }
+
+    TEST( DistributedGridMPIIO, Load_2D_GPU )
+    {
+        TestDistributedGridMPIIO<2,Cuda>::TestLoad();
+    }
+
+    TEST( DistributedGridMPIIO, Load_3D_GPU )
+    {
+        TestDistributedGridMPIIO<3,Cuda>::TestLoad();
+    }
+#endif
 
 #else
 TEST(NoMPI, NoTest)
@@ -95,7 +131,9 @@ int main( int argc, char* argv[] )
        delete listeners.Release(listeners.default_result_printer());
        listeners.Append(new MinimalistBuffredPrinter);
 
-       CommunicatorType::Init(argc,argv);
+       CommunicatorType::Init(argc,argv );
+       CommunicatorType::setRedirection( false );
+       CommunicatorType::setupRedirection();
     #endif
        int result= RUN_ALL_TESTS();
 
