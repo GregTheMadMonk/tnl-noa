@@ -150,7 +150,7 @@ read( const RegionOfInterest< Index > roi,
             case 1:
                char_color[ 0 ] = row[ 0 ][ j ];
                value = char_color[ 0 ] / ( Real ) 255.0;
-               vector.setElement( cell.getIndex(), value );
+               function.getData().setElement( cell.getIndex(), value );
                break;
             case 3:
                char_color[ 0 ] = row[ 0 ][ 3 * j ];
