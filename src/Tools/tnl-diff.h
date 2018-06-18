@@ -471,7 +471,9 @@ bool resolveGridIndexType( const Containers::List< String >& parsedMeshType,
    if( parsedMeshType[ 4 ] == "int" )
       return processFiles< Meshes::Grid< Dim, Real, Devices::Host, int > >( parameters );
    if( parsedMeshType[ 4 ] == "long int" )
-      return processFiles< Meshes::Grid< Dim, Real, Devices::Host, long int > >( parameters );   
+      return processFiles< Meshes::Grid< Dim, Real, Devices::Host, long int > >( parameters );
+   std::cerr << "Unknown index type " << parsedMeshType[ 4 ] << "." <<  std::endl;
+   return false;
 }
 
 template< int Dim >

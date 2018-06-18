@@ -53,6 +53,7 @@ INSTALL( TARGETS tnl-init
                  tnl-mesh-converter
                  tnl-dicom-reader
                  tnl-image-converter
+                 tnl-lattice-init
                  tnl-curve2gnuplot
          RUNTIME DESTINATION bin )
 

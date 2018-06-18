@@ -118,17 +118,17 @@ openForRead( const String& fileName )
 }
 
 template< typename Index >
-   template< typename Real,
+   template< typename MeshReal,
              typename Device,
-             typename Vector >
+             typename Real >
 bool
 PNGImage< Index >::
 read( const RegionOfInterest< Index > roi,
-      const Meshes::Grid< 2, Real, Device, Index >& grid,
-      Vector& vector )
+      Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function )
 {
 #ifdef HAVE_PNG_H
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+   typedef Meshes::Grid< 2, MeshReal, Device, Index > GridType;
+   const GridType& grid = function.getMesh();
    typename GridType::Cell cell( grid );
  
    /***
@@ -166,13 +166,13 @@ read( const RegionOfInterest< Index > roi,
                {
                   char_color[ 0 ] = row_pointers[ i ][ j ];
                   Real value = char_color[ 0 ] / ( Real ) 255.0;
-                  vector.setElement( cell.getIndex(), value );
+                  function.getData().setElement( cell.getIndex(), value );
                }
                if( this->bit_depth == 16 )
                {
                   int_color[ 0 ] = row_pointers[ i ][ j ];
                   Real value = int_color[ 0 ] / ( Real ) 65535.0;
-                  vector.setElement( cell.getIndex(), value );
+                  function.getData().setElement( cell.getIndex(), value );
                }
                break;
             case PNG_COLOR_TYPE_RGB:
@@ -186,7 +186,7 @@ read( const RegionOfInterest< Index > roi,
                   Real g = char_color[ 1 ] / ( Real ) 255.0;
                   Real b = char_color[ 2 ] / ( Real ) 255.0;
                   Real value = 0.2989 * r + 0.5870 * g + 0.1140 * b;
-                  vector.setElement( cell.getIndex(), value );
+                  function.getData().setElement( cell.getIndex(), value );
                }
                if( this->bit_depth == 16 )
                {
@@ -198,7 +198,7 @@ read( const RegionOfInterest< Index > roi,
                   Real g = int_color[ 1 ] / ( Real ) 66355.0;
                   Real b = int_color[ 2 ] / ( Real ) 65535.0;
                   Real value = 0.2989 * r + 0.5870 * g + 0.1140 * b;
-                  vector.setElement( cell.getIndex(), value );
+                  function.getData().setElement( cell.getIndex(), value );
                }
                break;
             default:
@@ -339,6 +339,54 @@ write( const Meshes::Grid< 2, Real, Device, Index >& grid,
    return false;
 #endif
 }
+
+template< typename Index >
+   template< typename MeshReal,
+             typename Device,
+             typename Real >
+bool
+PNGImage< Index >::
+write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function )
+{
+#ifdef HAVE_PNG_H
+   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+   const GridType& grid = function.getMesh();
+   typename GridType::Cell cell( grid );
+ 
+   /***
+    * Prepare the long jump back from libpng.
+    */
+   if( setjmp(png_jmpbuf( this->png_ptr ) ) )
+   {
+      png_destroy_read_struct( &this->png_ptr,
+                               &this->info_ptr,
+                               &this->end_info );
+      return false;
+   }
+ 
+   Index i, j;
+   png_bytep row = new png_byte[ 3 * grid.getDimensions().x() ];
+   for( i = 0; i < grid.getDimensions().y(); i ++ )
+   {
+      for( j = 0; j < grid.getDimensions().x(); j ++ )
+      {
+         cell.getCoordinates().x() = j;
+         cell.getCoordinates().y() = grid.getDimensions().y() - 1 - i;
+
+         //Index cellIndex = grid.getCellIndex( CoordinatesType( j,
+         //                                     grid.getDimensions().y() - 1 - i ) );
+
+         row[ j ] = 255 * function.getData().getElement( cell.getIndex() );
+      }
+      png_write_row( this->png_ptr, row );
+   }
+   delete[] row;
+   return true;
+#else
+   return false;
+#endif
+}
+
 
 
 template< typename Index >

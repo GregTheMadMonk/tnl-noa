@@ -10,7 +10,9 @@
 
 #pragma once
 
+#include <TNL/Object.h>
 #include <TNL/Config/ParameterContainer.h>
+#include <TNL/Meshes/Grid.h>
 
 using namespace TNL;
 
@@ -31,8 +33,24 @@ bool resolveProfileReal( const Config::ParameterContainer& parameters )
       std::cerr << "Unable to parse the mesh function type " << meshFunctionType << "." << std::endl;
       return EXIT_FAILURE;
    }
-   
-   
+   std::cout << parsedMeshFunctionType << std::endl;
+   if( parsedMeshFunctionType[ 0 ] != "Functions::MeshFunction" )
+   {
+      std::cerr << "MeshFunction is required in profile file " << profileFile << "." << std::endl;
+      return false;
+   }
+   if( parsedMeshFunctionType[ 1 ] != ProfileMesh::getType() )
+   {
+      std::cerr << "The mesh function in the profile file must be defined on " << ProfileMesh::getType() 
+                << " but it is defined on " << parsedMeshFunctionType[ 1 ] << "." << std::endl;
+      return false;
+   }
+   if( parsedMeshFunctionType[ 2 ] != "2" )
+   {
+      std::cerr << "The mesh function must be defined on cells but it is defined on mesh entities with " << parsedMeshFunctionType[ 2 ] << " dimensions." << std::endl;
+      return false;
+   }
+   return true;
 }
 
 template< typename ProfileMesh, typename Real, typename MeshReal >
@@ -40,10 +58,13 @@ bool resolveMeshIndexType( const Containers::List< String >& parsedMeshType,
                                   const Config::ParameterContainer& parameters )
 {
    if( parsedMeshType[ 4 ] == "int" )
-      return resolveProfileReal< ProfileMesh, Real, Meshes::Grid< 3, MeshReal, Devices::Host, int >( parameters );
+      return resolveProfileReal< ProfileMesh, Real, Meshes::Grid< 3, MeshReal, Devices::Host, int > >( parameters );
 
    if( parsedMeshType[ 4 ] == "long int" )
-      return resolveProfileReal< ProfileMesh, Real, Meshes::Grid< 3, MeshReal, Device::Host, long int >( parameters );  
+      return resolveProfileReal< ProfileMesh, Real, Meshes::Grid< 3, MeshReal, Devices::Host, long int > >( parameters );  
+
+   std::cerr << "Unknown index type " << parsedMeshType[ 4 ] << "." << std::endl;
+   return false;
 }
 
 template< typename ProfileMesh, typename Real >
@@ -65,9 +86,9 @@ bool resolveMesh( const Config::ParameterContainer& parameters )
    }
    
    int dimensions = atoi( parsedMeshType[ 1 ].getString() );
-   if( dimensions != 2 )
+   if( dimensions != 3 )
    {
-      std::cerr << "The profile mesh '" << meshFile << "' must be a 2D grid." << std::endl;
+      std::cerr << "The main mesh '" << meshFile << "' must be a 3D grid." << std::endl;
       return false;
    }
    
@@ -131,13 +152,13 @@ bool resolveProfileMeshRealType( const Containers::List< String >& parsedMeshTyp
 {
    std::cout << "+ -> Setting real type to " << parsedMeshType[ 2 ] << " ... " << std::endl;
    if( parsedMeshType[ 2 ] == "float" )
-      return resolveIndexType< float >( parsedMeshType, parameters );
+      return resolveProfileMeshIndexType< float >( parsedMeshType, parameters );
 
    if( parsedMeshType[ 2 ] == "double" )
-      return resolveIndexType< double >( parsedMeshType, parameters );
+      return resolveProfileMeshIndexType< double >( parsedMeshType, parameters );
 
    if( parsedMeshType[ 2 ] == "long-double" )
-      return resolveIndexType< long double >( parsedMeshType, parameters );
+      return resolveProfileMeshIndexType< long double >( parsedMeshType, parameters );
 
    return false;
 }

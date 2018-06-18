@@ -38,7 +38,7 @@ class MeshFunction :
       typedef SharedPointer< MeshType > MeshPointer;      
       typedef Real RealType;
       typedef Containers::Vector< RealType, DeviceType, IndexType > VectorType;
-      typedef Functions::MeshFunction< Mesh, MeshEntityDimension, Real > ThisType;
+      typedef Functions::MeshFunction< MeshType, MeshEntityDimension, RealType > ThisType;
       typedef Meshes::DistributedMeshes::DistributedMesh<MeshType> DistributedMeshType;
       typedef Meshes::DistributedMeshes::DistributedMeshSynchronizer<ThisType> DistributedMeshSynchronizerType;
  
@@ -166,7 +166,8 @@ class MeshFunction :
  
    protected:
 
-      DistributedMeshSynchronizerType synchronizer;    
+      //DistributedMeshSynchronizerType synchronizer;
+      Meshes::DistributedMeshes::DistributedMeshSynchronizer< Functions::MeshFunction< MeshType, MeshEntityDimension, RealType > > synchronizer;
       
       MeshPointer meshPointer;
       
@@ -175,7 +176,7 @@ class MeshFunction :
       template< typename, typename > friend class MeshFunctionEvaluator;
 
    private:
-      void SetupSynchronizer(DistributedMeshType *distrMesh);
+      void SetupSynchronizer( DistributedMeshType *distrMesh );
    
 };
 

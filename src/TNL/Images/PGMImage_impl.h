@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlPGMImage_impl.h  -  description
+                          PGMImage_impl.h  -  description
                              -------------------
     begin                : Jul 20, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -17,15 +17,15 @@ namespace TNL {
 namespace Images {   
 
 template< typename Index >
-tnlPGMImage< Index >::
-tnlPGMImage() :
+PGMImage< Index >::
+PGMImage() :
    binary( false ), maxColors( 0 ), fileOpen( false )
 {
 }
 
 template< typename Index >
 bool
-tnlPGMImage< Index >::
+PGMImage< Index >::
 readHeader()
 {
    char magicNumber[ 3 ];
@@ -60,7 +60,7 @@ readHeader()
 
 template< typename Index >
 bool
-tnlPGMImage< Index >::
+PGMImage< Index >::
 openForRead( const String& fileName )
 {
    this->close();
@@ -80,16 +80,16 @@ openForRead( const String& fileName )
 }
 
 template< typename Index >
-   template< typename Real,
+   template< typename MeshReal,
              typename Device,
-             typename Vector >
+             typename Real >
 bool
-tnlPGMImage< Index >::
+PGMImage< Index >::
 read( const RegionOfInterest< Index > roi,
-      const Meshes::Grid< 2, Real, Device, Index >& grid,
-      Vector& vector )
+      Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function )
 {
    typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+   const GridType& grid = function.getMesh();
    typename GridType::Cell cell( grid );
  
    Index i, j;
@@ -111,7 +111,7 @@ read( const RegionOfInterest< Index > roi,
             cell.refresh();
             //Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
             //                                                      roi.getBottom() - 1 - i ) );
-            vector.setElement( cell.getIndex(), ( Real ) col / ( Real ) this->maxColors );
+            function.getData().setElement( cell.getIndex(), ( Real ) col / ( Real ) this->maxColors );
          }
       }
    return true;
@@ -121,7 +121,7 @@ template< typename Index >
    template< typename Real,
              typename Device >
 bool
-tnlPGMImage< Index >::
+PGMImage< Index >::
 writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid,
              bool binary )
 {
@@ -138,7 +138,7 @@ template< typename Index >
    template< typename Real,
              typename Device >
 bool
-tnlPGMImage< Index >::
+PGMImage< Index >::
 openForWrite( const String& fileName,
               Meshes::Grid< 2, Real, Device, Index >& grid,
               bool binary )
@@ -165,7 +165,7 @@ template< typename Index >
              typename Device,
              typename Vector >
 bool
-tnlPGMImage< Index >::
+PGMImage< Index >::
 write( const Meshes::Grid< 2, Real, Device, Index >& grid,
        Vector& vector )
 {
@@ -200,8 +200,48 @@ write( const Meshes::Grid< 2, Real, Device, Index >& grid,
 }
 
 template< typename Index >
+   template< typename MeshReal,
+             typename Device,
+             typename Real >
+bool
+PGMImage< Index >::
+write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function )
+{
+   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+   const GridType& grid = function.getMesh();
+   typename GridType::Cell cell( grid );
+ 
+   Index i, j;
+   for( i = 0; i < grid.getDimensions().y(); i ++ )
+   {
+      for( j = 0; j < grid.getDimensions().x(); j ++ )
+      {
+         cell.getCoordinates().x() = j;
+         cell.getCoordinates().y() = grid.getDimensions().y() - 1 - i;
+         cell.refresh();
+ 
+         //Index cellIndex = grid.getCellIndex( CoordinatesType( j,
+         //                                     grid.getDimensions().y() - 1 - i ) );
+
+         unsigned char color = 255 * function.getData().getElement( cell.getIndex() );
+         if ( ! this->binary )
+         {
+             int color_aux = (int)color;
+             this->file << color_aux;
+                  this->file << ' ';
+         }
+         else this->file << color;
+      }      
+      if ( ! this->binary )
+         this->file << '\n';
+   }
+   return true;
+}
+
+
+template< typename Index >
 void
-tnlPGMImage< Index >::
+PGMImage< Index >::
 close()
 {
    if( this->fileOpen )
@@ -210,8 +250,8 @@ close()
 }
 
 template< typename Index >
-tnlPGMImage< Index >::
-~tnlPGMImage()
+PGMImage< Index >::
+~PGMImage()
 {
    close();
 }
