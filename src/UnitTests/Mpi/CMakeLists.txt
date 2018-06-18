@@ -61,10 +61,10 @@ ADD_TEST( NAME DistributedGridTest_2D COMMAND "mpirun" ${mpi_test_parameters_2d}
 SET (mpi_test_parameters_3d -np 27 -H localhost:27 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_3D${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridTest_3D COMMAND "mpirun" ${mpi_test_parameters_3d})
 
-SET (mpi_test_parameters_IO -np 4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridIOTest${CMAKE_EXECUTABLE_SUFFIX}")
+SET (mpi_test_parameters_IO -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridIOTest${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridIOTest COMMAND "mpirun" ${mpi_test_parameters_IO})
 
-SET (mpi_test_parameters_IOMPIIO -np 4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridIO_MPIIOTest${CMAKE_EXECUTABLE_SUFFIX}")
+SET (mpi_test_parameters_IOMPIIO -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridIO_MPIIOTest${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridIO_MPIIOTest COMMAND "mpirun" ${mpi_test_parameters_IOMPIIO})
 
 

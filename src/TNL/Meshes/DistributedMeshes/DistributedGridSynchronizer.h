@@ -44,8 +44,8 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
       typedef typename Grid< 1, GridReal, Device, Index >::Cell Cell;
       typedef typename Functions::MeshFunction< Grid< 1, GridReal, Device, Index >,EntityDimension, RealType> MeshFunctionType;
       typedef typename Grid< 1, GridReal, Device, Index >::DistributedMeshType DistributedGridType;
-      template< typename Real_ >
-      using BufferEntitiesHelperType = BufferEntitiesHelper< MeshFunctionType, 1, Real_, Device >;
+      //template< typename Real_ >
+      //using BufferEntitiesHelperType = BufferEntitiesHelper< MeshFunctionType, 1, Real_, Device >;
 
       DistributedMeshSynchronizer()
       {
@@ -131,9 +131,9 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
               int leftNeighbor, int rightNeighbor)
       {
          if(leftNeighbor!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[Left].getData(),left,size,toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 1, Real_, Device >::BufferEntities(meshFunction,buffers[Left].getData(),left,size,toBuffer);
          if(rightNeighbor!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[Right].getData(),right,size,toBuffer);  
+            BufferEntitiesHelper< MeshFunctionType, 1, Real_, Device >::BufferEntities(meshFunction,buffers[Right].getData(),right,size,toBuffer);  
       }
 
 
@@ -275,21 +275,21 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
                        const int *neighbor)
       {
          if(neighbor[Left]!=-1)        
-            BufferEntitiesHelperType< Real_ >::BufferEntities( meshFunction, buffers[Left].getData(), left,ycenter,shortDim.x(),longDim.y(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 2, Real_, Device >::BufferEntities( meshFunction, buffers[Left].getData(), left,ycenter,shortDim.x(),longDim.y(),toBuffer);
          if(neighbor[Right]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities( meshFunction, buffers[Right].getData(),right,ycenter,shortDim.x(),longDim.y(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 2, Real_, Device >::BufferEntities( meshFunction, buffers[Right].getData(),right,ycenter,shortDim.x(),longDim.y(),toBuffer);
          if(neighbor[Up]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities( meshFunction, buffers[Up].getData(), xcenter,up,longDim.x(),shortDim.y(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 2, Real_, Device >::BufferEntities( meshFunction, buffers[Up].getData(), xcenter,up,longDim.x(),shortDim.y(),toBuffer);
          if(neighbor[Down]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities( meshFunction, buffers[Down].getData(),xcenter,down,longDim.x(),shortDim.y(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 2, Real_, Device >::BufferEntities( meshFunction, buffers[Down].getData(),xcenter,down,longDim.x(),shortDim.y(),toBuffer);
          if(neighbor[UpLeft]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities( meshFunction, buffers[UpLeft].getData(),left,up,shortDim.x(),shortDim.y(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 2, Real_, Device >::BufferEntities( meshFunction, buffers[UpLeft].getData(),left,up,shortDim.x(),shortDim.y(),toBuffer);
          if(neighbor[UpRight]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities( meshFunction, buffers[UpRight].getData(),right,up,shortDim.x(),shortDim.y(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 2, Real_, Device >::BufferEntities( meshFunction, buffers[UpRight].getData(),right,up,shortDim.x(),shortDim.y(),toBuffer);
          if(neighbor[DownLeft]!=-1)        
-            BufferEntitiesHelperType< Real_ >::BufferEntities( meshFunction, buffers[DownLeft].getData(),left,down,shortDim.x(),shortDim.y(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 2, Real_, Device >::BufferEntities( meshFunction, buffers[DownLeft].getData(),left,down,shortDim.x(),shortDim.y(),toBuffer);
          if(neighbor[DownRight]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities( meshFunction, buffers[DownRight].getData(),right,down,shortDim.x(),shortDim.y(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 2, Real_, Device >::BufferEntities( meshFunction, buffers[DownRight].getData(),right,down,shortDim.x(),shortDim.y(),toBuffer);
       }
       
 
@@ -480,61 +480,61 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
     {
        //X-Y-Z
         if(neighbor[West]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[West].getData(),west,ycenter,zcenter,shortDim.x(),longDim.y(),longDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[West].getData(),west,ycenter,zcenter,shortDim.x(),longDim.y(),longDim.z(),toBuffer);
         if(neighbor[East]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[East].getData(),east,ycenter,zcenter,shortDim.x(),longDim.y(),longDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[East].getData(),east,ycenter,zcenter,shortDim.x(),longDim.y(),longDim.z(),toBuffer);
         if(neighbor[North]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[North].getData(),xcenter,nord,zcenter,longDim.x(),shortDim.y(),longDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[North].getData(),xcenter,nord,zcenter,longDim.x(),shortDim.y(),longDim.z(),toBuffer);
         if(neighbor[South]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[South].getData(),xcenter,south,zcenter,longDim.x(),shortDim.y(),longDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[South].getData(),xcenter,south,zcenter,longDim.x(),shortDim.y(),longDim.z(),toBuffer);
         if(neighbor[Bottom]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[Bottom].getData(),xcenter,ycenter,bottom,longDim.x(),longDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[Bottom].getData(),xcenter,ycenter,bottom,longDim.x(),longDim.y(),shortDim.z(),toBuffer);
         if(neighbor[Top]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[Top].getData(),xcenter,ycenter,top,longDim.x(),longDim.y(),shortDim.z(),toBuffer);	
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[Top].getData(),xcenter,ycenter,top,longDim.x(),longDim.y(),shortDim.z(),toBuffer);	
         //XY
         if(neighbor[NorthWest]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[NorthWest].getData(),west,nord,zcenter,shortDim.x(),shortDim.y(),longDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[NorthWest].getData(),west,nord,zcenter,shortDim.x(),shortDim.y(),longDim.z(),toBuffer);
         if(neighbor[NorthEast]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[NorthEast].getData(),east,nord,zcenter,shortDim.x(),shortDim.y(),longDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[NorthEast].getData(),east,nord,zcenter,shortDim.x(),shortDim.y(),longDim.z(),toBuffer);
         if(neighbor[SouthWest]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[SouthWest].getData(),west,south,zcenter,shortDim.x(),shortDim.y(),longDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[SouthWest].getData(),west,south,zcenter,shortDim.x(),shortDim.y(),longDim.z(),toBuffer);
         if(neighbor[SouthEast]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[SouthEast].getData(),east,south,zcenter,shortDim.x(),shortDim.y(),longDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[SouthEast].getData(),east,south,zcenter,shortDim.x(),shortDim.y(),longDim.z(),toBuffer);
         //XZ
         if(neighbor[BottomWest]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[BottomWest].getData(),west,ycenter,bottom,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[BottomWest].getData(),west,ycenter,bottom,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);
         if(neighbor[BottomEast]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[BottomEast].getData(),east,ycenter,bottom,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[BottomEast].getData(),east,ycenter,bottom,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);
         if(neighbor[TopWest]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[TopWest].getData(),west,ycenter,top,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[TopWest].getData(),west,ycenter,top,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);
         if(neighbor[TopEast]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[TopEast].getData(),east,ycenter,top,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);   
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[TopEast].getData(),east,ycenter,top,shortDim.x(),longDim.y(),shortDim.z(),toBuffer);   
         //YZ
         if(neighbor[BottomNorth]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[BottomNorth].getData(),xcenter,nord,bottom,longDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[BottomNorth].getData(),xcenter,nord,bottom,longDim.x(),shortDim.y(),shortDim.z(),toBuffer);
         if(neighbor[BottomSouth]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[BottomSouth].getData(),xcenter,south,bottom,longDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[BottomSouth].getData(),xcenter,south,bottom,longDim.x(),shortDim.y(),shortDim.z(),toBuffer);
         if(neighbor[TopNorth]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[TopNorth].getData(),xcenter,nord,top,longDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[TopNorth].getData(),xcenter,nord,top,longDim.x(),shortDim.y(),shortDim.z(),toBuffer);
         if(neighbor[TopSouth]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[TopSouth].getData(),xcenter,south,top,longDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[TopSouth].getData(),xcenter,south,top,longDim.x(),shortDim.y(),shortDim.z(),toBuffer);
         //XYZ
         if(neighbor[BottomNorthWest]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[BottomNorthWest].getData(),west,nord,bottom,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[BottomNorthWest].getData(),west,nord,bottom,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
         if(neighbor[BottomNorthEast]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[BottomNorthEast].getData(),east,nord,bottom,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[BottomNorthEast].getData(),east,nord,bottom,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
         if(neighbor[BottomSouthWest]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[BottomSouthWest].getData(),west,south,bottom,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[BottomSouthWest].getData(),west,south,bottom,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
         if(neighbor[BottomSouthEast]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[BottomSouthEast].getData(),east,south,bottom,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[BottomSouthEast].getData(),east,south,bottom,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
         if(neighbor[TopNorthWest]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[TopNorthWest].getData(),west,nord,top,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[TopNorthWest].getData(),west,nord,top,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
         if(neighbor[TopNorthEast]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[TopNorthEast].getData(),east,nord,top,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[TopNorthEast].getData(),east,nord,top,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
         if(neighbor[TopSouthWest]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[TopSouthWest].getData(),west,south,top,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[TopSouthWest].getData(),west,south,top,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);
         if(neighbor[TopSouthEast]!=-1)
-            BufferEntitiesHelperType< Real_ >::BufferEntities(meshFunction,buffers[TopSouthEast].getData(),east,south,top,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);   
+            BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >::BufferEntities(meshFunction,buffers[TopSouthEast].getData(),east,south,top,shortDim.x(),shortDim.y(),shortDim.z(),toBuffer);   
     }
 };
 
