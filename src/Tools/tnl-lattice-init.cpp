@@ -48,25 +48,10 @@ int main( int argc, char* argv[] )
 
    setupConfig( configDescription );
    
-
-   if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
+   if( ! Config::parseCommandLine( argc, argv, configDescription, parameters ) )
       return EXIT_FAILURE;
    
-   String meshFile = parameters. getParameter< String >( "mesh" );
-   String meshType;
-   if( ! getObjectType( meshFile, meshType ) )
-   {
-      std::cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << std::endl;
-      return EXIT_FAILURE;
-   }
-   std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
-   Containers::List< String > parsedMeshType;
-   if( ! parseObjectType( meshType, parsedMeshType ) )
-   {
-      std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
-      return EXIT_FAILURE;
-   }
-   if( ! resolveMeshType( parsedMeshType, parameters ) )
+   if( ! resolveProfileMeshType( parameters ) )
       return EXIT_FAILURE;
 
    return EXIT_SUCCESS;   
