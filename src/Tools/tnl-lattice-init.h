@@ -13,10 +13,35 @@
 #include <TNL/Object.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Functions/MeshFunction.h>
 
 using namespace TNL;
 
-template< typename ProfileMesh, typename Resl, typename Mesh >
+template< typename Real, typename Mesh, typename ProfileMeshFunction >
+bool
+readProfileMeshFunction( const Config::ParameterContainer& parameters )
+{
+   String profileFile = parameters.getParameter< String >( "profile-file" );
+   ProfileMeshFunction profileMeshFunction;
+   if( ! profileMeshFunction.load( profileFile ) )
+   {
+      std::cerr << "Unable to load profile mesh function from the file " << profileFile << "." << std::endl;
+      return false;
+   }
+   String meshFile = parameters.getParameter< String >( "mesh" );
+   using MeshPointer = SharedPointer< Mesh >;
+   MeshPointer mesh;
+   if( ! mesh->load( meshFile ) )
+   {
+      std::cerr << "Unable to load 3D mesh from the file " << meshFile << "." << std::endl;
+      return false;
+   }
+   using MeshFunction = Functions::MeshFunction< Mesh, 3, Real >;
+   MeshFunction meshFunction( mesh );
+   return true;
+}
+
+template< typename ProfileMesh, typename Real, typename Mesh >
 bool resolveProfileReal( const Config::ParameterContainer& parameters )
 {
    String profileFile = parameters. getParameter< String >( "profile-file" );
@@ -50,12 +75,17 @@ bool resolveProfileReal( const Config::ParameterContainer& parameters )
       std::cerr << "The mesh function must be defined on cells but it is defined on mesh entities with " << parsedMeshFunctionType[ 2 ] << " dimensions." << std::endl;
       return false;
    }
-   return true;
+   if( parsedMeshFunctionType[ 3 ] != "float" )
+      return readProfileMeshFunction< Real, Mesh, Functions::MeshFunction< ProfileMesh, 2, float > >( parameters );
+   if( parsedMeshFunctionType[ 3 ] != "double" )
+      return readProfileMeshFunction< Real, Mesh, Functions::MeshFunction< ProfileMesh, 2, double > >( parameters );
+   std::cerr << "Unknown real type " << parsedMeshFunctionType[ 3 ] << " of mesh function in the file " << profileFile << "." << std::endl;
+   return false;
 }
 
 template< typename ProfileMesh, typename Real, typename MeshReal >
 bool resolveMeshIndexType( const Containers::List< String >& parsedMeshType,
-                                  const Config::ParameterContainer& parameters )
+                           const Config::ParameterContainer& parameters )
 {
    if( parsedMeshType[ 4 ] == "int" )
       return resolveProfileReal< ProfileMesh, Real, Meshes::Grid< 3, MeshReal, Devices::Host, int > >( parameters );
