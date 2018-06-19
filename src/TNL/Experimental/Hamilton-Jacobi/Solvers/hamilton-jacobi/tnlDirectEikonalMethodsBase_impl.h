@@ -859,22 +859,12 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-double
+bool
 tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
 updateCell( volatile Real sArray[18][18], int thri, int thrj, const Real hx, const Real hy,
             const Real v )
 {
-   
-   //const Meshes::Grid< 2, Real, Device, Index >& mesh = u.template getMesh< Devices::Cuda >();
-   /*typedef typename Meshes::Grid< 2, Real, Device, Index >::Cell Cell;
-   Cell cell( mesh );
-   cell.getCoordinates().x() = i; cell.getCoordinates().y() = j;
-   cell.refresh();
-   
-   const auto& neighborEntities = cell.template getNeighborEntities< 2 >();
-   const RealType& hx = mesh.getSpaceSteps().x();
-   const RealType& hy = mesh.getSpaceSteps().y();*/
-   const RealType value = sArray[ thrj ][ thri ];//u( cell );
+   const RealType value = sArray[ thrj ][ thri ];
    RealType a, b, tmp = TypeInfo< RealType >::getMaxValue();
       
    b = TNL::argAbsMin( sArray[ thrj+1 ][ thri ],
@@ -885,7 +875,7 @@ updateCell( volatile Real sArray[18][18], int thri, int thrj, const Real hx, con
 
     if( fabs( a ) == TypeInfo< RealType >::getMaxValue() && 
         fabs( b ) == TypeInfo< RealType >::getMaxValue() )
-       return 0;
+       return false;
    
     RealType pom[6] = { a, b, TypeInfo< Real >::getMaxValue(), (RealType)hx, (RealType)hy, 0.0 };
     sortMinims( pom );
@@ -896,10 +886,10 @@ updateCell( volatile Real sArray[18][18], int thri, int thrj, const Real hx, con
     {
         sArray[ thrj ][ thri ] = argAbsMin( value, tmp );
         tmp = value - sArray[ thrj ][ thri ];
-        if ( fabs( tmp ) >  0.1 )
-            return 10;
+        if ( fabs( tmp ) >  0.001 )
+            return true;
         else
-            return 0;
+            return false;
     }
     else
     {
@@ -908,12 +898,12 @@ updateCell( volatile Real sArray[18][18], int thri, int thrj, const Real hx, con
             ( pom[ 1 ] - pom[ 0 ] ) * ( pom[ 1 ] - pom[ 0 ] ) ) )/( pom[ 3 ] * pom[ 3 ] + pom[ 4 ] * pom[ 4 ] );
         sArray[ thrj ][ thri ] = argAbsMin( value, tmp );
         tmp = value - sArray[ thrj ][ thri ];
-        if ( fabs( tmp ) > 0.1 )
-            return 10;
+        if ( fabs( tmp ) > 0.01 )
+            return true;
         else
-            return 0;
+            return false;
     }
     
-    return 0;
+    return false;
 }
 #endif

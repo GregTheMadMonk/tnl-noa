@@ -227,46 +227,38 @@ solve( const MeshPointer& mesh,
           tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr;
           
           
-          /*int nBlockIter = numBlocksX > numBlocksY ? numBlocksX : numBlocksY;
-          nBlockIter = numBlocksX == numBlocksY ? nBlockIter + 1 : nBlockIter;*/
           
-          bool isNotDone = true; numBlocksX = 16; numBlocksY = 16;
-          double* BlockIter = (double*)malloc( ( numBlocksX * numBlocksY ) * sizeof( double ) );
+          bool* BlockIter = (bool*)malloc( ( numBlocksX * numBlocksY ) * sizeof( bool ) );
           
-          double *BlockIterDevice;
-          cudaMalloc(&BlockIterDevice, ( numBlocksX * numBlocksY ) * sizeof( double ) );
+          bool *BlockIterDevice;
+          cudaMalloc(&BlockIterDevice, ( numBlocksX * numBlocksY ) * sizeof( bool ) );
           
-          //while( isNotDone )
+          while( BlockIter[ 0 ] )
           {
            for( int i = 0; i < numBlocksX * numBlocksY; i++ )
-                BlockIter[ i ] = 0.0;
-           cudaMemcpy(BlockIterDevice, BlockIter, ( numBlocksX * numBlocksY ) * sizeof( double ), cudaMemcpyHostToDevice);
-           
-            isNotDone = false;
-            
+                BlockIter[ i ] = false;
+           cudaMemcpy(BlockIterDevice, BlockIter, ( numBlocksX * numBlocksY ) * sizeof( bool ), cudaMemcpyHostToDevice);
+                       
             CudaUpdateCellCaller<<< gridSize, blockSize >>>( ptr,
                                                              interfaceMapPtr.template getData< Device >(),
                                                              auxPtr.template modifyData< Device>(),
                                                              BlockIterDevice );
             cudaDeviceSynchronize();         
             TNL_CHECK_CUDA_DEVICE;
-            cudaMemcpy(BlockIter, BlockIterDevice, ( numBlocksX * numBlocksY ) * sizeof( double ), cudaMemcpyDeviceToHost);
+            cudaMemcpy(BlockIter, BlockIterDevice, ( numBlocksX * numBlocksY ) * sizeof( bool ), cudaMemcpyDeviceToHost);
             
-            for( int j = numBlocksY-1; j > -1; j-- )
+            /*for( int j = numBlocksY-1; j > -1; j-- )
             {    
                 for( int i = 0; i < numBlocksX; i++ )
                 {
-                    //if( BlockIter[ j * numBlocksX + i ] )
-                        std::cout << BlockIter[ j * numBlocksY + i ] << "\t";
-                    //else
-                    //    std::cout << "0" << " ";    
+                    std::cout << BlockIter[ j * numBlocksY + i ] << "\t";  
                 }
                 std::cout << std::endl;
             }
-            std::cout << std::endl;
+            std::cout << std::endl;*/
                          
-            for( int i = 0; i < numBlocksX * numBlocksY; i++ )
-                isNotDone = isNotDone || BlockIter[ i ];
+            for( int i = 1; i < numBlocksX * numBlocksY; i++ )
+                BlockIter[ 0 ] = BlockIter[ 0 ] || BlockIter[ i ];
             
           }
           delete[] BlockIter;
@@ -289,7 +281,7 @@ template < typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr,
                                       const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
                                       Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
-                                      Real *BlockIterDevice )
+                                      bool *BlockIterDevice )
 {
     int thri = threadIdx.x; int thrj = threadIdx.y;
     int blIdx = blockIdx.x; int blIdy = blockIdx.y;
@@ -297,15 +289,12 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
     int j = blockDim.y*blIdy + thrj;
     int currentIndex = thrj * 16 + thri;
     
-    __shared__ volatile Real changed[256];
-    changed[ currentIndex ] = 0.0;
-    __syncthreads();
+    __shared__ volatile bool changed[256];
+    changed[ currentIndex ] = false;
     
     if( thrj == 0 && thri == 0 )
-        changed[ 0 ] = 10.0;
+        changed[ 0 ] = true;
     __syncthreads();
-        //SmallCycleBoolin = true;
-    
     
     const Meshes::Grid< 2, Real, Device, Index >& mesh = interfaceMap.template getMesh< Devices::Cuda >();
     __shared__ Real hx;
@@ -315,11 +304,9 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         hx = mesh.getSpaceSteps().x();
         hy = mesh.getSpaceSteps().y();
     }
-    __syncthreads();
     
     __shared__ volatile Real sArray[ 18 ][ 18 ];
     sArray[thrj][thri] = TypeInfo< Real >::getMaxValue();
-    __syncthreads();
     
     //filling sArray edges
     int dimX = mesh.getDimensions().x(); int dimY = mesh.getDimensions().y();
@@ -339,12 +326,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
 
         if( numOfBlocky -1 == blIdy )
             ykolik = dimY - (blIdy)*blockDim.y+1;
-    
-    //filling BlockIterDevice
-        //BlockIterDevice[ blIdy * numOfBlockx + blIdx ] = 0.0;
-     }
-    /*if( blIdx == 2 && blIdy == 3 )
-        BlockIterDevice[ currentIndex ] = 0.0;*/
+    }
     __syncthreads();
     
     if( thri == 0 )
@@ -354,7 +336,6 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         else
             sArray[thrj+1][xkolik] = TypeInfo< Real >::getMaxValue();
     }
-    __syncthreads();
     
     if( thri == 1 )
     {
@@ -363,7 +344,6 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         else
             sArray[thrj+1][0] = TypeInfo< Real >::getMaxValue();
     }
-    __syncthreads();
     
     if( thrj == 0 )
     {
@@ -372,7 +352,6 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         else
            sArray[ykolik][thri+1] = TypeInfo< Real >::getMaxValue();
     }
-    __syncthreads();
     
     if( thrj == 1 )
     {
@@ -381,44 +360,47 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         else
             sArray[0][thri+1] = TypeInfo< Real >::getMaxValue();
     }
-    __syncthreads();
     
         
     if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
     {    
         sArray[thrj+1][thri+1] = aux[ j*mesh.getDimensions().x() + i ];
-        __syncthreads();
-    }  
-    
-    int loopcounter;
-    loopcounter = 0;
-    __syncthreads();
-    
-  /*if( ( blIdx == 4 && blIdy == 5 ) || ( blIdx == 2 && blIdy == 2 ) || ( blIdx == 2 && blIdy == 3 ) ||
-      ( blIdx == 5 && blIdy == 5 ) || ( blIdx == 6 && blIdy == 5 ) || ( blIdx == 5 && blIdy == 4 ) ||
-      ( blIdx == 5 && blIdy == 2 ) || ( blIdx == 3 && blIdy == 2 ) || ( blIdx == 4 && blIdy == 2 ) )*/
-    while( changed[ 0 ] > 0.1 )
+    }
+    __syncthreads();  
+
+    while( changed[ 0 ] )
     {
-        changed[ currentIndex] = 0.0;
         __syncthreads();
+        
+        changed[ currentIndex] = false;
         
     //calculation of update cell
         if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
         {
             if( ! interfaceMap[ j * mesh.getDimensions().x() + i ] )
             {
-                changed[ currentIndex ] = ptr.updateCell( sArray, thri+1, thrj+1, hx, hy );  
-    __syncthreads();
+                changed[ currentIndex ] = ptr.updateCell( sArray, thri+1, thrj+1, hx, hy );
             }
         }
         __syncthreads();
+        
+        /*if( thri == 0 && thrj == 0 && blIdx == 1 && blIdy == 3 ){
+            for( int h = 15; h > -1; h-- ){
+                for( int g = 0; g < 16; g++ ){
+                    printf( "%d\t", changed[h*16+g] );
+                }
+                printf("\n");
+            }
+            printf("\n");
+        }
+        __syncthreads();*/
         
     //pyramid reduction
         if( blockDim.x*blockDim.y >= 256 )
         {
             if( currentIndex < 128 )
             {
-                changed[ currentIndex ] = changed[ currentIndex ] + changed[ currentIndex + 128 ];
+                changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 128 ];
             }
         }
         __syncthreads();
@@ -426,52 +408,25 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         {
             if( currentIndex < 64 )
             {
-                changed[ currentIndex ] = changed[ currentIndex ] + changed[ currentIndex + 64 ];
+                changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 64 ];
             }
         }
         __syncthreads();
         if( currentIndex < 32 ) //POUZE IF JSOU SINCHRONNI NA JEDNOM WARPU
         {
-            if( true ) changed[ currentIndex ] = changed[ currentIndex ] + changed[ currentIndex + 32 ];
-            if( currentIndex < 16 ) changed[ currentIndex ] = changed[ currentIndex ] + changed[ currentIndex + 16 ];
-            if( currentIndex < 8 ) changed[ currentIndex ] = changed[ currentIndex ] + changed[ currentIndex + 8 ];
-            if( currentIndex < 4 ) changed[ currentIndex ] = changed[ currentIndex ] + changed[ currentIndex + 4 ];
-            if( currentIndex < 2 ) changed[ currentIndex ] = changed[ currentIndex ] + changed[ currentIndex + 2 ];
-            if( currentIndex < 1 ) changed[ currentIndex ] = changed[ currentIndex ] + changed[ currentIndex + 1 ];
+            if( true ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 32 ];
+            if( currentIndex < 16 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 16 ];
+            if( currentIndex < 8 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 8 ];
+            if( currentIndex < 4 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 4 ];
+            if( currentIndex < 2 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 2 ];
+            if( currentIndex < 1 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 1 ];
         }
-        __syncthreads();
-        
-        
-               
-        loopcounter++;
-        __syncthreads();
-        if( currentIndex != 0 )
-            changed[ currentIndex ] = 0.0;
-        __syncthreads();
-        
-        if( loopcounter > 200 )
-            changed[ currentIndex ] = 0.0;
+        if( changed[ 0 ] && thri == 0 && thrj == 0 )
+            BlockIterDevice[ blIdy * numOfBlockx + blIdx ] = changed[ 0 ];
         __syncthreads();
     }
-    /*__syncthreads();
-    if( blIdy == 3 && blIdx == 1 )
-    {
-       BlockIterDevice[ currentIndex ] = changed[ currentIndex ];
-       BlockIterDevice[ 0 ] = loopcounter;
-    }*/
-    __syncthreads();
-    if( blIdx == 2 && blIdy == 3 )
-    { 
-        //SmallCycleBoolin = changed[ 0 ];
-        //if( changed[ 0 ] )
-             BlockIterDevice[ currentIndex ] = changed[ currentIndex ];// loopcounter;
-             BlockIterDevice[ 0 ] = loopcounter;
-
-    }
-      
-    
+  
     if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() && (!interfaceMap[ j * mesh.getDimensions().x() + i ]) )
         aux[ j * mesh.getDimensions().x() + i ] = sArray[ thrj + 1 ][ thri + 1 ];
-    __syncthreads();
 }
 #endif
