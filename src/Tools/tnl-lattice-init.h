@@ -13,16 +13,164 @@
 #include <TNL/Object.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/GridEntity.h>
 #include <TNL/Functions/MeshFunction.h>
 
 using namespace TNL;
+
+template< typename MeshFunction, typename ProfileMeshFunction >
+bool performExtrude( const Config::ParameterContainer& parameters,
+                     MeshFunction& f,
+                     const ProfileMeshFunction& profile )
+{
+   using MeshPointer = SharedPointer< typename MeshFunction::MeshType >;
+   using ProfileMeshPointer = SharedPointer< typename ProfileMeshFunction::MeshType >;
+   using ProfileMeshType = typename ProfileMeshFunction::MeshType;
+   using MeshType = typename MeshFunction::MeshType;
+   using RealType = typename MeshFunction::RealType;
+   using IndexType = typename MeshType::IndexType;
+   using CellType = typename MeshType::Cell;
+   using PointType = typename MeshType::PointType;
+   using ProfilePointType = typename ProfileMeshType::PointType;
+   using ProfileCellType = typename ProfileMeshType::Cell;
+   String profileOrientation = parameters.getParameter< String >( "profile-orientation" );
+   if( profileOrientation != "x" && 
+       profileOrientation != "y" &&
+       profileOrientation != "z" )
+   {
+      std::cerr << "Wrong profile orientation " << profileOrientation << "." << std::endl;
+      return false;
+   }
+   double profileShiftX = parameters.getParameter< double >( "profile-shift-x" );
+   double profileShiftY = parameters.getParameter< double >( "profile-shift-y" );
+   double profileShiftZ = parameters.getParameter< double >( "profile-shift-z" );
+   double profileScaleX = parameters.getParameter< double >( "profile-scale-x" );
+   double profileScaleY = parameters.getParameter< double >( "profile-scale-y" );
+   double profileScaleZ = parameters.getParameter< double >( "profile-scale-z" );   
+   double profileRotation = parameters.getParameter< double >( "profile-rotation" );   
+   double extrudeStart = parameters.getParameter< double >( "extrude-start" );
+   double extrudeStop = parameters.getParameter< double >( "extrude-stop" );
+   const MeshType mesh = f.getMesh();
+   ProfileMeshType profileMesh = profile.getMesh();
+   CellType cell( mesh );
+   IndexType& i = cell.getCoordinates().x();
+   IndexType& j = cell.getCoordinates().y();
+   IndexType& k = cell.getCoordinates().z();
+   ProfilePointType profileCenter( profileMesh.getOrigin() + 0.5 * profileMesh.getProportions() );
+   const RealType rotationSin = sin( M_PI * profileRotation / 180.0 );
+   const RealType rotationCos = cos( M_PI * profileRotation / 180.0 );
+   for( i = 0; i < mesh.getDimensions().x(); i++ )
+      for( j = 0; j < mesh.getDimensions().y(); j++ )
+         for( k = 0; k < mesh.getDimensions().z(); k++ )
+         {
+            cell.refresh();
+            PointType p = cell.getCenter();
+            p.x() /= profileScaleX;
+            p.y() /= profileScaleY;
+            p.z() /= profileScaleZ;
+            p.x() -= profileShiftX;
+            p.y() -= profileShiftY;
+            p.z() -= profileShiftZ;
+            if( profileOrientation == "x" )
+            {
+               if( p.z() < profileMesh.getOrigin().x() ||
+                   p.z() > profileMesh.getOrigin().x() + profileMesh.getProportions().x() ||
+                   p.y() < profileMesh.getOrigin().y() ||
+                   p.y() > profileMesh.getOrigin().y() + profileMesh.getProportions().y() )
+                  continue;
+               if( p.x() < extrudeStart || p.x() > extrudeStop )
+                  f( cell ) = 0.0;
+               else
+               {
+                  ProfileCellType profileCell( profileMesh );
+                  ProfilePointType aux1( ( p.z() - profileMesh.getOrigin().x() ),
+                                 ( p.y() - profileMesh.getOrigin().y() ) );
+                  aux1 -= profileCenter;
+                  ProfilePointType aux2( rotationCos * aux1.x() - rotationSin * aux1.y(),
+                                  rotationSin * aux1.x() + rotationCos * aux1.y() );
+                  aux1 = profileCenter + aux2;
+                  profileCell.getCoordinates().x() = aux1.x() / profileMesh.getSpaceSteps().x();
+                  profileCell.getCoordinates().y() = aux1.y() / profileMesh.getSpaceSteps().y();
+                  profileCell.refresh();
+                  RealType aux = profile( profileCell );
+                  if( aux ) f( cell ) = aux;
+               }
+            }
+            if( profileOrientation == "y" )
+            {
+               if( p.x() < profileMesh.getOrigin().x() ||
+                   p.x() > profileMesh.getOrigin().x() + profileMesh.getProportions().x() ||
+                   p.z() < profileMesh.getOrigin().y() ||
+                   p.z() > profileMesh.getOrigin().y() + profileMesh.getProportions().y() )
+                  continue;
+               if( p.y() < extrudeStart || p.y() > extrudeStop )
+                  f( cell ) = 0.0;
+               else
+               {
+                  ProfileCellType profileCell( profileMesh );
+                  ProfilePointType aux1( ( p.x() - profileMesh.getOrigin().x() ),
+                                 ( p.z() - profileMesh.getOrigin().y() ) );
+                  aux1 -= profileCenter;
+                  ProfilePointType aux2( rotationCos * aux1.x() - rotationSin * aux1.y(),
+                                  rotationSin * aux1.x() + rotationCos * aux1.y() );
+                  aux1 = profileCenter + aux2;
+                  profileCell.getCoordinates().x() = aux1.x() / profileMesh.getSpaceSteps().x();
+                  profileCell.getCoordinates().y() = aux1.y() / profileMesh.getSpaceSteps().y();
+                  profileCell.refresh();
+                  RealType aux = profile( profileCell );
+                  if( aux ) f( cell ) = aux;
+               }
+            }            
+            if( profileOrientation == "z" )
+            {
+               if( p.x() < profileMesh.getOrigin().x() ||
+                   p.x() > profileMesh.getOrigin().x() + profileMesh.getProportions().x() ||
+                   p.y() < profileMesh.getOrigin().y() ||
+                   p.y() > profileMesh.getOrigin().y() + profileMesh.getProportions().y() )
+                  continue;
+               if( p.z() < extrudeStart || p.z() > extrudeStop )
+                  f( cell ) = 0.0;
+               else
+               {
+                  ProfileCellType profileCell( profileMesh );
+                  ProfilePointType aux1( ( p.x() - profileMesh.getOrigin().x() ),
+                                 ( p.y() - profileMesh.getOrigin().y() ) );
+                  aux1 -= profileCenter;
+                  ProfilePointType aux2( rotationCos * aux1.x() - rotationSin * aux1.y(),
+                                  rotationSin * aux1.x() + rotationCos * aux1.y() );
+                  aux1 = profileCenter + aux2;
+                  profileCell.getCoordinates().x() = aux1.x() / profileMesh.getSpaceSteps().x();
+                  profileCell.getCoordinates().y() = aux1.y() / profileMesh.getSpaceSteps().y();
+                  profileCell.refresh();
+                  RealType aux = profile( profileCell );
+                  if( aux ) f( cell ) = aux;
+               }
+            }
+         }
+   String outputFile = parameters.getParameter< String >( "output-file" );
+   if( ! f.save( outputFile ) )
+   {
+      std::cerr << "Unable to save output file " << outputFile << "." << std::endl;
+      return false;
+   }
+   return true;
+}
+
 
 template< typename Real, typename Mesh, typename ProfileMeshFunction >
 bool
 readProfileMeshFunction( const Config::ParameterContainer& parameters )
 {
+   String profileMeshFile = parameters.getParameter< String >( "profile-mesh" );
+   using ProfileMeshPointer = SharedPointer< typename ProfileMeshFunction::MeshType >;
+   ProfileMeshPointer profileMesh;
+   if( ! profileMesh->load( profileMeshFile ) )
+   {
+      std::cerr << "Unable to load the profile mesh file." << profileMeshFile << "." << std::endl;
+      return false;
+   }
    String profileFile = parameters.getParameter< String >( "profile-file" );
-   ProfileMeshFunction profileMeshFunction;
+   ProfileMeshFunction profileMeshFunction( profileMesh );
    if( ! profileMeshFunction.load( profileFile ) )
    {
       std::cerr << "Unable to load profile mesh function from the file " << profileFile << "." << std::endl;
@@ -38,6 +186,18 @@ readProfileMeshFunction( const Config::ParameterContainer& parameters )
    }
    using MeshFunction = Functions::MeshFunction< Mesh, 3, Real >;
    MeshFunction meshFunction( mesh );
+   if( parameters.checkParameter( "input-file" ) )
+   {
+      const String& inputFile = parameters.getParameter< String >( "input-file" ); 
+      if( ! meshFunction.load( inputFile ) )
+      {
+         std::cerr << "Unable to load " << inputFile << "." << std::endl;
+         return false;
+      }
+   }
+   else meshFunction.getData().setValue( 0.0 );
+   if( parameters.getParameter< String >( "operation" ) == "extrude" )
+      performExtrude( parameters, meshFunction, profileMeshFunction );
    return true;
 }
 
@@ -51,14 +211,14 @@ bool resolveProfileReal( const Config::ParameterContainer& parameters )
       std::cerr << "I am not able to detect the mesh function type from the profile file " << profileFile << "." << std::endl;
       return EXIT_FAILURE;
    }
-   std::cout << meshFunctionType << " detected in " << profileFile << " file." << std::endl;
+   //std::cout << meshFunctionType << " detected in " << profileFile << " file." << std::endl;
    Containers::List< String > parsedMeshFunctionType;
    if( ! parseObjectType( meshFunctionType, parsedMeshFunctionType ) )
    {
       std::cerr << "Unable to parse the mesh function type " << meshFunctionType << "." << std::endl;
       return EXIT_FAILURE;
    }
-   std::cout << parsedMeshFunctionType << std::endl;
+   //std::cout << parsedMeshFunctionType << std::endl;
    if( parsedMeshFunctionType[ 0 ] != "Functions::MeshFunction" )
    {
       std::cerr << "MeshFunction is required in profile file " << profileFile << "." << std::endl;
@@ -75,9 +235,9 @@ bool resolveProfileReal( const Config::ParameterContainer& parameters )
       std::cerr << "The mesh function must be defined on cells but it is defined on mesh entities with " << parsedMeshFunctionType[ 2 ] << " dimensions." << std::endl;
       return false;
    }
-   if( parsedMeshFunctionType[ 3 ] != "float" )
+   if( parsedMeshFunctionType[ 3 ] == "float" )
       return readProfileMeshFunction< Real, Mesh, Functions::MeshFunction< ProfileMesh, 2, float > >( parameters );
-   if( parsedMeshFunctionType[ 3 ] != "double" )
+   if( parsedMeshFunctionType[ 3 ] == "double" )
       return readProfileMeshFunction< Real, Mesh, Functions::MeshFunction< ProfileMesh, 2, double > >( parameters );
    std::cerr << "Unknown real type " << parsedMeshFunctionType[ 3 ] << " of mesh function in the file " << profileFile << "." << std::endl;
    return false;
