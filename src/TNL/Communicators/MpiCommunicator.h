@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <cstring>
 
 #ifdef HAVE_MPI
 #include <mpi.h>   
@@ -22,6 +23,15 @@
 #include <TNL/Communicators/MpiDefs.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Exceptions/MPISupportMissing.h>
+
+#ifdef HAVE_CUDA
+#include <TNL/Devices/Cuda.h>
+
+typedef struct __attribute__((__packed__))  {
+	char name[MPI_MAX_PROCESSOR_NAME];
+} procName;
+
+#endif
 
 namespace TNL {
 namespace Communicators {
@@ -79,6 +89,8 @@ class MpiCommunicator
          MPI::Init( argc, argv );
          NullRequest=MPI::REQUEST_NULL;
          redirect = true;
+
+         selectGPU();
 #endif         
       }
       
@@ -274,12 +286,52 @@ class MpiCommunicator
 #else
       static int NullRequest;
 #endif
-
+    private :
       static std::streambuf *psbuf;
       static std::streambuf *backup;
       static std::ofstream filestr;
       static bool redirect;
       static bool inited;
+
+      static void selectGPU(void)
+      {
+#ifdef HAVE_CUDA
+        	int count,rank, gpuCount, gpuNumber;
+            MPI_Comm_size(MPI_COMM_WORLD,&count);
+            MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+
+            cudaGetDeviceCount(&gpuCount);
+
+            procName names[count];
+
+            int i=0;
+            int len;
+            MPI_Get_processor_name(names[rank].name, &len);
+
+            for(i=0;i<count;i++)
+	            std::memcpy(names[i].name,names[rank].name,len+1);
+
+            MPI_Alltoall( (void*)names ,MPI_MAX_PROCESSOR_NAME,MPI_CHAR,
+	            (void*)names,MPI_MAX_PROCESSOR_NAME,MPI_CHAR,
+                        MPI_COMM_WORLD);
+
+            int nodeRank=0;
+            for(i=0;i<rank;i++)
+            {
+	            if(std::strcmp(names[rank].name,names[i].name)==0)
+		            nodeRank++;
+            }
+
+            gpuNumber=nodeRank % gpuCount;
+
+            cudaSetDevice(gpuNumber);
+            TNL_CHECK_CUDA_DEVICE;
+
+            //std::cout<<"Node: " << rank << " gpu: " << gpuNumber << std::endl;
+ 
+#endif
+      }
+    
    
 };
    
