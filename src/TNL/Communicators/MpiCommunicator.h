@@ -295,7 +295,8 @@ class MpiCommunicator
 
       static void selectGPU(void)
       {
-#ifdef HAVE_CUDA
+#ifdef HAVE_MPI
+    #ifdef HAVE_CUDA
         	int count,rank, gpuCount, gpuNumber;
             MPI_Comm_size(MPI_COMM_WORLD,&count);
             MPI_Comm_rank(MPI_COMM_WORLD,&rank);
@@ -329,6 +330,7 @@ class MpiCommunicator
 
             //std::cout<<"Node: " << rank << " gpu: " << gpuNumber << std::endl;
  
+    #endif
 #endif
       }
     
