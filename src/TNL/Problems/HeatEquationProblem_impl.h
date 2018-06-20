@@ -24,10 +24,6 @@
 
 #include "HeatEquationProblem.h"
 
-//#define MPIIO
-#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
-
-
 namespace TNL {
 namespace Problems {
 
@@ -99,6 +95,13 @@ setup( const MeshPointer& meshPointer,
       std::cerr << "I was not able to initialize the right-hand side function." << std::endl;
       return false;
    }
+
+   String param=parameters.getParameter< String >( "distributed-grid-io-type" );
+   if(param=="MpiIO")
+        distributedIOType=Meshes::DistributedMeshes::MpiIO;
+   if(param=="LocalCopy")
+        distributedIOType=Meshes::DistributedMeshes::LocalCopy;
+
    return true;
 }
 
@@ -149,7 +152,10 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    if(CommunicatorType::isDistributed())
     {
         std::cout<<"Nodes Distribution: " << uPointer->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
-        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(initialConditionFile, *uPointer );
+        if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
+            Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(initialConditionFile, *uPointer );
+        if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
+            Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(initialConditionFile, *uPointer );
         uPointer->template synchronize<CommunicatorType>();
     }
     else
@@ -214,7 +220,10 @@ makeSnapshot( const RealType& time,
 
    if(CommunicatorType::isDistributed())
    {
-      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::save(fileName.getFileName(), *uPointer );
+      if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
+        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::save(fileName.getFileName(), *uPointer );
+      if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
+        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::save(fileName.getFileName(), *uPointer );
    }
    else
    {
@@ -246,7 +255,7 @@ getExplicitUpdate( const RealType& time,
     *
     * You may use supporting vectors again if you need.
     */
-   
+
    this->bindDofs( meshPointer, uDofs );
    MeshFunctionPointer fuPointer( meshPointer, fuDofs );
    this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
@@ -261,7 +270,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename CommType,
           typename DifferentialOperator >
-    template< typename MatrixPointer >          
+    template< typename MatrixPointer > 
 void
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,

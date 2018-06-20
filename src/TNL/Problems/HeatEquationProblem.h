@@ -25,6 +25,8 @@
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
+#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+
 namespace TNL {
 namespace Problems {
 
@@ -133,6 +135,9 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                                               RightHandSide,
                                               Solvers::PDE::BackwardTimeDiscretisation,
                                               DofVectorType > systemAssembler;
+
+        Meshes::DistributedMeshes::DistrGridIOTypes distributedIOType;
+
 };
 
 } // namespace Problems
