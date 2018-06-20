@@ -137,20 +137,20 @@ class MpiCommunicator
       {
          //CHECK_INICIALIZED_RET(MPI::COMM_WORLD.Get_rank());
 #ifdef HAVE_MPI
-        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
         return MPI::COMM_WORLD.Get_rank();
 #else
-        throw Exceptions::MPISupportMissing();
+        return 1;
 #endif
       };
 
       static int GetSize()
       {
 #ifdef HAVE_MPI
-        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
         return MPI::COMM_WORLD.Get_size();
 #else
-        throw Exceptions::MPISupportMissing();
+        return 1;
 #endif
       };
 
