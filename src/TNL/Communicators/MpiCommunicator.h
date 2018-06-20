@@ -16,6 +16,16 @@
 
 #ifdef HAVE_MPI
 #include <mpi.h>   
+
+#ifdef HAVE_CUDA
+    #include <TNL/Devices/Cuda.h>
+
+    typedef struct __attribute__((__packed__))  {
+	    char name[MPI_MAX_PROCESSOR_NAME];
+    } procName;
+
+#endif
+
 #endif
 
 #include <TNL/String.h>
@@ -24,14 +34,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Exceptions/MPISupportMissing.h>
 
-#ifdef HAVE_CUDA
-#include <TNL/Devices/Cuda.h>
 
-typedef struct __attribute__((__packed__))  {
-	char name[MPI_MAX_PROCESSOR_NAME];
-} procName;
-
-#endif
 
 namespace TNL {
 namespace Communicators {
