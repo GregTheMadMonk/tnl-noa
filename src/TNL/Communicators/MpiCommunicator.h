@@ -15,7 +15,7 @@
 #include <cstring>
 
 #ifdef HAVE_MPI
-#include <mpi.h>   
+#include <mpi.h>
 
 #ifdef HAVE_CUDA
     #include <TNL/Devices/Cuda.h>
@@ -65,38 +65,38 @@ class MpiCommunicator
       {
          return GetSize()>1;
       };
-      
+
       static void configSetup( Config::ConfigDescription& config, const String& prefix = "" )
       {
-#ifdef HAVE_MPI         
+#ifdef HAVE_MPI
          config.addEntry< bool >( "redirect-mpi-output", "Only process with rank 0 prints to console. Other processes are redirected to files.", true );
-#endif         
+#endif
       }
- 
+
       static bool setup( const Config::ParameterContainer& parameters,
                          const String& prefix = "" )
       {
-#ifdef HAVE_MPI 
+#ifdef HAVE_MPI
          if(IsInitialized())//i.e. - isUsed
          {
             redirect = parameters.getParameter< bool >( "redirect-mpi-output" );
             setupRedirection();
          }
-#endif         
+#endif
          return true;
       }
 
       static void Init(int argc, char **argv )
       {
-#ifdef HAVE_MPI         
+#ifdef HAVE_MPI
          MPI::Init( argc, argv );
          NullRequest=MPI::REQUEST_NULL;
          redirect = true;
 
          selectGPU();
-#endif         
+#endif
       }
-      
+
       static void setRedirection( bool redirect_ )
       {
          redirect = redirect_;
@@ -104,7 +104,7 @@ class MpiCommunicator
 
       static void setupRedirection()
       {
-#ifdef HAVE_MPI 
+#ifdef HAVE_MPI
          if(isDistributed() && redirect )
          {
             //redirect all stdout to files, only 0 take to go to console
@@ -130,9 +130,9 @@ class MpiCommunicator
          if(isDistributed())
          {
             if(MPI::COMM_WORLD.Get_rank()!=0)
-            { 
+            {
                std::cout.rdbuf(backup);
-               filestr.close(); 
+               filestr.close();
             }
          }
          MPI::Finalize();
@@ -141,7 +141,7 @@ class MpiCommunicator
 
       static bool IsInitialized()
       {
-#ifdef HAVE_MPI 
+#ifdef HAVE_MPI
          return MPI::Is_initialized() && !MPI::Is_finalized();
 #else
         return false;
@@ -176,7 +176,7 @@ class MpiCommunicator
         {
 #ifdef HAVE_MPI
             /***HACK for linear distribution***/
-      /*     int sum=0;
+           int sum=0;
            for(int i=0;i<dim;i++)
                 sum+=distr[i];
            if(sum==0) //uživatel neovlivňuje distribuci
@@ -187,7 +187,7 @@ class MpiCommunicator
                     distr[i]=1;
                }
                distr[dim-1]=0;
-            }*/
+            }
             /***END OF HACK***/
 
             MPI_Dims_create(nproc, dim, distr);
@@ -201,7 +201,7 @@ class MpiCommunicator
             MPI::COMM_WORLD.Barrier();;
 #else
             throw Exceptions::MPISupportMissing();
-#endif     
+#endif
         };
 
          template <typename T>
@@ -212,8 +212,8 @@ class MpiCommunicator
             return MPI::COMM_WORLD.Isend((void*) data, count, MPIDataType(data) , dest, 0);
 #else
             throw Exceptions::MPISupportMissing();
-#endif  
-        }    
+#endif
+        }
 
          template <typename T>
          static Request IRecv( const T *data, int count, int src)
@@ -223,7 +223,7 @@ class MpiCommunicator
             return MPI::COMM_WORLD.Irecv((void*) data, count, MPIDataType(data) , src, 0);
 #else
             throw Exceptions::MPISupportMissing();
-#endif  
+#endif
         }
 
          static void WaitAll(Request *reqs, int length)
@@ -244,7 +244,7 @@ class MpiCommunicator
         MPI::COMM_WORLD.Bcast((void*) &data, count,  MPIDataType(data), root);
 #else
         throw Exceptions::MPISupportMissing();
-#endif  
+#endif
         }
 
         template< typename T >
@@ -257,7 +257,7 @@ class MpiCommunicator
             MPI::COMM_WORLD.Allreduce( (void*) data, (void*) reduced_data,count,MPIDataType(data),op);
 #else
             throw Exceptions::MPISupportMissing();
-#endif            
+#endif
         };
 
 
@@ -283,7 +283,7 @@ class MpiCommunicator
             logger.writeParameter( "MPI processes:", GetSize() );
          }
       }
-      
+
 #ifdef HAVE_MPI
       static MPI::Request NullRequest;
 #else
@@ -332,15 +332,15 @@ class MpiCommunicator
             TNL_CHECK_CUDA_DEVICE;
 
             //std::cout<<"Node: " << rank << " gpu: " << gpuNumber << std::endl;
- 
+
     #endif
 #endif
       }
-    
-   
+
+
 };
-   
-#ifdef HAVE_MPI 
+
+#ifdef HAVE_MPI
 MPI::Request MpiCommunicator::NullRequest;
 #else
 int MpiCommunicator::NullRequest;
