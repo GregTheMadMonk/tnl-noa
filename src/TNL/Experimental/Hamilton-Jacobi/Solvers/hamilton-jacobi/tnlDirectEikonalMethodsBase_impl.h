@@ -21,45 +21,72 @@ initInterface( const MeshFunctionPointer& _input,
                MeshFunctionPointer& _output,
                InterfaceMapPointer& _interfaceMap  )
 {
-   const MeshType& mesh = _input->getMesh();
-   typedef typename MeshType::Cell Cell;
-   const MeshFunctionType& input = _input.getData();
-   MeshFunctionType& output = _output.modifyData();
-   InterfaceMapType& interfaceMap = _interfaceMap.modifyData();
-   Cell cell( mesh );
-   for( cell.getCoordinates().x() = 1;
-        cell.getCoordinates().x() < mesh.getDimensions().x() - 1;
-        cell.getCoordinates().x() ++ )
-   {
-      cell.refresh();
-      const RealType& c = input( cell );      
-      if( ! cell.isBoundaryEntity()  )
-      {
-         const auto& neighbors = cell.getNeighborEntities();
-         const RealType& h = mesh.getSpaceSteps().x();
-         //const IndexType& c = cell.getIndex();
-         const IndexType e = neighbors.template getEntityIndex<  1 >();
-         const IndexType w = neighbors.template getEntityIndex< -1 >();
-         if( c * input[ e ] <=0 )
-         {
-             output[ cell.getIndex() ] =
-             c >= 0 ? ( h * c )/( c - input[ e ] ) :
-                      - ( h * c )/( c - input[ e ] );
-             interfaceMap[ cell.getIndex() ] = true;
-         }
-         if( c * input[ w ] <=0 )
-         {
-             output[ cell.getIndex() ] =
-             c >= 0 ? ( h * c )/( c - input[ w ] ) :
-                      - ( h * c )/( c - input[ w ] );
-             interfaceMap[ cell.getIndex() ] = true;
-         }
-      }
-      output[ cell.getIndex() ] =
-      c > 0 ? TNL::TypeInfo< RealType >::getMaxValue() :
-             -TypeInfo< RealType >::getMaxValue();
-      interfaceMap[ cell.getIndex() ] = false;
-   }
+    if( std::is_same< Device, Devices::Cuda >::value )
+    {
+#ifdef HAVE_CUDA
+        const MeshType& mesh = _input->getMesh();
+        
+        const int cudaBlockSize( 16 );
+        int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().x(), cudaBlockSize );
+        dim3 blockSize( cudaBlockSize );
+        dim3 gridSize( numBlocksX );
+        Devices::Cuda::synchronizeDevice();
+        CudaInitCaller<<< gridSize, blockSize >>>( _input.template getData< Device >(),
+                                                   _output.template modifyData< Device >(),
+                                                   _interfaceMap.template modifyData< Device >() );
+        cudaDeviceSynchronize();
+        TNL_CHECK_CUDA_DEVICE;
+#endif
+    }
+    if( std::is_same< Device, Devices::Host >::value )
+    {
+        const MeshType& mesh = _input->getMesh();
+        typedef typename MeshType::Cell Cell;
+        const MeshFunctionType& input = _input.getData();
+        MeshFunctionType& output = _output.modifyData();
+        InterfaceMapType& interfaceMap = _interfaceMap.modifyData();
+        Cell cell( mesh );
+        for( cell.getCoordinates().x() = 0;
+            cell.getCoordinates().x() < mesh.getDimensions().x();
+            cell.getCoordinates().x() ++ )
+           {
+               cell.refresh();
+               output[ cell.getIndex() ] =
+               input( cell ) >= 0 ? TypeInfo< RealType >::getMaxValue() :
+                                  - TypeInfo< RealType >::getMaxValue();
+               interfaceMap[ cell.getIndex() ] = false;
+           }
+        
+        
+        const RealType& h = mesh.getSpaceSteps().x();
+        for( cell.getCoordinates().x() = 0;
+             cell.getCoordinates().x() < mesh.getDimensions().x() - 1;
+             cell.getCoordinates().x() ++ )
+        {
+           cell.refresh();
+           const RealType& c = input( cell );      
+           if( ! cell.isBoundaryEntity()  )
+           {
+              const auto& neighbors = cell.getNeighborEntities();
+              Real pom = 0;
+              //const IndexType& c = cell.getIndex();
+              const IndexType e = neighbors.template getEntityIndex<  1 >();
+              if( c * input[ e ] <= 0 )
+              {
+                pom = TNL::sign( c )*( h * c )/( c - input[ e ]);
+                if( TNL::abs( output[ cell.getIndex() ] ) > TNL::abs( pom ) )
+                    output[ cell.getIndex() ] = pom;
+
+                pom = pom - TNL::sign( c )*h; //output[ e ] = (hx * c)/( c - input[ e ]) - hx;
+                if( TNL::abs( output[ e ] ) > TNL::abs( pom ) )
+                    output[ e ] = pom; 
+
+                interfaceMap[ cell.getIndex() ] = true;
+                interfaceMap[ e ] = true;
+              }
+           }
+        }
+    }
 }
 
 template< typename Real,
@@ -69,8 +96,31 @@ template< typename Real,
 void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >::
 updateCell( MeshFunctionType& u,
-            const MeshEntity& cell )
+            const MeshEntity& cell, 
+            const RealType v )
 {
+    const auto& neighborEntities = cell.template getNeighborEntities< 1 >();
+    const MeshType& mesh = cell.getMesh();
+    const RealType& h = mesh.getSpaceSteps().x();
+    const RealType value = u( cell );
+    RealType a, tmp = TypeInfo< RealType >::getMaxValue();
+
+    if( cell.getCoordinates().x() == 0 )
+       a = u[ neighborEntities.template getEntityIndex< 1 >() ];
+    else if( cell.getCoordinates().x() == mesh.getDimensions().x() - 1 )
+       a = u[ neighborEntities.template getEntityIndex< -1 >() ];
+    else
+    {
+       a = TNL::argAbsMin( u[ neighborEntities.template getEntityIndex< -1 >() ],
+                           u[ neighborEntities.template getEntityIndex<  1 >() ] );
+    }
+
+    if( fabs( a ) == TypeInfo< RealType >::getMaxValue() )
+      return;
+   
+    tmp = a + TNL::sign( value ) * h/v;
+    
+    u[ cell.getIndex() ] = argAbsMin( value, tmp );
 }
 
 template< typename Real,
@@ -103,7 +153,20 @@ initInterface( const MeshFunctionPointer& _input,
     }
     if( std::is_same< Device, Devices::Host >::value )
     {
-         const MeshFunctionType& input = _input.getData();
+        MeshFunctionType input = _input.getData();
+        
+        double A[320][320];
+        std::ifstream fileInit("/home/maty/Downloads/initData.txt");
+
+        for (int i = 0; i < 320; i++)
+            for (int j = 0; j < 320; j++)
+                fileInit >> A[i][j];
+        fileInit.close();
+        for (int i = 0; i < 320; i++)
+            for (int j = 0; j < 320; j++)
+                input[i*320 + j] = A[i][j];
+        
+        
          MeshFunctionType& output = _output.modifyData();
          InterfaceMapType& interfaceMap = _interfaceMap.modifyData();
         const MeshType& mesh = input.getMesh();
@@ -186,7 +249,7 @@ initInterface( const MeshFunctionPointer& _input,
 
                         pom = pom - TNL::sign( c )*hx; //output[ e ] = (hx * c)/( c - input[ e ]) - hx;
                         if( TNL::abs( output[ e ] ) > TNL::abs( pom ) )
-                            output[ e ] = pom;                         
+                            output[ e ] = pom; 
                     /*}else
                     {
                         pom = - (hx * c)/( c - input[ e ]);
@@ -632,64 +695,60 @@ __cuda_callable__ void sortMinims( T1 pom[] )
     }   
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ void
-tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
-setsArray( MeshFunctionType& aux, Real sArray[18][18], int dimX, int dimY, int blockIdx, int blockIdy )
-{
-    int numOfBlockx = dimX/16 + ((dimX%16 != 0) ? 1:0);
-    int numOfBlocky = dimY/16 + ((dimY%16 != 0) ? 1:0);
-    int xkolik = 18;
-    int ykolik = 18;
-    int xOd = 0;
-    int yOd = 0;
-    
-    if( blockIdx == 0 )
-        xOd = 1;
-    if( blockIdy == 0 )
-        yOd = 1;
-    
-    if( numOfBlockx - 1 == blockIdx )
-        xkolik = dimX - (numOfBlockx-1)*16+1;
-
-    if( numOfBlocky -1 == blockIdy )
-        ykolik = dimY - (numOfBlocky-1)*16+1;
-    
-    if( dimX > (blockIdx+1) * 16 )
-    {
-        for( int i = yOd; i < ykolik; i++ )
-        {
-            sArray[i][17] = aux[ blockIdy*16*dimX - dimX + blockIdx*16 - 1 + i*dimX + 17 ];
-        }
-    }
-    if( blockIdx != 0 )
-    {
-        for( int i = yOd; i < ykolik; i++ )
-        {
-            sArray[i][0] = aux[ blockIdy*16*dimX - dimX + blockIdx*16 - 1 + i*dimX + 0];
-        }
-    } 
-    if( dimY > (blockIdy+1) * 16 )
-    {
-        for( int i = xOd; i < xkolik; i++ )
-        {
-            sArray[17][i] = aux[ blockIdy*16*dimX - dimX + blockIdx*16 - 1 + 17*dimX + i ];
-        }
-    }
-    if( blockIdy != 0 )
-    {
-        for( int i = xOd; i < xkolik; i++ )
-        {
-            sArray[0][i] = aux[ blockIdy*16*dimX - dimX + blockIdx*16 - 1 + 0*dimX + i ];
-        }
-    }   
-}
-
 
 
 #ifdef HAVE_CUDA
+template < typename Real, typename Device, typename Index >
+__global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 1, Real, Device, Index > >& input, 
+                                Functions::MeshFunction< Meshes::Grid< 1, Real, Device, Index > >& output,
+                                Functions::MeshFunction< Meshes::Grid< 1, Real, Device, Index >, 1, bool >& interfaceMap  )
+{
+    int i = threadIdx.x + blockDim.x*blockIdx.x;
+    const Meshes::Grid< 1, Real, Device, Index >& mesh = input.template getMesh< Devices::Cuda >();
+    
+    if( i < mesh.getDimensions().x()  )
+    {
+        typedef typename Meshes::Grid< 1, Real, Device, Index >::Cell Cell;
+        Cell cell( mesh );
+        cell.getCoordinates().x() = i;
+        cell.refresh();
+        const Index cind = cell.getIndex();
+
+
+        output[ cind ] =
+               input( cell ) >= 0 ? TypeInfo< Real >::getMaxValue() :
+                                    - TypeInfo< Real >::getMaxValue();
+        interfaceMap[ cind ] = false; 
+
+        const Real& h = mesh.getSpaceSteps().x();
+        cell.refresh();
+        const Real& c = input( cell );
+        if( ! cell.isBoundaryEntity()  )
+        {
+           auto neighbors = cell.getNeighborEntities();
+           Real pom = 0;
+           const Index e = neighbors.template getEntityIndex< 1 >();
+           const Index w = neighbors.template getEntityIndex< -1 >();
+           if( c * input[ e ] <= 0 )
+           {
+               pom = TNL::sign( c )*( h * c )/( c - input[ e ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) )
+                   output[ cind ] = pom;                       
+
+               interfaceMap[ cind ] = true;
+           }
+           if( c * input[ w ] <= 0 )
+           {
+               pom = TNL::sign( c )*( h * c )/( c - input[ w ]);
+               if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+                   output[ cind ] = pom;
+
+               interfaceMap[ cind ] = true;
+           }
+        }
+    }
+           
+}
 template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
                                 Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& output,
@@ -886,7 +945,7 @@ updateCell( volatile Real sArray[18][18], int thri, int thrj, const Real hx, con
     {
         sArray[ thrj ][ thri ] = argAbsMin( value, tmp );
         tmp = value - sArray[ thrj ][ thri ];
-        if ( fabs( tmp ) >  0.001 )
+        if ( fabs( tmp ) >  0.01*hx )
             return true;
         else
             return false;
@@ -898,12 +957,41 @@ updateCell( volatile Real sArray[18][18], int thri, int thrj, const Real hx, con
             ( pom[ 1 ] - pom[ 0 ] ) * ( pom[ 1 ] - pom[ 0 ] ) ) )/( pom[ 3 ] * pom[ 3 ] + pom[ 4 ] * pom[ 4 ] );
         sArray[ thrj ][ thri ] = argAbsMin( value, tmp );
         tmp = value - sArray[ thrj ][ thri ];
-        if ( fabs( tmp ) > 0.01 )
+        if ( fabs( tmp ) > 0.01*hx )
             return true;
         else
             return false;
     }
     
     return false;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+bool
+tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >::
+updateCell( volatile Real sArray[18], int thri, const Real h, const Real v )
+{
+   const RealType value = sArray[ thri ];
+   RealType a, tmp = TypeInfo< RealType >::getMaxValue();
+      
+   a = TNL::argAbsMin( sArray[ thri+1 ],
+                       sArray[ thri-1 ] );
+
+    if( fabs( a ) == TypeInfo< RealType >::getMaxValue() )
+       return false;
+   
+    tmp = a + TNL::sign( value ) * h/v;
+    
+                                
+    sArray[ thri ] = argAbsMin( value, tmp );
+    
+    tmp = value - sArray[ thri ];
+    if ( fabs( tmp ) >  0.01*h )
+        return true;
+    else
+        return false;
 }
 #endif

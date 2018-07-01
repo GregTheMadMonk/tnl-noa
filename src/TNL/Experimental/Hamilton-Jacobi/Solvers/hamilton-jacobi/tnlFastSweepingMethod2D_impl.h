@@ -18,13 +18,16 @@
 #include <TNL/Devices/Cuda.h>
 
 
+#include <iostream>
+#include <fstream>
+
 template< typename Real,
           typename Device,
           typename Index,
           typename Anisotropy >
 FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
 FastSweepingMethod()
-: maxIterations( 1 )
+: maxIterations( 2 )
 {
    
 }
@@ -61,15 +64,31 @@ solve( const MeshPointer& mesh,
        const AnisotropyPointer& anisotropy,
        MeshFunctionPointer& u )
 {
+   MeshFunctionType v;
+   v.setMesh(mesh);
+   double A[320][320];
+    for (int i = 0; i < 320; i++)
+        for (int j = 0; j < 320; j++)
+            A[i][j] = 0;
+    
+    std::ifstream file("/home/maty/Downloads/mapa2.txt");
+
+    for (int i = 0; i < 320; i++)
+        for (int j = 0; j < 320; j++)
+            file >> A[i][j];
+    file.close();
+    for (int i = 0; i < 320; i++)
+        for (int j = 0; j < 320; j++)
+            v[i*320 + j] = A[i][j];
+   v.save("mapa.tnl");
+   
+       
    MeshFunctionPointer auxPtr;
    InterfaceMapPointer interfaceMapPtr;
    auxPtr->setMesh( mesh );
    interfaceMapPtr->setMesh( mesh );
    std::cout << "Initiating the interface cells ..." << std::endl;
    BaseType::initInterface( u, auxPtr, interfaceMapPtr );
-#ifdef HAVE_CUDA
-   cudaDeviceSynchronize();
-#endif
         
    auxPtr->save( "aux-ini.tnl" );
 
@@ -92,7 +111,7 @@ solve( const MeshPointer& mesh,
                {
                   cell.refresh();
                   if( ! interfaceMap( cell ) )
-                     this->updateCell( aux, cell );
+                     this->updateCell( aux, cell, v( cell ) );
                }
          }
 
@@ -109,7 +128,7 @@ solve( const MeshPointer& mesh,
                   //std::cerr << "2 -> ";
                   cell.refresh();
                   if( ! interfaceMap( cell ) )            
-                     this->updateCell( aux, cell );
+                     this->updateCell( aux, cell, v( cell ) );
                }
          }
 
@@ -126,7 +145,7 @@ solve( const MeshPointer& mesh,
                   //std::cerr << "3 -> ";
                   cell.refresh();
                   if( ! interfaceMap( cell ) )            
-                     this->updateCell( aux, cell );
+                     this->updateCell( aux, cell, v( cell ) );
                }
             }
 
@@ -143,7 +162,7 @@ solve( const MeshPointer& mesh,
                   //std::cerr << "4 -> ";
                   cell.refresh();
                   if( ! interfaceMap( cell ) )            
-                     this->updateCell( aux, cell );
+                     this->updateCell( aux, cell, v( cell ) );
                }
             }
 
@@ -222,7 +241,6 @@ solve( const MeshPointer& mesh,
           int numBlocksY = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().y(), cudaBlockSize );
           dim3 blockSize( cudaBlockSize, cudaBlockSize );
           dim3 gridSize( numBlocksX, numBlocksY );
-          Devices::Cuda::synchronizeDevice();
           
           tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr;
           
@@ -243,20 +261,8 @@ solve( const MeshPointer& mesh,
                                                              interfaceMapPtr.template getData< Device >(),
                                                              auxPtr.template modifyData< Device>(),
                                                              BlockIterDevice );
-            cudaDeviceSynchronize();         
-            TNL_CHECK_CUDA_DEVICE;
             cudaMemcpy(BlockIter, BlockIterDevice, ( numBlocksX * numBlocksY ) * sizeof( bool ), cudaMemcpyDeviceToHost);
-            
-            /*for( int j = numBlocksY-1; j > -1; j-- )
-            {    
-                for( int i = 0; i < numBlocksX; i++ )
-                {
-                    std::cout << BlockIter[ j * numBlocksY + i ] << "\t";  
-                }
-                std::cout << std::endl;
-            }
-            std::cout << std::endl;*/
-                         
+                                   
             for( int i = 1; i < numBlocksX * numBlocksY; i++ )
                 BlockIter[ 0 ] = BlockIter[ 0 ] || BlockIter[ i ];
             
@@ -294,12 +300,11 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
     
     if( thrj == 0 && thri == 0 )
         changed[ 0 ] = true;
-    __syncthreads();
     
     const Meshes::Grid< 2, Real, Device, Index >& mesh = interfaceMap.template getMesh< Devices::Cuda >();
     __shared__ Real hx;
     __shared__ Real hy;
-    if( thrj == 0 && thri == 0 )
+    if( thrj == 1 && thri == 1 )
     {
         hx = mesh.getSpaceSteps().x();
         hy = mesh.getSpaceSteps().y();
@@ -345,20 +350,20 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
             sArray[thrj+1][0] = TypeInfo< Real >::getMaxValue();
     }
     
-    if( thrj == 0 )
+    if( thri == 2 )
     {
         if( dimY > (blIdy+1) * blockDim.y  && thri+1 < xkolik )
-            sArray[ykolik][thri+1] = aux[ blIdy*blockDim.y*dimX - dimX + blIdx*blockDim.x - 1 + ykolik*dimX + thri+1 ];
+            sArray[ykolik][thrj+1] = aux[ blIdy*blockDim.y*dimX - dimX + blIdx*blockDim.x - 1 + ykolik*dimX + thrj+1 ];
         else
-           sArray[ykolik][thri+1] = TypeInfo< Real >::getMaxValue();
+           sArray[ykolik][thrj+1] = TypeInfo< Real >::getMaxValue();
     }
     
-    if( thrj == 1 )
+    if( thri == 3 )
     {
         if( blIdy != 0 && thri+1 < xkolik )
-            sArray[0][thri+1] = aux[ blIdy*blockDim.y*dimX - dimX + blIdx*blockDim.x - 1 + thri+1 ];
+            sArray[0][thrj+1] = aux[ blIdy*blockDim.y*dimX - dimX + blIdx*blockDim.x - 1 + thrj+1 ];
         else
-            sArray[0][thri+1] = TypeInfo< Real >::getMaxValue();
+            sArray[0][thrj+1] = TypeInfo< Real >::getMaxValue();
     }
     
         
@@ -422,7 +427,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
             if( currentIndex < 1 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 1 ];
         }
         if( changed[ 0 ] && thri == 0 && thrj == 0 )
-            BlockIterDevice[ blIdy * numOfBlockx + blIdx ] = changed[ 0 ];
+            BlockIterDevice[ blIdy * numOfBlockx + blIdx ] = true;
         __syncthreads();
     }
   

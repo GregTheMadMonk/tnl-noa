@@ -125,7 +125,7 @@ bool
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 solve( const MeshPointer& mesh,
        DofVectorPointer& dofs )
-{
+{   
    FastSweepingMethod< MeshType, AnisotropyType > fsm;
    fsm.solve( mesh, anisotropy, initialData );
    return true;
