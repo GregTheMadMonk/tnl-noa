@@ -178,7 +178,7 @@ if( WITH_CUDA STREQUAL "yes" )
                 endif()
             endif()
         endif()
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES -lineinfo )
         # TODO: this is necessary only due to a bug in cmake
         set( CUDA_ADD_LIBRARY_OPTIONS -shared )
 
