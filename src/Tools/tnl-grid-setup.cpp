@@ -27,15 +27,16 @@ void configSetup( Config::ConfigDescription& config )
    config.addEntry        < String >( "index-type",    "Type for the indexing of the grid elements." ,"int" );
       config.addEntryEnum < String >( "int" );
       config.addEntryEnum < String >( "long-int" );
-   config.addEntry        < double >   ( "origin-x",      "The x-coordinate of the origin.", 0.0 );
-   config.addEntry        < double >   ( "origin-y",      "The y-coordinate of the origin.", 0.0 );
-   config.addEntry        < double >   ( "origin-z",      "The z-coordinate of the origin.", 0.0 );
-   config.addEntry        < double >   ( "proportions-x", "The proportions of the grid along the x axis.", 1.0 );
-   config.addEntry        < double >   ( "proportions-y", "The proportions of the grid along the y axis.", 1.0 );
-   config.addEntry        < double >   ( "proportions-z", "The proportions of the grid along the z axis.", 1.0 );
-   config.addEntry        < int >      ( "size-x",        "Number of elements along the x axis." );
-   config.addEntry        < int >      ( "size-y",        "Number of elements along the y axis." );
-   config.addEntry        < int >      ( "size-z",        "Number of elements along the z axis." );
+   config.addEntry        < double >   ( "origin-x",          "The x-coordinate of the origin.", 0.0 );
+   config.addEntry        < double >   ( "origin-y",          "The y-coordinate of the origin.", 0.0 );
+   config.addEntry        < double >   ( "origin-z",          "The z-coordinate of the origin.", 0.0 );
+   config.addEntry        < double >   ( "proportions-x",     "The proportions of the grid along the x axis.", 1.0 );
+   config.addEntry        < double >   ( "proportions-y",     "The proportions of the grid along the y axis.", 1.0 );
+   config.addEntry        < double >   ( "proportions-z",     "The proportions of the grid along the z axis.", 1.0 );
+   config.addEntry        < int >      ( "size-x",            "Number of elements along the x axis." );
+   config.addEntry        < int >      ( "size-y",            "Number of elements along the y axis." );
+   config.addEntry        < int >      ( "size-z",            "Number of elements along the z axis." );
+   config.addEntry        < bool >     ( "equal-space-steps", "All space steps will be equivalent.", false );
 }
 
 int main( int argc, char* argv[] )

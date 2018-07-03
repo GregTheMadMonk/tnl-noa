@@ -13,6 +13,7 @@
 
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/terminal-colors.h>
 
 using namespace TNL;
 
@@ -27,8 +28,6 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       RealType originX = parameters. getParameter< double >( "origin-x" );
       RealType proportionsX = parameters. getParameter< double >( "proportions-x" );
       IndexType sizeX = parameters. getParameter< int >( "size-x" );
-      std::cout << "Setting dimensions to  ... " << sizeX << std::endl;
-      std::cout << "Writing the grid to the file " << outputFile << " .... ";
 
       typedef Meshes::Grid< 1, RealType, Devices::Host, IndexType > GridType;
       typedef typename GridType::PointType PointType;
@@ -36,6 +35,8 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       GridType grid;
       grid.setDomain( PointType( originX ), PointType( proportionsX ) );
       grid.setDimensions( CoordinatesType( sizeX ) );
+      std::cout << "Setting dimensions to  ... " << sizeX << std::endl;
+      std::cout << "Writing the grid to the file " << outputFile << " .... ";      
       if( ! grid.save( outputFile ) )
       {
          std::cerr << "[ FAILED ] " << std::endl;
@@ -44,21 +45,32 @@ bool setupGrid( const Config::ParameterContainer& parameters )
    }
    if( dimensions == 2 )
    {
-      RealType originX = parameters. getParameter< double >( "origin-x" );
-      RealType originY = parameters. getParameter< double >( "origin-y" );
-      RealType proportionsX = parameters. getParameter< double >( "proportions-x" );
-      RealType proportionsY = parameters. getParameter< double >( "proportions-y" );
-      IndexType sizeX = parameters. getParameter< int >( "size-x" );
-      IndexType sizeY = parameters. getParameter< int >( "size-y" );
-     std::cout << "Setting dimensions to  ... " << sizeX << "x" << sizeY << std::endl;
-     std::cout << "Writing the grid to the file " << outputFile << " .... ";
-
+      RealType originX = parameters.getParameter< double >( "origin-x" );
+      RealType originY = parameters.getParameter< double >( "origin-y" );
+      RealType proportionsX = parameters.getParameter< double >( "proportions-x" );
+      RealType proportionsY = parameters.getParameter< double >( "proportions-y" );
+      IndexType sizeX = parameters.getParameter< int >( "size-x" );
+      IndexType sizeY = parameters.getParameter< int >( "size-y" );
       typedef Meshes::Grid< 2, RealType, Devices::Host, IndexType > GridType;
       typedef typename GridType::PointType PointType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;
       grid.setDomain( PointType( originX, originY ), PointType( proportionsX, proportionsY ) );
       grid.setDimensions( CoordinatesType( sizeX, sizeY ) );
+      if( parameters.getParameter< bool >( "equal-space-steps" ) )
+      {
+         if( grid.getSpaceSteps().x() != grid.getSpaceSteps().y() )
+         {
+            double h = min( grid.getSpaceSteps().x(), grid.getSpaceSteps().y() );
+            grid.setSpaceSteps( PointType( h, h ) );
+            std::cout << red << "Adjusting grid space steps to " << grid.getSpaceSteps() 
+                      << " and grid proportions to " << grid.getProportions() << "."  << reset << std::endl;
+
+         }
+      }
+      std::cout << "Setting dimensions to  ... " << grid.getDimensions() << std::endl;
+      std::cout << "Writing the grid to the file " << outputFile << " .... ";
+
       if( ! grid.save( outputFile ) )
       {
          std::cerr << "[ FAILED ] " << std::endl;
@@ -76,8 +88,6 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       IndexType sizeX = parameters. getParameter< int >( "size-x" );
       IndexType sizeY = parameters. getParameter< int >( "size-y" );
       IndexType sizeZ = parameters. getParameter< int >( "size-z" );
-     std::cout << "Setting dimensions to  ... " << sizeX << "x" << sizeY << "x" << sizeZ << std::endl;
-     std::cout << "Writing the grid to the file " << outputFile << " .... ";
 
       typedef Meshes::Grid< 3, RealType, Devices::Host, IndexType > GridType;
       typedef typename GridType::PointType PointType;
@@ -85,6 +95,20 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       GridType grid;
       grid.setDomain( PointType( originX, originY, originZ ), PointType( proportionsX, proportionsY, proportionsZ ) );
       grid.setDimensions( CoordinatesType( sizeX, sizeY, sizeZ ) );
+      if( parameters.getParameter< bool >( "equal-space-steps" ) )
+      {
+         if( grid.getSpaceSteps().x() != grid.getSpaceSteps().y() ||
+             grid.getSpaceSteps().x() != grid.getSpaceSteps().z() )
+         {
+            double h = min( grid.getSpaceSteps().x(), min( grid.getSpaceSteps().y(), grid.getSpaceSteps().z() ) );
+            grid.setSpaceSteps( PointType( h, h, h ) );
+            std::cout << red << "Adjusting grid space steps to " << grid.getSpaceSteps() 
+                      << " and grid proportions to " << grid.getProportions() << "." << reset << std::endl;
+         }
+      }
+      std::cout << "Setting dimensions to  ... " << grid.getDimensions() << std::endl;
+      std::cout << "Writing the grid to the file " << outputFile << " .... ";      
+      
       if( ! grid.save( outputFile ) )
       {
          std::cerr << "[ FAILED ] " << std::endl;
