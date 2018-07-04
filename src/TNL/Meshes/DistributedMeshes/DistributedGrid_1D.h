@@ -28,8 +28,6 @@ class DistributedMesh< Grid< 1, RealType, Device, Index > > : public Distributed
       using typename DistributedGrid_Base<1, RealType, Device, Index >::PointType;
       using typename DistributedGrid_Base<1, RealType, Device, Index >::CoordinatesType;
 
-      DistributedMesh();
-
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );
       

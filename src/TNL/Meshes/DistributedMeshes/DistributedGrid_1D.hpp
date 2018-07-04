@@ -14,13 +14,6 @@ namespace TNL {
    namespace Meshes {
       namespace DistributedMeshes {
 
-template<typename RealType, typename Device, typename Index >
-DistributedMesh< Grid< 1, RealType, Device, Index > >::
-DistributedMesh()
-{
-    this->domainDecomposition=CoordinatesType( 0 );
-}
-
 template< typename RealType, typename Device, typename Index >     
 bool
 DistributedMesh< Grid< 1, RealType, Device, Index > >::

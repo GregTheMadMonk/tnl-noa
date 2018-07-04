@@ -20,7 +20,7 @@ namespace TNL {
 template<int dim, typename RealType, typename Device, typename Index >
 DistributedGrid_Base< dim, RealType, Device, Index >::
 DistributedGrid_Base()
-: isSet( false ) {}
+ : domainDecomposition( 0 ), isSet( false ) {}
 
 template< int dim, typename RealType, typename Device, typename Index >     
 void

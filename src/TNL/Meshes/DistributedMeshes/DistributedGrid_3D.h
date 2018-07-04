@@ -27,34 +27,28 @@ enum Directions3D { West = 0 , East = 1 , North = 2, South=3, Top =4, Bottom=5,
 
 
 template< typename RealType, typename Device, typename Index >
-class DistributedMesh<Grid< 3, RealType, Device, Index >>
+class DistributedMesh<Grid< 3, RealType, Device, Index >> : public DistributedGrid_Base<3, RealType, Device, Index >
 {
 
     public:
 
-      typedef Index IndexType;
-      typedef Grid< 3, RealType, Device, IndexType > GridType;
-      typedef typename GridType::PointType PointType;
-      typedef Containers::StaticVector< 3, IndexType > CoordinatesType;
+      using typename DistributedGrid_Base<3, RealType, Device, Index >::IndexType;
+      using typename DistributedGrid_Base<3, RealType, Device, Index >::GridType;
+      using typename DistributedGrid_Base<3, RealType, Device, Index >::PointType;
+      using typename DistributedGrid_Base<3, RealType, Device, Index >::CoordinatesType;
 
       static constexpr int getMeshDimension() { return 3; };    
-
-      DistributedMesh();
     
       static void configSetup( Config::ConfigDescription& config );
       
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );
-      
-      void setDomainDecomposition( const CoordinatesType& domainDecomposition );
-      
-      const CoordinatesType& getDomainDecomposition() const;
-            
-      template< int EntityDimension >
+              
+/*      template< int EntityDimension >
       IndexType getEntitiesCount() const;
 
       template< typename Entity >
-      IndexType getEntitiesCount() const;      
+      IndexType getEntitiesCount() const;   */   
 
       template< typename CommunicatorType > 
       void setGlobalGrid( const GridType& globalGrid,
@@ -66,54 +60,15 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >>
 
       String printProcessDistr() const;
 
-      bool isDistributed() const;
-       
-      const CoordinatesType& getOverlap() const;
-       
       const int* getNeighbors() const;
-       
-      const CoordinatesType& getLocalSize() const;
-       
-      const CoordinatesType& getLocalGridSize() const;
-       
-      const CoordinatesType& getLocalBegin() const;
-
-      //number of elements of global grid
-      const CoordinatesType& getGlobalSize() const;
-
-      //coordinates of begin of local subdomain without overlaps in global grid
-      const CoordinatesType& getGlobalBegin() const;
        
       void writeProlog( Logger& logger );
 
    private:
 
-      int getRankOfProcCoord(int x, int y, int z) const;
-        
-      GridType globalGrid;
-      
-      PointType spaceSteps;
-      PointType localOrigin;
-      CoordinatesType localSize;
-      CoordinatesType localGridSize;
-      CoordinatesType localBegin;
-      CoordinatesType overlap;
-      CoordinatesType globalSize;
-      CoordinatesType globalBegin;
-        
-      IndexType Dimensions;        
-      bool distributed;
-        
-      int rank;
-      int nproc;
-        
-      CoordinatesType domainDecomposition;
-      CoordinatesType subdomainCoordinates;
-      int numberOfLarger[3];
-        
+      int getRankOfProcCoord(int x, int y, int z) const;           
       int neighbors[26];
 
-      bool isSet;
 };
 
 } // namespace DistributedMeshes
