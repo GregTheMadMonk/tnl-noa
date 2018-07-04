@@ -28,7 +28,7 @@ class DistributedGrid_Base
       typedef typename GridType::PointType PointType;
       typedef Containers::StaticVector< dim, IndexType > CoordinatesType;
 
-      static constexpr int getMeshDimension() { return 1; };    
+      static constexpr int getMeshDimension() { return dim; };    
 
       DistributedGrid_Base();
     

@@ -41,8 +41,6 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >> : public DistributedGr
       typedef typename DistributedGrid_Base<3, RealType, Device, Index >::IndexType IndexType;
       typedef typename DistributedGrid_Base<3, RealType, Device, Index >::GridType GridType;
       typedef typename DistributedGrid_Base<3, RealType, Device, Index >::PointType PointType;
-
-      static constexpr int getMeshDimension() { return 3; };    
     
       static void configSetup( Config::ConfigDescription& config );
       
