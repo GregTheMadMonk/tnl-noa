@@ -155,7 +155,7 @@ initInterface( const MeshFunctionPointer& _input,
     {
         MeshFunctionType input = _input.getData();
         
-        double A[320][320];
+        /*double A[320][320];
         std::ifstream fileInit("/home/maty/Downloads/initData.txt");
 
         for (int i = 0; i < 320; i++)
@@ -164,7 +164,7 @@ initInterface( const MeshFunctionPointer& _input,
         fileInit.close();
         for (int i = 0; i < 320; i++)
             for (int j = 0; j < 320; j++)
-                input[i*320 + j] = A[i][j];
+                input[i*320 + j] = A[i][j];*/
         
         
          MeshFunctionType& output = _output.modifyData();

@@ -64,7 +64,7 @@ solve( const MeshPointer& mesh,
        const AnisotropyPointer& anisotropy,
        MeshFunctionPointer& u )
 {
-   MeshFunctionType v;
+   /*MeshFunctionType v;
    v.setMesh(mesh);
    double A[320][320];
     for (int i = 0; i < 320; i++)
@@ -80,7 +80,7 @@ solve( const MeshPointer& mesh,
     for (int i = 0; i < 320; i++)
         for (int j = 0; j < 320; j++)
             v[i*320 + j] = A[i][j];
-   v.save("mapa.tnl");
+   v.save("mapa.tnl");*/
    
        
    MeshFunctionPointer auxPtr;
@@ -111,7 +111,7 @@ solve( const MeshPointer& mesh,
                {
                   cell.refresh();
                   if( ! interfaceMap( cell ) )
-                     this->updateCell( aux, cell, v( cell ) );
+                     this->updateCell( aux, cell );
                }
          }
 
@@ -128,7 +128,7 @@ solve( const MeshPointer& mesh,
                   //std::cerr << "2 -> ";
                   cell.refresh();
                   if( ! interfaceMap( cell ) )            
-                     this->updateCell( aux, cell, v( cell ) );
+                     this->updateCell( aux, cell );
                }
          }
 
@@ -145,7 +145,7 @@ solve( const MeshPointer& mesh,
                   //std::cerr << "3 -> ";
                   cell.refresh();
                   if( ! interfaceMap( cell ) )            
-                     this->updateCell( aux, cell, v( cell ) );
+                     this->updateCell( aux, cell );
                }
             }
 
@@ -162,7 +162,7 @@ solve( const MeshPointer& mesh,
                   //std::cerr << "4 -> ";
                   cell.refresh();
                   if( ! interfaceMap( cell ) )            
-                     this->updateCell( aux, cell, v( cell ) );
+                     this->updateCell( aux, cell );
                }
             }
 
