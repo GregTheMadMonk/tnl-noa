@@ -23,10 +23,15 @@ class DistributedMesh< Grid< 1, RealType, Device, Index > > : public Distributed
 {
 
     public:
-      using typename DistributedGrid_Base<1, RealType, Device, Index >::IndexType;
+ /*     using typename DistributedGrid_Base<1, RealType, Device, Index >::IndexType;
       using typename DistributedGrid_Base<1, RealType, Device, Index >::GridType;
       using typename DistributedGrid_Base<1, RealType, Device, Index >::PointType;
-      using typename DistributedGrid_Base<1, RealType, Device, Index >::CoordinatesType;
+      using typename DistributedGrid_Base<1, RealType, Device, Index >::CoordinatesType;*/
+
+      typedef typename DistributedGrid_Base<1, RealType, Device, Index >::CoordinatesType CoordinatesType;
+      typedef typename DistributedGrid_Base<1, RealType, Device, Index >::IndexType IndexType;
+      typedef typename DistributedGrid_Base<1, RealType, Device, Index >::GridType GridType;
+      typedef typename DistributedGrid_Base<1, RealType, Device, Index >::PointType PointType;
 
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );

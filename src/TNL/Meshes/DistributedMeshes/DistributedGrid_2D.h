@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedGrid_Base.h>
 
 namespace TNL {
 namespace Meshes { 
@@ -23,10 +24,14 @@ class DistributedMesh< Grid< 2, RealType, Device, Index > >: public DistributedG
 {
    public:
 
-      using typename DistributedGrid_Base<2, RealType, Device, Index >::IndexType;
+/*    using typename DistributedGrid_Base<2, RealType, Device, Index >::IndexType;
       using typename DistributedGrid_Base<2, RealType, Device, Index >::GridType;
       using typename DistributedGrid_Base<2, RealType, Device, Index >::PointType;
-      using typename DistributedGrid_Base<2, RealType, Device, Index >::CoordinatesType;
+      using typename DistributedGrid_Base<2, RealType, Device, Index >::CoordinatesType;*/
+      typedef typename DistributedGrid_Base<2, RealType, Device, Index >::CoordinatesType CoordinatesType;
+      typedef typename DistributedGrid_Base<2, RealType, Device, Index >::IndexType IndexType;
+      typedef typename DistributedGrid_Base<2, RealType, Device, Index >::GridType GridType;
+      typedef typename DistributedGrid_Base<2, RealType, Device, Index >::PointType PointType;
 
 /*      template< int EntityDimension >
       IndexType getEntitiesCount() const;

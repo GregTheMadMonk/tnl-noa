@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/Meshes/DistributedMeshes/DistributedGrid_2D.h>
-
 namespace TNL {
    namespace Meshes { 
       namespace DistributedMeshes {

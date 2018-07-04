@@ -12,6 +12,7 @@
 
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedGrid_Base.h>
 
 namespace TNL {
 namespace Meshes { 
@@ -32,10 +33,14 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >> : public DistributedGr
 
     public:
 
-      using typename DistributedGrid_Base<3, RealType, Device, Index >::IndexType;
-      using typename DistributedGrid_Base<3, RealType, Device, Index >::GridType;
-      using typename DistributedGrid_Base<3, RealType, Device, Index >::PointType;
-      using typename DistributedGrid_Base<3, RealType, Device, Index >::CoordinatesType;
+      //using typename DistributedGrid_Base<3, RealType, Device, Index >::IndexType;
+      //using typename DistributedGrid_Base<3, RealType, Device, Index >::GridType;
+      //using typename DistributedGrid_Base<3, RealType, Device, Index >::PointType;
+      //using typename DistributedGrid_Base<3, RealType, Device, Index >::CoordinatesType;
+      typedef typename DistributedGrid_Base<3, RealType, Device, Index >::CoordinatesType CoordinatesType;
+      typedef typename DistributedGrid_Base<3, RealType, Device, Index >::IndexType IndexType;
+      typedef typename DistributedGrid_Base<3, RealType, Device, Index >::GridType GridType;
+      typedef typename DistributedGrid_Base<3, RealType, Device, Index >::PointType PointType;
 
       static constexpr int getMeshDimension() { return 3; };    
     
