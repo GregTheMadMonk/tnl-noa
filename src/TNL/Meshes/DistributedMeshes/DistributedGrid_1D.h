@@ -12,38 +12,26 @@
 
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Logger.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedGrid_Base.h>
 
 namespace TNL {
 namespace Meshes { 
 namespace DistributedMeshes {
 
 template< typename RealType, typename Device, typename Index >     
-class DistributedMesh< Grid< 1, RealType, Device, Index > >
+class DistributedMesh< Grid< 1, RealType, Device, Index > > : public DistributedGrid_Base<1, RealType, Device, Index >
 {
 
     public:
-    
-      typedef Index IndexType;
-      typedef Grid< 1, RealType, Device, IndexType > GridType;
-      typedef typename GridType::PointType PointType;
-      typedef Containers::StaticVector< 1, IndexType > CoordinatesType;
-
-      static constexpr int getMeshDimension() { return 1; };    
+      using typename DistributedGrid_Base<1, RealType, Device, Index >::IndexType;
+      using typename DistributedGrid_Base<1, RealType, Device, Index >::GridType;
+      using typename DistributedGrid_Base<1, RealType, Device, Index >::PointType;
+      using typename DistributedGrid_Base<1, RealType, Device, Index >::CoordinatesType;
 
       DistributedMesh();
 
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );
-      
-      void setDomainDecomposition( const CoordinatesType& domainDecomposition );
-      
-      const CoordinatesType& getDomainDecomposition() const;
-      
-      template< int EntityDimension >
-      IndexType getEntitiesCount() const;
-
-      template< typename Entity >
-      IndexType getEntitiesCount() const;      
       
       template<typename CommunicatorType>
       void setGlobalGrid( const GridType& globalGrid, const CoordinatesType& overlap );
@@ -52,64 +40,34 @@ class DistributedMesh< Grid< 1, RealType, Device, Index > >
        
       String printProcessCoords() const;
 
-      String printProcessDistr() const;
+      String printProcessDistr() const;    
 
-      bool isDistributed() const;
-       
       int getLeft() const;
        
       int getRight() const;
-       
-      const CoordinatesType& getOverlap() const;
+      
+/*      template< int EntityDimension >
+      IndexType getEntitiesCount() const;
 
-      //number of elements of local sub domain WITHOUT overlap
-      const CoordinatesType& getLocalSize() const;
-
-      //dimensions of global grid
-      const CoordinatesType& getGlobalSize() const;
-
-      //coordinates of begin of local subdomain without overlaps in global grid
-      const CoordinatesType& getGlobalBegin() const;
-
-      //number of elements of local sub domain WITH overlap
-      const CoordinatesType& getLocalGridSize() const;
-       
-      //coordinates of begin of local subdomain without overlaps in local grid       
-      const CoordinatesType& getLocalBegin() const;
+      template< typename Entity >
+      IndexType getEntitiesCount() const;   */   
+     
       
       void writeProlog( Logger& logger ) const;       
-       
-   private : 
-
-      GridType globalGrid;
-      PointType localOrigin;
-      CoordinatesType localBegin;
-      CoordinatesType localSize;
-      CoordinatesType localGridSize;
-      CoordinatesType overlap;
-      CoordinatesType globalDimensions;
-      CoordinatesType globalBegin;
-      PointType spaceSteps;
-        
-      IndexType Dimensions;        
-      bool distributed;
-        
-      int rank;
-      int nproc;
       
-      CoordinatesType domainDecomposition;
-      CoordinatesType subdomainCoordinates;      
-        
-      int numberOfLarger;
+
+      
+  private:
         
       int left;
       int right;
 
-      bool isSet;
+      
 };
 
-} // namespace DistributedMeshes
-} // namespace Meshes
+      } //namespace DistributedMeshes
+   } // namespace Meshes
 } // namespace TNL
 
 #include <TNL/Meshes/DistributedMeshes/DistributedGrid_1D.hpp>
+

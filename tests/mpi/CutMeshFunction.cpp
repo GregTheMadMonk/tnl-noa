@@ -105,7 +105,7 @@ class CutMeshFunction
 
 
 #define DIM 3
-#define CODIM 1
+#define CODIM 2
 #define DEVICE Host
 #define SIZE 5
 
@@ -152,8 +152,8 @@ int main(int argc, char **argv)
    {
         CutMeshFunction<MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof, 
-            StaticVector<DIM-CODIM,int>(0,2),
-            StaticVector<CODIM,int>(1),
+            StaticVector<DIM-CODIM,int>(0),
+            StaticVector<CODIM,int>(1,2),
             StaticVector<CODIM,typename CutMeshType::IndexType>(i) );
 
         MeshFunction<CutMeshType> cutMeshFunction;

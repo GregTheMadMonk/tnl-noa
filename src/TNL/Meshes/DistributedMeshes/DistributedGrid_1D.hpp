@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/Meshes/DistributedMeshes/DistributedGrid_1D.h>
-
 namespace TNL {
    namespace Meshes {
       namespace DistributedMeshes {
@@ -19,7 +17,9 @@ namespace TNL {
 template<typename RealType, typename Device, typename Index >
 DistributedMesh< Grid< 1, RealType, Device, Index > >::
 DistributedMesh()
-: domainDecomposition( 0 ), isSet( false ) {}
+{
+    this->domainDecomposition=CoordinatesType( 0 );
+}
 
 template< typename RealType, typename Device, typename Index >     
 bool
@@ -31,22 +31,7 @@ setup( const Config::ParameterContainer& parameters,
    return true;
 }      
 
-template< typename RealType, typename Device, typename Index >     
-void
-DistributedMesh< Grid< 1, RealType, Device, Index > >::
-setDomainDecomposition( const CoordinatesType& domainDecomposition )
-{
-   this->domainDecomposition = domainDecomposition;
-}
-
-template< typename RealType, typename Device, typename Index >     
-const typename DistributedMesh< Grid< 1, RealType, Device, Index > >::CoordinatesType&
-DistributedMesh< Grid< 1, RealType, Device, Index > >::
-getDomainDecomposition() const
-{
-   return this->domainDecomposition;
-}
-      
+/*
 template< typename RealType, typename Device, typename Index >     
    template< int EntityDimension >
 Index
@@ -63,7 +48,7 @@ DistributedMesh< Grid< 1, RealType, Device, Index > >::
 getEntitiesCount() const
 {
    return this->globalGrid. template getEntitiesCount< Entity >();
-}
+}*/
 
 template< typename RealType, typename Device, typename Index >     
    template< typename CommunicatorType>
@@ -78,75 +63,75 @@ setGlobalGrid( const GridType& globalGrid,
    left=-1;
    right=-1;
 
-   Dimensions = GridType::getMeshDimension();
-   spaceSteps = globalGrid.getSpaceSteps();
+   this->Dimensions = GridType::getMeshDimension();
+   this->spaceSteps = globalGrid.getSpaceSteps();
 
-   distributed = false;
+   this->distributed = false;
    if( CommunicatorType::IsInitialized() )
    {
-       rank = CommunicatorType::GetRank();
+       this->rank = CommunicatorType::GetRank();
        this->nproc = CommunicatorType::GetSize();
        if( this->nproc>1 )
        {
-           distributed = true;
+           this->distributed = true;
        }
    }
 
-   if( !distributed )
+   if( !this->distributed )
    {
-       rank = 0;
-       localOrigin = globalGrid.getOrigin();
-       localSize = globalGrid.getDimensions();
-       localGridSize = globalGrid.getDimensions();
-       globalDimensions = globalGrid.getDimensions();
-       globalBegin = CoordinatesType(0);
-       localBegin = CoordinatesType(0);
+       this->rank = 0;
+       this->localOrigin = globalGrid.getOrigin();
+       this->localSize = globalGrid.getDimensions();
+       this->localGridSize = globalGrid.getDimensions();
+       this->globalDimensions = globalGrid.getDimensions();
+       this->globalBegin = CoordinatesType(0);
+       this->localBegin = CoordinatesType(0);
        this->domainDecomposition[ 0 ];
        return;
    }
    else
    {            
        //nearnodes
-       if( rank != 0 ) left=rank-1;
-       if( rank != nproc-1 ) right=rank+1;
+       if( this->rank != 0 ) left=this->rank-1;
+       if( this->rank != this->nproc-1 ) right=this->rank+1;
 
-       this->domainDecomposition[ 0 ] = nproc;
-       globalDimensions=globalGrid.getDimensions();                 
+       this->domainDecomposition[ 0 ] = this->nproc;
+       this->globalDimensions=globalGrid.getDimensions();                 
 
        //compute local mesh size               
-       numberOfLarger = globalGrid.getDimensions().x() % nproc;
+       int numberOfLarger = globalGrid.getDimensions().x() % this->nproc;
 
-       localSize.x() = globalGrid.getDimensions().x() / nproc;
-       if(numberOfLarger>rank) localSize.x() += 1;
+       this->localSize.x() = globalGrid.getDimensions().x() / this->nproc;
+       if(numberOfLarger>this->rank) this->localSize.x() += 1;
 
-       if(numberOfLarger>rank)
+       if(numberOfLarger>this->rank)
        {
-           globalBegin.x()=rank*localSize.x();
-           localOrigin.x()=globalGrid.getOrigin().x()
-                        +(globalBegin.x()-overlap.x())*globalGrid.getSpaceSteps().x();
+           this->globalBegin.x()=this->rank*this->localSize.x();
+           this->localOrigin.x()=globalGrid.getOrigin().x()
+                        +(this->globalBegin.x()-this->overlap.x())*this->globalGrid.getSpaceSteps().x();
        }
        else
        {
-           globalBegin.x()=numberOfLarger*(localSize.x()+1)+(rank-numberOfLarger)*localSize.x();
-           localOrigin.x()=(globalGrid.getOrigin().x()-overlap.x())
-                        +globalBegin.x()*globalGrid.getSpaceSteps().x();
+           this->globalBegin.x()=numberOfLarger*(this->localSize.x()+1)+(this->rank-numberOfLarger)*this->localSize.x();
+           this->localOrigin.x()=(this->globalGrid.getOrigin().x()-overlap.x())
+                        +this->globalBegin.x()*this->globalGrid.getSpaceSteps().x();
        }
 
-      localBegin=overlap;
+      this->localBegin=overlap;
 
        //vlevo neni prekryv
        if(left==-1)
        {
-           localOrigin.x()+=overlap.x()*globalGrid.getSpaceSteps().x();
-           localBegin.x()=0;
+           this->localOrigin.x()+=this->overlap.x()*this->globalGrid.getSpaceSteps().x();
+           this->localBegin.x()=0;
        }
 
-       localGridSize = localSize;
+       this->localGridSize = this->localSize;
        //add overlaps
        if( left == -1 || right == -1 )
-           localGridSize.x() += overlap.x();
+           this->localGridSize.x() += this->overlap.x();
        else
-           localGridSize.x() += 2*overlap.x();
+           this->localGridSize.x() += 2*this->overlap.x();
    }  
 } 
 
@@ -155,11 +140,11 @@ void
 DistributedMesh< Grid< 1, RealType, Device, Index > >::
 setupGrid( GridType& grid)
 {
-   TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by SetupGrid");
-   grid.setOrigin(localOrigin);
-   grid.setDimensions(localGridSize);
+   TNL_ASSERT_TRUE(this->isSet,"DistributedGrid is not set, but used by SetupGrid");
+   grid.setOrigin(this->localOrigin);
+   grid.setDimensions(this->localGridSize);
    //compute local proportions by sideefect
-   grid.setSpaceSteps(spaceSteps);
+   grid.setSpaceSteps(this->spaceSteps);
    grid.SetDistMesh(this);
 };
 
@@ -168,7 +153,7 @@ String
 DistributedMesh< Grid< 1, RealType, Device, Index > >::
 printProcessCoords() const
 {
-   return convertToString(rank);
+   return convertToString(this->rank);
 };
 
 template< typename RealType, typename Device, typename Index >     
@@ -176,23 +161,16 @@ String
 DistributedMesh< Grid< 1, RealType, Device, Index > >::
 printProcessDistr() const
 {
-   return convertToString(nproc);
+   return convertToString(this->nproc);
 };       
 
-template< typename RealType, typename Device, typename Index >     
-bool
-DistributedMesh< Grid< 1, RealType, Device, Index > >::
-isDistributed() const
-{
-   return this->distributed;
-};
 
 template< typename RealType, typename Device, typename Index >     
 int
 DistributedMesh< Grid< 1, RealType, Device, Index > >::
 getLeft() const
 {
-   TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by getLeft");
+   TNL_ASSERT_TRUE(this->isSet,"DistributedGrid is not set, but used by getLeft");
    return this->left;
 };
 
@@ -201,57 +179,9 @@ int
 DistributedMesh< Grid< 1, RealType, Device, Index > >::
 getRight() const
 {
-   TNL_ASSERT_TRUE(isSet,"DistributedGrid is not set, but used by getRight");
+   TNL_ASSERT_TRUE(this->isSet,"DistributedGrid is not set, but used by getRight");
    return this->right;
 };
-
-template< typename RealType, typename Device, typename Index >     
-const typename DistributedMesh< Grid< 1, RealType, Device, Index > >::CoordinatesType&
-DistributedMesh< Grid< 1, RealType, Device, Index > >::
-getOverlap() const
-{
-   return this->overlap;
-};
-
-template< typename RealType, typename Device, typename Index >     
-const typename DistributedMesh< Grid< 1, RealType, Device, Index > >::CoordinatesType&
-DistributedMesh< Grid< 1, RealType, Device, Index > >::
-getLocalSize() const
-{
-   return this->localSize;
-}
-
-template< typename RealType, typename Device, typename Index >     
-const typename DistributedMesh< Grid< 1, RealType, Device, Index > >::CoordinatesType&
-DistributedMesh< Grid< 1, RealType, Device, Index > >::
-getGlobalSize() const
-{
-   return this->globalGrid.getDimensions();
-}
-
-template< typename RealType, typename Device, typename Index >     
-const typename DistributedMesh< Grid< 1, RealType, Device, Index > >::CoordinatesType&
-DistributedMesh< Grid< 1, RealType, Device, Index > >::
-getGlobalBegin() const
-{
-   return this->globalBegin;
-}
-
-template< typename RealType, typename Device, typename Index >     
-const typename DistributedMesh< Grid< 1, RealType, Device, Index > >::CoordinatesType&
-DistributedMesh< Grid< 1, RealType, Device, Index > >::
-getLocalGridSize() const
-{
-   return this->localGridSize;
-}
-
-template< typename RealType, typename Device, typename Index >     
-const typename DistributedMesh< Grid< 1, RealType, Device, Index > >::CoordinatesType&
-DistributedMesh< Grid< 1, RealType, Device, Index > >::
-getLocalBegin() const
-{
-   return this->localBegin;
-}
 
 template< typename RealType, typename Device, typename Index >
 void
