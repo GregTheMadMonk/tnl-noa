@@ -1,64 +1,62 @@
 /***************************************************************************
-                          MainBuildConfig.h  -  description
+                          HamiltonJacobiBuildConfigTag.h  -  description
                              -------------------
     begin                : Jul 7, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef MAINBUILDCONFIG_H_
-#define MAINBUILDCONFIG_H_
+#pragma once
 
-#include <solvers/tnlBuildConfigTags.h>
+#include <TNL/Solvers/BuildConfigTags.h>
 
-class MainBuildConfig
+//namespace TNL {
+//namespace Solvers {   
+
+using namespace TNL::Solvers;
+
+class HamiltonJacobiBuildConfig
 {
    public:
 
-      static void print() { cerr << "MainBuildConfig" << endl; }
+      static void print() { std::cerr << "HamiltonJacobiBuildConfig" << std::endl; }
 };
 
 /****
  * Turn off support for float and long double.
  */
-template<> struct tnlConfigTagReal< MainBuildConfig, float > { enum { enabled = false }; };
-template<> struct tnlConfigTagReal< MainBuildConfig, long double > { enum { enabled = false }; };
+//template<> struct ConfigTagReal< HamiltonJacobiBuildConfig, float > { enum { enabled = false }; };
+template<> struct ConfigTagReal< HamiltonJacobiBuildConfig, long double > { enum { enabled = false }; };
 
 /****
  * Turn off support for short int and long int indexing.
  */
-template<> struct tnlConfigTagIndex< MainBuildConfig, short int >{ enum { enabled = false }; };
-template<> struct tnlConfigTagIndex< MainBuildConfig, long int >{ enum { enabled = false }; };
+template<> struct ConfigTagIndex< HamiltonJacobiBuildConfig, short int >{ enum { enabled = false }; };
+template<> struct ConfigTagIndex< HamiltonJacobiBuildConfig, long int >{ enum { enabled = false }; };
 
 /****
- * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
+ * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
  */
-template< int Dimensions, typename Real, typename Device, typename Index >
-   struct tnlConfigTagMesh< MainBuildConfig, tnlGrid< Dimensions, Real, Device, Index > >
-      { enum { enabled = tnlConfigTagDimensions< MainBuildConfig, Dimensions >::enabled  &&
-                         tnlConfigTagReal< MainBuildConfig, Real >::enabled &&
-                         tnlConfigTagDevice< MainBuildConfig, Device >::enabled &&
-                         tnlConfigTagIndex< MainBuildConfig, Index >::enabled }; };
+/*template< int Dimension, typename Real, typename Device, typename Index >
+   struct ConfigTagMesh< HamiltonJacobiBuildConfig, Meshes::Grid< Dimension, Real, Device, Index > >
+      { enum { enabled = ConfigTagDimension< HamiltonJacobiBuildConfig, Dimension >::enabled  &&
+                         ConfigTagReal< HamiltonJacobiBuildConfig, Real >::enabled &&
+                         ConfigTagDevice< HamiltonJacobiBuildConfig, Device >::enabled &&
+                         ConfigTagIndex< HamiltonJacobiBuildConfig, Index >::enabled }; };*/
 
 /****
  * Please, chose your preferred time discretisation  here.
  */
-template<> struct tnlConfigTagTimeDiscretisation< MainBuildConfig, tnlExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
-template<> struct tnlConfigTagTimeDiscretisation< MainBuildConfig, tnlSemiImplicitTimeDiscretisationTag >{ enum { enabled = false}; };
-template<> struct tnlConfigTagTimeDiscretisation< MainBuildConfig, tnlImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
+template<> struct ConfigTagTimeDiscretisation< HamiltonJacobiBuildConfig, ExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
+template<> struct ConfigTagTimeDiscretisation< HamiltonJacobiBuildConfig, SemiImplicitTimeDiscretisationTag >{ enum { enabled = true }; };
+template<> struct ConfigTagTimeDiscretisation< HamiltonJacobiBuildConfig, ImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
 
 /****
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
-template<> struct tnlConfigTagExplicitSolver< MainBuildConfig, tnlExplicitEulerSolverTag >{ enum { enabled = false }; };
+//template<> struct ConfigTagExplicitSolver< HamiltonJacobiBuildConfig, ExplicitEulerSolverTag >{ enum { enabled = false }; };
 
-#endif /* MAINBUILDCONFIG_H_ */
+//} // namespace Solvers
+//} // namespace TNL

@@ -20,11 +20,13 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/Grid.h>
 #include "tnlDirectEikonalProblem.h"
+#include "MainBuildConfig.h"
 
 using namespace TNL;
 
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
-typedef Solvers::FastBuildConfig BuildConfig;
+//typedef Solvers::FastBuildConfig BuildConfig;
+typedef HamiltonJacobiBuildConfig BuildConfig;
 
 template< typename MeshConfig >
 class tnlDirectEikonalSolverConfig
