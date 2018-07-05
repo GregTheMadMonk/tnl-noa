@@ -68,14 +68,14 @@ int main( int argc, char* argv[] )
       int dimensions = atoi( parsedMeshType[ 1 ].getString() );
       if( dimensions == 1 )
       {
-         if( parsedMeshType[ 1 ] == "float" )
+         if( parsedMeshType[ 2 ] == "float" )
          {
             typedef Meshes::Grid< 1, float, Devices::Host, int > MeshType;
             if( ! processFiles< MeshType >( parameters ) )
                return EXIT_FAILURE;
             return EXIT_SUCCESS;
          }
-         if( parsedMeshType[ 1 ] == "double" )
+         if( parsedMeshType[ 2 ] == "double" )
          {
             typedef Meshes::Grid< 1, double, Devices::Host, int > MeshType;
             if( ! processFiles< MeshType >( parameters ) )
@@ -85,14 +85,14 @@ int main( int argc, char* argv[] )
       }
       if( dimensions == 2 )
       {
-         if( parsedMeshType[ 1 ] == "float" )
+         if( parsedMeshType[ 2 ] == "float" )
          {
             typedef Meshes::Grid< 2, float, Devices::Host, int > MeshType;
             if( ! processFiles< MeshType >( parameters ) )
                return EXIT_FAILURE;
             return EXIT_SUCCESS;
          }
-         if( parsedMeshType[ 1 ] == "double" )
+         if( parsedMeshType[ 2 ] == "double" )
          {
             typedef Meshes::Grid< 2, double, Devices::Host, int > MeshType;
             if( ! processFiles< MeshType >( parameters ) )
@@ -102,14 +102,14 @@ int main( int argc, char* argv[] )
       }
       if( dimensions == 3 )
       {
-         if( parsedMeshType[ 1 ] == "float" )
+         if( parsedMeshType[ 2 ] == "float" )
          {
             typedef Meshes::Grid< 3, float, Devices::Host, int > MeshType;
             if( ! processFiles< MeshType >( parameters ) )
                return EXIT_FAILURE;
             return EXIT_SUCCESS;
          }
-         if( parsedMeshType[ 1 ] == "double" )
+         if( parsedMeshType[ 2 ] == "double" )
          {
             typedef Meshes::Grid< 3, double, Devices::Host, int > MeshType;
             if( ! processFiles< MeshType >( parameters ) )
