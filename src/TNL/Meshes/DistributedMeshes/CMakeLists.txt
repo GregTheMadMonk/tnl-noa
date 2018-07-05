@@ -8,6 +8,8 @@ SET( headers BufferEntitiesHelper.h
              DistributedGrid_2D.hpp
              DistributedGrid_3D.h
              DistributedGrid_3D.hpp
+             DistributedGrid_Base.h
+             DistributedGrid_Base.hpp
              DistributedGridSynchronizer.h
              DistributedGridIO.h
              )
