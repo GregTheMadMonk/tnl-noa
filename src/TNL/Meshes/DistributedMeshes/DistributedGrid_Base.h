@@ -54,6 +54,12 @@ class DistributedGrid_Base
       //coordinates of begin of local subdomain without overlaps in local grid       
       const CoordinatesType& getLocalBegin() const;
 
+      template< int EntityDimension >
+      IndexType getEntitiesCount() const;
+
+      template< typename Entity >
+      IndexType getEntitiesCount() const; 
+
    public: 
 
       GridType globalGrid;

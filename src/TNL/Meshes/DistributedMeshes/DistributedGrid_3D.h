@@ -46,12 +46,6 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >> : public DistributedGr
       
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );
-              
-/*      template< int EntityDimension >
-      IndexType getEntitiesCount() const;
-
-      template< typename Entity >
-      IndexType getEntitiesCount() const;   */   
 
       template< typename CommunicatorType > 
       void setGlobalGrid( const GridType& globalGrid,

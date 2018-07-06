@@ -14,24 +14,6 @@ namespace TNL {
    namespace Meshes { 
       namespace DistributedMeshes {
 
-/*template< typename RealType, typename Device, typename Index >     
-   template< int EntityDimension >
-Index
-DistributedMesh< Grid< 2, RealType, Device, Index > >::
-getEntitiesCount() const
-{
-   return this->globalGrid. template getEntitiesCount< EntityDimension >();
-}
-
-template< typename RealType, typename Device, typename Index >     
-   template< typename Entity >
-Index
-DistributedMesh< Grid< 2, RealType, Device, Index > >::
-getEntitiesCount() const
-{
-   return this->globalGrid. template getEntitiesCount< Entity >();
-}*/
-
 template< typename RealType, typename Device, typename Index >
 bool
 DistributedMesh< Grid< 2, RealType, Device, Index > >::

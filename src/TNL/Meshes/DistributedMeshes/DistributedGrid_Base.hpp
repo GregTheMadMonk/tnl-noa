@@ -94,6 +94,24 @@ getLocalBegin() const
    return this->localBegin;
 }
 
+template< int dim, typename RealType, typename Device, typename Index >      
+   template< int EntityDimension >
+Index
+DistributedGrid_Base< dim, RealType, Device, Index >::
+getEntitiesCount() const
+{
+   return this->globalGrid. template getEntitiesCount< EntityDimension >();
+}
+
+template< int dim, typename RealType, typename Device, typename Index >       
+   template< typename Entity >
+Index
+DistributedGrid_Base< dim, RealType, Device, Index >::
+getEntitiesCount() const
+{
+   return this->globalGrid. template getEntitiesCount< Entity >();
+}
+
       } //namespace DistributedMeshes
    } // namespace Meshes
 } // namespace TNL

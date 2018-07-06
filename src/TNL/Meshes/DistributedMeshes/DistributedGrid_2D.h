@@ -33,12 +33,6 @@ class DistributedMesh< Grid< 2, RealType, Device, Index > >: public DistributedG
       typedef typename DistributedGrid_Base<2, RealType, Device, Index >::GridType GridType;
       typedef typename DistributedGrid_Base<2, RealType, Device, Index >::PointType PointType;
 
-/*      template< int EntityDimension >
-      IndexType getEntitiesCount() const;
-
-      template< typename Entity >
-      IndexType getEntitiesCount() const;*/
-
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );
       

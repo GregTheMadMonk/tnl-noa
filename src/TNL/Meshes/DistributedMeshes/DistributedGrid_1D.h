@@ -48,14 +48,7 @@ class DistributedMesh< Grid< 1, RealType, Device, Index > > : public Distributed
       int getLeft() const;
        
       int getRight() const;
-      
-/*      template< int EntityDimension >
-      IndexType getEntitiesCount() const;
-
-      template< typename Entity >
-      IndexType getEntitiesCount() const;   */   
-     
-      
+            
       void writeProlog( Logger& logger ) const;       
       
 
