@@ -5,8 +5,6 @@
 @HAVE_SYS_IOCTL_H@
 
 #ifdef HAVE_CUDA
-    @HAVE_CUSP@
-
     @HAVE_CUSPARSE@
 #endif
 
