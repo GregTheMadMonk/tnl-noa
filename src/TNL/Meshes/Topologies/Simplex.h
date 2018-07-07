@@ -96,7 +96,7 @@ class NumCombinations
    static_assert(0 < k && k < n, "invalid argument");
 
    public:
-      static const unsigned int value = NumCombinations< n - 1, k - 1 >::value + NumCombinations< n - 1, k >::value;
+      static constexpr unsigned int value = NumCombinations< n - 1, k - 1 >::value + NumCombinations< n - 1, k >::value;
 };
 
 
@@ -109,7 +109,7 @@ class NumCombinations< n, 0 >
    static_assert(0 <= n, "invalid argument");
 
    public:
-      static const unsigned int value = 1;
+      static constexpr unsigned int value = 1;
 };
 
 template< unsigned int n >
@@ -118,7 +118,7 @@ class NumCombinations< n, n >
    static_assert(0 < n, "invalid argument");
 
    public:
-      static const unsigned int value = 1;
+      static constexpr unsigned int value = 1;
 };
 
 //     Compile-time generation of combinations
@@ -140,10 +140,10 @@ class CombinationValue
    static_assert( combinationIndex < NumCombinations< n, k >::value, "invalid combination index" );
    static_assert( valueIndex < k, "invalid value index" );
 
-   static const unsigned int incrementValueIndex = CombinationIncrement< n, k, combinationIndex - 1>::valueIndex;
+   static constexpr unsigned int incrementValueIndex = CombinationIncrement< n, k, combinationIndex - 1>::valueIndex;
 
    public:
-      static const unsigned int value = ( valueIndex < incrementValueIndex ? CombinationValue< n, k, combinationIndex - 1, valueIndex >::value :
+      static constexpr unsigned int value = ( valueIndex < incrementValueIndex ? CombinationValue< n, k, combinationIndex - 1, valueIndex >::value :
                                           CombinationValue< n, k, combinationIndex - 1, incrementValueIndex >::value +
                                           valueIndex - incrementValueIndex + 1);
 };
@@ -155,10 +155,10 @@ class CombinationValue< n, k, 0, valueIndex >
 {
    static_assert( valueIndex < k, "invalid value index" );
 
-   static const unsigned int incrementValueIndex = CombinationIncrement< n, k, 0 >::valueIndex;
+   static constexpr unsigned int incrementValueIndex = CombinationIncrement< n, k, 0 >::valueIndex;
 
    public:
-      static const unsigned int value = valueIndex;
+      static constexpr unsigned int value = valueIndex;
 };
 
 // The CombinationIncrement class determines value index of the particular combination which will be incremented when generating the next combination
@@ -170,7 +170,7 @@ class CombinationIncrementImpl
 {
    static_assert( combinationIndex < NumCombinations< n, k >::value - 1, "nothing to increment" );
 
-   static const bool incrementPossible = ( CombinationValue< n, k, combinationIndex, valueIndex_ >::value + k - valueIndex_ < n );
+   static constexpr bool incrementPossible = ( CombinationValue< n, k, combinationIndex, valueIndex_ >::value + k - valueIndex_ < n );
 
    public:
       static constexpr int valueIndex = ( incrementPossible ? valueIndex_ : CombinationIncrementImpl< n, k, combinationIndex, valueIndex_ - 1 >::valueIndex );
@@ -195,7 +195,7 @@ class CombinationIncrement
    static_assert( combinationIndex < NumCombinations< n, k >::value - 1, "nothing to increment" );
 
    public:
-      static const unsigned int valueIndex = CombinationIncrementImpl< n, k, combinationIndex, k - 1 >::valueIndex;
+      static constexpr unsigned int valueIndex = CombinationIncrementImpl< n, k, combinationIndex, k - 1 >::valueIndex;
 };
 
 } // namespace SimplexDetails
