@@ -51,22 +51,22 @@ class NoDistrCommunicator
       static bool IsInitialized()
       {   
           return true;
-      };
+      }
 
       static bool isDistributed()
       {
           return false;
-      };
+      }
 
       static int GetRank()
       {
           return 0;
-      };
+      }
 
       static int GetSize()
       {
           return 1;
-      };
+      }
 
       static void DimsCreate(int nproc, int dim, int *distr)
       {
@@ -74,7 +74,7 @@ class NoDistrCommunicator
           {
               distr[i]=1;
           }
-      };
+      }
 
       static void Barrier()
       {
@@ -94,7 +94,7 @@ class NoDistrCommunicator
 
       static void WaitAll(Request *reqs, int length)
       {
-      };
+      }
 
       template< typename T > 
       static void Bcast(  T& data, int count, int root)
@@ -108,7 +108,7 @@ class NoDistrCommunicator
                              const MPI_Op &op )
       {
          memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
-      };
+      }
 
       template< typename T >
       static void Reduce( T* data,
@@ -118,7 +118,7 @@ class NoDistrCommunicator
                           int root )
       {
          memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
-      };
+      }
 
       static void writeProlog( Logger& logger ){};
 };

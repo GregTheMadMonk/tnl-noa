@@ -40,6 +40,7 @@ set( headers
      StaticFor.h
      String.h
      Timer.h
+     terminal-colors.h
      UniquePointer.h )
 
 set( common_SOURCES

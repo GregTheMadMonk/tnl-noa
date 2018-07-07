@@ -64,7 +64,7 @@ class MpiCommunicator
       static bool isDistributed()
       {
          return GetSize()>1;
-      };
+      }
 
       static void configSetup( Config::ConfigDescription& config, const String& prefix = "" )
       {
@@ -122,7 +122,7 @@ class MpiCommunicator
             }
          }
 #endif
-      };
+      }
 
       static void Finalize()
       {
@@ -137,7 +137,7 @@ class MpiCommunicator
          }
          MPI::Finalize();
 #endif
-      };
+      }
 
       static bool IsInitialized()
       {
@@ -146,7 +146,7 @@ class MpiCommunicator
 #else
         return false;
 #endif
-      };
+      }
 
       static int GetRank()
       {
@@ -157,7 +157,7 @@ class MpiCommunicator
 #else
         return 1;
 #endif
-      };
+      }
 
       static int GetSize()
       {
@@ -167,7 +167,7 @@ class MpiCommunicator
 #else
         return 1;
 #endif
-      };
+      }
 
         //dim-number of dimesions, distr array of guess distr - 0 for computation
         //distr array will be filled by computed distribution
@@ -192,7 +192,7 @@ class MpiCommunicator
 
             MPI_Dims_create(nproc, dim, distr);
 #endif
-        };
+        }
 
          static void Barrier()
          {
@@ -202,7 +202,7 @@ class MpiCommunicator
 #else
             throw Exceptions::MPISupportMissing();
 #endif
-        };
+        }
 
          template <typename T>
          static Request ISend( const T *data, int count, int dest)
@@ -234,7 +234,7 @@ class MpiCommunicator
 #else
             throw Exceptions::MPISupportMissing();
 #endif
-        };
+        }
 
         template< typename T > 
         static void Bcast(  T& data, int count, int root)
@@ -258,7 +258,7 @@ class MpiCommunicator
 #else
             throw Exceptions::MPISupportMissing();
 #endif
-        };
+        }
 
 
          template< typename T >
@@ -273,7 +273,7 @@ class MpiCommunicator
 #else
             throw Exceptions::MPISupportMissing();
 #endif
-        };
+        }
 
 
       static void writeProlog( Logger& logger ) 

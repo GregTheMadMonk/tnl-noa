@@ -89,11 +89,16 @@ bool performExtrude( const Config::ParameterContainer& parameters,
                   ProfilePointType aux2( rotationCos * aux1.x() - rotationSin * aux1.y(),
                                   rotationSin * aux1.x() + rotationCos * aux1.y() );
                   aux1 = profileCenter + aux2;
-                  profileCell.getCoordinates().x() = aux1.x() / profileMesh.getSpaceSteps().x();
-                  profileCell.getCoordinates().y() = aux1.y() / profileMesh.getSpaceSteps().y();
-                  profileCell.refresh();
-                  RealType aux = profile( profileCell );
-                  if( aux ) f( cell ) = aux;
+                  if( aux1.x() >= 0 && aux1.y() >= 0 &&
+                      aux1.x() <= profileMesh.getProportions().x() &&
+                      aux1.y() <= profileMesh.getProportions().y() )
+                  {
+                     profileCell.getCoordinates().x() = aux1.x() / profileMesh.getSpaceSteps().x();
+                     profileCell.getCoordinates().y() = aux1.y() / profileMesh.getSpaceSteps().y();
+                     profileCell.refresh();
+                     RealType aux = profile( profileCell );
+                     if( aux ) f( cell ) = aux;
+                  }
                }
             }
             if( profileOrientation == "y" )
@@ -114,11 +119,16 @@ bool performExtrude( const Config::ParameterContainer& parameters,
                   ProfilePointType aux2( rotationCos * aux1.x() - rotationSin * aux1.y(),
                                   rotationSin * aux1.x() + rotationCos * aux1.y() );
                   aux1 = profileCenter + aux2;
-                  profileCell.getCoordinates().x() = aux1.x() / profileMesh.getSpaceSteps().x();
-                  profileCell.getCoordinates().y() = aux1.y() / profileMesh.getSpaceSteps().y();
-                  profileCell.refresh();
-                  RealType aux = profile( profileCell );
-                  if( aux ) f( cell ) = aux;
+                  if( aux1.x() >= 0 && aux1.y() >= 0 &&
+                      aux1.x() <= profileMesh.getProportions().x() &&
+                      aux1.y() <= profileMesh.getProportions().y() )
+                  {
+                     profileCell.getCoordinates().x() = aux1.x() / profileMesh.getSpaceSteps().x();
+                     profileCell.getCoordinates().y() = aux1.y() / profileMesh.getSpaceSteps().y();
+                     profileCell.refresh();
+                     RealType aux = profile( profileCell );
+                     if( aux ) f( cell ) = aux;
+                  }
                }
             }            
             if( profileOrientation == "z" )
@@ -139,11 +149,16 @@ bool performExtrude( const Config::ParameterContainer& parameters,
                   ProfilePointType aux2( rotationCos * aux1.x() - rotationSin * aux1.y(),
                                   rotationSin * aux1.x() + rotationCos * aux1.y() );
                   aux1 = profileCenter + aux2;
-                  profileCell.getCoordinates().x() = aux1.x() / profileMesh.getSpaceSteps().x();
-                  profileCell.getCoordinates().y() = aux1.y() / profileMesh.getSpaceSteps().y();
-                  profileCell.refresh();
-                  RealType aux = profile( profileCell );
-                  if( aux ) f( cell ) = aux;
+                  if( aux1.x() >= 0 && aux1.y() >= 0 &&
+                      aux1.x() <= profileMesh.getProportions().x() &&
+                      aux1.y() <= profileMesh.getProportions().y() )
+                  {
+                     profileCell.getCoordinates().x() = aux1.x() / profileMesh.getSpaceSteps().x();
+                     profileCell.getCoordinates().y() = aux1.y() / profileMesh.getSpaceSteps().y();
+                     profileCell.refresh();
+                     RealType aux = profile( profileCell );
+                     if( aux ) f( cell ) = aux;
+                  }
                }
             }
          }
