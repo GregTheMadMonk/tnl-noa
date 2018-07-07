@@ -29,9 +29,9 @@ template< typename Mesh,
           typename DifferentialOperator >
 String
 transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getTypeStatic()
+getType()
 {
-   return String( "transportEquationProblemEoc< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "transportEquationProblemEoc< " ) + Mesh :: getType() + " >";
 }
 
 template< typename Mesh,

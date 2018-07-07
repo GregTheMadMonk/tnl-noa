@@ -55,7 +55,7 @@ class navierStokesSolver
 
    navierStokesSolver();
 
-   static String getTypeStatic();
+   static String getType();
 
    String getPrologHeader() const;
 

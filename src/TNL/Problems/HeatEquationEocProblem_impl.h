@@ -28,9 +28,9 @@ template< typename Mesh,
           typename DifferentialOperator >
 String
 HeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getTypeStatic()
+getType()
 {
-   return String( "heatEquationEocSolver< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "heatEquationEocSolver< " ) + Mesh :: getType() + " >";
 }
 
 template< typename Mesh,

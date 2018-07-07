@@ -286,10 +286,10 @@ SolverMonitor*
 }
 
 template< typename Mesh, typename EulerScheme >
-String navierStokesSolver< Mesh, EulerScheme > :: getTypeStatic()
+String navierStokesSolver< Mesh, EulerScheme > :: getType()
 {
    return String( "navierStokesSolver< " ) +
-          Mesh :: getTypeStatic() + " >";
+          Mesh :: getType() + " >";
 }
 
 template< typename Mesh, typename EulerScheme >

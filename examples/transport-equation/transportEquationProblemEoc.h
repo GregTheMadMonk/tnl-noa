@@ -50,7 +50,7 @@ public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Differe
       
       //using BaseType::getExplicitUpdate;
       
-      static String getTypeStatic();
+      static String getType();
 
       String getPrologHeader() const;
 
