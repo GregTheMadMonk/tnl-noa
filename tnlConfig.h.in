@@ -15,7 +15,3 @@
 @HAVE_JPEG_H@
 
 #define TNL_CPP_COMPILER_NAME "@CMAKE_CXX_COMPILER_ID@ @CMAKE_CXX_COMPILER_VERSION@"
-
-#define maxCudaGridSize 65535
-
-#define maxCudaBlockSize 1023

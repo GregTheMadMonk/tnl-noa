@@ -16,33 +16,29 @@
 #include <TNL/CudaSharedMemory.h>
 
 namespace TNL {
-namespace Devices {   
+namespace Devices {
 
-__cuda_callable__ 
+__cuda_callable__
 inline constexpr int Cuda::getMaxGridSize()
 {
-   // TODO: make it preprocessor macro constant defined in tnlConfig
    return 65535;
-};
+}
 
 __cuda_callable__
 inline constexpr int Cuda::getMaxBlockSize()
 {
-   // TODO: make it preprocessor macro constant defined in tnlConfig
    return 1024;
-};
+}
 
-__cuda_callable__ 
+__cuda_callable__
 inline constexpr int Cuda::getWarpSize()
 {
-   // TODO: make it preprocessor macro constant defined in tnlConfig
    return 32;
 }
 
 __cuda_callable__
 inline constexpr int Cuda::getNumberOfSharedMemoryBanks()
 {
-   // TODO: make it preprocessor macro constant defined in tnlConfig
    return 32;
 }
 
