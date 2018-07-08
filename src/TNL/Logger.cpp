@@ -10,13 +10,12 @@
 
 #include <iomanip>
 #include <TNL/Logger.h>
-#include <TNL/Devices/Host.h>
 #include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Devices/SystemInfo.h>
 
 namespace TNL {
 
-Logger :: Logger( int _width,
-                        std::ostream& _stream )
+Logger :: Logger( int _width, std::ostream& _stream )
 : width( _width ),
   stream( _stream )
 {
@@ -44,7 +43,7 @@ void Logger :: writeSeparator()
 
 bool Logger :: writeSystemInformation( const Config::ParameterContainer& parameters )
 {
-   Devices::Host::writeDeviceInfo( *this );
+   Devices::SystemInfo::writeDeviceInfo( *this );
    if( parameters.getParameter< String >( "device" ) == "cuda" )
       Devices::CudaDeviceInfo::writeDeviceInfo( *this );
    return true;
@@ -52,7 +51,7 @@ bool Logger :: writeSystemInformation( const Config::ParameterContainer& paramet
 
 void Logger :: writeCurrentTime( const char* label )
 {
-   writeParameter< String >( label, Devices::Host::getCurrentTime() );
+   writeParameter< String >( label, Devices::SystemInfo::getCurrentTime() );
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
