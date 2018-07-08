@@ -94,8 +94,6 @@ class File
 
    bool close();
 
-   static int verbose;
-
 protected:
    template< typename Type,
              typename Device,
