@@ -27,7 +27,9 @@ class NoDistrCommunicator
    public:
 
       typedef int Request;
+      typedef int CommunicationGroup;
       static Request NullRequest;
+      static CommunicationGroup AllGroup;
 
       static void configSetup( Config::ConfigDescription& config, const String& prefix = "" ){};
  
@@ -58,12 +60,12 @@ class NoDistrCommunicator
           return false;
       };
 
-      static int GetRank()
+      static int GetRank(CommunicationGroup group)
       {
           return 0;
       };
 
-      static int GetSize()
+      static int GetSize(CommunicationGroup group)
       {
           return 1;
       };
@@ -76,18 +78,18 @@ class NoDistrCommunicator
           }
       };
 
-      static void Barrier()
+      static void Barrier(CommunicationGroup group)
       {
       };
 
       template <typename T>
-      static Request ISend( const T *data, int count, int dest)
+      static Request ISend( const T *data, int count, int dest, CommunicationGroup group)
       {
           return 1;
       }
 
       template <typename T>
-      static Request IRecv( const T *data, int count, int src)
+      static Request IRecv( const T *data, int count, int src, CommunicationGroup group)
       {
           return 1;
       }
@@ -97,7 +99,7 @@ class NoDistrCommunicator
       };
 
       template< typename T > 
-      static void Bcast(  T& data, int count, int root)
+      static void Bcast(  T& data, int count, int root, CommunicationGroup group)
       {
       }
 
@@ -105,7 +107,8 @@ class NoDistrCommunicator
       static void Allreduce( T* data,
                              T* reduced_data,
                              int count,
-                             const MPI_Op &op )
+                             const MPI_Op &op,
+                             CommunicationGroup group )
       {
          memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
       };
@@ -115,7 +118,8 @@ class NoDistrCommunicator
                           T* reduced_data,
                           int count,
                           MPI_Op &op,
-                          int root )
+                          int root,
+                          CommunicationGroup group )
       {
          memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
       };
@@ -125,6 +129,7 @@ class NoDistrCommunicator
 
 
   int NoDistrCommunicator::NullRequest;
+  int NoDistrCommunicator::AllGroup;
 
 } // namespace Communicators
 } // namespace TNL

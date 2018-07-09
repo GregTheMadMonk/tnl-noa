@@ -131,7 +131,7 @@ int main ( int argc, char *argv[])
   
   double sum=0.0;
 
-  constFunctionPtr->Number=CommunicatorType::GetRank();
+  constFunctionPtr->Number=CommunicatorType::GetRank(CommunicatorType::AllGroup);
   
   for(int i=0;i<cycles;i++)
     {    
@@ -139,12 +139,12 @@ int main ( int argc, char *argv[])
         
         constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
         //linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
-        CommunicatorType::Barrier();
+        CommunicatorType::Barrier(CommunicatorType::AllGroup);
         eval.stop();
 
         sync.start();    
         meshFunctionptr->template synchronize<CommunicatorType>();
-        CommunicatorType::Barrier();
+        CommunicatorType::Barrier(CommunicatorType::AllGroup);
         sync.stop();
 
         sum+=dof[gridptr->getDimensions().x()/2]; //dummy acces to array    
@@ -153,10 +153,10 @@ int main ( int argc, char *argv[])
   
 #ifdef OUTPUT    
   //print local dof
-  Printer<MeshType,DofType>::print_dof(CommunicatorType::GetRank(),*gridptr, dof);
+  Printer<MeshType,DofType>::print_dof(CommunicatorType::GetRank(CommunicatorType::AllGroup),*gridptr, dof);
 #endif
   
-  if(CommunicatorType::GetRank()==0)
+  if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
   {
     cout << sum <<endl<<endl;  
     

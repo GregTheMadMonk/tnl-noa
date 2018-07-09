@@ -81,7 +81,7 @@ class TestDistributedGridMPIIO{
         DistributedGridIO<MeshFunctionType,MpiIO> ::save(FileName, *meshFunctionptr );
 
        //first process compare results
-       if(CommunicatorType::GetRank()==0)
+       if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
        {
             DofType globalEvaluatedDof(globalGrid->template getEntitiesCount< Cell >());
 
@@ -132,7 +132,7 @@ class TestDistributedGridMPIIO{
         String FileName=String("/tmp/test-file.tnl");         
 
         //Prepare file   
-        if(CommunicatorType::GetRank()==0)
+        if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
         {   
             DofType saveDof(globalGrid->template getEntitiesCount< Cell >());
 

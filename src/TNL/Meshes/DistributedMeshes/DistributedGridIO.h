@@ -180,13 +180,14 @@ class DistributedGridIO_MPIIOBase
             return meshFunction.save(fileName);
         }
 
+       MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
        MPI_Datatype ftype;
        MPI_Datatype atype;
        int dataCount=CreateDataTypes(distrGrid,&ftype,&atype);
 
        //write 
        MPI_File file;
-       MPI_File_open( MPI_COMM_WORLD,
+       MPI_File_open( group,
                       const_cast< char* >( fileName.getString() ),
                       MPI_MODE_CREATE | MPI_MODE_WRONLY,
                       MPI_INFO_NULL,
@@ -194,11 +195,11 @@ class DistributedGridIO_MPIIOBase
 
        int headerSize=0;
 
-       if(Communicators::MpiCommunicator::GetRank()==0)
+       if(Communicators::MpiCommunicator::GetRank(group)==0)
        {
             headerSize=writeMeshFunctionHeader(file,meshFunction,dataCount);
        }
-       MPI_Bcast(&headerSize, 1, MPI_INT,0, MPI_COMM_WORLD);
+       MPI_Bcast(&headerSize, 1, MPI_INT,0, group);
 
        if( std::is_same< RealType, double >::value)
          MPI_File_set_view(file,headerSize,MPI_DOUBLE,ftype,"native",MPI_INFO_NULL);
@@ -329,13 +330,14 @@ class DistributedGridIO_MPIIOBase
             return meshFunction.boundLoad(fileName);
         }
 
+       MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
        MPI_Datatype ftype;
        MPI_Datatype atype;
        int dataCount=CreateDataTypes(distrGrid,&ftype,&atype);
 
        //write 
        MPI_File file;
-       MPI_File_open( MPI_COMM_WORLD,
+       MPI_File_open( group,
                       const_cast< char* >( fileName.getString() ),
                       MPI_MODE_RDONLY,
                       MPI_INFO_NULL,
@@ -343,11 +345,11 @@ class DistributedGridIO_MPIIOBase
        
        int headerSize=0;
 
-       if(Communicators::MpiCommunicator::GetRank()==0)
+       if(Communicators::MpiCommunicator::GetRank(group)==0)
        {
             headerSize=readMeshFunctionHeader(file,meshFunction,dataCount);
        }
-       MPI_Bcast(&headerSize, 1, MPI_INT,0, MPI_COMM_WORLD);
+       MPI_Bcast(&headerSize, 1, MPI_INT,0, group);
        
        if(headerSize<0)
             return false;

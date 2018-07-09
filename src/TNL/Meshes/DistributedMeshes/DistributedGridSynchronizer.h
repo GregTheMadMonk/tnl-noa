@@ -91,12 +91,13 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
 
           //async send
           typename CommunicatorType::Request req[4];
-
+          typename CommunicatorType::CommunicationGroup group;
+          group=*((typename CommunicatorType::CommunicationGroup *)(distributedGrid->getCommunicationGroup()));
           //send everithing, recieve everything 
           if(leftN!=-1)
           {
-              req[0]=CommunicatorType::ISend(sendbuffs[Left].getData(), overlapSize, leftN);
-              req[2]=CommunicatorType::IRecv(rcvbuffs[Left].getData(), overlapSize, leftN);
+              req[0]=CommunicatorType::ISend(sendbuffs[Left].getData(), overlapSize, leftN,group);
+              req[2]=CommunicatorType::IRecv(rcvbuffs[Left].getData(), overlapSize, leftN,group);
           }
           else
           {
@@ -106,8 +107,8 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
 
           if(rightN!=-1)
           {
-              req[1]=CommunicatorType::ISend(sendbuffs[Right].getData(), overlapSize, rightN);
-              req[3]=CommunicatorType::IRecv(rcvbuffs[Right].getData(), overlapSize, rightN);
+              req[1]=CommunicatorType::ISend(sendbuffs[Right].getData(), overlapSize, rightN,group);
+              req[3]=CommunicatorType::IRecv(rcvbuffs[Right].getData(), overlapSize, rightN,group);
           }
           else
           {
@@ -240,13 +241,15 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
 
          //async send and rcv
          typename CommunicatorType::Request req[16];
+         typename CommunicatorType::CommunicationGroup group;
+         group=*((typename CommunicatorType::CommunicationGroup *)(distributedGrid->getCommunicationGroup()));
 
          //send everything, recieve everything 
          for(int i=0;i<8;i++)	
             if(neighbor[i]!=-1)
             {
-               req[i]=CommunicatorType::ISend(sendbuffs[i].getData(), sizes[i], neighbor[i]);
-               req[8+i]=CommunicatorType::IRecv(rcvbuffs[i].getData(), sizes[i], neighbor[i]);
+               req[i]=CommunicatorType::ISend(sendbuffs[i].getData(), sizes[i], neighbor[i],group);
+               req[8+i]=CommunicatorType::IRecv(rcvbuffs[i].getData(), sizes[i], neighbor[i],group);
             }
             else
             {
@@ -444,13 +447,15 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
         
         //async send and rcv
         typename CommunicatorType::Request req[52];
+        typename CommunicatorType::CommunicationGroup group;
+        group=*((typename CommunicatorType::CommunicationGroup *)(distributedGrid->getCommunicationGroup()));
 		                
         //send everithing, recieve everything 
         for(int i=0;i<26;i++)	
            if(neighbor[i]!=-1)
            {
-               req[i]=CommunicatorType::ISend(sendbuffs[i].getData(), sizes[i], neighbor[i]);
-               req[26+i]=CommunicatorType::IRecv(rcvbuffs[i].getData(), sizes[i], neighbor[i]);
+               req[i]=CommunicatorType::ISend(sendbuffs[i].getData(), sizes[i], neighbor[i],group);
+               req[26+i]=CommunicatorType::IRecv(rcvbuffs[i].getData(), sizes[i], neighbor[i],group);
            }
 		   else
       	   {
