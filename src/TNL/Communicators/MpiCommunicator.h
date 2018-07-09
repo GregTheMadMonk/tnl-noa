@@ -66,7 +66,7 @@ class MpiCommunicator
       static bool isDistributed()
       {
          return GetSize(AllGroup)>1;
-      };
+      }
 
       static void configSetup( Config::ConfigDescription& config, const String& prefix = "" )
       {
@@ -125,7 +125,7 @@ class MpiCommunicator
             }
          }
 #endif
-      };
+      }
 
       static void Finalize()
       {
@@ -140,7 +140,7 @@ class MpiCommunicator
          }
          MPI_Finalize();
 #endif
-      };
+      }
 
       static bool IsInitialized()
       {
@@ -152,7 +152,7 @@ class MpiCommunicator
 #else
         return false;
 #endif
-      };
+      }
 
       static int GetRank(CommunicationGroup group)
       {
@@ -164,7 +164,7 @@ class MpiCommunicator
 #else
         return 1;
 #endif
-      };
+      }
 
       static int GetSize(CommunicationGroup group)
       {
@@ -176,7 +176,7 @@ class MpiCommunicator
 #else
         return 1;
 #endif
-      };
+      }
 
         //dim-number of dimesions, distr array of guess distr - 0 for computation
         //distr array will be filled by computed distribution
@@ -201,7 +201,7 @@ class MpiCommunicator
 
             MPI_Dims_create(nproc, dim, distr);
 #endif
-        };
+        }
 
          static void Barrier(CommunicationGroup comm)
          {
@@ -211,7 +211,7 @@ class MpiCommunicator
 #else
             throw Exceptions::MPISupportMissing();
 #endif
-        };
+        }
 
          template <typename T>
          static Request ISend( const T *data, int count, int dest, CommunicationGroup group)
@@ -247,7 +247,7 @@ class MpiCommunicator
 #else
             throw Exceptions::MPISupportMissing();
 #endif
-        };
+        }
 
         template< typename T > 
         static void Bcast(  T& data, int count, int root,CommunicationGroup group)
@@ -272,7 +272,7 @@ class MpiCommunicator
 #else
             throw Exceptions::MPISupportMissing();
 #endif
-        };
+        }
 
 
          template< typename T >
@@ -288,7 +288,7 @@ class MpiCommunicator
 #else
             throw Exceptions::MPISupportMissing();
 #endif
-        };
+        }
 
 
       static void writeProlog( Logger& logger ) 
