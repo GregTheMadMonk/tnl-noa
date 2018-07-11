@@ -118,8 +118,8 @@ class DistributedGirdTest_1D : public ::testing::Test {
   static void SetUpTestCase() {
       
     int size=10;
-    rank=CommunicatorType::GetRank();
-    nproc=CommunicatorType::GetSize();
+    rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
+    nproc=CommunicatorType::GetSize(CommunicatorType::AllGroup);
     
     PointType globalOrigin;
     PointType globalProportions;

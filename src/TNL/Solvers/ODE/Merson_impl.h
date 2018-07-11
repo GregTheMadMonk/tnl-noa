@@ -423,12 +423,7 @@ typename Problem :: RealType Merson< Problem > :: computeError( const RealType t
       }
 #endif
    }
-   Problem::CommunicatorType::Allreduce( &eps, &maxEps, 1, MPI_MAX );
-   /*#ifdef USE_MPI
-        TNLMPI::Allreduce( eps, maxEps, 1, MPI_MAX);
-   #else
-        maxEps=eps;
-   #endif*/
+   Problem::CommunicatorType::Allreduce( &eps, &maxEps, 1, MPI_MAX, Problem::CommunicatorType::AllGroup );
    return maxEps;
 }
 
@@ -495,7 +490,7 @@ void Merson< Problem >::computeNewTimeLevel( DofVectorPointer& u,
    }
 
    localResidue /= tau * ( RealType ) size;
-   Problem::CommunicatorType::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM );
+   Problem::CommunicatorType::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, Problem::CommunicatorType::AllGroup);
 /*#ifdef USE_MPI
    TNLMPI::Allreduce( localResidue, currentResidue, 1, MPI_SUM);
 #else

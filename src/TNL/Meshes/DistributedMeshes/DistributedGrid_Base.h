@@ -54,6 +54,10 @@ class DistributedGrid_Base
       //coordinates of begin of local subdomain without overlaps in local grid       
       const CoordinatesType& getLocalBegin() const;
 
+      //aka MPI-communcicator  
+      void setCommunicationGroup(void * group);
+      void * getCommunicationGroup() const;
+
       template< int EntityDimension >
       IndexType getEntitiesCount() const;
 
@@ -82,6 +86,9 @@ class DistributedGrid_Base
       int nproc;
 
       bool isSet;
+
+      //aka MPI-communcicator 
+      void * communicationGroup;
 
 };
 

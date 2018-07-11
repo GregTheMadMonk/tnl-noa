@@ -230,7 +230,7 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
 #endif
    }
    localResidue /= tau * ( RealType ) size;
-   Problem::CommunicatorType::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM );
+   Problem::CommunicatorType::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, Problem::CommunicatorType::AllGroup );
    //std::cerr << "Local residue = " << localResidue << " - globalResidue = " << currentResidue << std::endl;
 }
 

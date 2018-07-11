@@ -245,8 +245,8 @@ class TestDistributedGridIO{
 
 
        //create similar local mesh function and evaluate linear function on it
-        PointType localOrigin=parameters.getOrigin(CommunicatorType::GetRank());        
-        PointType localProportions=parameters.getProportions(CommunicatorType::GetRank());;
+        PointType localOrigin=parameters.getOrigin(CommunicatorType::GetRank(CommunicatorType::AllGroup));        
+        PointType localProportions=parameters.getProportions(CommunicatorType::GetRank(CommunicatorType::AllGroup));;
             
         SharedPointer<MeshType>  localGridptr;
         localGridptr->setDimensions(localProportions);
@@ -305,8 +305,8 @@ class TestDistributedGridIO{
         distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
 
         //save files from local mesh        
-        PointType localOrigin=parameters.getOrigin(CommunicatorType::GetRank());        
-        PointType localProportions=parameters.getProportions(CommunicatorType::GetRank());;
+        PointType localOrigin=parameters.getOrigin(CommunicatorType::GetRank(CommunicatorType::AllGroup));        
+        PointType localProportions=parameters.getProportions(CommunicatorType::GetRank(CommunicatorType::AllGroup));;
             
         SharedPointer<MeshType> localGridptr;
         localGridptr->setDimensions(localProportions);

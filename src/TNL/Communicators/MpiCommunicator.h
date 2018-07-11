@@ -56,14 +56,16 @@ class MpiCommunicator
       inline static MPI_Datatype MPIDataType( const double* ) { return MPI_DOUBLE; };
       inline static MPI_Datatype MPIDataType( const long double* ) { return MPI_LONG_DOUBLE; };
 
-      using Request = MPI::Request;
+      using Request = MPI_Request;
+      using CommunicationGroup = MPI_Comm;
 #else
       using Request = int;
+      using CommunicationGroup = int;
 #endif
 
       static bool isDistributed()
       {
-         return GetSize()>1;
+         return GetSize(AllGroup)>1;
       }
 
       static void configSetup( Config::ConfigDescription& config, const String& prefix = "" )
@@ -89,8 +91,9 @@ class MpiCommunicator
       static void Init(int argc, char **argv )
       {
 #ifdef HAVE_MPI
-         MPI::Init( argc, argv );
-         NullRequest=MPI::REQUEST_NULL;
+         MPI_Init( &argc, &argv );
+         NullRequest=MPI_REQUEST_NULL;
+         AllGroup=MPI_COMM_WORLD;
          redirect = true;
 
          selectGPU();
@@ -111,9 +114,9 @@ class MpiCommunicator
             backup=std::cout.rdbuf();
 
             //redirect output to files...
-            if(MPI::COMM_WORLD.Get_rank()!=0)
+            if(GetRank(AllGroup)!=0)
             {
-               std::cout<< GetRank() <<": Redirecting std::out to file" <<std::endl;
+               std::cout<< GetRank(AllGroup) <<": Redirecting std::out to file" <<std::endl;
                String stdoutFile;
                stdoutFile=String( "./stdout-")+convertToString(MPI::COMM_WORLD.Get_rank())+String(".txt");
                filestr.open (stdoutFile.getString()); 
@@ -129,41 +132,47 @@ class MpiCommunicator
 #ifdef HAVE_MPI
          if(isDistributed())
          {
-            if(MPI::COMM_WORLD.Get_rank()!=0)
+            if(GetRank(AllGroup)!=0)
             {
                std::cout.rdbuf(backup);
                filestr.close();
             }
          }
-         MPI::Finalize();
+         MPI_Finalize();
 #endif
       }
 
       static bool IsInitialized()
       {
 #ifdef HAVE_MPI
-         return MPI::Is_initialized() && !MPI::Is_finalized();
+         int inicialized, finalized;
+         MPI_Initialized(&inicialized);
+         MPI_Finalized(&finalized);
+         return inicialized && !finalized;
 #else
         return false;
 #endif
       }
 
-      static int GetRank()
+      static int GetRank(CommunicationGroup group)
       {
-         //CHECK_INICIALIZED_RET(MPI::COMM_WORLD.Get_rank());
 #ifdef HAVE_MPI
         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
-        return MPI::COMM_WORLD.Get_rank();
+        int rank;
+        MPI_Comm_rank(group,&rank);
+        return rank;
 #else
         return 1;
 #endif
       }
 
-      static int GetSize()
+      static int GetSize(CommunicationGroup group)
       {
 #ifdef HAVE_MPI
         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
-        return MPI::COMM_WORLD.Get_size();
+        int size;
+        MPI_Comm_size(group,&size);
+        return size;
 #else
         return 1;
 #endif
@@ -194,33 +203,37 @@ class MpiCommunicator
 #endif
         }
 
-         static void Barrier()
+         static void Barrier(CommunicationGroup comm)
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
-            MPI::COMM_WORLD.Barrier();;
+            MPI_Barrier(comm);
 #else
             throw Exceptions::MPISupportMissing();
 #endif
         }
 
          template <typename T>
-         static Request ISend( const T *data, int count, int dest)
+         static Request ISend( const T *data, int count, int dest, CommunicationGroup group)
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
-            return MPI::COMM_WORLD.Isend((void*) data, count, MPIDataType(data) , dest, 0);
+            Request req;
+            MPI_Isend((void*) data, count, MPIDataType(data) , dest, 0, group, &req);
+            return req;
 #else
             throw Exceptions::MPISupportMissing();
 #endif
         }
 
          template <typename T>
-         static Request IRecv( const T *data, int count, int src)
+         static Request IRecv( const T *data, int count, int src, CommunicationGroup group)
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
-            return MPI::COMM_WORLD.Irecv((void*) data, count, MPIDataType(data) , src, 0);
+            Request req;
+            MPI_Irecv((void*) data, count, MPIDataType(data) , src, 0, group, &req);
+            return req;
 #else
             throw Exceptions::MPISupportMissing();
 #endif
@@ -230,18 +243,18 @@ class MpiCommunicator
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
-            MPI::Request::Waitall(length, reqs);
+            MPI_Waitall(length, reqs, MPI_STATUSES_IGNORE);
 #else
             throw Exceptions::MPISupportMissing();
 #endif
         }
 
         template< typename T > 
-        static void Bcast(  T& data, int count, int root)
+        static void Bcast(  T& data, int count, int root,CommunicationGroup group)
         {
 #ifdef HAVE_MPI
         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
-        MPI::COMM_WORLD.Bcast((void*) &data, count,  MPIDataType(data), root);
+        MPI_Bcast((void*) &data, count,  MPIDataType(data), root, group);
 #else
         throw Exceptions::MPISupportMissing();
 #endif
@@ -251,10 +264,11 @@ class MpiCommunicator
         static void Allreduce( T* data,
                                T* reduced_data,
                                int count,
-                               const MPI_Op &op )
+                               const MPI_Op &op,
+                               CommunicationGroup group)
         {
 #ifdef HAVE_MPI
-            MPI::COMM_WORLD.Allreduce( (void*) data, (void*) reduced_data,count,MPIDataType(data),op);
+            MPI_Allreduce( (void*) data, (void*) reduced_data,count,MPIDataType(data),op,group);
 #else
             throw Exceptions::MPISupportMissing();
 #endif
@@ -266,10 +280,11 @@ class MpiCommunicator
                     T* reduced_data,
                     int count,
                     MPI_Op &op,
-                    int root)
+                    int root,
+                    CommunicationGroup group)
          {
 #ifdef HAVE_MPI
-            MPI::COMM_WORLD.Reduce( (void*) data, (void*) reduced_data,count,MPIDataType(data),op,root);
+            MPI_Reduce( (void*) data, (void*) reduced_data,count,MPIDataType(data),op,root,group);
 #else
             throw Exceptions::MPISupportMissing();
 #endif
@@ -280,14 +295,16 @@ class MpiCommunicator
       {
          if( isDistributed() )
          {
-            logger.writeParameter( "MPI processes:", GetSize() );
+            logger.writeParameter( "MPI processes:", GetSize(AllGroup) );
          }
       }
 
 #ifdef HAVE_MPI
-      static MPI::Request NullRequest;
+      static MPI_Request NullRequest;
+      static MPI_Comm AllGroup;
 #else
       static int NullRequest;
+      static int AllGroup;
 #endif
     private :
       static std::streambuf *psbuf;
@@ -341,9 +358,11 @@ class MpiCommunicator
 };
 
 #ifdef HAVE_MPI
-MPI::Request MpiCommunicator::NullRequest;
+MPI_Request MpiCommunicator::NullRequest;
+MPI_Comm MpiCommunicator::AllGroup;
 #else
 int MpiCommunicator::NullRequest;
+int MpiCommunicator::AllGroup;
 #endif
 std::streambuf *MpiCommunicator::psbuf;
 std::streambuf *MpiCommunicator::backup;

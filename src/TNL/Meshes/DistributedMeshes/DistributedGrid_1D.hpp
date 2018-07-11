@@ -31,6 +31,8 @@ DistributedMesh< Grid< 1, RealType, Device, Index > >::
 setGlobalGrid( const GridType& globalGrid,
                const CoordinatesType& overlap )
 {
+   typename CommunicatorType::CommunicationGroup &group = CommunicatorType::AllGroup;
+   this->communicationGroup=(void*)& group;
    this->globalGrid = globalGrid;
    this->isSet = true;
    this->overlap = overlap;
@@ -43,8 +45,8 @@ setGlobalGrid( const GridType& globalGrid,
    this->distributed = false;
    if( CommunicatorType::IsInitialized() )
    {
-       this->rank = CommunicatorType::GetRank();
-       this->nproc = CommunicatorType::GetSize();
+       this->rank = CommunicatorType::GetRank(group);
+       this->nproc = CommunicatorType::GetSize(group);
        if( this->nproc>1 )
        {
            this->distributed = true;

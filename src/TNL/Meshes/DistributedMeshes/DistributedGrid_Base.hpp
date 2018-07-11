@@ -112,6 +112,22 @@ getEntitiesCount() const
    return this->globalGrid. template getEntitiesCount< Entity >();
 }
 
+template< int dim, typename RealType, typename Device, typename Index >    
+void 
+DistributedGrid_Base< dim, RealType, Device, Index >::
+setCommunicationGroup(void * group)
+{
+    this->communciatonGroup=group;
+}
+
+template< int dim, typename RealType, typename Device, typename Index >    
+void *
+DistributedGrid_Base< dim, RealType, Device, Index >::
+getCommunicationGroup() const
+{
+    return this->communicationGroup;
+}
+
       } //namespace DistributedMeshes
    } // namespace Meshes
 } // namespace TNL

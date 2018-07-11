@@ -32,6 +32,8 @@ DistributedMesh< Grid< 2, RealType, Device, Index > >::
 setGlobalGrid( const GridType &globalGrid,
                const CoordinatesType& overlap )
 {
+   typename CommunicatorType::CommunicationGroup &group = CommunicatorType::AllGroup;
+   this->communicationGroup=(void*)& group;
    this->globalGrid = globalGrid;
    this->isSet=true;
    this->overlap=overlap;
@@ -45,8 +47,8 @@ setGlobalGrid( const GridType &globalGrid,
 
    if( CommunicatorType::IsInitialized() )
    {
-      this->rank=CommunicatorType::GetRank();
-      this->nproc=CommunicatorType::GetSize();
+      this->rank=CommunicatorType::GetRank(group);
+      this->nproc=CommunicatorType::GetSize(group);
       //use MPI only if have more than one process
       if(this->nproc>1)
       {
