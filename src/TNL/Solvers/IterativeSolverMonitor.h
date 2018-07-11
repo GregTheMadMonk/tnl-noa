@@ -47,7 +47,8 @@ protected:
 
    std::atomic_bool saved;
 
-   RealType time, saved_time, timeStep, saved_timeStep, residue, saved_residue, elapsed_time_before_refresh;
+   RealType time, saved_time, timeStep, saved_timeStep, residue, saved_residue, elapsed_time_before_refresh, last_mlups;
+   //TODO: Move MLUPS to LBM solver only i.e create solver monitor for LBM
 
    IndexType iterations, saved_iterations, iterations_before_refresh;
 
