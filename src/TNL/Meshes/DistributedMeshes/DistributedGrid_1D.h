@@ -44,20 +44,8 @@ class DistributedMesh< Grid< 1, RealType, Device, Index > > : public Distributed
       String printProcessCoords() const;
 
       String printProcessDistr() const;    
-
-      int getLeft() const;
-       
-      int getRight() const;
             
-      void writeProlog( Logger& logger ) const;       
-      
-
-      
-  private:
-        
-      int left;
-      int right;
-
+      void writeProlog( Logger& logger ) const; 
       
 };
 

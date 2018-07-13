@@ -299,6 +299,22 @@ class MpiCommunicator
          }
       }
 
+      static void CreateNewGroup(bool meToo,int myRank, CommunicationGroup &oldGroup, CommunicationGroup &newGroup)
+      {
+#ifdef HAVE_MPI
+        if(meToo)
+        {
+            MPI_Comm_split(oldGroup, 1, myRank, &newGroup);
+        }
+        else
+        {
+            MPI_Comm_split(oldGroup, MPI_UNDEFINED, GetRank(oldGroup), &newGroup);
+        }
+#else
+        newGroup=oldGroup;
+#endif         
+      }
+
 #ifdef HAVE_MPI
       static MPI_Request NullRequest;
       static MPI_Comm AllGroup;

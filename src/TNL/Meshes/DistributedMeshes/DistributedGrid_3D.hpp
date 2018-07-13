@@ -44,14 +44,19 @@ DistributedMesh< Grid< 3, RealType, Device, Index > >::
 setGlobalGrid( const GridType &globalGrid,
                const CoordinatesType& overlap )
 {
-   typename CommunicatorType::CommunicationGroup &group = CommunicatorType::AllGroup;
-   this->communicationGroup=(void*)& group;
+   if(this->isSet && this->communicationGroup != nullptr)
+        std::free(this->communicationGroup);
+   this->communicationGroup= std::malloc(sizeof(typename CommunicatorType::CommunicationGroup));
+
+   *((typename CommunicatorType::CommunicationGroup *)this->communicationGroup) = CommunicatorType::AllGroup;
+   auto group=*((typename CommunicatorType::CommunicationGroup *)this->communicationGroup);
+
    this->globalGrid = globalGrid;
    this->isSet=true;           
    this->overlap=overlap;
 
    for (int i=0;i<26;i++)
-        neighbors[i]=-1;
+        this->neighbors[i]=-1;
 
    this->Dimensions= GridType::getMeshDimension();
    this->spaceSteps=globalGrid.getSpaceSteps();
@@ -140,80 +145,21 @@ setGlobalGrid( const GridType &globalGrid,
 
       this->localOrigin=globalGrid.getOrigin()+TNL::Containers::tnlDotProduct(globalGrid.getSpaceSteps(),this->globalBegin-this->overlap);
 
-      //nearnodes
-      //X Y Z
-      if(this->subdomainCoordinates[0]>0)
-         neighbors[West]=getRankOfProcCoord(this->subdomainCoordinates[0]-1,this->subdomainCoordinates[1],this->subdomainCoordinates[2]);               
-      if(this->subdomainCoordinates[0]<this->domainDecomposition[0]-1)
-         neighbors[East]=getRankOfProcCoord(this->subdomainCoordinates[0]+1,this->subdomainCoordinates[1],this->subdomainCoordinates[2]);
-      if(this->subdomainCoordinates[1]>0)
-         neighbors[North]=getRankOfProcCoord(this->subdomainCoordinates[0],this->subdomainCoordinates[1]-1,this->subdomainCoordinates[2]);
-      if(this->subdomainCoordinates[1]<this->domainDecomposition[1]-1)
-         neighbors[South]=getRankOfProcCoord(this->subdomainCoordinates[0],this->subdomainCoordinates[1]+1,this->subdomainCoordinates[2]);
-      if(this->subdomainCoordinates[2]>0)
-         neighbors[Bottom]=getRankOfProcCoord(this->subdomainCoordinates[0],this->subdomainCoordinates[1],this->subdomainCoordinates[2]-1);
-      if(this->subdomainCoordinates[2]<this->domainDecomposition[2]-1)
-         neighbors[Top]=getRankOfProcCoord(this->subdomainCoordinates[0],this->subdomainCoordinates[1],this->subdomainCoordinates[2]+1);
-
-      //XY
-      if(this->subdomainCoordinates[0]>0 && this->subdomainCoordinates[1]>0)
-         neighbors[NorthWest]=getRankOfProcCoord(this->subdomainCoordinates[0]-1,this->subdomainCoordinates[1]-1,this->subdomainCoordinates[2]);
-      if(this->subdomainCoordinates[0]<this->domainDecomposition[0]-1 && this->subdomainCoordinates[1]>0)
-         neighbors[NorthEast]=getRankOfProcCoord(this->subdomainCoordinates[0]+1,this->subdomainCoordinates[1]-1,this->subdomainCoordinates[2]);
-      if(this->subdomainCoordinates[0]>0 && this->subdomainCoordinates[1]<this->domainDecomposition[1]-1)
-         neighbors[SouthWest]=getRankOfProcCoord(this->subdomainCoordinates[0]-1,this->subdomainCoordinates[1]+1,this->subdomainCoordinates[2]);
-      if(this->subdomainCoordinates[0]<this->domainDecomposition[0]-1 && this->subdomainCoordinates[1]<this->domainDecomposition[1]-1)
-         neighbors[SouthEast]=getRankOfProcCoord(this->subdomainCoordinates[0]+1,this->subdomainCoordinates[1]+1,this->subdomainCoordinates[2]);             
-      //XZ
-      if(this->subdomainCoordinates[0]>0 && this->subdomainCoordinates[2]>0)
-         neighbors[BottomWest]=getRankOfProcCoord(this->subdomainCoordinates[0]-1,this->subdomainCoordinates[1],this->subdomainCoordinates[2]-1);
-      if(this->subdomainCoordinates[0]<this->domainDecomposition[0]-1 && this->subdomainCoordinates[2]>0)
-         neighbors[BottomEast]=getRankOfProcCoord(this->subdomainCoordinates[0]+1,this->subdomainCoordinates[1],this->subdomainCoordinates[2]-1); 
-      if(this->subdomainCoordinates[0]>0 && this->subdomainCoordinates[2]<this->domainDecomposition[2]-1)
-         neighbors[TopWest]=getRankOfProcCoord(this->subdomainCoordinates[0]-1,this->subdomainCoordinates[1],this->subdomainCoordinates[2]+1);
-      if(this->subdomainCoordinates[0]<this->domainDecomposition[0]-1 && this->subdomainCoordinates[2]<this->domainDecomposition[2]-1)
-         neighbors[TopEast]=getRankOfProcCoord(this->subdomainCoordinates[0]+1,this->subdomainCoordinates[1],this->subdomainCoordinates[2]+1);
-      //YZ
-      if(this->subdomainCoordinates[1]>0 && this->subdomainCoordinates[2]>0)
-         neighbors[BottomNorth]=getRankOfProcCoord(this->subdomainCoordinates[0],this->subdomainCoordinates[1]-1,this->subdomainCoordinates[2]-1);
-      if(this->subdomainCoordinates[1]<this->domainDecomposition[1]-1 && this->subdomainCoordinates[2]>0)
-         neighbors[BottomSouth]=getRankOfProcCoord(this->subdomainCoordinates[0],this->subdomainCoordinates[1]+1,this->subdomainCoordinates[2]-1);
-      if(this->subdomainCoordinates[1]>0 && this->subdomainCoordinates[2]<this->domainDecomposition[2]-1)
-         neighbors[TopNorth]=getRankOfProcCoord(this->subdomainCoordinates[0],this->subdomainCoordinates[1]-1,this->subdomainCoordinates[2]+1);               
-      if(this->subdomainCoordinates[1]<this->domainDecomposition[1]-1 && this->subdomainCoordinates[2]<this->domainDecomposition[2]-1)
-         neighbors[TopSouth]=getRankOfProcCoord(this->subdomainCoordinates[0],this->subdomainCoordinates[1]+1,this->subdomainCoordinates[2]+1);
-      //XYZ
-      if(this->subdomainCoordinates[0]>0 && this->subdomainCoordinates[1]>0 && this->subdomainCoordinates[2]>0 )
-         neighbors[BottomNorthWest]=getRankOfProcCoord(this->subdomainCoordinates[0]-1,this->subdomainCoordinates[1]-1,this->subdomainCoordinates[2]-1);
-      if(this->subdomainCoordinates[0]<this->domainDecomposition[0]-1 && this->subdomainCoordinates[1]>0 && this->subdomainCoordinates[2]>0 )
-         neighbors[BottomNorthEast]=getRankOfProcCoord(this->subdomainCoordinates[0]+1,this->subdomainCoordinates[1]-1,this->subdomainCoordinates[2]-1);
-      if(this->subdomainCoordinates[0]>0 && this->subdomainCoordinates[1]<this->domainDecomposition[1]-1 && this->subdomainCoordinates[2]>0 )
-         neighbors[BottomSouthWest]=getRankOfProcCoord(this->subdomainCoordinates[0]-1,this->subdomainCoordinates[1]+1,this->subdomainCoordinates[2]-1);
-      if(this->subdomainCoordinates[0]<this->domainDecomposition[0]-1 && this->subdomainCoordinates[1]<this->domainDecomposition[1]-1 && this->subdomainCoordinates[2]>0 )
-         neighbors[BottomSouthEast]=getRankOfProcCoord(this->subdomainCoordinates[0]+1,this->subdomainCoordinates[1]+1,this->subdomainCoordinates[2]-1);
-      if(this->subdomainCoordinates[0]>0 && this->subdomainCoordinates[1]>0 && this->subdomainCoordinates[2]<this->domainDecomposition[2]-1 )
-         neighbors[TopNorthWest]=getRankOfProcCoord(this->subdomainCoordinates[0]-1,this->subdomainCoordinates[1]-1,this->subdomainCoordinates[2]+1);
-      if(this->subdomainCoordinates[0]<this->domainDecomposition[0]-1 && this->subdomainCoordinates[1]>0 && this->subdomainCoordinates[2]<this->domainDecomposition[2]-1 )
-         neighbors[TopNorthEast]=getRankOfProcCoord(this->subdomainCoordinates[0]+1,this->subdomainCoordinates[1]-1,this->subdomainCoordinates[2]+1);
-      if(this->subdomainCoordinates[0]>0 && this->subdomainCoordinates[1]<this->domainDecomposition[1]-1 && this->subdomainCoordinates[2]<this->domainDecomposition[2]-1 )
-         neighbors[TopSouthWest]=getRankOfProcCoord(this->subdomainCoordinates[0]-1,this->subdomainCoordinates[1]+1,this->subdomainCoordinates[2]+1);
-      if(this->subdomainCoordinates[0]<this->domainDecomposition[0]-1 && this->subdomainCoordinates[1]<this->domainDecomposition[1]-1 && this->subdomainCoordinates[2]<this->domainDecomposition[2]-1 )
-         neighbors[TopSouthEast]=getRankOfProcCoord(this->subdomainCoordinates[0]+1,this->subdomainCoordinates[1]+1,this->subdomainCoordinates[2]+1);   
-
+      this->setUpNeighbors();
 
       this->localBegin=this->overlap;
 
-      if(neighbors[West]==-1)
+      if(this->neighbors[West]==-1)
       {
          this->localOrigin.x()+=this->overlap.x()*globalGrid.getSpaceSteps().x();
          this->localBegin.x()=0;
       }
-      if(neighbors[North]==-1)
+      if(this->neighbors[North]==-1)
       {
          this->localOrigin.y()+=this->overlap.y()*globalGrid.getSpaceSteps().y();
          this->localBegin.y()=0;
       }
-      if(neighbors[Bottom]==-1)
+      if(this->neighbors[Bottom]==-1)
       {
          this->localOrigin.z()+=this->overlap.z()*globalGrid.getSpaceSteps().z();
          this->localBegin.z()=0;
@@ -221,19 +167,19 @@ setGlobalGrid( const GridType &globalGrid,
 
       this->localGridSize=this->localSize;
 
-      if(neighbors[West]!=-1)
+      if(this->neighbors[West]!=-1)
          this->localGridSize.x()+=this->overlap.x();
-      if(neighbors[East]!=-1)
+      if(this->neighbors[East]!=-1)
          this->localGridSize.x()+=this->overlap.x();
 
-      if(neighbors[North]!=-1)
+      if(this->neighbors[North]!=-1)
          this->localGridSize.y()+=this->overlap.y();
-      if(neighbors[South]!=-1)
+      if(this->neighbors[South]!=-1)
          this->localGridSize.y()+=this->overlap.y();
 
-      if(neighbors[Bottom]!=-1)
+      if(this->neighbors[Bottom]!=-1)
          this->localGridSize.z()+=this->overlap.z();
-      if(neighbors[Top]!=-1)
+      if(this->neighbors[Top]!=-1)
          this->localGridSize.z()+=this->overlap.z();
    }                     
 }
@@ -248,7 +194,7 @@ setupGrid( GridType& grid)
    grid.setDimensions(this->localGridSize);
    //compute local proportions by side efect
    grid.setSpaceSteps(this->spaceSteps);
-   grid.SetDistMesh(this);
+   grid.setDistMesh(this);
 };
 
 template< typename RealType, typename Device, typename Index >     
@@ -268,31 +214,13 @@ printProcessDistr() const
 };  
 
 template< typename RealType, typename Device, typename Index >     
-const int*
-DistributedMesh< Grid< 3, RealType, Device, Index > >::
-getNeighbors() const
-{
-   TNL_ASSERT_TRUE(this->isSet,"DistributedGrid is not set, but used by getNeighbors");
-   return this->neighbors;
-}
-
-template< typename RealType, typename Device, typename Index >     
 void
 DistributedMesh< Grid< 3, RealType, Device, Index > >::
 writeProlog( Logger& logger )
 {
    logger.writeParameter( "Domain decomposition:", this->getDomainDecomposition() );
 }           
-
-template< typename RealType, typename Device, typename Index >     
-int
-DistributedMesh< Grid< 3, RealType, Device, Index > >::
-getRankOfProcCoord( int x, int y, int z ) const
-{
-   return z*this->domainDecomposition[0]*this->domainDecomposition[1]+y*this->domainDecomposition[0]+x;
-}
-         
-         
+   
       } //namespace DistributedMeshes
    } // namespace Meshes
 } // namespace TNL

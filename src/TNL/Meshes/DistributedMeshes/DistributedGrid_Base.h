@@ -13,10 +13,14 @@
 
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Logger.h>
+#include <TNL/Meshes/DistributedMeshes/Directions.h>
+
 
 namespace TNL {
 namespace Meshes { 
 namespace DistributedMeshes {
+
+
 
 template<int dim, typename RealType, typename Device, typename Index >     
 class DistributedGrid_Base
@@ -28,9 +32,13 @@ class DistributedGrid_Base
       typedef typename GridType::PointType PointType;
       typedef Containers::StaticVector< dim, IndexType > CoordinatesType;
 
-      static constexpr int getMeshDimension() { return dim; };    
+      static constexpr int getMeshDimension() { return dim; };  
+
+      static constexpr int getNeighborsCount() { return DirectionCount<dim>::get(); } //c++14 may use Directions::pow3(dim)-1 
 
       DistributedGrid_Base();
+
+      ~DistributedGrid_Base();
     
       void setDomainDecomposition( const CoordinatesType& domainDecomposition );      
       const CoordinatesType& getDomainDecomposition() const;
@@ -45,6 +53,8 @@ class DistributedGrid_Base
       //dimensions of global grid
       const CoordinatesType& getGlobalSize() const;
 
+      const GridType& getGlobalGrid() const;
+
       //coordinates of begin of local subdomain without overlaps in global grid
       const CoordinatesType& getGlobalBegin() const;
 
@@ -53,6 +63,11 @@ class DistributedGrid_Base
        
       //coordinates of begin of local subdomain without overlaps in local grid       
       const CoordinatesType& getLocalBegin() const;
+
+      const CoordinatesType& getSubdomainCoordinates() const;
+
+      const PointType& getLocalOrigin() const;
+      const PointType& getSpaceSteps() const;
 
       //aka MPI-communcicator  
       void setCommunicationGroup(void * group);
@@ -64,7 +79,20 @@ class DistributedGrid_Base
       template< typename Entity >
       IndexType getEntitiesCount() const; 
 
+      const int* getNeighbors() const; 
+
+      template<typename CommunicatorType, typename DistributedGridType>
+      bool SetupByCut(DistributedGridType &inputDistributedGrid, 
+                 Containers::StaticVector<dim, int> savedDimensions, 
+                 Containers::StaticVector<DistributedGridType::getMeshDimension()-dim,int> reducedDimensions, 
+                 Containers::StaticVector<DistributedGridType::getMeshDimension()-dim,IndexType> fixedIndexs);
+
+    int getRankOfProcCoord(const CoordinatesType &nodeCoordinates) const;
+
    public: 
+      bool isThereNeighbor(const CoordinatesType &direction) const;
+
+      void setUpNeighbors();
 
       GridType globalGrid;
       PointType localOrigin;
@@ -72,12 +100,14 @@ class DistributedGrid_Base
       CoordinatesType localSize;
       CoordinatesType localGridSize;
       CoordinatesType overlap;
-      CoordinatesType globalDimensions;
+      //CoordinatesType globalDimensions;
       CoordinatesType globalBegin;
       PointType spaceSteps;
 
       CoordinatesType domainDecomposition;
-      CoordinatesType subdomainCoordinates;    
+      CoordinatesType subdomainCoordinates;   
+
+      int neighbors[getNeighborsCount()];
 
       IndexType Dimensions;        
       bool distributed;

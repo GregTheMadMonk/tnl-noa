@@ -101,7 +101,7 @@ class Grid< 3, Real, Device, Index > : public Object
 
    inline void setSpaceSteps(const PointType& steps);
    
-   void SetDistMesh(DistributedMeshType * distGrid);
+   void setDistMesh(DistributedMeshType * distGrid);
    
    DistributedMeshType * getDistributedMesh(void) const;
    

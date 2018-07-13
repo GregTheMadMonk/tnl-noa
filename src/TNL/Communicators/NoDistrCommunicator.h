@@ -124,6 +124,11 @@ class NoDistrCommunicator
          memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
       }
 
+      static void CreateNewGroup(bool meToo, int myRank, CommunicationGroup &oldGroup, CommunicationGroup &newGroup)
+      {
+         newGroup=oldGroup;
+      }
+
       static void writeProlog( Logger& logger ){};
 };
 

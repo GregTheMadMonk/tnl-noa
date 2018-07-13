@@ -8,6 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#include <cstdlib>
+
 #pragma once
 
 namespace TNL {
@@ -32,14 +34,19 @@ DistributedMesh< Grid< 2, RealType, Device, Index > >::
 setGlobalGrid( const GridType &globalGrid,
                const CoordinatesType& overlap )
 {
-   typename CommunicatorType::CommunicationGroup &group = CommunicatorType::AllGroup;
-   this->communicationGroup=(void*)& group;
+   if(this->isSet && this->communicationGroup != nullptr)
+        std::free(this->communicationGroup);
+   this->communicationGroup= std::malloc(sizeof(typename CommunicatorType::CommunicationGroup));
+
+   *((typename CommunicatorType::CommunicationGroup *)this->communicationGroup) = CommunicatorType::AllGroup;
+   auto group=*((typename CommunicatorType::CommunicationGroup *)this->communicationGroup);
+
    this->globalGrid = globalGrid;
    this->isSet=true;
    this->overlap=overlap;
 
    for( int i=0; i<8; i++ )
-      neighbors[i]=-1;
+      this->neighbors[i]=-1;
 
    this->Dimensions= GridType::getMeshDimension();
    this->spaceSteps=globalGrid.getSpaceSteps();
@@ -111,33 +118,35 @@ setGlobalGrid( const GridType &globalGrid,
 
       this->localOrigin=globalGrid.getOrigin()+TNL::Containers::tnlDotProduct(globalGrid.getSpaceSteps(),this->globalBegin-this->overlap);
 
+      this->setUpNeighbors();
+
       //nearnodes
-      if(this->subdomainCoordinates[0]>0)
-          neighbors[Left]=getRankOfProcCoord(this->subdomainCoordinates[0]-1,this->subdomainCoordinates[1]);
+      /*if(this->subdomainCoordinates[0]>0)
+          this->neighbors[Left]=this->getRankOfProcCoord(this->subdomainCoordinates+CoordinatesType(-1,0));
       if(this->subdomainCoordinates[0]<this->domainDecomposition[0]-1)
-          neighbors[Right]=getRankOfProcCoord(this->subdomainCoordinates[0]+1,this->subdomainCoordinates[1]);
+          this->neighbors[Right]=this->getRankOfProcCoord(this->subdomainCoordinates+CoordinatesType(1,0));
       if(this->subdomainCoordinates[1]>0)
-          neighbors[Up]=getRankOfProcCoord(this->subdomainCoordinates[0],this->subdomainCoordinates[1]-1);
+          this->neighbors[Up]=this->getRankOfProcCoord(this->subdomainCoordinates+CoordinatesType(0,-1));
       if(this->subdomainCoordinates[1]<this->domainDecomposition[1]-1)
-          neighbors[Down]=getRankOfProcCoord(this->subdomainCoordinates[0],this->subdomainCoordinates[1]+1);
+          this->neighbors[Down]=this->getRankOfProcCoord(this->subdomainCoordinates+CoordinatesType(0,1));
       if(this->subdomainCoordinates[0]>0 && this->subdomainCoordinates[1]>0)
-          neighbors[UpLeft]=getRankOfProcCoord(this->subdomainCoordinates[0]-1,this->subdomainCoordinates[1]-1);
+          this->neighbors[UpLeft]=this->getRankOfProcCoord(this->subdomainCoordinates+CoordinatesType(-1,-1));
       if(this->subdomainCoordinates[0]>0 && this->subdomainCoordinates[1]<this->domainDecomposition[1]-1)
-          neighbors[DownLeft]=getRankOfProcCoord(this->subdomainCoordinates[0]-1,this->subdomainCoordinates[1]+1);
+          this->neighbors[DownLeft]=this->getRankOfProcCoord(this->subdomainCoordinates+CoordinatesType(-1,1));
       if(this->subdomainCoordinates[0]<this->domainDecomposition[0]-1 && this->subdomainCoordinates[1]>0)
-          neighbors[UpRight]=getRankOfProcCoord(this->subdomainCoordinates[0]+1,this->subdomainCoordinates[1]-1);
+          this->neighbors[UpRight]=this->getRankOfProcCoord(this->subdomainCoordinates+CoordinatesType(1,-1));
       if(this->subdomainCoordinates[0]<this->domainDecomposition[0]-1 && this->subdomainCoordinates[1]<this->domainDecomposition[1]-1)
-          neighbors[DownRight]=getRankOfProcCoord(this->subdomainCoordinates[0]+1,this->subdomainCoordinates[1]+1);
+          this->neighbors[DownRight]=this->getRankOfProcCoord(this->subdomainCoordinates+CoordinatesType(1,1));*/
 
       this->localBegin=this->overlap;
 
-      if(neighbors[Left]==-1)
+      if(this->neighbors[Left]==-1)
       {
            this->localOrigin.x()+=this->overlap.x()*globalGrid.getSpaceSteps().x();
            this->localBegin.x()=0;
       }
 
-      if(neighbors[Up]==-1)
+      if(this->neighbors[Up]==-1)
       {
           this->localOrigin.y()+=this->overlap.y()*globalGrid.getSpaceSteps().y();
           this->localBegin.y()=0;
@@ -145,14 +154,14 @@ setGlobalGrid( const GridType &globalGrid,
 
       this->localGridSize=this->localSize;
       //Add Overlaps
-      if(neighbors[Left]!=-1)
+      if(this->neighbors[Left]!=-1)
           this->localGridSize.x()+=this->overlap.x();
-      if(neighbors[Right]!=-1)
+      if(this->neighbors[Right]!=-1)
           this->localGridSize.x()+=this->overlap.x();
 
-      if(neighbors[Up]!=-1)
+      if(this->neighbors[Up]!=-1)
           this->localGridSize.y()+=this->overlap.y();
-      if(neighbors[Down]!=-1)
+      if(this->neighbors[Down]!=-1)
           this->localGridSize.y()+=this->overlap.y();
   }
 }
@@ -167,7 +176,7 @@ setupGrid( GridType& grid )
    grid.setDimensions( this->localGridSize );
    //compute local proporions by sideefect
    grid.setSpaceSteps( this->spaceSteps );
-   grid.SetDistMesh(this);
+   grid.setDistMesh(this);
 };
 
 template< typename RealType, typename Device, typename Index >
@@ -186,14 +195,6 @@ printProcessDistr() const
    return convertToString(this->domainDecomposition[0])+String("-")+convertToString(this->domainDecomposition[1]);
 };  
 
-template< typename RealType, typename Device, typename Index >
-const int*
-DistributedMesh< Grid< 2, RealType, Device, Index > >::
-getNeighbors() const
-{
-   TNL_ASSERT_TRUE(this->isSet,"DistributedGrid is not set, but used by getNeighbors");
-   return this->neighbors;
-}
 
 template< typename RealType, typename Device, typename Index >
 void
@@ -202,15 +203,7 @@ writeProlog( Logger& logger ) const
 {
    logger.writeParameter( "Domain decomposition:", this->getDomainDecomposition() );
 }
-
-template< typename RealType, typename Device, typename Index >
-int
-DistributedMesh< Grid< 2, RealType, Device, Index > >::
-getRankOfProcCoord(int x, int y) const
-{
-   return y*this->domainDecomposition[0]+x;
-}
-         
+        
       } //namespace DistributedMeshes
    } // namespace Meshes
 } // namespace TNL

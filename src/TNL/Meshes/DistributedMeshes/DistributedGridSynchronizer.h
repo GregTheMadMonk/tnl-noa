@@ -80,24 +80,23 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
           if(!distributedGrid->isDistributed())
                   return;
 
-          int leftN=distributedGrid->getLeft();
-          int rightN=distributedGrid->getRight();
+          const int *neighbor=distributedGrid->getNeighbors();
 
           int totalSize = meshFunction.getMesh().getDimensions().x();
 
           CopyBuffers(meshFunction, sendbuffs, true,
                   overlapSize, totalSize-2*overlapSize, overlapSize,
-                  leftN, rightN);
+                  neighbor[Left], neighbor[Right]);
 
           //async send
           typename CommunicatorType::Request req[4];
           typename CommunicatorType::CommunicationGroup group;
           group=*((typename CommunicatorType::CommunicationGroup *)(distributedGrid->getCommunicationGroup()));
           //send everithing, recieve everything 
-          if(leftN!=-1)
+          if(neighbor[Left]!=-1)
           {
-              req[0]=CommunicatorType::ISend(sendbuffs[Left].getData(), overlapSize, leftN,group);
-              req[2]=CommunicatorType::IRecv(rcvbuffs[Left].getData(), overlapSize, leftN,group);
+              req[0]=CommunicatorType::ISend(sendbuffs[Left].getData(), overlapSize, neighbor[Left],group);
+              req[2]=CommunicatorType::IRecv(rcvbuffs[Left].getData(), overlapSize, neighbor[Left],group);
           }
           else
           {
@@ -105,10 +104,10 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
               req[2]=CommunicatorType::NullRequest;
           }        
 
-          if(rightN!=-1)
+          if(neighbor[Right]!=-1)
           {
-              req[1]=CommunicatorType::ISend(sendbuffs[Right].getData(), overlapSize, rightN,group);
-              req[3]=CommunicatorType::IRecv(rcvbuffs[Right].getData(), overlapSize, rightN,group);
+              req[1]=CommunicatorType::ISend(sendbuffs[Right].getData(), overlapSize, neighbor[Right],group);
+              req[3]=CommunicatorType::IRecv(rcvbuffs[Right].getData(), overlapSize, neighbor[Right],group);
           }
           else
           {
@@ -121,7 +120,7 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
 
           CopyBuffers(meshFunction, rcvbuffs, false,
                   0, totalSize-overlapSize, overlapSize,
-                  leftN, rightN);
+                  neighbor[Left], neighbor[Right]);
       }
 
    private:

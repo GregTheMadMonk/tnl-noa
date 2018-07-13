@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <cstdlib>
+
 namespace TNL {
    namespace Meshes {
       namespace DistributedMeshes {
@@ -31,13 +33,19 @@ DistributedMesh< Grid< 1, RealType, Device, Index > >::
 setGlobalGrid( const GridType& globalGrid,
                const CoordinatesType& overlap )
 {
-   typename CommunicatorType::CommunicationGroup &group = CommunicatorType::AllGroup;
-   this->communicationGroup=(void*)& group;
+
+   if(this->isSet && this->communicationGroup != nullptr)
+        std::free(this->communicationGroup);
+   this->communicationGroup= std::malloc(sizeof(typename CommunicatorType::CommunicationGroup));
+
+   *((typename CommunicatorType::CommunicationGroup *)this->communicationGroup) = CommunicatorType::AllGroup;
+    auto group=*((typename CommunicatorType::CommunicationGroup *)this->communicationGroup);
+
    this->globalGrid = globalGrid;
    this->isSet = true;
    this->overlap = overlap;
-   left=-1;
-   right=-1;
+   this->neighbors[Left]=-1;
+   this->neighbors[Right]=-1;
 
    this->Dimensions = GridType::getMeshDimension();
    this->spaceSteps = globalGrid.getSpaceSteps();
@@ -59,7 +67,6 @@ setGlobalGrid( const GridType& globalGrid,
        this->localOrigin = globalGrid.getOrigin();
        this->localSize = globalGrid.getDimensions();
        this->localGridSize = globalGrid.getDimensions();
-       this->globalDimensions = globalGrid.getDimensions();
        this->globalBegin = CoordinatesType(0);
        this->localBegin = CoordinatesType(0);
        this->domainDecomposition[ 0 ];
@@ -67,13 +74,9 @@ setGlobalGrid( const GridType& globalGrid,
    }
    else
    {            
-       //nearnodes
-       if( this->rank != 0 ) left=this->rank-1;
-       if( this->rank != this->nproc-1 ) right=this->rank+1;
-
        this->domainDecomposition[ 0 ] = this->nproc;
-       this->globalDimensions=globalGrid.getDimensions();                 
-
+       this->subdomainCoordinates[ 0 ]= this->rank;
+       
        //compute local mesh size               
        int numberOfLarger = globalGrid.getDimensions().x() % this->nproc;
 
@@ -93,10 +96,12 @@ setGlobalGrid( const GridType& globalGrid,
                         +this->globalBegin.x()*this->globalGrid.getSpaceSteps().x();
        }
 
+      this->setUpNeighbors();
+
       this->localBegin=overlap;
 
        //vlevo neni prekryv
-       if(left==-1)
+       if(this->neighbors[Left]==-1)
        {
            this->localOrigin.x()+=this->overlap.x()*this->globalGrid.getSpaceSteps().x();
            this->localBegin.x()=0;
@@ -104,7 +109,7 @@ setGlobalGrid( const GridType& globalGrid,
 
        this->localGridSize = this->localSize;
        //add overlaps
-       if( left == -1 || right == -1 )
+       if( this->neighbors[Left] == -1 || this->neighbors[Right] == -1 )
            this->localGridSize.x() += this->overlap.x();
        else
            this->localGridSize.x() += 2*this->overlap.x();
@@ -121,7 +126,7 @@ setupGrid( GridType& grid)
    grid.setDimensions(this->localGridSize);
    //compute local proportions by sideefect
    grid.setSpaceSteps(this->spaceSteps);
-   grid.SetDistMesh(this);
+   grid.setDistMesh(this);
 };
 
 template< typename RealType, typename Device, typename Index >     
@@ -139,25 +144,6 @@ printProcessDistr() const
 {
    return convertToString(this->nproc);
 };       
-
-
-template< typename RealType, typename Device, typename Index >     
-int
-DistributedMesh< Grid< 1, RealType, Device, Index > >::
-getLeft() const
-{
-   TNL_ASSERT_TRUE(this->isSet,"DistributedGrid is not set, but used by getLeft");
-   return this->left;
-};
-
-template< typename RealType, typename Device, typename Index >     
-int
-DistributedMesh< Grid< 1, RealType, Device, Index > >::
-getRight() const
-{
-   TNL_ASSERT_TRUE(this->isSet,"DistributedGrid is not set, but used by getRight");
-   return this->right;
-};
 
 template< typename RealType, typename Device, typename Index >
 void

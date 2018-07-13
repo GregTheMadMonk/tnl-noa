@@ -125,7 +125,7 @@ class Grid< 1, Real, Device, Index > : public Object
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const;
    
-   void SetDistMesh(DistributedMeshType * distMesh);
+   void setDistMesh(DistributedMeshType * distMesh);
    
    DistributedMeshType * getDistributedMesh() const;
 

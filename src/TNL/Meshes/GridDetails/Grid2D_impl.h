@@ -423,7 +423,7 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-void Grid< 2, Real, Device, Index >:: SetDistMesh(DistributedMeshType* distMesh)
+void Grid< 2, Real, Device, Index >:: setDistMesh(DistributedMeshType* distMesh)
 {
     this->distGrid=distMesh;
 }

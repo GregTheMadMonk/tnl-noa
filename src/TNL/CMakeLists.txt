@@ -41,7 +41,8 @@ set( headers
      String.h
      Timer.h
      terminal-colors.h
-     UniquePointer.h )
+     UniquePointer.h
+     StaticVectorFor.h )
 
 set( common_SOURCES
      File.cpp

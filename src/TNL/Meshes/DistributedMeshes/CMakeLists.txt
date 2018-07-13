@@ -12,6 +12,7 @@ SET( headers BufferEntitiesHelper.h
              DistributedGrid_Base.hpp
              DistributedGridSynchronizer.h
              DistributedGridIO.h
+             Directions.h
              )
 
 INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Meshes/DistributedMeshes )

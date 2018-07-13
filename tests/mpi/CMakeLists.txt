@@ -25,11 +25,6 @@
     TARGET_LINK_LIBRARIES(  mpiio-save-load-test ${CPPUNIT_LIBRARIES}
                                                            tnl )
 
-    ADD_EXECUTABLE( CutMeshFunction ${headers} CutMeshFunction.cpp )   
-    TARGET_LINK_LIBRARIES(  CutMeshFunction ${CPPUNIT_LIBRARIES}
-                                                           tnl )
-
-
 
     #ADD_EXECUTABLE( tnlMeshFuncttionEvaluateTestZ ${headers} MeshFunctionEvauateTest.cpp )   
     #TARGET_LINK_LIBRARIES( tnlMeshFuncttionEvaluateTestZ ${CPPUNIT_LIBRARIES}

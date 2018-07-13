@@ -1,3 +1,25 @@
+ADD_EXECUTABLE( DirectionsTest DirectionsTest.cpp )
+   TARGET_COMPILE_OPTIONS( DirectionsTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( DirectionsTest
+                              ${GTEST_BOTH_LIBRARIES}
+                              tnl )
+
+ADD_EXECUTABLE( CopyEntitesTest CopyEntitiesTest.cpp )
+   TARGET_COMPILE_OPTIONS( CopyEntitesTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( CopyEntitesTest
+                              ${GTEST_BOTH_LIBRARIES}
+                              tnl )
+
+ADD_EXECUTABLE( CutMeshFunctionTest CutMeshFunctionTest.cpp )
+   TARGET_COMPILE_OPTIONS( CutMeshFunctionTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( CutMeshFunctionTest
+                              ${GTEST_BOTH_LIBRARIES}
+                              tnl )
+
+ADD_TEST( NAME DirectionsTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/DirectionsTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( NAME CopyEntitesTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/CopyEntitesTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( NAME CutMeshFunctionTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/CutMeshFunctionTest${CMAKE_EXECUTABLE_SUFFIX} )
+
 if( ${CXX_COMPILER_NAME} STREQUAL "mpic++" )
 ADD_EXECUTABLE( DistributedGridTest_1D DistributedGridTest_1D.cpp )
    TARGET_COMPILE_OPTIONS( DistributedGridTest_1D PRIVATE ${CXX_TESTS_FLAGS} )
@@ -17,9 +39,15 @@ ADD_EXECUTABLE( DistributedGridTest_3D DistributedGridTest_3D.cpp )
                               ${GTEST_BOTH_LIBRARIES}
                               tnl )
 
-ADD_EXECUTABLE( CopyEntitesTest CopyEntitiesTest.cpp )
-   TARGET_COMPILE_OPTIONS( CopyEntitesTest PRIVATE ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( CopyEntitesTest
+ADD_EXECUTABLE( CutDistributedGridTest CutDistributedGridTest.cpp )
+   TARGET_COMPILE_OPTIONS( CutDistributedGridTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( CutDistributedGridTest
+                              ${GTEST_BOTH_LIBRARIES}
+                              tnl )
+
+ADD_EXECUTABLE( CutDistributedMeshFunctionTest CutDistributedMeshFunctionTest.cpp )
+   TARGET_COMPILE_OPTIONS( CutDistributedMeshFunctionTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( CutDistributedMeshFunctionTest
                               ${GTEST_BOTH_LIBRARIES}
                               tnl )
 
@@ -48,9 +76,6 @@ ELSE(  BUILD_CUDA )
                                   tnl )
 
 ENDIF( BUILD_CUDA )
-
- 
-ADD_TEST( NAME CopyEntitesTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/CopyEntitesTest${CMAKE_EXECUTABLE_SUFFIX} )
    
 SET (mpi_test_parameters_1d -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_1D${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridTest_1D COMMAND "mpirun" ${mpi_test_parameters_1d})
@@ -67,7 +92,11 @@ ADD_TEST( NAME DistributedGridIOTest COMMAND "mpirun" ${mpi_test_parameters_IO})
 SET (mpi_test_parameters_IOMPIIO -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridIO_MPIIOTest${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridIO_MPIIOTest COMMAND "mpirun" ${mpi_test_parameters_IOMPIIO})
 
+SET (mpi_test_parameters_CutDistributedGridTest -np 12 -H localhost:12 "${EXECUTABLE_OUTPUT_PATH}/CutDistributedGridTest${CMAKE_EXECUTABLE_SUFFIX}")
+ADD_TEST( NAME CutDistributedGridTest COMMAND "mpirun" ${mpi_test_parameters_CutDistributedGridTest})
 
+SET (mpi_test_parameters_CutDistributedMeshFunctionTest -np 12 -H localhost:12 "${EXECUTABLE_OUTPUT_PATH}/CutDistributedMeshFunctionTest${CMAKE_EXECUTABLE_SUFFIX}")
+ADD_TEST( NAME CutDistributedMeshFunctionTest COMMAND "mpirun" ${mpi_test_parameters_CutDistributedMeshFunctionTest})
 
 
 endif()

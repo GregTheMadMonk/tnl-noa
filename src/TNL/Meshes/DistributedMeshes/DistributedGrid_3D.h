@@ -18,14 +18,6 @@ namespace TNL {
 namespace Meshes { 
 namespace DistributedMeshes {
 
-enum Directions3D { West = 0 , East = 1 , North = 2, South=3, Top =4, Bottom=5, 
-                  NorthWest=6, NorthEast=7, SouthWest=8, SouthEast=9,
-                  BottomWest=10,BottomEast=11,BottomNorth=12,BottomSouth=13,
-                  TopWest=14,TopEast=15,TopNorth=16,TopSouth=17,
-                  BottomNorthWest=18,BottomNorthEast=19,BottomSouthWest=20,BottomSouthEast=21,
-                  TopNorthWest=22,TopNorthEast=23,TopSouthWest=24,TopSouthEast=25
-                  };
-
 
 template< typename RealType, typename Device, typename Index >
 class DistributedMesh<Grid< 3, RealType, Device, Index >> : public DistributedGrid_Base<3, RealType, Device, Index >
@@ -56,15 +48,8 @@ class DistributedMesh<Grid< 3, RealType, Device, Index >> : public DistributedGr
       String printProcessCoords() const;
 
       String printProcessDistr() const;
-
-      const int* getNeighbors() const;
-       
+      
       void writeProlog( Logger& logger );
-
-   private:
-
-      int getRankOfProcCoord(int x, int y, int z) const;           
-      int neighbors[26];
 
 };
 

@@ -17,7 +17,6 @@ namespace TNL {
 namespace Meshes { 
 namespace DistributedMeshes {
 
-enum Directions2D { Left = 0 , Right = 1 , Up = 2, Down=3, UpLeft =4, UpRight=5, DownLeft=6, DownRight=7 }; 
 
 template< typename RealType, typename Device, typename Index >
 class DistributedMesh< Grid< 2, RealType, Device, Index > >: public DistributedGrid_Base<2, RealType, Device, Index >
@@ -45,15 +44,8 @@ class DistributedMesh< Grid< 2, RealType, Device, Index > >: public DistributedG
       String printProcessCoords() const;
 
       String printProcessDistr() const;
-            
-      const int* getNeighbors() const;
              
       void writeProlog( Logger& logger ) const;
-               
-   private : 
-       
-      int getRankOfProcCoord(int x, int y) const;        
-      int neighbors[8];
 
 };
 
