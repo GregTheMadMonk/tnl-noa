@@ -168,10 +168,18 @@ void IterativeSolverMonitor< Real, Index > :: refresh()
          print_item( real_to_string( (saved) ? saved_residue : residue, 5 ), 12 );
       }
 
-      if( nodesPerIteration ) {
+      if( nodesPerIteration ) // otherwise MLUPS: 0 is printed
+      {
          const RealType mlups = nodesPerIteration * (iterations - iterations_before_refresh) / (getElapsedTime() - elapsed_time_before_refresh) * 1e-6;
+         //std::cerr << std::endl << " iterations - iterations_before_refresh = " << iterations - iterations_before_refresh
+         //          << " getElapsedTime() - elapsed_time_before_refresh = " << getElapsedTime() - elapsed_time_before_refresh << std::endl;
          print_item( " MLUPS:", 0 );
-         print_item( real_to_string( mlups, 5 ), 7 );
+         if( mlups > 0 )
+         {
+            print_item( real_to_string( mlups, 5 ), 7 );
+            last_mlups = mlups;
+         }
+         else print_item( real_to_string( last_mlups, 5 ), 7 );
       }
       iterations_before_refresh = iterations;
       elapsed_time_before_refresh = getElapsedTime();
