@@ -118,9 +118,7 @@ bool
 ExplicitTimeStepper< Problem, OdeSolver >::
 solve( const RealType& time,
        const RealType& stopTime,
-       const MeshPointer& mesh,
-       DofVectorPointer& dofVector,
-       MeshDependentDataPointer& meshDependentData )
+       DofVectorPointer& dofVector )
 {
    TNL_ASSERT_TRUE( this->odeSolver, "ODE solver was not set" );
    mainTimer.start();
@@ -130,11 +128,9 @@ solve( const RealType& time,
    this->odeSolver->setStopTime( stopTime );
    if( this->odeSolver->getMinIterations() )
       this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< Problem >::RealType ) this->odeSolver->getMinIterations() );
-   this->mesh = &mesh;
-   this->meshDependentData = &meshDependentData;
    if( ! this->odeSolver->solve( dofVector ) )
       return false;
-   this->problem->setExplicitBoundaryConditions( stopTime, *this->mesh, dofVector, *this->meshDependentData );
+   this->problem->setExplicitBoundaryConditions( stopTime, dofVector );
    mainTimer.stop();
    this->allIterations += this->odeSolver->getIterations();
    return true;

@@ -41,10 +41,8 @@ class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType,
       typedef typename ProblemType::IndexType IndexType;
       typedef typename ProblemType::MeshType MeshType;
       typedef typename ProblemType::DofVectorType DofVectorType;
-      typedef typename ProblemType::MeshDependentDataType MeshDependentDataType; 
       typedef SharedPointer< MeshType, DeviceType > MeshPointer;
       typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-      typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
 
       TimeIndependentPDESolver();
 
@@ -70,8 +68,6 @@ class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType,
 
       DofVectorPointer dofs;
 
-      MeshDependentDataPointer meshDependentData;
-      
       DiscreteSolver discreteSolver;
 
       ProblemType* problem;
