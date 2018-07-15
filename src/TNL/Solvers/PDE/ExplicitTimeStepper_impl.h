@@ -151,11 +151,7 @@ getExplicitUpdate( const RealType& time,
    }
 
    this->preIterateTimer.start();
-   if( ! this->problem->preIterate( time,
-                                    tau,
-                                    *this->mesh,
-                                    u,
-                                    *this->meshDependentData ) )
+   if( ! this->problem->preIterate( time, tau, u ) )
    {
       std::cerr << std::endl << "Preiteration failed." << std::endl;
       return;
@@ -167,19 +163,15 @@ getExplicitUpdate( const RealType& time,
       this->solverMonitor->setStage( "Explicit update" );
 
    this->explicitUpdaterTimer.start();
-   this->problem->setExplicitBoundaryConditions( time, *this->mesh, u, *this->meshDependentData );
-   this->problem->getExplicitUpdate( time, tau, *this->mesh, u, fu, *this->meshDependentData );
+   this->problem->setExplicitBoundaryConditions( time, u );
+   this->problem->getExplicitUpdate( time, tau, u, fu );
    this->explicitUpdaterTimer.stop();
 
    if( this->solverMonitor )
       this->solverMonitor->setStage( "Postiteration" );
 
    this->postIterateTimer.start();
-   if( ! this->problem->postIterate( time,
-                                     tau,
-                                     *this->mesh,
-                                     u,
-                                     *this->meshDependentData ) )
+   if( ! this->problem->postIterate( time, tau, u ) )
    {
       std::cerr << std::endl << "Postiteration failed." << std::endl;
       return;

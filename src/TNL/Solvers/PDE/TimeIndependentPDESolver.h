@@ -22,6 +22,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Solvers/PDE/PDESolver.h>
+#include <TNL/Problems/CommonData.h>
 
 
 namespace TNL {
@@ -43,6 +44,9 @@ class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType,
       typedef typename ProblemType::DofVectorType DofVectorType;
       typedef SharedPointer< MeshType, DeviceType > MeshPointer;
       typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+      typedef typename ProblemType::CommonDataType CommonDataType;
+      typedef typename ProblemType::CommonDataPointer CommonDataPointer;
+
 
       TimeIndependentPDESolver();
 
@@ -65,6 +69,8 @@ class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType,
    protected:
 
       MeshPointer mesh;
+      
+      CommonDataPointer commonDataPointer;
 
       DofVectorPointer dofs;
 

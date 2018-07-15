@@ -57,7 +57,7 @@ SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 init( const MeshPointer& mesh )
 {
   std::cout << "Setting up the linear system...";
-   if( ! this->problem->setupLinearSystem( mesh, this->matrix ) )
+   if( ! this->problem->setupLinearSystem( this->matrix ) )
       return false;
    std::cout << " [ OK ]" << std::endl;
    if( this->matrix.getData().getRows() == 0 || this->matrix.getData().getColumns() == 0 )

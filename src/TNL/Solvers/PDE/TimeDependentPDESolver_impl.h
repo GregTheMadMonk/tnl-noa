@@ -298,7 +298,7 @@ solve()
    this->computeTimer->reset();
  
    this->ioTimer->start();
-   if( ! this->problem->makeSnapshot( t, step, meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
+   if( ! this->problem->makeSnapshot( t, step, this->dofsPointer ) )
    {
       std::cerr << "Making the snapshot failed." << std::endl;
       return false;
@@ -316,14 +316,14 @@ solve()
    {
       RealType tau = min( this->snapshotPeriod,
                           this->finalTime - t );
-      if( ! this->timeStepper.solve( t, t + tau, this->meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
+      if( ! this->timeStepper.solve( t, t + tau, this->dofsPointer ) )
          return false;
       step ++;
       t += tau;
 
       this->ioTimer->start();
       this->computeTimer->stop();
-      if( ! this->problem->makeSnapshot( t, step, this->meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
+      if( ! this->problem->makeSnapshot( t, step, this->dofsPointer ) )
       {
          std::cerr << "Making the snapshot failed." << std::endl;
          return false;
