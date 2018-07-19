@@ -1,0 +1,17 @@
+
+IF( BUILD_CUDA )
+       CUDA_ADD_EXECUTABLE( large-meshfunction-example large-meshfunction-example.cu )
+       TARGET_COMPILE_OPTIONS( large-meshfunction-example PRIVATE ${CXX_TESTS_FLAGS} )
+       TARGET_LINK_LIBRARIES( large-meshfunction-example
+                                  ${GTEST_BOTH_LIBRARIES}
+                                  tnl )
+
+ELSE(  BUILD_CUDA )   
+       ADD_EXECUTABLE( large-meshfunction-example large-meshfunction-example.cpp )
+       TARGET_COMPILE_OPTIONS( large-meshfunction-example PRIVATE ${CXX_TESTS_FLAGS} )
+       TARGET_LINK_LIBRARIES( large-meshfunction-example
+                                  ${GTEST_BOTH_LIBRARIES}
+                                  tnl )
+
+ 
+ENDIF( BUILD_CUDA ) 

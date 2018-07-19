@@ -126,7 +126,7 @@ bool resolveIndexType( const Config::ParameterContainer& parameters )
   std::cout << "Setting index type to  ... " << indexType << std::endl;
    if( indexType == "int" )
       return setupGrid< RealType, int >( parameters );
-   if( indexType == "long int" )
+   if( indexType == "long-int" )
       return setupGrid< RealType, long int >( parameters );
    std::cerr << "The index type '" << indexType << "' is not defined. " << std::endl;
    return false;
