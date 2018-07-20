@@ -75,12 +75,16 @@ int main ( int argc, char *argv[])
     all.start();
     setup.start();
   
- PointType origin(-0.5);
- PointType proportions(size);
+ PointType globalOrigin;
+ globalOrigin.setValue(-0.5);
  
- SharedPointer<MeshType> gridPtr;
- gridPtr->setDimensions(proportions);
- gridPtr->setDomain(origin,proportions);
+ PointType globalProportions;
+ globalProportions.setValue(size);
+ 
+ 
+ MeshType globalGrid;
+ globalGrid.setDimensions(globalProportions);
+ globalGrid.setDomain(globalOrigin,globalProportions);
 
  
  CoordinatesType distr;
