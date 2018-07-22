@@ -6,5 +6,6 @@ ADD_SUBDIRECTORY( benchmarks )
 ADD_SUBDIRECTORY( long-time-unit-tests )
 ADD_SUBDIRECTORY( mic )
 ADD_SUBDIRECTORY( mpi )
+ADD_SUBDIRECTORY( simple_examples )
 
 unset( ENABLE_CODECOVERAGE )

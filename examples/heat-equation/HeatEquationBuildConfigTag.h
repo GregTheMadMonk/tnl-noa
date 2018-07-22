@@ -29,7 +29,7 @@ template<> struct ConfigTagReal< HeatEquationBuildConfigTag, long double > { enu
  * Turn off support for short int and long int indexing.
  */
 template<> struct ConfigTagIndex< HeatEquationBuildConfigTag, short int >{ enum { enabled = false }; };
-template<> struct ConfigTagIndex< HeatEquationBuildConfigTag, long int >{ enum { enabled = false }; };
+template<> struct ConfigTagIndex< HeatEquationBuildConfigTag, long int >{ enum { enabled = true }; };
 
 /****
  * Please, chose your preferred time discretization  here.

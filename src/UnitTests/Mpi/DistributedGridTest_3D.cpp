@@ -624,8 +624,8 @@ class DistributedGirdTest_3D : public ::testing::Test {
   static void SetUpTestCase() {
       
     int size=10;
-    rank=MPI::COMM_WORLD.Get_rank();
-    nproc=MPI::COMM_WORLD.Get_size();
+    rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
+    nproc=CommunicatorType::GetSize(CommunicatorType::AllGroup);
     
     PointType globalOrigin;
     PointType globalProportions;

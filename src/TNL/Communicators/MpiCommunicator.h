@@ -160,7 +160,7 @@ class MpiCommunicator
             {
                std::cout<< GetRank(AllGroup) <<": Redirecting std::out to file" <<std::endl;
                String stdoutFile;
-               stdoutFile=String( "./stdout-")+convertToString(MPI::COMM_WORLD.Get_rank())+String(".txt");
+               stdoutFile=String( "./stdout-")+convertToString(GetRank(MPI_COMM_WORLD))+String(".txt");
                filestr.open (stdoutFile.getString()); 
                psbuf = filestr.rdbuf(); 
                std::cout.rdbuf(psbuf);
