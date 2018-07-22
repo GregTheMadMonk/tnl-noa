@@ -16,6 +16,7 @@
 
 #ifdef HAVE_MPI
 #include <mpi.h>
+#include <mpi-ext.h>
 
 #ifdef HAVE_CUDA
     #include <TNL/Devices/Cuda.h>
@@ -72,6 +73,8 @@ class MpiCommunicator
       {
 #ifdef HAVE_MPI
          config.addEntry< bool >( "redirect-mpi-output", "Only process with rank 0 prints to console. Other processes are redirected to files.", true );
+         config.addEntry< bool >( "mpi-gdb-debug", "Wait for GDB to attach the master MPI process.", false );
+         config.addEntry< int >( "mpi-process-to-attach", "Number of the MPI process to be attached by GDB.", 0 );
 #endif
       }
 
@@ -82,9 +85,48 @@ class MpiCommunicator
          if(IsInitialized())//i.e. - isUsed
          {
             redirect = parameters.getParameter< bool >( "redirect-mpi-output" );
-            setupRedirection();
+            setupRedirection();                        
+#ifdef HAVE_CUDA
+   #if defined(MPIX_CUDA_AWARE_SUPPORT) && MPIX_CUDA_AWARE_SUPPORT
+            std::cout << "CUDA-aware MPI detected on this system ... " << std::endl;
+   #elif defined(MPIX_CUDA_AWARE_SUPPORT) && !MPIX_CUDA_AWARE_SUPPORT
+            std::cerr << "MPI is not CUDA-aware. Please install correct version of MPI." << std::endl;
+            return false;
+   #else
+            std::cerr << "WARNING: TNL cannot detect if you have CUDA-aware MPI. Some problems may occur." << std::endl;
+   #endif
+#endif // HAVE_CUDA
+            bool gdbDebug = parameters.getParameter< bool >( "mpi-gdb-debug" );
+            int processToAttach = parameters.getParameter< int >( "mpi-process-to-attach" );            
+    
+            if( gdbDebug )
+            {
+               int rank = GetRank( MPI_COMM_WORLD );
+               int pid = getpid();
+                              
+               volatile int tnlMPIDebugAttached = 0;
+               MPI_Send( &pid, 1, MPI_INT, 0, 0, MPI_COMM_WORLD );
+               if( rank == 0 )
+                  std::cerr << "Attach GDB to MPI process(es) by entering:" << std::endl;
+               for( int i = 0; i < GetSize( MPI_COMM_WORLD ); i++ )
+               {
+                  MPI_Status status;
+                  int recvPid;
+                  MPI_Recv( &recvPid, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status );
+               
+                  if( i == processToAttach || processToAttach == -1 )
+                  {
+                     std::cerr << "  For MPI process " << i << ": gdb -q -ex \"attach " << recvPid << "\"" 
+                               << " -ex \"set variable tnlMPIDebugAttached=1\"" 
+                               << " -ex \"finish\"" << std::endl;
+                  }
+               }
+               if( rank == processToAttach || processToAttach == -1 )
+                  while( ! tnlMPIDebugAttached );
+               MPI_Barrier( MPI_COMM_WORLD );
+            }
          }
-#endif
+#endif // HAVE_MPI
          return true;
       }
 
@@ -188,9 +230,8 @@ class MpiCommunicator
            int sum=0;
            for(int i=0;i<dim;i++)
                 sum+=distr[i];
-           if(sum==0) //uživatel neovlivňuje distribuci
+           if(sum==0)
            {
-               std::cout << "vynucuji distribuci" <<std::endl;
                for(int i=0;i<dim-1;i++)
                {
                     distr[i]=1;
@@ -334,37 +375,37 @@ class MpiCommunicator
 #ifdef HAVE_MPI
     #ifdef HAVE_CUDA
         	int count,rank, gpuCount, gpuNumber;
-            MPI_Comm_size(MPI_COMM_WORLD,&count);
-            MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+         MPI_Comm_size(MPI_COMM_WORLD,&count);
+         MPI_Comm_rank(MPI_COMM_WORLD,&rank);
 
-            cudaGetDeviceCount(&gpuCount);
+         cudaGetDeviceCount(&gpuCount);
 
-            procName names[count];
+         procName names[count];
 
-            int i=0;
-            int len;
-            MPI_Get_processor_name(names[rank].name, &len);
+         int i=0;
+         int len;
+         MPI_Get_processor_name(names[rank].name, &len);
 
-            for(i=0;i<count;i++)
-	            std::memcpy(names[i].name,names[rank].name,len+1);
+         for(i=0;i<count;i++)
+            std::memcpy(names[i].name,names[rank].name,len+1);
 
-            MPI_Alltoall( (void*)names ,MPI_MAX_PROCESSOR_NAME,MPI_CHAR,
-	            (void*)names,MPI_MAX_PROCESSOR_NAME,MPI_CHAR,
-                        MPI_COMM_WORLD);
+         MPI_Alltoall( (void*)names ,MPI_MAX_PROCESSOR_NAME,MPI_CHAR,
+            (void*)names,MPI_MAX_PROCESSOR_NAME,MPI_CHAR,
+                     MPI_COMM_WORLD);
 
-            int nodeRank=0;
-            for(i=0;i<rank;i++)
-            {
-	            if(std::strcmp(names[rank].name,names[i].name)==0)
-		            nodeRank++;
-            }
+         int nodeRank=0;
+         for(i=0;i<rank;i++)
+         {
+            if(std::strcmp(names[rank].name,names[i].name)==0)
+               nodeRank++;
+         }
 
-            gpuNumber=nodeRank % gpuCount;
+         gpuNumber=nodeRank % gpuCount;
 
-            cudaSetDevice(gpuNumber);
-            TNL_CHECK_CUDA_DEVICE;
+         cudaSetDevice(gpuNumber);
+         TNL_CHECK_CUDA_DEVICE;
 
-            //std::cout<<"Node: " << rank << " gpu: " << gpuNumber << std::endl;
+         //std::cout<<"Node: " << rank << " gpu: " << gpuNumber << std::endl;
 
     #endif
 #endif

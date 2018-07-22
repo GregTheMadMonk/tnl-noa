@@ -171,8 +171,6 @@ void IterativeSolverMonitor< Real, Index > :: refresh()
       if( nodesPerIteration ) // otherwise MLUPS: 0 is printed
       {
          const RealType mlups = nodesPerIteration * (iterations - iterations_before_refresh) / (getElapsedTime() - elapsed_time_before_refresh) * 1e-6;
-         //std::cerr << std::endl << " iterations - iterations_before_refresh = " << iterations - iterations_before_refresh
-         //          << " getElapsedTime() - elapsed_time_before_refresh = " << getElapsedTime() - elapsed_time_before_refresh << std::endl;
          print_item( " MLUPS:", 0 );
          if( mlups > 0 )
          {
