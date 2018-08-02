@@ -107,6 +107,7 @@ then
        echo "Warning:mpic++ is not installed on this system. MPI support is turned off." 
     else
        export CXX=mpic++
+       export CUDA_HOST_COMPILER=mpic++
     fi
     if ! [ -x  "$(command -v mpicc)" ]; then
        echo "Warning: mpicc is not installed on this system." 
