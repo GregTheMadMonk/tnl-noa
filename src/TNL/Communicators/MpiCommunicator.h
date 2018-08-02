@@ -106,20 +106,24 @@ class MpiCommunicator
                               
                volatile int tnlMPIDebugAttached = 0;
                MPI_Send( &pid, 1, MPI_INT, 0, 0, MPI_COMM_WORLD );
+               MPI_Barrier( MPI_COMM_WORLD );
                if( rank == 0 )
-                  std::cerr << "Attach GDB to MPI process(es) by entering:" << std::endl;
-               for( int i = 0; i < GetSize( MPI_COMM_WORLD ); i++ )
                {
-                  MPI_Status status;
-                  int recvPid;
-                  MPI_Recv( &recvPid, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status );
-               
-                  if( i == processToAttach || processToAttach == -1 )
+                  std::cout << "Attach GDB to MPI process(es) by entering:" << std::endl;
+                  for( int i = 0; i < GetSize( MPI_COMM_WORLD ); i++ )
                   {
-                     std::cerr << "  For MPI process " << i << ": gdb -q -ex \"attach " << recvPid << "\"" 
-                               << " -ex \"set variable tnlMPIDebugAttached=1\"" 
-                               << " -ex \"finish\"" << std::endl;
+                     MPI_Status status;
+                     int recvPid;
+                     MPI_Recv( &recvPid, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status );
+
+                     if( i == processToAttach || processToAttach == -1 )
+                     {
+                        std::cout << "  For MPI process " << i << ": gdb -q -ex \"attach " << recvPid << "\"" 
+                                  << " -ex \"set variable tnlMPIDebugAttached=1\"" 
+                                  << " -ex \"finish\"" << std::endl;
+                     }
                   }
+                  std::cout << std::flush;
                }
                if( rank == processToAttach || processToAttach == -1 )
                   while( ! tnlMPIDebugAttached );
