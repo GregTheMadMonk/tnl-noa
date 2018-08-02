@@ -70,18 +70,24 @@ class UpwindMomentumX< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Ind
          const IndexType& center = entity.getIndex(); 
          const IndexType& east = neighborEntities.template getEntityIndex< 1 >(); 
          const IndexType& west = neighborEntities.template getEntityIndex< -1 >();
+
          const RealType& pressure_center = this->pressure.template getData< DeviceType >()[ center ];
          const RealType& pressure_west = this->pressure.template getData< DeviceType >()[ west ];
          const RealType& pressure_east = this->pressure.template getData< DeviceType >()[ east ];
+
+         const RealType& density_center = this->density.template getData< DeviceType >()[ center ];
+         const RealType& density_west = this->density.template getData< DeviceType >()[ west ];
+         const RealType& density_east = this->density.template getData< DeviceType >()[ east ];
+
          const RealType& velocity_x_center = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ center ];
          const RealType& velocity_x_east = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ east ];
          const RealType& velocity_x_west = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ west ];
          
          return -hxInverse * ( 
-                                 this->positiveMainMomentumFlux( u[ center ], velocity_x_center, pressure_center )
-                               - this->positiveMainMomentumFlux( u[ west   ], velocity_x_west  , pressure_west   )
-                               - this->negativeMainMomentumFlux( u[ center ], velocity_x_center, pressure_center )
-                               + this->negativeMainMomentumFlux( u[ east   ], velocity_x_east  , pressure_east   )
+                                 this->positiveMainMomentumFlux( density_center, velocity_x_center, pressure_center )
+                               - this->positiveMainMomentumFlux( density_west,   velocity_x_west  , pressure_west   )
+                               - this->negativeMainMomentumFlux( density_center, velocity_x_center, pressure_center )
+                               + this->negativeMainMomentumFlux( density_east,   velocity_x_east  , pressure_east   )
                              );
       }
 
@@ -158,6 +164,12 @@ class UpwindMomentumX< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Ind
          const RealType& pressure_east   = this->pressure.template getData< DeviceType >()[ east ];
          const RealType& pressure_north  = this->pressure.template getData< DeviceType >()[ north ];
          const RealType& pressure_south  = this->pressure.template getData< DeviceType >()[ south ];
+         
+         const RealType& density_center = this->density.template getData< DeviceType >()[ center ];
+         const RealType& density_west   = this->density.template getData< DeviceType >()[ west ];
+         const RealType& density_east   = this->density.template getData< DeviceType >()[ east ];
+         const RealType& density_north  = this->density.template getData< DeviceType >()[ north ];
+         const RealType& density_south  = this->density.template getData< DeviceType >()[ south ];
 
          const RealType& velocity_x_center = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ center ];
          const RealType& velocity_x_east   = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ east ];
@@ -166,22 +178,20 @@ class UpwindMomentumX< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Ind
          const RealType& velocity_x_north  = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ north ];
 
          const RealType& velocity_y_center = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ center ];
-         const RealType& velocity_y_east   = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ east ];
-         const RealType& velocity_y_west   = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ west ];
          const RealType& velocity_y_north  = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ north ];
          const RealType& velocity_y_south  = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];          
          
          return -hxInverse * ( 
-                                 this->positiveMainMomentumFlux( u[ center ], velocity_x_center, pressure_center )
-                               - this->positiveMainMomentumFlux( u[ west   ], velocity_x_west  , pressure_west   )
-                               - this->negativeMainMomentumFlux( u[ center ], velocity_x_center, pressure_center )
-                               + this->negativeMainMomentumFlux( u[ east   ], velocity_x_east  , pressure_east   )
+                                 this->positiveMainMomentumFlux( density_center, velocity_x_center, pressure_center )
+                               - this->positiveMainMomentumFlux( density_west  , velocity_x_west  , pressure_west   )
+                               - this->negativeMainMomentumFlux( density_center, velocity_x_center, pressure_center )
+                               + this->negativeMainMomentumFlux( density_east  , velocity_x_east  , pressure_east   )
                              )
                 -hyInverse * ( 
-                                 this->positiveOtherMomentumFlux( u[ center ], velocity_x_center, velocity_y_center, pressure_center )
-                               - this->positiveOtherMomentumFlux( u[ south  ], velocity_x_south , velocity_y_south , pressure_south  )
-                               - this->negativeOtherMomentumFlux( u[ center ], velocity_x_center, velocity_y_center, pressure_center )
-                               + this->negativeOtherMomentumFlux( u[ north  ], velocity_x_north , velocity_y_north , pressure_north  )
+                                 this->positiveOtherMomentumFlux( density_center, velocity_x_center, velocity_y_center, pressure_center )
+                               - this->positiveOtherMomentumFlux( density_south , velocity_x_south , velocity_y_south , pressure_south  )
+                               - this->negativeOtherMomentumFlux( density_center, velocity_x_center, velocity_y_center, pressure_center )
+                               + this->negativeOtherMomentumFlux( density_north , velocity_x_north , velocity_y_north , pressure_north  )
                              );
 
                                       
@@ -254,9 +264,9 @@ class UpwindMomentumX< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Inde
          const IndexType& west   = neighborEntities.template getEntityIndex< -1,  0,  0 >(); 
          const IndexType& north  = neighborEntities.template getEntityIndex<  0,  1,  0 >(); 
          const IndexType& south  = neighborEntities.template getEntityIndex<  0, -1,  0 >();
-         const IndexType& up     = neighborEntities.template getEntityIndex<  0,  0,  1 >(); 
-         const IndexType& down   = neighborEntities.template getEntityIndex<  0,  0, -1 >();
-         
+         const IndexType& up     = neighborEntities.template getEntityIndex<  0,  0,  1 >();
+         const IndexType& down   = neighborEntities.template getEntityIndex<  0,  0, -1 >(); 
+              
          const RealType& pressure_center = this->pressure.template getData< DeviceType >()[ center ];
          const RealType& pressure_west   = this->pressure.template getData< DeviceType >()[ west ];
          const RealType& pressure_east   = this->pressure.template getData< DeviceType >()[ east ];
@@ -264,6 +274,14 @@ class UpwindMomentumX< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Inde
          const RealType& pressure_south  = this->pressure.template getData< DeviceType >()[ south ];
          const RealType& pressure_up     = this->pressure.template getData< DeviceType >()[ up ];
          const RealType& pressure_down   = this->pressure.template getData< DeviceType >()[ down ];
+         
+         const RealType& density_center = this->density.template getData< DeviceType >()[ center ];
+         const RealType& density_west   = this->density.template getData< DeviceType >()[ west ];
+         const RealType& density_east   = this->density.template getData< DeviceType >()[ east ];
+         const RealType& density_north  = this->density.template getData< DeviceType >()[ north ];
+         const RealType& density_south  = this->density.template getData< DeviceType >()[ south ];
+         const RealType& density_up     = this->density.template getData< DeviceType >()[ up ];
+         const RealType& density_down   = this->density.template getData< DeviceType >()[ down ];
          
          const RealType& velocity_x_center = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ center ];
          const RealType& velocity_x_east   = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ east ];
@@ -274,66 +292,30 @@ class UpwindMomentumX< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Inde
          const RealType& velocity_x_down   = this->velocity.template getData< DeviceType >()[ 0 ].template getData< DeviceType >()[ down ];
 
          const RealType& velocity_y_center = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ center ];
-         const RealType& velocity_y_east   = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ east ];
-         const RealType& velocity_y_west   = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ west ];
          const RealType& velocity_y_north  = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ north ];
          const RealType& velocity_y_south  = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ south ];
-         const RealType& velocity_y_up     = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ up ];
-         const RealType& velocity_y_down   = this->velocity.template getData< DeviceType >()[ 1 ].template getData< DeviceType >()[ down ];
 
          const RealType& velocity_z_center = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ center ];
-         const RealType& velocity_z_east   = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ east ];
-         const RealType& velocity_z_west   = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ west ];
-         const RealType& velocity_z_north  = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ north ];
-         const RealType& velocity_z_south  = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ south ];
          const RealType& velocity_z_up     = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ up ];
          const RealType& velocity_z_down   = this->velocity.template getData< DeviceType >()[ 2 ].template getData< DeviceType >()[ down ]; 
 
          return -hxInverse * ( 
-                                 u[ center ] / ( 2 * this->gamma )
-                                 * ( 2 * ( this->gamma - 1 ) * velocity_x_center * velocity_x_center
-                                   + ( velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) ) 
-                                   * ( velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                   )
-                               - u[ west   ] / ( 2 * this->gamma )
-                                   * ( 2 * ( this->gamma - 1 ) * velocity_x_west    * velocity_x_west
-                                     + ( velocity_x_west    + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
-                                     * ( velocity_x_west    + std::sqrt( this->gamma * pressure_west   / u[ west ]   ) )
-                                     )  
-                                - u[ center ] / ( 2 * this->gamma )
-                                  * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                  * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                                + u[ east   ] / ( 2 * this->gamma )
-                                  * ( velocity_x_east   - std::sqrt( this->gamma * pressure_center / u[ east   ] ) )
-                                  * ( velocity_x_east   - std::sqrt( this->gamma * pressure_center / u[ east   ] ) )
+                                 this->positiveMainMomentumFlux( density_center, velocity_x_center, pressure_center )
+                               - this->positiveMainMomentumFlux( density_west  , velocity_x_west  , pressure_west   )
+                               - this->negativeMainMomentumFlux( density_center, velocity_x_center, pressure_center )
+                               + this->negativeMainMomentumFlux( density_east  , velocity_x_east  , pressure_east   )
                              )
                 -hyInverse * ( 
-                               u[ center ] / ( 2 * this->gamma )
-                               * ( 2 * ( this->gamma - 1 ) * velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                               * velocity_y_center
-                             - u[ south ] / ( 2 * this->gamma )
-                               * ( 2 * ( this->gamma - 1 ) * velocity_x_south + std::sqrt( this->gamma * pressure_south / u[ south ] ) )
-                               * velocity_y_south
-                             - u[ center ] / ( 2 * this->gamma )
-                               * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                               * velocity_y_center
-                             + u[ north ] / ( 2 * this->gamma )
-                               * ( velocity_x_north - std::sqrt( this->gamma * pressure_north / u[ north ] ) )
-                               * velocity_y_north
+                                 this->positiveOtherMomentumFlux( density_center, velocity_x_center, velocity_y_center, pressure_center )
+                               - this->positiveOtherMomentumFlux( density_south , velocity_x_south , velocity_y_south , pressure_south  )
+                               - this->negativeOtherMomentumFlux( density_center, velocity_x_center, velocity_y_center, pressure_center )
+                               + this->negativeOtherMomentumFlux( density_north , velocity_x_north , velocity_y_north , pressure_north  )
                              )
                 -hzInverse * ( 
-                               u[ center ] / ( 2 * this->gamma )
-                               * ( 2 * ( this->gamma - 1 ) * velocity_x_center + std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                               * velocity_z_center
-                             - u[ south ] / ( 2 * this->gamma )
-                               * ( 2 * ( this->gamma - 1 ) * velocity_x_down + std::sqrt( this->gamma * pressure_down / u[ down ] ) )
-                               * velocity_z_south
-                             - u[ center ] / ( 2 * this->gamma )
-                               * ( velocity_x_center - std::sqrt( this->gamma * pressure_center / u[ center ] ) )
-                               * velocity_z_center
-                             + u[ up ] / ( 2 * this->gamma )
-                               * ( velocity_x_up - std::sqrt( this->gamma * pressure_up / u[ up ] ) )
-                               * velocity_z_up
+                                 this->positiveOtherMomentumFlux( density_center, velocity_x_center, velocity_z_center, pressure_center )
+                               - this->positiveOtherMomentumFlux( density_down  , velocity_x_down  , velocity_z_down  , pressure_down   )
+                               - this->negativeOtherMomentumFlux( density_center, velocity_x_center, velocity_z_center, pressure_center )
+                               + this->negativeOtherMomentumFlux( density_up    , velocity_x_up    , velocity_z_up    , pressure_up     )
                              );
       }
 

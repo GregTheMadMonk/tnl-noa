@@ -254,6 +254,7 @@ getExplicitUpdate( const RealType& time,
     this->inviscidOperatorsPointer->setTau( tau );
     this->inviscidOperatorsPointer->setVelocity( this->velocity );
     this->inviscidOperatorsPointer->setPressure( this->pressure );
+    this->inviscidOperatorsPointer->setDensity( this->conservativeVariables->getDensity() );
     this->inviscidOperatorsPointer->setGamma( this->gamma );
 
 //   this->pressure->write( "pressure2", "gnuplot" );
@@ -277,7 +278,7 @@ getExplicitUpdate( const RealType& time,
    explicitUpdaterMomentumX.setBoundaryConditions( this->boundaryConditionPointer );
    explicitUpdaterMomentumX.setRightHandSide( this->rightHandSidePointer );   
    explicitUpdaterMomentumX.template update< typename Mesh::Cell >( time, tau, mesh,
-                                                              this->conservativeVariables->getDensity(), // uRhoVelocityX,
+                                                           ( *this->conservativeVariables->getMomentum() )[ 0 ], // uRhoVelocityX,
                                                            ( *this->conservativeVariablesRHS->getMomentum() )[ 0 ] ); //, fuRhoVelocityX );
 
    if( Dimensions > 1 )
@@ -287,7 +288,7 @@ getExplicitUpdate( const RealType& time,
       explicitUpdaterMomentumY.setBoundaryConditions( this->boundaryConditionPointer );
       explicitUpdaterMomentumY.setRightHandSide( this->rightHandSidePointer );         
       explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time, tau, mesh,
-                                                                 this->conservativeVariables->getDensity(), // uRhoVelocityX,
+                                                              ( *this->conservativeVariables->getMomentum() )[ 1 ], // uRhoVelocityX,
                                                               ( *this->conservativeVariablesRHS->getMomentum() )[ 1 ] ); //, fuRhoVelocityX );
    }
    
@@ -298,7 +299,7 @@ getExplicitUpdate( const RealType& time,
       explicitUpdaterMomentumZ.setBoundaryConditions( this->boundaryConditionPointer );
       explicitUpdaterMomentumZ.setRightHandSide( this->rightHandSidePointer );               
       explicitUpdaterMomentumZ.template update< typename Mesh::Cell >( time, tau, mesh,
-                                                                 this->conservativeVariables->getDensity(), // uRhoVelocityX,
+                                                              ( *this->conservativeVariables->getMomentum() )[ 2 ], // uRhoVelocityX,
                                                               ( *this->conservativeVariablesRHS->getMomentum() )[ 2 ] ); //, fuRhoVelocityX );
    }
    
@@ -311,7 +312,7 @@ getExplicitUpdate( const RealType& time,
    explicitUpdaterEnergy.setBoundaryConditions( this->boundaryConditionPointer );
    explicitUpdaterEnergy.setRightHandSide( this->rightHandSidePointer );                  
    explicitUpdaterEnergy.template update< typename Mesh::Cell >( time, tau, mesh,
-                                                           this->conservativeVariables->getDensity(), // uRhoVelocityX,
+                                                           this->conservativeVariablesRHS->getEnergy(), // uRhoVelocityX,
                                                            this->conservativeVariablesRHS->getEnergy() ); //, fuRhoVelocityX );
 
 /*   this->pressure->write( "pressure3", "gnuplot" );

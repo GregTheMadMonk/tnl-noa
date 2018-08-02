@@ -94,6 +94,14 @@ class Upwind
          this->momentumZOperatorPointer->setPressure( pressure );
          this->energyOperatorPointer->setPressure( pressure );
       }
+
+      void setDensity( const MeshFunctionPointer& density )
+      {
+         this->momentumXOperatorPointer->setDensity( density );
+         this->momentumYOperatorPointer->setDensity( density );
+         this->momentumZOperatorPointer->setDensity( density );
+         this->energyOperatorPointer->setDensity( density );
+      }
       
       void setVelocity( const VectorFieldPointer& velocity )
       {
