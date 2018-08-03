@@ -69,6 +69,7 @@ class DistributedGridIO<Functions::VectorField<Size,MeshFunctionType>,MpiIO,Devi
       
     };
 
+#ifdef HAVE_MPI
 	private:
 	  static unsigned int writeVectorFieldHeader(MPI_File &file,Functions::VectorField<Size,MeshFunctionType> &vectorField)
 	  {
@@ -110,6 +111,7 @@ class DistributedGridIO<Functions::VectorField<Size,MeshFunctionType>,MpiIO,Devi
 
             return size;
       }
+#endif
 
     public:
     static bool load(const String& fileName, Functions::VectorField<Size,MeshFunctionType> &vectorField)
