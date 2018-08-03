@@ -113,7 +113,7 @@ bool
 ParameterContainer::
 addParameter( const String& name, const T& value )
 {
-   return parameters. Append( new tnlParameter< T >( name, TNL::getType< T >(). getString(), value ) );
+   return parameters. Append( new tnlParameter< T >( name, TNL::getType< T >().getString(), value ) );
 };
 
 template< class T >
