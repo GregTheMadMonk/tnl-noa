@@ -56,4 +56,6 @@ class DistributedGridIO<MeshFunctionType,Dummy,Device>
 }
 }
 
+//not clean logic of includes...
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO_MeshFunction.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedGridIO_VectorField.h>

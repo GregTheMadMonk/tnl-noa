@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Functions/MeshFunction.h>
+
 namespace TNL {
 namespace Meshes {   
 namespace DistributedMeshes {
@@ -19,14 +21,13 @@ namespace DistributedMeshes {
  * This variant cerate copy of MeshFunction but smaller, reduced to local entities, without overlap. 
  * It is slow and has high RAM consumption
  */
-template<typename MeshFunctionType,
+template<typename MeshType,
          typename Device> 
-class DistributedGridIO<MeshFunctionType,LocalCopy,Device>
+class DistributedGridIO<Functions::MeshFunction<MeshType>,LocalCopy,Device>
 {
 
     public:
-
-    typedef typename MeshFunctionType::MeshType MeshType;
+	typedef typename Functions::MeshFunction<MeshType> MeshFunctionType;
     typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
     typedef typename MeshFunctionType::MeshType::PointType PointType;
     typedef typename MeshFunctionType::VectorType VectorType;
@@ -360,7 +361,7 @@ class DistributedGridIO_MPIIOBase
        return headerSize+dataCount*sizeof(RealType); //size of readed data;
     };
 
-    //tak mohlo by to něco kontrolovat...ale nic to nekontroluje
+    //it shoudl check some loaded files...... but chcek nothing...
     static int readMeshFunctionHeader(MPI_File file,MeshFunctionType &meshFunction, int length)
     {
         MPI_Status rstatus;
@@ -396,10 +397,12 @@ class DistributedGridIO_MPIIOBase
 };
 #endif
 
-template<typename MeshFunctionType> 
-class DistributedGridIO<MeshFunctionType,MpiIO,TNL::Devices::Cuda>
+template<typename MeshType> 
+class DistributedGridIO<Functions::MeshFunction<MeshType>,MpiIO,TNL::Devices::Cuda>
 {
     public:
+	typedef typename Functions::MeshFunction<MeshType> MeshFunctionType;
+
     static bool save(const String& fileName, MeshFunctionType &meshFunction)
     {
 #ifdef HAVE_MPI
@@ -437,10 +440,13 @@ class DistributedGridIO<MeshFunctionType,MpiIO,TNL::Devices::Cuda>
 
 };
 
-template<typename MeshFunctionType> 
-class DistributedGridIO<MeshFunctionType,MpiIO,TNL::Devices::Host>
+template<typename MeshType> 
+class DistributedGridIO<Functions::MeshFunction<MeshType>,MpiIO,TNL::Devices::Host>
 {
+
     public:
+	typedef typename Functions::MeshFunction<MeshType> MeshFunctionType;
+
     static bool save(const String& fileName, MeshFunctionType &meshFunction)
     {
 #ifdef HAVE_MPI

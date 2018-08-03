@@ -27,6 +27,12 @@ ADD_EXECUTABLE( DistributedGridTest_1D DistributedGridTest_1D.cpp )
                               ${GTEST_BOTH_LIBRARIES}
                               tnl )
 
+ADD_EXECUTABLE( DistributedVectorFieldIO_MPIIOTest DistributedVectorFieldIO_MPIIOTest.cpp )
+   TARGET_COMPILE_OPTIONS( DistributedVectorFieldIO_MPIIOTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( DistributedVectorFieldIO_MPIIOTest
+                              ${GTEST_BOTH_LIBRARIES}
+                              tnl )
+
 ADD_EXECUTABLE( DistributedGridTest_2D DistributedGridTest_2D.cpp )
    TARGET_COMPILE_OPTIONS( DistributedGridTest_2D PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( DistributedGridTest_2D
@@ -97,6 +103,9 @@ ADD_TEST( NAME CutDistributedGridTest COMMAND "mpirun" ${mpi_test_parameters_Cut
 
 SET (mpi_test_parameters_CutDistributedMeshFunctionTest -np 12 -H localhost:12 "${EXECUTABLE_OUTPUT_PATH}/CutDistributedMeshFunctionTest${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME CutDistributedMeshFunctionTest COMMAND "mpirun" ${mpi_test_parameters_CutDistributedMeshFunctionTest})
+
+SET (mpi_test_parameters_DistributedVectorFieldIO_MPIIOTest -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorFieldIO_MPIIOTest ${CMAKE_EXECUTABLE_SUFFIX}")
+ADD_TEST( NAME DistributedVectorFieldIO_MPIIOTest COMMAND "mpirun" ${mpi_test_parameters_IOMPIIO})
 
 
 endif()
