@@ -165,7 +165,7 @@ class DistributedGridIO_MPIIOBase
     
     static int save(MPI_File &file, MeshFunctionType &meshFunction, RealType *data, int offset)
     {
-     
+
        auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
        MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
        MPI_Datatype ftype;
@@ -173,6 +173,9 @@ class DistributedGridIO_MPIIOBase
        int dataCount=CreateDataTypes(distrGrid,&ftype,&atype);
 
        int headerSize;
+	   
+       MPI_File_set_view(file,0,MPI_BYTE,MPI_BYTE,"native",MPI_INFO_NULL);
+
        if(Communicators::MpiCommunicator::GetRank(group)==0)
        {
             MPI_File_seek(file,offset,MPI_SEEK_SET);
@@ -184,8 +187,8 @@ class DistributedGridIO_MPIIOBase
 
        if( std::is_same< RealType, double >::value)
          MPI_File_set_view(file,offset,MPI_DOUBLE,ftype,"native",MPI_INFO_NULL);
-       if( std::is_same< RealType, float >::value)
-         MPI_File_set_view(file,offset,MPI_FLOAT,ftype,"native",MPI_INFO_NULL);
+/*       if( std::is_same< RealType, float >::value)
+         MPI_File_set_view(file,offset,MPI_FLOAT,ftype,"native",MPI_INFO_NULL);*/
        
        MPI_Status wstatus;
 

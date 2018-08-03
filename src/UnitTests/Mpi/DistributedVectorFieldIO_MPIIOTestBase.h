@@ -75,10 +75,10 @@ class TestDistributedVectorFieldMPIIO{
  
         String FileName=String("/tmp/test-file.tnl");
         DistributedGridIO<VectorFieldType,MpiIO> ::save(FileName, vectorField );
-/*        File file;
+        /*File file;
         file.open( FileName, IOMode::write );
 		vectorField.save(file);
-		file.close();*/
+		file.close();		*/
 
        //first process compare results
        if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
