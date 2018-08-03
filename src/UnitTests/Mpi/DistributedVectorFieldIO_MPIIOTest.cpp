@@ -27,21 +27,21 @@ TEST( DistributedVectorFieldIO_MPIIO, Save_3D )
     TestDistributedVectorFieldMPIIO<3,2,Host>::TestSave();
 }
 
-/*
-TEST( DistributedGridIO, Load_1D )
+
+TEST( DistributedVectorFieldIO_MPIIO, Load_1D )
 {
-    TestDistributedVectorFieldMPIIO<1,Host>::TestLoad();
+    TestDistributedVectorFieldMPIIO<1,2,Host>::TestLoad();
 }
 
-TEST( DistributedGridIO, Load_2D )
+TEST( DistributedVectorFieldIO_MPIIO, Load_2D )
 {
-    TestDistributedVectorFieldMPIIO<2,Host>::TestLoad();
+    TestDistributedVectorFieldMPIIO<2,3,Host>::TestLoad();
 }
 
-TEST( DistributedGridIO, Load_2D )
+TEST( DistributedVectorFieldIO_MPIIO, Load_3D )
 {
-    TestDistributedVectorFieldMPIIO<3,Host>::TestLoad();
-}*/
+    TestDistributedVectorFieldMPIIO<3,2,Host>::TestLoad();
+}
 
 
 #else

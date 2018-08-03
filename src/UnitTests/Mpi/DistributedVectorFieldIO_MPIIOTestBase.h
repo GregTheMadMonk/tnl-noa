@@ -111,7 +111,7 @@ class TestDistributedVectorFieldMPIIO{
 		    }
     };
     
-/*    static void TestLoad()
+    static void TestLoad()
     {
         SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
         MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
@@ -137,44 +137,50 @@ class TestDistributedVectorFieldMPIIO{
         //Prepare file   
         if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
         {   
-            DofType saveDof(globalGrid->template getEntitiesCount< Cell >());
+            DofType saveDof(vctdim*(globalGrid->template getEntitiesCount< Cell >()));
 
-            SharedPointer<MeshFunctionType> saveMeshFunctionptr;
-            saveMeshFunctionptr->bind(globalGrid,saveDof);
-            linearFunctionEvaluator.evaluateAllEntities(saveMeshFunctionptr , linearFunctionPtr);
+            VectorFieldType saveVectorField;
+            saveVectorField.bind(globalGrid,saveDof);
+            for(int i=0;i<vctdim;i++)
+                linearFunctionEvaluator.evaluateAllEntities(saveVectorField[i] , linearFunctionPtr);
       
             File file;
             file.open( FileName, IOMode::write );        
-            saveMeshFunctionptr->save(file);
+            saveVectorField.save(file);
             file.close();
         }
 
         SharedPointer<MeshType> loadGridptr;
-        SharedPointer<MeshFunctionType> loadMeshFunctionptr;
+        VectorFieldType loadVectorField;
         distrgrid.setupGrid(*loadGridptr);
         
-        DofType loadDof(loadGridptr->template getEntitiesCount< Cell >());
+        DofType loadDof(vctdim*(loadGridptr->template getEntitiesCount< Cell >()));
         loadDof.setValue(0);
-        loadMeshFunctionptr->bind(loadGridptr,loadDof);
+        loadVectorField.bind(loadGridptr,loadDof);
 
-        DistributedGridIO<MeshFunctionType,MpiIO> ::load(FileName, *loadMeshFunctionptr );
-        loadMeshFunctionptr->template synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
+        DistributedGridIO<VectorFieldType,MpiIO> ::load(FileName, loadVectorField );
+
+        for(int i=0;i<vctdim;i++)
+            (loadVectorField[i])->template synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
 
         SharedPointer<MeshType> evalGridPtr;
-        SharedPointer<MeshFunctionType> evalMeshFunctionptr;
+        VectorFieldType evalVectorField;
         distrgrid.setupGrid(*evalGridPtr);
         
-        DofType evalDof(evalGridPtr->template getEntitiesCount< Cell >());
+        DofType evalDof(vctdim*(evalGridPtr->template getEntitiesCount< Cell >()));
         evalDof.setValue(-1);
-        evalMeshFunctionptr->bind(evalGridPtr,evalDof);
+        evalVectorField.bind(evalGridPtr,evalDof);
         
-        linearFunctionEvaluator.evaluateAllEntities(evalMeshFunctionptr , linearFunctionPtr);        
-        evalMeshFunctionptr->template synchronize<CommunicatorType>();
+        for(int i=0;i<vctdim;i++)
+        {
+            linearFunctionEvaluator.evaluateAllEntities(evalVectorField[i] , linearFunctionPtr);        
+            (evalVectorField[i])->template synchronize<CommunicatorType>();
+        }
 
         for(int i=0;i<evalDof.getSize();i++)
         {
             EXPECT_EQ( evalDof.getElement(i), loadDof.getElement(i)) << "Compare Loaded and evaluated Dof Failed for: "<< i;
         }
         
-    }*/
+    }
 };

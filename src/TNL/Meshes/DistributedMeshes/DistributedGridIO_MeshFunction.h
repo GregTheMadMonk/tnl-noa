@@ -340,6 +340,8 @@ class DistributedGridIO_MPIIOBase
        MPI_Datatype atype;
        int dataCount=CreateDataTypes(distrGrid,&ftype,&atype);
        
+       MPI_File_set_view(file,0,MPI_BYTE,MPI_BYTE,"native",MPI_INFO_NULL);
+
        int headerSize=0;
 
        if(Communicators::MpiCommunicator::GetRank(group)==0)
