@@ -39,7 +39,7 @@ class HeatEquationBenchmarkProblem:
 
       HeatEquationBenchmarkProblem();
       
-      static String getTypeStatic();
+      static String getType();
 
       String getPrologHeader() const;
 

@@ -12,8 +12,6 @@
 
 namespace TNL {
 
-int File :: verbose = 0;
-
 File :: File()
 : mode( IOMode::undefined ),
   file( NULL ),
@@ -38,14 +36,6 @@ bool File :: open( const String& fileName,
    this->close();
 
    this->fileName = fileName;
-   if( verbose )
-   {
-      std::cout << "Opening file " << fileName;
-      if( mode == IOMode::read )
-         std::cout << " for reading... " << std::endl;
-      else
-         std::cout << " for writing ... " << std::endl;
-   }
    if( mode == IOMode::read )
       file = std::fopen( fileName.getString(), "rb" );
    if( mode == IOMode::write )
@@ -63,9 +53,6 @@ bool File :: open( const String& fileName,
 
 bool File :: close()
 {
-   if( verbose )
-      std::cout << "Closing the file " << getFileName() << " ... " << std::endl;
-
    if( file && std::fclose( file ) != 0 )
    {
       std::cerr << "I was not able to close the file " << fileName << " properly!" << std::endl;

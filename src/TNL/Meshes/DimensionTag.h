@@ -47,7 +47,7 @@ template<>
 class DimensionTag< 0 >
 {
 public:
-   static const int value = 0;
+   static constexpr int value = 0;
 
    using Increment = DimensionTag< 1 >;
 };

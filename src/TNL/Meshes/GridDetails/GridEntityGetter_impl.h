@@ -33,7 +33,7 @@ class GridEntityGetter<
 {
    public:
  
-      static const int entityDimension = EntityDimension;
+      static constexpr int entityDimension = EntityDimension;
  
       typedef Meshes::Grid< 1, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
@@ -74,7 +74,7 @@ class GridEntityGetter< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >
 {
    public:
  
-      static const int entityDimension = 2;
+      static constexpr int entityDimension = 2;
  
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
@@ -122,7 +122,7 @@ class GridEntityGetter< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 1 >
 {
    public:
  
-      static const int entityDimension = 1;
+      static constexpr int entityDimension = 1;
  
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
@@ -180,7 +180,7 @@ class GridEntityGetter< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 0 >
 {
    public:
  
-      static const int entityDimension = 0;
+      static constexpr int entityDimension = 0;
  
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
@@ -230,7 +230,7 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 3 >
 {
    public:
  
-      static const int entityDimension = 3;
+      static constexpr int entityDimension = 3;
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
@@ -278,7 +278,7 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 2 >
 {
    public:
  
-      static const int entityDimension = 2;
+      static constexpr int entityDimension = 2;
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
@@ -363,7 +363,7 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 1 >
 {
    public:
  
-      static const int entityDimension = 1;
+      static constexpr int entityDimension = 1;
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
@@ -449,7 +449,7 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 0 >
 {
    public:
  
-      static const int entityDimension = 0;
+      static constexpr int entityDimension = 0;
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;

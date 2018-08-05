@@ -31,9 +31,6 @@ target_link_libraries (tnl-dicom-reader tnl ${DCMTK_LIBRARIES} )
 ADD_EXECUTABLE( tnl-functions-benchmark functions-benchmark.cpp )
 target_link_libraries( tnl-functions-benchmark tnl )
 
-ADD_EXECUTABLE(tnl-curve2gnuplot tnlcurve2gnuplot.cpp )
-target_link_libraries (tnl-curve2gnuplot tnl )
-
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnl-cuda-arch tnl-cuda-arch.cu )
    INSTALL( TARGETS tnl-cuda-arch
@@ -49,7 +46,6 @@ INSTALL( TARGETS tnl-init
                  tnl-mesh-converter
                  tnl-dicom-reader
                  tnl-image-converter
-                 tnl-curve2gnuplot
          DESTINATION bin )
 
 INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-bindir

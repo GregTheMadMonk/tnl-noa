@@ -19,13 +19,13 @@ template< typename Mesh,
           typename Index >
 String
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-getTypeStatic()
+getType()
 {
    return String( "DirectEikonalProblem< " + 
-                  Mesh::getTypeStatic() + ", " +
-                  Anisotropy::getTypeStatic() + ", " +
-                  Real::getTypeStatic() + ", " +
-                  Index::getTypeStatic() + " >" );
+                  Mesh::getType() + ", " +
+                  Anisotropy::getType() + ", " +
+                  Real::getType() + ", " +
+                  Index::getType() + " >" );
 }
 
 template< typename Mesh,

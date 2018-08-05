@@ -49,7 +49,7 @@ public PDEProblem< Mesh,
       using typename BaseType::MeshDependentDataType;
       using typename BaseType::MeshDependentDataPointer; 
       
-      static String getTypeStatic();
+      static String getType();
 
       String getPrologHeader() const;
 

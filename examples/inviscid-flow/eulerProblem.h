@@ -55,7 +55,7 @@ class eulerProblem:
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
 
-      static String getTypeStatic();
+      static String getType();
 
       String getPrologHeader() const;
 

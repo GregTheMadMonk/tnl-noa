@@ -35,7 +35,7 @@ template< typename Problem >
 String Euler< Problem > :: getType() const
 {
    return String( "Euler< " ) +
-          Problem :: getTypeStatic() +
+          Problem :: getType() +
           String( " >" );
 };
 

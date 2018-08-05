@@ -162,20 +162,6 @@ if( WITH_CUDA STREQUAL "yes" )
         set( CUDA_ADD_LIBRARY_OPTIONS -shared )
 
         ####
-        # Check for CUSP
-        #
-        find_path( CUSP_INCLUDE_DIR cusp/hyb_matrix.h  
-                   DOC "CUSP headers." )
-        if( ${CUSP_INCLUDE_DIR} STREQUAL "CUSP_INCLUDE_DIR-NOTFOUND" )
-            message( "CUSP not found." )
-            set( HAVE_CUSP "//#define HAVE_CUSP 1" )
-        else()      
-            message( "CUSP found. -- ${CUSP_INCLUDE_DIR}" )
-            set( HAVE_CUSP "#define HAVE_CUSP 1" )
-            cuda_include_directories( ${CUSP_INCLUDE_DIR} )
-        endif()
-        
-        ####
         # Check for CUSPARSE
         #
         if( NOT WITH_CUSPARSE STREQUAL "no" )
