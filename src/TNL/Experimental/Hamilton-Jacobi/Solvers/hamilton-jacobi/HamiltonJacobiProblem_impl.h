@@ -24,9 +24,9 @@ template< typename Mesh,
 		  typename HamiltonJacobi,
 		  typename BoundaryCondition,
 		  typename RightHandSide>
-String HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide > :: getTypeStatic()
+String HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide > :: getType()
 {
-   return String( "hamiltonJacobiSolver< " ) + Mesh  :: getTypeStatic() + " >";
+   return String( "hamiltonJacobiSolver< " ) + Mesh  :: getType() + " >";
 }
 
 template< typename Mesh,

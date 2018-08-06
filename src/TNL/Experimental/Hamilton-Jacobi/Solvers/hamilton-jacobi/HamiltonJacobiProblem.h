@@ -48,7 +48,7 @@ class HamiltonJacobiProblem : public tnlPDEProblem< Mesh,
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
 
-      static String getTypeStatic();
+      static String getType();
 
       String getPrologHeader() const;
 

@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Problems/PDEProblem.h>
+
 namespace TNL {
 namespace Problems {
 
@@ -19,13 +21,13 @@ template< typename Mesh,
           typename Index >
 String
 PDEProblem< Mesh, Real, Device, Index >::
-getTypeStatic()
+getType()
 {
    return String( "PDEProblem< " ) +
-          Mesh :: getTypeStatic() + ", " +
-          getType< Real >() + ", " +
-          getType< Device >() + ", " +
-          getType< Index >() + " >";
+          Mesh::getType() + ", " +
+          TNL::getType< Real >() + ", " +
+          TNL::getType< Device >() + ", " +
+          TNL::getType< Index >() + " >";
 }
 
 template< typename Mesh,

@@ -31,13 +31,13 @@ namespace Linear {
 template< typename Matrix >
 struct is_csr_matrix
 {
-    static const bool value = false;
+    static constexpr bool value = false;
 };
 
 template< typename Real, typename Device, typename Index >
 struct is_csr_matrix< Matrices::CSR< Real, Device, Index > >
 {
-    static const bool value = true;
+    static constexpr bool value = true;
 };
 
 

@@ -13,7 +13,6 @@
 
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/terminal-colors.h>
 
 using namespace TNL;
 
@@ -63,8 +62,8 @@ bool setupGrid( const Config::ParameterContainer& parameters )
          {
             double h = min( grid.getSpaceSteps().x(), grid.getSpaceSteps().y() );
             grid.setSpaceSteps( PointType( h, h ) );
-            std::cout << red << "Adjusting grid space steps to " << grid.getSpaceSteps() 
-                      << " and grid proportions to " << grid.getProportions() << "."  << reset << std::endl;
+            std::cout << "Adjusting grid space steps to " << grid.getSpaceSteps() 
+                      << " and grid proportions to " << grid.getProportions() << "."  << std::endl;
 
          }
       }
@@ -102,8 +101,8 @@ bool setupGrid( const Config::ParameterContainer& parameters )
          {
             double h = min( grid.getSpaceSteps().x(), min( grid.getSpaceSteps().y(), grid.getSpaceSteps().z() ) );
             grid.setSpaceSteps( PointType( h, h, h ) );
-            std::cout << red << "Adjusting grid space steps to " << grid.getSpaceSteps() 
-                      << " and grid proportions to " << grid.getProportions() << "." << reset << std::endl;
+            std::cout << "Adjusting grid space steps to " << grid.getSpaceSteps() 
+                      << " and grid proportions to " << grid.getProportions() << "." << std::endl;
          }
       }
       std::cout << "Setting dimensions to  ... " << grid.getDimensions() << std::endl;

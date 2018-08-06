@@ -37,9 +37,9 @@ template< typename Mesh,
           typename InviscidOperators >
 String
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, CommType, InviscidOperators >::
-getTypeStatic()
+getType()
 {
-   return String( "eulerProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "eulerProblem< " ) + Mesh :: getType() + " >";
 }
 
 template< typename Mesh,

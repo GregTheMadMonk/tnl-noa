@@ -46,7 +46,7 @@ class PDEProblem : public Problem< Real, Device, Index >
        */
       typedef void TimeStepper;
       
-      static String getTypeStatic();
+      static String getType();
 
       String getPrologHeader() const;
 

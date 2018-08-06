@@ -99,7 +99,7 @@ template< typename Problem >
 String Merson< Problem > :: getType() const
 {
    return String( "Merson< " ) +
-          Problem :: getTypeStatic() +
+          Problem :: getType() +
           String( " >" );
 };
 

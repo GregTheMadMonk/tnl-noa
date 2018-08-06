@@ -34,9 +34,6 @@ target_link_libraries (tnl-lattice-init tnl )
 ADD_EXECUTABLE( tnl-functions-benchmark functions-benchmark.cpp )
 target_link_libraries( tnl-functions-benchmark tnl )
 
-ADD_EXECUTABLE(tnl-curve2gnuplot tnlcurve2gnuplot.cpp )
-target_link_libraries (tnl-curve2gnuplot tnl )
-
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnl-cuda-arch tnl-cuda-arch.cu )
 # TODO: Fix this -- https://cmake.org/pipermail/cmake/2013-September/055755.html
@@ -54,8 +51,7 @@ INSTALL( TARGETS tnl-init
                  tnl-dicom-reader
                  tnl-image-converter
                  tnl-lattice-init
-                 tnl-curve2gnuplot
-         RUNTIME DESTINATION bin )
+         DESTINATION bin )
 
 INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-bindir
                ${PROJECT_TOOLS_PATH}/tnl-compile
