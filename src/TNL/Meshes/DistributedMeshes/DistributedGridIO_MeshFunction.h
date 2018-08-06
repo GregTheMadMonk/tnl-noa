@@ -185,10 +185,9 @@ class DistributedGridIO_MPIIOBase
 
 	   offset +=headerSize;
 
-       if( std::is_same< RealType, double >::value)
-         MPI_File_set_view(file,offset,MPI_DOUBLE,ftype,"native",MPI_INFO_NULL);
-/*       if( std::is_same< RealType, float >::value)
-         MPI_File_set_view(file,offset,MPI_FLOAT,ftype,"native",MPI_INFO_NULL);*/
+       MPI_File_set_view(file,offset,
+               Communicators::MPITypeResolver<RealType>::getType(),
+               ftype,"native",MPI_INFO_NULL);
        
        MPI_Status wstatus;
 
@@ -216,7 +215,10 @@ class DistributedGridIO_MPIIOBase
 
         MPI_Type_create_subarray(dim,
             fgsize,flsize,fstarts,
-            MPI_ORDER_C,MPI_DOUBLE,ftype); //TYP
+            MPI_ORDER_C,
+            Communicators::MPITypeResolver<RealType>::getType(),
+            ftype);
+
         MPI_Type_commit(ftype);
 
        int agsize[dim];
@@ -229,7 +231,9 @@ class DistributedGridIO_MPIIOBase
 
        MPI_Type_create_subarray(dim,
             agsize,alsize,astarts,
-            MPI_ORDER_C,MPI_DOUBLE,atype); //TYP
+            MPI_ORDER_C,
+            Communicators::MPITypeResolver<RealType>::getType(),
+            atype);
        MPI_Type_commit(atype);
 
         int dataCount=1;
@@ -356,7 +360,9 @@ class DistributedGridIO_MPIIOBase
 
        offset+=headerSize;
 
-       MPI_File_set_view(file,offset,MPI_DOUBLE,ftype,"native",MPI_INFO_NULL);//TYP
+       MPI_File_set_view(file,offset,
+            Communicators::MPITypeResolver<RealType>::getType(),
+            ftype,"native",MPI_INFO_NULL);
        MPI_Status wstatus;
        MPI_File_read(file,(void*)data,1,atype,&wstatus);
         
