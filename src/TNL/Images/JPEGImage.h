@@ -17,8 +17,8 @@
 #endif
 
 #include <TNL/String.h>
-#include <TNL/Images//Image.h>
-#include <TNL/Images//RegionOfInterest.h>
+#include <TNL/Images/Image.h>
+#include <TNL/Images/RegionOfInterest.h>
 
 #ifdef HAVE_JPEG_H
 struct my_error_mgr

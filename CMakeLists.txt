@@ -376,11 +376,12 @@ LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 #Pokracujeme dalsimi podadresari
 add_subdirectory( src )
 add_subdirectory( share )
-add_subdirectory( tests )
-
+if( WITH_TESTS STREQUAL "yes" )
+    add_subdirectory( tests )
+endif( WITH_TESTS STREQUAL "yes" )
 if( WITH_EXAMPLES STREQUAL "yes" )
    add_subdirectory( examples )
-endif()
+endif( WITH_EXAMPLES STREQUAL "yes" )
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")
 set(CPACK_PACKAGE_VENDOR "MMG")
