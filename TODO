@@ -9,7 +9,6 @@ TODO:
 
 TODO:
 - pridat execution policy https://github.com/harrism/hemi/blob/master/hemi/execution_policy.h
-- odstranit parametr lazy ze smart pointeru
 
 TODO:
  - implementovat tnlMixedGridBoundaryConditions, kde by se pro kazdou stranu gridu definoval jiny zvlastni typ
@@ -32,13 +31,6 @@ TODO: CUDA unified memory
 se s nimi pracovat postaru
  - bylo by dobre to obalit unique poinetry, aby se nemusela delat dealokace rucne
 
-TODO: Mesh
- * vsechny traits zkusit presunout do jednotneho MeshTraits, tj. temer MeshConfigTraits ale pojmenovat jako MeshTraits
- * omezit tnlDimesnionsTag - asi to ale nepujde
-   - ale pozor na konstrukce jako BaseType::superentityIdsArray< SuperDimensionTag >( DimensionsTag ); ( v tnlMesh.h)
- * prejmenovat Tagy v topologies na Topology zrejme
- * zrusit tnlStorageTraits
-
 
 TODO: implementace maticovych resicu
       * Gaussova eliminace
@@ -53,12 +45,5 @@ TODO: Nahradit sablonovy parametr dimenze sitove entity za typ entity. Pak by se
       objemy nebo delky entyt apod.
       za tim ucelem nahradit setIndex v grdi entity za update(), aby to bylo obecnejsi
 
-TODO: implementovat tridu tnlFileName pro generovani jmen souboru
-
 TODO: metodu pro tnlString pro nahrazeni napr. podretezce XXXXX indexem 00001 tj. uXXXXX.bin -> u00001.bin
       to by melo byt robustnejsi, nez doposavadni pristup 
-
-TODO: vyjimky 
-
-TODO: prubezne ukladani vysledku behem vypoctu 
-                 

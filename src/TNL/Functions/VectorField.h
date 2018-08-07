@@ -95,6 +95,8 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       static constexpr int getEntitiesDimension() { return FunctionType::getEntitiesDimension(); }
       
       static constexpr int getMeshDimension() { return MeshType::getMeshDimension(); }
+
+	  static constexpr int getVectorDimension() { return Size; }
       
 
       static void configSetup( Config::ConfigDescription& config,
@@ -192,8 +194,8 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
                         "Attempt to bind vector which is not large enough."  );
          for( int i = 0; i < Size; i ++ )
          {
-            this->vectorField[ i ].bind( meshPointer, data, offset );
-            offset += this->vectorField[ i ]->getDofs();
+            this->vectorField[ i ]->bind( meshPointer, data, offset );
+            offset += this->vectorField[ i ]->getDofs(meshPointer);
          }
       }
       

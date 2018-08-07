@@ -63,7 +63,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
 
       typedef CommType CommunicatorType;
 
-      static String getTypeStatic();
+      static String getType();
 
       String getPrologHeader() const;
 

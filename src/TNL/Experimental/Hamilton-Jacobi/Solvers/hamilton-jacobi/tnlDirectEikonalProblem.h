@@ -46,7 +46,7 @@ class tnlDirectEikonalProblem
       
       static constexpr bool isTimeDependent() { return false; };
 
-      static String getTypeStatic();
+      static String getType();
 
       String getPrologHeader() const;
 

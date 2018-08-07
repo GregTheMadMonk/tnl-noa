@@ -36,7 +36,7 @@ class HeatEquationEocProblem : public HeatEquationProblem< Mesh, BoundaryConditi
       
       using typename BaseType::MeshPointer;
 
-      static String getTypeStatic();
+      static String getType();
 
       bool setup( const MeshPointer& meshPointer,
                   const Config::ParameterContainer& parameters,

@@ -43,7 +43,7 @@ class Directions {
 
 public:
     template<int numerofDriection>
-    static int getDirection(Containers::StaticVector<numerofDriection,int> directions) //takes +/- nuber of ax
+    static int getDirection(Containers::StaticVector<numerofDriection,int> directions) //takes +/- nuber of ax (i.e. (-2,+3))
     {
         int result=0;
         for(int i=0;i<directions.size;i++)
@@ -52,7 +52,7 @@ public:
     }
 
     template<int dim>
-    static Containers::StaticVector<dim,int> getXYZ(int neighbor)
+    static Containers::StaticVector<dim,int> getXYZ(int neighbor)// return neighbor as direction like (0,-1,1)
     {
         Containers::StaticVector<dim,int> res;
         int number=neighbor+1;

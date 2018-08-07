@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <TNL/TypeInfo.h>
+#include <limits>
 
 template< typename Real,
           typename Device,
@@ -42,8 +42,8 @@ initInterface( const MeshFunctionType& input,
          }
       }
       output[ cell.getIndex() ] =
-      c > 0 ? TypeInfo< RealType >::getMaxValue() :
-             -TypeInfo< RealType >::getMaxValue();
+      c > 0 ? std::numeric_limits< RealType >::max() :
+             -std::numeric_limits< RealType >::max();
       interfaceMap[ cell.getIndex() ] = false;
    }
 }
@@ -97,8 +97,8 @@ initInterface( const MeshFunctionType& input,
             }
          }
          output[ cell.getIndex() ] =
-            c > 0 ? TypeInfo< RealType >::getMaxValue() :
-                   -TypeInfo< RealType >::getMaxValue();  
+            c > 0 ? std::numeric_limits< RealType >::max() :
+                   -std::numeric_limits< RealType >::max();  
          interfaceMap[ cell.getIndex() ] = false;
       }
 }
@@ -139,11 +139,11 @@ updateCell( MeshFunctionType& u,
                      u[ neighborEntities.template getEntityIndex< 0,   1 >() ] );
    }
 
-   if( fabs( a ) == TypeInfo< Real >::getMaxValue() && 
-       fabs( b ) == TypeInfo< Real >::getMaxValue() )
+   if( fabs( a ) == std::numeric_limits< Real >::max() && 
+       fabs( b ) == std::numeric_limits< Real >::max() )
       return;
-   if( fabs( a ) == TypeInfo< Real >::getMaxValue() ||
-       fabs( b ) == TypeInfo< Real >::getMaxValue() ||
+   if( fabs( a ) == std::numeric_limits< Real >::max() ||
+       fabs( b ) == std::numeric_limits< Real >::max() ||
        fabs( a - b ) >= h )
    {
       tmp = argAbsMin( a, b ) + sign( value ) * h;
@@ -213,8 +213,8 @@ initInterface( const MeshFunctionType& input,
                }
             }
             output[ cell.getIndex() ] =
-               c > 0 ? TypeInfo< RealType >::getMaxValue() :
-                      -TypeInfo< RealType >::getMaxValue();
+               c > 0 ? std::numeric_limits< RealType >::max() :
+                      -std::numeric_limits< RealType >::max();
             interfaceMap[ cell.getIndex() ] = false;
          }
 }

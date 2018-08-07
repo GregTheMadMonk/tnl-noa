@@ -23,7 +23,6 @@ set( headers
      Constants.h
      CudaSharedMemory.h
      CudaStreamPool.h
-     Curve.h
      DevicePointer.h
      File.h
      File_impl.h
@@ -40,7 +39,6 @@ set( headers
      StaticFor.h
      String.h
      Timer.h
-     terminal-colors.h
      UniquePointer.h
      StaticVectorFor.h )
 

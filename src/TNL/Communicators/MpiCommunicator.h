@@ -431,6 +431,69 @@ std::ofstream MpiCommunicator::filestr;
 bool MpiCommunicator::redirect;
 bool MpiCommunicator::inited;
 
+#ifdef HAVE_MPI
+template<typename Type>
+class MPITypeResolver
+{
+    public:
+    static inline MPI_Datatype getType()
+    {
+        TNL_ASSERT_TRUE(false, "Fatal Error - Unknown MPI Type");
+        return MPI_INT;
+    };
+};
+
+template<> class MPITypeResolver<char>
+{
+    public:static inline MPI_Datatype getType(){return MPI_CHAR;};
+};
+
+template<> class MPITypeResolver<short int>
+{
+    public:static inline MPI_Datatype getType(){return MPI_SHORT;};
+};
+
+template<> class MPITypeResolver<long int>
+{
+    public:static inline MPI_Datatype getType(){return MPI_LONG;};
+};
+
+template<> class MPITypeResolver<unsigned char>
+{
+    public:static inline MPI_Datatype getType(){return MPI_UNSIGNED_CHAR;};
+};
+
+template<> class MPITypeResolver<unsigned short int>
+{
+    public:static inline MPI_Datatype getType(){return MPI_UNSIGNED_SHORT;};
+};
+
+template<> class MPITypeResolver<unsigned int>
+{
+    public:static inline MPI_Datatype getType(){return MPI_UNSIGNED;};
+};
+
+template<> class MPITypeResolver<unsigned long int>
+{
+    public:static inline MPI_Datatype getType(){return MPI_UNSIGNED_LONG;};
+};
+
+template<> class MPITypeResolver<float>
+{
+    public:static inline MPI_Datatype getType(){return MPI_FLOAT;};
+};
+
+template<> class MPITypeResolver<double>
+{
+    public:static inline MPI_Datatype getType(){return MPI_DOUBLE;};
+};
+
+template<> class MPITypeResolver<long double>
+{
+    public:static inline MPI_Datatype getType(){return MPI_LONG_DOUBLE;};
+};
+#endif
+
 }//namespace Communicators
 } // namespace TNL
 

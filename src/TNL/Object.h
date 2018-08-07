@@ -32,12 +32,6 @@ class Object
 {
    public:
 
-      //! Basic constructor
-#ifndef HAVE_MIC
-      __cuda_callable__
-      Object() : deprecatedReadMode( false ) {};
-#endif
-
       /****
        * Type getter. This returns the type in C++ style - for example the returned value
        * may look as follows: "Vector< double, Devices::Cuda >".
@@ -71,8 +65,6 @@ class Object
 
       bool boundLoad( const String& fileName );
       
-      void setDeprecatedReadMode();
-
       //! Destructor
       // FIXME: __cuda_callable__ would have to be added to every overriding destructor,
       // even if the object's constructor is not __cuda_callable__
@@ -80,12 +72,6 @@ class Object
 #ifndef HAVE_MIC
       virtual ~Object(){};
 #endif
-   
-   protected:
-      
-      // This allows to read old TNL files, it will be removed.
-      bool deprecatedReadMode;
-
 };
 
 bool getObjectType( File& file, String& type );
