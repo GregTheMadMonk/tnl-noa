@@ -118,7 +118,7 @@ setGlobalGrid( const GridType &globalGrid,
 
       this->localOrigin=globalGrid.getOrigin()+TNL::Containers::tnlDotProduct(globalGrid.getSpaceSteps(),this->globalBegin-this->overlap);
 
-      this->setUpNeighbors();
+      this->setupNeighbors();
 
       //nearnodes
       /*if(this->subdomainCoordinates[0]>0)

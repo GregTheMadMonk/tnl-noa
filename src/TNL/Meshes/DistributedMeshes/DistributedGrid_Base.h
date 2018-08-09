@@ -92,7 +92,7 @@ class DistributedGrid_Base
    public: 
       bool isThereNeighbor(const CoordinatesType &direction) const;
 
-      void setUpNeighbors();
+      void setupNeighbors();
 
       GridType globalGrid;
       PointType localOrigin;
@@ -108,6 +108,8 @@ class DistributedGrid_Base
       CoordinatesType subdomainCoordinates;   
 
       int neighbors[getNeighborsCount()];
+      
+      int periodicNeighbors[getNeighborsCount()];
 
       IndexType Dimensions;        
       bool distributed;

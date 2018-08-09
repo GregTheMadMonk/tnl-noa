@@ -46,7 +46,7 @@ setGlobalGrid( const GridType& globalGrid,
    this->overlap = overlap;
    this->neighbors[Left]=-1;
    this->neighbors[Right]=-1;
-
+   
    this->Dimensions = GridType::getMeshDimension();
    this->spaceSteps = globalGrid.getSpaceSteps();
 
@@ -96,7 +96,7 @@ setGlobalGrid( const GridType& globalGrid,
                         +this->globalBegin.x()*this->globalGrid.getSpaceSteps().x();
        }
 
-      this->setUpNeighbors();
+      this->setupNeighbors();
 
       this->localBegin=overlap;
 

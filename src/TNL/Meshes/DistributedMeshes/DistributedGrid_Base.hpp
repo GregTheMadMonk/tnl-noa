@@ -15,6 +15,8 @@
 
 #include <iostream>
 
+#include "DistributedGrid_Base.h"
+
 namespace TNL {
    namespace Meshes {
       namespace DistributedMeshes {
@@ -180,8 +182,8 @@ getRankOfProcCoord(const CoordinatesType &nodeCoordinates) const
     int ret=0;
     for(int i=0;i<dim;i++)
     {
-        ret+=dimOffset*nodeCoordinates[i];
-        dimOffset*=this->domainDecomposition[i];
+        ret += dimOffset*nodeCoordinates[i];
+        dimOffset *= this->domainDecomposition[i];
     }
     return ret;
 }
@@ -207,22 +209,31 @@ isThereNeighbor(const CoordinatesType &direction) const
 template< int dim, typename RealType, typename Device, typename Index >    
 void
 DistributedGrid_Base< dim, RealType, Device, Index >::
-setUpNeighbors()
+setupNeighbors()
 {
-    int *neighbors=this->neighbors;
+   int *neighbors = this->neighbors;
 
-    for(int i=0;i<getNeighborsCount();i++)
-    {
-        auto direction=Directions::template getXYZ<dim>(i);
-        if(this->isThereNeighbor(direction))
-        {
-            this->neighbors[i]=this->getRankOfProcCoord(this->subdomainCoordinates+direction);
-        }
-        else
-        {
-            this->neighbors[i]=-1;
-        }
-    }
+   for( int i = 0; i < getNeighborsCount(); i++ )
+   {
+      auto direction = Directions::template getXYZ< dim >( i );
+      auto coordinates = this->subdomainCoordinates+direction;
+      if( this->isThereNeighbor( direction ) )
+         this->neighbors[ i ] = this->getRankOfProcCoord( coordinates );
+      else
+         this->neighbors[ i ] =- 1;
+      
+      // Handling periodic neighbors
+      for( int d = 0; d < dim; d++ )
+      {
+         if( coordinates[ d ] == -1 )
+            coordinates[ d ] = this->domainDecomposition[ d ] - 1;
+         if( coordinates[ d ] == this->domainDecomposition[ d ] )
+            coordinates[ d ] = 0;
+         this->periodicNeighbors[ i ] = this->getRankOfProcCoord( coordinates );
+      }
+      
+      std::cout << "Setting i-th neigbour to " << neighbors[ i ] << " and " << periodicNeighbors[ i ] << std::endl;
+   }
 }
 
 template< int dim, typename RealType, typename Device, typename Index >   
@@ -293,7 +304,7 @@ SetupByCut(DistributedGridType &inputDistributedGrid,
 
             CommunicatorType::CreateNewGroup(isInCut,newRank,*oldGroup ,*((typename CommunicatorType::CommunicationGroup*) this->communicationGroup));
 
-            setUpNeighbors();
+            setupNeighbors();
 
 
             
