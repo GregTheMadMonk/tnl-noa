@@ -15,6 +15,8 @@
 
 #include <TNL/tnlConfig.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/Reduction.h>
+#include <TNL/Containers/Algorithms/ReductionOperations.h>
 
 namespace TNL {
 namespace Containers {   
@@ -128,19 +130,35 @@ compareMemory( const DestinationElement* destination,
                const SourceElement* source,
                const Index size )
 {
-   if( std::is_same< DestinationElement, SourceElement >::value &&
-       ( std::is_fundamental< DestinationElement >::value ||
-         std::is_pointer< DestinationElement >::value ) )
-   {
-      if( memcmp( destination, source, size * sizeof( DestinationElement ) ) != 0 )
-         return false;
-   }
-   else
-      for( Index i = 0; i < size; i ++ )
-         if( ! ( destination[ i ] == source[ i ] ) )
-            return false;
-   return true;
+   TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
+
+   //TODO: The parallel reduction on the CUDA device with different element types is needed.
+   bool result = false;
+   Algorithms::ParallelReductionEqualities< DestinationElement, SourceElement > reductionEqualities;
+   Reduction< Devices::Host >::reduce( reductionEqualities, size, destination, source, result );
+   return result;
 }
+
+template< typename Element,
+          typename Index >
+bool
+ArrayOperations< Devices::Host >::
+checkValue( const Element* data,
+            const Index size,
+            const Element& value )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "" );
+   
+   if( size == 0 ) return false;
+   bool result = false;
+   Algorithms::ParallelReductionCheckPresence< Element > reductionCheckPresence;
+   reductionCheckPresence.setValue( value );
+   Reduction< Devices::Host >::reduce( reductionCheckPresence, size, data, 0, result );
+   return result;   
+}
+
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 

@@ -27,45 +27,51 @@ class ArrayOperations< Devices::Host >
 {
    public:
 
-   template< typename Element, typename Index >
-   static void allocateMemory( Element*& data,
-                               const Index size );
+      template< typename Element, typename Index >
+      static void allocateMemory( Element*& data,
+                                  const Index size );
 
-   template< typename Element >
-   static void freeMemory( Element* data );
+      template< typename Element >
+      static void freeMemory( Element* data );
 
-   template< typename Element >
-   static void setMemoryElement( Element* data,
-                                 const Element& value );
+      template< typename Element >
+      static void setMemoryElement( Element* data,
+                                    const Element& value );
 
-   template< typename Element >
-   static Element getMemoryElement( Element* data );
+      template< typename Element >
+      static Element getMemoryElement( Element* data );
 
-   template< typename Element, typename Index >
-   static Element& getArrayElementReference( Element* data, const Index i );
+      template< typename Element, typename Index >
+      static Element& getArrayElementReference( Element* data, const Index i );
 
-   template< typename Element, typename Index >
-   static const Element& getArrayElementReference( const Element* data, const Index i );
+      template< typename Element, typename Index >
+      static const Element& getArrayElementReference( const Element* data, const Index i );
 
 
-   template< typename Element, typename Index >
-   static bool setMemory( Element* data,
-                          const Element& value,
-                          const Index size );
+      template< typename Element, typename Index >
+      static bool setMemory( Element* data,
+                             const Element& value,
+                             const Index size );
 
-   template< typename DestinationElement,
-             typename SourceElement,
-             typename Index >
-   static bool copyMemory( DestinationElement* destination,
-                           const SourceElement* source,
-                           const Index size );
-
-   template< typename Element1,
-             typename Element2,
-             typename Index >
-   static bool compareMemory( const Element1* destination,
-                              const Element2* source,
+      template< typename DestinationElement,
+                typename SourceElement,
+                typename Index >
+      static bool copyMemory( DestinationElement* destination,
+                              const SourceElement* source,
                               const Index size );
+
+      template< typename Element1,
+                typename Element2,
+                typename Index >
+      static bool compareMemory( const Element1* destination,
+                                 const Element2* source,
+                                 const Index size );
+
+      template< typename Element,
+                typename Index >
+      static bool checkValue( const Element* data,
+                              const Index size,
+                              const Element& value );
 };
 
 template<>
@@ -73,12 +79,9 @@ class ArrayOperations< Devices::Cuda >
 {
    public:
 
-   template< typename Element, typename Index >
-   static void allocateMemory( Element*& data,
-                               const Index size );
-
-   template< typename Element >
-   static void freeMemory( Element* data );
+      template< typename Element, typename Index >
+      static void allocateMemory( Element*& data,
+                                  const Index size );
 
    template< typename Element >
    __cuda_callable__
@@ -89,31 +92,41 @@ class ArrayOperations< Devices::Cuda >
    __cuda_callable__
    static Element getMemoryElement( const Element* data );
 
-   // TODO: does not make sense for CUDA - remove?
-   template< typename Element, typename Index >
-   static Element& getArrayElementReference( Element* data, const Index i );
+      template< typename Element >
+      static Element getMemoryElement( const Element* data );
 
-   template< typename Element, typename Index >
-   static const Element& getArrayElementReference( const Element* data, const Index i );
+      // TODO: does not make sense for CUDA - remove?
+      template< typename Element, typename Index >
+      static Element& getArrayElementReference( Element* data, const Index i );
 
-   template< typename Element, typename Index >
-   static bool setMemory( Element* data,
-                          const Element& value,
-                          const Index size );
+      template< typename Element, typename Index >
+      static const Element& getArrayElementReference( const Element* data, const Index i );
 
-   template< typename DestinationElement,
-             typename SourceElement,
-             typename Index >
-   static bool copyMemory( DestinationElement* destination,
-                           const SourceElement* source,
-                           const Index size );
+      template< typename Element, typename Index >
+      static bool setMemory( Element* data,
+                             const Element& value,
+                             const Index size );
 
-   template< typename Element1,
-             typename Element2,
-             typename Index >
-   static bool compareMemory( const Element1* destination,
-                              const Element2* source,
+      template< typename DestinationElement,
+                typename SourceElement,
+                typename Index >
+      static bool copyMemory( DestinationElement* destination,
+                              const SourceElement* source,
                               const Index size );
+
+      template< typename Element1,
+                typename Element2,
+                typename Index >
+      static bool compareMemory( const Element1* destination,
+                                 const Element2* source,
+                                 const Index size );
+
+      template< typename Element,
+                typename Index >
+      static bool checkValue( const Element* data,
+                              const Index size,
+                              const Element& value );
+
 };
 
 template<>
@@ -121,19 +134,19 @@ class ArrayOperations< Devices::Cuda, Devices::Host >
 {
    public:
 
-   template< typename DestinationElement,
-             typename SourceElement,
-             typename Index >
-   static bool copyMemory( DestinationElement* destination,
-                           const SourceElement* source,
-                           const Index size );
-
-   template< typename DestinationElement,
-             typename SourceElement,
-             typename Index >
-   static bool compareMemory( const DestinationElement* destination,
+      template< typename DestinationElement,
+                typename SourceElement,
+                typename Index >
+      static bool copyMemory( DestinationElement* destination,
                               const SourceElement* source,
                               const Index size );
+
+      template< typename DestinationElement,
+                typename SourceElement,
+                typename Index >
+      static bool compareMemory( const DestinationElement* destination,
+                                 const SourceElement* source,
+                                 const Index size );
 };
 
 template<>
@@ -141,19 +154,19 @@ class ArrayOperations< Devices::Host, Devices::Cuda >
 {
    public:
 
-   template< typename DestinationElement,
-             typename SourceElement,
-             typename Index >
-   static bool copyMemory( DestinationElement* destination,
-                           const SourceElement* source,
-                           const Index size );
-
-   template< typename Element1,
-             typename Element2,
-             typename Index >
-   static bool compareMemory( const Element1* destination,
-                              const Element2* source,
+      template< typename DestinationElement,
+                typename SourceElement,
+                typename Index >
+      static bool copyMemory( DestinationElement* destination,
+                              const SourceElement* source,
                               const Index size );
+
+      template< typename Element1,
+                typename Element2,
+                typename Index >
+      static bool compareMemory( const Element1* destination,
+                                 const Element2* source,
+                                 const Index size );
 };
 
 
@@ -162,44 +175,51 @@ class ArrayOperations< Devices::MIC >
 {
    public:
 
-   template< typename Element, typename Index >
-   static void allocateMemory( Element*& data,
-                               const Index size );
+      template< typename Element, typename Index >
+      static void allocateMemory( Element*& data,
+                                  const Index size );
 
-   template< typename Element >
-   static void freeMemory( Element* data );
+      template< typename Element >
+      static void freeMemory( Element* data );
 
-   template< typename Element >
-   static void setMemoryElement( Element* data,
-                                 const Element& value );
+      template< typename Element >
+      static void setMemoryElement( Element* data,
+                                    const Element& value );
 
-   template< typename Element >
-   static Element getMemoryElement( const Element* data );
+      template< typename Element >
+      static Element getMemoryElement( const Element* data );
 
-   template< typename Element, typename Index >
-   static Element& getArrayElementReference( Element* data, const Index i );
+      template< typename Element, typename Index >
+      static Element& getArrayElementReference( Element* data, const Index i );
 
-   template< typename Element, typename Index >
-   static const Element& getArrayElementReference( const Element* data, const Index i );
+      template< typename Element, typename Index >
+      static const Element& getArrayElementReference( const Element* data, const Index i );
 
-   template< typename Element, typename Index >
-   static bool setMemory( Element* data,
-                          const Element& value,
-                          const Index size );
+      template< typename Element, typename Index >
+      static bool setMemory( Element* data,
+                             const Element& value,
+                             const Index size );
 
-   template< typename DestinationElement,
-             typename SourceElement,
-             typename Index >
-   static bool copyMemory( DestinationElement* destination,
-                           const SourceElement* source,
-                           const Index size );
-
-   template< typename Element1,
-             typename Element2,
-             typename Index >
-   static bool compareMemory( const Element1* destination,
-                              const Element2* source,
+      template< typename DestinationElement,
+                typename SourceElement,
+                typename Index >
+      static bool copyMemory( DestinationElement* destination,
+                              const SourceElement* source,
                               const Index size );
+
+      template< typename Element1,
+                typename Element2,
+                typename Index >
+      static bool compareMemory( const Element1* destination,
+                                 const Element2* source,
+                                 const Index size );
+
+      template< typename Element,
+                typename Index >
+      static bool checkValue( const Element* data,
+                              const Index size,
+                              const Element& value );
+      
 };
 
 template<>
@@ -207,19 +227,19 @@ class ArrayOperations< Devices::MIC, Devices::Host >
 {
    public:
 
-   template< typename DestinationElement,
-             typename SourceElement,
-             typename Index >
-   static bool copyMemory( DestinationElement* destination,
-                           const SourceElement* source,
-                           const Index size );
-
-   template< typename DestinationElement,
-             typename SourceElement,
-             typename Index >
-   static bool compareMemory( const DestinationElement* destination,
+      template< typename DestinationElement,
+                typename SourceElement,
+                typename Index >
+      static bool copyMemory( DestinationElement* destination,
                               const SourceElement* source,
                               const Index size );
+
+      template< typename DestinationElement,
+                typename SourceElement,
+                typename Index >
+      static bool compareMemory( const DestinationElement* destination,
+                                 const SourceElement* source,
+                                 const Index size );
 };
 
 template<>
@@ -227,19 +247,19 @@ class ArrayOperations< Devices::Host, Devices::MIC >
 {
    public:
 
-   template< typename DestinationElement,
-             typename SourceElement,
-             typename Index >
-   static bool copyMemory( DestinationElement* destination,
-                           const SourceElement* source,
-                           const Index size );
-
-   template< typename DestinationElement,
-             typename SourceElement,
-             typename Index >
-   static bool compareMemory( const DestinationElement* destination,
+      template< typename DestinationElement,
+                typename SourceElement,
+                typename Index >
+      static bool copyMemory( DestinationElement* destination,
                               const SourceElement* source,
                               const Index size );
+
+      template< typename DestinationElement,
+                typename SourceElement,
+                typename Index >
+      static bool compareMemory( const DestinationElement* destination,
+                                 const SourceElement* source,
+                                 const Index size );
 };
 
 } // namespace Algorithms

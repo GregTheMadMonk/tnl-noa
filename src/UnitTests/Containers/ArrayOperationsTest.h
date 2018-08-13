@@ -141,6 +141,32 @@ TYPED_TEST( ArrayOperationsTest, compareMemoryWithConversion_host )
    ArrayOperations< Devices::Host >::freeMemory( data2 );
 }
 
+TYPED_TEST( ArrayOperationsTest, checkValue_host )
+{
+   const int size = ARRAY_TEST_SIZE;
+
+   int *data1;
+   float *data2;
+   ArrayOperations< Devices::Host >::allocateMemory( data1, size );
+   ArrayOperations< Devices::Host >::allocateMemory( data2, size );
+   for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
+   {
+      data1[ i ] = i % 10;
+      data2[ i ] = ( float ) ( i % 10 );
+   }
+   for( int i = 0; i < 10; i++ )
+   {
+      EXPECT_TRUE( ( ArrayOperations< Devices::Host >::checkValue( data1, size, i ) ) );
+      EXPECT_TRUE( ( ArrayOperations< Devices::Host >::checkValue( data2, size, ( float ) i ) ) );
+   }
+   for( int i = 10; i < 20; i++ )
+   {
+      EXPECT_FALSE( ( ArrayOperations< Devices::Host >::checkValue( data1, size, i ) ) );
+      EXPECT_FALSE( ( ArrayOperations< Devices::Host >::checkValue( data2, size, ( float ) i ) ) );
+   }
+   ArrayOperations< Devices::Host >::freeMemory( data1 );
+   ArrayOperations< Devices::Host >::freeMemory( data2 );
+}
 
 #ifdef HAVE_CUDA
 TYPED_TEST( ArrayOperationsTest, allocateMemory_cuda )
@@ -301,6 +327,46 @@ TYPED_TEST( ArrayOperationsTest, compareMemoryWithConversions_cuda )
    ArrayOperations< Devices::Cuda >::freeMemory( deviceData );
    ArrayOperations< Devices::Cuda >::freeMemory( deviceData2 );
 }
+
+TYPED_TEST( ArrayOperationsTest, checkValue_cuda )
+{
+   const int size = ARRAY_TEST_SIZE;
+
+   int *data1_host, *data1_cuda;
+   float *data2_host, *data2_cuda;
+   ArrayOperations< Devices::Host >::allocateMemory( data1_host, size );
+   ArrayOperations< Devices::Host >::allocateMemory( data2_host, size );
+   ArrayOperations< Devices::Cuda >::allocateMemory( data1_cuda, size );
+   ArrayOperations< Devices::Cuda >::allocateMemory( data2_cuda, size );
+   
+   
+   for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
+   {
+      data1_host[ i ] = i % 10;
+      data2_host[ i ] = ( float ) ( i % 10 );
+   }
+   
+   ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( data1_cuda, data1_host, size );
+   ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( data2_cuda, data2_host, size );
+   
+   for( int i = 0; i < 10; i++ )
+   {
+      EXPECT_TRUE( ( ArrayOperations< Devices::Cuda >::checkValue( data1_cuda, size, i ) ) );
+      EXPECT_TRUE( ( ArrayOperations< Devices::Cuda >::checkValue( data2_cuda, size, ( float ) i ) ) );
+   }
+   for( int i = 10; i < 20; i++ )
+   {
+      EXPECT_FALSE( ( ArrayOperations< Devices::Cuda >::checkValue( data1_cuda, size, i ) ) );
+      EXPECT_FALSE( ( ArrayOperations< Devices::Cuda >::checkValue( data2_cuda, size, ( float ) i ) ) );
+   }
+   ArrayOperations< Devices::Host >::freeMemory( data1_host );
+   ArrayOperations< Devices::Host >::freeMemory( data2_host );
+   ArrayOperations< Devices::Cuda >::freeMemory( data1_cuda );
+   ArrayOperations< Devices::Cuda >::freeMemory( data2_cuda );
+   
+}
+
+
 #endif // HAVE_CUDA
 #endif // HAVE_GTEST
 

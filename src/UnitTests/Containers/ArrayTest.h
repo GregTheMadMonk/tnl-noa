@@ -326,6 +326,23 @@ TYPED_TEST( ArrayTest, elementwiseAccess )
    testArrayElementwiseAccess( ArrayType() );
 }
 
+TYPED_TEST( ArrayTest, checkElement )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+   using ElementType = typename ArrayType::ElementType;
+
+   ArrayType array;
+   array.setSize( 1024 );
+   for( int i = 0; i < array.getSize(); i++ )
+      array.setElement( i, ( ElementType ) ( i % 10 ) );
+   
+   for( int i = 0; i < 10; i++ )
+      EXPECT_TRUE( ( array.checkElement( ( ElementType ) i ) ) );
+
+   for( int i = 10; i < 20; i++ )
+      EXPECT_FALSE( ( array.checkElement( ( ElementType ) i ) ) );
+}
+
 TYPED_TEST( ArrayTest, comparisonOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
