@@ -56,7 +56,7 @@ TEST(NoMPI, NoTest)
 #if (defined(HAVE_GTEST) && defined(HAVE_MPI))
 #include <sstream>
 
-  class MinimalistBuffredPrinter : public ::testing::EmptyTestEventListener {
+  class MinimalistBufferedPrinter : public ::testing::EmptyTestEventListener {
       
   private:
       std::stringstream sout;
@@ -100,7 +100,7 @@ int main( int argc, char* argv[] )
           ::testing::UnitTest::GetInstance()->listeners();
 
        delete listeners.Release(listeners.default_result_printer());
-       listeners.Append(new MinimalistBuffredPrinter);
+       listeners.Append(new MinimalistBufferedPrinter);
 
        CommunicatorType::Init(argc,argv );
        CommunicatorType::setRedirection( false );

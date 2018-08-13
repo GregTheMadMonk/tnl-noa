@@ -57,6 +57,8 @@ class MpiCommunicator
       inline static MPI_Datatype MPIDataType( const double* ) { return MPI_DOUBLE; };
       inline static MPI_Datatype MPIDataType( const long double* ) { return MPI_LONG_DOUBLE; };
 
+      // TODO: How to deal with bool
+
       using Request = MPI_Request;
       using CommunicationGroup = MPI_Comm;
 #else
@@ -334,6 +336,36 @@ class MpiCommunicator
             throw Exceptions::MPISupportMissing();
 #endif
         }
+         
+         template< typename T >
+         static void SendReceive( T* sendData,
+                                  int sendCount,
+                                  int destination,
+                                  int sendTag,
+                                  T* receiveData,
+                                  int receiveCount,
+                                  int source,
+                                  int receiveTag,
+                                  CommunicationGroup group )
+         {
+#ifdef HAVE_MPI
+            MPI_Status status;
+            MPI_Sendrecv( ( void* ) sendData,
+                          sendCount,
+                          MPIDataType( sendData ),
+                          destination,
+                          sendTag,
+                          ( void* ) receiveData,
+                          receiveCount,
+                          MPIDataType( receiveData ),
+                          source,
+                          receiveTag,
+                          group,
+                          &status );
+#else
+            throw Exceptions::MPISupportMissing();
+#endif            
+         }
 
 
       static void writeProlog( Logger& logger ) 

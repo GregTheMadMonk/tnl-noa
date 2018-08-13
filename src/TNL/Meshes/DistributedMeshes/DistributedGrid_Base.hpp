@@ -245,6 +245,15 @@ getNeighbors() const
     return this->neighbors;
 }
 
+template< int dim, typename RealType, typename Device, typename Index >   
+const int*
+DistributedGrid_Base< dim, RealType, Device, Index >::
+getPeriodicNeighbors() const
+{
+    TNL_ASSERT_TRUE(this->isSet,"DistributedGrid is not set, but used by getNeighbors");
+    return this->periodicNeighbors;
+}
+
 template< int dim, typename RealType, typename Device, typename Index >    
     template<typename CommunicatorType, typename DistributedGridType >
 bool 

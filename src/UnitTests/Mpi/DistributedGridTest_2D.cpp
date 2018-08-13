@@ -439,7 +439,7 @@ TEST_F(DistributedGirdTest_2D, evaluateAllEntities)
 {
 
     //Check Traversars
-    //All entities, witout overlap
+    //All entities, without overlap
     setDof_2D(*dof,-1);
     constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
     //Printer<MeshType,DofType>::print_dof(rank,*gridptr,*dof);
@@ -450,7 +450,7 @@ TEST_F(DistributedGirdTest_2D, evaluateAllEntities)
 
 TEST_F(DistributedGirdTest_2D, evaluateBoundaryEntities)
 {
-    //Boundary entities, witout overlap
+    //Boundary entities, without overlap
     setDof_2D(*dof,-1);
     constFunctionEvaluator.evaluateBoundaryEntities( meshFunctionptr , constFunctionPtr );
     //print_dof_2D(rank,*gridptr,dof);
@@ -461,7 +461,7 @@ TEST_F(DistributedGirdTest_2D, evaluateBoundaryEntities)
 
 TEST_F(DistributedGirdTest_2D, evaluateInteriorEntities)
 {
-    //Inner entities, witout overlap
+    //Inner entities, without overlap
     setDof_2D(*dof,-1);
     constFunctionEvaluator.evaluateInteriorEntities( meshFunctionptr , constFunctionPtr );
     check_Boundary_2D(rank, *gridptr, *dof, -1);
@@ -507,7 +507,7 @@ TEST(NoMPI, NoTest)
 #if (defined(HAVE_GTEST) && defined(HAVE_MPI))
 #include <sstream>
 
-  class MinimalistBuffredPrinter : public ::testing::EmptyTestEventListener {
+  class MinimalistBufferedPrinter : public ::testing::EmptyTestEventListener {
       
   private:
       std::stringstream sout;
@@ -551,7 +551,7 @@ int main( int argc, char* argv[] )
           ::testing::UnitTest::GetInstance()->listeners();
 
        delete listeners.Release(listeners.default_result_printer());
-       listeners.Append(new MinimalistBuffredPrinter);
+       listeners.Append(new MinimalistBufferedPrinter);
 
        CommunicatorType::Init(argc,argv);
     #endif

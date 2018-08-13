@@ -79,7 +79,9 @@ class DistributedGrid_Base
       template< typename Entity >
       IndexType getEntitiesCount() const; 
 
-      const int* getNeighbors() const; 
+      const int* getNeighbors() const;
+      
+      const int* getPeriodicNeighbors() const; 
 
       template<typename CommunicatorType, typename DistributedGridType>
       bool SetupByCut(DistributedGridType &inputDistributedGrid, 
