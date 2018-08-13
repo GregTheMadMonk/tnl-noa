@@ -226,7 +226,7 @@ class TestDistributedGridIO{
         overlap.setValue(1);
         DistributedGridType distrgrid;
         distrgrid.setDomainDecomposition( parameters.getDistr() );
-        distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid, overlap );
+        distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid, overlap,overlap); // TODO: fixthis
 
         std::cout << distrgrid.printProcessDistr() <<std::endl;
 
@@ -302,7 +302,7 @@ class TestDistributedGridIO{
         overlap.setValue(1);
         DistributedGridType distrgrid;
         distrgrid.setDomainDecomposition( parameters.getDistr() );
-        distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
+        distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap,overlap); // TODO: fix this
 
         //save files from local mesh        
         PointType localOrigin=parameters.getOrigin(CommunicatorType::GetRank(CommunicatorType::AllGroup));        

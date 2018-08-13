@@ -11,16 +11,18 @@
 #pragma once
 
 #include <TNL/Problems/PDEProblem.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 namespace TNL {
 namespace Problems {
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 String
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 getType()
 {
    return String( "PDEProblem< " ) +
@@ -31,44 +33,78 @@ getType()
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 String
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 getPrologHeader() const
 {
    return String( "General PDE Problem" );
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 void
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 bool
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 writeEpilog( Logger& logger ) const
 {
    return true;
 }
 
+template< typename Mesh,
+          typename Communicator,
+          typename Real,
+          typename Device,
+          typename Index >
+typename PDEProblem< Mesh, Communicator, Real, Device, Index >::IndexType
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
+subdomainOverlapSize()
+{ 
+   return 1;
+}
 
 template< typename Mesh,
+          typename Communicator,
+          typename Real,
+          typename Device,
+          typename Index >
+void
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
+getSubdomainOverlaps( const Config::ParameterContainer& parameters,
+                      const String& prefix,
+                      const MeshType& mesh,
+                      SubdomainOverlapsType& lower,
+                      SubdomainOverlapsType& upper )
+{
+   using namespace TNL::Meshes::DistributedMeshes;
+   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( mesh, lower, upper, this->subdomainOverlapSize() );
+}
+      
+
+
+template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 bool
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 setMeshDependentData( const MeshPointer& mesh,
                       MeshDependentDataPointer& meshDependentData )
 {
@@ -79,22 +115,24 @@ setMeshDependentData( const MeshPointer& mesh,
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 void
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 bindMeshDependentData( const MeshPointer& mesh,
                        MeshDependentDataPointer& meshDependentData )
 {
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 bool
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 preIterate( const RealType& time,
             const RealType& tau,
             const MeshPointer& meshPointer,
@@ -105,11 +143,12 @@ preIterate( const RealType& time,
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 void
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 setExplicitBoundaryConditions( const RealType& time,
                                const MeshPointer& meshPointer,
                                DofVectorPointer& dofs,
@@ -118,12 +157,13 @@ setExplicitBoundaryConditions( const RealType& time,
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
     template< typename Matrix >
 void
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 saveFailedLinearSystem( const Matrix& matrix,
                         const DofVectorType& dofs,
                         const DofVectorType& rhs ) const
@@ -135,11 +175,12 @@ saveFailedLinearSystem( const Matrix& matrix,
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 bool
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 postIterate( const RealType& time,
              const RealType& tau,
              const MeshPointer& meshPointer,
@@ -150,11 +191,12 @@ postIterate( const RealType& time,
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 Solvers::SolverMonitor*
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 getSolverMonitor()
 {
    return 0;

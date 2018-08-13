@@ -101,7 +101,7 @@ int main ( int argc, char *argv[])
  overlap.setValue(1);
  DistributedMeshType distrgrid;
  distrgrid.setDomainDecomposition( distr );
- distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap); 
+ distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap,overlap); 
    
  SharedPointer<MeshType> gridptr;
  SharedPointer<MeshFunctionType> meshFunctionptr;

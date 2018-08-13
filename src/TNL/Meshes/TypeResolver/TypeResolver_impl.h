@@ -119,10 +119,10 @@ loadMesh( const String& fileName,
           Mesh< MeshConfig, Device >& mesh,
           DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > > &distributedMesh )
 {
-   if(CommunicatorType::isDistributed())
+   if( CommunicatorType::isDistributed() )
    {
-       std::cerr << "Distributed Mesh is not supported yet, only Distributed Grid is supported.";
-       return false;
+      std::cerr << "Distributed Mesh is not supported yet, only Distributed Grid is supported.";
+      return false;
    }
 
    std::cout << "Loading mesh from file " << fileName << " ..." << std::endl;
@@ -176,6 +176,25 @@ loadMesh( const String& fileName,
 }
 
 template< typename CommunicatorType,
+          typename MeshConfig,
+          typename Problem >
+bool
+decomposeMesh( const Config::ParameterContainer& parameters,
+               const String& prefix,
+               Mesh< MeshConfig, Devices::Cuda >& mesh,
+               DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Devices::Cuda > >& distributedMesh,
+               Problem& problem )
+{
+   if( CommunicatorType::isDistributed() )
+   {
+       std::cerr << "Distributed Mesh is not supported yet, only Distributed Grid is supported.";
+       return false;
+   }
+   return true;
+}
+
+// Specializations for grids
+template< typename CommunicatorType,
           int Dimension,
           typename Real,
           typename Device,
@@ -188,48 +207,65 @@ loadMesh( const String& fileName,
 
    if( CommunicatorType::isDistributed() )
    {
-        std::cout << "Loading a global mesh from the file " << fileName << "...";
-        Grid< Dimension, Real, Device, Index > globalGrid;
-        if( ! globalGrid.load( fileName ) )
-        {
-          std::cerr << std::endl;
-          std::cerr << "I am not able to load the global mesh from the file " << fileName << "." << std::endl;
-          return false;
-        }
-        std::cout << " [ OK ] " << std::endl;
+      std::cout << "Loading a global mesh from the file " << fileName << "...";
+      Grid< Dimension, Real, Device, Index > globalGrid;
+      if( ! globalGrid.load( fileName ) )
+      {
+         std::cerr << std::endl;
+         std::cerr << "I am not able to load the global mesh from the file " << fileName << "." << std::endl;
+         return false;
+      }
+      std::cout << " [ OK ] " << std::endl;
   
-       typename Meshes::DistributedMeshes::DistributedMesh<Grid< Dimension, Real, Device, Index >>::CoordinatesType overlap;
-       overlap.setValue(1);
-       distributedMesh.template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
-       distributedMesh.setupGrid(mesh);
-       return true;
+      typename Meshes::DistributedMeshes::DistributedMesh<Grid< Dimension, Real, Device, Index >>::SubdomainOverlapsType overlap;
+      distributedMesh.template setGlobalGrid< CommunicatorType >( globalGrid );
+      distributedMesh.setupGrid(mesh);
+      return true;
    }
    else
    {
-       std::cout << "Loading a mesh from the file " << fileName << "...";
-       if( ! mesh.load( fileName ) )
-       {
-          std::cerr << std::endl;
-          std::cerr << "I am not able to load the mesh from the file " << fileName << "." << std::endl;
-          std::cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << std::endl;
-          return false;
-       }
-       std::cout << " [ OK ] " << std::endl;
-       return true;
+      std::cout << "Loading a mesh from the file " << fileName << "...";
+      if( ! mesh.load( fileName ) )
+      {
+         std::cerr << std::endl;
+         std::cerr << "I am not able to load the mesh from the file " << fileName << "." << std::endl;
+         std::cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << std::endl;
+         return false;
+      }
+      std::cout << " [ OK ] " << std::endl;
+      return true;
     }
-
-
-
-  /* std::cout << "Loading mesh from file " << fileName << " ..." << std::endl;
-   if( ! mesh.load( fileName ) )
-   {
-      std::cerr << "I am not able to load the grid from the file " << fileName << ". "
-                   "You may create it with tools like tnl-grid-setup."
-                << std::endl;
-      return false;
-   }
-   return true;*/
 }
+
+template< typename Problem,
+          int Dimension,
+          typename Real,
+          typename Device,
+          typename Index >
+bool
+decomposeMesh( const Config::ParameterContainer& parameters,
+               const String& prefix,
+               Grid< Dimension, Real, Device, Index >& mesh,
+               DistributedMeshes::DistributedMesh< Grid< Dimension, Real, Device, Index > > &distributedMesh,
+               Problem& problem )
+{
+   using GridType = Grid< Dimension, Real, Device, Index >;
+   using DistributedGridType = DistributedMeshes::DistributedMesh< GridType >;
+   using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
+   using CommunicatorType = typename Problem::CommunicatorType;
+   
+   if( CommunicatorType::isDistributed() )
+   {
+      SubdomainOverlapsType lower, upper;
+      problem.getSubdomainOverlaps( parameters, prefix, mesh, lower, upper  );
+      distributedMesh.setOverlaps( lower, upper );
+      distributedMesh.setupGrid( mesh );
+      return true;
+   }
+   else
+      return true;
+}
+
 
 } // namespace Meshes
 } // namespace TNL

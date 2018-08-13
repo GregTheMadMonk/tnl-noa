@@ -19,11 +19,13 @@
 #include "tnlFastSweepingMethod.h"
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlDirectEikonalProblem
    : public Problems::PDEProblem< Mesh,
+                                  Communicator,
                                   Real,
                                   typename Mesh::DeviceType,
                                   Index  >
@@ -34,7 +36,7 @@ class tnlDirectEikonalProblem
       typedef typename Mesh::DeviceType DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef Problems::PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef Problems::PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
       using AnisotropyType = Anisotropy;
 
       using typename BaseType::MeshType;

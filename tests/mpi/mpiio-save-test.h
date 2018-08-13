@@ -65,7 +65,7 @@ int main(int argc, char **argv)
         CoordinatesType overlap;
         overlap.setValue(1);
         DistributedGridType distrgrid;
-        distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
+        distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap,overlap);
 
         SharedPointer<MeshType> gridptr;
         SharedPointer<MeshFunctionType> meshFunctionptr;

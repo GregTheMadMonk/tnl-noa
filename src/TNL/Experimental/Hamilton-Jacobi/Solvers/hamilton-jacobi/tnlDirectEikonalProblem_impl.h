@@ -14,11 +14,12 @@
 #pragma once
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 String
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 getType()
 {
    return String( "DirectEikonalProblem< " + 
@@ -29,22 +30,24 @@ getType()
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 String
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 getPrologHeader() const
 {
    return String( "Direct eikonal solver" );
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 void
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 writeProlog( Logger& logger,
              const Config::ParameterContainer& parameters ) const
 {
@@ -52,22 +55,24 @@ writeProlog( Logger& logger,
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 bool
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 writeEpilog( Logger& logger )
 {
    return true;
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 bool
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 setup( const MeshPointer& mesh,
        const Config::ParameterContainer& parameters,
        const String& prefix )
@@ -76,22 +81,24 @@ setup( const MeshPointer& mesh,
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 Index
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 getDofs( const MeshPointer& mesh ) const
 {
    return mesh->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 void
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 bindDofs( const MeshPointer& mesh,
           const DofVectorPointer& dofs )
 {
@@ -99,11 +106,12 @@ bindDofs( const MeshPointer& mesh,
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 bool
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshPointer& mesh,
                      DofVectorPointer& dofs,
@@ -118,11 +126,12 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 bool
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 solve( const MeshPointer& mesh,
        DofVectorPointer& dofs )
 {

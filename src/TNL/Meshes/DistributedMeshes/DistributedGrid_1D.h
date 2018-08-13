@@ -32,12 +32,15 @@ class DistributedMesh< Grid< 1, RealType, Device, Index > > : public Distributed
       typedef typename DistributedGrid_Base<1, RealType, Device, Index >::IndexType IndexType;
       typedef typename DistributedGrid_Base<1, RealType, Device, Index >::GridType GridType;
       typedef typename DistributedGrid_Base<1, RealType, Device, Index >::PointType PointType;
+      typedef typename DistributedGrid_Base<1, RealType, Device, Index >::SubdomainOverlapsType SubdomainOverlapsType;
 
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );
       
-      template<typename CommunicatorType>
-      void setGlobalGrid( const GridType& globalGrid, const CoordinatesType& overlap );
+      template< typename CommunicatorType >
+      void setGlobalGrid( const GridType &globalGrid,
+                          const SubdomainOverlapsType& lower,
+                          const SubdomainOverlapsType& upper );
        
       void setupGrid( GridType& grid );
        

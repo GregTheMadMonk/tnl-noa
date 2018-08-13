@@ -34,7 +34,7 @@ void SetUpDistributedGrid(DistributedMesh<MeshType> &distributedGrid, MeshType &
     typename MeshType::CoordinatesType overlap;
     overlap.setValue(1);
     distributedGrid.setDomainDecomposition( distribution );
-    distributedGrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
+    distributedGrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap,overlap); // TODO: fix this
 }
 
 //===============================================2D================================================================

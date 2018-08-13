@@ -33,10 +33,11 @@ namespace Problems {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator = Operators::LinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
 class HeatEquationProblem : public PDEProblem< Mesh,
+                                               Communicator,
                                                typename DifferentialOperator::RealType,
                                                typename Mesh::DeviceType,
                                                typename DifferentialOperator::IndexType  >
@@ -48,7 +49,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
       typedef Matrices::SlicedEllpack< RealType, DeviceType, IndexType > MatrixType;
       typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
@@ -61,7 +62,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       using typename BaseType::MeshDependentDataType;
       using typename BaseType::MeshDependentDataPointer;
 
-      typedef CommType CommunicatorType;
+      typedef Communicator CommunicatorType;
 
       static String getType();
 

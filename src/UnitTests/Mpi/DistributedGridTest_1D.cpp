@@ -135,7 +135,7 @@ class DistributedGirdTest_1D : public ::testing::Test {
     typename DistributedMeshType::CoordinatesType overlap;
     overlap.setValue(1);
     distrgrid=new DistributedMeshType();
-    distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
+    distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap,overlap); // TODO: fix this
     
     distrgrid->setupGrid(*gridptr);
     dof=new DofType(gridptr->template getEntitiesCount< Cell >());

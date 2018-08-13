@@ -48,7 +48,7 @@ TEST(CutDistributedMeshFunction, 2D_Data)
    overlap.setValue(1);
    DistributedMeshType distrgrid;
    distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 3, 4 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap);
+   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap,overlap); // TODO: fix this
 
    SharedPointer<MeshType> originalGrid;
    distrgrid.setupGrid(*originalGrid);
@@ -126,7 +126,7 @@ TEST(CutDistributedMeshFunction, 3D_1_Data)
    overlap.setValue(1);
    DistributedMeshType distrgrid;
    distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2, 2, 3 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap);
+   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap,overlap); // TODO: fix this
 
    SharedPointer<MeshType> originalGrid;
    distrgrid.setupGrid(*originalGrid);
@@ -204,7 +204,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Data)
    overlap.setValue(1);
    DistributedMeshType distrgrid;
    distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2, 2, 3 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap);
+   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap,overlap); // TODO: fix this
 
    SharedPointer<MeshType> originalGrid;
    distrgrid.setupGrid(*originalGrid);
@@ -288,7 +288,7 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
    overlap.setValue(1);
    DistributedMeshType distrgrid;
    distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 3, 4 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap);
+   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap,overlap); // TODO: fix this
 
    SharedPointer<MeshType> originalGrid;
    distrgrid.setupGrid(*originalGrid);
@@ -370,7 +370,7 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
    overlap.setValue(1);
    DistributedMeshType distrgrid;
    distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2,2,3 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap);
+   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap,overlap); // TODO: fix this
 
    SharedPointer<MeshType> originalGrid;
    distrgrid.setupGrid(*originalGrid);
@@ -454,7 +454,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
    overlap.setValue(1);
    DistributedMeshType distrgrid;
    distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2,2,3 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap);
+   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap,overlap); // TODO: fix this
 
    SharedPointer<MeshType> originalGrid;
    distrgrid.setupGrid(*originalGrid);
@@ -536,7 +536,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
    overlap.setValue(1);
    DistributedMeshType distrgrid;
    distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2,2,3 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap);
+   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid,overlap,overlap); // TODO: fixthis
 
    SharedPointer<MeshType> originalGrid;
    distrgrid.setupGrid(*originalGrid);

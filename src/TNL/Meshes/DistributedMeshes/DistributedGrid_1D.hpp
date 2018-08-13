@@ -31,7 +31,8 @@ template< typename RealType, typename Device, typename Index >
 void
 DistributedMesh< Grid< 1, RealType, Device, Index > >::
 setGlobalGrid( const GridType& globalGrid,
-               const CoordinatesType& overlap )
+               const SubdomainOverlapsType& lower,
+               const SubdomainOverlapsType& upper )
 {
 
    if(this->isSet && this->communicationGroup != nullptr)
@@ -43,7 +44,9 @@ setGlobalGrid( const GridType& globalGrid,
 
    this->globalGrid = globalGrid;
    this->isSet = true;
-   this->overlap = overlap;
+   this->overlap = lower; // overlap; TODO: FIx this - I dont understand this code
+   this->lowerOverlap = lower;
+   this->upperOverlap = upper;
    this->neighbors[Left]=-1;
    this->neighbors[Right]=-1;
    
@@ -92,13 +95,13 @@ setGlobalGrid( const GridType& globalGrid,
        else
        {
            this->globalBegin.x()=numberOfLarger*(this->localSize.x()+1)+(this->rank-numberOfLarger)*this->localSize.x();
-           this->localOrigin.x()=(this->globalGrid.getOrigin().x()-overlap.x())
+           this->localOrigin.x()=(this->globalGrid.getOrigin().x()-this->overlap.x())
                         +this->globalBegin.x()*this->globalGrid.getSpaceSteps().x();
        }
 
       this->setupNeighbors();
 
-      this->localBegin=overlap;
+      this->localBegin=this->overlap;
 
        //vlevo neni prekryv
        if(this->neighbors[Left]==-1)

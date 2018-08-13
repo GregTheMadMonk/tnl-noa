@@ -15,6 +15,7 @@
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 #include "Functions.h"
 
@@ -29,10 +30,10 @@ using namespace TNL::Meshes::DistributedMeshes;
  
 
 template<typename DofType>
-void setDof_2D(DofType &dof, typename DofType::RealType value)
+void setDof_2D( DofType &dof, typename DofType::RealType value )
 {
-    for(int i=0;i<dof.getSize();i++)
-        dof[i]=value;
+   for( int i = 0; i < dof.getSize(); i++ )
+      dof[ i ] = value;
 }
 
 template<typename DofType,typename GridType>
@@ -361,6 +362,8 @@ typedef DistributedMesh<MeshType> DistributedGridType;
 
 class DistributedGirdTest_2D : public ::testing::Test {
  protected:
+    
+public:
 
     static DistributedGridType *distrgrid;
     static DofType *dof;
@@ -398,19 +401,24 @@ class DistributedGirdTest_2D : public ::testing::Test {
     globalGrid.setDimensions(size,size);
     globalGrid.setDomain(globalOrigin,globalProportions);
     
-    typename DistributedGridType::CoordinatesType overlap;
-    overlap.setValue(1);
-    distrgrid=new DistributedGridType();
-    distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3 ) );
-    distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap );
+    typename DistributedGridType::CoordinatesType overlap( 1 );
     
+    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+    distrgrid=new DistributedGridType();
+
+    distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3 ) );
+    distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid );
+    distrgrid->setupGrid(*gridptr);    
+    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( *gridptr, lowerOverlap, upperOverlap, 1 );
+    distrgrid->setOverlaps( lowerOverlap, upperOverlap );
     distrgrid->setupGrid(*gridptr);
+    
+    
     dof=new DofType(gridptr->template getEntitiesCount< Cell >());
     
     meshFunctionptr->bind(gridptr,*dof);
     
     constFunctionPtr->Number=rank;
-    
   }
 
   // Per-test-case tear-down.
@@ -437,7 +445,6 @@ int DistributedGirdTest_2D::nproc;
 
 TEST_F(DistributedGirdTest_2D, evaluateAllEntities)
 {
-
     //Check Traversars
     //All entities, without overlap
     setDof_2D(*dof,-1);
@@ -543,6 +550,59 @@ TEST(NoMPI, NoTest)
 #include "../../src/UnitTests/GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
+   /*CommunicatorType::Init(argc,argv);
+   
+    DistributedGridType *distrgrid;
+    DofType *dof;
+
+    SharedPointer<MeshType> gridptr;
+    SharedPointer<MeshFunctionType> meshFunctionptr;
+
+     MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,2> > constFunctionEvaluator;
+     SharedPointer< ConstFunction<double,2>, Host > constFunctionPtr;
+
+     MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,2> > linearFunctionEvaluator;
+     SharedPointer< LinearFunction<double,2>, Host > linearFunctionPtr;
+   
+     int rank;
+    int nproc;    
+   
+   
+   
+    int size=10;
+    rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
+    nproc=CommunicatorType::GetSize(CommunicatorType::AllGroup);
+    
+    PointType globalOrigin;
+    PointType globalProportions;
+    MeshType globalGrid;
+    
+    globalOrigin.x()=-0.5;
+    globalOrigin.y()=-0.5;    
+    globalProportions.x()=size;
+    globalProportions.y()=size;
+        
+    globalGrid.setDimensions(size,size);
+    globalGrid.setDomain(globalOrigin,globalProportions);
+    
+    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+    distrgrid=new DistributedGridType();
+    distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3 ) );
+    distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid );
+    distrgrid->setupGrid(*gridptr);    
+    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( *gridptr, lowerOverlap, upperOverlap, 1 );
+    distrgrid->setOverlaps( lowerOverlap, upperOverlap );
+    
+    dof=new DofType(gridptr->template getEntitiesCount< Cell >());
+    
+    meshFunctionptr->bind(gridptr,*dof);
+    
+    constFunctionPtr->Number=rank;
+   
+   
+   
+   return 0;*/
+   
 #ifdef HAVE_GTEST
    ::testing::InitGoogleTest( &argc, argv );
 

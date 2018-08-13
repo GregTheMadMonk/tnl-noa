@@ -15,6 +15,7 @@ SET( headers BufferEntitiesHelper.h
              DistributedGridIO_MeshFunction.h
              DistributedGridIO_VectorField.h
              Directions.h
+             SubdomainOverlapsGetter.h
              )
 
 INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Meshes/DistributedMeshes )

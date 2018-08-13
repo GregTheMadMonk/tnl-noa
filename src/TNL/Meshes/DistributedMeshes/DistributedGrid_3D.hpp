@@ -42,7 +42,8 @@ template< typename RealType, typename Device, typename Index >
 void
 DistributedMesh< Grid< 3, RealType, Device, Index > >::
 setGlobalGrid( const GridType &globalGrid,
-               const CoordinatesType& overlap )
+               const SubdomainOverlapsType& lower,
+               const SubdomainOverlapsType& upper )
 {
    if(this->isSet && this->communicationGroup != nullptr)
         std::free(this->communicationGroup);
@@ -53,7 +54,7 @@ setGlobalGrid( const GridType &globalGrid,
 
    this->globalGrid = globalGrid;
    this->isSet=true;           
-   this->overlap=overlap;
+   //this->overlap=overlap; TODO: Fix this
 
    for (int i=0;i<26;i++)
         this->neighbors[i]=-1;

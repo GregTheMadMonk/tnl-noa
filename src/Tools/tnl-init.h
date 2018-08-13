@@ -49,7 +49,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
    
        typename Meshes::DistributedMeshes::DistributedMesh<MeshType>::CoordinatesType overlap;
        overlap.setValue(1);
-       distributedMesh.template setGlobalGrid<CommunicatorType>(globalMesh,overlap); 
+       distributedMesh.template setGlobalGrid<CommunicatorType>(globalMesh,overlap,overlap); // TODO: FIX subdomain overlaps setup
        distributedMesh.setupGrid(*meshPointer);
     }
     else

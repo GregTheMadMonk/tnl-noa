@@ -645,7 +645,7 @@ class DistributedGirdTest_3D : public ::testing::Test {
     overlap.setValue(1);
     distrgrid=new DistributedGridType();
     distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3, 3 ) );
-    distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid, overlap );
+    distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid, overlap,overlap);
     
     distrgrid->setupGrid(*gridptr);
     dof=new DofType(gridptr->template getEntitiesCount< Cell >());

@@ -57,7 +57,7 @@ class TestDistributedVectorFieldMPIIO{
         CoordinatesType overlap;
         overlap.setValue(1);
         DistributedGridType distrgrid;
-        distrgrid.template setGlobalGrid<CommunicatorType>( *globalGrid, overlap );
+        distrgrid.template setGlobalGrid<CommunicatorType>( *globalGrid, overlap,overlap); // TODO: Fix this
 
         ///std::cout << distrgrid.printProcessDistr() <<std::endl;
 
@@ -130,7 +130,7 @@ class TestDistributedVectorFieldMPIIO{
         CoordinatesType overlap;
         overlap.setValue(1);
         DistributedGridType distrgrid;
-        distrgrid.template setGlobalGrid<CommunicatorType>(*globalGrid,overlap);
+        distrgrid.template setGlobalGrid<CommunicatorType>(*globalGrid,overlap,overlap); // TODO: fix this
 
         String FileName=String("/tmp/test-file.tnl");         
 

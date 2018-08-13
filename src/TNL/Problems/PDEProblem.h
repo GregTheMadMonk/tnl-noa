@@ -19,6 +19,7 @@ namespace TNL {
 namespace Problems {
 
 template< typename Mesh,
+          typename Communicator,
           typename Real = typename Mesh::RealType,
           typename Device = typename Mesh::DeviceType,
           typename Index = typename Mesh::GlobalIndexType >
@@ -26,18 +27,22 @@ class PDEProblem : public Problem< Real, Device, Index >
 {
    public:
 
-      typedef Problem< Real, Device, Index > BaseType;
+      using BaseType = Problem< Real, Device, Index >;
       using typename BaseType::RealType;
       using typename BaseType::DeviceType;
       using typename BaseType::IndexType;
 
-      typedef Mesh MeshType;
-      typedef SharedPointer< MeshType, DeviceType > MeshPointer;
-      typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
-      typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-      typedef Matrices::SlicedEllpack< RealType, DeviceType, IndexType > MatrixType;
-      typedef Containers::Vector< RealType, DeviceType, IndexType > MeshDependentDataType;
-      typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
+      using MeshType = Mesh;
+      using MeshPointer = SharedPointer< MeshType, DeviceType >;
+      using DistributedMeshType = Meshes::DistributedMeshes::DistributedMesh< MeshType >;
+      using SubdomainOverlapsType = typename DistributedMeshType::SubdomainOverlapsType;
+      using DofVectorType = Containers::Vector< RealType, DeviceType, IndexType>;
+      using DofVectorPointer = SharedPointer< DofVectorType, DeviceType >;
+      using MatrixType = Matrices::SlicedEllpack< RealType, DeviceType, IndexType >;
+      using CommunicatorType = Communicator;
+      
+      using MeshDependentDataType = Containers::Vector< RealType, DeviceType, IndexType >;
+      using MeshDependentDataPointer = SharedPointer< MeshDependentDataType, DeviceType >;
 
       static constexpr bool isTimeDependent() { return true; };
       
@@ -54,7 +59,17 @@ class PDEProblem : public Problem< Real, Device, Index >
                         const Config::ParameterContainer& parameters ) const;
  
       bool writeEpilog( Logger& logger ) const;
-
+      
+      // Width of the subdomain overlaps in case when all of them are the same
+      virtual IndexType subdomainOverlapSize();
+      
+      // Returns default subdomain overlaps i.e. no overlaps on the boundaries, only
+      // in the domain interior.
+      void getSubdomainOverlaps( const Config::ParameterContainer& parameters,
+                                 const String& prefix,
+                                 const MeshType& mesh,
+                                 SubdomainOverlapsType& lower,
+                                 SubdomainOverlapsType& upper );
 
       bool setMeshDependentData( const MeshPointer& mesh,
                                  MeshDependentDataPointer& meshDependentData );

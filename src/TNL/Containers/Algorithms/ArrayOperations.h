@@ -82,20 +82,21 @@ class ArrayOperations< Devices::Cuda >
       template< typename Element, typename Index >
       static void allocateMemory( Element*& data,
                                   const Index size );
-
-   template< typename Element >
-   __cuda_callable__
-   static void setMemoryElement( Element* data,
-                                 const Element& value );
-
-   template< typename Element >
-   __cuda_callable__
-   static Element getMemoryElement( const Element* data );
+      
+      template< typename Element >
+      static void freeMemory( Element* data );
 
       template< typename Element >
+      __cuda_callable__
+      static void setMemoryElement( Element* data,
+                                    const Element& value );
+
+      template< typename Element >
+      __cuda_callable__
       static Element getMemoryElement( const Element* data );
 
-      // TODO: does not make sense for CUDA - remove?
+
+      // TODO: does not make sense for CUDA - remove? <- could make sense with CUDA Unified Memory
       template< typename Element, typename Index >
       static Element& getArrayElementReference( Element* data, const Index i );
 

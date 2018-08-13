@@ -63,7 +63,9 @@ setup( const Config::ParameterContainer& parameters,
     * Load the mesh from the mesh file
     */
    const String& meshFile = parameters.getParameter< String >( "mesh" );
-   if( ! Meshes::loadMesh<typename Problem::CommunicatorType>( meshFile, *meshPointer, distrMesh ) )
+   if( ! Meshes::loadMesh< typename Problem::CommunicatorType >( meshFile, *meshPointer, distrMesh ) )
+      return false;
+   if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *meshPointer, distrMesh, *problem ) )
       return false;
    
    /****
