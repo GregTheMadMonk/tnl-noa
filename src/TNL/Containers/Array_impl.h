@@ -324,6 +324,16 @@ getElement( const Index& i ) const
 template< typename Element,
           typename Device,
           typename Index >
+bool
+Array< Element, Device, Index >::
+checkElement( const Element& v ) const
+{
+   return Algorithms::ArrayOperations< Device >::checkValue( this->data, this->size, v );
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
 __cuda_callable__
 inline Element&
 Array< Element, Device, Index >::

@@ -200,12 +200,39 @@ compareMemory( const Element1* destination,
 {
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
+#ifdef HAVE_CUDA   
    //TODO: The parallel reduction on the CUDA device with different element types is needed.
    bool result = false;
    Algorithms::ParallelReductionEqualities< Element1, Element2 > reductionEqualities;
    Reduction< Devices::Cuda >::reduce( reductionEqualities, size, destination, source, result );
    return result;
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif   
 }
+
+template< typename Element,
+          typename Index >
+bool
+ArrayOperations< Devices::Cuda >::
+checkValue( const Element* data,
+            const Index size,
+            const Element& value )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "" );
+#ifdef HAVE_CUDA
+   if( size == 0 ) return false;
+   bool result = false;
+   Algorithms::ParallelReductionCheckPresence< Element > reductionCheckPresence;
+   reductionCheckPresence.setValue( value );
+   Reduction< Devices::Cuda >::reduce( reductionCheckPresence, size, data, 0, result );
+   return result;   
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
+}
+
 
 /****
  * Operations CUDA -> Host

@@ -85,6 +85,9 @@ class Array : public Object
       void setElement( const Index& i, const Element& x );
 
       Element getElement( const Index& i ) const;
+      
+      // Checks if there is an element with value v in this array
+      bool checkElement( const Element& v ) const;
 
       __cuda_callable__ inline Element& operator[] ( const Index& i );
 
