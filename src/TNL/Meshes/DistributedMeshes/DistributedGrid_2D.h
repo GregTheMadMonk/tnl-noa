@@ -36,12 +36,6 @@ class DistributedMesh< Grid< 2, RealType, Device, Index > >: public DistributedG
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );
             
-      /*template< typename CommunicatorType >
-      void setGlobalGrid( const GridType& globalGrid );
-      
-      void setOverlaps( const SubdomainOverlapsType& lower,
-                        const SubdomainOverlapsType& upper );*/
-      
       void setupGrid( GridType& grid );
        
       String printProcessCoords() const;
