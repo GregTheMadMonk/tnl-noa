@@ -115,28 +115,18 @@ setGlobalGrid( const GridType &globalGrid )
       for( int i = 0; i < Dimension; i++ )
          this->domainDecomposition[ i ] = dims[ i ];
 
-      // TODO: Make one formula for arbitraty dimension
-      switch( Dimension )
+      int size = this->nproc;
+      int tmp = this->rank;
+      for( int i = Dimension - 1; i >= 0; i-- )
       {
-         case 1:
-            this->subdomainCoordinates[ 0 ] = this->rank;
-            break;
-         case 2:
-            this->subdomainCoordinates[ 0 ] = this->rank % this->domainDecomposition[ 0 ];
-            this->subdomainCoordinates[ 1 ] = this->rank / this->domainDecomposition[ 0 ];        
-            break;
-         case 3:
-            this->subdomainCoordinates[ 2 ] =   this->rank / ( this->domainDecomposition[0] * this->domainDecomposition[1] );
-            this->subdomainCoordinates[ 1 ] = ( this->rank % ( this->domainDecomposition[0] * this->domainDecomposition[1] ) ) / this->domainDecomposition[0];
-            this->subdomainCoordinates[ 0 ] = ( this->rank % ( this->domainDecomposition[0] * this->domainDecomposition[1] ) ) % this->domainDecomposition[0];
-            break;
-         default:
-            throw Exceptions::UnsupportedDimension( Dimension );
+         size = size / this->domainDecomposition[ i ];
+         this->subdomainCoordinates[ i ] = tmp / size;
+         tmp = tmp % size;
       }
 
       for( int i = 0; i < Dimension; i++ )
       {
-         numberOfLarger[ i ] = globalGrid.getDimensions().x() % this->domainDecomposition[ i ];
+         numberOfLarger[ i ] = globalGrid.getDimensions()[ i ] % this->domainDecomposition[ i ];
          
          this->localSize[ i ] = globalGrid.getDimensions()[ i ] / this->domainDecomposition[ i ];
          
@@ -163,14 +153,11 @@ setOverlaps( const SubdomainOverlapsType& lower,
 {
    this->lowerOverlap = lower;
    this->upperOverlap = upper;
-   
-   for( int i = 0; i < Dimension; i++ )
-   {
-      this->localOrigin[ i ] = this->globalGrid.getOrigin()[ i ] +
-         this->globalGrid.getSpaceSteps()[ i ] * 
-            ( this->globalBegin[ i ] - this->lowerOverlap[ i ] );         
 
-   }
+
+   this->localOrigin = this->globalGrid.getOrigin() +
+         Containers::Scale( this->globalGrid.getSpaceSteps(),
+            ( this->globalBegin - this->lowerOverlap ) );
 
    this->localBegin = this->lowerOverlap;
    this->localGridSize = this->localSize + this->lowerOverlap + this->upperOverlap;
@@ -216,6 +203,22 @@ DistributedGrid_Base< Dimension, RealType, Device, Index >::
 getOverlap() const
 {
    return this->overlap;
+};
+
+template< int Dimension, typename RealType, typename Device, typename Index >     
+const typename DistributedGrid_Base< Dimension, RealType, Device, Index >::CoordinatesType&
+DistributedGrid_Base< Dimension, RealType, Device, Index >::
+getLowerOverlap() const
+{
+   return this->lowerOverlap;
+};
+
+template< int Dimension, typename RealType, typename Device, typename Index >     
+const typename DistributedGrid_Base< Dimension, RealType, Device, Index >::CoordinatesType&
+DistributedGrid_Base< Dimension, RealType, Device, Index >::
+getUpperOverlap() const
+{
+   return this->upperOverlap;
 };
 
 template< int Dimension, typename RealType, typename Device, typename Index >     

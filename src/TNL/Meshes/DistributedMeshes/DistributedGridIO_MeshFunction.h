@@ -54,10 +54,7 @@ class DistributedGridIO<Functions::MeshFunction<MeshType>,LocalCopy,Device>
         newMesh->setDimensions(localSize);
         newMesh->setSpaceSteps(spaceSteps);
         CoordinatesType newOrigin;
-        for( int i = 0; i < MeshType::getMeshDimension(); i++ )
-           newOrigin = origin[ i ] + spaceSteps[ i ] * localBegin[ i ];
-        newMesh->setOrigin( newOrigin );
-        //newMesh->setOrigin(origin+TNL::Containers::tnlDotProduct(spaceSteps,localBegin));
+        newMesh->setOrigin(origin+TNL::Containers::Scale(spaceSteps,localBegin));
         
         File meshFile;
         meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords()+String(".tnl"),IOMode::write);
@@ -103,10 +100,7 @@ class DistributedGridIO<Functions::MeshFunction<MeshType>,LocalCopy,Device>
         newMesh->setDimensions(localSize);
         newMesh->setSpaceSteps(spaceSteps);
         CoordinatesType newOrigin;
-        for( int i = 0; i < MeshType::getMeshDimension(); i++ )
-           newOrigin = origin[ i ] + spaceSteps[ i ] * localBegin[ i ];
-        newMesh->setOrigin( newOrigin );       
-        //newMesh->setOrigin(origin+TNL::Containers::tnlDotProduct(spaceSteps,localBegin));
+        newMesh->setOrigin(origin+TNL::Containers::Scale(spaceSteps,localBegin));
         
         VectorType newDof(newMesh-> template getEntitiesCount< typename MeshType::Cell >());
         MeshFunctionType newMeshFunction;

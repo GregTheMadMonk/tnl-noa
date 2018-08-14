@@ -538,6 +538,6 @@ for( int j = 0; j < TNL::Communicators::MpiCommunicator::GetSize( TNL::Communica
                    << TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup )      \
                    << " : " << message << std::endl;                                                                     \
       }                                                                                                                  \
-      TNL::Communicators::MpiCommunicator::Barrier( Communicator::AllGroup );                                            \
+      TNL::Communicators::MpiCommunicator::Barrier( TNL::Communicators::MpiCommunicator::AllGroup );                                            \
    }
 

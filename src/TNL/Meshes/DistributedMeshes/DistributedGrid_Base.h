@@ -58,6 +58,10 @@ class DistributedGrid_Base
            
       // TODO: replace it with getLowerOverlap() and getUpperOverlap()
       const CoordinatesType& getOverlap() const;
+      
+      const CoordinatesType& getLowerOverlap() const;
+      
+      const CoordinatesType& getUpperOverlap() const;
 
       //number of elements of local sub domain WITHOUT overlap
       const CoordinatesType& getLocalSize() const;
