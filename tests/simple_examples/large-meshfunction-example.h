@@ -4,7 +4,7 @@
 
 #include <TNL/Functions/MeshFunction.h>
 
-#include "../../src/UnitTests/Mpi/Functions.h"
+#include "../../src/UnitTests/Functions/Functions.h"
 
 using namespace std;
 

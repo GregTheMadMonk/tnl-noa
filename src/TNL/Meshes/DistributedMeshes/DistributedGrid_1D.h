@@ -37,10 +37,10 @@ class DistributedMesh< Grid< 1, RealType, Device, Index > > : public Distributed
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );
       
-      template< typename CommunicatorType >
+      /*template< typename CommunicatorType >
       void setGlobalGrid( const GridType &globalGrid,
                           const SubdomainOverlapsType& lower,
-                          const SubdomainOverlapsType& upper );
+                          const SubdomainOverlapsType& upper );*/
        
       void setupGrid( GridType& grid );
        

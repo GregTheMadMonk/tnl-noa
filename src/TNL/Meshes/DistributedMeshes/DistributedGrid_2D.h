@@ -42,8 +42,6 @@ class DistributedMesh< Grid< 2, RealType, Device, Index > >: public DistributedG
       void setOverlaps( const SubdomainOverlapsType& lower,
                         const SubdomainOverlapsType& upper );*/
       
-      
-       
       void setupGrid( GridType& grid );
        
       String printProcessCoords() const;

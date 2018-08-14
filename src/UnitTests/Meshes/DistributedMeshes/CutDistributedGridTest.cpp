@@ -5,7 +5,7 @@
 
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
-
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -24,17 +24,19 @@ void SetUpDistributedGrid(DistributedMesh<MeshType> &distributedGrid, MeshType &
 {
     typename MeshType::PointType globalOrigin;
     typename MeshType::PointType globalProportions;
+    using DistributedMeshType = DistributedMesh< MeshType >;
     
-    globalOrigin.setValue(-0.5);    
-    globalProportions.setValue(size);
+    globalOrigin.setValue( -0.5 );
+    globalProportions.setValue( size );
 
-    globalGrid.setDimensions(size);
-    globalGrid.setDomain(globalOrigin,globalProportions);
+    globalGrid.setDimensions( size );
+    globalGrid.setDomain( globalOrigin,globalProportions );
     
-    typename MeshType::CoordinatesType overlap;
-    overlap.setValue(1);
     distributedGrid.setDomainDecomposition( distribution );
-    distributedGrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap,overlap); // TODO: fix this
+    distributedGrid.template setGlobalGrid<CommunicatorType>(globalGrid);
+    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 }
 
 //===============================================2D================================================================

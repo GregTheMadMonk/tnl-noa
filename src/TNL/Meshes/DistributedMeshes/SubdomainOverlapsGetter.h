@@ -39,7 +39,7 @@ class SubdomainOverlapsGetter< Mesh< MeshConfig, Device >, Communicator >
       
       // Computes subdomain overlaps
       // TODO: Its gonna be very likely different for Mesh than for Grid
-      static void getOverlaps( const MeshType& mesh,
+      static void getOverlaps( const DistributedMeshType* distributedMesh,
                                SubdomainOverlapsType& lower,
                                SubdomainOverlapsType& upper,
                                IndexType subdomainOverlapSize );
@@ -69,7 +69,7 @@ class SubdomainOverlapsGetter< Grid< Dimension, Real, Device, Index >, Communica
        * upper.x() is overlap of the subdomain at boundary where x = grid.getDimensions().x() - 1,
        * upper.y() is overlap of the subdomain at boundary where y = grid.getDimensions().y() - 1 etc.
        */
-      static void getOverlaps( const MeshType& mesh,
+      static void getOverlaps( const DistributedMeshType* distributedMesh,
                                SubdomainOverlapsType& lower,
                                SubdomainOverlapsType& upper,
                                IndexType subdomainOverlapSize );

@@ -3,11 +3,12 @@
 
 #ifdef HAVE_MPI    
 
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
-#include <TNL/Functions/MeshFunction.h>
 #include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
-#include "Functions.h"
+#include "../../Functions/Functions.h"
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -589,86 +590,88 @@ void check_Inner_3D(int rank, GridType grid, DofType dof, typename DofType::Real
 
 /*
  * Light check of 3D distributed grid and its synchronization. 
- * expected 27 processors
+ * expected 27 processes
  */
 typedef MpiCommunicator CommunicatorType;
-typedef Grid<3,double,Host,int> MeshType;
-typedef MeshFunction<MeshType> MeshFunctionType;
+typedef Grid<3,double,Host,int> GridType;
+typedef MeshFunction<GridType> MeshFunctionType;
 typedef Vector<double,Host,int> DofType;
-typedef typename MeshType::Cell Cell;
-typedef typename MeshType::IndexType IndexType; 
-typedef typename MeshType::PointType PointType; 
-typedef DistributedMesh<MeshType> DistributedGridType;
+typedef typename GridType::Cell Cell;
+typedef typename GridType::IndexType IndexType; 
+typedef typename GridType::PointType PointType; 
+typedef DistributedMesh<GridType> DistributedGridType;
      
-class DistributedGirdTest_3D : public ::testing::Test {
- protected:
+class DistributedGirdTest_3D : public ::testing::Test
+{
+   protected:
 
-    static DistributedGridType *distrgrid;
-    static DofType *dof;
+      static DistributedGridType *distrgrid;
+      static DofType *dof;
 
-    static SharedPointer<MeshType> gridptr;
-    static SharedPointer<MeshFunctionType> meshFunctionptr;
+      static SharedPointer<GridType> gridptr;
+      static SharedPointer<MeshFunctionType> meshFunctionptr;
 
-    static MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > constFunctionEvaluator;
-    static SharedPointer< ConstFunction<double,3>, Host > constFunctionPtr;
+      static MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > constFunctionEvaluator;
+      static SharedPointer< ConstFunction<double,3>, Host > constFunctionPtr;
 
-    static MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,3> > linearFunctionEvaluator;
-    static SharedPointer< LinearFunction<double,3>, Host > linearFunctionPtr;
+      static MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,3> > linearFunctionEvaluator;
+      static SharedPointer< LinearFunction<double,3>, Host > linearFunctionPtr;
 
-    static int rank;
-    static int nproc;    
-     
-  // Per-test-case set-up.
-  // Called before the first test in this test case.
-  // Can be omitted if not needed.
-  static void SetUpTestCase() {
-      
-    int size=10;
-    rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
-    nproc=CommunicatorType::GetSize(CommunicatorType::AllGroup);
-    
-    PointType globalOrigin;
-    PointType globalProportions;
-    MeshType globalGrid;
-    
-    globalOrigin.x()=-0.5;
-    globalOrigin.y()=-0.5;
-    globalOrigin.z()=-0.5;    
-    globalProportions.x()=size;
-    globalProportions.y()=size;
-    globalProportions.z()=size;
-        
-    globalGrid.setDimensions(size,size,size);
-    globalGrid.setDomain(globalOrigin,globalProportions);
-    
-    typename DistributedGridType::CoordinatesType overlap;
-    overlap.setValue(1);
-    distrgrid=new DistributedGridType();
-    distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3, 3 ) );
-    distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid, overlap,overlap);
-    
-    distrgrid->setupGrid(*gridptr);
-    dof=new DofType(gridptr->template getEntitiesCount< Cell >());
-    
-    meshFunctionptr->bind(gridptr,*dof);   
-    constFunctionPtr->Number=rank;
-    
-  }
+      static int rank;
+      static int nproc;    
 
-  // Per-test-case tear-down.
-  // Called after the last test in this test case.
-  // Can be omitted if not needed.
-  static void TearDownTestCase() {
-      delete dof;
-      delete distrgrid;
+      // Per-test-case set-up.
+      // Called before the first test in this test case.
+      // Can be omitted if not needed.
+      static void SetUpTestCase()
+      {
 
-  }
+         int size=10;
+         rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
+         nproc=CommunicatorType::GetSize(CommunicatorType::AllGroup);
 
+         PointType globalOrigin;
+         PointType globalProportions;
+         GridType globalGrid;
+
+         globalOrigin.x()=-0.5;
+         globalOrigin.y()=-0.5;
+         globalOrigin.z()=-0.5;    
+         globalProportions.x()=size;
+         globalProportions.y()=size;
+         globalProportions.z()=size;
+
+         globalGrid.setDimensions(size,size,size);
+         globalGrid.setDomain(globalOrigin,globalProportions);
+
+         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+         distrgrid=new DistributedGridType();
+         distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3, 3 ) );
+         distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid );
+         distrgrid->setupGrid(*gridptr);    
+         SubdomainOverlapsGetter< GridType, CommunicatorType >::getOverlaps( distrgrid, lowerOverlap, upperOverlap, 1 );
+         distrgrid->setOverlaps( lowerOverlap, upperOverlap );
+
+         distrgrid->setupGrid(*gridptr);
+         dof=new DofType(gridptr->template getEntitiesCount< Cell >());
+
+         meshFunctionptr->bind(gridptr,*dof);   
+         constFunctionPtr->Number=rank;
+      }
+
+      // Per-test-case tear-down.
+      // Called after the last test in this test case.
+      // Can be omitted if not needed.
+      static void TearDownTestCase()
+      {
+         delete dof;
+         delete distrgrid;
+      }
 };
 
 DistributedGridType *DistributedGirdTest_3D::distrgrid=NULL;
 DofType *DistributedGirdTest_3D::dof=NULL;
-SharedPointer<MeshType> DistributedGirdTest_3D::gridptr;
+SharedPointer<GridType> DistributedGirdTest_3D::gridptr;
 SharedPointer<MeshFunctionType> DistributedGirdTest_3D::meshFunctionptr;
 MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > DistributedGirdTest_3D::constFunctionEvaluator;
 SharedPointer< ConstFunction<double,3>, Host > DistributedGirdTest_3D::constFunctionPtr;
@@ -684,7 +687,7 @@ TEST_F(DistributedGirdTest_3D, evaluateAllEntities)
     //All entities, witout overlap
     setDof_3D(*dof,-1);
     constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-    //Printer<MeshType,DofType>::print_dof(rank,*gridptr,*dof);
+    //Printer<GridType,DofType>::print_dof(rank,*gridptr,*dof);
     check_Boundary_3D(rank, *gridptr, *dof, rank);
     check_Overlap_3D(rank, *gridptr, *dof, -1);
     check_Inner_3D(rank, *gridptr, *dof, rank);

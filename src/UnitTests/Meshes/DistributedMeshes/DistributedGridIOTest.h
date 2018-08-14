@@ -10,9 +10,9 @@
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
-
-#include "Functions.h"
+#include "../../Functions/Functions.h"
 
 using namespace TNL::Containers;
 using namespace TNL::Meshes;
@@ -189,7 +189,8 @@ class ParameterProvider<3,Device>
 typedef MpiCommunicator CommunicatorType;
 
 template <int dim, typename Device>
-class TestDistributedGridIO{
+class TestDistributedGridIO
+{
     public:
 
     typedef Grid<dim,double,Device,int> MeshType;
@@ -226,9 +227,12 @@ class TestDistributedGridIO{
         overlap.setValue(1);
         DistributedGridType distrgrid;
         distrgrid.setDomainDecomposition( parameters.getDistr() );
-        distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid, overlap,overlap); // TODO: fixthis
+        distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid );
+        typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
+        distrgrid.setOverlaps( lowerOverlap, upperOverlap );
 
-        std::cout << distrgrid.printProcessDistr() <<std::endl;
+        //std::cout << distrgrid.printProcessDistr() <<std::endl;
 
         SharedPointer<MeshType> gridptr;
         SharedPointer<MeshFunctionType> meshFunctionptr;
@@ -302,7 +306,10 @@ class TestDistributedGridIO{
         overlap.setValue(1);
         DistributedGridType distrgrid;
         distrgrid.setDomainDecomposition( parameters.getDistr() );
-        distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap,overlap); // TODO: fix this
+        distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid );
+        typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
+        distrgrid.setOverlaps( lowerOverlap, upperOverlap );
 
         //save files from local mesh        
         PointType localOrigin=parameters.getOrigin(CommunicatorType::GetRank(CommunicatorType::AllGroup));        

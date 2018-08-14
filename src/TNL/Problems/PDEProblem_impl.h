@@ -92,8 +92,8 @@ getSubdomainOverlaps( const Config::ParameterContainer& parameters,
                       SubdomainOverlapsType& lower,
                       SubdomainOverlapsType& upper )
 {
-   using namespace TNL::Meshes::DistributedMeshes;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( mesh, lower, upper, this->subdomainOverlapSize() );
+   using namespace Meshes::DistributedMeshes;
+   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( mesh.getDistributedMesh(), lower, upper, this->subdomainOverlapSize() );
 }
       
 

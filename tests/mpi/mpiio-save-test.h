@@ -1,14 +1,15 @@
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
-#include <TNL/Functions/MeshFunction.h>
-
 #ifdef HAVE_MPI
 
 #define MPIIO
+#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 
-#include "../../src/UnitTests/Mpi/Functions.h"
+
+#include "../../src/UnitTests/Functions/Functions.h"
 
 #define DIM 2
 
@@ -62,10 +63,11 @@ int main(int argc, char **argv)
         globalGrid.save( meshFile );
         meshFile.close();
 
-        CoordinatesType overlap;
-        overlap.setValue(1);
         DistributedGridType distrgrid;
-        distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap,overlap);
+        distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid );
+        typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
+        distrgrid.setOverlaps( lowerOverlap, upperOverlap );
 
         SharedPointer<MeshType> gridptr;
         SharedPointer<MeshFunctionType> meshFunctionptr;

@@ -6,7 +6,7 @@
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Communicators/NoDistrCommunicator.h>
 
-#include "Functions.h"
+#include "../../Functions/Functions.h"
 
 using namespace TNL;
 using namespace TNL::Containers;

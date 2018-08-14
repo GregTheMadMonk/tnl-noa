@@ -20,6 +20,7 @@
 
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 #include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/MpiCommunicator.h>
@@ -35,7 +36,9 @@ template< typename MeshType,
 bool renderFunction( const Config::ParameterContainer& parameters )
 {
 
-   Meshes::DistributedMeshes::DistributedMesh<MeshType> distributedMesh;
+   using namespace  Meshes::DistributedMeshes;
+   using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh<MeshType>;
+   DistributedGridType distributedMesh;
    SharedPointer< MeshType > meshPointer;
    MeshType globalMesh;
 
@@ -47,9 +50,11 @@ bool renderFunction( const Config::ParameterContainer& parameters )
        if( ! globalMesh.load( meshFile ) )
           return false;
    
-       typename Meshes::DistributedMeshes::DistributedMesh<MeshType>::CoordinatesType overlap;
-       overlap.setValue(1);
-       distributedMesh.template setGlobalGrid<CommunicatorType>(globalMesh,overlap,overlap); // TODO: FIX subdomain overlaps setup
+       // TODO: This should work with no overlaps
+       distributedMesh.template setGlobalGrid<CommunicatorType>(globalMesh);
+       typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+       SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedMesh, lowerOverlap, upperOverlap, 1 );
+       distributedMesh.setOverlaps( lowerOverlap, upperOverlap );
        distributedMesh.setupGrid(*meshPointer);
     }
     else

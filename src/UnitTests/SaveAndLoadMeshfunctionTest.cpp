@@ -11,7 +11,7 @@
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
 
-#include "Mpi/Functions.h"
+#include "Functions/Functions.h"
 
 #include <iostream>
 

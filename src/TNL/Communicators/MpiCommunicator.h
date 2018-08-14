@@ -529,5 +529,15 @@ template<> class MPITypeResolver<long double>
 }//namespace Communicators
 } // namespace TNL
 
-
+#define TNL_MPI_PRINT( message )                                                                                         \
+for( int j = 0; j < TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup ); j++ ) \
+   {                                                                                                                     \
+      if( j == TNL::Communicators::MpiCommunicator::GetRank( TNL::Communicators::MpiCommunicator::AllGroup ) )           \
+      {                                                                                                                  \
+         std::cerr << "Node " << j << " of "                                                                             \
+                   << TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup )      \
+                   << " : " << message << std::endl;                                                                     \
+      }                                                                                                                  \
+      TNL::Communicators::MpiCommunicator::Barrier( Communicator::AllGroup );                                            \
+   }
 

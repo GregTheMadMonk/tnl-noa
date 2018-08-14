@@ -7,9 +7,10 @@
     #define MPIIO
 #endif
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 
-#include "Functions.h"
+#include "../../Functions/Functions.h"
 
 using namespace TNL::Containers;
 using namespace TNL::Meshes;
@@ -54,15 +55,18 @@ class TestDistributedVectorFieldMPIIO{
         globalGrid->setDimensions(globalProportions);
         globalGrid->setDomain(globalOrigin,globalProportions);
         
-        CoordinatesType overlap;
-        overlap.setValue(1);
         DistributedGridType distrgrid;
-        distrgrid.template setGlobalGrid<CommunicatorType>( *globalGrid, overlap,overlap); // TODO: Fix this
-
-        ///std::cout << distrgrid.printProcessDistr() <<std::endl;
+        distrgrid.template setGlobalGrid<CommunicatorType>( *globalGrid );
 
         SharedPointer<MeshType> gridptr;        
         distrgrid.setupGrid(*gridptr);
+        typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
+        distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+        distrgrid.setupGrid(*gridptr);
+
+
+        ///std::cout << distrgrid.printProcessDistr() <<std::endl;
 
 		VectorFieldType vectorField;
 
@@ -130,7 +134,11 @@ class TestDistributedVectorFieldMPIIO{
         CoordinatesType overlap;
         overlap.setValue(1);
         DistributedGridType distrgrid;
-        distrgrid.template setGlobalGrid<CommunicatorType>(*globalGrid,overlap,overlap); // TODO: fix this
+        distrgrid.template setGlobalGrid<CommunicatorType>(*globalGrid);
+        typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
+        distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+
 
         String FileName=String("/tmp/test-file.tnl");         
 

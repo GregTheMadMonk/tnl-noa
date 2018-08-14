@@ -37,7 +37,7 @@ setup( const Config::ParameterContainer& parameters,
    return true;
 }      
 
-template< typename RealType, typename Device, typename Index >     
+/*template< typename RealType, typename Device, typename Index >     
    template< typename CommunicatorType >
 void
 DistributedMesh< Grid< 3, RealType, Device, Index > >::
@@ -183,7 +183,7 @@ setGlobalGrid( const GridType &globalGrid,
       if(this->neighbors[Top]!=-1)
          this->localGridSize.z()+=this->overlap.z();
    }                     
-}
+}*/
 
 template< typename RealType, typename Device, typename Index >     
 void

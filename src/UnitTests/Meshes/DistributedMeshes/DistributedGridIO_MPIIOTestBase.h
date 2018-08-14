@@ -1,48 +1,77 @@
-
-
-
+/***************************************************************************
+                          DistributedGridIO_MPIIO  -  description
+                             -------------------
+    begin                : Nov 1, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 #ifdef HAVE_GTEST
       #include <gtest/gtest.h>
 #ifdef HAVE_MPI
 
-#include <TNL/Communicators/MpiCommunicator.h>
-#include "DistributedVectorFieldIO_MPIIOTestBase.h"
+#include "DistributedGridIO_MPIIOTest.h"
 
-using namespace TNL::Communicators;
-
-typedef MpiCommunicator CommunicatorType;
-
-TEST( DistributedVectorFieldIO_MPIIO, Save_1D )
+TEST( DistributedGridMPIIO, Save_1D )
 {
-    TestDistributedVectorFieldMPIIO<1,2,Host>::TestSave();
+    TestDistributedGridMPIIO<1,Host>::TestSave();
 }
 
-TEST( DistributedVectorFieldIO_MPIIO, Save_2D )
+TEST( DistributedGridMPIIO, Save_2D )
 {
-    TestDistributedVectorFieldMPIIO<2,3,Host>::TestSave();
+    TestDistributedGridMPIIO<2,Host>::TestSave();
 }
 
-TEST( DistributedVectorFieldIO_MPIIO, Save_3D )
+TEST( DistributedGridMPIIO, Save_3D )
 {
-    TestDistributedVectorFieldMPIIO<3,2,Host>::TestSave();
+    TestDistributedGridMPIIO<3,Host>::TestSave();
 }
 
-
-TEST( DistributedVectorFieldIO_MPIIO, Load_1D )
+TEST( DistributedGridMPIIO, Load_1D )
 {
-    TestDistributedVectorFieldMPIIO<1,2,Host>::TestLoad();
+    TestDistributedGridMPIIO<1,Host>::TestLoad();
 }
 
-TEST( DistributedVectorFieldIO_MPIIO, Load_2D )
+TEST( DistributedGridMPIIO, Load_2D )
 {
-    TestDistributedVectorFieldMPIIO<2,3,Host>::TestLoad();
+    TestDistributedGridMPIIO<2,Host>::TestLoad();
 }
 
-TEST( DistributedVectorFieldIO_MPIIO, Load_3D )
+TEST( DistributedGridMPIIO, Load_3D )
 {
-    TestDistributedVectorFieldMPIIO<3,2,Host>::TestLoad();
+    TestDistributedGridMPIIO<3,Host>::TestLoad();
 }
 
+#ifdef HAVE_CUDA
+    TEST( DistributedGridMPIIO, Save_1D_GPU )
+    {
+        TestDistributedGridMPIIO<1,Cuda>::TestSave();
+    }
+
+    TEST( DistributedGridMPIIO, Save_2D_GPU )
+    {
+        TestDistributedGridMPIIO<2,Cuda>::TestSave();
+    }
+
+    TEST( DistributedGridMPIIO, Save_3D_GPU )
+    {
+        TestDistributedGridMPIIO<3,Cuda>::TestSave();
+    }
+
+    TEST( DistributedGridMPIIO, Load_1D_GPU )
+    {
+        TestDistributedGridMPIIO<1,Cuda>::TestLoad();
+    }
+
+    TEST( DistributedGridMPIIO, Load_2D_GPU )
+    {
+        TestDistributedGridMPIIO<2,Cuda>::TestLoad();
+    }
+
+    TEST( DistributedGridMPIIO, Load_3D_GPU )
+    {
+        TestDistributedGridMPIIO<3,Cuda>::TestLoad();
+    }
+#endif
 
 #else
 TEST(NoMPI, NoTest)
@@ -89,7 +118,7 @@ TEST(NoMPI, NoTest)
   };
 #endif
 
-#include "../GtestMissingError.h"
+#include "../../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST

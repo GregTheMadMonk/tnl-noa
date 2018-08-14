@@ -121,7 +121,7 @@ TEST(NoMPI, NoTest)
   };
 #endif
 
-#include "../GtestMissingError.h"
+#include "../../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST

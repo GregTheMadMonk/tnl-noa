@@ -17,7 +17,7 @@
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
-#include "Functions.h"
+#include "../../Functions/Functions.h"
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -360,76 +360,71 @@ typedef typename MeshType::IndexType IndexType;
 typedef typename MeshType::PointType PointType; 
 typedef DistributedMesh<MeshType> DistributedGridType;
 
-class DistributedGirdTest_2D : public ::testing::Test {
- protected:
+class DistributedGirdTest_2D : public ::testing::Test
+{
     
-public:
+   public:
 
-    static DistributedGridType *distrgrid;
-    static DofType *dof;
+      static DistributedGridType *distrgrid;
+      static DofType *dof;
 
-    static SharedPointer<MeshType> gridptr;
-    static SharedPointer<MeshFunctionType> meshFunctionptr;
+      static SharedPointer<MeshType> gridptr;
+      static SharedPointer<MeshFunctionType> meshFunctionptr;
 
-    static MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,2> > constFunctionEvaluator;
-    static SharedPointer< ConstFunction<double,2>, Host > constFunctionPtr;
+      static MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,2> > constFunctionEvaluator;
+      static SharedPointer< ConstFunction<double,2>, Host > constFunctionPtr;
 
-    static MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,2> > linearFunctionEvaluator;
-    static SharedPointer< LinearFunction<double,2>, Host > linearFunctionPtr;
+      static MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,2> > linearFunctionEvaluator;
+      static SharedPointer< LinearFunction<double,2>, Host > linearFunctionPtr;
 
-    static int rank;
-    static int nproc;    
-     
-  // Per-test-case set-up.
-  // Called before the first test in this test case.
-  // Can be omitted if not needed.
-  static void SetUpTestCase() {
-      
-    int size=10;
-    rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
-    nproc=CommunicatorType::GetSize(CommunicatorType::AllGroup);
-    
-    PointType globalOrigin;
-    PointType globalProportions;
-    MeshType globalGrid;
-    
-    globalOrigin.x()=-0.5;
-    globalOrigin.y()=-0.5;    
-    globalProportions.x()=size;
-    globalProportions.y()=size;
-        
-    globalGrid.setDimensions(size,size);
-    globalGrid.setDomain(globalOrigin,globalProportions);
-    
-    typename DistributedGridType::CoordinatesType overlap( 1 );
-    
-    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-    distrgrid=new DistributedGridType();
+      static int rank;
+      static int nproc;    
 
-    distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3 ) );
-    distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid );
-    distrgrid->setupGrid(*gridptr);    
-    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( *gridptr, lowerOverlap, upperOverlap, 1 );
-    distrgrid->setOverlaps( lowerOverlap, upperOverlap );
-    distrgrid->setupGrid(*gridptr);
-    
-    
-    dof=new DofType(gridptr->template getEntitiesCount< Cell >());
-    
-    meshFunctionptr->bind(gridptr,*dof);
-    
-    constFunctionPtr->Number=rank;
-  }
+      // Per-test-case set-up.
+      // Called before the first test in this test case.
+      // Can be omitted if not needed.
+      static void SetUpTestCase()
+      {
+         int size=10;
+         rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
+         nproc=CommunicatorType::GetSize(CommunicatorType::AllGroup);
 
-  // Per-test-case tear-down.
-  // Called after the last test in this test case.
-  // Can be omitted if not needed.
-  static void TearDownTestCase() {
-      delete dof;
-      delete distrgrid;
+         PointType globalOrigin;
+         PointType globalProportions;
+         MeshType globalGrid;
 
-  }
+         globalOrigin.x()=-0.5;
+         globalOrigin.y()=-0.5;    
+         globalProportions.x()=size;
+         globalProportions.y()=size;
 
+         globalGrid.setDimensions(size,size);
+         globalGrid.setDomain(globalOrigin,globalProportions);
+
+         //typename DistributedGridType::CoordinatesType overlap( 1 );
+         distrgrid=new DistributedGridType();
+         distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3 ) );
+         distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid );
+         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+         SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( distrgrid, lowerOverlap, upperOverlap, 1 );
+         distrgrid->setOverlaps( lowerOverlap, upperOverlap );
+         distrgrid->setupGrid(*gridptr);
+
+         dof=new DofType(gridptr->template getEntitiesCount< Cell >());
+
+         meshFunctionptr->bind(gridptr,*dof);
+
+         constFunctionPtr->Number=rank;
+      }
+
+      // Per-test-case tear-down.
+      // Called after the last test in this test case.
+      // Can be omitted if not needed.
+      static void TearDownTestCase()
+      {
+         delete dof;
+         delete distrgrid;
+      }
 };
 
 DistributedMesh<MeshType> *DistributedGirdTest_2D::distrgrid=NULL;
@@ -445,14 +440,14 @@ int DistributedGirdTest_2D::nproc;
 
 TEST_F(DistributedGirdTest_2D, evaluateAllEntities)
 {
-    //Check Traversars
-    //All entities, without overlap
-    setDof_2D(*dof,-1);
-    constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-    //Printer<MeshType,DofType>::print_dof(rank,*gridptr,*dof);
-    check_Boundary_2D(rank, *gridptr, *dof, rank);
-    check_Overlap_2D(rank, *gridptr, *dof, -1);
-    check_Inner_2D(rank, *gridptr, *dof, rank);
+   //Check Traversars
+   //All entities, without overlap
+   setDof_2D(*dof,-1);
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
+   //Printer<MeshType,DofType>::print_dof(rank,*gridptr,*dof);
+   check_Boundary_2D(rank, *gridptr, *dof, rank);
+   check_Overlap_2D(rank, *gridptr, *dof, -1);
+   check_Inner_2D(rank, *gridptr, *dof, rank);
 }
 
 TEST_F(DistributedGirdTest_2D, evaluateBoundaryEntities)
@@ -550,59 +545,6 @@ TEST(NoMPI, NoTest)
 #include "../../src/UnitTests/GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
-   /*CommunicatorType::Init(argc,argv);
-   
-    DistributedGridType *distrgrid;
-    DofType *dof;
-
-    SharedPointer<MeshType> gridptr;
-    SharedPointer<MeshFunctionType> meshFunctionptr;
-
-     MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,2> > constFunctionEvaluator;
-     SharedPointer< ConstFunction<double,2>, Host > constFunctionPtr;
-
-     MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,2> > linearFunctionEvaluator;
-     SharedPointer< LinearFunction<double,2>, Host > linearFunctionPtr;
-   
-     int rank;
-    int nproc;    
-   
-   
-   
-    int size=10;
-    rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
-    nproc=CommunicatorType::GetSize(CommunicatorType::AllGroup);
-    
-    PointType globalOrigin;
-    PointType globalProportions;
-    MeshType globalGrid;
-    
-    globalOrigin.x()=-0.5;
-    globalOrigin.y()=-0.5;    
-    globalProportions.x()=size;
-    globalProportions.y()=size;
-        
-    globalGrid.setDimensions(size,size);
-    globalGrid.setDomain(globalOrigin,globalProportions);
-    
-    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-    distrgrid=new DistributedGridType();
-    distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3 ) );
-    distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid );
-    distrgrid->setupGrid(*gridptr);    
-    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( *gridptr, lowerOverlap, upperOverlap, 1 );
-    distrgrid->setOverlaps( lowerOverlap, upperOverlap );
-    
-    dof=new DofType(gridptr->template getEntitiesCount< Cell >());
-    
-    meshFunctionptr->bind(gridptr,*dof);
-    
-    constFunctionPtr->Number=rank;
-   
-   
-   
-   return 0;*/
-   
 #ifdef HAVE_GTEST
    ::testing::InitGoogleTest( &argc, argv );
 

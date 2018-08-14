@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <TNL/StaticVectorFor.h>
 #include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Exceptions/UnsupportedDimension.h>
 
 #include <iostream>
 
@@ -68,7 +69,7 @@ setGlobalGrid( const GridType &globalGrid )
 
    this->globalGrid = globalGrid;
    this->isSet=true;
-   this->overlap.setValue( 1 );
+   this->overlap.setValue( 1 ); // TODO: Remove this - its only for compatibility with old code
    this->lowerOverlap.setValue( 0 );
    this->upperOverlap.setValue( 0 );
 
@@ -114,27 +115,40 @@ setGlobalGrid( const GridType &globalGrid )
       for( int i = 0; i < Dimension; i++ )
          this->domainDecomposition[ i ] = dims[ i ];
 
-      for( int i = 0; i < Dimension; i++ )
-         this->subdomainCoordinates[ i ] = this->rank % this->domainDecomposition[ i ];
+      // TODO: Make one formula for arbitraty dimension
+      switch( Dimension )
+      {
+         case 1:
+            this->subdomainCoordinates[ 0 ] = this->rank;
+            break;
+         case 2:
+            this->subdomainCoordinates[ 0 ] = this->rank % this->domainDecomposition[ 0 ];
+            this->subdomainCoordinates[ 1 ] = this->rank / this->domainDecomposition[ 0 ];        
+            break;
+         case 3:
+            this->subdomainCoordinates[ 2 ] =   this->rank / ( this->domainDecomposition[0] * this->domainDecomposition[1] );
+            this->subdomainCoordinates[ 1 ] = ( this->rank % ( this->domainDecomposition[0] * this->domainDecomposition[1] ) ) / this->domainDecomposition[0];
+            this->subdomainCoordinates[ 0 ] = ( this->rank % ( this->domainDecomposition[0] * this->domainDecomposition[1] ) ) % this->domainDecomposition[0];
+            break;
+         default:
+            throw Exceptions::UnsupportedDimension( Dimension );
+      }
 
-      //compute local mesh size
       for( int i = 0; i < Dimension; i++ )
+      {
          numberOfLarger[ i ] = globalGrid.getDimensions().x() % this->domainDecomposition[ i ];
-
-      for( int i = 0; i < Dimension; i++ )
+         
          this->localSize[ i ] = globalGrid.getDimensions()[ i ] / this->domainDecomposition[ i ];
-
-      for( int i = 0; i < Dimension; i++ )
+         
          if( numberOfLarger[ i ] > this->subdomainCoordinates[ i ] )
             this->localSize[ i ] += 1;
-      
-      for( int i = 0; i < Dimension; i++ )
+         
          if( numberOfLarger[ i ] > this->subdomainCoordinates[ i ] )
              this->globalBegin[ i ] = this->subdomainCoordinates[ i ] * this->localSize[ i ];
          else
              this->globalBegin[ i ] = numberOfLarger[ i ] * ( this->localSize[ i ] + 1 ) + 
                                      ( this->subdomainCoordinates[ i ] - numberOfLarger[ i ] ) * this->localSize[ i ];
-
+      }
 
       this->localGridSize = this->localSize;
       this->setupNeighbors();
@@ -150,16 +164,17 @@ setOverlaps( const SubdomainOverlapsType& lower,
    this->lowerOverlap = lower;
    this->upperOverlap = upper;
    
-   /*for( int i = 0; i < Dimension; i++ )
+   for( int i = 0; i < Dimension; i++ )
+   {
       this->localOrigin[ i ] = this->globalGrid.getOrigin()[ i ] +
-         this->globalGrid.getSpaceSteps()[ i ] * ( this->globalBegin[ i ] - this->lowerOverlap[ i ] );*/
-   this->localOrigin = this->globalGrid.getOrigin() +
-         Containers::tnlDotProduct( this->globalGrid.getSpaceSteps(),
-                                    this->globalBegin - this->lowerOverlap );         
+         this->globalGrid.getSpaceSteps()[ i ] * 
+            ( this->globalBegin[ i ] - this->lowerOverlap[ i ] );         
+
+   }
 
    this->localBegin = this->lowerOverlap;
    this->localGridSize = this->localSize + this->lowerOverlap + this->upperOverlap;
-   this->print( std::cerr );   
+   //this->print( std::cerr );   
 }
 
 

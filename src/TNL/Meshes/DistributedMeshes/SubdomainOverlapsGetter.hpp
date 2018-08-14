@@ -24,14 +24,13 @@ template< int Dimension,
           typename Communicator >
 void
 SubdomainOverlapsGetter< Grid< Dimension, Real, Device, Index >, Communicator >::
-getOverlaps( const MeshType& mesh,
+getOverlaps( const DistributedMeshType* distributedMesh,
              SubdomainOverlapsType& lower,
              SubdomainOverlapsType& upper,
              IndexType subdomainOverlapSize )
 {
    if( ! CommunicatorType::isDistributed() )
       return;
-   DistributedMeshType* distributedMesh = mesh.getDistributedMesh();
    TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
    
    CoordinatesType subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
@@ -43,7 +42,7 @@ getOverlaps( const MeshType& mesh,
       else
          lower[ i ] = 0;
       
-      if( subdomainCoordinates[ i ] < mesh.getDimensions()[ i ] - 1 )
+      if( subdomainCoordinates[ i ] < distributedMesh->getDomainDecomposition()[ i ] - 1 )
          upper[ i ] = subdomainOverlapSize;
       else
          upper[ i ] = 0;

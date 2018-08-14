@@ -3,15 +3,16 @@
 
 #if defined(HAVE_MPI) && defined(HAVE_CUDA)
 
+#include <TNL/Timer.h>
+#include <TNL/SharedPointer.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
-#include <TNL/Timer.h>
-#include  <TNL/SharedPointer.h>
 
 using namespace std;
 
@@ -21,7 +22,7 @@ using namespace std;
 //#define YDISTR
 //#define ZDISTR
 
-#include "../../src/UnitTests/Mpi/Functions.h"
+#include "../../src/UnitTests/Functions/Functions.h"
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -97,22 +98,23 @@ int main ( int argc, char *argv[])
      distr[2]=0;
  #endif
 
- typename MeshType::CoordinatesType overlap;
- overlap.setValue(1);
- DistributedMeshType distrgrid;
- distrgrid.setDomainDecomposition( distr );
- distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap,overlap); 
+   DistributedMeshType distrgrid;
+   distrgrid.setDomainDecomposition( distr );
+   distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid );
+   typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
+   distrgrid.setOverlaps( lowerOverlap, upperOverlap );
    
- SharedPointer<MeshType> gridptr;
- SharedPointer<MeshFunctionType> meshFunctionptr;
- MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
- MeshFunctionEvaluator< MeshFunctionType, ConstFunctionType > constFunctionEvaluator;
+   SharedPointer<MeshType> gridptr;
+   SharedPointer<MeshFunctionType> meshFunctionptr;
+   MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
+   MeshFunctionEvaluator< MeshFunctionType, ConstFunctionType > constFunctionEvaluator;
  
-  distrgrid.setupGrid(*gridptr);
+   distrgrid.setupGrid(*gridptr);
   
-  DofType dof(gridptr->template getEntitiesCount< Cell >());
+   DofType dof(gridptr->template getEntitiesCount< Cell >());
 
-  dof.setValue(0);
+   dof.setValue(0);
   
   meshFunctionptr->bind(gridptr,dof);  
   
