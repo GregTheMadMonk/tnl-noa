@@ -104,19 +104,19 @@ int main ( int argc, char *argv[])
        distr[2]=0;
    #endif
 
-   DistributedMeshType distrgrid;
-   distrgrid.setDomainDecomposition( distr );
-   distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid ); 
+   DistributedMeshType distributedGrid;
+   distributedGrid.setDomainDecomposition( distr );
+   distributedGrid.template setGlobalGrid<CommunicatorType>( globalGrid ); 
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
-   distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
    SharedPointer<MeshType> gridptr;
    SharedPointer<MeshFunctionType> meshFunctionptr;
    MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
    MeshFunctionEvaluator< MeshFunctionType, ConstFunctionType > constFunctionEvaluator;
  
-   distrgrid.setupGrid(*gridptr);
+   distributedGrid.setupGrid(*gridptr);
   
    DofType dof(gridptr->template getEntitiesCount< Cell >());
 
@@ -163,7 +163,7 @@ int main ( int argc, char *argv[])
       cout << sum <<endl<<endl;  
     
       cout<<"distr: ";
-      cout << distrgrid.printProcessDistr().getString();
+      cout << distributedGrid.printProcessDistr().getString();
       cout << endl;
   
       cout<<"setup: "<<setup.getRealTime() <<endl;

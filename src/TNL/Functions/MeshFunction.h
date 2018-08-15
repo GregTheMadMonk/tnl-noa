@@ -161,7 +161,7 @@ class MeshFunction :
       using Object::boundLoad;
 
       template< typename CommunicatorType>
-      void synchronize();    
+      void synchronize( bool withPeriodicBoundaryConditions = false );
 
  
    protected:
@@ -176,7 +176,7 @@ class MeshFunction :
       template< typename, typename > friend class MeshFunctionEvaluator;
 
    private:
-      void SetupSynchronizer( DistributedMeshType *distrMesh );
+      void setupSynchronizer( DistributedMeshType *distributedMesh );
    
 };
 

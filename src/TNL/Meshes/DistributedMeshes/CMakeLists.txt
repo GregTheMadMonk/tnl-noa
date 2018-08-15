@@ -11,6 +11,9 @@ SET( headers BufferEntitiesHelper.h
              DistributedGrid_Base.h
              DistributedGrid_Base.hpp
              DistributedGridSynchronizer.h
+             DistributedGridSynchronizer_1D.h
+             DistributedGridSynchronizer_2D.h
+             DistributedGridSynchronizer_3D.h
              DistributedGridIO.h
              DistributedGridIO_MeshFunction.h
              DistributedGridIO_VectorField.h

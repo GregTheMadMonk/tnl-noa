@@ -60,15 +60,15 @@ int main(int argc, char **argv)
         globalGrid.save( meshFile );
         meshFile.close();
 
-        DistributedGridType distrgrid;
-        distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid );
+        DistributedGridType distributedGrid;
+        distributedGrid.template setGlobalGrid<CommunicatorType>( globalGrid );
         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
-        distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+        distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
         SharedPointer<MeshType> gridptr;
         SharedPointer<MeshFunctionType> meshFunctionptr;
-        distrgrid.setupGrid(*gridptr);
+        distributedGrid.setupGrid(*gridptr);
        
         DofType dofsave(gridptr->template getEntitiesCount< Cell >());
         dofsave.setValue(0);

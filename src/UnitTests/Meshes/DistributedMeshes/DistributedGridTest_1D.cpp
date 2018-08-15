@@ -95,11 +95,11 @@ typedef typename GridType::IndexType IndexType;
 typedef typename GridType::PointType PointType; 
 typedef DistributedMesh<GridType> DistributedGridType;
      
-class DistributedGirdTest_1D : public ::testing::Test
+class DistributedGridTest_1D : public ::testing::Test
 {
    protected:
 
-      static DistributedMesh< GridType > *distrgrid;
+      static DistributedMesh< GridType > *distributedGrid;
       static DofType *dof;
 
       static SharedPointer< GridType > gridptr;
@@ -112,7 +112,7 @@ class DistributedGirdTest_1D : public ::testing::Test
       static SharedPointer< LinearFunction< double, 1 >, Host > linearFunctionPtr;
 
       static int rank;
-      static int nproc;    
+      static int nproc;
 
       // Per-test-case set-up.
       // Called before the first test in this test case.
@@ -136,17 +136,17 @@ class DistributedGirdTest_1D : public ::testing::Test
 
          typename DistributedGridType::CoordinatesType overlap;
          overlap.setValue(1);
-         distrgrid=new DistributedGridType();
+         distributedGrid=new DistributedGridType();
 
          typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-         distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid );
-         distrgrid->setupGrid(*gridptr);    
-         SubdomainOverlapsGetter< GridType, CommunicatorType >::getOverlaps( distrgrid, lowerOverlap, upperOverlap, 1 );
-         distrgrid->setOverlaps( lowerOverlap, upperOverlap );
+         distributedGrid->template setGlobalGrid<CommunicatorType>( globalGrid );
+         distributedGrid->setupGrid(*gridptr);    
+         SubdomainOverlapsGetter< GridType, CommunicatorType >::getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
+         distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
 
-         //distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap,overlap); // TODO: fix this
+         //distributedGrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap,overlap); // TODO: fix this
 
-         distrgrid->setupGrid(*gridptr);
+         distributedGrid->setupGrid(*gridptr);
          dof=new DofType(gridptr->template getEntitiesCount< Cell >());
 
          meshFunctionptr->bind(gridptr,*dof);
@@ -159,22 +159,22 @@ class DistributedGirdTest_1D : public ::testing::Test
   // Can be omitted if not needed.
   static void TearDownTestCase() {
       delete dof;
-      delete distrgrid;
+      delete distributedGrid;
   }
 };
 
-DistributedMesh<GridType> *DistributedGirdTest_1D::distrgrid=NULL;
-DofType *DistributedGirdTest_1D::dof=NULL;
-SharedPointer<GridType> DistributedGirdTest_1D::gridptr;
-SharedPointer<MeshFunctionType> DistributedGirdTest_1D::meshFunctionptr;
-MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,1> > DistributedGirdTest_1D::constFunctionEvaluator;
-SharedPointer< ConstFunction<double,1>, Host > DistributedGirdTest_1D::constFunctionPtr;
-MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,1> > DistributedGirdTest_1D::linearFunctionEvaluator;
-SharedPointer< LinearFunction<double,1>, Host > DistributedGirdTest_1D::linearFunctionPtr;
-int DistributedGirdTest_1D::rank;
-int DistributedGirdTest_1D::nproc;
+DistributedMesh<GridType> *DistributedGridTest_1D::distributedGrid=NULL;
+DofType *DistributedGridTest_1D::dof=NULL;
+SharedPointer<GridType> DistributedGridTest_1D::gridptr;
+SharedPointer<MeshFunctionType> DistributedGridTest_1D::meshFunctionptr;
+MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,1> > DistributedGridTest_1D::constFunctionEvaluator;
+SharedPointer< ConstFunction<double,1>, Host > DistributedGridTest_1D::constFunctionPtr;
+MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,1> > DistributedGridTest_1D::linearFunctionEvaluator;
+SharedPointer< LinearFunction<double,1>, Host > DistributedGridTest_1D::linearFunctionPtr;
+int DistributedGridTest_1D::rank;
+int DistributedGridTest_1D::nproc;
 
-TEST_F(DistributedGirdTest_1D, evaluateAllEntities)
+TEST_F(DistributedGridTest_1D, evaluateAllEntities)
 {
     //Check Traversars
     //All entities, witout overlap
@@ -186,7 +186,7 @@ TEST_F(DistributedGirdTest_1D, evaluateAllEntities)
     check_Inner_1D(rank, nproc, *dof, rank);
 }
 
-TEST_F(DistributedGirdTest_1D, evaluateBoundaryEntities)
+TEST_F(DistributedGridTest_1D, evaluateBoundaryEntities)
 {
     //Boundary entities, witout overlap
     setDof_1D(*dof,-1);
@@ -196,7 +196,7 @@ TEST_F(DistributedGirdTest_1D, evaluateBoundaryEntities)
     check_Inner_1D(rank, nproc, *dof, -1);
 }
 
-TEST_F(DistributedGirdTest_1D, evaluateInteriorEntities)
+TEST_F(DistributedGridTest_1D, evaluateInteriorEntities)
 {
     //Inner entities, witout overlap
     setDof_1D(*dof,-1);
@@ -206,7 +206,7 @@ TEST_F(DistributedGirdTest_1D, evaluateInteriorEntities)
     check_Inner_1D(rank, nproc, *dof, rank);
 }    
 
-TEST_F(DistributedGirdTest_1D, LinearFunctionTest)
+TEST_F(DistributedGridTest_1D, LinearFunctionTest)
 {
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_1D(*dof,-1);
@@ -222,7 +222,7 @@ TEST_F(DistributedGirdTest_1D, LinearFunctionTest)
     EXPECT_EQ(meshFunctionptr->getValue(entite), (*linearFunctionPtr)(entite)) << "Linear function Overlap error on right Edge.";
 }
 
-TEST_F(DistributedGirdTest_1D, SynchronizerNeighborTest)
+TEST_F(DistributedGridTest_1D, SynchronizerNeighborTest)
 {
     setDof_1D(*dof,-1);
     constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
@@ -233,6 +233,19 @@ TEST_F(DistributedGirdTest_1D, SynchronizerNeighborTest)
     if(rank!=nproc-1)
         EXPECT_EQ((*dof)[dof->getSize()-1],rank+1)<< "Right Overlap was filled by wrong process.";
 }
+
+TEST_F(DistributedGridTest_1D, SynchronizePeriodicBoundariesTest)
+{
+    setDof_1D(*dof,-1);
+    constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
+    meshFunctionptr->template synchronize<CommunicatorType>();
+
+    if(rank!=0)
+        EXPECT_EQ((*dof)[0],rank-1)<< "Left Overlap was filled by wrong process.";
+    if(rank!=nproc-1)
+        EXPECT_EQ((*dof)[dof->getSize()-1],rank+1)<< "Right Overlap was filled by wrong process.";
+}
+
     
 #else
 TEST(NoMPI, NoTest)

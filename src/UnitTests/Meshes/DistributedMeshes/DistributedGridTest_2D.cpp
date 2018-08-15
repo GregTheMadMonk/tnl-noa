@@ -365,7 +365,7 @@ class DistributedGirdTest_2D : public ::testing::Test
     
    public:
 
-      static DistributedGridType *distrgrid;
+      static DistributedGridType *distributedGrid;
       static DofType *dof;
 
       static SharedPointer<MeshType> gridptr;
@@ -402,13 +402,13 @@ class DistributedGirdTest_2D : public ::testing::Test
          globalGrid.setDomain(globalOrigin,globalProportions);
 
          //typename DistributedGridType::CoordinatesType overlap( 1 );
-         distrgrid=new DistributedGridType();
-         distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3 ) );
-         distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid );
+         distributedGrid=new DistributedGridType();
+         distributedGrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3 ) );
+         distributedGrid->template setGlobalGrid<CommunicatorType>( globalGrid );
          typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-         SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( distrgrid, lowerOverlap, upperOverlap, 1 );
-         distrgrid->setOverlaps( lowerOverlap, upperOverlap );
-         distrgrid->setupGrid(*gridptr);
+         SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
+         distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
+         distributedGrid->setupGrid(*gridptr);
 
          dof=new DofType(gridptr->template getEntitiesCount< Cell >());
 
@@ -423,11 +423,11 @@ class DistributedGirdTest_2D : public ::testing::Test
       static void TearDownTestCase()
       {
          delete dof;
-         delete distrgrid;
+         delete distributedGrid;
       }
 };
 
-DistributedMesh<MeshType> *DistributedGirdTest_2D::distrgrid=NULL;
+DistributedMesh<MeshType> *DistributedGirdTest_2D::distributedGrid=NULL;
 DofType *DistributedGirdTest_2D::dof=NULL;
 SharedPointer<MeshType> DistributedGirdTest_2D::gridptr;
 SharedPointer<MeshFunctionType> DistributedGirdTest_2D::meshFunctionptr;
