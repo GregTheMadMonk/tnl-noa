@@ -184,7 +184,6 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
             Helper::BufferEntities( meshFunction, buffers[ DownRight ].getData(), right, down, upperOverlap.x(), upperOverlap.y(), toBuffer );
       }
       
-
       DistributedGridType *distributedGrid;
 
       Containers::Array<RealType, Device, Index> sendbuffs[8];
@@ -201,9 +200,6 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
       int rightDst;
       int upDst;
       int downDst;
-
-      //CoordinatesType overlap;
-      //CoordinatesType localSize;
 
       bool isSet;      
 };

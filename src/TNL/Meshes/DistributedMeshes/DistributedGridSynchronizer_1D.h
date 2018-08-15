@@ -88,9 +88,10 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
          const SubdomainOverlapsType& upperOverlap = distributedGrid->getUpperOverlap();
          
          copyBuffers( meshFunction, sendbuffs, true,
-                      lowerOverlap.x(), totalSize - 2 * upperOverlap.x(),
-                      lowerOverlap.x(), upperOverlap.x(),
-                      neighbors[ Left ], neighbors[ Right ],
+                      lowerOverlap.x(),
+                      totalSize - 2 * upperOverlap.x(),
+                      lowerOverlap, upperOverlap,
+                      neighbors,
                       periodicBoundaries );
 
          //async send
@@ -127,30 +128,32 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
 
          copyBuffers( meshFunction, rcvbuffs, false,
             0, totalSize - upperOverlap.x(),
-            lowerOverlap.x(),
-            upperOverlap.x(),
-            neighbors[ Left ], neighbors[ Right ],
+            lowerOverlap,
+            upperOverlap,
+            neighbors,
             periodicBoundaries );
       }
-
+      
    private:
       template <typename Real_ >
       void copyBuffers( MeshFunctionType meshFunction, TNL::Containers::Array<Real_,Device>* buffers, bool toBuffer,
          int left, int right,
-         int leftSize, int rightSize,
-         int leftNeighbor, int rightNeighbor,
+         const SubdomainOverlapsType& lowerOverlap,
+         const SubdomainOverlapsType& upperOverlap,
+         const int* neighbors,
          bool periodicBoundaries )
+      
       {
          typedef BufferEntitiesHelper< MeshFunctionType, 1, Real_, Device > Helper;
-         if( leftNeighbor != -1 )
-            Helper::BufferEntities( meshFunction, buffers[ Left ].getData(), left, leftSize, toBuffer );
+         if( neighbors[ Left ] != -1 )
+            Helper::BufferEntities( meshFunction, buffers[ Left ].getData(), left, lowerOverlap.x(), toBuffer );
          else if( periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ Left ].getData(), left, leftSize, toBuffer );
+            Helper::BufferEntities( meshFunction, buffers[ Left ].getData(), left, lowerOverlap.x(), toBuffer );
 
-         if( rightNeighbor != -1 )
-            Helper::BufferEntities( meshFunction, buffers[ Right ].getData(), right, rightSize, toBuffer );
+         if( neighbors[ Right ] != -1 )
+            Helper::BufferEntities( meshFunction, buffers[ Right ].getData(), right, upperOverlap.x(), toBuffer );
          else if( periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ Right ].getData(), right, rightSize, toBuffer );
+            Helper::BufferEntities( meshFunction, buffers[ Right ].getData(), right, upperOverlap.x(), toBuffer );
       }
 
       Containers::Array<RealType, Device> sendbuffs[ 2 ], rcvbuffs[ 2 ];
