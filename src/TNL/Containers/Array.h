@@ -87,7 +87,10 @@ class Array : public Object
       Element getElement( const Index& i ) const;
       
       // Checks if there is an element with value v in this array
-      bool checkElement( const Element& v ) const;
+      bool containsValue( const Element& v ) const;
+      
+      // Checks if all elements in this array have the same value v
+      bool containsOnlyValue( const Element& v ) const;
 
       __cuda_callable__ inline Element& operator[] ( const Index& i );
 

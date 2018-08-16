@@ -326,7 +326,7 @@ TYPED_TEST( ArrayTest, elementwiseAccess )
    testArrayElementwiseAccess( ArrayType() );
 }
 
-TYPED_TEST( ArrayTest, checkElement )
+TYPED_TEST( ArrayTest, containsValue )
 {
    using ArrayType = typename TestFixture::ArrayType;
    using ElementType = typename ArrayType::ElementType;
@@ -337,11 +337,29 @@ TYPED_TEST( ArrayTest, checkElement )
       array.setElement( i, ( ElementType ) ( i % 10 ) );
    
    for( int i = 0; i < 10; i++ )
-      EXPECT_TRUE( ( array.checkElement( ( ElementType ) i ) ) );
+      EXPECT_TRUE( ( array.containsValue( ( ElementType ) i ) ) );
 
    for( int i = 10; i < 20; i++ )
-      EXPECT_FALSE( ( array.checkElement( ( ElementType ) i ) ) );
+      EXPECT_FALSE( ( array.containsValue( ( ElementType ) i ) ) );
 }
+
+TYPED_TEST( ArrayTest, containsOnlyValue )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+   using ElementType = typename ArrayType::ElementType;
+
+   ArrayType array;
+   array.setSize( 1024 );
+   for( int i = 0; i < array.getSize(); i++ )
+      array.setElement( i, ( ElementType ) ( i % 10 ) );
+   
+   for( int i = 0; i < 20; i++ )
+      EXPECT_FALSE( ( array.containsOnlyValue( ( ElementType ) i ) ) );
+   
+   array.setValue( 100 );
+   EXPECT_TRUE( ( array.containsOnlyValue( ( ElementType ) 100 ) ) );
+}
+
 
 TYPED_TEST( ArrayTest, comparisonOperator )
 {
