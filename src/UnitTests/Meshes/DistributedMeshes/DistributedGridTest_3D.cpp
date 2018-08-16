@@ -605,25 +605,22 @@ class DistributedGirdTest_3D : public ::testing::Test
 {
    protected:
 
-      static DistributedGridType *distributedGrid;
-      static DofType *dof;
+      DistributedGridType *distributedGrid;
+      DofType *dof;
 
-      static SharedPointer<GridType> gridptr;
-      static SharedPointer<MeshFunctionType> meshFunctionptr;
+      SharedPointer<GridType> gridptr;
+      SharedPointer<MeshFunctionType> meshFunctionptr;
 
-      static MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > constFunctionEvaluator;
-      static SharedPointer< ConstFunction<double,3>, Host > constFunctionPtr;
+      MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > constFunctionEvaluator;
+      SharedPointer< ConstFunction<double,3>, Host > constFunctionPtr;
 
-      static MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,3> > linearFunctionEvaluator;
-      static SharedPointer< LinearFunction<double,3>, Host > linearFunctionPtr;
+      MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,3> > linearFunctionEvaluator;
+      SharedPointer< LinearFunction<double,3>, Host > linearFunctionPtr;
 
-      static int rank;
-      static int nproc;    
+      int rank;
+      int nproc;    
 
-      // Per-test-case set-up.
-      // Called before the first test in this test case.
-      // Can be omitted if not needed.
-      static void SetUpTestCase()
+      void SetUp()
       {
 
          int size=10;
@@ -659,26 +656,12 @@ class DistributedGirdTest_3D : public ::testing::Test
          constFunctionPtr->Number=rank;
       }
 
-      // Per-test-case tear-down.
-      // Called after the last test in this test case.
-      // Can be omitted if not needed.
-      static void TearDownTestCase()
+      void TearDown()
       {
          delete dof;
          delete distributedGrid;
       }
 };
-
-DistributedGridType *DistributedGirdTest_3D::distributedGrid=NULL;
-DofType *DistributedGirdTest_3D::dof=NULL;
-SharedPointer<GridType> DistributedGirdTest_3D::gridptr;
-SharedPointer<MeshFunctionType> DistributedGirdTest_3D::meshFunctionptr;
-MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > DistributedGirdTest_3D::constFunctionEvaluator;
-SharedPointer< ConstFunction<double,3>, Host > DistributedGirdTest_3D::constFunctionPtr;
-MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,3> > DistributedGirdTest_3D::linearFunctionEvaluator;
-SharedPointer< LinearFunction<double,3>, Host > DistributedGirdTest_3D::linearFunctionPtr;
-int DistributedGirdTest_3D::rank;
-int DistributedGirdTest_3D::nproc;    
 
 TEST_F(DistributedGirdTest_3D, evaluateAllEntities)
 {

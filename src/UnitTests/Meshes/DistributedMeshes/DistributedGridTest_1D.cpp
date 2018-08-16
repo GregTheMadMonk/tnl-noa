@@ -99,25 +99,22 @@ class DistributedGridTest_1D : public ::testing::Test
 {
    protected:
 
-      static DistributedMesh< GridType > *distributedGrid;
-      static DofType *dof;
+      DistributedMesh< GridType > *distributedGrid;
+      DofType *dof;
 
-      static SharedPointer< GridType > gridptr;
-      static SharedPointer< MeshFunctionType > meshFunctionptr;
+      SharedPointer< GridType > gridptr;
+      SharedPointer< MeshFunctionType > meshFunctionptr;
 
-      static MeshFunctionEvaluator< MeshFunctionType, ConstFunction< double, 1 > > constFunctionEvaluator;
-      static SharedPointer< ConstFunction< double, 1 >, Host > constFunctionPtr;
+      MeshFunctionEvaluator< MeshFunctionType, ConstFunction< double, 1 > > constFunctionEvaluator;
+      SharedPointer< ConstFunction< double, 1 >, Host > constFunctionPtr;
 
-      static MeshFunctionEvaluator< MeshFunctionType, LinearFunction< double, 1 > > linearFunctionEvaluator;
-      static SharedPointer< LinearFunction< double, 1 >, Host > linearFunctionPtr;
+      MeshFunctionEvaluator< MeshFunctionType, LinearFunction< double, 1 > > linearFunctionEvaluator;
+      SharedPointer< LinearFunction< double, 1 >, Host > linearFunctionPtr;
 
-      static int rank;
-      static int nproc;
+      int rank;
+      int nproc;
 
-      // Per-test-case set-up.
-      // Called before the first test in this test case.
-      // Can be omitted if not needed.
-      static void SetUpTestCase()
+      void SetUp()
       {
          int size=10;
          rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
@@ -154,25 +151,12 @@ class DistributedGridTest_1D : public ::testing::Test
          constFunctionPtr->Number=rank;
       }
 
-  // Per-test-case tear-down.
-  // Called after the last test in this test case.
-  // Can be omitted if not needed.
-  static void TearDownTestCase() {
-      delete dof;
-      delete distributedGrid;
-  }
+      void TearDown()
+      {
+         delete dof;
+         delete distributedGrid;
+      }
 };
-
-DistributedMesh<GridType> *DistributedGridTest_1D::distributedGrid=NULL;
-DofType *DistributedGridTest_1D::dof=NULL;
-SharedPointer<GridType> DistributedGridTest_1D::gridptr;
-SharedPointer<MeshFunctionType> DistributedGridTest_1D::meshFunctionptr;
-MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,1> > DistributedGridTest_1D::constFunctionEvaluator;
-SharedPointer< ConstFunction<double,1>, Host > DistributedGridTest_1D::constFunctionPtr;
-MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,1> > DistributedGridTest_1D::linearFunctionEvaluator;
-SharedPointer< LinearFunction<double,1>, Host > DistributedGridTest_1D::linearFunctionPtr;
-int DistributedGridTest_1D::rank;
-int DistributedGridTest_1D::nproc;
 
 TEST_F(DistributedGridTest_1D, evaluateAllEntities)
 {
