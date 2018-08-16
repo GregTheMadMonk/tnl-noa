@@ -69,9 +69,16 @@ class ArrayOperations< Devices::Host >
 
       template< typename Element,
                 typename Index >
-      static bool checkValue( const Element* data,
-                              const Index size,
-                              const Element& value );
+      static bool containsValue( const Element* data,
+                                 const Index size,
+                                 const Element& value );
+      
+      template< typename Element,
+                typename Index >
+      static bool containsOnlyValue( const Element* data,
+                                     const Index size,
+                                     const Element& value );
+      
 };
 
 template<>
@@ -124,9 +131,16 @@ class ArrayOperations< Devices::Cuda >
 
       template< typename Element,
                 typename Index >
-      static bool checkValue( const Element* data,
-                              const Index size,
-                              const Element& value );
+      static bool containsValue( const Element* data,
+                                 const Index size,
+                                 const Element& value );
+      
+      template< typename Element,
+                typename Index >
+      static bool containsOnlyValue( const Element* data,
+                                     const Index size,
+                                     const Element& value );
+      
 
 };
 
@@ -217,9 +231,16 @@ class ArrayOperations< Devices::MIC >
 
       template< typename Element,
                 typename Index >
-      static bool checkValue( const Element* data,
-                              const Index size,
-                              const Element& value );
+      static bool containsValue( const Element* data,
+                                 const Index size,
+                                 const Element& value );
+      
+      template< typename Element,
+                typename Index >
+      static bool containsOnlyValue( const Element* data,
+                                     const Index size,
+                                     const Element& value );
+      
       
 };
 

@@ -326,9 +326,19 @@ template< typename Element,
           typename Index >
 bool
 Array< Element, Device, Index >::
-checkElement( const Element& v ) const
+containsValue( const Element& v ) const
 {
-   return Algorithms::ArrayOperations< Device >::checkValue( this->data, this->size, v );
+   return Algorithms::ArrayOperations< Device >::containsValue( this->data, this->size, v );
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
+bool
+Array< Element, Device, Index >::
+containsOnlyValue( const Element& v ) const
+{
+   return Algorithms::ArrayOperations< Device >::containsOnlyValue( this->data, this->size, v );
 }
 
 template< typename Element,
