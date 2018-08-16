@@ -106,7 +106,7 @@ copyMemory( DestinationElement* destination,
    {
       // GCC 8.1 complains that we bypass a non-trivial copy-constructor
       // (in C++17 we could use constexpr if to avoid compiling this branch in that case)
-      #if defined(__GNUC__) && !defined(__clang__) && !defined(__NVCC__)
+      #if defined(__GNUC__) && ( __GNUC__ > 8 || ( __GNUC__ == 8 && __GNUC_MINOR__ > 0 ) ) && !defined(__clang__) && !defined(__NVCC__)
          #pragma GCC diagnostic push
          #pragma GCC diagnostic ignored "-Wclass-memaccess"
       #endif
