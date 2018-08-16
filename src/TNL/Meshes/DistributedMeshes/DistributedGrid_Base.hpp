@@ -429,7 +429,9 @@ SetupByCut(DistributedGridType &inputDistributedGrid,
                 this->domainDecomposition[i]=inputDistributedGrid.getDomainDecomposition()[savedDimensions[i]];
                 this->subdomainCoordinates[i]=inputDistributedGrid.getSubdomainCoordinates()[savedDimensions[i]];
 
-                this->overlap[i]=inputDistributedGrid.getOverlap()[savedDimensions[i]];
+                this->overlap[i]=inputDistributedGrid.getOverlap()[savedDimensions[i]];//TODO: RomoveThis
+                this->lowerOverlap[i]=inputDistributedGrid.getLowerOverlap()[savedDimensions[i]];
+                this->upperOverlap[i]=inputDistributedGrid.getUpperOverlap()[savedDimensions[i]];
                 this->localSize[i]=inputDistributedGrid.getLocalSize()[savedDimensions[i]];
                 this->globalBegin[i]=inputDistributedGrid.getGlobalBegin()[savedDimensions[i]];
                 this->localGridSize[i]=inputDistributedGrid.getLocalGridSize()[savedDimensions[i]];
