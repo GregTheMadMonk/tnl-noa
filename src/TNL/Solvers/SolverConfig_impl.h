@@ -16,7 +16,7 @@
 #include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedGrid_3D.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedGrid.h>
 
 namespace TNL {
 namespace Solvers {

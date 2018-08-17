@@ -14,6 +14,7 @@
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Logger.h>
 #include <TNL/Meshes/DistributedMeshes/Directions.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 
 namespace TNL {
@@ -23,15 +24,17 @@ namespace DistributedMeshes {
 
 
 template< int Dimension,
-          typename RealType,
+          typename Real,
           typename Device,
           typename Index >     
-class DistributedGrid_Base
+class DistributedMesh< Grid< Dimension, Real, Device, Index > >
 {
   public:
 
+      typedef Real RealType;
+      typedef Device DeviceType;
       typedef Index IndexType;
-      typedef Grid< Dimension, RealType, Device, IndexType > GridType;
+      typedef Grid< Dimension, Real, Device, IndexType > GridType;
       typedef typename GridType::PointType PointType;
       typedef Containers::StaticVector< Dimension, IndexType > CoordinatesType;
       typedef Containers::StaticVector< Dimension, IndexType > SubdomainOverlapsType;
@@ -40,9 +43,14 @@ class DistributedGrid_Base
 
       static constexpr int getNeighborsCount() { return DirectionCount<Dimension>::get(); } //c++14 may use Directions::pow3(Dimension)-1 
 
-      DistributedGrid_Base();
+      DistributedMesh();
 
-      ~DistributedGrid_Base();
+      ~DistributedMesh();
+      
+      static void configSetup( Config::ConfigDescription& config );
+      
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix );      
     
       void setDomainDecomposition( const CoordinatesType& domainDecomposition );
       
@@ -53,6 +61,8 @@ class DistributedGrid_Base
       
       void setOverlaps( const SubdomainOverlapsType& lower,
                         const SubdomainOverlapsType& upper );
+      
+      void setupGrid( GridType& grid);
 
       bool isDistributed() const;
       
@@ -99,7 +109,7 @@ class DistributedGrid_Base
 
       const int* getNeighbors() const;
       
-      const int* getPeriodicNeighbors() const; 
+      const int* getPeriodicNeighbors() const;      
 
       template<typename CommunicatorType, typename DistributedGridType>
       bool SetupByCut(DistributedGridType &inputDistributedGrid, 
@@ -108,6 +118,12 @@ class DistributedGrid_Base
                  Containers::StaticVector<DistributedGridType::getMeshDimension()-Dimension,IndexType> fixedIndexs);
 
       int getRankOfProcCoord(const CoordinatesType &nodeCoordinates) const;
+      
+      String printProcessCoords() const;
+
+      String printProcessDistr() const;
+      
+      void writeProlog( Logger& logger );
 
    public: 
       
@@ -153,4 +169,4 @@ class DistributedGrid_Base
 } // namespace Meshes
 } // namespace TNL
 
-#include <TNL/Meshes/DistributedMeshes/DistributedGrid_Base.hpp>
+#include <TNL/Meshes/DistributedMeshes/DistributedGrid.hpp>

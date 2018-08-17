@@ -17,47 +17,70 @@
 
 #include <iostream>
 
-#include "DistributedGrid_Base.h"
+#include "DistributedGrid.h"
 
 namespace TNL {
    namespace Meshes {
       namespace DistributedMeshes {
 
-
 template<int Dimension, typename Real, typename Device, typename Index >
-DistributedGrid_Base< Dimension, Real, Device, Index >::
-DistributedGrid_Base()
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
+DistributedMesh()
  : domainDecomposition( 0 ), isSet( false ) {}
 
 template<int Dimension, typename Real, typename Device, typename Index >
-DistributedGrid_Base< Dimension, Real, Device, Index >::
-~DistributedGrid_Base()
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
+~DistributedMesh()
 {
     if(isSet && this->communicationGroup!=nullptr)
         std::free(this->communicationGroup);
 }
 
+
+template<int Dimension, typename Real, typename Device, typename Index >
+void
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
+configSetup( Config::ConfigDescription& config )
+{
+   config.addEntry< int >( "grid-domain-decomposition-x", "Number of grid subdomains along x-axis.", 0 );
+   config.addEntry< int >( "grid-domain-decomposition-y", "Number of grid subdomains along y-axis.", 0 );
+   config.addEntry< int >( "grid-domain-decomposition-z", "Number of grid subdomains along z-axis.", 0 );
+}
+
+template<int Dimension, typename Real, typename Device, typename Index >
+bool
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
+{
+   this->domainDecomposition.x() = parameters.getParameter< int >( "grid-domain-decomposition-x" );
+   if( Dimension > 1 )
+      this->domainDecomposition.y() = parameters.getParameter< int >( "grid-domain-decomposition-y" );
+   if( Dimension > 2 )
+      this->domainDecomposition.z() = parameters.getParameter< int >( "grid-domain-decomposition-z" );
+   return true;
+}
+
 template< int Dimension, typename Real, typename Device, typename Index >     
 void
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 setDomainDecomposition( const CoordinatesType& domainDecomposition )
 {
    this->domainDecomposition = domainDecomposition;
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedGrid_Base< Dimension, Real, Device, Index >::CoordinatesType&
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getDomainDecomposition() const
 {
    return this->domainDecomposition;
 }
 
-
 template< int Dimension, typename Real, typename Device, typename Index >     
 template< typename CommunicatorType >
 void
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 setGlobalGrid( const GridType &globalGrid )
 {
    if(this->isSet && this->communicationGroup != nullptr)
@@ -147,7 +170,7 @@ setGlobalGrid( const GridType &globalGrid )
 
 template< int Dimension, typename Real, typename Device, typename Index >     
 void
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 setOverlaps( const SubdomainOverlapsType& lower,
              const SubdomainOverlapsType& upper )
 {
@@ -165,25 +188,38 @@ setOverlaps( const SubdomainOverlapsType& lower,
 }
 
 
+template< int Dimension, typename Real, typename Device, typename Index >
+void
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
+setupGrid( GridType& grid)
+{
+   TNL_ASSERT_TRUE(this->isSet,"DistributedGrid is not set, but used by SetupGrid");
+   grid.setOrigin(this->localOrigin);
+   grid.setDimensions(this->localGridSize);
+   //compute local proportions by side efect
+   grid.setSpaceSteps(this->spaceSteps);
+   grid.setDistMesh(this);
+};
+
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedGrid_Base< Dimension, Real, Device, Index >::CoordinatesType&
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getSubdomainCoordinates() const
 {
    return this->subdomainCoordinates;
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedGrid_Base< Dimension, Real, Device, Index >::PointType&
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::PointType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getLocalOrigin() const
 {
    return this->localOrigin;
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedGrid_Base< Dimension, Real, Device, Index >::PointType&
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::PointType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getSpaceSteps() const
 {
    return this->spaceSteps;
@@ -191,15 +227,15 @@ getSpaceSteps() const
    
 template< int Dimension, typename Real, typename Device, typename Index >     
 bool
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 isDistributed() const
 {
    return this->distributed;
 };
 
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedGrid_Base< Dimension, Real, Device, Index >::CoordinatesType&
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getOverlap() const
 {
    return this->overlap;
@@ -207,7 +243,7 @@ getOverlap() const
 
 template< int Dimension, typename Real, typename Device, typename Index >     
 bool
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 isBoundarySubdomain() const
 {
    for( int i = 0; i < getNeighborsCount(); i++ )
@@ -217,64 +253,64 @@ isBoundarySubdomain() const
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedGrid_Base< Dimension, Real, Device, Index >::CoordinatesType&
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getLowerOverlap() const
 {
    return this->lowerOverlap;
 };
 
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedGrid_Base< Dimension, Real, Device, Index >::CoordinatesType&
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getUpperOverlap() const
 {
    return this->upperOverlap;
 };
 
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedGrid_Base< Dimension, Real, Device, Index >::CoordinatesType&
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getLocalSize() const
 {
    return this->localSize;
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedGrid_Base< Dimension, Real, Device, Index >::CoordinatesType&
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getGlobalSize() const
 {
    return this->globalGrid.getDimensions();
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedGrid_Base< Dimension, Real, Device, Index >::GridType&
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::GridType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getGlobalGrid() const
 {
     return this->globalGrid;
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedGrid_Base< Dimension, Real, Device, Index >::CoordinatesType&
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getGlobalBegin() const
 {
    return this->globalBegin;
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedGrid_Base< Dimension, Real, Device, Index >::CoordinatesType&
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getLocalGridSize() const
 {
    return this->localGridSize;
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedGrid_Base< Dimension, Real, Device, Index >::CoordinatesType&
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getLocalBegin() const
 {
    return this->localBegin;
@@ -283,7 +319,7 @@ getLocalBegin() const
 template< int Dimension, typename Real, typename Device, typename Index >      
    template< int EntityDimension >
 Index
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getEntitiesCount() const
 {
    return this->globalGrid. template getEntitiesCount< EntityDimension >();
@@ -292,7 +328,7 @@ getEntitiesCount() const
 template< int Dimension, typename Real, typename Device, typename Index >       
    template< typename Entity >
 Index
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getEntitiesCount() const
 {
    return this->globalGrid. template getEntitiesCount< Entity >();
@@ -300,7 +336,7 @@ getEntitiesCount() const
 
 template< int Dimension, typename Real, typename Device, typename Index >    
 void 
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 setCommunicationGroup(void * group)
 {
     this->communicationGroup=group;
@@ -308,7 +344,7 @@ setCommunicationGroup(void * group)
 
 template< int Dimension, typename Real, typename Device, typename Index >    
 void *
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getCommunicationGroup() const
 {
     return this->communicationGroup;
@@ -316,7 +352,7 @@ getCommunicationGroup() const
 
 template< int Dimension, typename Real, typename Device, typename Index >    
 int
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getRankOfProcCoord(const CoordinatesType &nodeCoordinates) const
 {
     int DimensionOffset=1;
@@ -331,7 +367,7 @@ getRankOfProcCoord(const CoordinatesType &nodeCoordinates) const
 
 template< int Dimension, typename Real, typename Device, typename Index >    
 bool
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 isThereNeighbor(const CoordinatesType &direction) const
 {
     bool res=true;
@@ -349,7 +385,7 @@ isThereNeighbor(const CoordinatesType &direction) const
 
 template< int Dimension, typename Real, typename Device, typename Index >    
 void
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 setupNeighbors()
 {
    int *neighbors = this->neighbors;
@@ -379,7 +415,7 @@ setupNeighbors()
 
 template< int Dimension, typename Real, typename Device, typename Index >   
 const int*
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getNeighbors() const
 {
     TNL_ASSERT_TRUE(this->isSet,"DistributedGrid is not set, but used by getNeighbors");
@@ -388,7 +424,7 @@ getNeighbors() const
 
 template< int Dimension, typename Real, typename Device, typename Index >   
 const int*
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getPeriodicNeighbors() const
 {
     TNL_ASSERT_TRUE(this->isSet,"DistributedGrid is not set, but used by getNeighbors");
@@ -398,7 +434,7 @@ getPeriodicNeighbors() const
 template< int Dimension, typename Real, typename Device, typename Index >
     template<typename CommunicatorType, typename DistributedGridType >
 bool 
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 SetupByCut(DistributedGridType &inputDistributedGrid, 
          Containers::StaticVector<Dimension, int> savedDimensions, 
          Containers::StaticVector<DistributedGridType::getMeshDimension()-Dimension,int> reducedDimensions, 
@@ -481,9 +517,33 @@ SetupByCut(DistributedGridType &inputDistributedGrid,
       return false;
 }
 
+template< int Dimension, typename Real, typename Device, typename Index >
+String
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
+printProcessCoords() const
+{
+   return convertToString(this->subdomainCoordinates[0])+String("-")+convertToString(this->subdomainCoordinates[1])+String("-")+convertToString(this->subdomainCoordinates[2]);
+};
+
+template< int Dimension, typename Real, typename Device, typename Index >
+String
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
+printProcessDistr() const
+{
+   return convertToString(this->domainDecomposition[0])+String("-")+convertToString(this->domainDecomposition[1])+String("-")+convertToString(this->domainDecomposition[2]);
+};  
+
+template< int Dimension, typename Real, typename Device, typename Index >
+void
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
+writeProlog( Logger& logger )
+{
+   logger.writeParameter( "Domain decomposition:", this->getDomainDecomposition() );
+}           
+
 template< int Dimension, typename Real, typename Device, typename Index >    
 void
-DistributedGrid_Base< Dimension, Real, Device, Index >::
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 print( ostream& str ) const
 {
    using Communicator = Communicators::MpiCommunicator;

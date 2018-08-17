@@ -534,8 +534,6 @@ TEST_F(DistributedGirdTest_2D, SynchronizerNeighborPeriodicBoundariesTest )
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
    meshFunctionPtr->template synchronize<CommunicatorType>( true );
    
-   TNL_MPI_PRINT( "Grid dimensions: " << gridPtr->getDimensions() << " " << meshFunctionPtr->getData() );
-   
    if( rank == 0 )
    {
       SCOPED_TRACE( "Up Left" );
