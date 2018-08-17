@@ -208,11 +208,6 @@ bind( const MeshPointer& meshPointer,
                   "The input vector is not large enough for binding to the mesh function." );    
    
    setupSynchronizer(meshPointer->getDistributedMesh());
-  
-   this->meshPointer = meshPointer;
-
-    
-
    this->meshPointer=meshPointer;
    this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
@@ -231,9 +226,6 @@ bind( const MeshPointer& meshPointer,
                    "The input vector is not large enough for binding to the mesh function." );      
 
    setupSynchronizer(meshPointer->getDistributedMesh());
-
-   this->meshPointer = meshPointer;
-
    this->meshPointer=meshPointer;
    this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
@@ -544,12 +536,12 @@ template< typename Mesh,
 template< typename CommunicatorType>
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >:: 
-synchronize( bool withPeriodicBoundaryConditions )
+synchronize( bool periodicBoundaries )
 {
     auto distrMesh = this->getMesh().getDistributedMesh();
     if(distrMesh != NULL && distrMesh->isDistributed())
     {
-        this->synchronizer.template synchronize<CommunicatorType>(*this);
+        this->synchronizer.template synchronize<CommunicatorType>( *this, periodicBoundaries );
     }
 }
 
@@ -558,11 +550,10 @@ template< typename Mesh,
           typename Real >
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >:: 
-setupSynchronizer(DistributedMeshType *distributedMesh )
+setupSynchronizer( DistributedMeshType *distributedMesh )
 {
-   if( distributedMesh && 
-      this->getMesh().getDistributedMesh() != distributedMesh )
-         this->synchronizer.setDistributedGrid( distributedMesh );
+   if( distributedMesh )
+      this->synchronizer.setDistributedGrid( distributedMesh );
 }
 
  

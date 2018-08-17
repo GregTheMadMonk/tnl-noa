@@ -42,7 +42,8 @@ class SubdomainOverlapsGetter< Mesh< MeshConfig, Device >, Communicator >
       static void getOverlaps( const DistributedMeshType* distributedMesh,
                                SubdomainOverlapsType& lower,
                                SubdomainOverlapsType& upper,
-                               IndexType subdomainOverlapSize );
+                               IndexType subdomainOverlapSize,
+                               const SubdomainOverlapsType& periodicBoundariesOverlapSize = 0 );
 };
 
 template< int Dimension,
@@ -72,7 +73,8 @@ class SubdomainOverlapsGetter< Grid< Dimension, Real, Device, Index >, Communica
       static void getOverlaps( const DistributedMeshType* distributedMesh,
                                SubdomainOverlapsType& lower,
                                SubdomainOverlapsType& upper,
-                               IndexType subdomainOverlapSize );
+                               IndexType subdomainOverlapSize,
+                               const SubdomainOverlapsType& periodicBoundariesOverlapSize = 0 );
    
 };
 

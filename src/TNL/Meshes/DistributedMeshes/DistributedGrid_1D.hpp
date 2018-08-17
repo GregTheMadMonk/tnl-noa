@@ -24,7 +24,7 @@ setup( const Config::ParameterContainer& parameters,
 {
    this->domainDecomposition.x() = parameters.getParameter< int >( "grid-domain-decomposition-x" );
    return true;
-}      
+}
 
 template< typename RealType, typename Device, typename Index >     
 void

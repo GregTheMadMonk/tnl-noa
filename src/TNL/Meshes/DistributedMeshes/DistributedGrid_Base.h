@@ -55,6 +55,8 @@ class DistributedGrid_Base
                         const SubdomainOverlapsType& upper );
 
       bool isDistributed() const;
+      
+      bool isBoundarySubdomain() const;
            
       // TODO: replace it with getLowerOverlap() and getUpperOverlap()
       const CoordinatesType& getOverlap() const;
