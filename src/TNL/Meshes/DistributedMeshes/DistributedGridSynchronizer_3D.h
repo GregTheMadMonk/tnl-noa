@@ -99,27 +99,10 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
 
          for( int i=0; i<26; i++ )
          {
-            sendbuffs[ i ].setSize( sizes[ i ] );
-            rcvbuffs[ i ].setSize( sizes[ i ] );
+            sendBuffers[ i ].setSize( sizes[ i ] );
+            receiveBuffers[ i ].setSize( sizes[ i ] );
          }
         
-         westSrc   = lowerOverlap.x();
-         eastSrc   = localGridSize.x() - 2 * upperOverlap.x();
-         nordSrc   = lowerOverlap.y();
-         southSrc  = localGridSize.y() - 2 * upperOverlap.y();
-         bottomSrc = lowerOverlap.z();
-         topSrc    = localGridSize.z() - 2 * upperOverlap.z();
-            
-         xcenter = lowerOverlap.x();
-         ycenter = lowerOverlap.y();
-         zcenter = lowerOverlap.z();
-        
-         westDst   = 0;
-         eastDst   = localGridSize.x() - upperOverlap.x();
-         nordDst   = 0;
-         southDst  = localGridSize.y() - upperOverlap.y();
-         bottomDst = 0;
-         topDst    = localGridSize.z() - upperOverlap.z();
      }
         
       template<typename CommunicatorType>
@@ -136,46 +119,80 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
          const CoordinatesType& localSize = distributedGrid->getLocalSize(); 
          const CoordinatesType& localGridSize = this->distributedGrid->getLocalGridSize();
         
+         westSource   = lowerOverlap.x();
+         eastSource   = localGridSize.x() - 2 * upperOverlap.x();
+         northSource   = lowerOverlap.y();
+         southSource  = localGridSize.y() - 2 * upperOverlap.y();
+         bottomSource = lowerOverlap.z();
+         topSource    = localGridSize.z() - 2 * upperOverlap.z();
+            
+         xCenter = lowerOverlap.x();
+         yCenter = lowerOverlap.y();
+         zCenter = lowerOverlap.z();
+        
+         westDestination   = 0;
+         eastDestination   = localGridSize.x() - upperOverlap.x();
+         northDestination  = 0;
+         southDestination  = localGridSize.y() - upperOverlap.y();
+         bottomDestination = 0;
+         topDestination    = localGridSize.z() - upperOverlap.z();         
         
          const int *neighbors = distributedGrid->getNeighbors();
          const int *periodicNeighbors = distributedGrid->getPeriodicNeighbors();
+         
+        if( periodicBoundaries )
+         {
+            if( neighbors[ West ] == -1 )
+               swap( westSource, westDestination );
+            if( neighbors[ East ] == -1 )
+               swap( eastSource, eastDestination );
+            if( neighbors[ South ] == -1 )
+               swap( southSource, southDestination );
+            if( neighbors[ North ] == -1 )
+               swap( northSource, northDestination );
+            if( neighbors[ Bottom ] == -1 )
+               swap( bottomSource, bottomDestination );
+            if( neighbors[ Top ] == -1 )
+               swap( topSource, topDestination );            
+         }         
         
-        //fill send buffers
-        copyBuffers( meshFunction, sendbuffs, true,
-            westSrc, eastSrc, nordSrc, southSrc, bottomSrc, topSrc,
-            xcenter, ycenter, zcenter,
+         //fill send buffers
+         copyBuffers( meshFunction, sendBuffers, true,
+            westSource, eastSource, northSource, southSource, bottomSource, topSource,
+            xCenter, yCenter, zCenter,
             lowerOverlap, upperOverlap, localSize,
-            neighbors);
+            neighbors,
+            periodicBoundaries );
         
-        //async send and rcv
-        typename CommunicatorType::Request requests[52];
-        typename CommunicatorType::CommunicationGroup group;
-        group=*((typename CommunicatorType::CommunicationGroup *)(distributedGrid->getCommunicationGroup()));
-        int requestsCount( 0 );
+         //async send and receive
+         typename CommunicatorType::Request requests[52];
+         typename CommunicatorType::CommunicationGroup group;
+         group=*((typename CommunicatorType::CommunicationGroup *)(distributedGrid->getCommunicationGroup()));
+         int requestsCount( 0 );
 		                
-        //send everithing, recieve everything 
-        for( int i=0; i<26; i++ )
+         //send everything, recieve everything 
+         for( int i=0; i<26; i++ )
             if( neighbors[ i ] != -1 )
             {
-               requests[ requestsCount++ ] = CommunicatorType::ISend( sendbuffs[ i ].getData(),  sizes[ i ], neighbors[ i ], group );
-               requests[ requestsCount++ ] = CommunicatorType::IRecv( rcvbuffs[ i ].getData(),  sizes[ i ], neighbors[ i ], group );
+               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sizes[ i ], neighbors[ i ], group );
+               requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ i ].getData(),  sizes[ i ], neighbors[ i ], group );
             }
             else if( periodicBoundaries )
       	   {
-               requests[ requestsCount++ ] = CommunicatorType::ISend( sendbuffs[ i ].getData(),  sizes[ i ], periodicNeighbors[ i ], group );
-               requests[ requestsCount++ ] = CommunicatorType::IRecv( rcvbuffs[ i ].getData(),  sizes[ i ], periodicNeighbors[ i ], group );
+               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sizes[ i ], periodicNeighbors[ i ], group );
+               requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ i ].getData(),  sizes[ i ], periodicNeighbors[ i ], group );
             }
 
         //wait until send is done
         CommunicatorType::WaitAll( requests, requestsCount );
 
-        //copy data form rcv buffers
-        copyBuffers(meshFunction, rcvbuffs, false,
-            westDst, eastDst, nordDst, southDst, bottomDst, topDst,
-            xcenter, ycenter, zcenter,
+        //copy data from receive buffers
+        copyBuffers(meshFunction, receiveBuffers, false,
+            westDestination, eastDestination, northDestination, southDestination, bottomDestination, topDestination,
+            xCenter, yCenter, zCenter,
             lowerOverlap, upperOverlap, localSize,
-            neighbors ); 
- 
+            neighbors,
+            periodicBoundaries );
     }
     
    private:
@@ -187,95 +204,96 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
               const CoordinatesType& lowerOverlap,
               const CoordinatesType& upperOverlap,
               const CoordinatesType& localSize,
-              const int *neighbor)
+              const int *neighbor,
+              bool periodicBoundaries )
       {
          using Helper = BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >;
          //X-Y-Z
-         if( neighbor[ West ] != -1 )
+         if( neighbor[ West ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ West ].getData(),   west,    ycenter, zcenter, lowerOverlap.x(), localSize.y(),     localSize.z(),    toBuffer );
-         if( neighbor[ East ] != -1 )
+         if( neighbor[ East ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ East ].getData(),   east,    ycenter, zcenter, upperOverlap.x(), localSize.y(),     localSize.z(),    toBuffer );
-         if( neighbor[ North ] != -1 )
+         if( neighbor[ North ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ North ].getData(),  xcenter, north,   zcenter, localSize.x(),    lowerOverlap.y(),  localSize.z(),    toBuffer );
-         if( neighbor[ South ] != -1 )
+         if( neighbor[ South ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ South ].getData(),  xcenter, south,   zcenter, localSize.x(),     upperOverlap.y(), localSize.z(),    toBuffer );
-         if( neighbor[ Bottom ] != -1 )
+         if( neighbor[ Bottom ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ Bottom ].getData(), xcenter, ycenter, bottom,  localSize.x(),     localSize.y(),    lowerOverlap.z(), toBuffer );
-         if( neighbor[ Top ] != -1 )
+         if( neighbor[ Top ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ Top ].getData(),    xcenter, ycenter, top,     localSize.x(),     localSize.y(),    upperOverlap.z(), toBuffer );	
          
          //XY
-         if( neighbor[ NorthWest ] != -1 )
+         if( neighbor[ NorthWest ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ NorthWest ].getData(), west, north, zcenter, lowerOverlap.x(), lowerOverlap.y(), localSize.z(), toBuffer );
-         if( neighbor[ NorthEast ] != -1 )
+         if( neighbor[ NorthEast ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ NorthEast ].getData(), east, north, zcenter, upperOverlap.x(), lowerOverlap.y(), localSize.z(), toBuffer );
-         if( neighbor[ SouthWest ] != -1 )
+         if( neighbor[ SouthWest ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ SouthWest ].getData(), west, south, zcenter, lowerOverlap.x(), upperOverlap.y(), localSize.z(), toBuffer );
-         if( neighbor[ SouthEast ] != -1 )
+         if( neighbor[ SouthEast ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ SouthEast ].getData(), east, south, zcenter, upperOverlap.x(), upperOverlap.y(), localSize.z(), toBuffer );
          
          //XZ
-         if( neighbor[ BottomWest ] != -1 )
+         if( neighbor[ BottomWest ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ BottomWest ].getData(), west, ycenter, bottom, lowerOverlap.x(), localSize.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ BottomEast ] != -1 )
+         if( neighbor[ BottomEast ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ BottomEast ].getData(), east, ycenter, bottom, upperOverlap.x(), localSize.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ TopWest ] != -1 )
+         if( neighbor[ TopWest ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ TopWest ].getData(),    west, ycenter, top,    lowerOverlap.x(), localSize.y(), upperOverlap.z(), toBuffer );
-         if( neighbor[ TopEast ] != -1 )
+         if( neighbor[ TopEast ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ TopEast ].getData(),    east, ycenter, top,    upperOverlap.x(), localSize.y(), upperOverlap.z(), toBuffer );   
          
          //YZ
-         if( neighbor[ BottomNorth ] != -1 )
+         if( neighbor[ BottomNorth ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ BottomNorth ].getData(), xcenter, north, bottom, localSize.x(), lowerOverlap.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ BottomSouth ] != -1 )
+         if( neighbor[ BottomSouth ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ BottomSouth ].getData(), xcenter, south, bottom, localSize.x(), upperOverlap.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ TopNorth ] != -1 )
+         if( neighbor[ TopNorth ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ TopNorth ].getData(),    xcenter, north, top,    localSize.x(), lowerOverlap.y(), upperOverlap.z(), toBuffer );
-         if( neighbor[ TopSouth ] != -1 )
+         if( neighbor[ TopSouth ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ TopSouth ].getData(),    xcenter, south, top,    localSize.x(), upperOverlap.y(), upperOverlap.z(), toBuffer );
          
          //XYZ
-         if( neighbor[ BottomNorthWest ] != -1 )
+         if( neighbor[ BottomNorthWest ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ BottomNorthWest ].getData(), west, north, bottom, lowerOverlap.x(), lowerOverlap.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ BottomNorthEast ] != -1 )
+         if( neighbor[ BottomNorthEast ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ BottomNorthEast ].getData(), east, north, bottom, upperOverlap.x(), lowerOverlap.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ BottomSouthWest ] != -1 )
+         if( neighbor[ BottomSouthWest ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ BottomSouthWest ].getData(), west, south, bottom, lowerOverlap.x(), upperOverlap.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ BottomSouthEast ] != -1 )
+         if( neighbor[ BottomSouthEast ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ BottomSouthEast ].getData(), east, south, bottom, upperOverlap.x(), upperOverlap.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ TopNorthWest ] != -1 )
+         if( neighbor[ TopNorthWest ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ TopNorthWest ].getData(),    west, north, top,    lowerOverlap.x(), lowerOverlap.y(), upperOverlap.z(), toBuffer );
-         if( neighbor[ TopNorthEast ] != -1 )
+         if( neighbor[ TopNorthEast ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ TopNorthEast ].getData(),    east, north, top,    upperOverlap.x(), lowerOverlap.y(), upperOverlap.z(), toBuffer );
-         if( neighbor[ TopSouthWest ] != -1 )
+         if( neighbor[ TopSouthWest ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ TopSouthWest ].getData(),    west, south, top,    lowerOverlap.x(), upperOverlap.y(), upperOverlap.z(), toBuffer );
-         if( neighbor[ TopSouthEast ] != -1 )
+         if( neighbor[ TopSouthEast ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ TopSouthEast ].getData(),    east, south, top,    upperOverlap.x(), upperOverlap.y(), upperOverlap.z(), toBuffer );   
       }
     
    private:
    
-      Containers::Array<RealType, Device, Index> sendbuffs[26];
-      Containers::Array<RealType, Device, Index> rcvbuffs[26];
+      Containers::Array<RealType, Device, Index> sendBuffers[26];
+      Containers::Array<RealType, Device, Index> receiveBuffers[26];
       Containers::StaticArray< 26, int > sizes;
       
       DistributedGridType *distributedGrid;
         
-      int westSrc;
-      int eastSrc;
-      int nordSrc;
-      int southSrc;
-      int bottomSrc;
-      int topSrc;
-      int xcenter;
-      int ycenter;
-      int zcenter;
-      int westDst;
-      int eastDst;
-      int nordDst;
-      int southDst;
-      int bottomDst;
-      int topDst;
+      int westSource;
+      int eastSource;
+      int northSource;
+      int southSource;
+      int bottomSource;
+      int topSource;
+      int xCenter;
+      int yCenter;
+      int zCenter;
+      int westDestination;
+      int eastDestination;
+      int northDestination;
+      int southDestination;
+      int bottomDestination;
+      int topDestination;
         
       CoordinatesType overlap;
       CoordinatesType localSize;

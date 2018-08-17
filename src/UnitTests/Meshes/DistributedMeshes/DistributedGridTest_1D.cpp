@@ -260,7 +260,8 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsTest )
 TEST_F(DistributedGridTest_1D, SynchronizePeriodicBoundariesLinearTest )
 {
    // Setup periodic boundaries
-   // TODO: I do not know how to do it better with GTEST
+   // TODO: I do not know how to do it better with GTEST - additional setup 
+   // of the periodic boundaries
    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
    SubdomainOverlapsGetter< GridType, CommunicatorType >::
       getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );

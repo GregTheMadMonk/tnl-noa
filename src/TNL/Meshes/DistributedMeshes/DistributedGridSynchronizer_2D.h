@@ -82,22 +82,10 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
           
          for(int i=0;i<8;i++)
          {
-            sendbuffs[ i ].setSize( sizes[ i ] );
-            rcvbuffs[ i ].setSize( sizes[ i ] );
+            sendBuffers[ i ].setSize( sizes[ i ] );
+            receiveBuffers[ i ].setSize( sizes[ i ] );
          }
 
-         leftSrc  = lowerOverlap.x();
-         rightSrc = localGridSize.x() - 2 * upperOverlap.x();
-         upSrc    = lowerOverlap.y();                             // TODO: SWAP up and down
-         downSrc  = localGridSize.y() - 2 * upperOverlap.y();     // TODO: SWAP up and down
-
-         xcenter  = lowerOverlap.x();
-         ycenter  = lowerOverlap.y();
-
-         leftDst  = 0;
-         rightDst = localGridSize.x() - upperOverlap.x();
-         upDst    = 0;
-         downDst  = localGridSize.y() - upperOverlap.y();                       
       }
 
       template<typename CommunicatorType>
@@ -113,44 +101,72 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
          const SubdomainOverlapsType& lowerOverlap = distributedGrid->getLowerOverlap();
          const SubdomainOverlapsType& upperOverlap = distributedGrid->getUpperOverlap();
          const CoordinatesType& localSize = distributedGrid->getLocalSize();
+         const CoordinatesType& localGridSize = this->distributedGrid->getLocalGridSize();
+         
+         leftSource  = lowerOverlap.x();
+         rightSource = localGridSize.x() - 2 * upperOverlap.x();
+         upSource    = lowerOverlap.y();                             // TODO: SWAP up and down
+         downSource  = localGridSize.y() - 2 * upperOverlap.y();     // TODO: SWAP up and down
+
+         xCenter  = lowerOverlap.x();
+         yCenter  = lowerOverlap.y();
+
+         leftDestination  = 0;
+         rightDestination = localGridSize.x() - upperOverlap.x();
+         upDestination    = 0;
+         downDestination  = localGridSize.y() - upperOverlap.y();                       
          
          const int *neighbors = distributedGrid->getNeighbors();
          const int *periodicNeighbors = distributedGrid->getPeriodicNeighbors();
          
-         copyBuffers(meshFunction, sendbuffs, true,
-            leftSrc, rightSrc, upSrc, downSrc,
-            xcenter, ycenter,
+         if( periodicBoundaries )
+         {
+            if( neighbors[ Left ] == -1 )
+               swap( leftSource, leftDestination );
+            if( neighbors[ Right ] == -1 )
+               swap( rightSource, rightDestination );
+            if( neighbors[ Up ] == -1 )
+               swap( upSource, upDestination );
+            if( neighbors[ Down ] == -1 )
+               swap( downSource, downDestination );
+         }
+         
+         copyBuffers(meshFunction, sendBuffers, true,
+            leftSource, rightSource, upSource, downSource,
+            xCenter, yCenter,
             lowerOverlap, upperOverlap, localSize,
-            neighbors);
+            neighbors,
+            periodicBoundaries );
 
-         //async send and rcv
-         typename CommunicatorType::Request req[16];
+         //async send and receive
+         typename CommunicatorType::Request requests[ 16 ];
          typename CommunicatorType::CommunicationGroup group;
          group=*((typename CommunicatorType::CommunicationGroup *)(distributedGrid->getCommunicationGroup()));
          int requestsCount( 0 );
          
-         //send everything, recieve everything 
+         //send everything, receive everything 
          for( int i = 0; i < 8; i++ )
             if( neighbors[ i ] != -1 )
             {
-               req[ requestsCount++ ] = CommunicatorType::ISend( sendbuffs[ i ].getData(), sizes[ i ], neighbors[ i ], group );
-               req[ requestsCount++ ] = CommunicatorType::IRecv( rcvbuffs[ i ].getData(), sizes[ i ], neighbors[ i ], group );
+               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(), sizes[ i ], neighbors[ i ], group );
+               requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ i ].getData(), sizes[ i ], neighbors[ i ], group );
             }
             else if( periodicBoundaries )
             {
-               req[ requestsCount++ ] = CommunicatorType::ISend( sendbuffs[ i ].getData(), sizes[ i ], periodicNeighbors[ i ], group );
-               req[ requestsCount++ ] = CommunicatorType::IRecv( rcvbuffs[ i ].getData(), sizes[ i ], periodicNeighbors[ i ], group );
+               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(), sizes[ i ], periodicNeighbors[ i ], group );
+               requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ i ].getData(), sizes[ i ], periodicNeighbors[ i ], group );
             }
 
          //wait until send is done
-         CommunicatorType::WaitAll( req, requestsCount );
+         CommunicatorType::WaitAll( requests, requestsCount );
 
-         //copy data form rcv buffers
-         copyBuffers(meshFunction, rcvbuffs, false,
-              leftDst, rightDst, upDst, downDst,
-              xcenter, ycenter,
+         //copy data from receive buffers
+         copyBuffers(meshFunction, receiveBuffers, false,
+              leftDestination, rightDestination, upDestination, downDestination,
+              xCenter, yCenter,
               lowerOverlap, upperOverlap, localSize,
-              neighbors);
+              neighbors,
+              periodicBoundaries );
       }
     
    private:
@@ -162,48 +178,48 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
                        const CoordinatesType& lowerOverlap,
                        const CoordinatesType& upperOverlap,
                        const CoordinatesType& localSize,
-                       const int *neighbors )
+                       const int *neighbors,
+                       bool periodicBoundaries )
       {
          // TODO: SWAP up and down
          using Helper = BufferEntitiesHelper< MeshFunctionType, 2, Real_, Device >;
-         if( neighbors[ Left ] != -1 )
+         if( neighbors[ Left ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ Left ].getData(), left, ycenter, lowerOverlap.x(), localSize.y(), toBuffer );
-         if( neighbors[ Right ] != -1)
+         if( neighbors[ Right ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ Right ].getData(), right, ycenter, upperOverlap.x(), localSize.y(), toBuffer );
-         if( neighbors[ Up ] != -1 )
+         if( neighbors[ Up ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ Up ].getData(), xcenter, up, localSize.x(), lowerOverlap.y(), toBuffer );
-         if( neighbors[ Down ] != -1 )
+         if( neighbors[ Down ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ Down ].getData(), xcenter, down, localSize.x(), upperOverlap.y(), toBuffer );
-         if( neighbors[ UpLeft ] != -1 )
+         if( neighbors[ UpLeft ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ UpLeft ].getData(), left, up, lowerOverlap.x(), lowerOverlap.y(), toBuffer );
-         if( neighbors[ UpRight ] != -1 )
+         if( neighbors[ UpRight ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ UpRight ].getData(), right, up, upperOverlap.x(), lowerOverlap.y(), toBuffer );
-         if( neighbors[ DownLeft ] != -1 )        
+         if( neighbors[ DownLeft ] != -1 || periodicBoundaries )        
             Helper::BufferEntities( meshFunction, buffers[ DownLeft ].getData(), left, down, lowerOverlap.x(), upperOverlap.y(), toBuffer );
-         if( neighbors[ DownRight ] != -1 )
+         if( neighbors[ DownRight ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ DownRight ].getData(), right, down, upperOverlap.x(), upperOverlap.y(), toBuffer );
       }
       
       DistributedGridType *distributedGrid;
 
-      Containers::Array<RealType, Device, Index> sendbuffs[8];
-      Containers::Array<RealType, Device, Index> rcvbuffs[8];
+      Containers::Array<RealType, Device, Index> sendBuffers[8];
+      Containers::Array<RealType, Device, Index> receiveBuffers[8];
       Containers::StaticArray< 8, int > sizes;
 
-      int leftSrc;
-      int rightSrc;
-      int upSrc;
-      int downSrc;
-      int xcenter;
-      int ycenter;
-      int leftDst;
-      int rightDst;
-      int upDst;
-      int downDst;
+      int leftSource;
+      int rightSource;
+      int upSource;
+      int downSource;
+      int xCenter;
+      int yCenter;
+      int leftDestination;
+      int rightDestination;
+      int upDestination;
+      int downDestination;
 
       bool isSet;      
 };
-
 
 } // namespace DistributedMeshes
 } // namespace Meshes

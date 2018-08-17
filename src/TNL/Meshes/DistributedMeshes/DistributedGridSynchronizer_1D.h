@@ -85,29 +85,27 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
          if( !distributedGrid->isDistributed() )
             return;
 
-         const int *neighbors = distributedGrid->getNeighbors();
-         const int *periodicNeighbors = distributedGrid->getPeriodicNeighbors();
-
          int totalSize = meshFunction.getMesh().getDimensions().x();
          const SubdomainOverlapsType& lowerOverlap = distributedGrid->getLowerOverlap();
          const SubdomainOverlapsType& upperOverlap = distributedGrid->getUpperOverlap();
          const CoordinatesType& localGridSize = this->distributedGrid->getLocalGridSize();
 
-         
          leftSource  = lowerOverlap.x();
          rightSource = localGridSize.x() - 2 * upperOverlap.x();
          leftDestination  = 0;
          rightDestination = localGridSize.x() - upperOverlap.x();
          
-         if( periodicBoundaries && this->distributedGrid->isBoundarySubdomain() )
+         const int *neighbors = distributedGrid->getNeighbors();
+         const int *periodicNeighbors = distributedGrid->getPeriodicNeighbors();         
+         
+         if( periodicBoundaries )
          {
-            const int* neighbors = this->distributedGrid->getNeighbors();
             if( neighbors[ Left ] == -1 )
                swap( leftSource, leftDestination );
             if( neighbors[ Right ] == -1 )
                swap( rightSource, rightDestination );
          }
-         
+
          copyBuffers( meshFunction, sendBuffers, true,
                       leftSource, rightSource,
                       lowerOverlap, upperOverlap,
@@ -140,7 +138,6 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
          {
             TNL_ASSERT_GE( sendBuffers[ Right ].getSize(), upperOverlap.x(), "" );
             TNL_ASSERT_GE( receiveBuffers[ Right ].getSize(), upperOverlap.x(), "" );
-
             requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ Right ].getData(), upperOverlap.x(), neighbors[ Right ], group );
             requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ Right ].getData(), upperOverlap.x(), neighbors[ Right ], group );
          }
@@ -148,12 +145,11 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
          {
             TNL_ASSERT_GE( sendBuffers[ Right ].getSize(), upperOverlap.x(), "" );
             TNL_ASSERT_GE( receiveBuffers[ Right ].getSize(), upperOverlap.x(), "" );
-            
             requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ Right ].getData(), upperOverlap.x(), periodicNeighbors[ Right ], group );
             requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ Right ].getData(), upperOverlap.x(), periodicNeighbors[ Right ], group );
          }
          
-         //wait until send and recv is done
+         //wait until send and receive is done
          CommunicatorType::WaitAll( requests, requestsCount );
 
          copyBuffers( meshFunction, receiveBuffers, false,
@@ -175,14 +171,9 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
       
       {
          typedef BufferEntitiesHelper< MeshFunctionType, 1, Real_, Device > Helper;
-         if( neighbors[ Left ] != -1 )
+         if( neighbors[ Left ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ Left ].getData(), left, lowerOverlap.x(), toBuffer );
-         else if( periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ Left ].getData(), left, lowerOverlap.x(), toBuffer );
-
-         if( neighbors[ Right ] != -1 )
-            Helper::BufferEntities( meshFunction, buffers[ Right ].getData(), right, upperOverlap.x(), toBuffer );
-         else if( periodicBoundaries )
+         if( neighbors[ Right ] != -1 || periodicBoundaries )
             Helper::BufferEntities( meshFunction, buffers[ Right ].getData(), right, upperOverlap.x(), toBuffer );
       }
 
