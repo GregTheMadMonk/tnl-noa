@@ -59,6 +59,8 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
       template< typename CommunicatorType >
       void setGlobalGrid( const GridType& globalGrid );
       
+      const GridType& getGlobalGrid() const;
+      
       void setOverlaps( const SubdomainOverlapsType& lower,
                         const SubdomainOverlapsType& upper );
       
@@ -76,20 +78,21 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
       const SubdomainOverlapsType& getUpperOverlap() const;
 
       //number of elements of local sub domain WITHOUT overlap
+      // TODO: getSubdomainDimensions
       const CoordinatesType& getLocalSize() const;
 
       //Dimensionensions of global grid
+      // TODO: delete
       const CoordinatesType& getGlobalSize() const;
-
-      const GridType& getGlobalGrid() const;
 
       //coordinates of begin of local subdomain without overlaps in global grid
       const CoordinatesType& getGlobalBegin() const;
 
       //number of elements of local sub domain WITH overlap
+      // TODO: replace with localGrid
       const CoordinatesType& getLocalGridSize() const;
        
-      //coordinates of begin of local subdomain without overlaps in local grid       
+      //coordinates of begin of local subdomain without overlaps in local grid
       const CoordinatesType& getLocalBegin() const;
 
       const CoordinatesType& getSubdomainCoordinates() const;
