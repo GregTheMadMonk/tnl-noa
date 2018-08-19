@@ -151,8 +151,8 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
       CoordinatesType domainDecomposition;
       CoordinatesType subdomainCoordinates;   
 
+      // TODO: static arrays
       int neighbors[ getNeighborsCount() ];
-      
       int periodicNeighbors[ getNeighborsCount() ];
 
       IndexType Dimensions;        
