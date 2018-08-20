@@ -158,7 +158,7 @@ getEntitiesCount() const
 {
    static_assert( EntityDimension <= 1 &&
                   EntityDimension >= 0, "Wrong grid entity dimensions." );
- 
+
    switch( EntityDimension )
    {
       case 1:
@@ -192,7 +192,7 @@ getEntity( const IndexType& entityIndex ) const
 {
    static_assert( Entity::getEntityDimension() <= 1 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
- 
+
    return GridEntityGetter< ThisType, Entity >::getEntity( *this, entityIndex );
 }
 
@@ -207,7 +207,7 @@ getEntityIndex( const Entity& entity ) const
 {
    static_assert( Entity::getEntityDimension() <= 1 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
- 
+
    return GridEntityGetter< ThisType, Entity >::getEntityIndex( *this, entity );
 }
 
@@ -265,7 +265,7 @@ Grid< 1, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
                                                         const GridFunction& f2 ) const
 {
    typename GridFunction::RealType maxDiff( -1.0 );
- 
+
    Cell cell( *this );
    for( cell.getCoordinates().x() = 0;
         cell.getCoordinates().x() < getDimensions().x();

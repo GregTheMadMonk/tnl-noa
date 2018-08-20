@@ -36,20 +36,20 @@ class Grid< 2, Real, Device, Index > : public Object
    typedef Grid< 2, Real, Devices::Host, Index > HostType;
    typedef Grid< 2, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 2, Real, Device, Index > ThisType;
- 
+
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
- 
+
    static constexpr int getMeshDimension() { return 2; };
 
    template< int EntityDimension,
              typename Config = GridEntityCrossStencilStorage< 1 > >
    using EntityType = GridEntity< ThisType, EntityDimension, Config >;
- 
+
    typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
    typedef EntityType< getMeshDimension() - 1, GridEntityNoStencilStorage > Face;
    typedef EntityType< 0 > Vertex;
-   
+
    Grid();
 
    static String getType();
@@ -79,15 +79,15 @@ class Grid< 2, Real, Device, Index > : public Object
    template< int EntityDimension >
    __cuda_callable__
    IndexType getEntitiesCount() const;
-   
+
    template< typename Entity >
    __cuda_callable__
    inline IndexType getEntitiesCount() const;
- 
+
    template< typename Entity >
    __cuda_callable__
    inline Entity getEntity( const IndexType& entityIndex ) const;
- 
+
    template< typename Entity >
    __cuda_callable__
    inline Index getEntityIndex( const Entity& entity ) const;
@@ -98,14 +98,14 @@ class Grid< 2, Real, Device, Index > : public Object
    template< int xPow, int yPow >
    __cuda_callable__
    const RealType& getSpaceStepsProducts() const;
-   
+
    __cuda_callable__
    inline const RealType& getCellMeasure() const;
- 
+
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
 
- 
+
    template< typename GridFunction >
    typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;
 
@@ -140,15 +140,15 @@ class Grid< 2, Real, Device, Index > : public Object
    void computeSpaceSteps();
 
    CoordinatesType dimensions;
- 
+
    IndexType numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
 
    PointType origin, proportions;
- 
+
    PointType spaceSteps;
- 
+
    RealType spaceStepsProducts[ 5 ][ 5 ];
- 
+
    template< typename, typename, int >
    friend class GridEntityGetter;
 };
