@@ -47,7 +47,7 @@ class Grid< 2, Real, Device, Index > : public Object
    using EntityType = GridEntity< ThisType, EntityDimension, Config >;
 
    typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
-   typedef EntityType< getMeshDimension() - 1, GridEntityNoStencilStorage > Face;
+   typedef EntityType< getMeshDimension() - 1 > Face;
    typedef EntityType< 0 > Vertex;
 
    Grid();
