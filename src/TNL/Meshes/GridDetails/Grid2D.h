@@ -41,20 +41,12 @@ class Grid< 2, Real, Device, Index > : public Object
    static constexpr int getMeshDimension() { return 2; };
 
    template< int EntityDimension,
-             typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
+             typename Config = GridEntityCrossStencilStorage< 1 > >
    using EntityType = GridEntity< ThisType, EntityDimension, Config >;
  
    typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
    typedef EntityType< getMeshDimension() - 1, GridEntityNoStencilStorage > Face;
    typedef EntityType< 0 > Vertex;
-   
-
-   // TODO: remove this
-   //template< int EntityDimension, 
-   //          typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   //using TestEntityType = tnlTestGridEntity< ThisType, EntityDimension, Config >;
-   //typedef TestEntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > TestCell;
-   /////
    
    Grid();
 
