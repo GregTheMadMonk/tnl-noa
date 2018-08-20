@@ -256,7 +256,6 @@ containsOnlyValue( const Element* data,
 }
 
 
-
 /****
  * Operations CUDA -> Host
  */

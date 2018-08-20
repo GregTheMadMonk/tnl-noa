@@ -15,7 +15,7 @@
 #include <TNL/Devices/MIC.h>
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
 namespace Algorithms {
 
 template< typename DestinationDevice,
@@ -72,13 +72,13 @@ class ArrayOperations< Devices::Host >
       static bool containsValue( const Element* data,
                                  const Index size,
                                  const Element& value );
-      
+
       template< typename Element,
                 typename Index >
       static bool containsOnlyValue( const Element* data,
                                      const Index size,
                                      const Element& value );
-      
+
 };
 
 template<>
@@ -131,14 +131,12 @@ class ArrayOperations< Devices::Cuda >
       static bool containsValue( const Element* data,
                                  const Index size,
                                  const Element& value );
-      
+
       template< typename Element,
                 typename Index >
       static bool containsOnlyValue( const Element* data,
                                      const Index size,
                                      const Element& value );
-      
-
 };
 
 template<>
@@ -231,14 +229,12 @@ class ArrayOperations< Devices::MIC >
       static bool containsValue( const Element* data,
                                  const Index size,
                                  const Element& value );
-      
+
       template< typename Element,
                 typename Index >
       static bool containsOnlyValue( const Element* data,
                                      const Index size,
                                      const Element& value );
-      
-      
 };
 
 template<>
