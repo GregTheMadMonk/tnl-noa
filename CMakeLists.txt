@@ -170,25 +170,6 @@ if( ${WITH_CUDA} )
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES )
         # TODO: this is necessary only due to a bug in cmake
         set( CUDA_ADD_LIBRARY_OPTIONS -shared )
-
-        ####
-        # Check for CUSPARSE
-        #
-        if( WITH_CUSPARSE )
-           find_path( CUSPARSE_INCLUDE_DIR cusparse.h
-                      /usr/local/cuda/include
-                      ${CUDA_INCLUDE_DIR}
-                      DOC "CUSPARSE headers." )
-           if( ${CUSPARSE_INCLUDE_DIR} STREQUAL "CUSPARSE_INCLUDE_DIR-NOTFOUND" )
-               message( "CUSPARSE not found." )
-               set( HAVE_CUSPARSE "//#define HAVE_CUSPARSE 1" )
-           else()
-               message( "CUSPARSE found. -- ${CUSPARSE_INCLUDE_DIR}" )
-               set( HAVE_CUSPARSE "#define HAVE_CUSPARSE 1" )
-               cuda_include_directories( ${CUSPARSE_INCLUDE_DIR} )
-               set( CUSPARSE_LIBRARY "${CUDA_cusparse_LIBRARY}" )
-           endif()
-        endif()
     endif()
 endif()
 

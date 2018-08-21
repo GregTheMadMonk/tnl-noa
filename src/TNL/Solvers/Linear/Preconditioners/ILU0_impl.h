@@ -160,6 +160,7 @@ ILU0< double, Devices::Cuda, int >::
 update( const MatrixPointer& matrixPointer )
 {
 #ifdef HAVE_CUDA
+#ifdef HAVE_CUSPARSE
    // TODO: only numerical factorization has to be done every time, split the rest into separate "setup" method which is called less often
    resetMatrices();
 
@@ -255,6 +256,9 @@ update( const MatrixPointer& matrixPointer )
       throw 1;
    }
 #else
+   throw std::runtime_error("The program was not compiled with the CUSPARSE library. Pass -DHAVE_CUSPARSE -lcusparse to the compiler.")
+#endif
+#else
    throw Exceptions::CudaSupportMissing();
 #endif
 }
@@ -265,6 +269,7 @@ ILU0< double, Devices::Cuda, int >::
 solve( const Vector1& b, Vector2& x ) const
 {
 #ifdef HAVE_CUDA
+#ifdef HAVE_CUSPARSE
    const int m = A.getRows();
    const int nnz = A.getValues().getSize();
 
@@ -289,6 +294,9 @@ solve( const Vector1& b, Vector2& x ) const
                           policy_U, (void*) pBuffer.getData() );
 
    return true;
+#else
+   throw std::runtime_error("The program was not compiled with the CUSPARSE library. Pass -DHAVE_CUSPARSE -lcusparse to the compiler.")
+#endif
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
