@@ -78,7 +78,7 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
       //number of elements of local sub domain WITHOUT overlap
       const CoordinatesType& getLocalSize() const;
 
-      //Dimensionensions of global grid
+      //Dimensions of global grid
       const CoordinatesType& getGlobalSize() const;
 
       const GridType& getGlobalGrid() const;
