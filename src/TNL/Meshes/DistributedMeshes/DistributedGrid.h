@@ -59,6 +59,8 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
       template< typename CommunicatorType >
       void setGlobalGrid( const GridType& globalGrid );
       
+      const GridType& getGlobalGrid() const;
+      
       void setOverlaps( const SubdomainOverlapsType& lower,
                         const SubdomainOverlapsType& upper );
       
@@ -69,27 +71,29 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
       bool isBoundarySubdomain() const;
            
       // TODO: replace it with getLowerOverlap() and getUpperOverlap()
-      const CoordinatesType& getOverlap() const;
+      // It is still being used in cuts set-up
+      const CoordinatesType& getOverlap() const { return this->overlap;};
       
       const SubdomainOverlapsType& getLowerOverlap() const;
       
       const SubdomainOverlapsType& getUpperOverlap() const;
 
       //number of elements of local sub domain WITHOUT overlap
+      // TODO: getSubdomainDimensions
       const CoordinatesType& getLocalSize() const;
 
+      // TODO: delete
       //Dimensions of global grid
       const CoordinatesType& getGlobalSize() const;
-
-      const GridType& getGlobalGrid() const;
 
       //coordinates of begin of local subdomain without overlaps in global grid
       const CoordinatesType& getGlobalBegin() const;
 
       //number of elements of local sub domain WITH overlap
+      // TODO: replace with localGrid
       const CoordinatesType& getLocalGridSize() const;
        
-      //coordinates of begin of local subdomain without overlaps in local grid       
+      //coordinates of begin of local subdomain without overlaps in local grid
       const CoordinatesType& getLocalBegin() const;
 
       const CoordinatesType& getSubdomainCoordinates() const;
@@ -148,8 +152,8 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
       CoordinatesType domainDecomposition;
       CoordinatesType subdomainCoordinates;   
 
+      // TODO: static arrays
       int neighbors[ getNeighborsCount() ];
-      
       int periodicNeighbors[ getNeighborsCount() ];
 
       IndexType Dimensions;        

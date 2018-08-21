@@ -234,14 +234,6 @@ isDistributed() const
 };
 
 template< int Dimension, typename Real, typename Device, typename Index >     
-const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
-DistributedMesh< Grid< Dimension, Real, Device, Index > >::
-getOverlap() const
-{
-   return this->overlap;
-};
-
-template< int Dimension, typename Real, typename Device, typename Index >     
 bool
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 isBoundarySubdomain() const
