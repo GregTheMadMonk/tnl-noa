@@ -26,7 +26,7 @@ getType()
    return String( "PDEProblem< " ) +
           Mesh::getType() + ", " +
           TNL::getType< Real >() + ", " +
-          TNL::getType< Device >() + ", " +
+          Device::getDeviceType() + ", " +
           TNL::getType< Index >() + " >";
 }
 
