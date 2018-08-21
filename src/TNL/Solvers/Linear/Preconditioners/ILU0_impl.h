@@ -256,7 +256,7 @@ update( const MatrixPointer& matrixPointer )
       throw 1;
    }
 #else
-   throw std::runtime_error("The program was not compiled with the CUSPARSE library. Pass -DHAVE_CUSPARSE -lcusparse to the compiler.")
+   throw std::runtime_error("The program was not compiled with the CUSPARSE library. Pass -DHAVE_CUSPARSE -lcusparse to the compiler.");
 #endif
 #else
    throw Exceptions::CudaSupportMissing();
@@ -295,7 +295,7 @@ solve( const Vector1& b, Vector2& x ) const
 
    return true;
 #else
-   throw std::runtime_error("The program was not compiled with the CUSPARSE library. Pass -DHAVE_CUSPARSE -lcusparse to the compiler.")
+   throw std::runtime_error("The program was not compiled with the CUSPARSE library. Pass -DHAVE_CUSPARSE -lcusparse to the compiler.");
 #endif
 #else
    throw Exceptions::CudaSupportMissing();
