@@ -1,4 +1,5 @@
-SET( headers Problem.h
+SET( headers CommonData.h
+             Problem.h
              PDEProblem.h
              PDEProblem_impl.h
              HeatEquationProblem.h

@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Problems/Problem.h>
+#include <TNL/Problems/CommonData.h>
 #include <TNL/SharedPointer.h>
 #include <TNL/Matrices/SlicedEllpack.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
@@ -36,8 +37,8 @@ class PDEProblem : public Problem< Real, Device, Index >
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
       typedef Matrices::SlicedEllpack< RealType, DeviceType, IndexType > MatrixType;
-      typedef Containers::Vector< RealType, DeviceType, IndexType > MeshDependentDataType;
-      typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
+      using CommonDataType = CommonData;
+      using CommonDataPointer = SharedPointer< CommonDataType, DeviceType >;
 
       static constexpr bool isTimeDependent() { return true; };
       
@@ -54,24 +55,25 @@ class PDEProblem : public Problem< Real, Device, Index >
                         const Config::ParameterContainer& parameters ) const;
  
       bool writeEpilog( Logger& logger ) const;
+      
+      void setMesh( MeshPointer& meshPointer);
+      
+      const MeshPointer& getMesh() const;
+      
+      MeshPointer& getMesh();
 
-
-      bool setMeshDependentData( const MeshPointer& mesh,
-                                 MeshDependentDataPointer& meshDependentData );
-
-      void bindMeshDependentData( const MeshPointer& mesh,
-                                  MeshDependentDataPointer& meshDependentData );
+      void setCommonData( CommonDataPointer& commonData );
+      
+      const CommonDataPointer& getCommonData() const;
+      
+      CommonDataPointer& getCommonData();
 
       bool preIterate( const RealType& time,
                        const RealType& tau,
-                       const MeshPointer& meshPointer,
-                       DofVectorPointer& dofs,
-                       MeshDependentDataPointer& meshDependentData );
+                       DofVectorPointer& dofs );
  
       void setExplicitBoundaryConditions( const RealType& time,
-                                          const MeshPointer& meshPointer,
-                                          DofVectorPointer& dofs,
-                                          MeshDependentDataPointer& meshDependentData );
+                                          DofVectorPointer& dofs );
 
       template< typename Matrix >
       void saveFailedLinearSystem( const Matrix& matrix,
@@ -80,11 +82,13 @@ class PDEProblem : public Problem< Real, Device, Index >
 
       bool postIterate( const RealType& time,
                         const RealType& tau,
-                        const MeshPointer& meshPointer,
-                        DofVectorPointer& dofs,
-                        MeshDependentDataPointer& meshDependentData );
+                        DofVectorPointer& dofs );
 
       Solvers::SolverMonitor* getSolverMonitor();
+      
+      MeshPointer meshPointer;
+      
+      CommonDataPointer commonDataPointer;
 };
 
 } // namespace Problems
