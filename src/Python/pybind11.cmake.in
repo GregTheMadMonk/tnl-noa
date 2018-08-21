@@ -9,4 +9,7 @@ ExternalProject_Add(pybind11
   SOURCE_DIR        "${CMAKE_BINARY_DIR}/pybind11-src"
   BINARY_DIR        "${CMAKE_BINARY_DIR}/pybind11-build"
   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DPYBIND11_TEST=FALSE
+  # Disable update of the external project in an offline build
+  # reference: https://stackoverflow.com/a/40423683
+  UPDATE_DISCONNECTED ${OFFLINE_BUILD}
 )

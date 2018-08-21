@@ -19,6 +19,7 @@ project( tnl )
 set( tnlVersion "0.1" )
 
 # declare all custom build options
+option(OFFLINE_BUILD "Offline build (i.e. without downloading libraries such as pybind11)" OFF)
 option(WITH_MIC "Build with MIC support" OFF)
 option(WITH_CUDA "Build with CUDA support" ON)
 set(WITH_CUDA_ARCH "auto" CACHE STRING "Build for these CUDA architectures")
@@ -377,6 +378,7 @@ INCLUDE( CPack )
 
 # Print custom build options
 message( "-- Build options:" )
+message( "   OFFLINE_BUILD=${OFFLINE_BUILD}" )
 message( "   WITH_MIC=${WITH_MIC}" )
 message( "   WITH_CUDA=${WITH_CUDA}" )
 message( "   WITH_CUDA_ARCH=${WITH_CUDA_ARCH}" )
