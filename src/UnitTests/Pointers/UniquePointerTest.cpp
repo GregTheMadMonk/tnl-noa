@@ -17,7 +17,7 @@
 
 #include <cstdlib>
 #include <TNL/Devices/Host.h>
-#include <TNL/UniquePointer.h>
+#include <TNL/Pointers/UniquePointer.h>
 #include <TNL/Containers/StaticArray.h>
 
 #ifdef HAVE_GTEST 
@@ -47,7 +47,7 @@ TEST( UniquePointerTest, ConstructorTest )
 };
 #endif
 
-#include "GtestMissingError.h"
+#include "../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST

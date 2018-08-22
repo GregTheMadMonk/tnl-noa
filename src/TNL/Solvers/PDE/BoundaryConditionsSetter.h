@@ -13,7 +13,7 @@
 
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Functions/FunctionAdapter.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Meshes/Traverser.h>
 
 namespace TNL {

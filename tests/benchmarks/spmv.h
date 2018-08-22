@@ -15,7 +15,7 @@
 #include "benchmarks.h"
 
 #include <TNL/Containers/List.h>
-#include <TNL/DevicePointer.h>
+#include <TNL/Pointers/DevicePointer.h>
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Matrices/SlicedEllpack.h>

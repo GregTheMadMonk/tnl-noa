@@ -15,7 +15,7 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Functions/MeshFunction.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include "tnlFastSweepingMethod.h"
 
 template< typename Mesh,

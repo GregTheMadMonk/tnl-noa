@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include <iostream>
-#include <TNL/SmartPointersRegister.h>
+#include <TNL/Pointers/SmartPointersRegister.h>
 #include <TNL/Devices/Cuda.h>
 
 void SmartPointersRegister::insert( SmartPointer* pointer, int deviceId )

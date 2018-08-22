@@ -19,7 +19,7 @@
 
 #include <unordered_set>
 #include <unordered_map>
-#include <TNL/SmartPointer.h>
+#include <TNL/Pointers/SmartPointer.h>
 #include <TNL/Assert.h>
 
 class SmartPointersRegister

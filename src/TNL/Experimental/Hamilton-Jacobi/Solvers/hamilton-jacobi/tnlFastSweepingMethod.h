@@ -12,7 +12,7 @@
 
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/Analytic/Constant.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include "tnlDirectEikonalMethodsBase.h"
 
 template< typename Mesh,

@@ -12,7 +12,7 @@
 #include <TNL/Functions/Domain.h>
 #include <TNL/Functions/MeshFunctionGnuplotWriter.h>
 #include <TNL/Functions/MeshFunctionVTKWriter.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 
 #pragma once
 

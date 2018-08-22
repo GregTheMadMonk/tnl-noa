@@ -9,10 +9,10 @@ ADD_SUBDIRECTORY( Images )
 ADD_SUBDIRECTORY( Matrices )
 ADD_SUBDIRECTORY( Meshes )
 ADD_SUBDIRECTORY( Operators )
+ADD_SUBDIRECTORY( Pointers )
 ADD_SUBDIRECTORY( Problems )
 ADD_SUBDIRECTORY( Solvers )
 
-#ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( legacy )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
@@ -22,7 +22,6 @@ set( headers
      Constants.h
      CudaSharedMemory.h
      CudaStreamPool.h
-     DevicePointer.h
      File.h
      File_impl.h
      FileName.h
@@ -33,20 +32,15 @@ set( headers
      mpi-supp.h
      ParallelFor.h
      param-types.h
-     SharedPointer.h
-     SmartPointer.h
-     SmartPointersRegister.h
      StaticFor.h
      String.h
-     Timer.h
-     UniquePointer.h )
+     Timer.h )
 
 set( common_SOURCES
      File.cpp
      FileName.cpp
      Object.cpp
      Logger.cpp
-     SmartPointersRegister.cpp
      String.cpp
      Timer.cpp )
 
@@ -59,9 +53,9 @@ set( tnl_SOURCES ${tnl_config_SOURCES}
                  ${tnl_matrices_SOURCES}
                  ${tnl_operators_SOURCES}
                  ${tnl_problems_SOURCES}
+                 ${tnl_pointers_SOURCES}
                  ${tnl_solvers_SOURCES}
 
-                 ${tnl_core_SOURCES}
                  ${tnl_legacy_SOURCES}
 
                  ${common_SOURCES} )
@@ -74,11 +68,10 @@ set( tnl_CUDA__SOURCES ${tnl_config_CUDA__SOURCES}
                        ${tnl_images_CUDA__SOURCES}
                        ${tnl_matrices_CUDA__SOURCES}
                        ${tnl_operators_CUDA__SOURCES}
+                       ${tnl_pointers_CUDA__SOURCES}
                        ${tnl_problems_CUDA__SOURCES}
                        ${tnl_solvers_CUDA__SOURCES}
 
-
-                       ${tnl_core_CUDA__SOURCES}
                        ${tnl_legacy_CUDA__SOURCES}
                        ${common_SOURCES} )
 

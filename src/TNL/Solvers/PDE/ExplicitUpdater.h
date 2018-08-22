@@ -12,7 +12,7 @@
 
 #include <TNL/Functions/FunctionAdapter.h>
 #include <TNL/Timer.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <type_traits>
 #include <TNL/Meshes/GridDetails/Traverser_Grid1D.h>
 #include <TNL/Meshes/GridDetails/Traverser_Grid2D.h>

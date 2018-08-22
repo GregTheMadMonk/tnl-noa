@@ -14,11 +14,11 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/SmartPointer.h>
+#include <TNL/Pointers/SmartPointer.h>
 
 #include <cstring>
 
-#include "Devices/MIC.h"
+#include <TNL/Devices/MIC.h>
 
 
 namespace TNL { 

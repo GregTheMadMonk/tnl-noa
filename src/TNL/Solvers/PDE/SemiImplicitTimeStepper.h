@@ -12,7 +12,7 @@
 
 #include <TNL/Timer.h>
 #include <TNL/Logger.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 
 namespace TNL {

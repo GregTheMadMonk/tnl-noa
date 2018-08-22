@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Meshes/Mesh.h>
 
 namespace TNL {

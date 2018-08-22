@@ -4,7 +4,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/VectorField.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 
 namespace TNL {
    namespace Operators {

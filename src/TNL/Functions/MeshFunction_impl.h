@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/Assert.h>
-#include <TNL/DevicePointer.h>
+#include <TNL/Pointers/DevicePointer.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Functions/MeshFunctionEvaluator.h>
 #include <TNL/Functions/MeshFunctionNormGetter.h>

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/Grid.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/CudaStreamPool.h>
 
 namespace TNL {

@@ -13,7 +13,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Logger.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Solvers/PDE/PDESolver.h>
 #include <TNL/Solvers/PDE/MeshDependentTimeSteps.h>
 

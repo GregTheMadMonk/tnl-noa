@@ -10,11 +10,15 @@
 
 #pragma once
 
+#if __CUDA_ARCH__ >= 300
+#define HAVE_CUDA_UNIFIED_MEMORY
+#endif
+
 #include <iostream>
 #include <unistd.h>
 #include <TNL/String.h>
 #include <TNL/Assert.h>
-#include <TNL/SmartPointersRegister.h>
+#include <TNL/Pointers/SmartPointersRegister.h>
 #include <TNL/Timer.h>
 #include <TNL/Devices/CudaCallable.h>
 

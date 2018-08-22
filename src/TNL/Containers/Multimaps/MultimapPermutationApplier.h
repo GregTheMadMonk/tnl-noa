@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/DevicePointer.h>
+#include <TNL/Pointers/DevicePointer.h>
 #include <TNL/ParallelFor.h>
 
 namespace TNL {

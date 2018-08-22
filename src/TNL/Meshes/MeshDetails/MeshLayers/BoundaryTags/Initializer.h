@@ -12,7 +12,7 @@
 
 #include <TNL/StaticFor.h>
 #include <TNL/ParallelFor.h>
-#include <TNL/DevicePointer.h>
+#include <TNL/Pointers/DevicePointer.h>
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 

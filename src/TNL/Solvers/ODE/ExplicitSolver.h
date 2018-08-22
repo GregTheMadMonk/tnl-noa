@@ -18,7 +18,7 @@
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {

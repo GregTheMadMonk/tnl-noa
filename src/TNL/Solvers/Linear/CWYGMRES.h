@@ -14,7 +14,7 @@
 
 #include <math.h>
 #include <TNL/Object.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>

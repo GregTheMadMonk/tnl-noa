@@ -12,7 +12,7 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Functions/MeshFunction.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include "transportEquationProblem.h"
 
 using namespace TNL::Problems;

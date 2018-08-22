@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Functions/VectorField.h>
 #include <TNL/Functions/MeshFunctionEvaluator.h>

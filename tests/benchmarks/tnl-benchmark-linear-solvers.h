@@ -18,7 +18,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Matrices/Dense.h>
 #include <TNL/Matrices/Tridiagonal.h>
 #include <TNL/Matrices/Multidiagonal.h>

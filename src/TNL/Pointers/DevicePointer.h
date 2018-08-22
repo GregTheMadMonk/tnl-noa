@@ -1,52 +1,35 @@
 /***************************************************************************
-                          SharedPointer.h  -  description
+                          DevicePointer.h  -  description
                              -------------------
-    begin                : May 6, 2016
+    begin                : Sep 1, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
-// Implemented by: Tomas Oberhuber, Jakub Klinkovsky
+// Implemented by: Jakub Klinkovsky
 
 #pragma once
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Devices/MIC.h>
-#include <TNL/SmartPointer.h>
+#include <TNL/Pointers/SmartPointer.h>
 
 #include <cstring>
 
-
-
-//#define TNL_DEBUG_SHARED_POINTERS
-
-#ifdef TNL_DEBUG_SHARED_POINTERS
-   #include <typeinfo>
-   #include <cxxabi.h>
-   #include <iostream>
-   #include <string>
-   #include <memory>
-   #include <cstdlib>
-
-   inline
-   std::string demangle(const char* mangled)
-   {
-      int status;
-      std::unique_ptr<char[], void (*)(void*)> result(
-         abi::__cxa_demangle(mangled, 0, 0, &status), std::free);
-      return result.get() ? std::string(result.get()) : "error occurred";
-   }
-#endif
+#include <TNL/Devices/MIC.h>
 
 
 namespace TNL {
 
+/***
+ * The DevicePointer is like SharedPointer, except it takes an existing host
+ * object - there is no call to the ObjectType's constructor nor destructor.
+ */
 template< typename Object,
           typename Device = typename Object::DeviceType >
-class SharedPointer
+class DevicePointer
 {
    static_assert( ! std::is_same< Device, void >::value, "The device cannot be void. You need to specify the device explicitly in your code." );
 };
@@ -55,7 +38,7 @@ class SharedPointer
  * Specialization for Devices::Host
  */
 template< typename Object >
-class SharedPointer< Object, Devices::Host > : public SmartPointer
+class DevicePointer< Object, Devices::Host > : public SmartPointer
 {
    private:
       // Convenient template alias for controlling the selection of copy- and
@@ -68,164 +51,127 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       // friend class will be needed for templated assignment operators
       template< typename Object_, typename Device_ >
-      friend class SharedPointer;
+      friend class DevicePointer;
 
    public:
 
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
-      typedef SharedPointer< Object, Devices::Host > ThisType;
+      typedef DevicePointer< Object, Devices::Host > ThisType;
 
-      template< typename... Args >
-      explicit  SharedPointer( Args... args )
-      : pd( nullptr )
+      explicit  DevicePointer( ObjectType& obj )
+      : pointer( nullptr )
       {
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Creating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
-         this->allocate( args... );
+         this->pointer = &obj;
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      SharedPointer( const ThisType& pointer )
-      : pd( (PointerData*) pointer.pd )
+      DevicePointer( const ThisType& pointer )
+      : pointer( pointer.pointer )
       {
-         this->pd->counter += 1;
       }
 
       // conditional constructor for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      SharedPointer( const SharedPointer< Object_, DeviceType >& pointer )
-      : pd( (PointerData*) pointer.pd )
+      DevicePointer( const DevicePointer< Object_, DeviceType >& pointer )
+      : pointer( pointer.pointer )
       {
-         this->pd->counter += 1;
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      SharedPointer( ThisType&& pointer )
-      : pd( (PointerData*) pointer.pd )
+      DevicePointer( ThisType&& pointer )
+      : pointer( pointer.pointer )
       {
-         pointer.pd = nullptr;
+         pointer.pointer = nullptr;
       }
 
       // conditional constructor for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      SharedPointer( SharedPointer< Object_, DeviceType >&& pointer )
-      : pd( (PointerData*) pointer.pd )
+      DevicePointer( DevicePointer< Object_, DeviceType >&& pointer )
+      : pointer( pointer.pointer )
       {
-         pointer.pd = nullptr;
-      }
-
-      template< typename... Args >
-      bool recreate( Args... args )
-      {
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Recreating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
-         if( ! this->counter )
-            return this->allocate( args... );
-
-         if( *this->pd->counter == 1 )
-         {
-            /****
-             * The object is not shared -> recreate it in-place, without reallocation
-             */
-            this->pd->data.~ObjectType();
-            new ( this->pd->data ) ObjectType( args... );
-            return true;
-         }
-
-         // free will just decrement the counter
-         this->free();
-
-         return this->allocate( args... );
+         pointer.pointer = nullptr;
       }
 
       const Object* operator->() const
       {
-         return &this->pd->data;
+         return this->pointer;
       }
 
       Object* operator->()
       {
-         return &this->pd->data;
+         return this->pointer;
       }
 
       const Object& operator *() const
       {
-         return this->pd->data;
+         return *( this->pointer );
       }
 
       Object& operator *()
       {
-         return this->pd->data;
+         return *( this->pointer );
       }
 
       __cuda_callable__
       operator bool() const
       {
-         return this->pd;
+         return this->pointer;
       }
 
       __cuda_callable__
       bool operator!() const
       {
-         return ! this->pd;
+         return ! this->pointer;
       }
 
       template< typename Device = Devices::Host >
       __cuda_callable__
       const Object& getData() const
       {
-         return this->pd->data;
-      }      
-      
+         return *( this->pointer );
+      }
+
       template< typename Device = Devices::Host >
       __cuda_callable__
       Object& modifyData()
       {
-         return this->pd->data;
+         return *( this->pointer );
       }
 
       // this is needed only to avoid the default compiler-generated operator
       const ThisType& operator=( const ThisType& ptr )
       {
-         this->free();
-         this->pd = (PointerData*) ptr.pd;
-         this->pd->counter += 1;
+         this->pointer = ptr.pointer;
          return *this;
       }
 
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( const SharedPointer< Object_, DeviceType >& ptr )
+      const ThisType& operator=( const DevicePointer< Object_, DeviceType >& ptr )
       {
-         this->free();
-         this->pd = (PointerData*) ptr.pd;
-         this->pd->counter += 1;
+         this->pointer = ptr.pointer;
          return *this;
       }
 
       // this is needed only to avoid the default compiler-generated operator
       const ThisType& operator=( ThisType&& ptr )
       {
-         this->free();
-         this->pd = (PointerData*) ptr.pd;
-         ptr.pd = nullptr;
+         this->pointer = ptr.pointer;
+         ptr.pointer = nullptr;
          return *this;
       }
 
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( SharedPointer< Object_, DeviceType >&& ptr )
+      const ThisType& operator=( DevicePointer< Object_, DeviceType >&& ptr )
       {
-         this->free();
-         this->pd = (PointerData*) ptr.pd;
-         ptr.pd = nullptr;
+         this->pointer = ptr.pointer;
+         ptr.pointer = nullptr;
          return *this;
       }
 
@@ -233,60 +179,22 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
       {
          return true;
       }
-      
-      void clear()
-      {
-         this->free();
-      }
 
-      ~SharedPointer()
+      ~DevicePointer()
       {
-         this->free();
       }
 
 
    protected:
 
-      struct PointerData
-      {
-         Object data;
-         int counter;
-
-         template< typename... Args >
-         explicit PointerData( Args... args )
-         : data( args... ),
-           counter( 1 )
-         {}
-      };
-
-      template< typename... Args >
-      bool allocate( Args... args )
-      {
-         this->pd = new PointerData( args... );
-         return this->pd;
-      }
-
-      void free()
-      {
-         if( this->pd )
-         {
-            if( ! --this->pd->counter )
-            {
-               delete this->pd;
-               this->pd = nullptr;
-            }
-         }
-
-      }
-
-      PointerData* pd;
+      Object* pointer;
 };
 
 /****
  * Specialization for CUDA
  */
 template< typename Object >
-class SharedPointer< Object, Devices::Cuda > : public SmartPointer
+class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 {
    private:
       // Convenient template alias for controlling the selection of copy- and
@@ -299,25 +207,26 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       // friend class will be needed for templated assignment operators
       template< typename Object_, typename Device_ >
-      friend class SharedPointer;
+      friend class DevicePointer;
 
    public:
 
       typedef Object ObjectType;
       typedef Devices::Cuda DeviceType;
-      typedef SharedPointer< Object, Devices::Cuda > ThisType;
+      typedef DevicePointer< Object, Devices::Cuda > ThisType;
 
-      template< typename... Args >
-      explicit  SharedPointer( Args... args )
-      : pd( nullptr ),
+      explicit  DevicePointer( ObjectType& obj )
+      : pointer( nullptr ),
+        pd( nullptr ),
         cuda_pointer( nullptr )
       {
-         this->allocate( args... );
+         this->allocate( obj );
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      SharedPointer( const ThisType& pointer )
-      : pd( (PointerData*) pointer.pd ),
+      DevicePointer( const ThisType& pointer )
+      : pointer( pointer.pointer ),
+        pd( (PointerData*) pointer.pd ),
         cuda_pointer( pointer.cuda_pointer )
       {
          this->pd->counter += 1;
@@ -326,18 +235,21 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       // conditional constructor for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      SharedPointer( const SharedPointer< Object_, DeviceType >& pointer )
-      : pd( (PointerData*) pointer.pd ),
+      DevicePointer( const DevicePointer< Object_, DeviceType >& pointer )
+      : pointer( pointer.pointer ),
+        pd( (PointerData*) pointer.pd ),
         cuda_pointer( pointer.cuda_pointer )
       {
          this->pd->counter += 1;
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      SharedPointer( ThisType&& pointer )
-      : pd( (PointerData*) pointer.pd ),
+      DevicePointer( ThisType&& pointer )
+      : pointer( pointer.pointer ),
+        pd( (PointerData*) pointer.pd ),
         cuda_pointer( pointer.cuda_pointer )
       {
+         pointer.pointer = nullptr;
          pointer.pd = nullptr;
          pointer.cuda_pointer = nullptr;
       }
@@ -345,63 +257,36 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       // conditional constructor for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      SharedPointer( SharedPointer< Object_, DeviceType >&& pointer )
-      : pd( (PointerData*) pointer.pd ),
+      DevicePointer( DevicePointer< Object_, DeviceType >&& pointer )
+      : pointer( pointer.pointer ),
+        pd( (PointerData*) pointer.pd ),
         cuda_pointer( pointer.cuda_pointer )
       {
+         pointer.pointer = nullptr;
          pointer.pd = nullptr;
          pointer.cuda_pointer = nullptr;
-      }
-
-      template< typename... Args >
-      bool recreate( Args... args )
-      {
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Recreating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
-         if( ! this->pd )
-            return this->allocate( args... );
-
-         if( this->pd->counter == 1 )
-         {
-            /****
-             * The object is not shared -> recreate it in-place, without reallocation
-             */
-            this->pd->data.~Object();
-            new ( &this->pd->data ) Object( args... );
-#ifdef HAVE_CUDA
-            cudaMemcpy( (void*) this->cuda_pointer, (void*) &this->pd->data, sizeof( Object ), cudaMemcpyHostToDevice );
-#endif
-            this->set_last_sync_state();
-            return true;
-         }
-
-         // free will just decrement the counter
-         this->free();
-
-         return this->allocate( args... );
       }
 
       const Object* operator->() const
       {
-         return &this->pd->data;
+         return this->pointer;
       }
 
       Object* operator->()
       {
          this->pd->maybe_modified = true;
-         return &this->pd->data;
+         return this->pointer;
       }
 
       const Object& operator *() const
       {
-         return this->pd->data;
+         return *( this->pointer );
       }
 
       Object& operator *()
       {
          this->pd->maybe_modified = true;
-         return this->pd->data;
+         return *( this->pointer );
       }
 
       __cuda_callable__
@@ -421,10 +306,11 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       const Object& getData() const
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
+         TNL_ASSERT( this->pointer, );
          TNL_ASSERT( this->pd, );
          TNL_ASSERT( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
-            return this->pd->data;
+            return *( this->pointer );
          if( std::is_same< Device, Devices::Cuda >::value )
             return *( this->cuda_pointer );
       }
@@ -434,12 +320,13 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       Object& modifyData()
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
+         TNL_ASSERT( this->pointer, );
          TNL_ASSERT( this->pd, );
          TNL_ASSERT( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
          {
             this->pd->maybe_modified = true;
-            return this->pd->data;
+            return *( this->pointer );
          }
          if( std::is_same< Device, Devices::Cuda >::value )
             return *( this->cuda_pointer );
@@ -449,27 +336,23 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       const ThisType& operator=( const ThisType& ptr )
       {
          this->free();
+         this->pointer = ptr.pointer;
          this->pd = (PointerData*) ptr.pd;
          this->cuda_pointer = ptr.cuda_pointer;
          this->pd->counter += 1;
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
          return *this;
       }
 
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( const SharedPointer< Object_, DeviceType >& ptr )
+      const ThisType& operator=( const DevicePointer< Object_, DeviceType >& ptr )
       {
          this->free();
+         this->pointer = ptr.pointer;
          this->pd = (PointerData*) ptr.pd;
          this->cuda_pointer = ptr.cuda_pointer;
          this->pd->counter += 1;
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
          return *this;
       }
 
@@ -477,29 +360,27 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       const ThisType& operator=( ThisType&& ptr )
       {
          this->free();
+         this->pointer = ptr.pointer;
          this->pd = (PointerData*) ptr.pd;
          this->cuda_pointer = ptr.cuda_pointer;
+         ptr.pointer = nullptr;
          ptr.pd = nullptr;
          ptr.cuda_pointer = nullptr;
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Move-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
          return *this;
       }
 
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( SharedPointer< Object_, DeviceType >&& ptr )
+      const ThisType& operator=( DevicePointer< Object_, DeviceType >&& ptr )
       {
          this->free();
+         this->pointer = ptr.pointer;
          this->pd = (PointerData*) ptr.pd;
          this->cuda_pointer = ptr.cuda_pointer;
+         ptr.pointer = nullptr;
          ptr.pd = nullptr;
          ptr.cuda_pointer = nullptr;
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Move-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
          return *this;
       }
 
@@ -510,12 +391,9 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 #ifdef HAVE_CUDA
          if( this->modified() )
          {
-#ifdef TNL_DEBUG_SHARED_POINTERS
-            std::cerr << "Synchronizing shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(Object).name()) << std::endl;
-            std::cerr << "   ( " << sizeof( Object ) << " bytes, CUDA adress " << this->cuda_pointer << " )" << std::endl;
-#endif
+            TNL_ASSERT( this->pointer, );
             TNL_ASSERT( this->cuda_pointer, );
-            cudaMemcpy( (void*) this->cuda_pointer, (void*) &this->pd->data, sizeof( Object ), cudaMemcpyHostToDevice );
+            cudaMemcpy( (void*) this->cuda_pointer, (void*) this->pointer, sizeof( ObjectType ), cudaMemcpyHostToDevice );
             if( ! TNL_CHECK_CUDA_DEVICE ) {
                return false;
             }
@@ -527,13 +405,8 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
          return false;
 #endif
       }
-      
-      void clear()
-      {
-         this->free();
-      }      
 
-      ~SharedPointer()
+      ~DevicePointer()
       {
          this->free();
          Devices::Cuda::removeSmartPointer( this );
@@ -543,69 +416,56 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       struct PointerData
       {
-         Object data;
          char data_image[ sizeof(Object) ];
-         int counter;
-         bool maybe_modified;
-
-         template< typename... Args >
-         explicit PointerData( Args... args )
-         : data( args... ),
-           counter( 1 ),
-           maybe_modified( false )
-         {}
+         int counter = 1;
+         bool maybe_modified = false;
       };
 
-      template< typename... Args >
-      bool allocate( Args... args )
+      bool allocate( ObjectType& obj )
       {
-         this->pd = new PointerData( args... );
+         this->pointer = &obj;
+         this->pd = new PointerData();
          // pass to device
-         this->cuda_pointer = Devices::Cuda::passToDevice( this->pd->data );
+         this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
          // set last-sync state
          this->set_last_sync_state();
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Created shared pointer to " << demangle(typeid(ObjectType).name()) << " (cuda_pointer = " << this->cuda_pointer << ")" << std::endl;
-#endif
          Devices::Cuda::insertSmartPointer( this );
          return true;
       }
 
       void set_last_sync_state()
       {
+         TNL_ASSERT( this->pointer, );
          TNL_ASSERT( this->pd, );
-         std::memcpy( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( Object ) );
+         std::memcpy( (void*) &this->pd->data_image, (void*) this->pointer, sizeof( Object ) );
          this->pd->maybe_modified = false;
       }
 
       bool modified()
       {
+         TNL_ASSERT( this->pointer, );
          TNL_ASSERT( this->pd, );
          // optimization: skip bitwise comparison if we're sure that the data is the same
          if( ! this->pd->maybe_modified )
             return false;
-         return std::memcmp( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( Object ) ) != 0;
+         return std::memcmp( (void*) &this->pd->data_image, (void*) this->pointer, sizeof( Object ) ) != 0;
       }
 
       void free()
       {
          if( this->pd )
          {
-#ifdef TNL_DEBUG_SHARED_POINTERS
-            std::cerr << "Freeing shared pointer: counter = " << this->pd->counter << ", cuda_pointer = " << this->cuda_pointer << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
             if( ! --this->pd->counter )
             {
                delete this->pd;
                this->pd = nullptr;
                if( this->cuda_pointer )
                   Devices::Cuda::freeFromDevice( this->cuda_pointer );
-#ifdef TNL_DEBUG_SHARED_POINTERS
-               std::cerr << "...deleted data." << std::endl;
-#endif
             }
          }
       }
+
+      Object* pointer;
 
       PointerData* pd;
 
@@ -614,12 +474,13 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       Object* cuda_pointer;
 };
 
-#ifdef HAVE_MIC
 /****
  * Specialization for MIC
  */
-template< typename Object>
-class SharedPointer< Object, Devices::MIC > : public SmartPointer
+
+#ifdef HAVE_MIC
+template< typename Object >
+class DevicePointer< Object, Devices::MIC > : public SmartPointer
 {
    private:
       // Convenient template alias for controlling the selection of copy- and
@@ -631,26 +492,27 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
                                       std::is_same< typename std::remove_cv< Object >::type, Object_ >::value >;
 
       // friend class will be needed for templated assignment operators
-      template< typename Object_, typename Device_>
-      friend class SharedPointer;
+      template< typename Object_, typename Device_ >
+      friend class DevicePointer;
 
    public:
 
       typedef Object ObjectType;
       typedef Devices::MIC DeviceType;
-      typedef SharedPointer< Object, Devices::MIC> ThisType;
+      typedef DevicePointer< Object, Devices::MIC > ThisType;
 
-      template< typename... Args >
-      explicit  SharedPointer( Args... args )
-      : pd( nullptr ),
+      explicit  DevicePointer( ObjectType& obj )
+      : pointer( nullptr ),
+        pd( nullptr ),
         mic_pointer( nullptr )
       {
-            this->allocate( args... );
+         this->allocate( obj );
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      SharedPointer( const ThisType& pointer )
-      : pd( (PointerData*) pointer.pd ),
+      DevicePointer( const ThisType& pointer )
+      : pointer( pointer.pointer ),
+        pd( (PointerData*) pointer.pd ),
         mic_pointer( pointer.mic_pointer )
       {
          this->pd->counter += 1;
@@ -659,18 +521,21 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       // conditional constructor for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      SharedPointer( const SharedPointer< Object_, DeviceType >& pointer )
-      : pd( (PointerData*) pointer.pd ),
+      DevicePointer( const DevicePointer< Object_, DeviceType >& pointer )
+      : pointer( pointer.pointer ),
+        pd( (PointerData*) pointer.pd ),
         mic_pointer( pointer.mic_pointer )
       {
          this->pd->counter += 1;
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      SharedPointer( ThisType&& pointer )
-      : pd( (PointerData*) pointer.pd ),
+      DevicePointer( ThisType&& pointer )
+      : pointer( pointer.pointer ),
+        pd( (PointerData*) pointer.pd ),
         mic_pointer( pointer.mic_pointer )
       {
+         pointer.pointer = nullptr;
          pointer.pd = nullptr;
          pointer.mic_pointer = nullptr;
       }
@@ -678,61 +543,36 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       // conditional constructor for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      SharedPointer( SharedPointer< Object_, DeviceType >&& pointer )
-      : pd( (PointerData*) pointer.pd ),
+      DevicePointer( DevicePointer< Object_, DeviceType >&& pointer )
+      : pointer( pointer.pointer ),
+        pd( (PointerData*) pointer.pd ),
         mic_pointer( pointer.mic_pointer )
       {
+         pointer.pointer = nullptr;
          pointer.pd = nullptr;
          pointer.mic_pointer = nullptr;
-      }
-
-      template< typename... Args >
-      bool recreate( Args... args )
-      {
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Recreating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
-         if( ! this->pd )
-            return this->allocate( args... );
-
-         if( this->pd->counter == 1 )
-         {
-            /****
-             * The object is not shared -> recreate it in-place, without reallocation
-             */
-            this->pd->data.~Object();
-            new ( &this->pd->data ) Object( args... );
-            Devices::MIC::CopyToMIC(this->mic_pointer,(void*) &this->pd->data,sizeof(Object));
-            this->set_last_sync_state();
-            return true;
-         }
-
-         // free will just decrement the counter
-         this->free();
-
-         return this->allocate( args... );
       }
 
       const Object* operator->() const
       {
-         return &this->pd->data;
+         return this->pointer;
       }
 
       Object* operator->()
       {
          this->pd->maybe_modified = true;
-         return &this->pd->data;
+         return this->pointer;
       }
 
       const Object& operator *() const
       {
-         return this->pd->data;
+         return *( this->pointer );
       }
 
       Object& operator *()
       {
          this->pd->maybe_modified = true;
-         return this->pd->data;
+         return *( this->pointer );
       }
 
       operator bool()
@@ -745,13 +585,13 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       const Object& getData() const
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::MIC >::value, "Only Devices::Host or Devices::MIC devices are accepted here." );
+         TNL_ASSERT( this->pointer, );
          TNL_ASSERT( this->pd, );
          TNL_ASSERT( this->mic_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
-            return this->pd->data;
+            return *( this->pointer );
          if( std::is_same< Device, Devices::MIC >::value )
             return *( this->mic_pointer );
-
       }
 
       template< typename Device = Devices::Host >
@@ -759,43 +599,39 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       Object& modifyData()
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::MIC >::value, "Only Devices::Host or Devices::MIC devices are accepted here." );
+         TNL_ASSERT( this->pointer, );
          TNL_ASSERT( this->pd, );
          TNL_ASSERT( this->mic_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
          {
             this->pd->maybe_modified = true;
-            return this->pd->data;
+            return *( this->pointer );
          }
          if( std::is_same< Device, Devices::MIC >::value )
             return *( this->mic_pointer );
-
       }
 
       // this is needed only to avoid the default compiler-generated operator
       const ThisType& operator=( const ThisType& ptr )
       {
          this->free();
+         this->pointer = ptr.pointer;
          this->pd = (PointerData*) ptr.pd;
          this->mic_pointer = ptr.mic_pointer;
          this->pd->counter += 1;
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
          return *this;
       }
 
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( const SharedPointer< Object_, DeviceType >& ptr )
+      const ThisType& operator=( const DevicePointer< Object_, DeviceType >& ptr )
       {
          this->free();
+         this->pointer = ptr.pointer;
          this->pd = (PointerData*) ptr.pd;
          this->mic_pointer = ptr.mic_pointer;
          this->pd->counter += 1;
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
          return *this;
       }
 
@@ -803,29 +639,27 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       const ThisType& operator=( ThisType&& ptr )
       {
          this->free();
+         this->pointer = ptr.pointer;
          this->pd = (PointerData*) ptr.pd;
          this->mic_pointer = ptr.mic_pointer;
+         ptr.pointer = nullptr;
          ptr.pd = nullptr;
          ptr.mic_pointer = nullptr;
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Move-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
          return *this;
       }
 
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( SharedPointer< Object_, DeviceType >&& ptr )
+      const ThisType& operator=( DevicePointer< Object_, DeviceType >&& ptr )
       {
          this->free();
+         this->pointer = ptr.pointer;
          this->pd = (PointerData*) ptr.pd;
          this->mic_pointer = ptr.mic_pointer;
+         ptr.pointer = nullptr;
          ptr.pd = nullptr;
          ptr.mic_pointer = nullptr;
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Move-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
          return *this;
       }
 
@@ -833,28 +667,19 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       {
          if( ! this->pd )
             return true;
-
          if( this->modified() )
          {
-#ifdef TNL_DEBUG_SHARED_POINTERS
-            std::cerr << "Synchronizing shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(Object).name()) << std::endl;
-            std::cerr << "   ( " << sizeof( Object ) << " bytes, MIC adress " << this->mic_pointer << " )" << std::endl;
-#endif
+            TNL_ASSERT( this->pointer, );
             TNL_ASSERT( this->mic_pointer, );
-            
-            Devices::MIC::CopyToMIC((void*)this->mic_pointer,(void*) &this->pd->data,sizeof(Object));    
+            Devices::MIC::CopyToMIC((void*) this->mic_pointer, (void*) this->pointer, sizeof( ObjectType ));
             this->set_last_sync_state();
             return true;
          }
-         return false; //??
-      }
-      
-      void clear()
-      {
-         this->free();
+         return true;
+
       }
 
-      ~SharedPointer()
+      ~DevicePointer()
       {
          this->free();
          Devices::MIC::removeSmartPointer( this );
@@ -864,83 +689,67 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
 
       struct PointerData
       {
-         Object data;
-         uint8_t data_image[ sizeof(Object) ];
-         int counter;
-         bool maybe_modified;
-
-         template< typename... Args >
-         explicit PointerData( Args... args )
-         : data( args... ),
-           counter( 1 ),
-           maybe_modified( false )
-         {}
+         char data_image[ sizeof(Object) ];
+         int counter = 1;
+         bool maybe_modified = false;
       };
 
-      template< typename... Args >
-      bool allocate( Args... args )
+      bool allocate( ObjectType& obj )
       {
-         this->pd = new PointerData( args... );
+         this->pointer = &obj;
+         this->pd = new PointerData();
          if( ! this->pd )
             return false;
-         
-         mic_pointer=(Object*)Devices::MIC::AllocMIC(sizeof(Object));
-         Devices::MIC::CopyToMIC((void*)this->mic_pointer,(void*) &this->pd->data,sizeof(Object));
-         
+         // pass to device
+         this->mic_pointer = (ObjectType*)Devices::MIC::AllocMIC(sizeof(ObjectType));
          if( ! this->mic_pointer )
             return false;
+         Devices::MIC::CopyToMIC((void*)this->mic_pointer,(void*)this->pointer,sizeof(ObjectType));
+                 
          // set last-sync state
          this->set_last_sync_state();
-#ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Created shared pointer to " << demangle(typeid(ObjectType).name()) << " (mic_pointer = " << this->mic_pointer << ")" << std::endl;
-#endif
          Devices::MIC::insertSmartPointer( this );
          return true;
       }
 
       void set_last_sync_state()
       {
+         TNL_ASSERT( this->pointer, );
          TNL_ASSERT( this->pd, );
-         std::memcpy( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( Object ) );
+         std::memcpy( (void*) &this->pd->data_image, (void*) this->pointer, sizeof( Object ) );
          this->pd->maybe_modified = false;
       }
 
       bool modified()
       {
+         TNL_ASSERT( this->pointer, );
          TNL_ASSERT( this->pd, );
          // optimization: skip bitwise comparison if we're sure that the data is the same
          if( ! this->pd->maybe_modified )
             return false;
-         return std::memcmp( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( Object ) ) != 0;
+         return std::memcmp( (void*) &this->pd->data_image, (void*) this->pointer, sizeof( Object ) ) != 0;
       }
 
       void free()
       {
          if( this->pd )
          {
-#ifdef TNL_DEBUG_SHARED_POINTERS
-            std::cerr << "Freeing shared pointer: counter = " << this->pd->counter << ", mic_pointer = " << this->mic_pointer << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
-#endif
             if( ! --this->pd->counter )
             {
                delete this->pd;
                this->pd = nullptr;
                if( this->mic_pointer )
-               {
-                   Devices::MIC::FreeMIC((void*)mic_pointer);
-                   mic_pointer=nullptr;
-               }
-#ifdef TNL_DEBUG_SHARED_POINTERS
-               std::cerr << "...deleted data." << std::endl;
-#endif
+                  Devices::MIC::FreeMIC( (void*) this->mic_pointer );
             }
          }
       }
 
+      Object* pointer;
+
       PointerData* pd;
 
-      // cuda_pointer can't be part of PointerData structure, since we would be
-      // unable to dereference this-pd on the device -- Nevím zda to platí pro MIC, asi jo
+      // mic_pointer can't be part of PointerData structure, since we would be
+      // unable to dereference this-pd on the device
       Object* mic_pointer;
 };
 #endif
@@ -950,13 +759,13 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
 namespace Assert {
 
 template< typename Object, typename Device >
-struct Formatter< SharedPointer< Object, Device > >
+struct Formatter< DevicePointer< Object, Device > >
 {
    static std::string
-   printToString( const SharedPointer< Object, Device >& value )
+   printToString( const DevicePointer< Object, Device >& value )
    {
       ::std::stringstream ss;
-      ss << "(SharedPointer< " << Object::getType() << ", " << Device::getDeviceType()
+      ss << "(DevicePointer< " << Object::getType() << ", " << Device::getDeviceType()
          << " > object at " << &value << ")";
       return ss.str();
    }

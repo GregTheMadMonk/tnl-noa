@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Problems/Problem.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Matrices/SlicedEllpack.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 
