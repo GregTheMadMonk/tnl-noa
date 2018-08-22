@@ -18,7 +18,7 @@
 namespace TNL {
    namespace Pointers {
 
-#define HAVE_CUDA_UNIFIED_MEMORY
+//#define HAVE_CUDA_UNIFIED_MEMORY
       
 #ifdef HAVE_CUDA_UNIFIED_MEMORY
 template< typename Object >

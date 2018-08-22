@@ -10,10 +10,6 @@
 
 #pragma once
 
-#if __CUDA_ARCH__ >= 300
-//#define HAVE_CUDA_UNIFIED_MEMORY
-#endif
-
 #include <iostream>
 #include <unistd.h>
 #include <TNL/String.h>
