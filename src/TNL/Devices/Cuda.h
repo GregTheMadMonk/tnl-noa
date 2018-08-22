@@ -11,7 +11,7 @@
 #pragma once
 
 #if __CUDA_ARCH__ >= 300
-#define HAVE_CUDA_UNIFIED_MEMORY
+//#define HAVE_CUDA_UNIFIED_MEMORY
 #endif
 
 #include <iostream>
