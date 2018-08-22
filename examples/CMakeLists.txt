@@ -1,6 +1,9 @@
 add_subdirectory( heat-equation )
-add_subdirectory( transport-equation )
-add_subdirectory( navier-stokes )
+
+# TODO CMAKE: get it back
+#add_subdirectory( transport-equation )
+#add_subdirectory( navier-stokes )
+#add_subdirectory( inviscid-flow )
 
 #add_subdirectory( mean-curvature-flow )
 #add_subdirectory( hamilton-jacobi )
@@ -10,6 +13,6 @@ add_subdirectory( navier-stokes )
 #add_subdirectory( fast-sweeping-map )
 #add_subdirectory( narrow-band )
 
-add_subdirectory( inviscid-flow )
+
 #add_subdirectory( mean-curvature-flow )
 

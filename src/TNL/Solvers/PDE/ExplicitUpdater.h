@@ -79,7 +79,7 @@ class ExplicitUpdater
 {
    public:
       typedef Mesh MeshType;
-      typedef SharedPointer< MeshType > MeshPointer;
+      typedef Pointers::SharedPointer<  MeshType > MeshPointer;
       typedef typename MeshFunction::RealType RealType;
       typedef typename MeshFunction::DeviceType DeviceType;
       typedef typename MeshFunction::IndexType IndexType;
@@ -88,11 +88,11 @@ class ExplicitUpdater
                                                 DifferentialOperator,
                                                 BoundaryConditions,
                                                 RightHandSide > TraverserUserData;
-      typedef SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-      typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-      typedef SharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
-      typedef SharedPointer< TraverserUserData, DeviceType > TraverserUserDataPointer;
+      typedef Pointers::SharedPointer<  DifferentialOperator, DeviceType > DifferentialOperatorPointer;
+      typedef Pointers::SharedPointer<  BoundaryConditions, DeviceType > BoundaryConditionsPointer;
+      typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
+      typedef Pointers::SharedPointer<  MeshFunction, DeviceType > MeshFunctionPointer;
+      typedef Pointers::SharedPointer<  TraverserUserData, DeviceType > TraverserUserDataPointer;
       
       void setDifferentialOperator( const DifferentialOperatorPointer& differentialOperatorPointer )
       {

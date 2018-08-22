@@ -1,5 +1,8 @@
 SET( headers DevicePointer.h
              SharedPointer.h
+             SharedPointerCuda.h
+             SharedPointerHost.h
+             SharedPointerMic.h
              SmartPointer.h
              SmartPointersRegister.h
              UniquePointer.h

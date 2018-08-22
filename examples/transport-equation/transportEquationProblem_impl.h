@@ -134,7 +134,7 @@ setupLinearSystem( const MeshPointer& mesh,
 {
    /*const IndexType dofs = this->getDofs( mesh );
    typedef typename Matrix::ObjectType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   SharedPointer< CompressedRowsLengthsVectorType > rowLengths;
+   Pointers::SharedPointer<  CompressedRowsLengthsVectorType > rowLengths;
    if( ! rowLengths->setSize( dofs ) )
       return false;
    Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
@@ -196,8 +196,8 @@ getExplicitUpdate( const RealType& time,
    int count = ::sqrt(mesh->template getEntitiesCount< Cell >());
    this->bindDofs( mesh, _u );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   SharedPointer< MeshFunctionType > u( mesh, _u ); 
-   SharedPointer< MeshFunctionType > fu( mesh, _fu );
+   Pointers::SharedPointer<  MeshFunctionType > u( mesh, _u ); 
+   Pointers::SharedPointer<  MeshFunctionType > fu( mesh, _fu );
    differentialOperatorPointer->setTau(tau); 
    differentialOperatorPointer->setVelocityField( this->velocityField );
    explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );

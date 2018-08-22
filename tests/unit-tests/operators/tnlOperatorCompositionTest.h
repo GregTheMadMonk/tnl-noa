@@ -65,7 +65,7 @@ class OperatorCompositionTest
  
    void test()
    {      
-      SharedPointer< MeshType > mesh;
+      Pointers::SharedPointer<  MeshType > mesh;
       mesh->setDimensions( CoordinatesType( 25 ) );
       mesh->setDomain( PointType( -1.0 ), PointType( 2.0 ) );
       TestFunctionType testFunction;

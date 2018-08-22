@@ -558,7 +558,7 @@ assemblyLinearSystem( const RealType& time,
                              typename DofVectorPointer::ObjectType > systemAssembler;
 
    typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-   typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
+   typedef Pointers::SharedPointer<  MeshFunctionType, DeviceType > MeshFunctionPointer;
    MeshFunctionPointer u( mesh, *_u );
    systemAssembler.setDifferentialOperator( this->differentialOperator );
    systemAssembler.setBoundaryConditions( this->boundaryCondition );

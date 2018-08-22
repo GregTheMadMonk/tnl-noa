@@ -70,7 +70,7 @@ setup( const MeshPointer& meshPointer,
    static const int Dimension = Mesh::getMeshDimension();
    typedef typename MeshPointer::ObjectType MeshType;
    typedef Functions::MeshFunction< MeshType > MeshFunction;
-   SharedPointer< MeshFunction > u( meshPointer );
+   Pointers::SharedPointer<  MeshFunction > u( meshPointer );
    if( initialCondition == "heaviside-vector-norm" )
    {
       typedef Functions::Analytic::VectorNorm< Dimension, RealType > VectorNormType;
@@ -81,7 +81,7 @@ setup( const MeshPointer& meshPointer,
       {      
          typedef Operators::Analytic::Shift< Dimension, RealType > ShiftOperatorType;
          typedef Functions::OperatorFunction< ShiftOperatorType, InitialConditionType > ExactSolutionType;
-         SharedPointer< ExactSolutionType, Devices::Host > exactSolution;
+         Pointers::SharedPointer<  ExactSolutionType, Devices::Host > exactSolution;
          if( ! exactSolution->getFunction().setup( parameters, prefix + "vector-norm-" ) ||
              ! exactSolution->getOperator().setup( parameters, prefix + "heaviside-" ) )
             return false;

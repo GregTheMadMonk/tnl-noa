@@ -33,12 +33,12 @@ public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Differe
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator > BaseType;
-      typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
-      typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
-      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef Pointers::SharedPointer<  MeshFunctionType, DeviceType > MeshFunctionPointer;
+      typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;
+      typedef Pointers::SharedPointer<  BoundaryCondition > BoundaryConditionPointer;
+      typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
       typedef typename DifferentialOperator::VelocityFieldType VelocityFieldType;
-      typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
+      typedef Pointers::SharedPointer<  VelocityFieldType, DeviceType > VelocityFieldPointer;
       
 
       using typename BaseType::MeshType;

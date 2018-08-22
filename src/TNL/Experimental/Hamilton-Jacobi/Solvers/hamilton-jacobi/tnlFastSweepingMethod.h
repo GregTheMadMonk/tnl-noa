@@ -38,7 +38,7 @@ class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
       typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > > BaseType;
-      using MeshPointer = SharedPointer< MeshType >;
+      using MeshPointer = Pointers::SharedPointer<  MeshType >;
       
       using typename BaseType::InterfaceMapType;
       using typename BaseType::MeshFunctionType;
@@ -76,7 +76,7 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
       typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > BaseType;
-      using MeshPointer = SharedPointer< MeshType >;
+      using MeshPointer = Pointers::SharedPointer<  MeshType >;
 
       using typename BaseType::InterfaceMapType;
       using typename BaseType::MeshFunctionType;
@@ -114,7 +114,7 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
       typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > BaseType;
-      using MeshPointer = SharedPointer< MeshType >;
+      using MeshPointer = Pointers::SharedPointer<  MeshType >;
       
       using typename BaseType::InterfaceMapType;
       using typename BaseType::MeshFunctionType;

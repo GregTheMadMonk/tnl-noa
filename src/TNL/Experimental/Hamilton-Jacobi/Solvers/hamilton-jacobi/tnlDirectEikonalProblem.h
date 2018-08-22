@@ -40,9 +40,9 @@ class tnlDirectEikonalProblem
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
-      using MeshPointer = SharedPointer< MeshType >;
-      using DofVectorPointer = SharedPointer< DofVectorType >;
-      using MeshDependentDataPointer = SharedPointer< MeshDependentDataType >;
+      using MeshPointer = Pointers::SharedPointer<  MeshType >;
+      using DofVectorPointer = Pointers::SharedPointer<  DofVectorType >;
+      using MeshDependentDataPointer = Pointers::SharedPointer<  MeshDependentDataType >;
       
       static constexpr bool isTimeDependent() { return false; };
 

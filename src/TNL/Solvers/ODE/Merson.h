@@ -28,7 +28,7 @@ class Merson : public ExplicitSolver< Problem >
    typedef typename Problem :: RealType RealType;
    typedef typename Problem :: DeviceType DeviceType;
    typedef typename Problem :: IndexType IndexType;
-   typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+   typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
 
    Merson();
 

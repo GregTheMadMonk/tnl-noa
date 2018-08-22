@@ -37,8 +37,8 @@ public:
    typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
+   typedef Pointers::SharedPointer<  const MatrixType, DeviceType > MatrixPointer;
+   typedef Pointers::SharedPointer<  const PreconditionerType, DeviceType > PreconditionerPointer;
 
    GMRES();
 

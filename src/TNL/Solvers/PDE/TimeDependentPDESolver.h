@@ -40,9 +40,9 @@ class TimeDependentPDESolver
       typedef typename ProblemType::MeshType MeshType;
       typedef typename ProblemType::DofVectorType DofVectorType;
       typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
-      typedef SharedPointer< MeshType, DeviceType > MeshPointer;
-      typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-      typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
+      typedef Pointers::SharedPointer<  MeshType, DeviceType > MeshPointer;
+      typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
+      typedef Pointers::SharedPointer<  MeshDependentDataType, DeviceType > MeshDependentDataPointer;
       typedef IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > SolverMonitorType;
       
       static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );

@@ -36,10 +36,10 @@ class SemiImplicitTimeStepper
    typedef LinearSystemSolver LinearSystemSolverType;
    typedef typename LinearSystemSolverType::PreconditionerType PreconditionerType;
    typedef typename ProblemType::MatrixType MatrixType;
-   typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
-   typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-   typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
-   typedef SharedPointer< PreconditionerType, DeviceType > PreconditionerPointer;
+   typedef Pointers::SharedPointer<  MatrixType, DeviceType > MatrixPointer;
+   typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
+   typedef Pointers::SharedPointer<  MeshDependentDataType, DeviceType > MeshDependentDataPointer;
+   typedef Pointers::SharedPointer<  PreconditionerType, DeviceType > PreconditionerPointer;
    typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
 
    SemiImplicitTimeStepper();

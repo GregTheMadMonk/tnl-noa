@@ -34,7 +34,7 @@ class LaxFridrichsContinuityBase
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       static const int Dimensions = MeshType::getMeshDimension();
       typedef Functions::VectorField< Dimensions, MeshFunctionType > VelocityFieldType;
-      typedef SharedPointer< VelocityFieldType > VelocityFieldPointer;
+      typedef Pointers::SharedPointer<  VelocityFieldType > VelocityFieldPointer;
 
       LaxFridrichsContinuityBase()
        : artificialViscosity( 1.0 ){};

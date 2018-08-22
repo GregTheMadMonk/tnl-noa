@@ -153,7 +153,7 @@ setupLinearSystem( const MeshPointer& meshPointer,
 {
    const IndexType dofs = this->getDofs( meshPointer );
    typedef typename MatrixPointer::ObjectType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
-   SharedPointer< CompressedRowLengthsVectorType > rowLengthsPointer;
+   Pointers::SharedPointer<  CompressedRowLengthsVectorType > rowLengthsPointer;
    rowLengthsPointer->setSize( dofs );
    Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >(

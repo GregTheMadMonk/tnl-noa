@@ -28,21 +28,21 @@ template< typename MeshType,
           int zDiff >
 bool renderFunction( const Config::ParameterContainer& parameters )
 {
-   SharedPointer< MeshType > meshPointer;
+   Pointers::SharedPointer<  MeshType > meshPointer;
    String meshFile = parameters.getParameter< String >( "mesh" );
    std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
    if( ! meshPointer->load( meshFile ) )
       return false;
 
    typedef Functions::TestFunction< MeshType::getMeshDimension(), RealType > FunctionType;
-   typedef SharedPointer< FunctionType, typename MeshType::DeviceType > FunctionPointer;
+   typedef Pointers::SharedPointer<  FunctionType, typename MeshType::DeviceType > FunctionPointer;
    FunctionPointer function;
    std::cout << "Setting up the function ... " << std::endl;
    if( ! function->setup( parameters, "" ) )
       return false;
    std::cout << "done." << std::endl;
    typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimension() > MeshFunctionType;
-   typedef SharedPointer< MeshFunctionType, typename MeshType::DeviceType > MeshFunctionPointer;
+   typedef Pointers::SharedPointer<  MeshFunctionType, typename MeshType::DeviceType > MeshFunctionPointer;
    MeshFunctionPointer meshFunction( meshPointer );
    //if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
    //   return false;

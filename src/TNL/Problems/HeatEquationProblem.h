@@ -44,12 +44,12 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
+      typedef Pointers::SharedPointer<  MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef Matrices::SlicedEllpack< RealType, DeviceType, IndexType > MatrixType;
-      typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
-      typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
-      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;
+      typedef Pointers::SharedPointer<  BoundaryCondition > BoundaryConditionPointer;
+      typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;

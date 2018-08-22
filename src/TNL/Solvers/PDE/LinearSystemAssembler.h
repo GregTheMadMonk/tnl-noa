@@ -77,12 +77,12 @@ class LinearSystemAssembler
                                                    RightHandSide,
                                                    DofVector > TraverserUserData;
 
-   //typedef SharedPointer< Matrix, DeviceType > MatrixPointer;
-   typedef SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-   typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-   typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-   typedef SharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
-   typedef SharedPointer< DofVector, DeviceType > DofVectorPointer;
+   //typedef Pointers::SharedPointer<  Matrix, DeviceType > MatrixPointer;
+   typedef Pointers::SharedPointer<  DifferentialOperator, DeviceType > DifferentialOperatorPointer;
+   typedef Pointers::SharedPointer<  BoundaryConditions, DeviceType > BoundaryConditionsPointer;
+   typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
+   typedef Pointers::SharedPointer<  MeshFunction, DeviceType > MeshFunctionPointer;
+   typedef Pointers::SharedPointer<  DofVector, DeviceType > DofVectorPointer;
    
    void setDifferentialOperator( const DifferentialOperatorPointer& differentialOperatorPointer )
    {
@@ -104,7 +104,7 @@ class LinearSystemAssembler
                   const RealType& tau,
                   const MeshPointer& meshPointer,
                   const MeshFunctionPointer& uPointer,
-                  SharedPointer< Matrix >& matrixPointer,
+                  Pointers::SharedPointer<  Matrix >& matrixPointer,
                   DofVectorPointer& bPointer )
    {
       static_assert( std::is_same< MeshFunction,
@@ -190,7 +190,7 @@ class LinearSystemAssembler
    };
 
 protected:
-   SharedPointer< TraverserUserData, DeviceType > userDataPointer;
+   Pointers::SharedPointer<  TraverserUserData, DeviceType > userDataPointer;
 };
 
 } // namespace PDE

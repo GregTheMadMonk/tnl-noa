@@ -27,7 +27,7 @@ template< typename Real,
 void
 Traverser< Meshes::Grid< 1, Real, Device, Index >, GridEntity, 1 >::
 processBoundaryEntities( const GridPointer& gridPointer,
-                         SharedPointer< UserData, Device >& userDataPointer ) const
+                         Pointers::SharedPointer<  UserData, Device >& userDataPointer ) const
 {
    /****
     * Boundary cells
@@ -50,7 +50,7 @@ template< typename Real,
 void
 Traverser< Meshes::Grid< 1, Real, Device, Index >, GridEntity, 1 >::
 processInteriorEntities( const GridPointer& gridPointer,
-                         SharedPointer< UserData, Device >& userDataPointer ) const
+                         Pointers::SharedPointer<  UserData, Device >& userDataPointer ) const
 {
    /****
     * Interior cells
@@ -74,7 +74,7 @@ void
 Traverser< Meshes::Grid< 1, Real, Device, Index >, GridEntity, 1 >::
 processAllEntities(
    const GridPointer& gridPointer,
-   SharedPointer< UserData, Device >& userDataPointer ) const
+   Pointers::SharedPointer<  UserData, Device >& userDataPointer ) const
 {
    /****
     * All cells
@@ -100,7 +100,7 @@ template< typename Real,
 void
 Traverser< Meshes::Grid< 1, Real, Device, Index >, GridEntity, 0 >::
 processBoundaryEntities( const GridPointer& gridPointer,
-                         SharedPointer< UserData, Device >& userDataPointer ) const
+                         Pointers::SharedPointer<  UserData, Device >& userDataPointer ) const
 {
    /****
     * Boundary vertices
@@ -123,7 +123,7 @@ template< typename Real,
 void
 Traverser< Meshes::Grid< 1, Real, Device, Index >, GridEntity, 0 >::
 processInteriorEntities( const GridPointer& gridPointer,
-                         SharedPointer< UserData, Device >& userDataPointer ) const
+                         Pointers::SharedPointer<  UserData, Device >& userDataPointer ) const
 {
    /****
     * Interior vertices
@@ -147,7 +147,7 @@ void
 Traverser< Meshes::Grid< 1, Real, Device, Index >, GridEntity, 0 >::
 processAllEntities(
    const GridPointer& gridPointer,
-   SharedPointer< UserData, Device >& userDataPointer ) const
+   Pointers::SharedPointer<  UserData, Device >& userDataPointer ) const
 {
    /****
     * All vertices

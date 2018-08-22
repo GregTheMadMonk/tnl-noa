@@ -35,7 +35,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType begin,
    const CoordinatesType end,
-   SharedPointer< UserData, DeviceType >& userDataPointer,
+   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
    const int& stream )
 {
    GridEntity entity( *gridPointer );
@@ -159,7 +159,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType& begin,
    const CoordinatesType& end,
-   SharedPointer< UserData, DeviceType >& userDataPointer,
+   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
    const int& stream )
 {
 #ifdef HAVE_CUDA
@@ -223,7 +223,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType& begin,
    const CoordinatesType& end,
-   SharedPointer< UserData, DeviceType >& userDataPointer,
+   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
    const int& stream )
 {
     std::cout << "Not Implemented yet Grid Traverser <1, Real, Device::MIC>" << std::endl;
@@ -288,7 +288,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType begin,
    const CoordinatesType end,
-   SharedPointer< UserData, DeviceType >& userDataPointer,
+   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -481,7 +481,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType& begin,
    const CoordinatesType& end,
-   SharedPointer< UserData, DeviceType >& userDataPointer,
+   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -613,7 +613,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType& begin,
    const CoordinatesType& end,
-   SharedPointer< UserData, DeviceType >& userDataPointer,
+   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -712,7 +712,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType begin,
    const CoordinatesType end,
-   SharedPointer< UserData, DeviceType >& userDataPointer,
+   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -975,7 +975,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType& begin,
    const CoordinatesType& end,
-   SharedPointer< UserData, DeviceType >& userDataPointer,
+   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -1157,7 +1157,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType& begin,
    const CoordinatesType& end,
-   SharedPointer< UserData, DeviceType >& userDataPointer,
+   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {

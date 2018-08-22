@@ -420,7 +420,7 @@ struct FilesProcessor
       int verbose = parameters. getParameter< int >( "verbose");
       String meshFile = parameters. getParameter< String >( "mesh" );
 
-      typedef SharedPointer< Mesh > MeshPointer;
+      typedef Pointers::SharedPointer<  Mesh > MeshPointer;
       MeshPointer meshPointer;
       
       if( meshFile != "" )

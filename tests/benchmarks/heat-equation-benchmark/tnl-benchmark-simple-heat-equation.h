@@ -313,7 +313,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    
    typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
    typedef typename GridType::PointType PointType;
-   typedef SharedPointer< GridType > GridPointer;
+   typedef Pointers::SharedPointer<  GridType > GridPointer;
    GridPointer gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
@@ -541,7 +541,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
     */
    typedef Meshes::Grid< 2, Real, Devices::Host, Index > GridType;
    typedef typename GridType::PointType PointType;
-   SharedPointer< GridType > gridPointer;
+   Pointers::SharedPointer<  GridType > gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
    Containers::Vector< Real, Devices::Host, Index > vecU;

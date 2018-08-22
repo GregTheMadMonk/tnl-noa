@@ -23,23 +23,23 @@ class Traverser
 {
    public:
       using MeshType = Mesh;
-      using MeshPointer = SharedPointer< MeshType >;
+      using MeshPointer = Pointers::SharedPointer<  MeshType >;
       using DeviceType = typename MeshType::DeviceType;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const MeshPointer& meshPointer,
-                                    SharedPointer< UserData, DeviceType >& userDataPointer ) const;
+                                    Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const MeshPointer& meshPointer,
-                                    SharedPointer< UserData, DeviceType >& userDataPointer ) const;
+                                    Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const MeshPointer& meshPointer,
-                               SharedPointer< UserData, DeviceType >& userDataPointer ) const;
+                               Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
 };
 
 template< typename MeshConfig,
@@ -49,23 +49,23 @@ class Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimensio
 {
    public:
       using MeshType = Mesh< MeshConfig, Devices::Cuda >;
-      using MeshPointer = SharedPointer< MeshType >;
+      using MeshPointer = Pointers::SharedPointer<  MeshType >;
       using DeviceType = typename MeshType::DeviceType;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const MeshPointer& meshPointer,
-                                    SharedPointer< UserData, DeviceType >& userDataPointer ) const;
+                                    Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const MeshPointer& meshPointer,
-                                    SharedPointer< UserData, DeviceType >& userDataPointer ) const;
+                                    Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const MeshPointer& meshPointer,
-                               SharedPointer< UserData, DeviceType >& userDataPointer ) const;
+                               Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
 };
 
 } // namespace Meshes

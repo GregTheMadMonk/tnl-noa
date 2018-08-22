@@ -35,12 +35,12 @@ public PDEProblem< Mesh,
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
-      typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
-      typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
-      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef Pointers::SharedPointer<  MeshFunctionType, DeviceType > MeshFunctionPointer;
+      typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;
+      typedef Pointers::SharedPointer<  BoundaryCondition > BoundaryConditionPointer;
+      typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
       typedef typename DifferentialOperator::VelocityFieldType VelocityFieldType;
-      typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
+      typedef Pointers::SharedPointer<  VelocityFieldType, DeviceType > VelocityFieldPointer;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;

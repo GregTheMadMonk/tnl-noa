@@ -119,9 +119,9 @@ evaluateEntities( OutMeshFunctionPointer& meshFunction,
    typedef Functions::MeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData > AssignmentEntitiesProcessor;
    typedef Functions::MeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
    //typedef typename OutMeshFunction::MeshPointer OutMeshPointer;
-   typedef SharedPointer< TraverserUserData, DeviceType > TraverserUserDataPointer;
+   typedef Pointers::SharedPointer<  TraverserUserData, DeviceType > TraverserUserDataPointer;
    
-   SharedPointer< TraverserUserData, DeviceType >
+   Pointers::SharedPointer<  TraverserUserData, DeviceType >
       userData( &function.template getData< DeviceType >(),
                 time,
                 &meshFunction.template modifyData< DeviceType >(),

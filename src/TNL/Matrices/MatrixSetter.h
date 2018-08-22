@@ -46,15 +46,15 @@ class MatrixSetter
 {
    public:
    typedef Mesh MeshType;
-   typedef SharedPointer< MeshType > MeshPointer;
+   typedef Pointers::SharedPointer<  MeshType > MeshPointer;
    typedef typename MeshType::DeviceType DeviceType;
    typedef typename CompressedRowLengthsVector::RealType IndexType;
    typedef MatrixSetterTraversalUserData< DifferentialOperator,
                                           BoundaryConditions,
                                           CompressedRowLengthsVector > TraversalUserData;
-   typedef SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-   typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-   typedef SharedPointer< CompressedRowLengthsVector, DeviceType > CompressedRowLengthsVectorPointer;
+   typedef Pointers::SharedPointer<  DifferentialOperator, DeviceType > DifferentialOperatorPointer;
+   typedef Pointers::SharedPointer<  BoundaryConditions, DeviceType > BoundaryConditionsPointer;
+   typedef Pointers::SharedPointer<  CompressedRowLengthsVector, DeviceType > CompressedRowLengthsVectorPointer;
 
    template< typename EntityType >
    void getCompressedRowLengths( const MeshPointer& meshPointer,

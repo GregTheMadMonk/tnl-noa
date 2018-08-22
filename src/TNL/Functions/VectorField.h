@@ -83,9 +83,9 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       
       typedef Mesh MeshType;
       typedef Real RealType;
-      typedef SharedPointer< MeshType > MeshPointer;
+      typedef Pointers::SharedPointer<  MeshType > MeshPointer;
       typedef MeshFunction< MeshType, MeshEntityDimension, RealType > FunctionType;
-      typedef SharedPointer< FunctionType > FunctionPointer;
+      typedef Pointers::SharedPointer<  FunctionType > FunctionPointer;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::GlobalIndexType IndexType;
       typedef VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, RealType > > ThisType;

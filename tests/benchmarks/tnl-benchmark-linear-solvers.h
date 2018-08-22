@@ -67,15 +67,15 @@ void configSetup( Config::ConfigDescription& config )
 
 template< typename Solver >
 bool benchmarkSolver( const Config::ParameterContainer& parameters,
-                      SharedPointer< typename Solver::MatrixType >& matrix)
+                      Pointers::SharedPointer<  typename Solver::MatrixType >& matrix)
 {
    typedef typename Solver::MatrixType MatrixType;
    typedef typename MatrixType::RealType RealType;
    typedef typename MatrixType::DeviceType DeviceType;
    typedef typename MatrixType::IndexType IndexType;
    typedef Containers::Vector< RealType, DeviceType, IndexType > VectorType;
-   typedef SharedPointer< VectorType > VectorPointer;
-   typedef SharedPointer< MatrixType > MatrixPointer;
+   typedef Pointers::SharedPointer<  VectorType > VectorPointer;
+   typedef Pointers::SharedPointer<  MatrixType > MatrixPointer;
 
    VectorPointer x, y, b;
    x->setSize( matrix->getColumns() );
@@ -136,7 +136,7 @@ template< typename Matrix >
 bool resolveLinearSolver( const Config::ParameterContainer& parameters )
 {
    const String& solver = parameters.getParameter< String >( "solver" );
-   typedef SharedPointer< Matrix > MatrixPointer;
+   typedef Pointers::SharedPointer<  Matrix > MatrixPointer;
 
    MatrixPointer matrix;
    if( ! readMatrix( parameters, *matrix ) )

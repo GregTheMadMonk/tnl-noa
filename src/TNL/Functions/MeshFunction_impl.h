@@ -75,7 +75,7 @@ template< typename Mesh,
    template< typename Vector >
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const MeshPointer& meshPointer,
-              SharedPointer< Vector >& data,
+              Pointers::SharedPointer<  Vector >& data,
               const IndexType& offset )
 : meshPointer( meshPointer )
 {
@@ -204,7 +204,7 @@ template< typename Mesh,
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 bind( const MeshPointer& meshPointer,
-      const SharedPointer< Vector >& data,
+      const Pointers::SharedPointer<  Vector >& data,
       const IndexType& offset )
 {
    this->meshPointer = meshPointer;

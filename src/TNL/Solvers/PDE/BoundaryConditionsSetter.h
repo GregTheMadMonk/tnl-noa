@@ -57,16 +57,16 @@ class BoundaryConditionsSetter
          RealType,
          MeshFunction,
          BoundaryConditions > TraverserUserData;
-      typedef SharedPointer< MeshType, DeviceType > MeshPointer;
-      typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-      typedef SharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
+      typedef Pointers::SharedPointer<  MeshType, DeviceType > MeshPointer;
+      typedef Pointers::SharedPointer<  BoundaryConditions, DeviceType > BoundaryConditionsPointer;
+      typedef Pointers::SharedPointer<  MeshFunction, DeviceType > MeshFunctionPointer;
 
       template< typename EntityType = typename MeshType::Cell >
       static void apply( const BoundaryConditionsPointer& boundaryConditions,
                          const RealType& time,
                          MeshFunctionPointer& u )
       {
-         SharedPointer< TraverserUserData, DeviceType >
+         Pointers::SharedPointer<  TraverserUserData, DeviceType >
             userData( time,
                       &boundaryConditions.template getData< DeviceType >(),
                       &u.template modifyData< DeviceType >() );

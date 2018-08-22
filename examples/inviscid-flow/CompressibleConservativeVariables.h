@@ -28,9 +28,9 @@ class CompressibleConservativeVariables
       typedef typename MeshType::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef Functions::VectorField< Dimensions, MeshFunctionType > VelocityFieldType;
-      typedef SharedPointer< MeshType > MeshPointer;      
-      typedef SharedPointer< MeshFunctionType > MeshFunctionPointer;
-      typedef SharedPointer< VelocityFieldType > MomentumFieldPointer;
+      typedef Pointers::SharedPointer<  MeshType > MeshPointer;      
+      typedef Pointers::SharedPointer<  MeshFunctionType > MeshFunctionPointer;
+      typedef Pointers::SharedPointer<  VelocityFieldType > MomentumFieldPointer;
       
       CompressibleConservativeVariables(){};
       

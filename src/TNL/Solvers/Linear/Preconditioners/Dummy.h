@@ -45,7 +45,7 @@ class SolverStarterSolverPreconditionerSetter
    public:
        
       static void run( LinearSolver& solver,
-                       SharedPointer< Preconditioner, typename LinearSolver::DeviceType >& preconditioner )
+                       Pointers::SharedPointer<  Preconditioner, typename LinearSolver::DeviceType >& preconditioner )
       {
          solver.setPreconditioner( preconditioner );
       }
@@ -60,7 +60,7 @@ class SolverStarterSolverPreconditionerSetter< LinearSolver, Dummy< Real, Device
       typedef Dummy< Real, DeviceType, Index > PreconditionerType;
    
       static void run( LinearSolver& solver,
-                       SharedPointer< PreconditionerType, typename LinearSolver::DeviceType >& preconditioner )
+                       Pointers::SharedPointer<  PreconditionerType, typename LinearSolver::DeviceType >& preconditioner )
       {
          // do nothing
       }

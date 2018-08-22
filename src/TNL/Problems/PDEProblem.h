@@ -32,12 +32,12 @@ class PDEProblem : public Problem< Real, Device, Index >
       using typename BaseType::IndexType;
 
       typedef Mesh MeshType;
-      typedef SharedPointer< MeshType, DeviceType > MeshPointer;
+      typedef Pointers::SharedPointer<  MeshType, DeviceType > MeshPointer;
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
-      typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+      typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
       typedef Matrices::SlicedEllpack< RealType, DeviceType, IndexType > MatrixType;
       typedef Containers::Vector< RealType, DeviceType, IndexType > MeshDependentDataType;
-      typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
+      typedef Pointers::SharedPointer<  MeshDependentDataType, DeviceType > MeshDependentDataPointer;
 
       static constexpr bool isTimeDependent() { return true; };
       

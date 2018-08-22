@@ -25,7 +25,7 @@ template< typename Mesh,
 void
 Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processBoundaryEntities( const MeshPointer& meshPointer,
-                         SharedPointer< UserData, DeviceType >& userDataPointer ) const
+                         Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const
 {
    auto entitiesCount = meshPointer->template getBoundaryEntitiesCount< EntitiesDimension >();
 #ifdef HAVE_OPENMP
@@ -47,7 +47,7 @@ template< typename Mesh,
 void
 Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processInteriorEntities( const MeshPointer& meshPointer,
-                         SharedPointer< UserData, DeviceType >& userDataPointer ) const
+                         Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const
 {
    auto entitiesCount = meshPointer->template getInteriorEntitiesCount< EntitiesDimension >();
 #ifdef HAVE_OPENMP
@@ -69,7 +69,7 @@ template< typename Mesh,
 void
 Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processAllEntities( const MeshPointer& meshPointer,
-                    SharedPointer< UserData, DeviceType >& userDataPointer ) const
+                    Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const
 {
    auto entitiesCount = meshPointer->template getEntitiesCount< EntitiesDimension >();
 #ifdef HAVE_OPENMP
@@ -152,7 +152,7 @@ template< typename MeshConfig,
 void
 Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimension >::
 processBoundaryEntities( const MeshPointer& meshPointer,
-                         SharedPointer< UserData, DeviceType >& userDataPointer ) const
+                         Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const
 {
 #ifdef HAVE_CUDA
    auto entitiesCount = meshPointer->template getBoundaryEntitiesCount< EntitiesDimension >();
@@ -183,7 +183,7 @@ template< typename MeshConfig,
 void
 Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimension >::
 processInteriorEntities( const MeshPointer& meshPointer,
-                         SharedPointer< UserData, DeviceType >& userDataPointer ) const
+                         Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const
 {
 #ifdef HAVE_CUDA
    auto entitiesCount = meshPointer->template getInteriorEntitiesCount< EntitiesDimension >();
@@ -214,7 +214,7 @@ template< typename MeshConfig,
 void
 Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimension >::
 processAllEntities( const MeshPointer& meshPointer,
-                    SharedPointer< UserData, DeviceType >& userDataPointer ) const
+                    Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const
 {
 #ifdef HAVE_CUDA
    auto entitiesCount = meshPointer->template getEntitiesCount< EntitiesDimension >();
