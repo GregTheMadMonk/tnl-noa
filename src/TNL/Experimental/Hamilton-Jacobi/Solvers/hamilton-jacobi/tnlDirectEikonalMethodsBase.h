@@ -101,6 +101,10 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
       __cuda_callable__ void updateCell( MeshFunctionType& u,
                                          const MeshEntity& cell,
                                          const RealType velocity = 1.0);
+      
+      __cuda_callable__ bool updateCell( volatile Real sArray[10][10][10],
+                                         int thri, int thrj, int thrk, const Real hx, const Real hy, const Real hz,
+                                         const Real velocity = 1.0 );
 };
 
 template < typename T1, typename T2 >
@@ -125,9 +129,12 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
 template < typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr,
                                       const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
-                                      Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
-                                      int *BlockIterDevice );
+                                      Real *aux,
+                                      int *BlockIterDevice);
 __global__ void CudaParallelReduc( int *BlockIterDevice, int *dBlock, int nBlocks );
+
+template < typename Real, typename Device, typename Index >
+__global__ void aux1( Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux, Real *dAux, int a );
 
 template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
@@ -142,7 +149,8 @@ __global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3
 template < typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > ptr,
                                       const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
-                                      Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& aux );
+                                      Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& aux,
+                                      int *BlockIterDevice );
 #endif
 
 #include "tnlDirectEikonalMethodsBase_impl.h"

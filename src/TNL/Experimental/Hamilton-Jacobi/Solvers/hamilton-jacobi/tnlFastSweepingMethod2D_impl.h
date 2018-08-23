@@ -27,7 +27,7 @@ template< typename Real,
           typename Anisotropy >
 FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
 FastSweepingMethod()
-: maxIterations( 1 )
+: maxIterations( 100 )
 {
    
 }
@@ -236,6 +236,13 @@ solve( const MeshPointer& mesh,
       {
          // TODO: CUDA code
 #ifdef HAVE_CUDA
+          
+          Real *dAux;
+          cudaMalloc(&dAux, ( mesh->getDimensions().x() * mesh->getDimensions().y() ) * sizeof( Real ) );
+          
+          
+          
+          
           const int cudaBlockSize( 16 );
           int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().x(), cudaBlockSize );
           int numBlocksY = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().y(), cudaBlockSize );
@@ -244,7 +251,7 @@ solve( const MeshPointer& mesh,
           
           tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr;
           
-          
+          aux1<<< gridSize, blockSize >>>( auxPtr.template modifyData< Device>(), dAux,1 );
           
           //int BlockIter = 1;// = (bool*)malloc( ( numBlocksX * numBlocksY ) * sizeof( bool ) );
 
@@ -263,7 +270,7 @@ solve( const MeshPointer& mesh,
                        
             CudaUpdateCellCaller<<< gridSize, blockSize >>>( ptr,
                                                              interfaceMapPtr.template getData< Device >(),
-                                                             auxPtr.template modifyData< Device>(),
+                                                             dAux,
                                                              BlockIterDevice );
             
             CudaParallelReduc<<< nBlocks , 512 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY ) );
@@ -275,14 +282,16 @@ solve( const MeshPointer& mesh,
                 BlockIter[ 0 ] = BlockIter[ 0 ] || BlockIter[ i ];*/
             
           }
+          aux1<<<gridSize,blockSize>>>( auxPtr.template modifyData< Device>(), dAux, 0 );
+          cudaFree( dAux );
           cudaFree( BlockIterDevice );
           cudaFree( dBlock );
           cudaDeviceSynchronize();
           
           TNL_CHECK_CUDA_DEVICE;
               
-          aux = *auxPtr;
-          interfaceMap = *interfaceMapPtr;
+          //aux = *auxPtr;
+          //interfaceMap = *interfaceMapPtr;
 #endif
       }
       iteration++;
@@ -291,6 +300,23 @@ solve( const MeshPointer& mesh,
 }
 
 #ifdef HAVE_CUDA
+template < typename Real, typename Device, typename Index >
+__global__ void aux1( Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux, Real *dAux, int a )
+{
+    int i = threadIdx.x + blockDim.x*blockIdx.x;
+    int j = blockDim.y*blockIdx.y + threadIdx.y;
+    const Meshes::Grid< 2, Real, Device, Index >& mesh = aux.template getMesh< Devices::Cuda >();
+    if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() && a == 1 )
+    {    
+        dAux[ j*mesh.getDimensions().x() + i ] = aux[ j*mesh.getDimensions().x() + i ];
+    }
+    if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() && a == 0 )
+    {    
+        aux[ j*mesh.getDimensions().x() + i ] = dAux[ j*mesh.getDimensions().x() + i ];
+    }
+    
+}
+
 __global__ void CudaParallelReduc( int *BlockIterDevice, int *dBlock, int nBlocks )
 {
     int i = threadIdx.x;
@@ -341,16 +367,17 @@ __global__ void CudaParallelReduc( int *BlockIterDevice, int *dBlock, int nBlock
 template < typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr,
                                       const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
-                                      Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
+                                      Real *aux,
                                       int *BlockIterDevice )
 {
     int thri = threadIdx.x; int thrj = threadIdx.y;
     int blIdx = blockIdx.x; int blIdy = blockIdx.y;
     int i = thri + blockDim.x*blIdx;
     int j = blockDim.y*blIdy + thrj;
-    int currentIndex = thrj * 16 + thri;
+    int currentIndex = thrj * blockDim.x + thri;
     
-    __shared__ volatile bool changed[256];
+    //__shared__ volatile bool changed[ blockDim.x*blockDim.y ];
+    __shared__ volatile bool changed[16*16];
     changed[ currentIndex ] = false;
     
     if( thrj == 0 && thri == 0 )
@@ -365,7 +392,8 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         hy = mesh.getSpaceSteps().y();
     }
     
-    __shared__ volatile Real sArray[ 18 ][ 18 ];
+    //__shared__ volatile Real sArray[ blockDim.y+2 ][ blockDim.x+2 ];
+    __shared__ volatile Real sArray[18][18];
     sArray[thrj][thri] = TypeInfo< Real >::getMaxValue();
     
     //filling sArray edges
@@ -440,23 +468,28 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         {
             if( ! interfaceMap[ j * mesh.getDimensions().x() + i ] )
             {
-                changed[ currentIndex ] = ptr.updateCell( sArray, thri+1, thrj+1, hx, hy );
+                changed[ currentIndex ] = ptr.updateCell( sArray, thri+1, thrj+1, hx,hy);
             }
         }
         __syncthreads();
         
-        /*if( thri == 0 && thrj == 0 && blIdx == 1 && blIdy == 3 ){
-            for( int h = 15; h > -1; h-- ){
-                for( int g = 0; g < 16; g++ ){
-                    printf( "%d\t", changed[h*16+g] );
-                }
-                printf("\n");
-            }
-            printf("\n");
-        }
-        __syncthreads();*/
-        
     //pyramid reduction
+        if( blockDim.x*blockDim.y == 1024 )
+        {
+            if( currentIndex < 512 )
+            {
+                changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 512 ];
+            }
+        }
+        __syncthreads();
+        if( blockDim.x*blockDim.y >= 512 )
+        {
+            if( currentIndex < 256 )
+            {
+                changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 256 ];
+            }
+        }
+        __syncthreads();
         if( blockDim.x*blockDim.y >= 256 )
         {
             if( currentIndex < 128 )

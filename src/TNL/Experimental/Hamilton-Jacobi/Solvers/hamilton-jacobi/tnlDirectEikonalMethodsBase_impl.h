@@ -994,4 +994,78 @@ updateCell( volatile Real sArray[18], int thri, const Real h, const Real v )
     else
         return false;
 }
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__ 
+bool 
+tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
+updateCell( volatile Real sArray[10][10][10], int thri, int thrj, int thrk,
+        const Real hx, const Real hy, const Real hz, const Real v )
+{
+   const RealType value = sArray[thrk][thrj][thri];
+   //std::cout << value << std::endl;
+   RealType a, b, c, tmp = TypeInfo< RealType >::getMaxValue();
+   
+   c = TNL::argAbsMin( sArray[ thrk+1 ][ thrj ][ thri ],
+                        sArray[ thrk-1 ][ thrj ][ thri ] );
+    
+   b = TNL::argAbsMin( sArray[ thrk ][ thrj+1 ][ thri ],
+                        sArray[ thrk ][ thrj-1 ][ thri ] );
+   
+   a = TNL::argAbsMin( sArray[ thrk ][ thrj ][ thri+1 ],
+                        sArray[ thrk ][ thrj ][ thri-1 ] );
+   
+   
+   if( fabs( a ) == TypeInfo< RealType >::getMaxValue() && 
+       fabs( b ) == TypeInfo< RealType >::getMaxValue() &&
+       fabs( c ) == TypeInfo< RealType >::getMaxValue() )
+      return false;
+   
+    RealType pom[6] = { a, b, c, (RealType)hx, (RealType)hy, (RealType)hz};
+    
+    sortMinims( pom );
+    
+    tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 3 ];
+    if( fabs( tmp ) < fabs( pom[ 1 ] ) ) 
+    {
+        sArray[ thrk ][ thrj ][ thri ] = argAbsMin( value, tmp );
+        tmp = value - sArray[ thrk ][ thrj ][ thri ];
+        if ( fabs( tmp ) >  0.01*hx )
+            return true;
+        else
+            return false;
+    }
+    else
+    {
+        tmp = ( pom[ 3 ] * pom[ 3 ] * pom[ 1 ] + pom[ 4 ] * pom[ 4 ] * pom[ 0 ] + 
+            TNL::sign( value ) * pom[ 3 ] * pom[ 4 ] * TNL::sqrt( ( pom[ 3 ] * pom[ 3 ] +  pom[ 4 ] *  pom[ 4 ] )/( v * v ) - 
+            ( pom[ 1 ] - pom[ 0 ] ) * ( pom[ 1 ] - pom[ 0 ] ) ) )/( pom[ 3 ] * pom[ 3 ] + pom[ 4 ] * pom[ 4 ] );
+        if( fabs( tmp ) < fabs( pom[ 2 ]) ) 
+        {
+            sArray[ thrk ][ thrj ][ thri ] = argAbsMin( value, tmp );
+            tmp = value - sArray[ thrk ][ thrj ][ thri ];
+            if ( fabs( tmp ) > 0.01*hx )
+                return true;
+            else
+                return false;
+        }
+        else
+        {
+            tmp = ( hy * hy * hz * hz * a + hx * hx * hz * hz * b + hx * hx * hy * hy * c +
+                TNL::sign( value ) * hx * hy * hz * TNL::sqrt( ( hx * hx * hz * hz + hy * hy * hz * hz + hx * hx * hy * hy)/( v * v ) - 
+                hz * hz * ( a - b ) * ( a - b ) - hy * hy * ( a - c ) * ( a - c ) -
+                hx * hx * ( b - c ) * ( b - c ) ) )/( hx * hx * hy * hy + hy * hy * hz * hz + hz * hz * hx *hx );
+            sArray[ thrk ][ thrj ][ thri ] = argAbsMin( value, tmp );
+            tmp = value - sArray[ thrk ][ thrj ][ thri ];
+            if ( fabs( tmp ) > 0.01*hx )
+                return true;
+            else
+                return false;
+        }
+    }
+    
+    return false;
+}
 #endif
