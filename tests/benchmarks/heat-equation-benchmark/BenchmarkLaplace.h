@@ -89,6 +89,13 @@ class BenchmarkLaplace< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Ind
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
 
+      template< typename MeshFunction >//, typename MeshEntity >
+      __cuda_callable__
+      Real operator()( const MeshFunction& u,
+                       const IndexType& entityIndex,
+                       const typename MeshType::CoordinatesType coordinates,
+                       const RealType& time = 0.0 ) const;      
+
       template< typename MeshEntity >
       __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,

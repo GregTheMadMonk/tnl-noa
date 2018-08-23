@@ -166,6 +166,29 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
+   template< typename MeshFunction > //, typename MeshEntity >
+__cuda_callable__
+Real
+BenchmarkLaplace< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+operator()( const MeshFunction& u,
+            const IndexType& entityIndex,
+            const typename MeshType::CoordinatesType coordinates,
+            const RealType& time ) const
+{
+   const MeshType& mesh = u.template getMesh< Device >();
+   const IndexType& xSize = mesh.getDimensions().x();
+   const IndexType& c = entityIndex;
+   const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< -2, 0 >(); 
+   const RealType& hySquareInverse = mesh.template getSpaceStepsProducts< 0, -2 >(); 
+   return ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ]  ) * hxSquareInverse +
+          ( u[ c - xSize ] - 2.0 * u[ c ] + u[ c + xSize ] ) * hySquareInverse;
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
 template< typename MeshEntity >
 __cuda_callable__
 Index

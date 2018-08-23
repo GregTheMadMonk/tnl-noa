@@ -138,6 +138,19 @@ class ExplicitUpdater
                ( *userData.u )( entity ) = ( *userData.boundaryConditions )
                   ( *userData.u, entity, userData.time );
             }
+            
+            //template< typename EntityType >            
+            __cuda_callable__
+            static inline void processEntity( const MeshType& mesh,
+                                              TraverserUserData& userData,
+                                              //const EntityType& entity,
+                                              const IndexType& entityIndex,
+                                              const typename MeshType::CoordinatesType& coordinates )
+            {
+               ( *userData.u )[ entityIndex ] = 0.0; /*( *userData.boundaryConditions )
+                  ( *userData.u, entity, userData.time );*/
+            }
+            
 
       };
 
@@ -161,6 +174,24 @@ class ExplicitUpdater
                   FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
                
             }
+
+            //template< typename EntityType >
+            __cuda_callable__
+            static inline void processEntity( const MeshType& mesh,
+                                              TraverserUserData& userData,
+                                              //const EntityType& entity,
+                                              const IndexType& entityIndex,
+                                              const typename MeshType::CoordinatesType& coordinates )
+            {
+               ( *userData.fu )[ entityIndex ] = 
+                       ( *userData.differentialOperator )( *userData.u, entityIndex, coordinates, userData.time );
+            
+               typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+               (  *userData.fu )[ entityIndex ] += 0.0;
+                  //FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );               
+               
+            }
+            
       }; 
 
    protected:

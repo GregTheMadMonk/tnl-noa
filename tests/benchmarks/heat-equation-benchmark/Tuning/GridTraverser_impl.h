@@ -132,14 +132,19 @@ _GridTraverser2D(
    
    if( coordinates <= end )
    {
-      GridEntity entity( *grid, coordinates, gridEntityParameters... );
-      entity.refresh();
-      if( ! processOnlyBoundaryEntities || entity.isBoundaryEntity() )
+      //GridEntity entity( *grid, coordinates, gridEntityParameters... );
+      //entity.refresh();
+      if( ! processOnlyBoundaryEntities || 
+         ( coordinates.x() == 0 || coordinates.y() == 0 ||
+           coordinates.x() == grid->getDimensions().x() - 1 || coordinates.y() == grid->getDimensions().y() - 1 ) )
+         //entity.isBoundaryEntity() )
       {
          EntitiesProcessor::processEntity
          ( *grid,
            *userData,
-           entity );
+           coordinates.y() * grid->getDimensions().x() + coordinates.x(),
+           coordinates
+            );
       }
    }
 }
