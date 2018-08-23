@@ -35,7 +35,9 @@ class ExplicitUpdaterTraverserUserData
 
       const RightHandSide* rightHandSide;
 
-      MeshFunction *u, *fu;
+      //MeshFunction *u, *fu;
+      
+      Real *u, *fu;
       
       ExplicitUpdaterTraverserUserData()
       : time( 0.0 ),
@@ -109,8 +111,8 @@ class ExplicitUpdater
          
          
          this->userDataPointer->time = time;
-         this->userDataPointer->u = &uPointer.template modifyData< DeviceType >();
-         this->userDataPointer->fu = &fuPointer.template modifyData< DeviceType >();
+         this->userDataPointer->u = uPointer->getData().getData();
+         this->userDataPointer->fu = fuPointer->getData().getData();
          TNL::Traverser< MeshType, EntityType > meshTraverser;
          meshTraverser.template processInteriorEntities< TraverserUserData,
                                                          TraverserInteriorEntitiesProcessor >
@@ -135,8 +137,8 @@ class ExplicitUpdater
                                               TraverserUserData& userData,
                                               const GridEntity& entity )
             {
-               ( *userData.u )( entity ) = ( *userData.boundaryConditions )
-                  ( *userData.u, entity, userData.time );
+               /*( *userData.u )( entity ) = ( *userData.boundaryConditions )
+                  ( *userData.u, entity, userData.time );*/
             }
             
             //template< typename EntityType >            
@@ -147,7 +149,7 @@ class ExplicitUpdater
                                               const IndexType& entityIndex,
                                               const typename MeshType::CoordinatesType& coordinates )
             {
-               ( *userData.u )[ entityIndex ] = 0.0; /*( *userData.boundaryConditions )
+               userData.u[ entityIndex ] = 0.0; /*( *userData.boundaryConditions )
                   ( *userData.u, entity, userData.time );*/
             }
             
@@ -166,12 +168,12 @@ class ExplicitUpdater
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
-               ( *userData.fu )( entity ) = 
+               /*( *userData.fu )( entity ) = 
                        ( *userData.differentialOperator )( *userData.u, entity, userData.time );
             
                typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
                (  *userData.fu )( entity ) += 
-                  FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
+                  FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );*/
                
             }
 
@@ -183,11 +185,11 @@ class ExplicitUpdater
                                               const IndexType& entityIndex,
                                               const typename MeshType::CoordinatesType& coordinates )
             {
-               ( *userData.fu )[ entityIndex ] = 
-                       ( *userData.differentialOperator )( *userData.u, entityIndex, coordinates, userData.time );
+               userData.fu[ entityIndex ] = 
+                       ( *userData.differentialOperator )( mesh, userData.u, entityIndex, coordinates, userData.time );
             
                typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               (  *userData.fu )[ entityIndex ] += 0.0;
+               userData.fu[ entityIndex ] += 0.0;
                   //FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );               
                
             }
