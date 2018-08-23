@@ -3,7 +3,7 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Functions/MeshFunction.h>
-#include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include "Tuning/ExplicitUpdater.h"
 
 using namespace TNL;
 using namespace TNL::Problems;
@@ -90,7 +90,7 @@ class HeatEquationBenchmarkProblem:
       RightHandSide* cudaRightHandSide;
       DifferentialOperator* cudaDifferentialOperator;
       
-      Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+      TNL::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
       
 };
 

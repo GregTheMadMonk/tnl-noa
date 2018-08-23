@@ -14,14 +14,9 @@
 #include <TNL/Timer.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include <type_traits>
-#include <TNL/Meshes/GridDetails/Traverser_Grid1D.h>
-#include <TNL/Meshes/GridDetails/Traverser_Grid2D.h>
-#include <TNL/Meshes/GridDetails/Traverser_Grid3D.h>
-
+#include "Traverser_Grid2D.h"
 
 namespace TNL {
-namespace Solvers {
-namespace PDE {   
 
 template< typename Real,
           typename MeshFunction,
@@ -50,22 +45,6 @@ class ExplicitUpdaterTraverserUserData
         u( NULL ),
         fu( NULL )
       {}
-      
-      
-      /*void setUserData( const Real& time,
-                        const DifferentialOperator* differentialOperator,
-                        const BoundaryConditions* boundaryConditions,
-                        const RightHandSide* rightHandSide,
-                        MeshFunction* u,
-                        MeshFunction* fu )
-      {
-         this->time = time;
-         this->differentialOperator = differentialOperator;
-         this->boundaryConditions = boundaryConditions;
-         this->rightHandSide = rightHandSide;
-         this->u = u;
-         this->fu = fu;
-      }*/
 };
 
 
@@ -132,7 +111,7 @@ class ExplicitUpdater
          this->userDataPointer->time = time;
          this->userDataPointer->u = &uPointer.template modifyData< DeviceType >();
          this->userDataPointer->fu = &fuPointer.template modifyData< DeviceType >();
-         Meshes::Traverser< MeshType, EntityType > meshTraverser;
+         TNL::Traverser< MeshType, EntityType > meshTraverser;
          meshTraverser.template processInteriorEntities< TraverserUserData,
                                                          TraverserInteriorEntitiesProcessor >
                                                        ( meshPointer,
@@ -190,7 +169,5 @@ class ExplicitUpdater
 
 };
 
-} // namespace PDE
-} // namespace Solvers
-} // namespace TNL
+} // namepsace TNL
 
