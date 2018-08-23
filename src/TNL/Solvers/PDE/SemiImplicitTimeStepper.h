@@ -32,13 +32,11 @@ class SemiImplicitTimeStepper
    typedef typename Problem::MeshType MeshType;
    typedef typename Problem::MeshPointer MeshPointer;
    typedef typename ProblemType::DofVectorType DofVectorType;   
-   typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
    typedef LinearSystemSolver LinearSystemSolverType;
    typedef typename LinearSystemSolverType::PreconditionerType PreconditionerType;
    typedef typename ProblemType::MatrixType MatrixType;
    typedef Pointers::SharedPointer<  MatrixType, DeviceType > MatrixPointer;
    typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
-   typedef Pointers::SharedPointer<  MeshDependentDataType, DeviceType > MeshDependentDataPointer;
    typedef Pointers::SharedPointer<  PreconditionerType, DeviceType > PreconditionerPointer;
    typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
 
@@ -68,9 +66,7 @@ class SemiImplicitTimeStepper
 
    bool solve( const RealType& time,
                const RealType& stopTime,
-               const MeshPointer& meshPointer,
-               DofVectorPointer& dofVectorPointer,
-               MeshDependentDataPointer& meshDependentData );
+               DofVectorPointer& dofVectorPointer );
  
    bool writeEpilog( Logger& logger ) const;
 

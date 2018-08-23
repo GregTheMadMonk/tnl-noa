@@ -372,17 +372,16 @@ TYPED_TEST( ArrayOperationsTest, containsValue_cuda )
    ArrayOperations< Devices::Host >::allocateMemory( data2_host, size );
    ArrayOperations< Devices::Cuda >::allocateMemory( data1_cuda, size );
    ArrayOperations< Devices::Cuda >::allocateMemory( data2_cuda, size );
-   
-   
+
    for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
    {
       data1_host[ i ] = i % 10;
       data2_host[ i ] = ( float ) ( i % 10 );
    }
-   
+
    ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( data1_cuda, data1_host, size );
    ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( data2_cuda, data2_host, size );
-   
+
    for( int i = 0; i < 10; i++ )
    {
       EXPECT_TRUE( ( ArrayOperations< Devices::Cuda >::containsValue( data1_cuda, size, i ) ) );
@@ -397,7 +396,6 @@ TYPED_TEST( ArrayOperationsTest, containsValue_cuda )
    ArrayOperations< Devices::Host >::freeMemory( data2_host );
    ArrayOperations< Devices::Cuda >::freeMemory( data1_cuda );
    ArrayOperations< Devices::Cuda >::freeMemory( data2_cuda );
-   
 }
 
 TYPED_TEST( ArrayOperationsTest, containsOnlyValue_cuda )
@@ -410,8 +408,7 @@ TYPED_TEST( ArrayOperationsTest, containsOnlyValue_cuda )
    ArrayOperations< Devices::Host >::allocateMemory( data2_host, size );
    ArrayOperations< Devices::Cuda >::allocateMemory( data1_cuda, size );
    ArrayOperations< Devices::Cuda >::allocateMemory( data2_cuda, size );
-   
-   
+
    for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
    {
       data1_host[ i ] = i % 10;
@@ -419,7 +416,7 @@ TYPED_TEST( ArrayOperationsTest, containsOnlyValue_cuda )
    }   
    ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( data1_cuda, data1_host, size );
    ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( data2_cuda, data2_host, size );
-   
+
    for( int i = 0; i < 20; i++ )
    {
       EXPECT_FALSE( ( ArrayOperations< Devices::Cuda >::containsOnlyValue( data1_cuda, size, i ) ) );
@@ -436,16 +433,12 @@ TYPED_TEST( ArrayOperationsTest, containsOnlyValue_cuda )
 
    EXPECT_TRUE( ( ArrayOperations< Devices::Cuda >::containsOnlyValue( data1_cuda, size, 10 ) ) );
    EXPECT_TRUE( ( ArrayOperations< Devices::Cuda >::containsOnlyValue( data2_cuda, size, ( float ) 10 ) ) );
-   
+
    ArrayOperations< Devices::Host >::freeMemory( data1_host );
    ArrayOperations< Devices::Host >::freeMemory( data2_host );
    ArrayOperations< Devices::Cuda >::freeMemory( data1_cuda );
    ArrayOperations< Devices::Cuda >::freeMemory( data2_cuda );
-   
 }
-
-
-
 #endif // HAVE_CUDA
 #endif // HAVE_GTEST
 

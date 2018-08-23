@@ -61,27 +61,41 @@ setup( const Config::ParameterContainer& parameters,
       return false;
    }
    std::cout << " [ OK ] " << std::endl;
+   
+   /****
+    * Set-up common data
+    */
+   if( ! this->commonDataPointer->setup( parameters ) )
+   {
+      std::cerr << "The problem common data initiation failed!" << std::endl;
+      return false;
+   }
+   problem->setCommonData( this->commonDataPointer );
+   
+   /****
+    * Setup the problem
+    */
+   if( ! problem->setup( parameters, prefix ) )
+   {
+      std::cerr << "The problem initiation failed!" << std::endl;
+      return false;
+   }   
 
    /****
     * Set DOFs (degrees of freedom)
     */
-   TNL_ASSERT_GT( problem->getDofs( this->mesh ), 0, "number of DOFs must be positive" );
-   this->dofs->setSize( problem->getDofs( this->mesh ) );
+   TNL_ASSERT_GT( problem->getDofs(), 0, "number of DOFs must be positive" );
+   this->dofs->setSize( problem->getDofs() );
    this->dofs->setValue( 0.0 );
-   this->problem->bindDofs( this->mesh, this->dofs );   
+   this->problem->bindDofs( this->dofs );   
    
-   /****
-    * Set mesh dependent data
-    */
-   this->problem->setMeshDependentData( this->mesh, this->meshDependentData );
-   this->problem->bindMeshDependentData( this->mesh, this->meshDependentData );
    
    /***
     * Set-up the initial condition
     */
    std::cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! this->problem->setInitialCondition( parameters, this->mesh, this->dofs, this->meshDependentData ) )
+   if( ! this->problem->setInitialCondition( parameters, this->dofs ) )
       return false;
    std::cout << " [ OK ]" << std::endl;
    
@@ -141,7 +155,7 @@ solve()
 
    this->computeTimer->reset();
    this->computeTimer->start();
-   if( ! this->problem->solve( this->mesh, this->dofs ) )
+   if( ! this->problem->solve( this->dofs ) )
    {
       this->computeTimer->stop();
       return false;

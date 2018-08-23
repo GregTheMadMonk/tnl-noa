@@ -156,7 +156,7 @@ containsValue( const Element* data,
 {
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
-   
+
    for( Index i = 0; i < size; i ++ )
       if( data[ i ] == value )
          return true;
@@ -173,15 +173,14 @@ containsOnlyValue( const Element* data,
 {
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
-   
+
    if( size == 0 ) return false;
-   
+
    for( Index i = 0; i < size; i ++ )
       if( ! ( data[ i ] == value ) )
          return false;
    return true;
 }
-
 
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

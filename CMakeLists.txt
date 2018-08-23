@@ -18,6 +18,17 @@ project( tnl )
 
 set( tnlVersion "0.1" )
 
+# declare all custom build options
+option(OFFLINE_BUILD "Offline build (i.e. without downloading libraries such as pybind11)" OFF)
+option(WITH_MIC "Build with MIC support" OFF)
+option(WITH_CUDA "Build with CUDA support" ON)
+set(WITH_CUDA_ARCH "auto" CACHE STRING "Build for these CUDA architectures")
+option(WITH_OPENMP "Build with OpenMP support" ON)
+option(WITH_TESTS "Build tests" ON)
+option(WITH_COVERAGE "Enable code coverage reports from unit tests" OFF)
+option(WITH_EXAMPLES "Compile the 'examples' directory" ON)
+option(WITH_TEMPLATES_INSTANTIATION "Enable explicit template instantiation" OFF)
+
 # install paths relative to the cmake's prefix
 set( TNL_TARGET_INCLUDE_DIRECTORY "include/TNL" )
 set( TNL_TARGET_DATA_DIRECTORY "share/TNL" )
@@ -65,15 +76,15 @@ if( CXX_COMPILER_NAME MATCHES "icpc" )
    #####
    #  Ckeck for MIC 
    #
-   if( WITH_MIC STREQUAL "yes" )
-       message( "Compile MIC support..."    )
-       set( MIC_CXX_FLAGS "-DHAVE_MIC")
-       # build all tests with MIC support
-       set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} -DHAVE_MIC )
-       set( WITH_CUDA "no")
+   if( ${WITH_MIC} )
+      message( "Enabled MIC support." )
+      set( MIC_CXX_FLAGS "-DHAVE_MIC")
+      # build all tests with MIC support
+      set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} -DHAVE_MIC )
+      set( WITH_CUDA OFF CACHE BOOL "Build with CUDA support" )
    else()
-       set( MIC_CXX_FLAGS "")
-   endif( )	
+      set( MIC_CXX_FLAGS "")
+   endif()
 endif()
 
 # force colorized output in continuous integration
@@ -89,13 +100,13 @@ endif()
 #####
 # Check for CUDA
 #
-if( WITH_CUDA STREQUAL "yes" )
+if( ${WITH_CUDA} )
     find_package( CUDA )
     if( CUDA_FOUND )
         set( BUILD_CUDA TRUE)
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
         set(BUILD_SHARED_LIBS ON)
-        set(CUDA_SEPARABLE_COMPILATION ON)        
+        set(CUDA_SEPARABLE_COMPILATION ON)
         # Use the CUDA_HOST_COMPILER environment variable if the user specified it.
         if( NOT $ENV{CUDA_HOST_COMPILER} STREQUAL "" )
             message( "-- Setting CUDA_HOST_COMPILER to '$ENV{CUDA_HOST_COMPILER}'" )
@@ -160,34 +171,15 @@ if( WITH_CUDA STREQUAL "yes" )
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES )
         # TODO: this is necessary only due to a bug in cmake
         set( CUDA_ADD_LIBRARY_OPTIONS -shared )
-
-        ####
-        # Check for CUSPARSE
-        #
-        if( NOT WITH_CUSPARSE STREQUAL "no" )
-           find_path( CUSPARSE_INCLUDE_DIR cusparse.h
-                      /usr/local/cuda/include                   
-                      ${CUDA_INCLUDE_DIR}  
-                      DOC "CUSPARSE headers." )
-           if( ${CUSPARSE_INCLUDE_DIR} STREQUAL "CUSPARSE_INCLUDE_DIR-NOTFOUND" )
-               message( "CUSPARSE not found." )
-               set( HAVE_CUSPARSE "//#define HAVE_CUSPARSE 1" )
-           else()      
-               message( "CUSPARSE found. -- ${CUSPARSE_INCLUDE_DIR}" )
-               set( HAVE_CUSPARSE "#define HAVE_CUSPARSE 1" )
-               cuda_include_directories( ${CUSPARSE_INCLUDE_DIR} )
-               set( CUSPARSE_LIBRARY "${CUDA_cusparse_LIBRARY}" )
-           endif()            
-        endif( NOT WITH_CUSPARSE STREQUAL "no" )        
-    endif( CUDA_FOUND )
-endif( WITH_CUDA STREQUAL "yes" )
+    endif()
+endif()
 
 
 ####
 # Check for OpenMP
 #
-if( OPENMP_FOUND AND WITH_OPENMP STREQUAL "yes" )
-   message( "Compiler supports OpenMP." )
+if( OPENMP_FOUND AND ${WITH_OPENMP} )
+   message( "Enabled OpenMP support." )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP ${OpenMP_CXX_FLAGS}" )
 endif()
 
@@ -271,17 +263,17 @@ else()
     set( HAVE_SYS_IOCTL_H "#define HAVE_SYS_IOCTL_H 1" )
 endif()
 
-if( WITH_TESTS STREQUAL "yes" )
+if( ${WITH_TESTS} )
    enable_testing()
 
    # build gtest libs
    include( BuildGtest )
 
-   if( WITH_COVERAGE STREQUAL "yes" AND CMAKE_BUILD_TYPE STREQUAL "Debug" )
+   if( ${WITH_COVERAGE} AND CMAKE_BUILD_TYPE STREQUAL "Debug" )
       # enable code coverage reports
       include( UseCodeCoverage )
    endif()
-endif( WITH_TESTS STREQUAL "yes" )
+endif()
 
 #if( BUILD_MPI )
 #   FIND_PATH( PETSC_INCLUDE_DIR petsc.h
@@ -311,7 +303,7 @@ endif( WITH_TESTS STREQUAL "yes" )
 ####
 # Explicit template instantiation
 #
-#if( WITH_TEMPLATE_INSTANTIATION STREQUAL "yes" )
+#if( ${WITH_TEMPLATE_INSTANTIATION} )
 #   AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
 #
 #   if( INSTANTIATE_INT STREQUAL "yes" )
@@ -352,7 +344,7 @@ add_subdirectory( src )
 add_subdirectory( share )
 add_subdirectory( tests )
 
-if( WITH_EXAMPLES STREQUAL "yes" )
+if( ${WITH_EXAMPLES} )
    add_subdirectory( examples )
 endif()
 
@@ -384,6 +376,17 @@ set(CPACK_SOURCE_STRIP_FILES "Release")
 #set(CPACK_PACKAGE_EXECUTABLES "MyExecutable" "My Executable")
 INCLUDE( CPack )
 
+# Print custom build options
+message( "-- Build options:" )
+message( "   OFFLINE_BUILD=${OFFLINE_BUILD}" )
+message( "   WITH_MIC=${WITH_MIC}" )
+message( "   WITH_CUDA=${WITH_CUDA}" )
+message( "   WITH_CUDA_ARCH=${WITH_CUDA_ARCH}" )
+message( "   WITH_OPENMP=${WITH_OPENMP}" )
+message( "   WITH_TESTS=${WITH_TESTS}" )
+message( "   WITH_COVERAGE=${WITH_COVERAGE}" )
+message( "   WITH_EXAMPLES=${WITH_EXAMPLES}" )
+message( "   WITH_TEMPLATES_INSTANTIATION=${WITH_TEMPLATES_INSTANTIATION}" )
 # Print compiler options
 message( "-- Compiler options:" )
 message( "   CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS}" )

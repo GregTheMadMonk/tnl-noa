@@ -335,7 +335,7 @@ TYPED_TEST( ArrayTest, containsValue )
    array.setSize( 1024 );
    for( int i = 0; i < array.getSize(); i++ )
       array.setElement( i, ( ElementType ) ( i % 10 ) );
-   
+
    for( int i = 0; i < 10; i++ )
       EXPECT_TRUE( ( array.containsValue( ( ElementType ) i ) ) );
 
@@ -352,14 +352,13 @@ TYPED_TEST( ArrayTest, containsOnlyValue )
    array.setSize( 1024 );
    for( int i = 0; i < array.getSize(); i++ )
       array.setElement( i, ( ElementType ) ( i % 10 ) );
-   
+
    for( int i = 0; i < 20; i++ )
       EXPECT_FALSE( ( array.containsOnlyValue( ( ElementType ) i ) ) );
-   
+
    array.setValue( 100 );
    EXPECT_TRUE( ( array.containsOnlyValue( ( ElementType ) 100 ) ) );
 }
-
 
 TYPED_TEST( ArrayTest, comparisonOperator )
 {
@@ -588,7 +587,7 @@ TYPED_TEST( ArrayTest, referenceCountingBind )
 // TODO: test all __cuda_callable__ methods from a CUDA kernel
 
 #endif // HAVE_GTEST
-   
+
 
 #include "../GtestMissingError.h"
 int main( int argc, char* argv[] )

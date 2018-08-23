@@ -76,11 +76,10 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const MeshPointer& meshPointer,
-       const Config::ParameterContainer& parameters,
+setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, "boundary-conditions-" ) )
+   if( ! this->boundaryConditionPointer->setup( this->getMesh(), parameters, "boundary-conditions-" ) )
    {
       std::cerr << "I was not able to initialize the boundary conditions." << std::endl;
       return false;
@@ -99,12 +98,12 @@ template< typename Mesh,
           typename DifferentialOperator >
 typename HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getDofs( const MeshPointer& meshPointer ) const
+getDofs() const
 {
    /****
     * Set-up DOFs and supporting grid functions
     */
-   return meshPointer->template getEntitiesCount< typename MeshType::Cell >();
+   return this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
@@ -113,11 +112,10 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-bindDofs( const MeshPointer& meshPointer,
-          const DofVectorPointer& dofVector )
+bindDofs( const DofVectorPointer& dofVector )
 {
-   const IndexType dofs = meshPointer->template getEntitiesCount< typename MeshType::Cell >();
-   this->uPointer->bind( meshPointer, dofVector );
+   const IndexType dofs = this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
+   this->uPointer->bind( this->getMesh(), dofVector );
 }
 
 template< typename Mesh,
@@ -127,11 +125,9 @@ template< typename Mesh,
 bool
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
-                     const MeshPointer& meshPointer,
-                     DofVectorPointer& dofs,
-                     MeshDependentDataPointer& meshDependentData )
+                     DofVectorPointer& dofs )
 {
-   this->bindDofs( meshPointer, dofs );
+   this->bindDofs( dofs );
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if( ! this->uPointer->boundLoad( initialConditionFile ) )
    {
@@ -148,16 +144,15 @@ template< typename Mesh,
    template< typename MatrixPointer >          
 bool
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setupLinearSystem( const MeshPointer& meshPointer,
-                   MatrixPointer& matrixPointer )
+setupLinearSystem( MatrixPointer& matrixPointer )
 {
-   const IndexType dofs = this->getDofs( meshPointer );
+   const IndexType dofs = this->getDofs();
    typedef typename MatrixPointer::ObjectType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
    Pointers::SharedPointer<  CompressedRowLengthsVectorType > rowLengthsPointer;
    rowLengthsPointer->setSize( dofs );
    Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >(
-      meshPointer,
+      this->getMesh(),
       differentialOperatorPointer,
       boundaryConditionPointer,
       rowLengthsPointer );
@@ -175,13 +170,11 @@ bool
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
-              const MeshPointer& meshPointer,
-              DofVectorPointer& dofs,
-              MeshDependentDataPointer& meshDependentData )
+              DofVectorPointer& dofs )
 {
    std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
 
-   this->bindDofs( meshPointer, dofs );
+   this->bindDofs( dofs );
 
    FileName fileName;
    fileName.setFileNameBase( "u-" );
@@ -199,11 +192,9 @@ template< typename Mesh,
 void
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getExplicitUpdate( const RealType& time,
-                const RealType& tau,
-                const MeshPointer& meshPointer,
-                DofVectorPointer& uDofs,
-                DofVectorPointer& fuDofs,
-                MeshDependentDataPointer& meshDependentData )
+                   const RealType& tau,
+                   DofVectorPointer& uDofs,
+                   DofVectorPointer& fuDofs )
 {
    /****
     * If you use an explicit solver like Euler or Merson, you
@@ -214,12 +205,12 @@ getExplicitUpdate( const RealType& time,
     * You may use supporting vectors again if you need.
     */
    
-   this->bindDofs( meshPointer, uDofs );
-   MeshFunctionPointer fuPointer( meshPointer, fuDofs );
+   this->bindDofs( uDofs );
+   MeshFunctionPointer fuPointer( this->getMesh(), fuDofs );
    this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer ),
    this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer ),
    this->explicitUpdater.setRightHandSide( this->rightHandSidePointer ),
-   this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, meshPointer, this->uPointer, fuPointer );
+   this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, this->getMesh(), this->uPointer, fuPointer );
 }
 
 template< typename Mesh,
@@ -231,20 +222,18 @@ void
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const MeshPointer& meshPointer,
                       const DofVectorPointer& dofsPointer,
                       MatrixPointer& matrixPointer,
-                      DofVectorPointer& bPointer,
-                      MeshDependentDataPointer& meshDependentData )
+                      DofVectorPointer& bPointer )
 {
-   this->bindDofs( meshPointer, dofsPointer );
+   this->bindDofs( dofsPointer );
    this->systemAssembler.setDifferentialOperator( this->differentialOperatorPointer );
    this->systemAssembler.setBoundaryConditions( this->boundaryConditionPointer );
    this->systemAssembler.setRightHandSide( this->rightHandSidePointer );
    this->systemAssembler.template assembly< typename Mesh::Cell, typename MatrixPointer::ObjectType >( 
       time,
       tau,
-      meshPointer,
+      this->getMesh(),
       this->uPointer,
       matrixPointer,
       bPointer );
