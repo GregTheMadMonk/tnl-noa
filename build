@@ -11,6 +11,7 @@ CMAKE="cmake"
 CMAKE_ONLY="no"
 HELP="no"
 VERBOSE=""
+OFFLINE_BUILD="no"
 
 WITH_CLANG="no"
 WITH_MPI="yes"
@@ -43,6 +44,7 @@ do
         --cmake-only=*                   ) CMAKE_ONLY="${option#*=}" ;;
         --verbose                        ) VERBOSE="VERBOSE=1" ;;
         --help                           ) HELP="yes" ;;
+        --offline-build                  ) OFFLINE_BUILD="yes" ;;
         --with-clang=*                   ) WITH_CLANG="${option#*=}" ;;
         --with-mpi=*                     ) WITH_MPI="${option#*=}" ;;
         --with-mic=*                     ) WITH_MIC="${option#*=}" ;;
@@ -81,6 +83,7 @@ then
     echo "   --build-jobs=NUM                      Number of processes to be used for the build. It is set to the number of available CPU cores by default."
     echo "   --prefix=PATH                         Prefix for the installation directory. ${HOME}/local by default."
     echo "   --install=yes/no                      Enables the installation of TNL files."
+    echo "   --offline-build=yes/no                Disables online updates during the build. 'no' by default."
     echo "   --with-mpi=yes/no                     Enables MPI. 'no' by default (Intel Compiler required)."
     echo "   --with-mic=yes/no                     Enables MIC (Intel Xeon Phi). 'no' by default (Intel Compiler required)."
     echo "   --with-cuda=yes/no                    Enables CUDA. 'yes' by default (CUDA Toolkit is required)."
@@ -127,6 +130,7 @@ echo "Configuring ${BUILD} $TARGET ..."
 ${CMAKE} ${ROOT_DIR} \
          -DCMAKE_BUILD_TYPE=${BUILD} \
          -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+         -DOFFLINE_BUILD=${OFFLINE_BUILD} \
          -DWITH_MIC=${WITH_MIC} \
          -DWITH_CUDA=${WITH_CUDA} \
          -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH} \
