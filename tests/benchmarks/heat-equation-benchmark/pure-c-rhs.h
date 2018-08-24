@@ -82,6 +82,7 @@ __global__ void heatEquationKernel( const Real* u,
       const Index c = j * gridXSize + i;
       aux[ c ] = ( ( u[ c - 1 ]         - 2.0 * u[ c ] + u[ c + 1 ]         ) * hx_inv +
                    ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
+      //aux[ c ] += 0.1;
       //aux[ c ] = ( ( __ldg( &u[ c - 1 ] ) - 2.0 * __ldg( &u[ c ] ) + __ldg( &u[ c + 1 ] ) ) * hx_inv +
       //                   ( __ldg( &u[ c - gridXSize ] ) - 2.0 * __ldg( &u[ c ] ) + __ldg( &u[ c + gridXSize ] ) ) * hy_inv );
    }  

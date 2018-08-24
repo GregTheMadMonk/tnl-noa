@@ -191,13 +191,10 @@ class ExplicitUpdater
                                               const IndexType& entityIndex,
                                               const typename MeshType::CoordinatesType& coordinates )
             {
+               typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
                userData.fu[ entityIndex ] = 
                        ( *userData.differentialOperator )( mesh, userData.u, entityIndex, coordinates, userData.time );
-            
-               typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               userData.fu[ entityIndex ] += 0.0;
-                  //FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );               
-               
+                    //   + 0.0;
             }
             
       }; 

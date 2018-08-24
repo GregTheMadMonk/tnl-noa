@@ -525,20 +525,25 @@ getExplicitUpdate( const RealType& time,
       }
       if( this->cudaKernelType == "tunning" )
       {
+         using UserData = ExplicitUpdaterTraverserUserData< RealType,
+            MeshFunctionType,
+            DifferentialOperator,
+            BoundaryCondition,
+            RightHandSide >;
+         using ExplicitUpdaterType = TNL::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
+         using IntertiorEntitiesProcessor = typename ExplicitUpdaterType::TraverserInteriorEntitiesProcessor;
+         using BoundaryEntitiesProcessor = typename ExplicitUpdaterType::TraverserBoundaryEntitiesProcessor;
+         
          const IndexType gridXSize = mesh->getDimensions().x();
          const IndexType gridYSize = mesh->getDimensions().y();
-         const RealType& hx_inv = mesh->template getSpaceStepsProducts< -2,  0 >();
-         const RealType& hy_inv = mesh->template getSpaceStepsProducts<  0, -2 >();
+         /*const RealType& hx_inv = mesh->template getSpaceStepsProducts< -2,  0 >();
+         const RealType& hy_inv = mesh->template getSpaceStepsProducts<  0, -2 >();*/
 
          dim3 cudaBlockSize( 16, 16 );
          dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
                             gridYSize / 16 + ( gridYSize % 16 != 0 ) );
          
-         typedef ExplicitUpdaterTraverserUserData< RealType,
-                                           MeshFunctionType,
-                                           DifferentialOperator,
-                                           BoundaryCondition,
-                                           RightHandSide > UserData;
+         
          UserData userData;
          userData.time = time;
          userData.differentialOperator = &this->differentialOperatorPointer.template getData< Devices::Cuda >();
@@ -549,7 +554,7 @@ getExplicitUpdate( const RealType& time,
 
          TNL::Devices::Cuda::synchronizeDevice();
          int cudaErr;
-         _boundaryConditionsKernel< UserData, MeshType, RealType, IndexType >
+         _boundaryConditionsKernel< BoundaryEntitiesProcessor, UserData, MeshType, RealType, IndexType >
          <<< cudaGridSize, cudaBlockSize >>>
             ( &mesh.template getData< Devices::Cuda >(),
             userData );
@@ -563,7 +568,7 @@ getExplicitUpdate( const RealType& time,
           * Laplace operator
           */
          //cout << "Laplace operator ... " << endl;
-         _heatEquationKernel< UserData, MeshType, RealType, IndexType >
+         _heatEquationKernel< IntertiorEntitiesProcessor, UserData, MeshType, RealType, IndexType >
          <<< cudaGridSize, cudaBlockSize >>>
             ( &mesh.template getData< Devices::Cuda >(),
               userData );
