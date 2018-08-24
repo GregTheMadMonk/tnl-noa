@@ -6,6 +6,7 @@
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 #include "TestGridEntity.h"
+#include "Tuning/tunning.h"
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -522,6 +523,48 @@ getExplicitUpdate( const RealType& time,
          
          this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, this->u, this->fu );
       }
+      if( this->cudaKernelType == "tunning" )
+      {
+         const IndexType gridXSize = mesh->getDimensions().x();
+         const IndexType gridYSize = mesh->getDimensions().y();
+         const RealType& hx_inv = mesh->template getSpaceStepsProducts< -2,  0 >();
+         const RealType& hy_inv = mesh->template getSpaceStepsProducts<  0, -2 >();
+
+         dim3 cudaBlockSize( 16, 16 );
+         dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
+                            gridYSize / 16 + ( gridYSize % 16 != 0 ) );
+
+         TNL::Devices::Cuda::synchronizeDevice();
+         int cudaErr;
+         _boundaryConditionsKernel< BoundaryCondition, MeshType, RealType, IndexType >
+         <<< cudaGridSize, cudaBlockSize >>>
+            ( &mesh.template getData< Devices::Cuda >(),
+              uDofs->getData(),
+              fuDofs->getData(),
+              &this->boundaryConditionPointer.template getData< Devices::Cuda >() );
+         if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
+         {
+            std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
+            return;
+         }
+
+         /****
+          * Laplace operator
+          */
+         //cout << "Laplace operator ... " << endl;
+         _heatEquationKernel< DifferentialOperator, MeshType, RealType, IndexType >
+         <<< cudaGridSize, cudaBlockSize >>>
+            ( &mesh.template getData< Devices::Cuda >(),
+              uDofs->getData(),
+              fuDofs->getData(),
+              tau,
+              &this->differentialOperatorPointer.template getData< Devices::Cuda >() );
+         if( cudaGetLastError() != cudaSuccess )
+         {
+            std::cerr << "Laplace operator failed." << std::endl;
+            return;
+         }
+      }      
    }
 }
 

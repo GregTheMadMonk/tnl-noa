@@ -11,7 +11,7 @@ using namespace TNL::Problems;
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-           typename DifferentialOperator >
+          typename DifferentialOperator >
 class HeatEquationBenchmarkProblem:
    public PDEProblem< Mesh,
                          typename DifferentialOperator::RealType,
