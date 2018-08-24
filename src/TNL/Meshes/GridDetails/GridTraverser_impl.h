@@ -35,7 +35,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType begin,
    const CoordinatesType end,
-   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
+   UserData& userData,
    const int& stream )
 {
    GridEntity entity( *gridPointer );
@@ -45,10 +45,10 @@ processEntities(
 
       entity.getCoordinates() = begin;
       entity.refresh();
-      EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+      EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
       entity.getCoordinates() = end;
       entity.refresh();
-      EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+      EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
    }
    else
    {
@@ -59,7 +59,7 @@ processEntities(
            entity.getCoordinates().x() ++ )
       {
          entity.refresh();
-         EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+         EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
       }*/ 
 #ifdef HAVE_OPENMP
 #pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
@@ -73,7 +73,7 @@ processEntities(
          {
             entity.getCoordinates().x() = x;
             entity.refresh();
-            EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
          }      
       }
       
@@ -92,7 +92,7 @@ template< typename Real,
 __global__ void
 GridTraverser1D(
    const Meshes::Grid< 1, Real, Devices::Cuda, Index >* grid,
-   UserData* userData,
+   UserData userData,
    const typename GridEntity::CoordinatesType begin,
    const typename GridEntity::CoordinatesType end,
    const Index gridIdx )
@@ -107,7 +107,7 @@ GridTraverser1D(
    {   
       GridEntity entity( *grid, coordinates );
       entity.refresh();
-      EntitiesProcessor::processEntity( entity.getMesh(), *userData, entity );
+      EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
    }
 }
 
@@ -119,7 +119,7 @@ template< typename Real,
 __global__ void
 GridBoundaryTraverser1D(
    const Meshes::Grid< 1, Real, Devices::Cuda, Index >* grid,
-   UserData* userData,
+   UserData userData,
    const typename GridEntity::CoordinatesType begin,
    const typename GridEntity::CoordinatesType end )
 {
@@ -133,14 +133,14 @@ GridBoundaryTraverser1D(
       coordinates.x() = begin.x();
       GridEntity entity( *grid, coordinates );
       entity.refresh();
-      EntitiesProcessor::processEntity( entity.getMesh(), *userData, entity );
+      EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
    }
    if( threadIdx.x == 1 )
    {
       coordinates.x() = end.x();
       GridEntity entity( *grid, coordinates );
       entity.refresh();
-      EntitiesProcessor::processEntity( entity.getMesh(), *userData, entity );
+      EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
    }
 }
 
@@ -159,7 +159,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType& begin,
    const CoordinatesType& end,
-   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
+   UserData& userData,
    const int& stream )
 {
 #ifdef HAVE_CUDA
@@ -174,7 +174,7 @@ processEntities(
       GridBoundaryTraverser1D< Real, Index, GridEntity, UserData, EntitiesProcessor >
             <<< cudaBlocks, cudaBlockSize, 0, s >>>
             ( &gridPointer.template getData< Devices::Cuda >(),
-              &userDataPointer.template modifyData< Devices::Cuda >(),
+              userData,
               begin,
               end );
    }
@@ -189,7 +189,7 @@ processEntities(
          GridTraverser1D< Real, Index, GridEntity, UserData, EntitiesProcessor >
             <<< cudaBlocks, cudaBlockSize, 0, s >>>
             ( &gridPointer.template getData< Devices::Cuda >(),
-              &userDataPointer.template modifyData< Devices::Cuda >(),
+              userData,
               begin,
               end,
               gridXIdx );
@@ -223,7 +223,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType& begin,
    const CoordinatesType& end,
-   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
+   UserData& userData,
    const int& stream )
 {
     std::cout << "Not Implemented yet Grid Traverser <1, Real, Device::MIC>" << std::endl;
@@ -239,7 +239,7 @@ processEntities(
       GridBoundaryTraverser1D< Real, Index, GridEntity, UserData, EntitiesProcessor >
             <<< cudaBlocks, cudaBlockSize, 0, s >>>
             ( &gridPointer.template getData< Devices::Cuda >(),
-              &userDataPointer.template modifyData< Devices::Cuda >(),
+              userData,
               begin,
               end );
    }
@@ -254,7 +254,7 @@ processEntities(
          GridTraverser1D< Real, Index, GridEntity, UserData, EntitiesProcessor >
             <<< cudaBlocks, cudaBlockSize, 0, s >>>
             ( &gridPointer.template getData< Devices::Cuda >(),
-              &userDataPointer.template modifyData< Devices::Cuda >(),
+              userData,
               begin,
               end,
               gridXIdx );
@@ -288,7 +288,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType begin,
    const CoordinatesType end,
-   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
+   UserData& userData,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -303,10 +303,10 @@ processEntities(
          {
             entity.getCoordinates().y() = begin.y();
             entity.refresh();
-            EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
             entity.getCoordinates().y() = end.y();
             entity.refresh();
-            EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
          }
       if( XOrthogonalBoundary )
          for( entity.getCoordinates().y() = begin.y();
@@ -315,10 +315,10 @@ processEntities(
          {
             entity.getCoordinates().x() = begin.x();
             entity.refresh();
-            EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
             entity.getCoordinates().x() = end.x();
             entity.refresh();
-            EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
          }
    }
    else
@@ -333,7 +333,7 @@ processEntities(
               entity.getCoordinates().x() ++ )
          {
             entity.refresh();
-            EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
          }*/
 #ifdef HAVE_OPENMP
 #pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
@@ -349,7 +349,7 @@ processEntities(
                entity.getCoordinates().x() = x;
                entity.getCoordinates().y() = y;
                entity.refresh();
-               EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
             }      
       }
    }
@@ -369,7 +369,7 @@ template< typename Real,
 __global__ void 
 GridTraverser2D(
    const Meshes::Grid< 2, Real, Devices::Cuda, Index >* grid,
-   UserData* userData,
+   UserData userData,
    const typename GridEntity::CoordinatesType begin,
    const typename GridEntity::CoordinatesType end,
    const dim3 gridIdx,
@@ -389,7 +389,7 @@ GridTraverser2D(
       {
          EntitiesProcessor::processEntity
          ( *grid,
-           *userData,
+           userData,
            entity );
       }
    }
@@ -405,7 +405,7 @@ template< typename Real,
 __global__ void 
 GridTraverser2DBoundaryAlongX(
    const Meshes::Grid< 2, Real, Devices::Cuda, Index >* grid,
-   UserData* userData,
+   UserData userData,
    const Index beginX,
    const Index endX,
    const Index fixedY,
@@ -424,7 +424,7 @@ GridTraverser2DBoundaryAlongX(
       entity.refresh();
       EntitiesProcessor::processEntity
       ( *grid,
-        *userData,
+        userData,
         entity );
    }   
 }
@@ -439,7 +439,7 @@ template< typename Real,
 __global__ void 
 GridTraverser2DBoundaryAlongY(
    const Meshes::Grid< 2, Real, Devices::Cuda, Index >* grid,
-   UserData* userData,
+   UserData userData,
    const Index beginY,
    const Index endY,
    const Index fixedX,
@@ -458,7 +458,7 @@ GridTraverser2DBoundaryAlongY(
       entity.refresh();
       EntitiesProcessor::processEntity
       ( *grid,
-        *userData,
+        userData,
         entity );
    }   
 }
@@ -481,7 +481,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType& begin,
    const CoordinatesType& end,
-   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
+   UserData& userData,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -508,7 +508,7 @@ processEntities(
          GridTraverser2DBoundaryAlongX< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                <<< cudaGridSize, cudaBlockSize, 0, s1 >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
-                 &userDataPointer.template modifyData< Devices::Cuda >(),
+                 userData,
                  begin.x(),
                  end.x(),
                  begin.y(),
@@ -517,7 +517,7 @@ processEntities(
          GridTraverser2DBoundaryAlongX< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                <<< cudaGridSize, cudaBlockSize, 0, s2 >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
-                 &userDataPointer.template modifyData< Devices::Cuda >(),
+                 userData,
                  begin.x(),
                  end.x(),
                  end.y(),
@@ -532,7 +532,7 @@ processEntities(
          GridTraverser2DBoundaryAlongY< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                <<< cudaGridSize, cudaBlockSize, 0, s3 >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
-                 &userDataPointer.template modifyData< Devices::Cuda >(),
+                 userData,
                  begin.y() + 1,
                  end.y() - 1,
                  begin.x(),
@@ -541,7 +541,7 @@ processEntities(
          GridTraverser2DBoundaryAlongY< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                <<< cudaGridSize, cudaBlockSize, 0, s4 >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
-                 &userDataPointer.template modifyData< Devices::Cuda >(),
+                 userData,
                  begin.y() + 1,
                  end.y() - 1,
                  end.x(),
@@ -575,7 +575,7 @@ processEntities(
             GridTraverser2D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                <<< cudaGridSize, cudaBlockSize, 0, s >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
-                 &userDataPointer.template modifyData< Devices::Cuda >(),
+                 userData,
                  begin,
                  end,
                  gridIdx,
@@ -613,7 +613,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType& begin,
    const CoordinatesType& end,
-   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
+   UserData& userData,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -712,7 +712,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType begin,
    const CoordinatesType end,
-   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
+   UserData& userData,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -730,10 +730,10 @@ processEntities(
             {
                entity.getCoordinates().z() = begin.z();
                entity.refresh();
-               EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
                entity.getCoordinates().z() = end.z();
                entity.refresh();
-               EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
             }
       if( YOrthogonalBoundary )
          for( entity.getCoordinates().z() = begin.z();
@@ -745,10 +745,10 @@ processEntities(
             {
                entity.getCoordinates().y() = begin.y();
                entity.refresh();
-               EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
                entity.getCoordinates().y() = end.y();
                entity.refresh();
-               EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
             }
       if( XOrthogonalBoundary )
          for( entity.getCoordinates().z() = begin.z();
@@ -760,10 +760,10 @@ processEntities(
             {
                entity.getCoordinates().x() = begin.x();
                entity.refresh();
-               EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
                entity.getCoordinates().x() = end.x();
                entity.refresh();
-               EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
             }
    }
    else
@@ -781,7 +781,7 @@ processEntities(
                  entity.getCoordinates().x() ++ )
             {
                entity.refresh();
-               EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
             }*/
 #ifdef HAVE_OPENMP
 #pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
@@ -799,7 +799,7 @@ processEntities(
                   entity.getCoordinates().y() = y;
                   entity.getCoordinates().z() = z;
                   entity.refresh();
-                  EntitiesProcessor::processEntity( entity.getMesh(), *userDataPointer, entity );
+                  EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
             }
       }      
    }
@@ -819,7 +819,7 @@ template< typename Real,
 __global__ void
 GridTraverser3D(
    const Meshes::Grid< 3, Real, Devices::Cuda, Index >* grid,
-   UserData* userData,
+   UserData userData,
    const typename GridEntity::CoordinatesType begin,
    const typename GridEntity::CoordinatesType end,
    const dim3 gridIdx,
@@ -840,7 +840,7 @@ GridTraverser3D(
       {
          EntitiesProcessor::processEntity
          ( *grid,
-           *userData,
+           userData,
            entity );
       }
    }
@@ -856,7 +856,7 @@ template< typename Real,
 __global__ void 
 GridTraverser3DBoundaryAlongXY(
    const Meshes::Grid< 3, Real, Devices::Cuda, Index >* grid,
-   UserData* userData,
+   UserData userData,
    const Index beginX,
    const Index endX,
    const Index beginY,
@@ -878,7 +878,7 @@ GridTraverser3DBoundaryAlongXY(
       entity.refresh();
       EntitiesProcessor::processEntity
       ( *grid,
-        *userData,
+        userData,
         entity );
    }
 }
@@ -893,7 +893,7 @@ template< typename Real,
 __global__ void 
 GridTraverser3DBoundaryAlongXZ(
    const Meshes::Grid< 3, Real, Devices::Cuda, Index >* grid,
-   UserData* userData,
+   UserData userData,
    const Index beginX,
    const Index endX,
    const Index beginZ,
@@ -915,7 +915,7 @@ GridTraverser3DBoundaryAlongXZ(
       entity.refresh();
       EntitiesProcessor::processEntity
       ( *grid,
-        *userData,
+        userData,
         entity );
    }   
 }
@@ -930,7 +930,7 @@ template< typename Real,
 __global__ void 
 GridTraverser3DBoundaryAlongYZ(
    const Meshes::Grid< 3, Real, Devices::Cuda, Index >* grid,
-   UserData* userData,
+   UserData userData,
    const Index beginY,
    const Index endY,
    const Index beginZ,
@@ -952,7 +952,7 @@ GridTraverser3DBoundaryAlongYZ(
       entity.refresh();
       EntitiesProcessor::processEntity
       ( *grid,
-        *userData,
+        userData,
         entity );
    }   
 }
@@ -975,7 +975,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType& begin,
    const CoordinatesType& end,
-   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
+   UserData& userData,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -1013,7 +1013,7 @@ processEntities(
             GridTraverser3DBoundaryAlongXY< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                   <<< cudaBlocksCountAlongXY, cudaBlockSize, 0 , s1 >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
-                    &userDataPointer.template modifyData< Devices::Cuda >(),
+                    userData,
                     begin.x(),
                     end.x(),
                     begin.y(),
@@ -1024,7 +1024,7 @@ processEntities(
             GridTraverser3DBoundaryAlongXY< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                   <<< cudaBlocksCountAlongXY, cudaBlockSize, 0, s2 >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
-                    &userDataPointer.template modifyData< Devices::Cuda >(),
+                    userData,
                     begin.x(),
                     end.x(),
                     begin.y(),
@@ -1040,7 +1040,7 @@ processEntities(
             GridTraverser3DBoundaryAlongXZ< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                   <<< cudaBlocksCountAlongXZ, cudaBlockSize, 0, s3 >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
-                    &userDataPointer.template modifyData< Devices::Cuda >(),
+                    userData,
                     begin.x(),
                     end.x(),               
                     begin.z() + 1,
@@ -1051,7 +1051,7 @@ processEntities(
             GridTraverser3DBoundaryAlongXZ< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                   <<< cudaBlocksCountAlongXZ, cudaBlockSize, 0, s4 >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
-                    &userDataPointer.template modifyData< Devices::Cuda >(),
+                    userData,
                     begin.x(),
                     end.x(),               
                     begin.z() + 1,
@@ -1067,7 +1067,7 @@ processEntities(
             GridTraverser3DBoundaryAlongYZ< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                   <<< cudaBlocksCountAlongYZ, cudaBlockSize, 0, s5 >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
-                    &userDataPointer.template modifyData< Devices::Cuda >(),
+                    userData,
                     begin.y() + 1,
                     end.y() - 1,               
                     begin.z() + 1,
@@ -1078,7 +1078,7 @@ processEntities(
             GridTraverser3DBoundaryAlongYZ< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                   <<< cudaBlocksCountAlongYZ, cudaBlockSize, 0, s6 >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
-                    &userDataPointer.template modifyData< Devices::Cuda >(),
+                    userData,
                     begin.y() + 1,
                     end.y() - 1,               
                     begin.z() + 1,
@@ -1118,7 +1118,7 @@ processEntities(
                GridTraverser3D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                   <<< gridSize, cudaBlockSize, 0, s >>>
                   ( &gridPointer.template getData< Devices::Cuda >(),
-                    &userDataPointer.template modifyData< Devices::Cuda >(),
+                    userData,
                     begin,
                     end,
                     gridIdx,
@@ -1157,7 +1157,7 @@ processEntities(
    const GridPointer& gridPointer,
    const CoordinatesType& begin,
    const CoordinatesType& end,
-   Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer,
+   UserData& userData,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -1183,7 +1183,7 @@ processEntities(
             GridTraverser3D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
                <<< cudaBlocks, cudaBlockSize, 0, s >>>
                ( &gridPointer.template getData< Devices::Cuda >(),
-                 &userDataPointer.template modifyData< Devices::Cuda >(),
+                 userData,
                  begin,
                  end,
                  gridXIdx,

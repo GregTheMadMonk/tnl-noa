@@ -16,7 +16,7 @@ namespace Matrices {
 template< typename DifferentialOperator,
           typename BoundaryConditions,
           typename CompressedRowLengthsVector >
-class MatrixSetterTraversalUserData
+class MatrixSetterTraverserUserData
 {
    public:
       
@@ -28,7 +28,7 @@ class MatrixSetterTraversalUserData
 
       CompressedRowLengthsVector* rowLengths;
 
-      MatrixSetterTraversalUserData( const DifferentialOperator* differentialOperator,
+      MatrixSetterTraverserUserData( const DifferentialOperator* differentialOperator,
                                      const BoundaryConditions* boundaryConditions,
                                      CompressedRowLengthsVector* rowLengths )
       : differentialOperator( differentialOperator ),
@@ -49,9 +49,9 @@ class MatrixSetter
    typedef Pointers::SharedPointer<  MeshType > MeshPointer;
    typedef typename MeshType::DeviceType DeviceType;
    typedef typename CompressedRowLengthsVector::RealType IndexType;
-   typedef MatrixSetterTraversalUserData< DifferentialOperator,
+   typedef MatrixSetterTraverserUserData< DifferentialOperator,
                                           BoundaryConditions,
-                                          CompressedRowLengthsVector > TraversalUserData;
+                                          CompressedRowLengthsVector > TraverserUserData;
    typedef Pointers::SharedPointer<  DifferentialOperator, DeviceType > DifferentialOperatorPointer;
    typedef Pointers::SharedPointer<  BoundaryConditions, DeviceType > BoundaryConditionsPointer;
    typedef Pointers::SharedPointer<  CompressedRowLengthsVector, DeviceType > CompressedRowLengthsVectorPointer;
@@ -62,14 +62,14 @@ class MatrixSetter
                                   const BoundaryConditionsPointer& boundaryConditionsPointer,
                                   CompressedRowLengthsVectorPointer& rowLengthsPointer ) const;
 
-   class TraversalBoundaryEntitiesProcessor
+   class TraverserBoundaryEntitiesProcessor
    {
       public:
 
          template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
-                                    TraversalUserData& userData,                                    
+                                    TraverserUserData& userData,
                                     const EntityType& entity )
          {
             ( *userData.rowLengths )[ entity.getIndex() ] =
@@ -78,14 +78,14 @@ class MatrixSetter
 
    };
 
-   class TraversalInteriorEntitiesProcessor
+   class TraverserInteriorEntitiesProcessor
    {
       public:
          
          template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
-                                    TraversalUserData& userData,
+                                    TraverserUserData& userData,
                                     const EntityType& entity )
          {
             ( *userData.rowLengths )[ entity.getIndex() ] =
@@ -114,9 +114,9 @@ class MatrixSetter< Meshes::Grid< Dimension, Real, Device, Index >,
    typedef typename MeshType::DeviceType DeviceType;
    typedef typename CompressedRowLengthsVector::RealType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef MatrixSetterTraversalUserData< DifferentialOperator,
+   typedef MatrixSetterTraverserUserData< DifferentialOperator,
                                              BoundaryConditions,
-                                             CompressedRowLengthsVector > TraversalUserData;
+                                             CompressedRowLengthsVector > TraverserUserData;
 
    template< typename EntityType >
    void getCompressedRowLengths( const MeshType& mesh,
@@ -124,14 +124,14 @@ class MatrixSetter< Meshes::Grid< Dimension, Real, Device, Index >,
                        const BoundaryConditions& boundaryConditions,
                        CompressedRowLengthsVector& rowLengths ) const;
 
-   class TraversalBoundaryEntitiesProcessor
+   class TraverserBoundaryEntitiesProcessor
    {
       public:
 
          template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
-                                    TraversalUserData& userData,
+                                    TraverserUserData& userData,
                                     const EntityType& entity )
          {
             ( *userData.rowLengths )[ entity.getIndex() ] =
@@ -140,14 +140,14 @@ class MatrixSetter< Meshes::Grid< Dimension, Real, Device, Index >,
 
    };
 
-   class TraversalInteriorEntitiesProcessor
+   class TraverserInteriorEntitiesProcessor
    {
       public:
  
          template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
-                                    TraversalUserData& userData,
+                                    TraverserUserData& userData,
                                     const EntityType& entity )
          {
             ( *userData.rowLengths )[ entity.getIndex() ] =

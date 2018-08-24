@@ -86,17 +86,17 @@ class LinearSystemAssembler
    
    void setDifferentialOperator( const DifferentialOperatorPointer& differentialOperatorPointer )
    {
-      this->userDataPointer->differentialOperator = &differentialOperatorPointer.template getData< DeviceType >();
+      this->userData.differentialOperator = &differentialOperatorPointer.template getData< DeviceType >();
    }
 
    void setBoundaryConditions( const BoundaryConditionsPointer& boundaryConditionsPointer )
    {
-      this->userDataPointer->boundaryConditions = &boundaryConditionsPointer.template getData< DeviceType >();
+      this->userData.boundaryConditions = &boundaryConditionsPointer.template getData< DeviceType >();
    }
 
    void setRightHandSide( const RightHandSidePointer& rightHandSidePointer )
    {
-      this->userDataPointer->rightHandSide = &rightHandSidePointer.template getData< DeviceType >();
+      this->userData.rightHandSide = &rightHandSidePointer.template getData< DeviceType >();
    }
    
    template< typename EntityType, typename Matrix >
@@ -115,20 +115,20 @@ class LinearSystemAssembler
 
       const IndexType maxRowLength = matrixPointer.template getData< Devices::Host >().getMaxRowLength();
       TNL_ASSERT_GT( maxRowLength, 0, "maximum row length must be positive" );
-      this->userDataPointer->time = time;
-      this->userDataPointer->tau = tau;
-      this->userDataPointer->u = &uPointer.template getData< DeviceType >();
-      this->userDataPointer->matrix = ( void* ) &matrixPointer.template modifyData< DeviceType >();
-      this->userDataPointer->b = &bPointer.template modifyData< DeviceType >();
+      this->userData.time = time;
+      this->userData.tau = tau;
+      this->userData.u = &uPointer.template getData< DeviceType >();
+      this->userData.matrix = ( void* ) &matrixPointer.template modifyData< DeviceType >();
+      this->userData.b = &bPointer.template modifyData< DeviceType >();
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor< Matrix> >
                                                     ( meshPointer,
-                                                      userDataPointer );
+                                                      userData );
       meshTraverser.template processInteriorEntities< TraverserUserData,
                                                       TraverserInteriorEntitiesProcessor< Matrix > >
                                                     ( meshPointer,
-                                                      userDataPointer );
+                                                      userData );
       
    }
 
@@ -190,7 +190,7 @@ class LinearSystemAssembler
    };
 
 protected:
-   Pointers::SharedPointer<  TraverserUserData, DeviceType > userDataPointer;
+   TraverserUserData userData;
 };
 
 } // namespace PDE

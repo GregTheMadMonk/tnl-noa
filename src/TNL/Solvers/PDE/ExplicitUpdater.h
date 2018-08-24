@@ -95,17 +95,17 @@ class ExplicitUpdater
       
       void setDifferentialOperator( const DifferentialOperatorPointer& differentialOperatorPointer )
       {
-         this->userDataPointer->differentialOperator = &differentialOperatorPointer.template getData< DeviceType >();
+         this->userData.differentialOperator = &differentialOperatorPointer.template getData< DeviceType >();
       }
       
       void setBoundaryConditions( const BoundaryConditionsPointer& boundaryConditionsPointer )
       {
-         this->userDataPointer->boundaryConditions = &boundaryConditionsPointer.template getData< DeviceType >();
+         this->userData.boundaryConditions = &boundaryConditionsPointer.template getData< DeviceType >();
       }
       
       void setRightHandSide( const RightHandSidePointer& rightHandSidePointer )
       {
-         this->userDataPointer->rightHandSide = &rightHandSidePointer.template getData< DeviceType >();
+         this->userData.rightHandSide = &rightHandSidePointer.template getData< DeviceType >();
       }
             
       template< typename EntityType >
@@ -121,27 +121,27 @@ class ExplicitUpdater
                                                  typename MeshFunction::IndexType > >::value != true,
             "Error: I am getting Vector instead of MeshFunction or similar object. You might forget to bind DofVector into MeshFunction in you method getExplicitUpdate."  );
             
-         TNL_ASSERT_TRUE( this->userDataPointer->differentialOperator,
+         TNL_ASSERT_TRUE( this->userData.differentialOperator,
                           "The differential operator is not correctly set-up. Use method setDifferentialOperator() to do it." );
-         TNL_ASSERT_TRUE( this->userDataPointer->boundaryConditions, 
+         TNL_ASSERT_TRUE( this->userData.boundaryConditions,
                           "The boundary conditions are not correctly set-up. Use method setBoundaryCondtions() to do it." );
-         TNL_ASSERT_TRUE( this->userDataPointer->rightHandSide, 
+         TNL_ASSERT_TRUE( this->userData.rightHandSide,
                           "The right-hand side is not correctly set-up. Use method setRightHandSide() to do it." );
          
          
-         this->userDataPointer->time = time;
-         this->userDataPointer->u = &uPointer.template modifyData< DeviceType >();
-         this->userDataPointer->fu = &fuPointer.template modifyData< DeviceType >();
+         this->userData.time = time;
+         this->userData.u = &uPointer.template modifyData< DeviceType >();
+         this->userData.fu = &fuPointer.template modifyData< DeviceType >();
          Meshes::Traverser< MeshType, EntityType > meshTraverser;
          meshTraverser.template processInteriorEntities< TraverserUserData,
                                                          TraverserInteriorEntitiesProcessor >
                                                        ( meshPointer,
-                                                         userDataPointer );
-         this->userDataPointer->time = time + tau;
+                                                         userData );
+         this->userData.time = time + tau;
          meshTraverser.template processBoundaryEntities< TraverserUserData,
                                              TraverserBoundaryEntitiesProcessor >
                                            ( meshPointer,
-                                             userDataPointer );
+                                             userData );
          
       }
       
@@ -184,7 +184,8 @@ class ExplicitUpdater
 
    protected:
 
-      TraverserUserDataPointer userDataPointer;
+      //TraverserUserDataPointer userDataPointer;
+      TraverserUserData userData;
 
 };
 
