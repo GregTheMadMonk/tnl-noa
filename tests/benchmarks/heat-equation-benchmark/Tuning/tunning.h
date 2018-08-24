@@ -71,9 +71,9 @@ template< typename InteriorEntitiesProcessor, typename UserData, typename Grid, 
 __global__ void _heatEquationKernel( const Grid* grid,
                                      UserData userData )
 {
-   Real* u = userData.u;
+   /*Real* u = userData.u;
    Real* fu = userData.fu;
-   const typename UserData::DifferentialOperatorType* op = userData.differentialOperator;
+   const typename UserData::DifferentialOperatorType* op = userData.differentialOperator;*/
 
    const Index& gridXSize = grid->getDimensions().x();
    const Index& gridYSize = grid->getDimensions().y();

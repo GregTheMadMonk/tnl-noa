@@ -7,6 +7,7 @@
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 #include "TestGridEntity.h"
 #include "Tuning/tunning.h"
+#include "Tuning/SimpleCell.h"
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -431,17 +432,7 @@ getExplicitUpdate( const RealType& time,
                             gridYSize / 16 + ( gridYSize % 16 != 0 ) );
 
          int cudaErr;
-         boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( uDofs->getData(), fuDofs->getData(), gridXSize, gridYSize );
-         if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
-         {
-            std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
-            return;
-         }
 
-         /****
-          * Laplace operator
-          */
-         //cout << "Laplace operator ... " << endl;
          heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
             ( uDofs->getData(), fuDofs->getData(), tau, hx_inv, hy_inv, gridXSize, gridYSize );
          if( cudaGetLastError() != cudaSuccess )
@@ -449,6 +440,14 @@ getExplicitUpdate( const RealType& time,
             std::cerr << "Laplace operator failed." << std::endl;
             return;
          }
+         
+         boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( uDofs->getData(), fuDofs->getData(), gridXSize, gridYSize );
+         if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
+         {
+            std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
+            return;
+         }
+         
       }
       if( this->cudaKernelType == "templated-compact" )
       {
@@ -525,60 +524,77 @@ getExplicitUpdate( const RealType& time,
       }
       if( this->cudaKernelType == "tunning" )
       {
-         using UserData = ExplicitUpdaterTraverserUserData< RealType,
-            MeshFunctionType,
-            DifferentialOperator,
-            BoundaryCondition,
-            RightHandSide >;
-         using ExplicitUpdaterType = TNL::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
-         using InteriorEntitiesProcessor = typename ExplicitUpdaterType::TraverserInteriorEntitiesProcessor;
-         using BoundaryEntitiesProcessor = typename ExplicitUpdaterType::TraverserBoundaryEntitiesProcessor;
-         
-         const IndexType gridXSize = mesh->getDimensions().x();
-         const IndexType gridYSize = mesh->getDimensions().y();
-         /*const RealType& hx_inv = mesh->template getSpaceStepsProducts< -2,  0 >();
-         const RealType& hy_inv = mesh->template getSpaceStepsProducts<  0, -2 >();*/
+         if( std::is_same< DeviceType, Devices::Cuda >::value )
+         {   
+            using UserData = ExplicitUpdaterTraverserUserData< RealType,
+               MeshFunctionType,
+               DifferentialOperator,
+               BoundaryCondition,
+               RightHandSide >;
+            using ExplicitUpdaterType = TNL::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
+            using InteriorEntitiesProcessor = typename ExplicitUpdaterType::TraverserInteriorEntitiesProcessor;
+            using BoundaryEntitiesProcessor = typename ExplicitUpdaterType::TraverserBoundaryEntitiesProcessor;
 
-         dim3 cudaBlockSize( 16, 16 );
-         dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
-                            gridYSize / 16 + ( gridYSize % 16 != 0 ) );
-         
-         
-         UserData userData;
-         userData.time = time;
-         userData.differentialOperator = &this->differentialOperatorPointer.template getData< Devices::Cuda >();
-         userData.boundaryConditions = &this->boundaryConditionPointer.template getData< Devices::Cuda >();
-         userData.rightHandSide = NULL;
-         userData.u = uDofs->getData();
-         userData.fu = fuDofs->getData();
-         //userData.uMf = uDofs->getData();
-         //userData.fuMf = fuDofs->getData();
-         
+            const IndexType gridXSize = mesh->getDimensions().x();
+            const IndexType gridYSize = mesh->getDimensions().y();
+            /*const RealType& hx_inv = mesh->template getSpaceStepsProducts< -2,  0 >();
+            const RealType& hy_inv = mesh->template getSpaceStepsProducts<  0, -2 >();*/
 
-         TNL::Devices::Cuda::synchronizeDevice();
-         int cudaErr;
-         _boundaryConditionsKernel< BoundaryEntitiesProcessor, UserData, MeshType, RealType, IndexType >
-         <<< cudaGridSize, cudaBlockSize >>>
-            ( &mesh.template getData< Devices::Cuda >(),
-            userData );
-         if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
-         {
-            std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
-            return;
-         }
+            dim3 cudaBlockSize( 16, 16 );
+            dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
+                               gridYSize / 16 + ( gridYSize % 16 != 0 ) );
 
-         /****
-          * Laplace operator
-          */
-         //cout << "Laplace operator ... " << endl;
-         _heatEquationKernel< InteriorEntitiesProcessor, UserData, MeshType, RealType, IndexType >
-         <<< cudaGridSize, cudaBlockSize >>>
-            ( &mesh.template getData< Devices::Cuda >(),
-              userData );
-         if( cudaGetLastError() != cudaSuccess )
-         {
-            std::cerr << "Laplace operator failed." << std::endl;
-            return;
+
+            /*Pointers::SharedPointer< UserData, Devices::Cuda > userDataPtr;
+            userDataPtr->time = time;
+            userDataPtr->differentialOperator = &this->differentialOperatorPointer.template getData< Devices::Cuda >();
+            userDataPtr->boundaryConditions = &this->boundaryConditionPointer.template getData< Devices::Cuda >();
+            userDataPtr->rightHandSide = NULL;
+            userDataPtr->u = uDofs->getData();
+            userDataPtr->fu = fuDofs->getData();*/
+            
+            UserData userData;
+            userData.time = time;
+            userData.differentialOperator = &this->differentialOperatorPointer.template getData< Devices::Cuda >();
+            userData.boundaryConditions = &this->boundaryConditionPointer.template getData< Devices::Cuda >();
+            userData.rightHandSide = NULL;
+            userData.u = uDofs->getData();
+            userData.fu = fuDofs->getData();
+            
+
+
+            TNL::Devices::Cuda::synchronizeDevice();
+            int cudaErr;
+            _boundaryConditionsKernel< BoundaryEntitiesProcessor, UserData, MeshType, RealType, IndexType >
+            <<< cudaGridSize, cudaBlockSize >>>
+               ( &mesh.template getData< Devices::Cuda >(),
+                userData );
+                //&userDataPtr.template modifyData< Devices::Cuda >() );
+            if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
+            {
+               std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
+               return;
+            }
+
+            /****
+             * Laplace operator
+             */
+            //cout << "Laplace operator ... " << endl;
+            /*Meshes::Traverser< MeshType, SimpleCell > meshTraverser
+            meshTraverser.template processInteriorEntities< UserData,
+                                                      InteriorEntitiesProcessor >
+                                                          ( meshPointer,
+                                                            userDataPointer );*/
+            _heatEquationKernel< InteriorEntitiesProcessor, UserData, MeshType, RealType, IndexType >
+            <<< cudaGridSize, cudaBlockSize >>>
+               ( &mesh.template getData< Devices::Cuda >(),
+                userData );
+                //&userDataPtr.template modifyData< Devices::Cuda >() );
+            if( cudaGetLastError() != cudaSuccess )
+            {
+               std::cerr << "Laplace operator failed." << std::endl;
+               return;
+            }
          }
       }      
    }
