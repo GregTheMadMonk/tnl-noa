@@ -174,12 +174,10 @@ class ExplicitUpdater
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
-               ( *userData.fu )( entity ) = 
-                       ( *userData.differentialOperator )( *userData.u, entity, userData.time );
-            
                typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               (  *userData.fu )( entity ) += 
-                  FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
+               ( *userData.fu )( entity ) = 
+                  ( *userData.differentialOperator )( *userData.u, entity, userData.time )
+                  + FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
                
             }
       }; 
