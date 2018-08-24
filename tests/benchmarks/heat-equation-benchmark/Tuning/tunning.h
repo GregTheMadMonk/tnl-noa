@@ -34,12 +34,12 @@ struct Data
 
 #ifdef HAVE_CUDA
 
-template< typename BoundaryCondition, typename Grid, typename Real, typename Index >
+template< typename UserData, typename Grid, typename Real, typename Index >
 __global__ void _boundaryConditionsKernel( const Grid* grid,
-                                           Real* u,
-                                           Real* aux,
-                                           const BoundaryCondition* bc )
+                                           UserData userData )
 {
+   Real* u = userData.u;
+   const typename UserData::BoundaryConditionsType* bc = userData.boundaryConditions;
    using Coordinates = typename Grid::CoordinatesType;
    const Index& gridXSize = grid->getDimensions().x();
    const Index& gridYSize = grid->getDimensions().y();
@@ -56,30 +56,31 @@ __global__ void _boundaryConditionsKernel( const Grid* grid,
    if( coordinates.x() == gridXSize - 1 && coordinates.y() < gridYSize )
    {
       //aux[ coordinates.y() * gridXSize + gridYSize - 1 ] = 0.0;
-      //u[ coordinates.y() * gridXSize + gridXSize - 1 ] = 0.0; //u[ coordinates.y() * gridXSize + gridXSize - 1 ];
+      //userData.u[ coordinates.y() * gridXSize + gridXSize - 1 ] = 0.0; //userData.u[ coordinates.y() * gridXSize + gridXSize - 1 ];
       u[ c ] = ( *bc )( *grid, u, c, coordinates, 0 ); //0.0;
    }
    if( coordinates.y() == 0 && coordinates.x() < gridXSize )
    {
-      //aux[ coordinates.x() ] = 0.0; //u[ coordinates.y() * gridXSize + 1 ];
-      //u[ coordinates.x() ] = 0.0; //u[ coordinates.y() * gridXSize + 1 ];
+      //aux[ coordinates.x() ] = 0.0; //userData.u[ coordinates.y() * gridXSize + 1 ];
+      //userData.u[ coordinates.x() ] = 0.0; //userData.u[ coordinates.y() * gridXSize + 1 ];
       u[ c ] = ( *bc )( *grid, u, c, coordinates, 0 ); //0.0;
    }
    if( coordinates.y() == gridYSize -1  && coordinates.x() < gridXSize )
    {
-      //aux[ coordinates.y() * gridXSize + coordinates.x() ] = 0.0; //u[ coordinates.y() * gridXSize + gridXSize - 1 ];      
-      //u[ coordinates.y() * gridXSize + coordinates.x() ] = 0.0; //u[ coordinates.y() * gridXSize + gridXSize - 1 ];      
+      //aux[ coordinates.y() * gridXSize + coordinates.x() ] = 0.0; //userData.u[ coordinates.y() * gridXSize + gridXSize - 1 ];      
+      //userData.u[ coordinates.y() * gridXSize + coordinates.x() ] = 0.0; //userData.u[ coordinates.y() * gridXSize + gridXSize - 1 ];      
       u[ c ] = ( *bc )( *grid, u, c, coordinates, 0 ); //0.0;
    }         
 }
 
-template< typename Operator, typename Grid, typename Real, typename Index >
+template< typename UserData, typename Grid, typename Real, typename Index >
 __global__ void _heatEquationKernel( const Grid* grid,
-                                     const Real* u, 
-                                     Real* aux,
-                                     const Real tau,
-                                     const Operator* op )
+                                     UserData userData )
 {
+   Real* u = userData.u;
+   Real* fu = userData.fu;
+   const typename UserData::DifferentialOperatorType* op = userData.differentialOperator;
+
    const Index& gridXSize = grid->getDimensions().x();
    const Index& gridYSize = grid->getDimensions().y();
    const Real& hx_inv = grid->template getSpaceStepsProducts< -2,  0 >();
@@ -92,9 +93,9 @@ __global__ void _heatEquationKernel( const Grid* grid,
        coordinates.y() > 0 && coordinates.y() < gridYSize - 1 )
    {
       const Index c = coordinates.y() * gridXSize + coordinates.x();
-      aux[ c ] = ( *op )( *grid, u, c, coordinates, 0 );
-         /*( ( u[ c - 1 ]         - 2.0 * u[ c ] + u[ c + 1 ]         ) * hx_inv +
-                   ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );*/
+      fu[ c ] = ( *op )( *grid, u, c, coordinates, 0 );
+         /*( ( userData.u[ c - 1 ]         - 2.0 * userData.u[ c ] + userData.u[ c + 1 ]         ) * hx_inv +
+                   ( userData.u[ c - gridXSize ] - 2.0 * userData.u[ c ] + userData.u[ c + gridXSize ] ) * hy_inv );*/
    }  
 }
 

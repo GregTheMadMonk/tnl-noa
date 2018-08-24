@@ -533,15 +533,26 @@ getExplicitUpdate( const RealType& time,
          dim3 cudaBlockSize( 16, 16 );
          dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
                             gridYSize / 16 + ( gridYSize % 16 != 0 ) );
+         
+         typedef ExplicitUpdaterTraverserUserData< RealType,
+                                           MeshFunctionType,
+                                           DifferentialOperator,
+                                           BoundaryCondition,
+                                           RightHandSide > UserData;
+         UserData userData;
+         userData.time = time;
+         userData.differentialOperator = &this->differentialOperatorPointer.template getData< Devices::Cuda >();
+         userData.boundaryConditions = &this->boundaryConditionPointer.template getData< Devices::Cuda >();
+         userData.rightHandSide = NULL;
+         userData.u = uDofs->getData();
+         userData.fu = fuDofs->getData();
 
          TNL::Devices::Cuda::synchronizeDevice();
          int cudaErr;
-         _boundaryConditionsKernel< BoundaryCondition, MeshType, RealType, IndexType >
+         _boundaryConditionsKernel< UserData, MeshType, RealType, IndexType >
          <<< cudaGridSize, cudaBlockSize >>>
             ( &mesh.template getData< Devices::Cuda >(),
-              uDofs->getData(),
-              fuDofs->getData(),
-              &this->boundaryConditionPointer.template getData< Devices::Cuda >() );
+            userData );
          if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
          {
             std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
@@ -552,13 +563,10 @@ getExplicitUpdate( const RealType& time,
           * Laplace operator
           */
          //cout << "Laplace operator ... " << endl;
-         _heatEquationKernel< DifferentialOperator, MeshType, RealType, IndexType >
+         _heatEquationKernel< UserData, MeshType, RealType, IndexType >
          <<< cudaGridSize, cudaBlockSize >>>
             ( &mesh.template getData< Devices::Cuda >(),
-              uDofs->getData(),
-              fuDofs->getData(),
-              tau,
-              &this->differentialOperatorPointer.template getData< Devices::Cuda >() );
+              userData );
          if( cudaGetLastError() != cudaSuccess )
          {
             std::cerr << "Laplace operator failed." << std::endl;

@@ -27,6 +27,12 @@ class ExplicitUpdaterTraverserUserData
 {
    public:
       
+      using RealType = Real;
+      using MeshFunctionType = MeshFunction;
+      using DifferentialOperatorType = DifferentialOperator;
+      using BoundaryConditionsType = BoundaryConditions;
+      using RightHandSideType = RightHandSide;
+      
       Real time;
 
       const DifferentialOperator* differentialOperator;
