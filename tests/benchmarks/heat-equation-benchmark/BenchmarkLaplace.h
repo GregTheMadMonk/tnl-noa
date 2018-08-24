@@ -88,6 +88,13 @@ class BenchmarkLaplace< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Ind
       Real operator()( const MeshFunction& u,
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
+      
+      template< typename MeshEntity >
+      __cuda_callable__
+      Real operator()( const RealType* u,
+                       const MeshEntity& entity,
+                       const RealType& time = 0.0 ) const;
+      
 
       //template< typename MeshFunction >//, typename MeshEntity >
       __cuda_callable__

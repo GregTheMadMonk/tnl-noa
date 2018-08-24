@@ -27,7 +27,7 @@ class SimpleCell
       typedef SimpleCell< GridType > ThisType;
 
       __cuda_callable__ inline
-      SimpleCell( const GridType& grid ) { this->grid = grid; };
+      SimpleCell( const GridType& grid ) :grid( grid ) {};
  
       /*__cuda_callable__ inline
       SimpleCell( const GridType& grid,
@@ -70,15 +70,21 @@ class SimpleCell
       template< int NeighborEntityDimension = Dimension >
       __cuda_callable__ inline
       const NeighborEntities< NeighborEntityDimension >&
-      getNeighborEntities() const;*/
+      getNeighborEntities() const;
+ 
+      __cuda_callable__ inline
+      bool isBoundaryEntity() const;
+       */
+ 
+      __cuda_callable__ inline
+      PointType getCenter() const
+      {
+         return PointType(
+            grid.getOrigin().x() + ( coordinates.x() + 0.5 ) * grid.getSpaceSteps().x(),
+            grid.getOrigin().y() + ( coordinates.y() + 0.5 ) * grid.getSpaceSteps().y() );
+      };
  
       /*__cuda_callable__ inline
-      bool isBoundaryEntity() const;
- 
-      __cuda_callable__ inline
-      PointType getCenter() const;
- 
-      __cuda_callable__ inline
       const RealType& getMeasure() const;
  
       __cuda_callable__ inline
@@ -94,4 +100,9 @@ class SimpleCell
       IndexType entityIndex;
  
       CoordinatesType coordinates;
+      
+      // TODO: Test of boundary entity will likely be more
+      // complicated with MPI. It might be more efficient to resolve it
+      // before.
+      //bool isBoundaryEnity;
 };

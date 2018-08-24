@@ -2,24 +2,20 @@
                           tunning.h  -  description
                              -------------------
     begin                : Aug 24, 2018
-    copyright            : (C) 2018 by Tomas Oberhuber
+    copyright            : (C) 2018 by oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
+
 
 #pragma once
 
 #ifdef HAVE_CUDA
 #include<cuda.h>
 #endif
+
+#include "SimpleCell.h"
 
 /****
  * Just testing data for measuring performance
@@ -32,14 +28,15 @@ struct Data
    TNL::Meshes::Grid< 2, double > grid;
 };
 
+
 #ifdef HAVE_CUDA
 
 template< typename BoundaryEntitiesProcessor, typename UserData, typename Grid, typename Real, typename Index >
 __global__ void _boundaryConditionsKernel( const Grid* grid,
                                            UserData userData )
 {
-   Real* u = userData.u;
-   const typename UserData::BoundaryConditionsType* bc = userData.boundaryConditions;
+   //Real* u = userData.u;
+   //const typename UserData::BoundaryConditionsType* bc = userData.boundaryConditions;
    using Coordinates = typename Grid::CoordinatesType;
    const Index& gridXSize = grid->getDimensions().x();
    const Index& gridYSize = grid->getDimensions().y();
@@ -74,26 +71,41 @@ template< typename InteriorEntitiesProcessor, typename UserData, typename Grid, 
 __global__ void _heatEquationKernel( const Grid* grid,
                                      UserData userData )
 {
-   /*Real* u = userData.u;
+   Real* u = userData.u;
    Real* fu = userData.fu;
-   const typename UserData::DifferentialOperatorType* op = userData.differentialOperator;*/
+   const typename UserData::DifferentialOperatorType* op = userData.differentialOperator;
 
    const Index& gridXSize = grid->getDimensions().x();
    const Index& gridYSize = grid->getDimensions().y();
    const Real& hx_inv = grid->template getSpaceStepsProducts< -2,  0 >();
    const Real& hy_inv = grid->template getSpaceStepsProducts<  0, -2 >();
    
-   using Coordinates = typename Grid::CoordinatesType;
+   SimpleCell< Grid > cell( *grid );
+   cell.getCoordinates().x() = blockIdx.x * blockDim.x + threadIdx.x;
+   cell.getCoordinates().y() = blockIdx.y * blockDim.y + threadIdx.y;
+   
+   /*using Coordinates = typename Grid::CoordinatesType;
    Coordinates coordinates( blockIdx.x * blockDim.x + threadIdx.x, 
-                            blockIdx.y * blockDim.y + threadIdx.y );
+                            blockIdx.y * blockDim.y + threadIdx.y );*/
 
-   if( coordinates.x() > 0 && coordinates.x() < gridXSize - 1 &&
-       coordinates.y() > 0 && coordinates.y() < gridYSize - 1 )
+   if( cell.getCoordinates().x() > 0 && cell.getCoordinates().x() < gridXSize - 1 &&
+       cell.getCoordinates().y() > 0 && cell.getCoordinates().y() < gridYSize - 1 )
+   //if( coordinates.x() > 0 && coordinates.x() < gridXSize - 1 &&
+   //    coordinates.y() > 0 && coordinates.y() < gridYSize - 1 )      
    {
-      const Index entityIndex = coordinates.y() * gridXSize + coordinates.x();
-      InteriorEntitiesProcessor::processEntity( *grid, userData, entityIndex, coordinates );
+      cell.refresh();
+      InteriorEntitiesProcessor::processEntity( *grid, userData, cell );
       
-         //fu[ entityIndex ] = ( *op )( *grid, userData.u, entityIndex, coordinates, userData.time ); // + 0.1;
+      //const Index entityIndex = cell.getCoordinates().y() * gridXSize + cell.getCoordinates().x();
+      //const Index entityIndex = coordinates.y() * gridXSize + coordinates.x();
+      //InteriorEntitiesProcessor::processEntity( *grid, userData, entityIndex, coordinates );
+      
+      
+      //fu[ entityIndex ] = ( *op )( *grid, userData.u, entityIndex, coordinates, userData.time ); // + 0.1;
+      
+      //fu[ entityIndex ] = ( ( u[ entityIndex - 1 ]         - 2.0 * u[ entityIndex ] + u[ entityIndex + 1 ]         ) * hx_inv +
+      //                    ( u[ entityIndex - gridXSize ] - 2.0 * u[ entityIndex ] + u[ entityIndex + gridXSize ] ) * hy_inv );
+
 
    }  
 }

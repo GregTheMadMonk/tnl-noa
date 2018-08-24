@@ -521,7 +521,7 @@ getExplicitUpdate( const RealType& time,
          explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
          explicitUpdater.setRightHandSide( this->rightHandSidePointer );
          
-         this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, this->u, this->fu );
+         //this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, this->u, this->fu );
       }
       if( this->cudaKernelType == "tunning" )
       {
@@ -531,7 +531,7 @@ getExplicitUpdate( const RealType& time,
             BoundaryCondition,
             RightHandSide >;
          using ExplicitUpdaterType = TNL::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
-         using IntertiorEntitiesProcessor = typename ExplicitUpdaterType::TraverserInteriorEntitiesProcessor;
+         using InteriorEntitiesProcessor = typename ExplicitUpdaterType::TraverserInteriorEntitiesProcessor;
          using BoundaryEntitiesProcessor = typename ExplicitUpdaterType::TraverserBoundaryEntitiesProcessor;
          
          const IndexType gridXSize = mesh->getDimensions().x();
@@ -551,6 +551,9 @@ getExplicitUpdate( const RealType& time,
          userData.rightHandSide = NULL;
          userData.u = uDofs->getData();
          userData.fu = fuDofs->getData();
+         //userData.uMf = uDofs->getData();
+         //userData.fuMf = fuDofs->getData();
+         
 
          TNL::Devices::Cuda::synchronizeDevice();
          int cudaErr;
@@ -568,7 +571,7 @@ getExplicitUpdate( const RealType& time,
           * Laplace operator
           */
          //cout << "Laplace operator ... " << endl;
-         _heatEquationKernel< IntertiorEntitiesProcessor, UserData, MeshType, RealType, IndexType >
+         _heatEquationKernel< InteriorEntitiesProcessor, UserData, MeshType, RealType, IndexType >
          <<< cudaGridSize, cudaBlockSize >>>
             ( &mesh.template getData< Devices::Cuda >(),
               userData );
