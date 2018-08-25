@@ -125,12 +125,23 @@ class ExplicitUpdater
                                                        ( meshPointer,
                                                          userDataPointer );
          this->userDataPointer->time = time + tau;
+         /*meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                             TraverserBoundaryEntitiesProcessor >
+                                           ( meshPointer,
+                                             userDataPointer );*/  
+      }
+      
+      template< typename EntityType >
+      void applyBoundaryConditions( const MeshPointer& meshPointer,
+                                    const RealType& time,
+                                    MeshFunctionPointer& uPointer )
+      {
+         Meshes::Traverser< MeshType, EntityType > meshTraverser;
          meshTraverser.template processBoundaryEntities< TraverserUserData,
                                              TraverserBoundaryEntitiesProcessor >
                                            ( meshPointer,
-                                             userDataPointer );
-         
-      }
+                                             *userDataPointer );         
+      }      
       
          
       class TraverserBoundaryEntitiesProcessor
@@ -159,8 +170,8 @@ class ExplicitUpdater
                   ( *userData.u, entity, userData.time );*/
             }
             
-
       };
+      
 
       class TraverserInteriorEntitiesProcessor
       {

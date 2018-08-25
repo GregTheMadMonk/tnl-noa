@@ -29,17 +29,17 @@ class Traverser
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const MeshPointer& meshPointer,
-                                    Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
+                                    UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const MeshPointer& meshPointer,
-                                    Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
+                                       UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const MeshPointer& meshPointer,
-                               Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
+                                 UserData& userData ) const;
 };
 
 template< typename MeshConfig,
@@ -55,17 +55,17 @@ class Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimensio
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const MeshPointer& meshPointer,
-                                    Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
+                                       UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const MeshPointer& meshPointer,
-                                    Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
+                                       UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const MeshPointer& meshPointer,
-                               Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
+                                 UserData& userData ) const;
 };
 
 } // namespace Meshes

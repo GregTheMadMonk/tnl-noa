@@ -125,6 +125,7 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
        */
       if( currentTau + time == this -> stopTime ) this->setResidue( lastResidue );
       time += currentTau;
+      this->problem->applyBoundaryConditions( time, u );
 
       if( ! this->nextIteration() )
          return this->checkConvergence();

@@ -67,9 +67,12 @@ class ExplicitTimeStepper
                DofVectorPointer& dofVector );
 
    void getExplicitUpdate( const RealType& time,
-                        const RealType& tau,
-                        DofVectorPointer& _u,
-                        DofVectorPointer& _fu );
+                             const RealType& tau,
+                             DofVectorPointer& _u,
+                             DofVectorPointer& _fu );
+   
+   void applyBoundaryConditions( const RealType& time,
+                                 DofVectorPointer& _u );
    
    bool writeEpilog( Logger& logger ) const;
 

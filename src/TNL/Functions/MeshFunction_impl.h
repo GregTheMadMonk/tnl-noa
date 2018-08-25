@@ -186,6 +186,21 @@ template< typename Mesh,
    template< typename Vector >
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
+bind( const Vector& data,
+      const IndexType& offset )
+{
+   this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
+   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
+               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
+                         << "this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() );   
+}
+
+template< typename Mesh,
+          int MeshEntityDimension,
+          typename Real >
+   template< typename Vector >
+void
+MeshFunction< Mesh, MeshEntityDimension, Real >::
 bind( const MeshPointer& meshPointer,
       const Vector& data,
       const IndexType& offset )

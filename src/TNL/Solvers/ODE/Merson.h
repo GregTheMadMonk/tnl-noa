@@ -58,8 +58,9 @@ class Merson : public ExplicitSolver< Problem >
 
    RealType computeError( const RealType tau );
 
-   void computeNewTimeLevel( DofVectorPointer& u,
-                             RealType tau,
+   void computeNewTimeLevel( const RealType time,
+                             const RealType tau,
+                             DofVectorPointer& u,
                              RealType& currentResidue );
 
    void writeGrids( const DofVectorPointer& u );

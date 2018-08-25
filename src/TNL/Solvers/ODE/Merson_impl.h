@@ -191,15 +191,16 @@ bool Merson< Problem > :: solve( DofVectorPointer& u )
       {
          RealType lastResidue = this->getResidue();
          RealType newResidue( 0.0 );
-         computeNewTimeLevel( u, currentTau, newResidue );
+         time += currentTau;
+         computeNewTimeLevel( time, currentTau, u, newResidue );
          this->setResidue( newResidue );
  
          /****
           * When time is close to stopTime the new residue
           * may be inaccurate significantly.
           */
-         if( currentTau + time == this->stopTime ) this->setResidue( lastResidue );
-         time += currentTau;
+         if( abs( time - this->stopTime ) < 1.0e-7 ) this->setResidue( lastResidue );
+         
 
          if( ! this->nextIteration() )
             return false;
@@ -239,8 +240,8 @@ bool Merson< Problem > :: solve( DofVectorPointer& u )
 
 template< typename Problem >
 void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
-                                                    const RealType& time,
-                                                    RealType tau )
+                                             const RealType& time,
+                                             RealType tau )
 {
    IndexType size = u->getSize();
 
@@ -273,6 +274,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 1.0 / 3.0 * _k1[ i ] );
+      this->problem->applyBoundaryConditions( time + tau_3, kAux );
       this->problem->getExplicitUpdate( time + tau_3, tau, kAux, k2 );
 
    #ifdef HAVE_OPENMP
@@ -280,6 +282,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * 1.0 / 6.0 * ( _k1[ i ] + _k2[ i ] );
+      this->problem->applyBoundaryConditions( time + tau_3, kAux );
       this->problem->getExplicitUpdate( time + tau_3, tau, kAux, k3 );
 
    #ifdef HAVE_OPENMP
@@ -287,6 +290,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.125 * _k1[ i ] + 0.375 * _k3[ i ] );
+      this->problem->applyBoundaryConditions( time + 0.5 * tau, kAux );
       this->problem->getExplicitUpdate( time + 0.5 * tau, tau, kAux, k4 );
 
    #ifdef HAVE_OPENMP
@@ -294,6 +298,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.5 * _k1[ i ] - 1.5 * _k3[ i ] + 2.0 * _k4[ i ] );
+      this->problem->applyBoundaryConditions( time + tau, kAux );
       this->problem->getExplicitUpdate( time + tau, tau, kAux, k5 );
    }
    if( std::is_same< DeviceType, Devices::Cuda >::value )
@@ -315,6 +320,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
          computeK2Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_kAux[ gridOffset ] );
       }
       cudaThreadSynchronize();
+      this->problem->applyBoundaryConditions( time + tau_3, kAux );
       this->problem->getExplicitUpdate( time + tau_3, tau, kAux, k2 );
       cudaThreadSynchronize();
 
@@ -325,6 +331,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
          computeK3Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k2[ gridOffset ], &_kAux[ gridOffset ] );
       }
       cudaThreadSynchronize();
+      this->problem->applyBoundaryConditions( time + tau_3, kAux );
       this->problem->getExplicitUpdate( time + tau_3, tau, kAux, k3 );
       cudaThreadSynchronize();
 
@@ -335,6 +342,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
          computeK4Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k3[ gridOffset ], &_kAux[ gridOffset ] );
       }
       cudaThreadSynchronize();
+      this->problem->applyBoundaryConditions( time + 0.5 * tau, kAux );
       this->problem->getExplicitUpdate( time + 0.5 * tau, tau, kAux, k4 );
       cudaThreadSynchronize();
 
@@ -345,6 +353,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
          computeK5Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k3[ gridOffset ], &_k4[ gridOffset ], &_kAux[ gridOffset ] );
       }
       cudaThreadSynchronize();
+      this->problem->applyBoundaryConditions( time + tau, kAux );
       this->problem->getExplicitUpdate( time + tau, tau, kAux, k5 );
       cudaThreadSynchronize();
 #endif
@@ -424,9 +433,10 @@ typename Problem :: RealType Merson< Problem > :: computeError( const RealType t
 }
 
 template< typename Problem >
-void Merson< Problem >::computeNewTimeLevel( DofVectorPointer& u,
-                                                      RealType tau,
-                                                      RealType& currentResidue )
+void Merson< Problem >::computeNewTimeLevel( const RealType time,
+                                             const RealType tau,
+                                             DofVectorPointer& u,
+                                             RealType& currentResidue )
 {
    RealType localResidue = RealType( 0.0 );
    IndexType size = k1->getSize();
@@ -454,6 +464,7 @@ void Merson< Problem >::computeNewTimeLevel( DofVectorPointer& u,
          _u[ i ] += add;
          localResidue += abs( ( RealType ) add );
       }
+      this->problem->applyBoundaryConditions( time, u );
    }
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
@@ -481,6 +492,7 @@ void Merson< Problem >::computeNewTimeLevel( DofVectorPointer& u,
          localResidue += this->cudaBlockResidue.sum();
          cudaThreadSynchronize();
       }
+      this->problem->applyBoundaryConditions( time, u );
 
 #endif
    }

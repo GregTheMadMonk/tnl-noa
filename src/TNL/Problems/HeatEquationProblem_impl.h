@@ -89,6 +89,12 @@ setup( const Config::ParameterContainer& parameters,
       std::cerr << "I was not able to initialize the right-hand side function." << std::endl;
       return false;
    }
+   this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
+   this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
+   this->explicitUpdater.setRightHandSide( this->rightHandSidePointer );
+   this->systemAssembler.setDifferentialOperator( this->differentialOperatorPointer );
+   this->systemAssembler.setBoundaryConditions( this->boundaryConditionPointer );
+   this->systemAssembler.setRightHandSide( this->rightHandSidePointer );
    return true;
 }
 
@@ -206,11 +212,21 @@ getExplicitUpdate( const RealType& time,
     */
    
    this->bindDofs( uDofs );
-   MeshFunctionPointer fuPointer( this->getMesh(), fuDofs );
-   this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer ),
-   this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer ),
-   this->explicitUpdater.setRightHandSide( this->rightHandSidePointer ),
-   this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, this->getMesh(), this->uPointer, fuPointer );
+   this->fuPointer->bind( this->getMesh(), *fuDofs );
+   this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, this->getMesh(), this->uPointer, this->fuPointer );
+}
+
+template< typename Mesh,
+          typename BoundaryCondition,
+          typename RightHandSide,
+          typename DifferentialOperator >
+void 
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+applyBoundaryConditions( const RealType& time,
+                         DofVectorPointer& uDofs )
+{
+   this->bindDofs( uDofs );
+   this->explicitUpdater.template applyBoundaryConditions< typename Mesh::Cell >( this->getMesh(), time, this->uPointer );
 }
 
 template< typename Mesh,
@@ -227,9 +243,6 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& bPointer )
 {
    this->bindDofs( dofsPointer );
-   this->systemAssembler.setDifferentialOperator( this->differentialOperatorPointer );
-   this->systemAssembler.setBoundaryConditions( this->boundaryConditionPointer );
-   this->systemAssembler.setRightHandSide( this->rightHandSidePointer );
    this->systemAssembler.template assembly< typename Mesh::Cell, typename MatrixPointer::ObjectType >( 
       time,
       tau,

@@ -25,7 +25,7 @@ template< typename Mesh,
 void
 Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processBoundaryEntities( const MeshPointer& meshPointer,
-                            UserData& userData ) const
+                         UserData& userData ) const
 {
    auto entitiesCount = meshPointer->template getBoundaryEntitiesCount< EntitiesDimension >();
 #ifdef HAVE_OPENMP

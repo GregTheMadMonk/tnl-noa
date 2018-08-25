@@ -143,17 +143,6 @@ template< typename Mesh,
           typename Real,
           typename Device,
           typename Index >
-void
-PDEProblem< Mesh, Real, Device, Index >::
-setExplicitBoundaryConditions( const RealType& time,
-                               DofVectorPointer& dofs )
-{
-}
-
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
     template< typename Matrix >
 void
 PDEProblem< Mesh, Real, Device, Index >::

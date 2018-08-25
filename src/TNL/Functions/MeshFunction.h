@@ -75,6 +75,10 @@ class MeshFunction :
                   const String& prefix = "" );
  
       void bind( ThisType& meshFunction );
+      
+      template< typename Vector >
+      void bind( const Vector& data,
+                 const IndexType& offset = 0 );
  
       template< typename Vector >
       void bind( const MeshPointer& meshPointer,

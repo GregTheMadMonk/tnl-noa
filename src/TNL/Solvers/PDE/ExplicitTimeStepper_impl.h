@@ -130,7 +130,7 @@ solve( const RealType& time,
       this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< Problem >::RealType ) this->odeSolver->getMinIterations() );
    if( ! this->odeSolver->solve( dofVector ) )
       return false;
-   this->problem->setExplicitBoundaryConditions( stopTime, dofVector );
+   //this->problem->setExplicitBoundaryConditions( stopTime, dofVector );
    mainTimer.stop();
    this->allIterations += this->odeSolver->getIterations();
    return true;
@@ -163,7 +163,7 @@ getExplicitUpdate( const RealType& time,
       this->solverMonitor->setStage( "Explicit update" );
 
    this->explicitUpdaterTimer.start();
-   this->problem->setExplicitBoundaryConditions( time, u );
+   this->problem->applyBoundaryConditions( time, u );
    this->problem->getExplicitUpdate( time, tau, u, fu );
    this->explicitUpdaterTimer.stop();
 
@@ -179,6 +179,17 @@ getExplicitUpdate( const RealType& time,
    }
    this->postIterateTimer.stop();
 }
+
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
+void
+ExplicitTimeStepper< Problem, OdeSolver >::
+applyBoundaryConditions( const RealType& time,
+                            DofVectorPointer& u )
+{
+   this->problem->applyBoundaryConditions( time, u );
+}
+
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >

@@ -87,6 +87,9 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                               const RealType& tau,
                               DofVectorPointer& _u,
                               DofVectorPointer& _fu );
+      
+      void applyBoundaryConditions( const RealType& time,
+                                    DofVectorPointer& dofs );      
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,

@@ -123,8 +123,6 @@ class ExplicitUpdater
             
          TNL_ASSERT_TRUE( this->userData.differentialOperator,
                           "The differential operator is not correctly set-up. Use method setDifferentialOperator() to do it." );
-         TNL_ASSERT_TRUE( this->userData.boundaryConditions,
-                          "The boundary conditions are not correctly set-up. Use method setBoundaryCondtions() to do it." );
          TNL_ASSERT_TRUE( this->userData.rightHandSide,
                           "The right-hand side is not correctly set-up. Use method setRightHandSide() to do it." );
          
@@ -138,13 +136,24 @@ class ExplicitUpdater
                                                        ( meshPointer,
                                                          userData );
          this->userData.time = time + tau;
-         meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                             TraverserBoundaryEntitiesProcessor >
-                                           ( meshPointer,
-                                             userData );
          
       }
       
+      template< typename EntityType >
+      void applyBoundaryConditions( const MeshPointer& meshPointer,
+                                    const RealType& time,
+                                    MeshFunctionPointer& uPointer )
+      {
+         TNL_ASSERT_TRUE( this->userData.boundaryConditions,
+                          "The boundary conditions are not correctly set-up. Use method setBoundaryCondtions() to do it." );         
+         this->userData.time = time;
+         this->userData.u = &uPointer.template modifyData< DeviceType >();         
+         Meshes::Traverser< MeshType, EntityType > meshTraverser;
+         meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                             TraverserBoundaryEntitiesProcessor >
+                                           ( meshPointer,
+                                             userData );         
+      }
          
       class TraverserBoundaryEntitiesProcessor
       {
@@ -184,7 +193,6 @@ class ExplicitUpdater
 
    protected:
 
-      //TraverserUserDataPointer userDataPointer;
       TraverserUserData userData;
 
 };

@@ -65,6 +65,9 @@ class HeatEquationBenchmarkProblem:
                               const RealType& tau,
                               DofVectorPointer& _uPointer,
                               DofVectorPointer& _fuPointer );
+      
+      void applyBoundaryConditions( const RealType& time,
+                                    DofVectorPointer& dofs );        
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,

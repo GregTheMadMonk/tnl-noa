@@ -72,8 +72,8 @@ class PDEProblem : public Problem< Real, Device, Index >
                        const RealType& tau,
                        DofVectorPointer& dofs );
  
-      void setExplicitBoundaryConditions( const RealType& time,
-                                          DofVectorPointer& dofs );
+      void applyBoundaryConditions( const RealType& time,
+                                       DofVectorPointer& dofs );
 
       template< typename Matrix >
       void saveFailedLinearSystem( const Matrix& matrix,
