@@ -609,8 +609,11 @@ HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, Differenti
 applyBoundaryConditions( const RealType& time,
                          DofVectorPointer& uDofs )
 {
-   this->bindDofs( uDofs );
-   this->explicitUpdater.template applyBoundaryConditions< typename Mesh::Cell >( this->getMesh(), time, this->u );
+   if( this->cudaKernelType == "templated" )
+   {
+      this->bindDofs( uDofs );
+      this->explicitUpdater.template applyBoundaryConditions< typename Mesh::Cell >( this->getMesh(), time, this->u );
+   }
 }
 
 
