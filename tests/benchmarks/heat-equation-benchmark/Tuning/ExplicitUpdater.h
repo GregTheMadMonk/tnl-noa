@@ -136,6 +136,8 @@ class ExplicitUpdater
                                     const RealType& time,
                                     MeshFunctionPointer& uPointer )
       {
+         this->userDataPointer->time = time;
+         this->userDataPointer->u = uPointer->getData().getData();
          Meshes::Traverser< MeshType, EntityType > meshTraverser;
          meshTraverser.template processBoundaryEntities< TraverserUserData,
                                              TraverserBoundaryEntitiesProcessor >
