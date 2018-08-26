@@ -19,7 +19,7 @@ namespace TNL {
 /****
  * This is only a helper class for Traverser specializations for Grid.
  */
-template< typename Grid >
+template< typename Grid, typename Cell >
 class GridTraverser
 {
 };
@@ -28,8 +28,9 @@ class GridTraverser
  * 2D grid, Devices::Host
  */
 template< typename Real,
-          typename Index >
-class GridTraverser< Meshes::Grid< 2, Real, Devices::Host, Index > >
+          typename Index,
+          typename Cell >
+class GridTraverser< Meshes::Grid< 2, Real, Devices::Host, Index >, Cell >
 {
    public:
       
@@ -53,7 +54,7 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Host, Index > >
          const GridPointer& gridPointer,
          const CoordinatesType begin,
          const CoordinatesType end,
-         Pointers::SharedPointer<  UserData, DeviceType >& userData,
+         UserData& userData,
          // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
 //         const int& stream = 0,
          const int& stream,
@@ -66,8 +67,9 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Host, Index > >
  * 2D grid, Devices::Cuda
  */
 template< typename Real,
-          typename Index >
-class GridTraverser< Meshes::Grid< 2, Real, Devices::Cuda, Index > >
+          typename Index,
+          typename Cell >
+class GridTraverser< Meshes::Grid< 2, Real, Devices::Cuda, Index >, Cell >
 {
    public:
       
@@ -91,7 +93,7 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Cuda, Index > >
          const GridPointer& gridPointer,
          const CoordinatesType& begin,
          const CoordinatesType& end,
-         Pointers::SharedPointer<  UserData, DeviceType >& userData,
+         UserData& userData,
          // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
 //         const int& stream = 0,
          const int& stream,

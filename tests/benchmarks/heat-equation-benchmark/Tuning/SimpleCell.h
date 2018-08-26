@@ -10,7 +10,12 @@
 
 #pragma once
 
-template< typename Grid >
+#include <TNL/Meshes/GridDetails/NeighborGridEntitiesStorage.h>
+#include <TNL/Meshes/GridEntityConfig.h>
+
+#define SIMPLE_CELL_HAVE_NEIGHBOR_ENTITIES_STORAGE
+
+template< typename Grid, typename Config = Meshes::GridEntityNoStencilStorage >
 class SimpleCell
 {
    public:
@@ -21,21 +26,34 @@ class SimpleCell
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::PointType PointType;
- 
+      typedef SimpleCell< GridType, Config > ThisType;
+      typedef Meshes::NeighborGridEntitiesStorage< ThisType, Config >
+         NeighborGridEntitiesStorageType;
+      typedef Config ConfigType;
+      
       constexpr static int getMeshDimension() { return GridType::getMeshDimension(); };
  
       constexpr static int getEntityDimension() { return getMeshDimension(); };
- 
-      typedef SimpleCell< GridType > ThisType;
-
+       
       __cuda_callable__ inline
-      SimpleCell( const GridType& grid ) :grid( grid ) {};
+      SimpleCell( const GridType& grid )
+      :grid( grid )
+#ifdef SIMPLE_CELL_HAVE_NEIGHBOR_ENTITIES_STORAGE         
+      , neighborEntitiesStorage( *this )
+#endif      
+      {};
  
-      /*__cuda_callable__ inline
+      __cuda_callable__ inline
       SimpleCell( const GridType& grid,
                   const CoordinatesType& coordinates,
-                  const EntityOrientationType& orientation = EntityOrientationType( ( Index ) 0 ),
-                  const EntityBasisType& basis = EntityBasisType( ( Index ) 1 ) );*/
+                  const CoordinatesType& orientation = CoordinatesType( ( IndexType ) 0 ),
+                  const CoordinatesType& basis = CoordinatesType( ( IndexType ) 1 ) )
+      : grid( grid ),
+        coordinates( coordinates )
+#ifdef SIMPLE_CELL_HAVE_NEIGHBOR_ENTITIES_STORAGE               
+      , neighborEntitiesStorage( *this )
+#endif      
+      {};
  
       __cuda_callable__ inline
       const CoordinatesType& getCoordinates() const { return this->coordinates; };
@@ -52,7 +70,11 @@ class SimpleCell
        * mechanism is a performance.
        */
       __cuda_callable__ inline
-      void refresh() { this->entityIndex = this->grid.getEntityIndex( *this ); };
+      void refresh() 
+      { 
+         this->entityIndex = this->grid.getEntityIndex( *this );
+         this->neighborEntitiesStorage.refresh( this->grid, this->entityIndex );
+      };
 
       __cuda_callable__ inline
       IndexType getIndex() const { return this->entityIndex; };
@@ -73,10 +95,17 @@ class SimpleCell
       __cuda_callable__ inline
       const NeighborEntities< NeighborEntityDimension >&
       getNeighborEntities() const;
- 
+      */
       __cuda_callable__ inline
-      bool isBoundaryEntity() const;
-       */
+      bool isBoundaryEntity() const
+      {
+         return false;
+         /*return( this->getCoordinates().x() == 0 ||
+                 this->getCoordinates().y() == 0 ||
+                 this->getCoordinates().x() == this->getMesh().getDimensions().x() - 1 ||
+                 this->getCoordinates().y() == this->getMesh().getDimensions().y() - 1 );*/
+      };
+      
  
       __cuda_callable__ inline
       PointType getCenter() const
@@ -102,6 +131,11 @@ class SimpleCell
       IndexType entityIndex;
  
       CoordinatesType coordinates;
+       
+#ifdef SIMPLE_CELL_HAVE_NEIGHBOR_ENTITIES_STORAGE               
+      NeighborGridEntitiesStorageType neighborEntitiesStorage;
+#endif
+      
       
       // TODO: Test of boundary entity will likely be more
       // complicated with MPI. It might be more efficient to resolve it

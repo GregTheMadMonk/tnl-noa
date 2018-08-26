@@ -146,6 +146,9 @@ class ExplicitUpdater
       {
          TNL_ASSERT_TRUE( this->userData.boundaryConditions,
                           "The boundary conditions are not correctly set-up. Use method setBoundaryCondtions() to do it." );         
+         TNL_ASSERT_TRUE( &uPointer.template modifyData< DeviceType >(),
+                          "The function u is not correctly set-up. It was not bound probably with DOFs." );
+
          this->userData.time = time;
          this->userData.u = &uPointer.template modifyData< DeviceType >();         
          Meshes::Traverser< MeshType, EntityType > meshTraverser;

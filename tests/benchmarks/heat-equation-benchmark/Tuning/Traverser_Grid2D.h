@@ -28,17 +28,17 @@ class Traverser
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const MeshPointer& meshPointer,
-                                    Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
+                                    UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const MeshPointer& meshPointer,
-                                    Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
+                                    UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const MeshPointer& meshPointer,
-                               Pointers::SharedPointer<  UserData, DeviceType >& userDataPointer ) const;
+                               UserData& userData ) const;
 }; 
 
 template< typename Real,
@@ -55,16 +55,16 @@ class Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const GridPointer& gridPointer,
-                                    Pointers::SharedPointer<  UserData, Device >& userDataPointer ) const;
+                                    UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridPointer& gridPointer,
-                                    Pointers::SharedPointer<  UserData, Device >& userDataPointer ) const;
+                                    UserData& userData ) const;
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const GridPointer& gridPointer,
-                               Pointers::SharedPointer<  UserData, Device >& userDataPointer ) const;
+                               UserData& userData ) const;
  
 };
 
