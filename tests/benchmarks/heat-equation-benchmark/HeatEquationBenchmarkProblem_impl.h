@@ -560,8 +560,8 @@ getExplicitUpdate( const RealType& time,
             //using CellConfig = Meshes::GridEntityNoStencilStorage;
             using CellConfig = Meshes::GridEntityCrossStencilStorage< 1 >;
             using ExplicitUpdaterType = ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
-            //using Cell = typename MeshType::Cell; 
-            using Cell = SimpleCell< Mesh, CellConfig >;
+            using Cell = typename MeshType::Cell; 
+            //using Cell = SimpleCell< Mesh, CellConfig >;
             using MeshTraverserType = Traverser< MeshType, Cell >;
             using UserData = ExplicitUpdaterTraverserUserData< RealType,
                MeshFunctionType,
@@ -593,12 +593,12 @@ getExplicitUpdate( const RealType& time,
             TNL::Devices::Cuda::synchronizeDevice();
             int cudaErr;
             Meshes::Traverser< MeshType, Cell > meshTraverser;
-            meshTraverser.template processInteriorEntities< UserData,
+            /*meshTraverser.template processInteriorEntities< UserData,
                                                       InteriorEntitiesProcessor >
                                                           ( mesh,
                                                             userData );
              // */
-            /*_heatEquationKernel< InteriorEntitiesProcessor, UserData, MeshType, RealType, IndexType >
+            _heatEquationKernel< InteriorEntitiesProcessor, UserData, MeshType, RealType, IndexType >
             <<< cudaGridSize, cudaBlockSize >>>
                ( &mesh.template getData< Devices::Cuda >(),
                 userData );
@@ -609,12 +609,12 @@ getExplicitUpdate( const RealType& time,
                return;
             }
             
-            meshTraverser.template processBoundaryEntities< UserData,
+            /*meshTraverser.template processBoundaryEntities< UserData,
                                                       BoundaryEntitiesProcessor >
                                                           ( mesh,
                                                             userData );
             // */
-           /*_boundaryConditionsKernel< BoundaryEntitiesProcessor, UserData, MeshType, RealType, IndexType >
+           _boundaryConditionsKernel< BoundaryEntitiesProcessor, UserData, MeshType, RealType, IndexType >
             <<< cudaGridSize, cudaBlockSize >>>
                ( &mesh.template getData< Devices::Cuda >(),
                 userData );
@@ -650,6 +650,7 @@ applyBoundaryConditions( const RealType& time,
    }
    if( this->cudaKernelType == "tunning" )
    {
+      /*
       return;
       this->bindDofs( uDofs );
       this->explicitUpdater.template applyBoundaryConditions< typename Mesh::Cell >( this->getMesh(), time, this->u );
