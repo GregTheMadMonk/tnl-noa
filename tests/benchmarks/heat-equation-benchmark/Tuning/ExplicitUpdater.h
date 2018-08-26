@@ -41,9 +41,9 @@ class ExplicitUpdaterTraverserUserData
 
       const RightHandSide* rightHandSide;
 
-      //MeshFunction *uMf, *fuMf;
+      MeshFunction *u, *fu;
       
-      Real *u, *fu;
+      Real *real_u, *real_fu;
       
       ExplicitUpdaterTraverserUserData()
       : time( 0.0 ),
@@ -117,18 +117,16 @@ class ExplicitUpdater
          
          
          this->userDataPointer->time = time;
-         this->userDataPointer->u = uPointer->getData().getData();
-         this->userDataPointer->fu = fuPointer->getData().getData();
+         this->userDataPointer->u = &uPointer->template modifyData< DeviceType >();
+         this->userDataPointer->fu = &fuPointer->template modifyData< DeviceType >();
+         this->userDataPointer->real_u = uPointer->getData().getData();
+         this->userDataPointer->real_fu = fuPointer->getData().getData();         
          TNL::Traverser< MeshType, EntityType > meshTraverser;
          meshTraverser.template processInteriorEntities< TraverserUserData,
                                                          TraverserInteriorEntitiesProcessor >
                                                        ( meshPointer,
                                                          userDataPointer );
          this->userDataPointer->time = time + tau;
-         /*meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                             TraverserBoundaryEntitiesProcessor >
-                                           ( meshPointer,
-                                             userDataPointer );*/  
       }
       
       template< typename EntityType >
@@ -156,19 +154,18 @@ class ExplicitUpdater
                                               TraverserUserData& userData,
                                               const GridEntity& entity )
             {
-               /*( *userData.u )( entity ) = ( *userData.boundaryConditions )
-                  ( *userData.u, entity, userData.time );*/
+               ( *userData.u )( entity ) = ( *userData.boundaryConditions )
+                  ( *userData.u, entity, userData.time );
             }
             
-            //template< typename EntityType >            
+
             __cuda_callable__
             static inline void processEntity( const MeshType& mesh,
                                               TraverserUserData& userData,
-                                              //const EntityType& entity,
                                               const IndexType& entityIndex,
                                               const typename MeshType::CoordinatesType& coordinates )
             {
-               userData.u[ entityIndex ] = 0.0; /*( *userData.boundaryConditions )
+               userData.real_u[ entityIndex ] = 0.0; /* ( *userData.boundaryConditions )
                   ( *userData.u, entity, userData.time );*/
             }
             
@@ -188,23 +185,21 @@ class ExplicitUpdater
                                               const EntityType& entity )
             {
                typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               ( userData.fu )[ entity.getIndex() ]  = 
-                  ( *userData.differentialOperator )( userData.u, entity, userData.time );
+               ( *userData.fu )( entity )  = 
+                  ( *userData.differentialOperator )( *userData.u, entity, userData.time );
                    + FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
                
             }
 
-            //template< typename EntityType >
             __cuda_callable__
             static inline void processEntity( const MeshType& mesh,
                                               TraverserUserData& userData,
-                                              //const EntityType& entity,
                                               const IndexType& entityIndex,
                                               const typename MeshType::CoordinatesType& coordinates )
             {
                typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               userData.fu[ entityIndex ] = 
-                       ( *userData.differentialOperator )( mesh, userData.u, entityIndex, coordinates, userData.time );
+               userData.real_fu[ entityIndex ] = 
+                       ( *userData.differentialOperator )( mesh, userData.real_u, entityIndex, coordinates, userData.time );
                     //   + 0.0;
             }
             

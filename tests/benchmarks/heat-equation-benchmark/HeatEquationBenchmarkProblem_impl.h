@@ -11,6 +11,11 @@
 #include "Tuning/SimpleCell.h"
 #include "Tuning/GridTraverser.h"
 
+//#define WITH_TNL  // In the 'tunning' part, this serves for comparison of performance 
+                  // when using common TNL structures compared to the benchmark ones
+
+
+
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
@@ -534,19 +539,28 @@ getExplicitUpdate( const RealType& time,
       {
          if( std::is_same< DeviceType, Devices::Cuda >::value )
          {   
-            /*using ExplicitUpdaterType = TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
+            this->u->bind( mesh, uDofs );
+            this->fu->bind( mesh, fuDofs );                     
+            
+            
+            /*this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, this->u, this->fu );
+            return;*/
+            
+#ifdef WITH_TNL
+            using ExplicitUpdaterType = TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
             using Cell = typename MeshType::Cell;
             using MeshTraverserType = Meshes::Traverser< MeshType, Cell >;
             using UserData = TNL::Solvers::PDE::ExplicitUpdaterTraverserUserData< RealType,
                MeshFunctionType,
                DifferentialOperator,
                BoundaryCondition,
-               RightHandSide >;*/
+               RightHandSide >;
             
+#else
             //using CellConfig = Meshes::GridEntityNoStencilStorage;
-            
             using CellConfig = Meshes::GridEntityCrossStencilStorage< 1 >;
             using ExplicitUpdaterType = ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
+            //using Cell = typename MeshType::Cell; 
             using Cell = SimpleCell< Mesh, CellConfig >;
             using MeshTraverserType = Traverser< MeshType, Cell >;
             using UserData = ExplicitUpdaterTraverserUserData< RealType,
@@ -554,24 +568,22 @@ getExplicitUpdate( const RealType& time,
                DifferentialOperator,
                BoundaryCondition,
                RightHandSide >;
+#endif            
 
             using InteriorEntitiesProcessor = typename ExplicitUpdaterType::TraverserInteriorEntitiesProcessor;
             using BoundaryEntitiesProcessor = typename ExplicitUpdaterType::TraverserBoundaryEntitiesProcessor;
-         
-            this->u->bind( mesh, uDofs );
-            this->fu->bind( mesh, fuDofs );         
             
             UserData userData;
             userData.time = time;
             userData.differentialOperator = &this->differentialOperatorPointer.template getData< Devices::Cuda >();
             userData.boundaryConditions = &this->boundaryConditionPointer.template getData< Devices::Cuda >();
             userData.rightHandSide = &this->rightHandSidePointer.template getData< Devices::Cuda >();
-            //userData.u = &this->u.template modifyData< Devices::Cuda >(); //uDofs->getData();
-            //userData.fu = &this->fu.template modifyData< Devices::Cuda >(); //fuDofs->getData();
-            userData.u = uDofs->getData();
-            userData.fu = fuDofs->getData();
-            
-                        
+            userData.u = &this->u.template modifyData< Devices::Cuda >(); //uDofs->getData();
+            userData.fu = &this->fu.template modifyData< Devices::Cuda >(); //fuDofs->getData();
+#ifndef WITH_TNL
+            userData.real_u = uDofs->getData();
+            userData.real_fu = fuDofs->getData();
+#endif                        
             const IndexType gridXSize = mesh->getDimensions().x();
             const IndexType gridYSize = mesh->getDimensions().y();
             dim3 cudaBlockSize( 16, 16 );
@@ -580,32 +592,13 @@ getExplicitUpdate( const RealType& time,
             
             TNL::Devices::Cuda::synchronizeDevice();
             int cudaErr;
-            /*Meshes::Traverser< MeshType, Cell > meshTraverser;
-            meshTraverser.template processBoundaryEntities< UserData,
-                                                      BoundaryEntitiesProcessor >
-                                                          ( mesh,
-                                                            userData );
-             */
-            
-            
-            _boundaryConditionsKernel< BoundaryEntitiesProcessor, UserData, MeshType, RealType, IndexType >
-            <<< cudaGridSize, cudaBlockSize >>>
-               ( &mesh.template getData< Devices::Cuda >(),
-                userData );
-                //&userDataPtr.template modifyData< Devices::Cuda >() );
-            if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
-            {
-               std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
-               return;
-            }
-
-            
-            /*meshTraverser.template processInteriorEntities< UserData,
+            Meshes::Traverser< MeshType, Cell > meshTraverser;
+            meshTraverser.template processInteriorEntities< UserData,
                                                       InteriorEntitiesProcessor >
                                                           ( mesh,
                                                             userData );
-             * */
-            _heatEquationKernel< InteriorEntitiesProcessor, UserData, MeshType, RealType, IndexType >
+             // */
+            /*_heatEquationKernel< InteriorEntitiesProcessor, UserData, MeshType, RealType, IndexType >
             <<< cudaGridSize, cudaBlockSize >>>
                ( &mesh.template getData< Devices::Cuda >(),
                 userData );
@@ -615,6 +608,26 @@ getExplicitUpdate( const RealType& time,
                std::cerr << "Laplace operator failed." << std::endl;
                return;
             }
+            
+            meshTraverser.template processBoundaryEntities< UserData,
+                                                      BoundaryEntitiesProcessor >
+                                                          ( mesh,
+                                                            userData );
+            // */
+           /*_boundaryConditionsKernel< BoundaryEntitiesProcessor, UserData, MeshType, RealType, IndexType >
+            <<< cudaGridSize, cudaBlockSize >>>
+               ( &mesh.template getData< Devices::Cuda >(),
+                userData );
+                //&userDataPtr.template modifyData< Devices::Cuda >() );
+            // */ 
+            if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
+            {
+               std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
+               return;
+            }
+
+            
+            
          }
       }      
    }
@@ -629,10 +642,73 @@ HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, Differenti
 applyBoundaryConditions( const RealType& time,
                          DofVectorPointer& uDofs )
 {
+   const MeshPointer& mesh = this->getMesh();
    if( this->cudaKernelType == "templated" )
    {
       this->bindDofs( uDofs );
       this->explicitUpdater.template applyBoundaryConditions< typename Mesh::Cell >( this->getMesh(), time, this->u );
+   }
+   if( this->cudaKernelType == "tunning" )
+   {
+      return;
+      this->bindDofs( uDofs );
+      this->explicitUpdater.template applyBoundaryConditions< typename Mesh::Cell >( this->getMesh(), time, this->u );
+      return;
+      
+#ifdef WITH_TNL
+      using ExplicitUpdaterType = TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
+      using Cell = typename MeshType::Cell;
+      using MeshTraverserType = Meshes::Traverser< MeshType, Cell >;
+      using UserData = TNL::Solvers::PDE::ExplicitUpdaterTraverserUserData< RealType,
+         MeshFunctionType,
+         DifferentialOperator,
+         BoundaryCondition,
+         RightHandSide >;
+            
+#else
+      //using CellConfig = Meshes::GridEntityNoStencilStorage;
+      using CellConfig = Meshes::GridEntityCrossStencilStorage< 1 >;
+      using ExplicitUpdaterType = ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
+      //using Cell = typename MeshType::Cell; 
+      using Cell = SimpleCell< Mesh, CellConfig >;
+      using MeshTraverserType = Traverser< MeshType, Cell >;
+      using UserData = ExplicitUpdaterTraverserUserData< RealType,
+         MeshFunctionType,
+         DifferentialOperator,
+         BoundaryCondition,
+         RightHandSide >;
+#endif            
+         using InteriorEntitiesProcessor = typename ExplicitUpdaterType::TraverserInteriorEntitiesProcessor;
+         using BoundaryEntitiesProcessor = typename ExplicitUpdaterType::TraverserBoundaryEntitiesProcessor;
+
+         UserData userData;
+         userData.time = time;
+         userData.differentialOperator = &this->differentialOperatorPointer.template getData< Devices::Cuda >();
+         userData.rightHandSide = &this->rightHandSidePointer.template getData< Devices::Cuda >();
+         userData.u = &this->u.template modifyData< Devices::Cuda >(); //uDofs->getData();
+#ifndef WITH_TNL
+         userData.real_u = uDofs->getData();
+#endif
+      userData.boundaryConditions = &this->boundaryConditionPointer.template getData< Devices::Cuda >();
+      Meshes::Traverser< MeshType, Cell > meshTraverser;
+      /*meshTraverser.template processBoundaryEntities< UserData,
+                                                BoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );*/
+      // */
+      /*_boundaryConditionsKernel< BoundaryEntitiesProcessor, UserData, MeshType, RealType, IndexType >
+      <<< cudaGridSize, cudaBlockSize >>>
+         ( &mesh.template getData< Devices::Cuda >(),
+          userData );
+          //&userDataPtr.template modifyData< Devices::Cuda >() );
+      // */ 
+      int cudaErr;
+      if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
+      {
+         std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
+         return;
+      }
+      
    }
 }
 

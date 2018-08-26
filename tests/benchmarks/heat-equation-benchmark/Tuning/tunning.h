@@ -31,6 +31,9 @@ struct Data
 
 #ifdef HAVE_CUDA
 
+#define WITH_CELL  // Serves for comparison of performance when using SimpleCell
+                   // vs. using only cell index and coordinates
+
 template< typename BoundaryEntitiesProcessor, typename UserData, typename Grid, typename Real, typename Index >
 __global__ void _boundaryConditionsKernel( const Grid* grid,
                                            UserData userData )
@@ -40,30 +43,56 @@ __global__ void _boundaryConditionsKernel( const Grid* grid,
    using Coordinates = typename Grid::CoordinatesType;
    const Index& gridXSize = grid->getDimensions().x();
    const Index& gridYSize = grid->getDimensions().y();
+#ifdef WITH_CELL   
+   SimpleCell< Grid > cell( *grid,
+      Coordinates( ( blockIdx.x ) * blockDim.x + threadIdx.x,
+                   ( blockIdx.y ) * blockDim.y + threadIdx.y ) );
+   Coordinates& coordinates = cell.getCoordinates();
+   cell.refresh();   
+#else   
    Coordinates coordinates( ( blockIdx.x ) * blockDim.x + threadIdx.x,
                              ( blockIdx.y ) * blockDim.y + threadIdx.y );
-   
    Index entityIndex = coordinates.y() * gridXSize + coordinates.x();
+#endif   
+   
    
    if( coordinates.x() == 0 && coordinates.y() < gridYSize )
    {
       //u[ c ] = ( *bc )( *grid, u, c, coordinates, 0 );
+#ifdef WITH_CELL
+      BoundaryEntitiesProcessor::processEntity( *grid, userData, cell );
+#else
       BoundaryEntitiesProcessor::processEntity( *grid, userData, entityIndex, coordinates );
+#endif 
    }
    if( coordinates.x() == gridXSize - 1 && coordinates.y() < gridYSize )
    {
       //u[ c ] = ( *bc )( *grid, u, c, coordinates, 0 );
+
+#ifdef WITH_CELL
+      BoundaryEntitiesProcessor::processEntity( *grid, userData, cell );
+#else
       BoundaryEntitiesProcessor::processEntity( *grid, userData, entityIndex, coordinates );
+#endif      
    }
    if( coordinates.y() == 0 && coordinates.x() < gridXSize )
    {
       //u[ c ] = ( *bc )( *grid, u, c, coordinates, 0 );
+#ifdef WITH_CELL
+      BoundaryEntitiesProcessor::processEntity( *grid, userData, cell );
+#else
       BoundaryEntitiesProcessor::processEntity( *grid, userData, entityIndex, coordinates );
+#endif      
    }
    if( coordinates.y() == gridYSize -1  && coordinates.x() < gridXSize )
    {
       //u[ c ] = ( *bc )( *grid, u, c, coordinates, 0 );
+
+#ifdef WITH_CELL
+      BoundaryEntitiesProcessor::processEntity( *grid, userData, cell );
+#else
       BoundaryEntitiesProcessor::processEntity( *grid, userData, entityIndex, coordinates );
+#endif      
    }         
 }
 
@@ -93,12 +122,14 @@ __global__ void _heatEquationKernel( const Grid* grid,
    //if( coordinates.x() > 0 && coordinates.x() < gridXSize - 1 &&
    //    coordinates.y() > 0 && coordinates.y() < gridYSize - 1 )      
    {
+#ifdef WITH_CELL      
       cell.refresh();
       InteriorEntitiesProcessor::processEntity( *grid, userData, cell );
-      
+#else      
       //const Index entityIndex = cell.getCoordinates().y() * gridXSize + cell.getCoordinates().x();
-      //const Index entityIndex = coordinates.y() * gridXSize + coordinates.x();
-      //InteriorEntitiesProcessor::processEntity( *grid, userData, entityIndex, coordinates );
+      const Index entityIndex = coordinates.y() * gridXSize + coordinates.x();
+      InteriorEntitiesProcessor::processEntity( *grid, userData, entityIndex, cell.getCoordinates() );
+#endif      
       
       
       //fu[ entityIndex ] = ( *op )( *grid, userData.u, entityIndex, coordinates, userData.time ); // + 0.1;

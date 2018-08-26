@@ -120,13 +120,19 @@ class ExplicitUpdater
                                                  typename MeshFunction::DeviceType,
                                                  typename MeshFunction::IndexType > >::value != true,
             "Error: I am getting Vector instead of MeshFunction or similar object. You might forget to bind DofVector into MeshFunction in you method getExplicitUpdate."  );
+         TNL_ASSERT_GT( uPointer->getData().getSize(), 0, "The first MeshFunction in the parameters was not bound." );
+         TNL_ASSERT_GT( fuPointer->getData().getSize(), 0, "The second MeshFunction in the parameters was not bound." );
+
+         TNL_ASSERT_EQ( uPointer->getData().getSize(), mesh.template getEntitiesCount< EntityType >(),
+                        "The first MeshFunction in the parameters was not bound properly." );
+         TNL_ASSERT_EQ( fuPointer->getData().getSize(), mesh.template getEntitiesCount< EntityType >(),
+                        "The second MeshFunction in the parameters was not bound properly." );
             
          TNL_ASSERT_TRUE( this->userData.differentialOperator,
                           "The differential operator is not correctly set-up. Use method setDifferentialOperator() to do it." );
          TNL_ASSERT_TRUE( this->userData.rightHandSide,
                           "The right-hand side is not correctly set-up. Use method setRightHandSide() to do it." );
-         
-         
+
          this->userData.time = time;
          this->userData.u = &uPointer.template modifyData< DeviceType >();
          this->userData.fu = &fuPointer.template modifyData< DeviceType >();
@@ -135,8 +141,6 @@ class ExplicitUpdater
                                                          TraverserInteriorEntitiesProcessor >
                                                        ( meshPointer,
                                                          userData );
-         this->userData.time = time + tau;
-         
       }
       
       template< typename EntityType >
