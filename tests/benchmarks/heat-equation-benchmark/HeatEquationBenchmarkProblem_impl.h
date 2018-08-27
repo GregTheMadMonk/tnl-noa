@@ -593,12 +593,12 @@ getExplicitUpdate( const RealType& time,
             TNL::Devices::Cuda::synchronizeDevice();
             int cudaErr;
             Meshes::Traverser< MeshType, Cell > meshTraverser;
-            /*meshTraverser.template processInteriorEntities< UserData,
+            meshTraverser.template processInteriorEntities< UserData,
                                                       InteriorEntitiesProcessor >
                                                           ( mesh,
                                                             userData );
              // */
-            _heatEquationKernel< InteriorEntitiesProcessor, UserData, MeshType, RealType, IndexType >
+            /*_heatEquationKernel< InteriorEntitiesProcessor, UserData, MeshType, RealType, IndexType >
             <<< cudaGridSize, cudaBlockSize >>>
                ( &mesh.template getData< Devices::Cuda >(),
                 userData );
@@ -609,12 +609,12 @@ getExplicitUpdate( const RealType& time,
                return;
             }
             
-            /*meshTraverser.template processBoundaryEntities< UserData,
+            meshTraverser.template processBoundaryEntities< UserData,
                                                       BoundaryEntitiesProcessor >
                                                           ( mesh,
                                                             userData );
             // */
-           _boundaryConditionsKernel< BoundaryEntitiesProcessor, UserData, MeshType, RealType, IndexType >
+           /*_boundaryConditionsKernel< BoundaryEntitiesProcessor, UserData, MeshType, RealType, IndexType >
             <<< cudaGridSize, cudaBlockSize >>>
                ( &mesh.template getData< Devices::Cuda >(),
                 userData );

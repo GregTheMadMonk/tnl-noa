@@ -410,17 +410,98 @@ GridTraverser2DBoundary(
    const Index endX,
    const Index beginY,
    const Index endY,
+   const Index blocksPerFace,
    const dim3 gridIdx,
    const GridEntityParameters... gridEntityParameters )
 {
    using GridType = Meshes::Grid< 2, Real, Devices::Cuda, Index >;
    using CoordinatesType = typename GridType::CoordinatesType;
    
-   Index entitiesAlongX = endX - beginX + 1;
-   Index entitiesAlongY = endY - beginY;
+   const Index faceIdx = blockIdx.x / blocksPerFace;
+   const Index faceBlockIdx = blockIdx.x % blocksPerFace;
+   const Index threadId = faceBlockIdx * blockDim. x + threadIdx.x;
+   if( faceIdx < 2 )
+   {
+      const Index entitiesAlongX = endX - beginX + 1;
+      if( threadId < entitiesAlongX )
+      {
+         GridEntity entity( *grid, 
+            CoordinatesType(  beginX + threadId, faceIdx == 0 ? beginY : endY ),
+            gridEntityParameters... );
+         //printf( "faceIdx %d Thread %d -> %d %d \n ", faceIdx, threadId, entity.getCoordinates().x(), entity.getCoordinates().y() );
+         entity.refresh();
+         EntitiesProcessor::processEntity( *grid, userData, entity );
+      }
+   }
+   else
+   {
+      const Index entitiesAlongY = endY - beginY - 1;   
+      if( threadId < entitiesAlongY )
+      {
+         GridEntity entity( *grid, 
+            CoordinatesType(  faceIdx == 2 ? beginX : endX, beginY + threadId + 1  ),
+            gridEntityParameters... );
+         //printf( "faceIdx %d Thread %d -> %d %d \n ", faceIdx, threadId, entity.getCoordinates().x(), entity.getCoordinates().y() );
+         entity.refresh();
+         EntitiesProcessor::processEntity( *grid, userData, entity );
+      }
+   }
+   
+   
+   
+   /*const Index aux = max( entitiesAlongX, entitiesAlongY );
+   const Index& warpSize = Devices::Cuda::getWarpSize();
+   const Index threadsPerAxis = warpSize * ( aux / warpSize + ( aux % warpSize != 0 ) );
    
    Index threadId = Devices::Cuda::getGlobalThreadIdx_x( gridIdx );
-   if( threadId < entitiesAlongX )
+   GridEntity entity( *grid, 
+         CoordinatesType( 0, 0 ),
+         gridEntityParameters... );
+   CoordinatesType& coordinates = entity.getCoordinates();
+   const Index axisIndex = threadId / threadsPerAxis;
+   //printf( "axisIndex %d, threadId %d thradsPerAxis %d \n", axisIndex, threadId, threadsPerAxis );   
+   threadId -= axisIndex * threadsPerAxis;
+   switch( axisIndex )
+   {
+      case 1:
+         coordinates = CoordinatesType( beginX + threadId, beginY );
+         if( threadId < entitiesAlongX )
+         {
+            //printf( "X1: Thread %d -> %d %d \n ", threadId, coordinates.x(), coordinates.y() );
+            entity.refresh();
+            EntitiesProcessor::processEntity( *grid, userData, entity );
+         }
+         break;
+      case 2:
+         coordinates = CoordinatesType( beginX + threadId, endY );
+         if( threadId < entitiesAlongX )
+         {
+            //printf( "X2: Thread %d -> %d %d \n ", threadId, coordinates.x(), coordinates.y() );
+            entity.refresh();
+            EntitiesProcessor::processEntity( *grid, userData, entity );
+         }
+         break;
+      case 3:
+         coordinates = CoordinatesType( beginX, beginY + threadId + 1 );
+         if( threadId < entitiesAlongY )
+         {
+            //printf( "Y1: Thread %d -> %d %d \n ", threadId, coordinates.x(), coordinates.y() );
+            entity.refresh();
+            EntitiesProcessor::processEntity( *grid, userData, entity );
+         }
+         break;
+      case 4:
+         coordinates = CoordinatesType( endX, beginY + threadId + 1 );
+         if( threadId < entitiesAlongY )
+         {
+            //printf( "Y2: Thread %d -> %d %d \n ", threadId, coordinates.x(), coordinates.y() );
+            entity.refresh();
+            EntitiesProcessor::processEntity( *grid, userData, entity );
+         }
+         break;
+   }*/
+   
+   /*if( threadId < entitiesAlongX )
    {
       GridEntity entity( *grid, 
          CoordinatesType( beginX + threadId, beginY ),
@@ -457,7 +538,7 @@ GridTraverser2DBoundary(
       entity.refresh();
       //printf( "Y2: Thread %d -> %d %d \n ", threadId, entity.getCoordinates().x(), entity.getCoordinates().y() );
       EntitiesProcessor::processEntity( *grid, userData, entity );
-   }
+   }*/
 }
 #endif
 
@@ -487,8 +568,14 @@ processEntities(
    {
       dim3 cudaBlockSize( 256 );      
       dim3 cudaBlocksCount, cudaGridsCount;
-      IndexType cudaThreadsCount = 2 * ( end.x() - begin.x() + end.y() - begin.y() + 1 );
+      const IndexType entitiesAlongX = end.x() - begin.x() + 1;
+      const IndexType entitiesAlongY = end.x() - begin.x() - 1;
+      const IndexType maxFaceSize = max( entitiesAlongX, entitiesAlongY );
+      const IndexType blocksPerFace = maxFaceSize / cudaBlockSize.x + ( maxFaceSize % cudaBlockSize.x != 0 );
+      IndexType cudaThreadsCount = 4 * cudaBlockSize.x * blocksPerFace;
       Devices::Cuda::setupThreads( cudaBlockSize, cudaBlocksCount, cudaGridsCount, cudaThreadsCount );
+      //std::cerr << "blocksPerFace = " << blocksPerFace << "Threads count = " << cudaThreadsCount 
+      //          << "cudaBlockCount = " << cudaBlocksCount.x << std::endl;      
       dim3 gridIdx, cudaGridSize;
       Devices::Cuda::synchronizeDevice();
       for( gridIdx.x = 0; gridIdx.x < cudaGridsCount.x; gridIdx.x++ )
@@ -503,9 +590,11 @@ processEntities(
                  end.x(),
                  begin.y(),
                  end.y(),
+                 blocksPerFace,
                  gridIdx,
                  gridEntityParameters... );
-      }      
+      }
+      //getchar();
       TNL_CHECK_CUDA_DEVICE;
    }
    else
@@ -535,7 +624,7 @@ processEntities(
                  gridIdx,
                  gridEntityParameters... );
          }
-
+      
       // only launches into the stream 0 are synchronized
       if( stream == 0 )
       {
