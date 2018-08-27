@@ -1,3 +1,19 @@
+
+        * tnlBoundaryConditionsSetter was implemented 
+           - it allows to set boundary conditions to given function
+           - in explicit solvers, it must be called explicitly now after calling tnlExplicitUpdater
+
+2015-12-25 Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
+        * significant changes in grids
+            - the central structure is now grid entity rather than grid itself
+            - specialization of cells for cross stencils was implemented -- they store indexes of neighbhour cells
+            - it currently does not work with nvcc compiler
+            - grid traversers takes entity type instead of entity dimensions as a templated argument
+        * mesh function was implemented
+        * boundary conditions were refactored a simplified
+            - there is no need to have analytic and discrete types of boundary conditions
+        * tnl-quickstart does not generate correct code now
+
 2012-10-05  Tomas Oberhuber  <tomas.oberhuber@fjfi.cvut.cz>
  
 	* src/mesh/detail/container.h:

@@ -1,44 +1,12 @@
-
-# /
-/build
-/missing
-/Makefile.in
-/ltmain.sh
-/install-sh
-/depcomp
-/configure
-/config.*
-/aclocal.m4
-/m4
-/autom4te.cache
+/nbproject
 /Debug
 /Release
-.settings
-
-.settings
-
-# /src/
-/src/Makefile.in
-
-# /src/core/
-/src/core/Makefile.in
-
-# /src/debug/
-/src/debug/Makefile.in
-
-# /src/diff/
-/src/diff/Makefile.in
-
-# /src/matrix/
-/src/matrix/*.in
-
-# /tools/
-/tools/Makefile.in
-
-# /tools/share/
-/tools/share/Makefile.in
-
-# /tools/src/
-/tools/src/Makefile.in
 /Testing
 /CMakeLists.txt.user
+/doc/_build
+/Build
+
+# Eclipse project stuff
+/.settings
+/.project
+/.pydevproject
