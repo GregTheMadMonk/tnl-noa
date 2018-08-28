@@ -6,19 +6,12 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLUNITTESTSTARTER_H_
 #define TNLUNITTESTSTARTER_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/ui/text/TestRunner.h>
@@ -35,14 +28,14 @@ class tnlUnitTestStarter
    static bool run()
    {
 #ifdef HAVE_CPPUNIT
-      CppUnit :: TextTestRunner runner;
-      runner. addTest( Tester :: suite() );
-      runner. setOutputter( new CppUnit::CompilerOutputter(&runner.result(), std::cout) );
+      CppUnit::TextTestRunner runner;
+      runner.addTest( Tester :: suite() );
+      runner.setOutputter( new CppUnit::CompilerOutputter(&runner.result(), std::cout) );
       if( ! runner.run() )
          return false;
       return true;
 #else
-      std :: cerr << "Error: CPPUNIT is missing." << std :: endl;
+      std::cerr << "Error: CPPUNIT is missing." << std::endl;
       return false;
 #endif
    }

@@ -1,22 +1,15 @@
 /***************************************************************************
-                          tnlSlicedEllpackMatrixTester.h  -  description
+                          SlicedEllpackTester.h  -  description
                              -------------------
     begin                : Dec 9, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSLICEDELLPACKMATRIXTESTER_H_
-#define TNLSLICEDELLPACKMATRIXTESTER_H_
+#ifndef SlicedEllpackTESTER_H_
+#define SlicedEllpackTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -24,35 +17,37 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <matrices/tnlSlicedEllpackMatrix.h>
-#include <core/tnlFile.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/Matrices/SlicedEllpack.h>
+#include <TNL/File.h>
+#include <TNL/Containers/Vector.h>
+
+using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType, int SliceSize >
-class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
+class SlicedEllpackTester : public CppUnit :: TestCase
 {
    public:
-   typedef tnlSlicedEllpackMatrix< RealType, Device, IndexType, SliceSize > MatrixType;
-   typedef tnlVector< RealType, Device, IndexType > VectorType;
-   typedef tnlVector< IndexType, Device, IndexType > IndexVector;
-   typedef tnlSlicedEllpackMatrixTester< RealType, Device, IndexType, SliceSize > TesterType;
+   typedef SlicedEllpack< RealType, Device, IndexType, SliceSize > MatrixType;
+   typedef Vector< RealType, Device, IndexType > VectorType;
+   typedef Vector< IndexType, Device, IndexType > IndexVector;
+   typedef SlicedEllpackTester< RealType, Device, IndexType, SliceSize > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   tnlSlicedEllpackMatrixTester(){};
+   SlicedEllpackTester(){};
 
    virtual
-   ~tnlSlicedEllpackMatrixTester(){};
+   ~SlicedEllpackTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlTridiagonalMatrixTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setLikeTest", &TesterType::setLikeTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElement_DiagonalMatrixTest", &TesterType::setElement_DiagonalMatrixTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "setElement_DenseMatrixTest", &TesterType::setElement_DenseMatrixTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "setElement_DenseTest", &TesterType::setElement_DenseTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElement_LowerTriangularMatrixTest", &TesterType::setElement_LowerTriangularMatrixTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
@@ -77,7 +72,7 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m1.getRows() );
       rowLengths.setValue( 5 );
-      m1.setRowLengths( rowLengths );
+      m1.setCompressedRowLengths( rowLengths );
       m2.setLike( m1 );
       CPPUNIT_ASSERT( m1.getRows() == m2.getRows() );
    }
@@ -89,7 +84,7 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setRowLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       for( int i = 0; i < 7; i++ )
          CPPUNIT_ASSERT( m.setElement( 0, i, i ) );
@@ -103,7 +98,7 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setRowLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
@@ -120,14 +115,14 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
       }
    }
 
-   void setElement_DenseMatrixTest()
+   void setElement_DenseTest()
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 10 );
-      m.setRowLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
@@ -144,7 +139,7 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
-      m.setRowLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 9; i >= 0; i-- )
          for( int j = 9; j >= 0; j-- )
             m.setElement( i, j, i+j );
@@ -162,7 +157,7 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
       rowLengths.setSize( m.getRows() );
       for( int i = 0; i < 10; i++ )
          rowLengths.setElement( i, i+1 );
-      m.setRowLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
 
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j <= i; j++ )
@@ -177,7 +172,7 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
-      m.setRowLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 9; i >= 0; i-- )
          for( int j = i; j >= 0; j-- )
             m.setElement( i, j, i + j );
@@ -197,7 +192,7 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setRowLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
@@ -227,7 +222,7 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
       IndexVector rowLengths;
       rowLengths.setSize( m.getRows() );
       rowLengths.setValue( 7 );
-      m.setRowLengths( rowLengths );
+      m.setCompressedRowLengths( rowLengths );
       for( int i = 0; i < size; i++ )
       {
          v.setElement( i, i );
@@ -250,4 +245,4 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
 
 #endif /* HAVE_CPPUNIT */
 
-#endif /* TNLSLICEDELLPACKMATRIXTESTER_H_ */
+#endif /* SlicedEllpackTESTER_H_ */

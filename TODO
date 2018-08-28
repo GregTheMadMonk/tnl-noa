@@ -1,29 +1,49 @@
-TODO: test aproximace pro implicitni schemata 
-TODO: pokusit se napsat test explicitni aproximace podobne jako implicinit bez specializace pro grid
-TODO: doladit semi-implicitni resic
-TODO: opravit argumenty metod v heat equation - nekde se nepredavaji dofy a pomocne dofy
-TODO: doresit okrajove podminky v heat equation - nacitani ze souboru
-      => soucasne Dir. a Neum. okrajove podminky prejmenovat asi tnlAnalytic... a zavest nove tnlDirichlet... a tnlNeumann...
-      ktere budou mit sve hodnoty ulozene  ve vektoru      
-TODO: neumanovy okrajove podminky
-TODO: doladit vse s CUDA
-TODO: doplnit mesh travelsals pro jine mesh entity nez cell
+TODO:
+- pri zpracovani dat z MRI jde vetsinou o prilis male snimky na optimalni vyuziti GPU (ve 2D). Kdyby se ale pomoci CUDA streamu provadelo vice 
+  vypoctu soucasne, mohlo by se dosahnout mnohem lepsiho urychleni
+
+TODO:
+- objekt NeighborEnities by mohl vracet i lokalni index dane neighbor entity, coz je potreba pro spravne vkladani maticovych elementu,
+  ted se tyto indexy doplnuji rucne podle znalosti indexovani v gridu. Jelikoz neighbor entities mohou znat typ okoli/vzor numerickeho schematu,
+  dokazaly by se prizpusobit i ruznym patternum. To by pak vyresilo i skladani operatoru s ruznymi patterny.
+
+TODO:
+- pridat execution policy https://github.com/harrism/hemi/blob/master/hemi/execution_policy.h
+
+TODO:
+ - implementovat tnlMixedGridBoundaryConditions, kde by se pro kazdou stranu gridu definoval jiny zvlastni typ
+   okrajovych podminek
+ - dalo by se tim resit i skladani zpetnych a doprednych diferenci u nelinearni difuze, kdy je potreba napr. dopredne diference
+   vycislit i na leve a dolni hranici 2D gridu
+   - tohle resit spis primym rozepsanim schematu
+
+TODO:
+ - implementovat tuple pro snazsi a snad efektivnejsi prenos dat na GPU
+ - nebylo by nutne definovat pomocne datove structury pro traverser
+ - data by se na hostu preskupila do souvisleho bloku dat a ten se prenesl najednou
+
+
+TODO: CUDA unified memory
+ - pretizit operator new s cudaMallocManaged, pak by bylo mozne vytvaret CUDA objekty pristupne pro host a device
+ - v TNL solveru by pak vlastne jen stacilo vytvaret objekty pomoci new
+ - zrejme bude nutne pretizit i delete
+ - pokud jde o MeshDependentData, stacilo by, aby uzivatel pretizil operator new a delete. Pokud by to neudelal, mohlo by 
+se s nimi pracovat postaru
+ - bylo by dobre to obalit unique poinetry, aby se nemusela delat dealokace rucne
+
+
 TODO: implementace maticovych resicu
       * Gaussova eliminace
       * SOR metoda
       * Jacobiho metoda
-      * TFQMR metoda
       * IDR metody 
 
-
-TODO: implementovat tridu tnlFileName pro generovani jmen souboru
+TODO: Nahradit sablonovy parametr dimenze sitove entity za typ entity. Pak by se mohlo zkusit, napriklad u gridu
+      odvozovat entity, ktere obsahuji predpocitane indexy pro dopredne, zpetne, nebo centralni diference. Uzivatel
+      by si mohl definovat vlastni entity. Mohlo by to zvysit efektivitu.
+      U nestrukturovanych siti by se do entit mohly doplnovat ukazatele na struktury s dalsimi informacemi jako 
+      objemy nebo delky entyt apod.
+      za tim ucelem nahradit setIndex v grdi entity za update(), aby to bylo obecnejsi
 
 TODO: metodu pro tnlString pro nahrazeni napr. podretezce XXXXX indexem 00001 tj. uXXXXX.bin -> u00001.bin
       to by melo byt robustnejsi, nez doposavadni pristup 
-
-TODO: vyjimky 
-    
-TODO: implementovat maticovy format COO - mimo jine by se dal vyuzit k rychlejsimu parsovani mtx souboru
-
-TODO: prubezne ukladani vysledku behem vypoctu 
-                 
