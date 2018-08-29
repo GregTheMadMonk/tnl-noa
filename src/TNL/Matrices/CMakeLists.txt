@@ -1,5 +1,5 @@
 SET( headers AdEllpack.h
-             AdEllpack_impl.k
+             AdEllpack_impl.h
              BiEllpack.h
              BiEllpack_impl.h
              COOMatrix.h

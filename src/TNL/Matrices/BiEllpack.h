@@ -8,52 +8,51 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-
 #pragma once
 
-#include <matrices/SparseMatrix.h>
-#include <core/vectors/Containers::Vectors::Vector.h>
+#include <TNL/Matrices/Sparse.h>
+#include <TNL/Containers/Vector.h>
 
-namspace TNL {
-   namepsace Matrices
+namespace TNL {
+   namespace Matrices {
 
 
 template< typename Device >
-class BiEllpackMatrixDeviceDependentCode;
+class BiEllpackDeviceDependentCode;
 
 template< typename Real, typename Device = Devices::Cuda, typename Index = int, int StripSize = 32 >
-class BiEllpackMatrix : public SparseMatrix< Real, Device, Index >
+class BiEllpack : public Sparse< Real, Device, Index >
 {
 public:
 	typedef Real RealType;
 	typedef Device DeviceType;
 	typedef Index IndexType;
-	typedef typename SparseMatrix< RealType, DeviceType, IndexType >::RowLengthsVector RowLengthsVector;
-	typedef typename SparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
-	typedef typename SparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-	typedef BiEllpackMatrix< Real, Device, Index > ThisType;
-	typedef BiEllpackMatrix< Real, Devices::Host, Index > HostType;
-	typedef BiEllpackMatrix< Real, Devices::Cuda, Index > CudaType;
+	typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
+	typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
+	typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
+	typedef BiEllpack< Real, Device, Index > ThisType;
+	typedef BiEllpack< Real, Devices::Host, Index > HostType;
+	typedef BiEllpack< Real, Devices::Cuda, Index > CudaType;
 
-	BiEllpackMatrix();
+	BiEllpack();
 
 	static String getType();
 
 	String getTypeVirtual() const;
 
-	bool setDimensions( const IndexType rows,
-						const IndexType columns );
+	void setDimensions( const IndexType rows,
+	                    const IndexType columns );
 
-	bool setRowLengths( const RowLengthsVector& rowLengths );
+	void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
 	IndexType getRowLength( const IndexType row ) const;
 
 	template< typename Real2,
 			  typename Device2,
 			  typename Index2 >
-	bool setLike( const BiEllpackMatrix< Real2, Device2, Index2, StripSize >& matrix );
+	bool setLike( const BiEllpack< Real2, Device2, Index2, StripSize >& matrix );
 
-	void getRowLengths( Containers::Vectors::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const;
+	void getRowLengths( CompressedRowLengthsVector& rowLengths ) const;
 
 	bool setElement( const IndexType row,
 					 const IndexType column,
@@ -99,9 +98,10 @@ public:
 	RealType getElementFast( const IndexType row,
 							 const IndexType column ) const;
 
+   // TODO: Change this to return MatrixRow type like in CSR format
 	void getRow( const IndexType row,
-			 	 IndexType* columns,
-			 	 RealType* values ) const;
+			 	    IndexType* columns,
+			 	    RealType* values ) const;
 
 #ifdef HAVE_CUDA
 	__device__ __host__
@@ -130,20 +130,20 @@ public:
 
 	void reset();
 
-	bool save( tnlFile& file ) const;
+	bool save( File& file ) const;
 
-	bool load( tnlFile& file );
+	bool load( File& file );
 
 	bool save( const String& fileName ) const;
 
 	bool load( const String& fileName );
 
-	void print( ostream& str ) const;
+	void print( std::ostream& str ) const;
 
-	void performRowBubbleSort( Containers::Vectors::Vector< Index, Device, Index >& tempRowLengths );
-	void computeColumnSizes( Containers::Vectors::Vector< Index, Device, Index >& tempRowLengths );
+	void performRowBubbleSort( Containers::Vector< Index, Device, Index >& tempRowLengths );
+	void computeColumnSizes( Containers::Vector< Index, Device, Index >& tempRowLengths );
 
-//	void verifyRowLengths( const typename BiEllpackMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths );
+//	void verifyRowLengths( const typename BiEllpack< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths );
 
 	template< typename InVector,
 			  typename OutVector >
@@ -164,13 +164,13 @@ public:
 #ifdef HAVE_CUDA
 	__device__
 #endif
-	void performRowBubbleSortCudaKernel( const typename BiEllpackMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths,
+	void performRowBubbleSortCudaKernel( const typename BiEllpack< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths,
 										 const IndexType strip );
 
 #ifdef HAVE_CUDA
 	__device__
 #endif
-	void computeColumnSizesCudaKernel( const typename BiEllpackMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths,
+	void computeColumnSizesCudaKernel( const typename BiEllpack< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths,
 									   const IndexType numberOfStrips,
 									   const IndexType strip );
 
@@ -180,8 +180,8 @@ public:
 	IndexType power( const IndexType number,
 				     const IndexType exponent ) const;
 
-	typedef BiEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
-	friend class BiEllpackMatrixDeviceDependentCode< DeviceType >;
+	typedef BiEllpackDeviceDependentCode< DeviceType > DeviceDependentCode;
+	friend class BiEllpackDeviceDependentCode< DeviceType >;
 
 private:
 
@@ -191,14 +191,14 @@ private:
 
 	IndexType virtualRows;
 
-	Containers::Vectors::Vector< Index, Device, Index > rowPermArray;
+	Containers::Vector< Index, Device, Index > rowPermArray;
 
-	Containers::Vectors::Vector< Index, Device, Index > groupPointers;
+	Containers::Vector< Index, Device, Index > groupPointers;
 
 };
 
    } //namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/BiEllpackMatrix_impl.h>
+#include <TNL/Matrices/BiEllpack_impl.h>
 

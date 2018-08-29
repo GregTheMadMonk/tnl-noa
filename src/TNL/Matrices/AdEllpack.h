@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include <matrices/SparseMatrix.h>
-#include <core/vectors/Containers::Vectors::Vector.h>
+#include <TNL/Matrices/Sparse.h>
+#include <TNL/Containers/Vector.h>
 
-namspace TNL {
-   namepsace Matrices
+namespace TNL {
+   namespace Matrices {
 
 template< typename Device >
-class AdEllpackMatrixDeviceDependentCode;
+class AdEllpackDeviceDependentCode;
 
 struct warpInfo
 {
@@ -67,28 +67,25 @@ private:
 };
 
 template< typename Real, typename Device, typename Index >
-class AdEllpackMatrix : public SparseMatrix< Real, Device, Index >
+class AdEllpack : public Sparse< Real, Device, Index >
 {
 public:
 
     typedef Real RealType;
     typedef Device DeviceType;
     typedef Index IndexType;
-    typedef typename SparseMatrix< RealType, DeviceType, IndexType >::RowLengthsVector RowLengthsVector;
-    typedef AdEllpackMatrix< Real, Device, Index > ThisType;
-    typedef AdEllpackMatrix< Real, Devices::Host, Index > HostType;
-    typedef AdEllpackMatrix< Real, Devices::Cuda, Index > CudaType;
+    typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
+    typedef AdEllpack< Real, Device, Index > ThisType;
+    typedef AdEllpack< Real, Devices::Host, Index > HostType;
+    typedef AdEllpack< Real, Devices::Cuda, Index > CudaType;
 
-    AdEllpackMatrix();
+    AdEllpack();
 
-    static tnlString getType();
+    static String getType();
 
-    tnlString getTypeVirtual() const;
+    String getTypeVirtual() const;
 
-    bool setDimensions( const IndexType rows,
-                        const IndexType columns );
-
-    bool setRowLengths( const RowLengthsVector& rowLengths );
+    void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
     IndexType getWarp( const IndexType row ) const;
 
@@ -98,7 +95,7 @@ public:
     IndexType getRowLength( const IndexType row ) const;
 
     template< typename Real2, typename Device2, typename Index2 >
-    bool setLike( const AdEllpackMatrix< Real2, Device2, Index2 >& matrix );
+    bool setLike( const AdEllpack< Real2, Device2, Index2 >& matrix );
 
     void reset();
 
@@ -129,6 +126,7 @@ public:
 
     //const MatrixType getRow( const IndexType row ) const;
 
+    // TODO: Change this to return MatrixRow type like in CSR format, like those above
     void getRow( const IndexType row,
                  IndexType* columns,
                  RealType* values ) const;
@@ -138,18 +136,18 @@ public:
     void vectorProduct( const InVector& inVector,
                         OutVector& outVector ) const;
 
-    bool save( tnlFile& file ) const;
+    bool save( File& file ) const;
 
-    bool load( tnlFile& file );
+    bool load( File& file );
 
-    bool save( const tnlString& fileName ) const;
+    bool save( const String& fileName ) const;
 
-    bool load( const tnlString& fileName );
+    bool load( const String& fileName );
 
-    void print( ostream& str ) const;
+    void print( std::ostream& str ) const;
 
     bool balanceLoad( const RealType average,
-                      const RowLengthsVector& rowLengths,
+                      const CompressedRowLengthsVector& rowLengths,
                       warpList* list );
 
     void computeWarps( const IndexType SMs,
@@ -160,7 +158,7 @@ public:
 
     void performRowTest();
 
-    void performRowLengthsTest( const RowLengthsVector& rowLengths );
+    void performRowLengthsTest( const CompressedRowLengthsVector& rowLengths );
 
     IndexType getTotalLoad() const;
 
@@ -171,22 +169,59 @@ public:
     void spmvCuda( const InVector& inVector,
                    OutVector& outVector,
                    const int gridIdx ) const;
+
+    template< typename InVector,
+              typename OutVector >
+   __device__
+   void spmvCuda2( const InVector& inVector,
+                   OutVector& outVector,
+                   const int gridIdx ) const;
+
+   template< typename InVector,
+             typename OutVector >
+   __device__
+   void spmvCuda4( const InVector& inVector,
+                   OutVector& outVector,
+                   const int gridIdx ) const;
+   
+   template< typename InVector,
+          typename OutVector >
+   __device__
+   void spmvCuda8( const InVector& inVector,
+                   OutVector& outVector,
+                   const int gridIdx ) const;
+   
+   template< typename InVector,
+          typename OutVector >
+   __device__
+   void spmvCuda16( const InVector& inVector,
+                    OutVector& outVector,
+                    const int gridIdx ) const;   
+
+   template< typename InVector,
+          typename OutVector >
+   __device__
+   void spmvCuda32( const InVector& inVector,
+                    OutVector& outVector,
+                    const int gridIdx ) const;   
+   
+   
 #endif
 
 
     // these arrays must be public
-    Containers::Vectors::Vector< Index, Device, Index > offset;
+    Containers::Vector< Index, Device, Index > offset;
 
-    Containers::Vectors::Vector< Index, Device, Index > rowOffset;
+    Containers::Vector< Index, Device, Index > rowOffset;
 
-    Containers::Vectors::Vector< Index, Device, Index > localLoad;
+    Containers::Vector< Index, Device, Index > localLoad;
 
-    Containers::Vectors::Vector< Index, Device, Index > reduceMap;
+    Containers::Vector< Index, Device, Index > reduceMap;
 
-    typedef AdEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
-    friend class AdEllpackMatrixDeviceDependentCode< DeviceType >;
-    friend class AdEllpackMatrix< RealType, Devices::Host, IndexType >;
-    friend class AdEllpackMatrix< RealType, Devices::Cuda, IndexType >;
+    typedef AdEllpackDeviceDependentCode< DeviceType > DeviceDependentCode;
+    friend class AdEllpackDeviceDependentCode< DeviceType >;
+    friend class AdEllpack< RealType, Devices::Host, IndexType >;
+    friend class AdEllpack< RealType, Devices::Cuda, IndexType >;
 
 protected:
 
@@ -199,6 +234,6 @@ protected:
    } //namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/AdEllpackMatrix_impl.h>
+#include <TNL/Matrices/AdEllpack_impl.h>
 
 

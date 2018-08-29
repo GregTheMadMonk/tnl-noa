@@ -21,6 +21,8 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Matrices/CSR.h>
+#include <TNL/Matrices/AdEllpack.h>
+#include <TNL/Matrices/BiEllpack.h>
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Matrices/SlicedEllpack.h>
 #include <TNL/Matrices/ChunkedEllpack.h>
@@ -363,7 +365,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
       CSRCudaType cudaCSR;
       //cout << "Copying matrix to GPU... ";
       cudaCSR = csrMatrix;
-      TNL::tnlCusparseCSR< Real > cusparseCSR;
+      TNL::CusparseCSR< Real > cusparseCSR;
       cusparseCSR.init( cudaCSR, &cusparseHandle );
       benchmarkMatrix( cusparseCSR,
                        cudaX,
@@ -614,14 +616,15 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                        logFile );
       cudaChunkedEllpack.reset();
 #endif
-         chunkedEllpackMatrix.reset();
-      }
 
-      typedef tnlBiEllpackMatrix< Real, tnlHost, int > BiEllpackMatrixType;
+      typedef BiEllpack< Real, Devices::Host, int > BiEllpackMatrixType;
       BiEllpackMatrixType biEllpackMatrix;
-      if( ! biEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
+      // TODO: I did not check this during git merging, but I hope its gonna work
+      //   Tomas Oberhuber
+      //    copySparseMatrix( biEllpackMatrix, csrMatrix ); // TODO:Fix the getRow method to be compatible with othr formats
+      /*if( ! biEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
          writeTestFailed( logFile, 7 );
-      else
+      else*/
       {
          allocatedElements = biEllpackMatrix.getNumberOfMatrixElements();
          padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
@@ -635,16 +638,21 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
+         biEllpackMatrix.reset();
+
 #ifdef HAVE_CUDA
-         typedef tnlBiEllpackMatrix< Real, tnlCuda, int > BiEllpackMatrixCudaType;
+         typedef BiEllpack< Real, Devices::Cuda, int > BiEllpackMatrixCudaType;
          BiEllpackMatrixCudaType cudaBiEllpackMatrix;
+         // TODO: I did not check this during git merging, but I hope its gonna work
+         //   Tomas Oberhuber
+         //    copySparseMatrix( biEllpackMatrix, csrMatrix ); // TODO:Fix the getRow method to be compatible with othr formats
          cout << "Copying matrix to GPU... ";
-         if( ! cudaBiEllpackMatrix.copyFrom( biEllpackMatrix, rowLengthsCuda ) )
+         /*if( ! cudaBiEllpackMatrix.copyFrom( biEllpackMatrix, rowLengthsCuda ) )
          {
             cerr << "I am not able to transfer the matrix on GPU." << endl;
             writeTestFailed( logFile, 3 );
          }
-         else
+         else*/
          {
             cout << " done.    \r";
             benchmarkMatrix( cudaBiEllpackMatrix,
@@ -659,38 +667,45 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
          }
          cudaBiEllpackMatrix.reset();
 #endif
-         biEllpackMatrix.reset();
-      }*/
+      }
 
 
-  //    typedef tnlAdEllpackMatrix< Real, tnlHost, int > AdEllpackMatrixType;
-  //    AdEllpackMatrixType adEllpackMatrix;
-  //    if( ! adEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
-  //       writeTestFailed( logFile, 7 );
-  //    else
-  //    {
-  //       allocatedElements = adEllpackMatrix.getNumberOfMatrixElements();
-  //       padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
-  //       logFile << "    " << padding << endl;
-  //       benchmarkMatrix( adEllpackMatrix,
-  //                        hostX,
-  //                        hostB,
-  //                        nonzeroElements,
-  //                        "AdEllpack Host",
-  //                        stopTime,
-  //                        baseline,
-  //                        verbose,
-  //                        logFile );
+        typedef AdEllpack< Real, Devices::Host, int > AdEllpackMatrixType;
+        AdEllpackMatrixType adEllpackMatrix;
+         // TODO: I did not check this during git merging, but I hope its gonna work
+         //   Tomas Oberhuber
+        //copySparseMatrix( adEllpackMatrix, csrMatrix ); // TODO:Fix the getRow method to be compatible with othr formats
+        /*if( ! adEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
+           writeTestFailed( logFile, 7 );
+        else*/
+        {
+           allocatedElements = adEllpackMatrix.getNumberOfMatrixElements();
+           padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
+           logFile << "    " << padding << endl;
+           benchmarkMatrix( adEllpackMatrix,
+                            hostX,
+                            hostB,
+                            nonzeroElements,
+                            "AdEllpack Host",
+                            stopTime,
+                            baseline,
+                            verbose,
+                            logFile );
+           adEllpackMatrix.reset();
+
 #ifdef HAVE_CUDA
-         typedef tnlAdEllpackMatrix< Real, tnlCuda, int > AdEllpackMatrixCudaType;
+         typedef AdEllpack< Real, Devices::Cuda, int > AdEllpackMatrixCudaType;
          AdEllpackMatrixCudaType cudaAdEllpackMatrix;
+         // TODO: I did not check this during git merging, but I hope its gonna work
+         //   Tomas Oberhuber
+        //copySparseMatrix( adEllpackMatrix, csrMatrix ); // TODO:Fix the getRow method to be compatible with othr formats
          cout << "Copying matrix to GPU... ";
-         if( ! cudaAdEllpackMatrix.copyFrom( csrMatrix, rowLengthsCuda ) )
+         /*if( ! cudaAdEllpackMatrix.copyFrom( csrMatrix, rowLengthsCuda ) )
          {
             cerr << "I am not able to transfer the matrix on GPU." << endl;
             writeTestFailed( logFile, 3 );
          }
-         else
+         else*/
          {
 	    allocatedElements = cudaAdEllpackMatrix.getNumberOfMatrixElements();
 	    padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
@@ -705,11 +720,10 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                              baseline,
                              verbose,
                              logFile );
-         cudaAdEllpackMatrix.reset();
+           cudaAdEllpackMatrix.reset();
 	}
 #endif
-//         adEllpackMatrix.reset();
-//      }
+     }
    }
    return true;
 }

@@ -79,6 +79,26 @@ Index Matrix< Real, Device, Index >::getColumns() const
 template< typename Real,
           typename Device,
           typename Index >
+const typename Matrix< Real, Device, Index >::ValuesVector&
+Matrix< Real, Device, Index >::
+getValues() const
+{
+   return this->values;
+}
+   
+template< typename Real,
+          typename Device,
+          typename Index >
+typename Matrix< Real, Device, Index >::ValuesVector& 
+Matrix< Real, Device, Index >::
+getValues()
+{
+   return this->values;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void Matrix< Real, Device, Index >::reset()
 {
    this->rows = 0;

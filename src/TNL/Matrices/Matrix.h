@@ -32,7 +32,7 @@ public:
    Matrix();
 
    virtual void setDimensions( const IndexType rows,
-                               const IndexType columns );
+                                 const IndexType columns );
 
    virtual void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths ) = 0;
 
@@ -83,6 +83,10 @@ public:
 
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
+   
+   const ValuesVector& getValues() const;
+   
+   ValuesVector& getValues();
 
    template< typename Matrix >
    bool operator == ( const Matrix& matrix ) const;

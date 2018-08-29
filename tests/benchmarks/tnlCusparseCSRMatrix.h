@@ -17,14 +17,14 @@
 namespace TNL {
 
 template< typename Real >
-class tnlCusparseCSRBase
+class CusparseCSRBase
 {
    public:
       typedef Real RealType;
       typedef Devices::Cuda DeviceType;
       typedef Matrices::CSR< RealType, Devices::Cuda, int > MatrixType;
 
-      tnlCusparseCSRBase()
+      CusparseCSRBase()
       : matrix( 0 )
       {
       };
@@ -90,11 +90,11 @@ class tnlCusparseCSRBase
 
 
 template< typename Real >
-class tnlCusparseCSR
+class CusparseCSR
 {};
 
 template<>
-class tnlCusparseCSR< double > : public tnlCusparseCSRBase< double >
+class CusparseCSR< double > : public CusparseCSRBase< double >
 {
    public:
 
@@ -103,7 +103,7 @@ class tnlCusparseCSR< double > : public tnlCusparseCSRBase< double >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const
       {
-         tnlAssert( matrix, );
+         TNL_ASSERT( matrix, "" );
 #ifdef HAVE_CUDA  
 	 double d = 1.0;       
          double* alpha = &d;
@@ -111,12 +111,12 @@ class tnlCusparseCSR< double > : public tnlCusparseCSRBase< double >
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
                          this->matrix->getRows(),
                          this->matrix->getColumns(),
-                         this->matrix->values.getSize(),
+                         this->matrix->getValues().getSize(),
                          alpha,
                          this->matrixDescriptor,
-                         this->matrix->values.getData(),
-                         this->matrix->rowPointers.getData(),
-                         this->matrix->columnIndexes.getData(),
+                         this->matrix->getValues().getData(),
+                         this->matrix->getRowPointers().getData(),
+                         this->matrix->getColumnIndexes().getData(),
                          inVector.getData(),
                          alpha,
                          outVector.getData() );
@@ -125,7 +125,7 @@ class tnlCusparseCSR< double > : public tnlCusparseCSRBase< double >
 };
 
 template<>
-class tnlCusparseCSR< float > : public tnlCusparseCSRBase< float >
+class CusparseCSR< float > : public CusparseCSRBase< float >
 {
    public:
 
@@ -134,7 +134,7 @@ class tnlCusparseCSR< float > : public tnlCusparseCSRBase< float >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const
       {
-         tnlAssert( matrix, );
+         TNL_ASSERT( matrix, "" );
 #ifdef HAVE_CUDA         
          float d = 1.0;       
          float* alpha = &d;
@@ -142,12 +142,12 @@ class tnlCusparseCSR< float > : public tnlCusparseCSRBase< float >
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
                          this->matrix->getRows(),
                          this->matrix->getColumns(),
-                         this->matrix->values.getSize(),
+                         this->matrix->getValues().getSize(),
                          alpha,
                          this->matrixDescriptor,
-                         this->matrix->values.getData(),
-                         this->matrix->rowPointers.getData(),
-                         this->matrix->columnIndexes.getData(),
+                         this->matrix->getValues().getData(),
+                         this->matrix->getRowPointers().getData(),
+                         this->matrix->getColumnIndexes().getData(),
                          inVector.getData(),
                          alpha,
                          outVector.getData() );
