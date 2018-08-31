@@ -6,40 +6,36 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNL_HEAT_EQUATION_EOC_H_
 #define TNL_HEAT_EQUATION_EOC_H_
 
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfigTag.h>
-#include <solvers/tnlBuildConfigTags.h>
-#include <functors/tnlTestFunction.h>
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <operators/diffusion/tnlExactLinearDiffusion.h>
-#include <operators/tnlAnalyticDirichletBoundaryConditions.h>
-#include <problems/tnlHeatEquationEocRhs.h>
-#include <problems/tnlHeatEquationEocProblem.h>
+#include <TNL/Solvers/Solver.h>
+#include <TNL/Solvers/FastBuildConfigTag.h>
+#include <TNL/Solvers/BuildConfigTags.h>
+#include <TNL/Functions/TestFunction.h>
+#include <TNL/Operators/diffusion/LinearDiffusion.h>
+#include <TNL/Operators/diffusion/ExactLinearDiffusion.h>
+#include <TNL/Problems/HeatEquationEocRhs.h>
+#include <TNL/Problems/HeatEquationEocProblem.h>
+#include <TNL/Operators/DirichletBoundaryConditions.h>
 
-//typedef tnlDefaultBuildConfigTag BuildConfig;
-typedef tnlFastBuildConfig BuildConfig;
+using namespace TNL;
+using namespace TNL::Problems;
 
-template< typename ConfigTag >
+//typedef Solvers::DefaultBuildConfigTag BuildConfig;
+typedef Solvers::FastBuildConfigTag BuildConfig;
+
+template< typename MeshConfig >
 class heatEquationEocConfig
 {
    public:
-      static void configSetup( tnlConfigDescription& config )
+      static void configSetup( Config::ConfigDescription& config )
       {
          config.addDelimiter( "Heat equation EOC settings:" );
          config.addDelimiter( "Tests setting::" );
-         tnlTestFunction< 3, double >::configSetup( config );
+         Functions::TestFunction< 3, double >::configSetup( config );
       }
 };
 
@@ -47,7 +43,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MeshType,
-          typename ConfigTag,
+          typename MeshConfig,
           typename SolverStarter >
 class heatEquationSetter
 {
@@ -57,18 +53,18 @@ class heatEquationSetter
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef tnlStaticVector< MeshType::Dimensions, Real > Vertex;
+   typedef Containers::StaticVector< MeshType::getMeshDimension(), Real > Point;
 
-   static bool run( const tnlParameterContainer& parameters )
+   static bool run( const Config::ParameterContainer& parameters )
    {
-      enum { Dimensions = MeshType::Dimensions };
-      typedef tnlLinearDiffusion< MeshType, Real, Index > ApproximateOperator;
-      typedef tnlExactLinearDiffusion< Dimensions > ExactOperator;
-      typedef tnlTestFunction< MeshType::Dimensions, Real, Device > TestFunction;
-      typedef tnlHeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
-      typedef tnlStaticVector < MeshType::Dimensions, Real > Vertex;
-      typedef tnlAnalyticDirichletBoundaryConditions< MeshType, TestFunction, Real, Index > BoundaryConditions;
-      typedef tnlHeatEquationEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
+      enum { Dimension = MeshType::getMeshDimension() };
+      typedef Operators::LinearDiffusion< MeshType, Real, Index > ApproximateOperator;
+      typedef Operators::ExactLinearDiffusion< Dimension > ExactOperator;
+      typedef Functions::TestFunction< MeshType::getMeshDimension(), Real, Device > TestFunction;
+      typedef HeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
+      typedef Containers::StaticVector < MeshType::getMeshDimension(), Real > Point;
+      typedef Operators::DirichletBoundaryConditions< MeshType, TestFunction, Dimension, Real, Index > BoundaryConditions;
+      typedef HeatEquationEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );
    };
@@ -76,7 +72,7 @@ class heatEquationSetter
 
 int main( int argc, char* argv[] )
 {
-   tnlSolver< heatEquationSetter, heatEquationEocConfig, BuildConfig > solver;
+   Solvers::Solver< heatEquationSetter, heatEquationEocConfig, BuildConfig > solver;
    if( ! solver. run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;

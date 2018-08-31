@@ -1,62 +1,57 @@
 /***************************************************************************
-                          tnlMatrixTester.h  -  description
+                          MatrixTester.h  -  description
                              -------------------
     begin                : May 21, 2011
     copyright            : (C) 2011 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMATRIXTESTER_H_
-#define TNLMATRIXTESTER_H_
+#ifndef MatrixTESTER_H_
+#define MatrixTESTER_H_
 
-#include <matrices/tnlCSRMatrix.h>
+#include <TNL/Matrices/CSR.h>
+
+using namespace TNL;
 
 template< typename Real, typename Index = int >
-class tnlMatrixTester
+class MatrixTester
 {
    public:
 
-   void setEmptyMatrix( tnlCSRMatrix< Real >& csrMatrix,
+   void setEmptyMatrix( CSR< Real >& csrMatrix,
                         const Index size );
 
-   void setDiagonalMatrix( tnlCSRMatrix< Real >& csrMatrix,
+   void setDiagonalMatrix( CSR< Real >& csrMatrix,
                            const Index size );
 
-   void setTridiagonalMatrix( tnlCSRMatrix< Real >& csrMatrix,
+   void setTridiagonal( CSR< Real >& csrMatrix,
                               const Index size );
 
-   void setUpperTriangularMatrix( tnlCSRMatrix< Real >& csrMatrix,
+   void setUpperTriangularMatrix( CSR< Real >& csrMatrix,
                                   const Index size );
 
-   void setFullMatrix( tnlCSRMatrix< Real >& csrMatrix,
+   void setFullMatrix( CSR< Real >& csrMatrix,
                        const Index size );
 
 
    /****
     * Sets part of real matrix.
     */
-   void setBcsstk20Matrix( tnlCSRMatrix< Real >& csrMatrix );
+   void setBcsstk20Matrix( CSR< Real >& csrMatrix );
 
 };
 
 template< typename Real, typename Index >
-void tnlMatrixTester< Real, Index > :: setEmptyMatrix( tnlCSRMatrix< Real >& csrMatrix,
+void MatrixTester< Real, Index > :: setEmptyMatrix( CSR< Real >& csrMatrix,
                                                        const Index size )
 {
    csrMatrix. setDimensions( size, size );
 }
 
 template< typename Real, typename Index >
-void tnlMatrixTester< Real, Index > :: setDiagonalMatrix( tnlCSRMatrix< Real >& csrMatrix,
+void MatrixTester< Real, Index > :: setDiagonalMatrix( CSR< Real >& csrMatrix,
                                                           const Index size )
 {
    csrMatrix. setSize( size );
@@ -66,7 +61,7 @@ void tnlMatrixTester< Real, Index > :: setDiagonalMatrix( tnlCSRMatrix< Real >& 
 }
 
 template< typename Real, typename Index >
-void tnlMatrixTester< Real, Index > :: setTridiagonalMatrix( tnlCSRMatrix< Real >& csrMatrix,
+void MatrixTester< Real, Index > :: setTridiagonal( CSR< Real >& csrMatrix,
                                                              const Index size )
 {
    csrMatrix. setSize( size );
@@ -84,7 +79,7 @@ void tnlMatrixTester< Real, Index > :: setTridiagonalMatrix( tnlCSRMatrix< Real 
 }
 
 template< typename Real, typename Index >
-void tnlMatrixTester< Real, Index > :: setUpperTriangularMatrix( tnlCSRMatrix< Real >& csrMatrix,
+void MatrixTester< Real, Index > :: setUpperTriangularMatrix( CSR< Real >& csrMatrix,
                                                                  const Index size )
 {
    csrMatrix. setSize( size );
@@ -95,7 +90,7 @@ void tnlMatrixTester< Real, Index > :: setUpperTriangularMatrix( tnlCSRMatrix< R
 }
 
 template< typename Real, typename Index >
-void tnlMatrixTester< Real, Index > :: setFullMatrix( tnlCSRMatrix< Real >& csrMatrix,
+void MatrixTester< Real, Index > :: setFullMatrix( CSR< Real >& csrMatrix,
                                                       const Index size )
 {
    csrMatrix. setSize( size );
@@ -106,7 +101,7 @@ void tnlMatrixTester< Real, Index > :: setFullMatrix( tnlCSRMatrix< Real >& csrM
 }
 
 template< typename Real, typename Index >
-void tnlMatrixTester< Real, Index > :: setBcsstk20Matrix( tnlCSRMatrix< Real >& csrMatrix)
+void MatrixTester< Real, Index > :: setBcsstk20Matrix( CSR< Real >& csrMatrix)
 {
    /****
     * Sets a real matrix from a matrix market
@@ -318,4 +313,4 @@ void tnlMatrixTester< Real, Index > :: setBcsstk20Matrix( tnlCSRMatrix< Real >& 
 
 
 
-#endif /* TNLMATRIXTESTER_H_ */
+#endif /* MatrixTESTER_H_ */

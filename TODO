@@ -1,51 +1,49 @@
-tnlLinearSystemAssembler< Mesh,
-                             DofVectorType,
-                             DifferentialOperator,
-                             BoundaryCondition,
-                             RightHandSide,
-                             tnlBackwardTimeDiscretisation,
-                             Matrix > systemAssembler;
-   systemAssembler
+TODO:
+- pri zpracovani dat z MRI jde vetsinou o prilis male snimky na optimalni vyuziti GPU (ve 2D). Kdyby se ale pomoci CUDA streamu provadelo vice 
+  vypoctu soucasne, mohlo by se dosahnout mnohem lepsiho urychleni
 
-tnlLinearDiffusion - je v i heat equation 
-tnlAnalyticNeumannBoundaryConditions - nastavi neumanna na kraji jako template bude funkce tnlConstantFunction
-tnlNoTimeDiscretization - nedela nic s pravou stranou a nemeni diagonalu
+TODO:
+- objekt NeighborEnities by mohl vracet i lokalni index dane neighbor entity, coz je potreba pro spravne vkladani maticovych elementu,
+  ted se tyto indexy doplnuji rucne podle znalosti indexovani v gridu. Jelikoz neighbor entities mohou znat typ okoli/vzor numerickeho schematu,
+  dokazaly by se prizpusobit i ruznym patternum. To by pak vyresilo i skladani operatoru s ruznymi patterny.
 
-jako pravou stranu pouzit opet tnlConstantFunction
+TODO:
+- pridat execution policy https://github.com/harrism/hemi/blob/master/hemi/execution_policy.h
 
-Pouzivej EllPack!!!
+TODO:
+ - implementovat tnlMixedGridBoundaryConditions, kde by se pro kazdou stranu gridu definoval jiny zvlastni typ
+   okrajovych podminek
+ - dalo by se tim resit i skladani zpetnych a doprednych diferenci u nelinearni difuze, kdy je potreba napr. dopredne diference
+   vycislit i na leve a dolni hranici 2D gridu
+   - tohle resit spis primym rozepsanim schematu
 
-
-2) Zatim resit se SOR, ale pak zkusit udelat Jacobiho
-bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b, v podstate je treba zmenit jen matrix->performSORIteration na nejakou vlastni 
-bool tnlEllpackMatrix< Real, Device, Index > :: performSORIteration( 
-
-
-
-
+TODO:
+ - implementovat tuple pro snazsi a snad efektivnejsi prenos dat na GPU
+ - nebylo by nutne definovat pomocne datove structury pro traverser
+ - data by se na hostu preskupila do souvisleho bloku dat a ten se prenesl najednou
 
 
-TODO: v tnlMeshResolver se provadi preklad pro vsechny mozne sablonove parametry => prorezat
+TODO: CUDA unified memory
+ - pretizit operator new s cudaMallocManaged, pak by bylo mozne vytvaret CUDA objekty pristupne pro host a device
+ - v TNL solveru by pak vlastne jen stacilo vytvaret objekty pomoci new
+ - zrejme bude nutne pretizit i delete
+ - pokud jde o MeshDependentData, stacilo by, aby uzivatel pretizil operator new a delete. Pokud by to neudelal, mohlo by 
+se s nimi pracovat postaru
+ - bylo by dobre to obalit unique poinetry, aby se nemusela delat dealokace rucne
 
-TODO: napsat FunctionDiscretizer pro jednotne rozhrani RightHandSide
 
-TODO: doplnit mesh travelsals pro jine mesh entity nez cell
 TODO: implementace maticovych resicu
       * Gaussova eliminace
       * SOR metoda
       * Jacobiho metoda
-      * TFQMR metoda
       * IDR metody 
 
-TODO: Nahradit sablonovy parametr dimenze sitove entity za typ entity. V pripade hran gridu, by ty v sobe mohly mit i orientaci.
-      Asi by to bylo vyhodne i pro site se smisenym typem entit. 
-
-TODO: implementovat tridu tnlFileName pro generovani jmen souboru
+TODO: Nahradit sablonovy parametr dimenze sitove entity za typ entity. Pak by se mohlo zkusit, napriklad u gridu
+      odvozovat entity, ktere obsahuji predpocitane indexy pro dopredne, zpetne, nebo centralni diference. Uzivatel
+      by si mohl definovat vlastni entity. Mohlo by to zvysit efektivitu.
+      U nestrukturovanych siti by se do entit mohly doplnovat ukazatele na struktury s dalsimi informacemi jako 
+      objemy nebo delky entyt apod.
+      za tim ucelem nahradit setIndex v grdi entity za update(), aby to bylo obecnejsi
 
 TODO: metodu pro tnlString pro nahrazeni napr. podretezce XXXXX indexem 00001 tj. uXXXXX.bin -> u00001.bin
       to by melo byt robustnejsi, nez doposavadni pristup 
-
-TODO: vyjimky 
-
-TODO: prubezne ukladani vysledku behem vypoctu 
-                 

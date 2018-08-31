@@ -6,12 +6,11 @@ INSTALL( FILES matrix-market
                run-matrix-solvers-benchmark
                run-tnl-benchmark-spmv
                run-tnl-benchmark-linear-solvers
+               tnl-run-heat-equation-benchmark
                cuda-profiler.conf
                process-cuda-profile.pl 
-               tnl-log-to-html.py
-               DESTINATION share/tnl-${tnlVersion}/benchmark-scripts )
+               DESTINATION ${TNL_TARGET_DATA_DIRECTORY}/benchmark-scripts )
 
 INSTALL( FILES tnl-run-spmv-benchmark
          DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
-                                                                   

@@ -1,41 +1,36 @@
 /***************************************************************************
-                          tnlGrid1DTester.h  -  description
+                          Grid1DTester.h  -  description
                              -------------------
     begin                : Feb 13, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TESTS_UNIT_TESTS_MESH_TNLGRID1DTESTER_H_
 #define TESTS_UNIT_TESTS_MESH_TNLGRID1DTESTER_H_
 
+using namespace TNL;
+
 template< typename RealType, typename Device, typename IndexType >
-class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCase
+class GridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCase
 {
    public:
-   typedef tnlGridTester< 1, RealType, Device, IndexType > TesterType;
+   typedef GridTester< 1, RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
-   typedef tnlGrid< 1, RealType, Device, IndexType > GridType;
+   typedef Meshes::Grid< 1, RealType, Device, IndexType > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename GridType::VertexType VertexType;
+   typedef typename GridType::PointType PointType;
 
-   tnlGridTester(){};
+   GridTester(){};
 
    virtual
-   ~tnlGridTester(){};
+   ~GridTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlGridTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "GridTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDomainTest", &TesterType::setDomainTest ) );
@@ -47,10 +42,10 @@ class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCas
    void setDomainTest()
    {
       GridType grid;
-      grid.setDomain( VertexType( 0.0 ), VertexType( 1.0 ) );
+      grid.setDomain( PointType( 0.0 ), PointType( 1.0 ) );
       grid.setDimensions( 10 );
 
-      CPPUNIT_ASSERT( grid.getCellProportions().x() == 0.1 );
+      CPPUNIT_ASSERT( grid.getSpaceSteps().x() == 0.1 );
    }
 
    void cellIndexingTest()
@@ -58,12 +53,15 @@ class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCas
       const IndexType xSize( 13 );
       GridType grid;
       grid.setDimensions( xSize );
-      for( IndexType i = 0; i < xSize; i++ )
+ 
+      typename GridType::Cell cell( grid );
+      for( cell.getCoordinates().x() = 0;
+           cell.getCoordinates().x() < xSize;
+           cell.getCoordinates().x()++ )
       {
-         CoordinatesType cellCoordinates( i );
-         CPPUNIT_ASSERT( grid.getCellIndex( cellCoordinates ) >= 0 );
-         CPPUNIT_ASSERT( grid.getCellIndex( cellCoordinates ) < grid.getNumberOfCells() );
-         CPPUNIT_ASSERT( grid.getCellCoordinates( grid.getCellIndex( cellCoordinates ) ) == cellCoordinates );
+         CPPUNIT_ASSERT( grid.getEntityIndex( cell ) >= 0 );
+         CPPUNIT_ASSERT( grid.getEntityIndex( cell ) < grid.template getEntitiesCount< typename GridType::Cell >() );
+         CPPUNIT_ASSERT( grid.template getEntity< typename GridType::Cell >( grid.getEntityIndex( cell ) ).getCoordinates() == cell.getCoordinates() );
       }
    }
 
@@ -72,12 +70,15 @@ class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCas
       const IndexType xSize( 13 );
       GridType grid;
       grid.setDimensions( xSize );
-      for( IndexType i = 0; i < xSize + 1; i++ )
+
+      typename GridType::Point vertex( grid );
+      for( vertex.getCoordinates().x() = 0;
+           vertex.getCoordinates().x() < xSize;
+           vertex.getCoordinates().x()++ )
       {
-         CoordinatesType vertexCoordinates( i );
-         CPPUNIT_ASSERT( grid.getVertexIndex( vertexCoordinates ) >= 0 );
-         CPPUNIT_ASSERT( grid.getVertexIndex( vertexCoordinates ) < grid.getNumberOfVertices() );
-         CPPUNIT_ASSERT( grid.getVertexCoordinates( grid.getVertexIndex( vertexCoordinates ) ) == vertexCoordinates );
+         CPPUNIT_ASSERT( grid.getEntityIndex( vertex ) >= 0 );
+         CPPUNIT_ASSERT( grid.getEntityIndex( vertex ) < grid.template getEntitiesCount< typename GridType::Point >() );
+         CPPUNIT_ASSERT( grid.template getEntity< typename GridType::Point >( grid.getEntityIndex( vertex ) ).getCoordinates() == vertex.getCoordinates() );
       }
    }
 

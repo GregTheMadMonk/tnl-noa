@@ -18,18 +18,18 @@
 #ifndef NAVIERSTOKESSOLVER_H_
 #define NAVIERSTOKESSOLVER_H_
 
-#include <core/tnlLogger.h>
-#include <core/tnlHost.h>
-#include <core/vectors/tnlVector.h>
-#include <config/tnlParameterContainer.h>
-#include <matrices/tnlCSRMatrix.h>
-#include <solvers/preconditioners/tnlDummyPreconditioner.h>
-#include <solvers/tnlSolverMonitor.h>
-#include <operators/euler/fvm/tnlLaxFridrichs.h>
-#include <operators/gradient/tnlCentralFDMGradient.h>
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <mesh/tnlLinearGridGeometry.h>
-#include <solvers/cfd/navier-stokes/tnlNavierStokesSolver.h>
+#include <TNL/Logger.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Matrices/CSR.h>
+#include <TNL/Solvers/preconditioners/Dummy.h>
+#include <TNL/Solvers/SolverMonitor.h>
+#include <TNL/Operators/euler/fvm/LaxFridrichs.h>
+#include <TNL/Operators/gradient/tnlCentralFDMGradient.h>
+#include <TNL/Operators/diffusion/LinearDiffusion.h>
+#include <TNL/Meshes/tnlLinearGridGeometry.h>
+#include <TNL/Solvers/cfd/navier-stokes/NavierStokesSolver.h>
 
 #include "navierStokesSolverMonitor.h"
 #include "navierStokesBoundaryConditions.h"
@@ -44,10 +44,10 @@ class navierStokesSolver
    typedef typename Mesh :: DeviceType DeviceType;
    typedef typename Mesh :: IndexType IndexType;
    typedef Mesh MeshType;
-   typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+   typedef Vector< RealType, DeviceType, IndexType> DofVectorType;
 
-   typedef tnlCSRMatrix< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
-   typedef tnlDummyPreconditioner< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
+   typedef CSR< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
+   typedef Dummy< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
 
    enum BoundaryConditionType { dirichlet, neumann, noSlip };
 
@@ -55,12 +55,12 @@ class navierStokesSolver
 
    navierStokesSolver();
 
-   static tnlString getTypeStatic();
+   static String getType();
 
-   tnlString getPrologHeader() const;
+   String getPrologHeader() const;
 
-   void writeProlog( tnlLogger& logger,
-                     const tnlParameterContainer& parameters ) const;
+   void writeProlog( Logger& logger,
+                     const Config::ParameterContainer& parameters ) const;
 
    template< typename Geom >
    bool setMeshGeometry( Geom& geometry ) const;
@@ -68,23 +68,23 @@ class navierStokesSolver
    bool setMeshGeometry( tnlLinearGridGeometry< 2, RealType, DeviceType, IndexType >& geometry ) const;
 
    template< typename InitMesh >
-   bool initMesh( InitMesh& mesh, const tnlParameterContainer& parameters ) const;
+   bool initMesh( InitMesh& mesh, const Config::ParameterContainer& parameters ) const;
 
    template< typename Real, typename Device, typename Index, template< int, typename, typename, typename > class Geometry >
-   bool initMesh( tnlGrid< 1, Real, Device, Index, Geometry >& mesh,
-                  const tnlParameterContainer& parameters ) const;
+   bool initMesh( Meshes::Grid< 1, Real, Device, Index, Geometry >& mesh,
+                  const Config::ParameterContainer& parameters ) const;
 
    template< typename Real, typename Device, typename Index, template< int, typename, typename, typename > class Geometry >
-   bool initMesh( tnlGrid< 2, Real, Device, Index, Geometry >& mesh,
-                  const tnlParameterContainer& parameters ) const;
+   bool initMesh( Meshes::Grid< 2, Real, Device, Index, Geometry >& mesh,
+                  const Config::ParameterContainer& parameters ) const;
 
    template< typename Real, typename Device, typename Index, template< int, typename, typename, typename > class Geometry >
-   bool initMesh( tnlGrid< 3, Real, Device, Index, Geometry >& mesh,
-                  const tnlParameterContainer& parameters ) const;
+   bool initMesh( Meshes::Grid< 3, Real, Device, Index, Geometry >& mesh,
+                  const Config::ParameterContainer& parameters ) const;
 
-   bool setup( const tnlParameterContainer& parameters );
+   bool setup( const Config::ParameterContainer& parameters );
 
-   bool setInitialCondition( const tnlParameterContainer& parameters );
+   bool setInitialCondition( const Config::ParameterContainer& parameters );
 
    DofVectorType& getDofVector();
 
@@ -93,12 +93,12 @@ class navierStokesSolver
 
    bool solve();
 
-   void GetExplicitRHS( const RealType& time,
+   void getExplicitUpdate( const RealType& time,
                         const RealType& tau,
                         DofVectorType& _u,
                         DofVectorType& _fu );
 
-   tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
+   SolverMonitor* getSolverMonitor();
 
    protected:
 
@@ -114,11 +114,11 @@ class navierStokesSolver
 
    EulerScheme eulerScheme;
 
-   tnlNavierStokesSolver< EulerScheme,
-                          tnlLinearDiffusion< MeshType >,
+   NavierStokesSolver< EulerScheme,
+                          LinearDiffusion< MeshType >,
                           navierStokesBoundaryConditions< MeshType > > nsSolver;
 
-   tnlLinearDiffusion< MeshType > u1Viscosity, u2Viscosity, eViscosity;
+   LinearDiffusion< MeshType > u1Viscosity, u2Viscosity, eViscosity;
    tnlCentralFDMGradient< MeshType > pressureGradient;
 
    navierStokesBoundaryConditions< MeshType > boundaryConditions;
