@@ -30,14 +30,18 @@ navierStokesSolverMonitor< Real, Index > :: navierStokesSolverMonitor()
 template< typename Real, typename Index >
 void navierStokesSolverMonitor< Real, Index > :: refresh()
 {
-   if( this -> verbose > 0 && this -> refreshing % this -> outputPeriod == 0 )
+<<<<<<< HEAD
+   if( this -> verbose > 0 && this -> refresRate % this -> refreshRate == 0 )
+=======
+   if( this->verbose > 0 && this->refresRate % this->refreshRate == 0 )
+>>>>>>> develop
    {
-      cout << "V=( " << uMax
+     std::cout << "V=( " << uMax
            << " , " << uAvg
            << " ) E=( " << eMax
            << ", " << eAvg << " ) ";
    }
-   tnlODESolverMonitor< Real, Index > :: refresh();
+   ODESolverMonitor< Real, Index > :: refresh();
 }
 
 #endif /* TNLNAVIERSTOKESSOLVERMONITOR_IMPL_H_ */

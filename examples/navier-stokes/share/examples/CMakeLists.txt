@@ -1,2 +1,2 @@
 INSTALL( FILES cavity
-         DESTINATION share/tnl-${tnlVersion}/examples/navier-stokes/share/examples )
+         DESTINATION ${TNL_TARGET_DATA_DIRECTORY}/examples/navier-stokes/share/examples )

@@ -1,9 +1,0 @@
-group IO
-{
-   string input-file(!)                 [Input file name.];
-   string output-file(!)                [Output file name.];
-   string output-matrix-format("csr")   [Format of the output matrix.];
-   string precision("double")           [Output matrix precision. Can be float or double.];
-   bool verify(no)                      [Verify the conversion.];
-   bool verbose(yes)                    [Verbose mode.];
-},[Arguments describing input and output data.];
