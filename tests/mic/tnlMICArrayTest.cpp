@@ -37,7 +37,7 @@ using namespace std;
 
 int main(void)
 {
-    cout << "Array on MIC test by hanouvit:" <<endl;
+   std::cout << "Array on MIC test by hanouvit:" <<endl;
 	
 	#ifdef HAVE_ICPC
 		cout << "ICPC in USE" <<endl;

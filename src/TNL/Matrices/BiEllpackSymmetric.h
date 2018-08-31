@@ -1,45 +1,56 @@
-#ifndef tnlBiEllpackSymMatrix_H_
-#define tnlBiEllpackSymMatrix_H_
+/***************************************************************************
+                          BiEllpackSymmetric.h  -  description
+                             -------------------
+    begin                : Aug 30, 2018
+    copyright            : (C) 2018 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 
-#include <matrices/tnlSparseMatrix.h>
-#include <core/vectors/tnlVector.h>
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
+
+#include <TNL/Matrices/Sparse.h>
+#include <TNL/Containers/Vector.h>
+
+namespace TNL {
+namespace Matrices {
 
 template< typename Device >
-class tnlBiEllpackSymMatrixDeviceDependentCode;
+class BiEllpackSymmetricDeviceDependentCode;
 
-template< typename Real, typename Device = tnlCuda, typename Index = int, int StripSize = 32 >
-class tnlBiEllpackSymMatrix : public tnlSparseMatrix< Real, Device, Index >
+template< typename Real, typename Device = Devices::Cuda, typename Index = int, int StripSize = 32 >
+class BiEllpackSymmetric : public Sparse< Real, Device, Index >
 {
 public:
 	typedef Real RealType;
 	typedef Device DeviceType;
 	typedef Index IndexType;
-	typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::RowLengthsVector RowLengthsVector;
-	typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
-	typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-	typedef tnlBiEllpackSymMatrix< Real, Device, Index > ThisType;
-	typedef tnlBiEllpackSymMatrix< Real, tnlHost, Index > HostType;
-	typedef tnlBiEllpackSymMatrix< Real, tnlCuda, Index > CudaType;
+	typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
+	typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
+	typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
+	typedef BiEllpackSymmetric< Real, Device, Index > ThisType;
+	typedef BiEllpackSymmetric< Real, Devices::Host, Index > HostType;
+	typedef BiEllpackSymmetric< Real, Devices::Cuda, Index > CudaType;
 
-	tnlBiEllpackSymMatrix();
+	BiEllpackSymmetric();
 
-	static tnlString getType();
+	static String getType();
 
-	tnlString getTypeVirtual() const;
+	String getTypeVirtual() const;
 
-	bool setDimensions( const IndexType rows,
-						const IndexType columns );
+	void setDimensions( const IndexType rows, const IndexType columns );
 
-	bool setRowLengths( const RowLengthsVector& rowLengths );
+	void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
 	IndexType getRowLength( const IndexType row ) const;
 
 	template< typename Real2,
 			  typename Device2,
 			  typename Index2 >
-	bool setLike( const tnlBiEllpackSymMatrix< Real2, Device2, Index2, StripSize >& matrix );
+	bool setLike( const BiEllpackSymmetric< Real2, Device2, Index2, StripSize >& matrix );
 
-	void getRowLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const;
+	void getRowLengths( Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const;
 
 	bool setElement( const IndexType row,
 					 const IndexType column,
@@ -116,20 +127,20 @@ public:
 
 	void reset();
 
-	bool save( tnlFile& file ) const;
+	bool save( File& file ) const;
 
-	bool load( tnlFile& file );
+	bool load( File& file );
 
-	bool save( const tnlString& fileName ) const;
+	bool save( const String& fileName ) const;
 
-	bool load( const tnlString& fileName );
+	bool load( const String& fileName );
 
-	void print( ostream& str ) const;
+	void print( std::ostream& str ) const;
 
-	void performRowBubbleSort( tnlVector< Index, Device, Index >& tempRowLengths );
-	void computeColumnSizes( tnlVector< Index, Device, Index >& tempRowLengths );
+	void performRowBubbleSort( Containers::Vector< Index, Device, Index >& tempRowLengths );
+	void computeColumnSizes( Containers::Vector< Index, Device, Index >& tempRowLengths );
 
-//	void verifyRowLengths( const typename tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths );
+//	void verifyRowLengths( const typename BiEllpackSymmetric< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths );
 
 	template< typename InVector,
 			  typename OutVector >
@@ -150,13 +161,13 @@ public:
 #ifdef HAVE_CUDA
 	__device__
 #endif
-	void performRowBubbleSortCudaKernel( const typename tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths,
+	void performRowBubbleSortCudaKernel( const typename BiEllpackSymmetric< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths,
 										 const IndexType strip );
 
 #ifdef HAVE_CUDA
 	__device__
 #endif
-	void computeColumnSizesCudaKernel( const typename tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths,
+	void computeColumnSizesCudaKernel( const typename BiEllpackSymmetric< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths,
 									   const IndexType numberOfStrips,
 									   const IndexType strip );
 
@@ -166,8 +177,8 @@ public:
 	IndexType power( const IndexType number,
 				     const IndexType exponent ) const;
 
-	typedef tnlBiEllpackSymMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
-	friend class tnlBiEllpackSymMatrixDeviceDependentCode< DeviceType >;
+	typedef BiEllpackSymmetricDeviceDependentCode< DeviceType > DeviceDependentCode;
+	friend class BiEllpackSymmetricDeviceDependentCode< DeviceType >;
 
 private:
 
@@ -177,12 +188,14 @@ private:
 
 	IndexType virtualRows;
 
-	tnlVector< Index, Device, Index > rowPermArray;
+	Containers::Vector< Index, Device, Index > rowPermArray;
 
-	tnlVector< Index, Device, Index > groupPointers;
+	Containers::Vector< Index, Device, Index > groupPointers;
 
 };
 
-#include <implementation/matrices/tnlBiEllpackSymMatrix_impl.h>
+} // namespace Matrices
+} // namespace TNL
 
-#endif
+#include <TNL/Matrices/BiEllpackSymmetric_impl.h>
+

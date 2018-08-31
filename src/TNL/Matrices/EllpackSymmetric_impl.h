@@ -1,31 +1,26 @@
 /***************************************************************************
-                          tnlEllpackSymMatrix_impl.h  -  description
+                          EllpackSymmetric_impl.h  -  description
                              -------------------
-    begin                : Dec 7, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Aug 30, 2018
+    copyright            : (C) 2018 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLELLPACKSYMMATRIX_IMPL_H_
-#define TNLELLPACKSYMMATRIX_IMPL_H_
+#pragma once
 
-#include <matrices/tnlEllpackSymMatrix.h>
-#include <core/vectors/tnlVector.h>
-#include <core/mfuncs.h>
+#include <TNL/Matrices/EllpackSymmetric.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Math.h>
+
+namespace TNL {
+namespace Matrices {
 
 template< typename Real,
           typename Device,
           typename Index >
-tnlEllpackSymMatrix< Real, Device, Index > :: tnlEllpackSymMatrix()
+EllpackSymmetric< Real, Device, Index > :: EllpackSymmetric()
 : rowLengths( 0 ), alignedRows( 0 )
 {
 };
@@ -33,19 +28,19 @@ tnlEllpackSymMatrix< Real, Device, Index > :: tnlEllpackSymMatrix()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlEllpackSymMatrix< Real, Device, Index > :: getType()
+String EllpackSymmetric< Real, Device, Index > :: getType()
 {
-   return tnlString( "tnlEllpackSymMatrix< ") +
-          tnlString( ::getType< Real >() ) +
-          tnlString( ", " ) +
-          Device :: getDeviceType() +
-          tnlString( " >" );
+   return String( "EllpackSymmetric< ") +
+          String( TNL::getType< Real >() ) +
+          String( ", " ) +
+          Device::getDeviceType() +
+          String( " >" );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlEllpackSymMatrix< Real, Device, Index >::getTypeVirtual() const
+String EllpackSymmetric< Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -53,42 +48,41 @@ tnlString tnlEllpackSymMatrix< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackSymMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
+void EllpackSymmetric< Real, Device, Index >::setDimensions( const IndexType rows,
                                                              const IndexType columns )
 {
-   tnlAssert( rows > 0 && columns > 0,
-              cerr << "rows = " << rows
-                   << " columns = " << columns << endl );
+   TNL_ASSERT( rows > 0 && columns > 0,
+             std::cerr << "rows = " << rows
+                   << " columns = " << columns <<std::endl );
    this->rows = rows;
    this->columns = columns;   
-   if( Device::DeviceType == ( int ) tnlCudaDevice )
-      this->alignedRows = roundToMultiple( columns, tnlCuda::getWarpSize() );
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
+      this->alignedRows = roundToMultiple( columns, Devices::Cuda::getWarpSize() );
    else this->alignedRows = rows;
    if( this->rowLengths != 0 )
-      return allocateElements();
-   return true;
+      allocateElements();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackSymMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
+void EllpackSymmetric< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
-   tnlAssert( this->getRows() > 0, );
-   tnlAssert( this->getColumns() > 0, );
-   //tnlAssert( this->rowLengths > 0,
-   //           cerr << "this->rowLengths = " << this->rowLengths );
+   TNL_ASSERT( this->getRows() > 0, );
+   TNL_ASSERT( this->getColumns() > 0, );
+   //TNL_ASSERT( this->rowLengths > 0,
+   //          std::cerr << "this->rowLengths = " << this->rowLengths );
    this->rowLengths = this->maxRowLength = rowLengths.max();
-   return allocateElements();
+   allocateElements();
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackSymMatrix< Real, Device, Index >::setConstantRowLengths( const IndexType& rowLengths )
+bool EllpackSymmetric< Real, Device, Index >::setConstantRowLengths( const IndexType& rowLengths )
 {
-   tnlAssert( rowLengths > 0,
-              cerr << " rowLengths = " << rowLengths );
+   TNL_ASSERT( rowLengths > 0,
+             std::cerr << " rowLengths = " << rowLengths );
    this->rowLengths = rowLengths;
    if( this->rows > 0 )
       return allocateElements();
@@ -98,7 +92,7 @@ bool tnlEllpackSymMatrix< Real, Device, Index >::setConstantRowLengths( const In
 template< typename Real,
           typename Device,
           typename Index >
-Index tnlEllpackSymMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+Index EllpackSymmetric< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
    return this->rowLengths;
 }
@@ -109,9 +103,9 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool tnlEllpackSymMatrix< Real, Device, Index >::setLike( const tnlEllpackSymMatrix< Real2, Device2, Index2 >& matrix )
+bool EllpackSymmetric< Real, Device, Index >::setLike( const EllpackSymmetric< Real2, Device2, Index2 >& matrix )
 {
-   if( ! tnlSparseMatrix< Real, Device, Index >::setLike( matrix ) )
+   if( ! Sparse< Real, Device, Index >::setLike( matrix ) )
       return false;
    this->rowLengths = matrix.rowLengths;
    return true;
@@ -120,9 +114,9 @@ bool tnlEllpackSymMatrix< Real, Device, Index >::setLike( const tnlEllpackSymMat
 template< typename Real,
           typename Device,
           typename Index >
-void tnlEllpackSymMatrix< Real, Device, Index > :: reset()
+void EllpackSymmetric< Real, Device, Index > :: reset()
 {
-   tnlSparseMatrix< Real, Device, Index >::reset();
+   Sparse< Real, Device, Index >::reset();
    this->rowLengths = 0;
 }
 
@@ -132,11 +126,11 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool tnlEllpackSymMatrix< Real, Device, Index >::operator == ( const tnlEllpackSymMatrix< Real2, Device2, Index2 >& matrix ) const
+bool EllpackSymmetric< Real, Device, Index >::operator == ( const EllpackSymmetric< Real2, Device2, Index2 >& matrix ) const
 {
-   tnlAssert( this->getRows() == matrix.getRows() &&
+   TNL_ASSERT( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
-              cerr << "this->getRows() = " << this->getRows()
+             std::cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
                    << " this->getColumns() = " << this->getColumns()
                    << " matrix.getColumns() = " << matrix.getColumns()
@@ -151,7 +145,7 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool tnlEllpackSymMatrix< Real, Device, Index >::operator != ( const tnlEllpackSymMatrix< Real2, Device2, Index2 >& matrix ) const
+bool EllpackSymmetric< Real, Device, Index >::operator != ( const EllpackSymmetric< Real2, Device2, Index2 >& matrix ) const
 {
    return ! ( ( *this ) == matrix );
 }
@@ -160,8 +154,8 @@ bool tnlEllpackSymMatrix< Real, Device, Index >::operator != ( const tnlEllpackS
           typename Device,
           typename Index >
    template< typename Matrix >
-bool tnlEllpackSymMatrix< Real, Device, Index >::copyFrom( const Matrix& matrix,
-                                                        const RowLengthsVector& rowLengths )
+bool EllpackSymmetric< Real, Device, Index >::copyFrom( const Matrix& matrix,
+                                                        const CompressedRowLengthsVector& rowLengths )
 {
    return tnlMatrix< RealType, DeviceType, IndexType >::copyFrom( matrix, rowLengths );
 }*/
@@ -172,7 +166,7 @@ template< typename Real,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-bool tnlEllpackSymMatrix< Real, Device, Index > :: setElementFast( const IndexType row,
+bool EllpackSymmetric< Real, Device, Index > :: setElementFast( const IndexType row,
                                                                 const IndexType column,
                                                                 const Real& value )
 {
@@ -182,7 +176,7 @@ bool tnlEllpackSymMatrix< Real, Device, Index > :: setElementFast( const IndexTy
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackSymMatrix< Real, Device, Index > :: setElement( const IndexType row,
+bool EllpackSymmetric< Real, Device, Index > :: setElement( const IndexType row,
                                                             const IndexType column,
                                                             const Real& value )
 {
@@ -196,19 +190,19 @@ template< typename Real,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-bool tnlEllpackSymMatrix< Real, Device, Index > :: addElementFast( const IndexType row,
+bool EllpackSymmetric< Real, Device, Index > :: addElementFast( const IndexType row,
                                                                 const IndexType column,
                                                                 const RealType& value,
                                                                 const RealType& thisElementMultiplicator )
 {
-   // TODO: return this back when CUDA kernels support cerr
-   /*tnlAssert( row >= 0 && row < this->rows &&
+   // TODO: return this back when CUDA kernels supportstd::cerr
+   /*TNL_ASSERT( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
-              cerr << " row = " << row
+             std::cerr << " row = " << row
                    << " column = " << column
                    << " this->rows = " << this->rows
                    << " this->columns = " << this-> columns );*/
-   typedef tnlEllpackSymMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackSymmetricDeviceDependentCode< DeviceType > DDCType;
    IndexType i = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -247,12 +241,12 @@ bool tnlEllpackSymMatrix< Real, Device, Index > :: addElementFast( const IndexTy
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackSymMatrix< Real, Device, Index > :: addElement( const IndexType row,
+bool EllpackSymmetric< Real, Device, Index > :: addElement( const IndexType row,
                                                             const IndexType column,
                                                             const RealType& value,
                                                             const RealType& thisElementMultiplicator )
 {
-   typedef tnlEllpackSymMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackSymmetricDeviceDependentCode< DeviceType > DDCType;
    IndexType i = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -294,12 +288,12 @@ template< typename Real,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-bool tnlEllpackSymMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
+bool EllpackSymmetric< Real, Device, Index > :: setRowFast( const IndexType row,
                                                             const IndexType* columnIndexes,
                                                             const RealType* values,
                                                             const IndexType elements )
 {
-   typedef tnlEllpackSymMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackSymmetricDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPointer = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -326,12 +320,12 @@ bool tnlEllpackSymMatrix< Real, Device, Index > :: setRowFast( const IndexType r
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackSymMatrix< Real, Device, Index > :: setRow( const IndexType row,
+bool EllpackSymmetric< Real, Device, Index > :: setRow( const IndexType row,
                                                         const IndexType* columnIndexes,
                                                         const RealType* values,
                                                         const IndexType elements )
 {
-   typedef tnlEllpackSymMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackSymmetricDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPointer = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -362,7 +356,7 @@ template< typename Real,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-bool tnlEllpackSymMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
+bool EllpackSymmetric< Real, Device, Index > :: addRowFast( const IndexType row,
                                                             const IndexType* columns,
                                                             const RealType* values,
                                                             const IndexType numberOfElements,
@@ -375,7 +369,7 @@ bool tnlEllpackSymMatrix< Real, Device, Index > :: addRowFast( const IndexType r
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackSymMatrix< Real, Device, Index > :: addRow( const IndexType row,
+bool EllpackSymmetric< Real, Device, Index > :: addRow( const IndexType row,
                                                         const IndexType* columns,
                                                         const RealType* values,
                                                         const IndexType numberOfElements,
@@ -391,13 +385,13 @@ template< typename Real,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-Real tnlEllpackSymMatrix< Real, Device, Index >::getElementFast( const IndexType row,
+Real EllpackSymmetric< Real, Device, Index >::getElementFast( const IndexType row,
                                                               const IndexType column ) const
 {
    if( row < column )
        return this->getElementFast( column, row );
 
-   typedef tnlEllpackSymMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackSymmetricDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPtr = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -413,13 +407,13 @@ Real tnlEllpackSymMatrix< Real, Device, Index >::getElementFast( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlEllpackSymMatrix< Real, Device, Index >::getElement( const IndexType row,
+Real EllpackSymmetric< Real, Device, Index >::getElement( const IndexType row,
                                                           const IndexType column ) const
 {
    if( row < column )
        return this->getElement( column, row );
 
-   typedef tnlEllpackSymMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackSymmetricDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPtr = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -439,11 +433,11 @@ template< typename Real,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-void tnlEllpackSymMatrix< Real, Device, Index >::getRowFast( const IndexType row,
+void EllpackSymmetric< Real, Device, Index >::getRowFast( const IndexType row,
                                                           IndexType* columns,
                                                           RealType* values ) const
 {
-   typedef tnlEllpackSymMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackSymmetricDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPtr = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -459,11 +453,11 @@ void tnlEllpackSymMatrix< Real, Device, Index >::getRowFast( const IndexType row
 template< typename Real,
           typename Device,
           typename Index >
-void tnlEllpackSymMatrix< Real, Device, Index >::getRow( const IndexType row,
+void EllpackSymmetric< Real, Device, Index >::getRow( const IndexType row,
                                                       IndexType* columns,
                                                       RealType* values ) const
 {
-   typedef tnlEllpackSymMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackSymmetricDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPtr = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -483,7 +477,7 @@ template< typename Real,
           typename Index >
    template< typename InVector,
              typename OutVector >
-void tnlEllpackSymMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
+void EllpackSymmetric< Real, Device, Index >::vectorProduct( const InVector& inVector,
                                                                    OutVector& outVector ) const
 {
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
@@ -494,11 +488,11 @@ template< typename Real,
           typename Index >
    template< typename Real2,
              typename Index2 >
-void tnlEllpackSymMatrix< Real, Device, Index > :: addMatrix( const tnlEllpackSymMatrix< Real2, Device, Index2 >& matrix,
+void EllpackSymmetric< Real, Device, Index > :: addMatrix( const EllpackSymmetric< Real2, Device, Index2 >& matrix,
                                                                  const RealType& matrixMultiplicator,
                                                                  const RealType& thisMatrixMultiplicator )
 {
-   tnlAssert( false, cerr << "TODO: implement" );
+   TNL_ASSERT( false,std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -507,10 +501,10 @@ template< typename Real,
           typename Index >
    template< typename Real2,
              typename Index2 >
-void tnlEllpackSymMatrix< Real, Device, Index >::getTransposition( const tnlEllpackSymMatrix< Real2, Device, Index2 >& matrix,
+void EllpackSymmetric< Real, Device, Index >::getTransposition( const EllpackSymmetric< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   tnlAssert( false, cerr << "TODO: implement" );
+   TNL_ASSERT( false,std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -518,15 +512,15 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-bool tnlEllpackSymMatrix< Real, Device, Index > :: performSORIteration( const Vector& b,
+bool EllpackSymmetric< Real, Device, Index > :: performSORIteration( const Vector& b,
                                                                            const IndexType row,
                                                                            Vector& x,
                                                                            const RealType& omega ) const
 {
-   tnlAssert( row >=0 && row < this->getRows(),
-              cerr << "row = " << row
+   TNL_ASSERT( row >=0 && row < this->getRows(),
+             std::cerr << "row = " << row
                    << " this->getRows() = " << this->getRows()
-                   << " this->getName() = " << this->getName() << endl );
+                   << " this->getName() = " << this->getName() <<std::endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
@@ -544,7 +538,7 @@ bool tnlEllpackSymMatrix< Real, Device, Index > :: performSORIteration( const Ve
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of thge matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
+     std::cerr << "There is zero on the diagonal in " << row << "-th row of thge matrix " << this->getName() << ". I cannot perform SOR iteration." <<std::endl;
       return false;
    }
    x. setElement( row, x[ row ] + omega / diagonalValue * ( b[ row ] - sum ) );
@@ -555,11 +549,11 @@ bool tnlEllpackSymMatrix< Real, Device, Index > :: performSORIteration( const Ve
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackSymMatrix< Real, Device, Index >::save( tnlFile& file ) const
+bool EllpackSymmetric< Real, Device, Index >::save( File& file ) const
 {
-   if( ! tnlSparseMatrix< Real, Device, Index >::save( file) ) return false;
+   if( ! Sparse< Real, Device, Index >::save( file) ) return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file.write< IndexType, tnlHost, IndexType >( &this->rowLengths, 1 ) ) return false;
+   if( ! file.write< IndexType, Devices::Host, IndexType >( &this->rowLengths, 1 ) ) return false;
 #else      
    if( ! file.write( &this->rowLengths ) ) return false;
 #endif   
@@ -569,11 +563,11 @@ bool tnlEllpackSymMatrix< Real, Device, Index >::save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackSymMatrix< Real, Device, Index >::load( tnlFile& file )
+bool EllpackSymmetric< Real, Device, Index >::load( File& file )
 {
-   if( ! tnlSparseMatrix< Real, Device, Index >::load( file) ) return false;
+   if( ! Sparse< Real, Device, Index >::load( file) ) return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file.read< IndexType, tnlHost, IndexType >( &this->rowLengths, 1 ) ) return false;
+   if( ! file.read< IndexType, Devices::Host, IndexType >( &this->rowLengths, 1 ) ) return false;
 #else   
    if( ! file.read( &this->rowLengths ) ) return false;
 #endif   
@@ -583,23 +577,23 @@ bool tnlEllpackSymMatrix< Real, Device, Index >::load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackSymMatrix< Real, Device, Index >::save( const tnlString& fileName ) const
+bool EllpackSymmetric< Real, Device, Index >::save( const String& fileName ) const
 {
-   return tnlObject::save( fileName );
+   return Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackSymMatrix< Real, Device, Index >::load( const tnlString& fileName )
+bool EllpackSymmetric< Real, Device, Index >::load( const String& fileName )
 {
-   return tnlObject::load( fileName );
+   return Object::load( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlEllpackSymMatrix< Real, Device, Index >::print( ostream& str ) const
+void EllpackSymmetric< Real, Device, Index >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -614,30 +608,28 @@ void tnlEllpackSymMatrix< Real, Device, Index >::print( ostream& str ) const
          str << " Col:" << column << "->" << this->values.getElement( i ) << "\t";
          i++;
       }
-      str << endl;
+      str <<std::endl;
    }
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackSymMatrix< Real, Device, Index >::allocateElements()
+void EllpackSymmetric< Real, Device, Index >::allocateElements()
 {
-   if( ! tnlSparseMatrix< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths );
 }
 
 template<>
-class tnlEllpackSymMatrixDeviceDependentCode< tnlHost >
+class EllpackSymmetricDeviceDependentCode< Devices::Host >
 {
    public:
 
-      typedef tnlHost Device;
+      typedef Devices::Host Device;
 
       template< typename Real,
                 typename Index >
-      static Index getRowBegin( const tnlEllpackSymMatrix< Real, Device, Index >& matrix,
+      static Index getRowBegin( const EllpackSymmetric< Real, Device, Index >& matrix,
                                 const Index row )
       {
          return row * matrix.rowLengths;
@@ -645,7 +637,7 @@ class tnlEllpackSymMatrixDeviceDependentCode< tnlHost >
 
       template< typename Real,
                 typename Index >
-      static Index getRowEnd( const tnlEllpackSymMatrix< Real, Device, Index >& matrix,
+      static Index getRowEnd( const EllpackSymmetric< Real, Device, Index >& matrix,
                                 const Index row )
       {
          //return row * matrix.rowLengths + row + 1;
@@ -654,7 +646,7 @@ class tnlEllpackSymMatrixDeviceDependentCode< tnlHost >
 
       template< typename Real,
                 typename Index >
-      static Index getElementStep( const tnlEllpackSymMatrix< Real, Device, Index >& matrix )
+      static Index getElementStep( const EllpackSymmetric< Real, Device, Index >& matrix )
       {
          return 1;
       }
@@ -663,7 +655,7 @@ class tnlEllpackSymMatrixDeviceDependentCode< tnlHost >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const tnlEllpackSymMatrix< Real, Device, Index >& matrix,
+      static void vectorProduct( const EllpackSymmetric< Real, Device, Index >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
@@ -677,7 +669,7 @@ template< typename Real,
           typename Index >
 template< typename InVector,
           typename OutVector >
-void tnlEllpackSymMatrix< Real, Device, Index >::vectorProductHost( const InVector& inVector,
+void EllpackSymmetric< Real, Device, Index >::vectorProductHost( const InVector& inVector,
                                                                     OutVector& outVector ) const
 {
     for( Index row = 0; row < this->getRows(); row++ )
@@ -704,7 +696,7 @@ template< typename Vector >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-typename Vector::RealType tnlEllpackSymMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
+typename Vector::RealType EllpackSymmetric< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                      const Vector& vector ) const
 {
     IndexType i = DeviceDependentCode::getRowBegin( *this, row );
@@ -728,7 +720,7 @@ template< typename Real,
 template< typename InVector,
           typename OutVector >
 __device__
-void tnlEllpackSymMatrix< Real, Device, Index >::spmvCuda( const InVector& inVector,
+void EllpackSymmetric< Real, Device, Index >::spmvCuda( const InVector& inVector,
                                                            OutVector& outVector,
                                                            int rowId ) const
 {
@@ -739,9 +731,9 @@ void tnlEllpackSymMatrix< Real, Device, Index >::spmvCuda( const InVector& inVec
     while( i < rowEnd && this->columnIndexes[ i ] != this->getPaddingIndex() )
     {
         const IndexType column = this->columnIndexes[ i ];
-        outVector.add( rowId, this->values[ i ] * inVector[ column ] );
+        outVector[ rowId ] += this->values[ i ] * inVector[ column ];
         if( rowId != column )
-            outVector.add( column, this->values[ i ] * inVector[ rowId ] );
+            outVector[ column ] += this->values[ i ] * inVector[ rowId ];
         i += step;
     }
 };
@@ -753,12 +745,12 @@ template< typename Real,
           typename InVector,
           typename OutVector >
 __global__
-void tnlEllpackSymMatrixVectorProductCuda( const tnlEllpackSymMatrix< Real, tnlCuda, Index >* matrix,
+void EllpackSymmetricVectorProductCuda( const EllpackSymmetric< Real, Devices::Cuda, Index >* matrix,
                                            const InVector* inVector,
                                            OutVector* outVector,
                                            const int gridIdx )
 {
-    int globalIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+    int globalIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     if( globalIdx >= matrix->getRows() )
         return;
     matrix->spmvCuda( *inVector, *outVector, globalIdx );
@@ -766,18 +758,18 @@ void tnlEllpackSymMatrixVectorProductCuda( const tnlEllpackSymMatrix< Real, tnlC
 #endif
 
 template<>
-class tnlEllpackSymMatrixDeviceDependentCode< tnlCuda >
+class EllpackSymmetricDeviceDependentCode< Devices::Cuda >
 {
    public:
 
-      typedef tnlCuda Device;
+      typedef Devices::Cuda Device;
 
       template< typename Real,
                 typename Index >
 #ifdef HAVE_CUDA
       __device__ __host__
 #endif
-      static Index getRowBegin( const tnlEllpackSymMatrix< Real, Device, Index >& matrix,
+      static Index getRowBegin( const EllpackSymmetric< Real, Device, Index >& matrix,
                                 const Index row )
       {
          return row;
@@ -788,7 +780,7 @@ class tnlEllpackSymMatrixDeviceDependentCode< tnlCuda >
 #ifdef HAVE_CUDA
       __device__ __host__
 #endif
-      static Index getRowEnd( const tnlEllpackSymMatrix< Real, Device, Index >& matrix,
+      static Index getRowEnd( const EllpackSymmetric< Real, Device, Index >& matrix,
                                 const Index row )
       {
          // TODO: fix this: return row + getElementStep( matrix ) * matrix.rowLengths;
@@ -800,7 +792,7 @@ class tnlEllpackSymMatrixDeviceDependentCode< tnlCuda >
 #ifdef HAVE_CUDA
       __device__ __host__
 #endif
-      static Index getElementStep( const tnlEllpackSymMatrix< Real, Device, Index >& matrix )
+      static Index getElementStep( const EllpackSymmetric< Real, Device, Index >& matrix )
       {
          return matrix.alignedRows;
       }
@@ -809,40 +801,38 @@ class tnlEllpackSymMatrixDeviceDependentCode< tnlCuda >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const tnlEllpackSymMatrix< Real, Device, Index >& matrix,
+      static void vectorProduct( const EllpackSymmetric< Real, Device, Index >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
 #ifdef HAVE_CUDA
-          typedef tnlEllpackSymMatrix< Real, tnlCuda, Index > Matrix;
+          typedef EllpackSymmetric< Real, Devices::Cuda, Index > Matrix;
           typedef typename Matrix::IndexType IndexType;
-          Matrix* kernel_this = tnlCuda::passToDevice( matrix );
-          InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
-          OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
-          dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+          Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
+          InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
+          OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
+          dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
           const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-          const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+          const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
           for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
           {
               if( gridIdx == cudaGrids - 1 )
-                  cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+                  cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
               const int sharedMemory = cudaBlockSize.x * sizeof( Real );
-              tnlEllpackSymMatrixVectorProductCuda< Real, Index, InVector, OutVector >
+              EllpackSymmetricVectorProductCuda< Real, Index, InVector, OutVector >
                                                 <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                   ( kernel_this,
                                                     kernel_inVector,
                                                     kernel_outVector,
                                                     gridIdx );
           }
-          tnlCuda::freeFromDevice( kernel_this );
-          tnlCuda::freeFromDevice( kernel_inVector );
-          tnlCuda::freeFromDevice( kernel_outVector );
-          checkCudaDevice;
+          Devices::Cuda::freeFromDevice( kernel_this );
+          Devices::Cuda::freeFromDevice( kernel_inVector );
+          Devices::Cuda::freeFromDevice( kernel_outVector );
+          TNL_CHECK_CUDA_DEVICE;
 #endif
       }
 };
 
-
-
-
-#endif /* TNLELLPACKMATRIX_IMPL_H_ */
+} // namespace Matrices
+} // namespace TNL

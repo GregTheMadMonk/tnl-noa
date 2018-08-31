@@ -30,19 +30,19 @@ COOMatrix< Real, Device, Index >::COOMatrix()
 template< typename Real,
 	  	  typename Device,
 	  	  typename Index >
-tnlString COOMatrix< Real, Device, Index >::getType()
+String COOMatrix< Real, Device, Index >::getType()
 {
-	return tnlString("COOMatrix< ") +
-  	 	   tnlString(::getType< Real>()) +
-		   tnlString(", ") +
+	return String("COOMatrix< ") +
+  	 	   String(::getType< Real>()) +
+		   String(", ") +
 		   Device::getDeviceType() +
-		   tnlString(" >");
+		   String(" >");
 }
 
 template< typename Real,
 	  	  typename Device,
 	  	  typename Index >
-tnlString COOMatrix< Real, Device, Index >::getTypeVirtual() const
+String COOMatrix< Real, Device, Index >::getTypeVirtual() const
 {
 	return this->getType();
 }
@@ -52,7 +52,7 @@ template< typename Real,
 		  typename Index >
 bool COOMatrix< Real, Device, Index >::setDimensions(const IndexType rows, const IndexType columns)
 {
-	if (!SparseMatrix< Real, Device, Index >::setDimensions(rows, columns) ||
+	if (!Sparse< Real, Device, Index >::setDimensions(rows, columns) ||
 	    !this->rowIndexes.setSize( this->values.getSize() ) )
 		return false;
 	return true;
@@ -84,7 +84,7 @@ Index COOMatrix< Real, Device, Index >::getNumberOfUsedValues() const
 template< typename Real,
 		  typename Device,
 		  typename Index >
-bool COOMatrix< Real, Device, Index >::setRowLengths(const RowLengthsVector& rowLengths)
+bool COOMatrix< Real, Device, Index >::setCompressedRowLengths(const CompressedRowLengthsVector& rowLengths)
 {
 	IndexType size = 0;
 	for(IndexType row = 0; row < this->getRows(); row++)
@@ -99,7 +99,7 @@ bool COOMatrix< Real, Device, Index >::setRowLengths(const RowLengthsVector& row
 template< typename Real,
 		  typename Device,
 		  typename Index >
-void COOMatrix< Real, Device, Index >::getRowLengths(tnlVector< IndexType, DeviceType, IndexType >& rowLengthsVector) const
+void COOMatrix< Real, Device, Index >::getRowLengths(Containers::Vector< IndexType, DeviceType, IndexType >& rowLengthsVector) const
 {
 	IndexType rowLength;
 	for(IndexType row = 0; row < this->getRows(); row++)
@@ -144,9 +144,9 @@ bool COOMatrix< Real, Device, Index >::addElement( const IndexType row,
 						      	  	  	  	  	  	  const RealType& value,
 						      	  	  	  	  	  	  const RealType& thisElementMultiplicator )
 {
-	tnlAssert( row >= 0 && row < this->rows &&
+	TNL_ASSERT( row >= 0 && row < this->rows &&
                column >= 0 && column < this->columns,
-               cerr << " row = " << row
+              std::cerr << " row = " << row
                     << " column = " << column
                     << " this->rows = " << this->rows
                     << " this->columns = " << this->columns );
@@ -285,10 +285,10 @@ void COOMatrix< Real, Device, Index >::vectorProductHost(const InVector& inVecto
 }
 
 template <>
-class COOMatrixDeviceDependentCode< tnlHost >
+class COOMatrixDeviceDependentCode< Devices::Host >
 {
 	public:
-		typedef tnlHost Device;
+		typedef Devices::Host Device;
 
 		template< typename Real,
 			  	  typename Index,
@@ -321,9 +321,9 @@ typename Vector::RealType COOMatrix< Real, Device, Index >::rowVectorProduct(con
 template< typename Real,
 	  	  typename Device,
 	  	  typename Index >
-bool COOMatrix< Real, Device, Index >::save(tnlFile& file) const
+bool COOMatrix< Real, Device, Index >::save(File& file) const
 {
-	if (!SparseMatrix< Real, Device, Index >::save(file) ||
+	if (!Sparse< Real, Device, Index >::save(file) ||
 	    !this->rowIndexes.save(file))
 		return false;
 	return true;
@@ -332,9 +332,9 @@ bool COOMatrix< Real, Device, Index >::save(tnlFile& file) const
 template< typename Real,
 		  typename Device,
 		  typename Index >
-bool COOMatrix< Real, Device, Index >::load(tnlFile& file)
+bool COOMatrix< Real, Device, Index >::load(File& file)
 {
-	if (!SparseMatrix< Real, Device, Index >::load(file) ||
+	if (!Sparse< Real, Device, Index >::load(file) ||
 	    !this->rowIndexes.load(file))
 		return false;
 	return true;
@@ -343,7 +343,7 @@ bool COOMatrix< Real, Device, Index >::load(tnlFile& file)
 template< typename Real,
 		  typename Device,
 		  typename Index >
-bool COOMatrix< Real, Device, Index >::save(const tnlString& fileName) const
+bool COOMatrix< Real, Device, Index >::save(const String& fileName) const
 {
 	return Object::save(fileName);
 }
@@ -351,7 +351,7 @@ bool COOMatrix< Real, Device, Index >::save(const tnlString& fileName) const
 template< typename Real,
 	  	  typename Device,
 	  	  typename Index >
-bool COOMatrix< Real, Device, Index >::load(const tnlString& fileName)
+bool COOMatrix< Real, Device, Index >::load(const String& fileName)
 {
 	return Object::load(fileName);
 }
@@ -375,7 +375,7 @@ template< typename Real,
 		  typename Index >
 void COOMatrix< Real, Device, Index >::reset()
 {
-	SparseMatrix< Real, Device, Index >::reset();
+	Sparse< Real, Device, Index >::reset();
 	this->rowIndexes.reset();
 }
 

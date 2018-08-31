@@ -1,11 +1,22 @@
-#ifndef tnlBiEllpackSymMatrix_IMPL_H_
-#define tnlBiEllpackSymMatrix_IMPL_H_
+/***************************************************************************
+                          BiEllpackSymmetric.h  -  description
+                             -------------------
+    begin                : Aug 30, 2018
+    copyright            : (C) 2018 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 
-#include <matrices/tnlBiEllpackSymMatrix.h>
-#include <core/vectors/tnlVector.h>
-#include <core/vectors/tnlSharedVector.h>
-#include <core/mfuncs.h>
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
+
+#include <TNL/Matrices/BiEllpackSymmetric.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Math.h>
 #include <cstdio>
+
+namespace TNL {
+namespace Matrices {
 
 template< typename Real,
           typename Device,
@@ -14,7 +25,7 @@ template< typename Real,
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-Index tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::power( const IndexType number,
+Index BiEllpackSymmetric< Real, Device, Index, StripSize >::power( const IndexType number,
                                                                    const IndexType exponent ) const
 {
     if( exponent >= 0 )
@@ -31,7 +42,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::tnlBiEllpackSymMatrix()
+BiEllpackSymmetric< Real, Device, Index, StripSize >::BiEllpackSymmetric()
 : warpSize( 32 ),
   logWarpSize( 5 )
 {}
@@ -40,20 +51,20 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-tnlString tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::getType()
+String BiEllpackSymmetric< Real, Device, Index, StripSize >::getType()
 {
-    return tnlString( "BiEllpackMatrix< ") +
-           tnlString( ::getType< Real >() ) +
-           tnlString( ", " ) +
+    return String( "BiEllpackMatrix< ") +
+           String( TNL::getType< Real >() ) +
+           String( ", " ) +
            Device :: getDeviceType() +
-           tnlString( " >" );
+           String( " >" );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-tnlString tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::getTypeVirtual() const
+String BiEllpackSymmetric< Real, Device, Index, StripSize >::getTypeVirtual() const
 {
     return this->getType();
 }
@@ -62,12 +73,12 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::setDimensions( const IndexType rows,
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::setDimensions( const IndexType rows,
                                                                           const IndexType columns )
 {
-    tnlAssert( rows >= 0 && columns >= 0,
-               cerr << "rows = " << rows
-                    << "columns = " << columns <<endl );
+    TNL_ASSERT( rows >= 0 && columns >= 0,
+               std::cerr << "rows = " << rows
+                    << "columns = " << columns << std::endl );
 
     if( this->getRows() % this->warpSize != 0 )
         this->setVirtualRows( this->getRows() + this->warpSize - ( this->getRows() % this->warpSize ) );
@@ -75,35 +86,33 @@ bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::setDimensions( con
         this->setVirtualRows( this->getRows() );
     IndexType strips = this->virtualRows / this->warpSize;
 
-    if( ! tnlSparseMatrix< Real, Device, Index >::setDimensions( rows, columns ) ||
-        ! this->rowPermArray.setSize( this->rows ) ||
-        ! this->groupPointers.setSize( strips * ( this->logWarpSize + 1 ) + 1 ) )
-        return false;
+    Sparse< Real, Device, Index >::setDimensions( rows, columns );
+    this->rowPermArray.setSize( this->rows );
+    this->groupPointers.setSize( strips * ( this->logWarpSize + 1 ) + 1 );
 
     for( IndexType row = 0; row < this->getRows(); row++ )
         this->rowPermArray.setElement(row, row);
-    return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::setRowLengths( const RowLengthsVector& rowLengths )
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 {
     if( this->getRows() % this->warpSize != 0 )
         this->setVirtualRows( this->getRows() + this->warpSize - ( this->getRows() % this->warpSize ) );
     else
         this->setVirtualRows( this->getRows() );
     IndexType strips = this->virtualRows / this->warpSize;
-    if( ! this->rowPermArray.setSize( this->rows ) ||
-        ! this->groupPointers.setSize( strips * ( this->logWarpSize + 1 ) + 1 ) )
-        return false;
+    this->rowPermArray.setSize( this->rows );
+    this->groupPointers.setSize( strips * ( this->logWarpSize + 1 ) + 1 );
     for( IndexType i = 0; i < this->groupPointers.getSize(); i++ )
         this->groupPointers.setElement( i, 0 );
 
-    DeviceDependentCode::performRowBubbleSort( *this, rowLengths );
-    DeviceDependentCode::computeColumnSizes( *this, rowLengths );
+   // TODO: fix this
+    //DeviceDependentCode::performRowBubbleSort( *this, rowLengths );
+    //DeviceDependentCode::computeColumnSizes( *this, rowLengths );
 
     this->groupPointers.computeExclusivePrefixSum();
 
@@ -111,8 +120,7 @@ bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::setRowLengths( con
     //DeviceDependentCode::verifyRowPerm( *this, rowLengths );
     //DeviceDependentCode::verifyRowLengths( *this, rowLengths );
 
-    return
-        this->allocateMatrixElements( this->warpSize * this->groupPointers.getElement( strips * ( this->logWarpSize + 1 ) ) );
+    this->allocateMatrixElements( this->warpSize * this->groupPointers.getElement( strips * ( this->logWarpSize + 1 ) ) );
 }
 
 template< typename Real,
@@ -122,11 +130,11 @@ template< typename Real,
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-Index tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::getStripLength( const IndexType strip ) const
+Index BiEllpackSymmetric< Real, Device, Index, StripSize >::getStripLength( const IndexType strip ) const
 {
-    tnlAssert( strip >= 0,
-                cerr << "strip = " << strip
-                     << " this->getName() = " << this->getName() << endl );
+    TNL_ASSERT( strip >= 0,
+                std::cerr << "strip = " << strip
+                     << " this->getName() = " << std::endl );
 
     return this->groupPointers.getElement( ( strip + 1 ) * ( this->logWarpSize + 1 ) )
            - this->groupPointers.getElement( strip * ( this->logWarpSize + 1 ) );
@@ -139,12 +147,12 @@ template< typename Real,
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-Index tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::getNumberOfGroups( const IndexType row ) const
+Index BiEllpackSymmetric< Real, Device, Index, StripSize >::getNumberOfGroups( const IndexType row ) const
 {
-    tnlAssert( row >=0 && row < this->getRows(),
-                  cerr << "row = " << row
+    TNL_ASSERT( row >=0 && row < this->getRows(),
+                 std::cerr << "row = " << row
                        << " this->getRows() = " << this->getRows()
-                       << " this->getName() = " << this->getName() << endl );
+                       << " this->getName() = " << std::endl );
 
     IndexType strip = row / this->warpSize;
     IndexType rowStripPermutation = this->rowPermArray.getElement( row ) - this->warpSize * strip;
@@ -162,12 +170,12 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-Index tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::getRowLength( const IndexType row ) const
+Index BiEllpackSymmetric< Real, Device, Index, StripSize >::getRowLength( const IndexType row ) const
 {
-    tnlAssert( row >= 0 && row < this->getRows(),
-                cerr << "row = " << row
+    TNL_ASSERT( row >= 0 && row < this->getRows(),
+                std::cerr << "row = " << row
                      << " this->getRows() = " << this->getRows()
-                     << " this->getName() = " << this->getName() << endl );
+                     << " this->getName() = " << std::endl );
 
     const IndexType strip = row / this->warpSize;
     const IndexType groupBegin = strip * ( this->logWarpSize + 1 );
@@ -200,11 +208,11 @@ template< typename Real,
     template< typename Real2,
               typename Device2,
               typename Index2 >
-bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::setLike( const tnlBiEllpackSymMatrix< Real2, Device2, Index2, StripSize >& matrix )
+bool BiEllpackSymmetric< Real, Device, Index, StripSize >::setLike( const BiEllpackSymmetric< Real2, Device2, Index2, StripSize >& matrix )
 {
-    cout << "setLike" << endl;
-    cout << "settingLike" << endl;
-    if( ! tnlSparseMatrix< Real, Device, Index >::setLike( matrix ) ||
+    std::cout << "setLike" << std::endl;
+    std::cout << "settingLike" << std::endl;
+    if( ! Sparse< Real, Device, Index >::setLike( matrix ) ||
         ! this->rowPermArray.setLike( matrix.rowPermArray ) ||
         ! this->groupPointers.setLike( matrix.groupPointers ) )
         return false;
@@ -215,7 +223,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::getRowLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths) const
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::getRowLengths( Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths) const
 {
     for( IndexType row = 0; row < this->getRows(); row++ )
         rowLengths.setElement( row, this->getRowLength( row ) );
@@ -225,16 +233,16 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::setElement( const IndexType row,
+bool BiEllpackSymmetric< Real, Device, Index, StripSize >::setElement( const IndexType row,
                                                                        const IndexType column,
                                                                        const RealType& value )
 {
-    tnlAssert( ( row >= 0 && row < this->getRows() ) ||
+    TNL_ASSERT( ( row >= 0 && row < this->getRows() ) ||
                 ( column >= 0 && column < this->getColumns() ),
-                  cerr << "row = " << row
+                 std::cerr << "row = " << row
                        << " this->getRows() = " << this->getRows()
                        << " this->getColumns() = " << this->getColumns()
-                       << " this->getName() = " << this->getName() << endl );
+                       << " this->getName() = " << std::endl );
 
     return this->addElement( row, column, value, 0.0 );
 }
@@ -246,16 +254,16 @@ template< typename Real,
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::setElementFast( const IndexType row,
+bool BiEllpackSymmetric< Real, Device, Index, StripSize >::setElementFast( const IndexType row,
                                                                            const IndexType column,
                                                                            const RealType& value )
 {
-    tnlAssert( ( row >= 0 && row < this->getRows() ) ||
+    TNL_ASSERT( ( row >= 0 && row < this->getRows() ) ||
                ( column >= 0 && column < this->getColumns() ),
-                 cerr << "row = " << row
+                std::cerr << "row = " << row
                       << " this->getRows() = " << this->getRows()
                       << " this->getColumns() = " << this->getColumns()
-                      << " this->getName() = " << this->getName() << endl );
+                      << " this->getName() = " << this->getName() <<std::endl );
 
     return this->addElementFast( row, column, value, 0.0 );
 }
@@ -264,7 +272,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::addElement( const IndexType row,
+bool BiEllpackSymmetric< Real, Device, Index, StripSize >::addElement( const IndexType row,
                                                                        const IndexType column,
                                                                        const RealType& value,
                                                                        const RealType& thisElementMultiplicator )
@@ -306,7 +314,7 @@ template< typename Real,
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::addElementFast( const IndexType row,
+bool BiEllpackSymmetric< Real, Device, Index, StripSize >::addElementFast( const IndexType row,
                                                                            const IndexType column,
                                                                            const RealType& value,
                                                                            const RealType& thisElementMultiplicator )
@@ -360,15 +368,15 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::setRow( const IndexType row,
+bool BiEllpackSymmetric< Real, Device, Index, StripSize >::setRow( const IndexType row,
                                                                    const IndexType* columns,
                                                                    const RealType* values,
                                                                    const IndexType numberOfElements )
 {
-    tnlAssert( row >= 0 && row < this->getRows(),
-               cerr << "row = " << row
+    TNL_ASSERT( row >= 0 && row < this->getRows(),
+              std::cerr << "row = " << row
                     << " this->getRows() = " << this->getRows()
-                    << " this->getName() = " << this->getName() << endl );
+                    << " this->getName() = " << std::endl );
 
     const IndexType strip = row / this->warpSize;
     const IndexType groupBegin = strip * ( this->logWarpSize + 1 );
@@ -398,16 +406,16 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::addRow( const IndexType row,
+bool BiEllpackSymmetric< Real, Device, Index, StripSize >::addRow( const IndexType row,
                                                                    const IndexType* columns,
                                                                    const RealType* values,
                                                                    const IndexType numberOfElements,
                                                                    const RealType& thisElementMultiplicator )
 {
-    tnlAssert( row >=0 && row < this->getRows(),
-               cerr << "row = " << row
+    TNL_ASSERT( row >=0 && row < this->getRows(),
+              std::cerr << "row = " << row
                     << " this->getRows() = " << this->getRows()
-                    << " this->getName() = " << this->getName() << endl );
+                    << " this->getName() = " << std::endl );
 
     const IndexType strip = row / this->warpSize;
     const IndexType groupBegin = strip * ( this->logWarpSize + 1 );
@@ -442,15 +450,15 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-Real tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::getElement( const IndexType row,
+Real BiEllpackSymmetric< Real, Device, Index, StripSize >::getElement( const IndexType row,
                                                                        const IndexType column ) const
 {
-    tnlAssert( ( row >= 0 && row < this->getRows() ) ||
+    TNL_ASSERT( ( row >= 0 && row < this->getRows() ) ||
                 ( column >= 0 && column < this->getColumns() ),
-                  cerr << "row = " << row
+                 std::cerr << "row = " << row
                        << " this->getRows() = " << this->getRows()
                        << " this->getColumns() = " << this->getColumns()
-                       << "this->getName() = " << this->getName() << endl );
+                       << "this->getName() = " << std::endl );
 
     if( row > column )
         return this->getElement( column, row );
@@ -483,7 +491,7 @@ template< typename Real,
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-Real tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::getElementFast( const IndexType row,
+Real BiEllpackSymmetric< Real, Device, Index, StripSize >::getElementFast( const IndexType row,
                                                                            const IndexType column ) const
 {
     const IndexType strip = row / this->warpSize;
@@ -526,14 +534,14 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::getRow( const IndexType row,
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::getRow( const IndexType row,
                                                                    IndexType* columns,
                                                                    RealType* values ) const
 {
-    tnlAssert( row >=0 && row < this->getRows(),
-                  cerr << "row = " << row
+    TNL_ASSERT( row >=0 && row < this->getRows(),
+                 std::cerr << "row = " << row
                        << " this->getRows() = " << this->getRows()
-                       << " this->getName() = " << this->getName() << endl );
+                       << " this->getName() = " << this->getName() <<std::endl );
 
     bool padding = false;
     const IndexType strip = row / this->warpSize;
@@ -567,7 +575,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::setVirtualRows(const IndexType rows)
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::setVirtualRows(const IndexType rows)
 {
     this->virtualRows = rows;
 }
@@ -579,7 +587,7 @@ template< typename Real,
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-Index tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::getGroupLength( const Index strip,
+Index BiEllpackSymmetric< Real, Device, Index, StripSize >::getGroupLength( const Index strip,
                                                                             const Index group ) const
 {
     return this->groupPointers.getElement( strip * ( this->logWarpSize + 1 ) + group + 1 )
@@ -592,7 +600,7 @@ template< typename Real,
           int StripSize >
 template< typename InVector,
           typename OutVector >
-void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::vectorProduct( const InVector& inVector,
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::vectorProduct( const InVector& inVector,
                                                                           OutVector& outVector ) const
 {
     DeviceDependentCode::vectorProduct( *this, inVector, outVector );
@@ -604,14 +612,14 @@ template< typename Real,
           int StripSize >
 template< typename InVector,
           typename OutVector >
-void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::vectorProductHost( const InVector& inVector,
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::vectorProductHost( const InVector& inVector,
                                                                               OutVector& outVector ) const
 {
     const IndexType cudaBlockSize = 256;
     const IndexType cudaBlocks = roundUpDivision( this->getRows(), cudaBlockSize );
     for( IndexType blockIdx = 0; blockIdx < cudaBlocks; blockIdx++ )
     {
-        tnlVector< Real, Device, Index > tempStripOutVector;
+        Containers::Vector< Real, Device, Index > tempStripOutVector;
         tempStripOutVector.setSize( cudaBlockSize );
         for( IndexType i = 0; i < tempStripOutVector.getSize(); i++ )
             tempStripOutVector.setElement( i, 0 );
@@ -665,9 +673,9 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::reset()
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::reset()
 {
-    tnlSparseMatrix< Real, Device, Index >::reset();
+    Sparse< Real, Device, Index >::reset();
     this->rowPermArray.reset();
     this->groupPointers.reset();
 }
@@ -676,9 +684,9 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::save( tnlFile& file ) const
+bool BiEllpackSymmetric< Real, Device, Index, StripSize >::save( File& file ) const
 {
-    if( ! tnlSparseMatrix< Real, Device, Index >::save( file ) ||
+    if( ! Sparse< Real, Device, Index >::save( file ) ||
         ! this->groupPointers.save( file ) ||
         ! this->rowPermArray.save( file ) )
         return false;
@@ -689,9 +697,9 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::load( tnlFile& file )
+bool BiEllpackSymmetric< Real, Device, Index, StripSize >::load( File& file )
 {
-    if( ! tnlSparseMatrix< Real, Device, Index >::load( file ) ||
+    if( ! Sparse< Real, Device, Index >::load( file ) ||
         ! this->groupPointers.load( file ) ||
         ! this->rowPermArray.load( file ) )
         return false;
@@ -702,25 +710,25 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::save( const tnlString& fileName ) const
+bool BiEllpackSymmetric< Real, Device, Index, StripSize >::save( const String& fileName ) const
 {
-    return tnlObject::save( fileName );
+    return Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-bool tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::load( const tnlString& fileName )
+bool BiEllpackSymmetric< Real, Device, Index, StripSize >::load( const String& fileName )
 {
-    return tnlObject::load( fileName );
+    return Object::load( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::print( ostream& str ) const
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::print( std::ostream& str ) const
 {
     for( IndexType row = 0; row < this->getRows(); row++ )
     {
@@ -750,7 +758,7 @@ void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::print( ostream& st
             step /= 2;
             rowMultiplicator *= 2;
         }
-        str << endl;
+        str <<std::endl;
     }
 }
 
@@ -758,7 +766,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::performRowBubbleSort( tnlVector< Index, Device, Index >& tempRowLengths )
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::performRowBubbleSort( Containers::Vector< Index, Device, Index >& tempRowLengths )
 {
     Index strips = this->virtualRows / this->warpSize;
     for( Index i = 0; i < strips; i++ )
@@ -817,7 +825,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::computeColumnSizes( tnlVector< Index, Device, Index >& tempRowLengths )
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::computeColumnSizes( Containers::Vector< Index, Device, Index >& tempRowLengths )
 {
     Index numberOfStrips = this->virtualRows / this->warpSize;
     for( Index strip = 0; strip < numberOfStrips; strip++ )
@@ -854,17 +862,17 @@ void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::computeColumnSizes
 }
 
 template<>
-class tnlBiEllpackSymMatrixDeviceDependentCode< tnlHost >
+class BiEllpackSymmetricDeviceDependentCode< Devices::Host >
 {
 public:
 
-    typedef tnlHost Device;
+    typedef Devices::Host Device;
 
     template< typename Real,
               typename Index,
               int StripSize >
-    static void verifyRowLengths( const tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >& matrix,
-                                  const typename tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
+    static void verifyRowLengths( const BiEllpackSymmetric< Real, Device, Index, StripSize >& matrix,
+                                  const typename BiEllpackSymmetric< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
     {
         bool ok = true;
         for( Index row = 0; row < matrix.getRows(); row++ )
@@ -893,14 +901,14 @@ public:
                 ok = false;
         }
         if( ok )
-            cout << "row lengths OK" << endl;
+           std::cout << "row lengths OK" <<std::endl;
     }
 
     template< typename Real,
               typename Index,
               int StripSize >
-    static void verifyRowPerm( const tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >& matrix,
-                               const typename tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
+    static void verifyRowPerm( const BiEllpackSymmetric< Real, Device, Index, StripSize >& matrix,
+                               const typename BiEllpackSymmetric< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
     {
         bool ok = true;
         Index numberOfStrips = matrix.virtualRows / matrix.warpSize;
@@ -929,7 +937,7 @@ public:
                     }
                 }
                 if( !first || !second )
-                    cout << "Wrong permutation!" << endl;
+                   std::cout << "Wrong permutation!" <<std::endl;
                 if( rowLengths.getElement( permIndex1 ) >= rowLengths.getElement( permIndex2 ) )
                     continue;
                 else
@@ -937,7 +945,7 @@ public:
             }
         }
         if( ok )
-            cout << "Permutation OK" << endl;
+           std::cout << "Permutation OK" <<std::endl;
     }
 
     template< typename Real,
@@ -945,7 +953,7 @@ public:
               int StripSize,
               typename InVector,
               typename OutVector >
-    static void vectorProduct( const tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >& matrix,
+    static void vectorProduct( const BiEllpackSymmetric< Real, Device, Index, StripSize >& matrix,
                                const InVector& inVector,
                     	       OutVector& outVector )
     {
@@ -955,8 +963,8 @@ public:
     template< typename Real,
               typename Index,
               int StripSize >
-    static void computeColumnSizes( tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >& matrix,
-                                    const typename tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
+    static void computeColumnSizes( BiEllpackSymmetric< Real, Device, Index, StripSize >& matrix,
+                                    const typename BiEllpackSymmetric< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
     {
         Index numberOfStrips = matrix.virtualRows / matrix.warpSize;
         for( Index strip = 0; strip < numberOfStrips; strip++ )
@@ -1001,9 +1009,9 @@ public:
     template< typename Real,
               typename Index,
               int StripSize >
-    static void performRowBubbleSort( tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >& matrix,
-                                      const typename tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths
-                                      /*tnlVector< Index, Device, Index >& tempRowLengths*/ )
+    static void performRowBubbleSort( BiEllpackSymmetric< Real, Device, Index, StripSize >& matrix,
+                                      const typename BiEllpackSymmetric< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths
+                                      /*Containers::Vector< Index, Device, Index >& tempRowLengths*/ )
     {
         Index strips = matrix.virtualRows / matrix.warpSize;
         for( Index i = 0; i < strips; i++ )
@@ -1065,7 +1073,7 @@ template< typename Real,
 template< typename InVector,
           typename OutVector >
 __device__
-void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::spmvCuda( const InVector& inVector,
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::spmvCuda( const InVector& inVector,
                                                                      OutVector& outVector,
                                                                      int globalIdx ) const
 {
@@ -1080,7 +1088,7 @@ void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::spmvCuda( const In
     IndexType bisection = this->warpSize;
     IndexType groupBegin = strip * ( this->logWarpSize + 1 );
 
-    Real* temp = getSharedMemory< Real >();
+    Real* temp = Devices::Cuda::getSharedMemory< Real >();
     __shared__ Real results[ cudaBlockSize ];
     results[ threadIdx.x ] = 0.0;
     IndexType elementPtr = ( this->groupPointers[ groupBegin ] << this->logWarpSize ) + inWarpIdx;
@@ -1127,7 +1135,7 @@ template< typename Real,
 template< typename InVector,
           typename OutVector >
 __device__
-void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::spmvCuda( const InVector& inVector,
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::spmvCuda( const InVector& inVector,
                     	                     OutVector& outVector,
                     			     int globalIdx ) const
 {
@@ -1295,13 +1303,13 @@ template< typename Real,
           typename InVector,
           typename OutVector >
 __global__
-void tnlBiEllpackSymMatrixVectorProductCuda( const tnlBiEllpackSymMatrix< Real, tnlCuda, Index, StripSize >* matrix,
+void BiEllpackSymmetricVectorProductCuda( const BiEllpackSymmetric< Real, Devices::Cuda, Index, StripSize >* matrix,
                                           const InVector* inVector,
                                           OutVector* outVector,
                                           int gridIdx,
                                           const int warpSize )
 {
-    Index globalIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+    Index globalIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     matrix->spmvCuda( *inVector, *outVector, globalIdx );
 }
 #endif
@@ -1312,7 +1320,7 @@ template< typename Real,
           typename Index,
           int StripSize >
 __device__
-void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::performRowBubbleSortCudaKernel( const typename tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths,
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::performRowBubbleSortCudaKernel( const typename BiEllpackSymmetric< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths,
                                                                                            const IndexType strip )
 {
     IndexType begin = strip * this->warpSize;
@@ -1369,7 +1377,7 @@ template< typename Real,
           typename Index,
           int StripSize >
 __device__
-void tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::computeColumnSizesCudaKernel( const typename tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths,
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::computeColumnSizesCudaKernel( const typename BiEllpackSymmetric< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths,
                                                                                          const IndexType numberOfStrips,
                                                                                          const IndexType strip )
 {
@@ -1417,11 +1425,11 @@ template< typename Real,
           typename Index,
           int StripSize >
 __global__
-void performRowBubbleSortCuda( tnlBiEllpackSymMatrix< Real, tnlCuda, Index, StripSize >* matrix,
-                               const typename tnlBiEllpackSymMatrix< Real, tnlCuda, Index, StripSize >::RowLengthsVector* rowLengths,
+void performRowBubbleSortCuda( BiEllpackSymmetric< Real, Devices::Cuda, Index, StripSize >* matrix,
+                               const typename BiEllpackSymmetric< Real, Devices::Cuda, Index, StripSize >::RowLengthsVector* rowLengths,
                                int gridIdx )
 {
-    const Index stripIdx = gridIdx * tnlCuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
+    const Index stripIdx = gridIdx * Devices::Cuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
     matrix->performRowBubbleSortCudaKernel( *rowLengths, stripIdx );
 }
 #endif
@@ -1431,31 +1439,31 @@ template< typename Real,
           typename Index,
           int StripSize >
 __global__
-void computeColumnSizesCuda( tnlBiEllpackSymMatrix< Real, tnlCuda, Index, StripSize >* matrix,
-                             const typename tnlBiEllpackSymMatrix< Real, tnlCuda, Index, StripSize >::RowLengthsVector* rowLengths,
+void computeColumnSizesCuda( BiEllpackSymmetric< Real, Devices::Cuda, Index, StripSize >* matrix,
+                             const typename BiEllpackSymmetric< Real, Devices::Cuda, Index, StripSize >::RowLengthsVector* rowLengths,
                              const Index numberOfStrips,
                              int gridIdx )
 {
-    const Index stripIdx = gridIdx * tnlCuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
+    const Index stripIdx = gridIdx * Devices::Cuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
     matrix->computeColumnSizesCudaKernel( *rowLengths, numberOfStrips, stripIdx );
 }
 #endif
 
 template<>
-class tnlBiEllpackSymMatrixDeviceDependentCode< tnlCuda >
+class BiEllpackSymmetricDeviceDependentCode< Devices::Cuda >
 {
 public:
 
-    typedef tnlCuda Device;
+    typedef Devices::Cuda Device;
 
     template< typename Real,
               typename Index,
               int StripSize >
-    static void verifyRowLengths( const tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >& matrix,
-                                  const typename tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
+    static void verifyRowLengths( const BiEllpackSymmetric< Real, Device, Index, StripSize >& matrix,
+                                  const typename BiEllpackSymmetric< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
     {
         bool ok = true;
-        cout << "inside method" << endl;
+       std::cout << "inside method" <<std::endl;
         for( Index row = 0; row < matrix.getRows(); row++ )
         {
             const Index strip = row / matrix.warpSize;
@@ -1483,14 +1491,14 @@ public:
                 ok = false;
         }
         if( ok )
-            cout << "row lengths OK" << endl;
+           std::cout << "row lengths OK" <<std::endl;
     }
 
     template< typename Real,
               typename Index,
               int StripSize >
-    static void verifyRowPerm( const tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >& matrix,
-                               const typename tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
+    static void verifyRowPerm( const BiEllpackSymmetric< Real, Device, Index, StripSize >& matrix,
+                               const typename BiEllpackSymmetric< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
     {
         bool ok = true;
         Index numberOfStrips = matrix.virtualRows / matrix.warpSize;
@@ -1519,7 +1527,7 @@ public:
                     }
                 }
                 if( !first || !second )
-                    cout << "nenasel jsem spravne indexy" << endl;
+                   std::cout << "nenasel jsem spravne indexy" <<std::endl;
                 if( rowLengths.getElement( permIndex1 ) >= rowLengths.getElement( permIndex2 ) )
                     continue;
                 else
@@ -1527,59 +1535,59 @@ public:
             }
         }
         if( ok )
-            cout << "perm OK" << endl;
+           std::cout << "perm OK" <<std::endl;
     }
 
     template< typename Real,
               typename Index,
               int StripSize >
-    static void performRowBubbleSort( tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >& matrix,
-                                      const typename tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
+    static void performRowBubbleSort( BiEllpackSymmetric< Real, Device, Index, StripSize >& matrix,
+                                      const typename BiEllpackSymmetric< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
     {
 #ifdef HAVE_CUDA
         Index numberOfStrips = matrix.virtualRows / StripSize;
-        typedef tnlBiEllpackSymMatrix< Real, tnlCuda, Index, StripSize > Matrix;
-        typedef typename Matrix::RowLengthsVector RowLengthsVector;
-        Matrix* kernel_this = tnlCuda::passToDevice( matrix );
-        RowLengthsVector* kernel_rowLengths = tnlCuda::passToDevice( rowLengths );
-        dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+        typedef BiEllpackSymmetric< Real, Devices::Cuda, Index, StripSize > Matrix;
+        typedef typename Matrix::RowLengthsVector CompressedRowLengthsVector;
+        Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
+        CompressedRowLengthsVector* kernel_rowLengths = Devices::Cuda::passToDevice( rowLengths );
+        dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
         const Index cudaBlocks = roundUpDivision( numberOfStrips, cudaBlockSize.x );
-        const Index cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+        const Index cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
         for( int gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
         {
              if( gridIdx == cudaGrids - 1 )
-                 cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+                 cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
              performRowBubbleSortCuda< Real, Index, StripSize >
                                      <<< cudaGridSize, cudaBlockSize >>>
                                      ( kernel_this,
                                        kernel_rowLengths,
                                        gridIdx );
         }
-        tnlCuda::freeFromDevice( kernel_this );
-        tnlCuda::freeFromDevice( kernel_rowLengths );
-        checkCudaDevice;
+        Devices::Cuda::freeFromDevice( kernel_this );
+        Devices::Cuda::freeFromDevice( kernel_rowLengths );
+        TNL_CHECK_CUDA_DEVICE;
 #endif
     }
 
     template< typename Real,
               typename Index,
               int StripSize >
-    static void computeColumnSizes( tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >& matrix,
-                                    const typename tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
+    static void computeColumnSizes( BiEllpackSymmetric< Real, Device, Index, StripSize >& matrix,
+                                    const typename BiEllpackSymmetric< Real, Device, Index, StripSize >::RowLengthsVector& rowLengths )
     {
 #ifdef HAVE_CUDA
         const Index numberOfStrips = matrix.virtualRows / StripSize;
-        typedef tnlBiEllpackSymMatrix< Real, tnlCuda, Index, StripSize > Matrix;
-        typedef typename Matrix::RowLengthsVector RowLengthsVector;
-        Matrix* kernel_this = tnlCuda::passToDevice( matrix );
-        RowLengthsVector* kernel_rowLengths = tnlCuda::passToDevice( rowLengths );
-        dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+        typedef BiEllpackSymmetric< Real, Devices::Cuda, Index, StripSize > Matrix;
+        typedef typename Matrix::RowLengthsVector CompressedRowLengthsVector;
+        Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
+        CompressedRowLengthsVector* kernel_rowLengths = Devices::Cuda::passToDevice( rowLengths );
+        dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
         const Index cudaBlocks = roundUpDivision( numberOfStrips, cudaBlockSize.x );
-        const Index cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+        const Index cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
         for( int gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
         {
              if( gridIdx == cudaGrids - 1 )
-                 cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+                 cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
              computeColumnSizesCuda< Real, Index, StripSize >
                                    <<< cudaGridSize, cudaBlockSize >>>
                                    ( kernel_this,
@@ -1587,9 +1595,9 @@ public:
                                      numberOfStrips,
                                      gridIdx );
         }
-        tnlCuda::freeFromDevice( kernel_this );
-        tnlCuda::freeFromDevice( kernel_rowLengths );
-        checkCudaDevice;
+        Devices::Cuda::freeFromDevice( kernel_this );
+        Devices::Cuda::freeFromDevice( kernel_rowLengths );
+        TNL_CHECK_CUDA_DEVICE;
 #endif
     }
 
@@ -1599,25 +1607,25 @@ public:
               int StripSize,
               typename InVector,
               typename OutVector >
-    static void vectorProduct( const tnlBiEllpackSymMatrix< Real, Device, Index, StripSize >& matrix,
+    static void vectorProduct( const BiEllpackSymmetric< Real, Device, Index, StripSize >& matrix,
                                const InVector& inVector,
                                OutVector& outVector )
     {
 #ifdef HAVE_CUDA
-        typedef tnlBiEllpackSymMatrix< Real, tnlCuda, Index > Matrix;
+        typedef BiEllpackSymmetric< Real, Devices::Cuda, Index > Matrix;
         typedef typename Matrix::IndexType IndexType;
-        Matrix* kernel_this = tnlCuda::passToDevice( matrix );
-        InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
-        OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
-        dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+        Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
+        InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
+        OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
+        dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
         const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-        const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+        const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
         for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
         {
             if( gridIdx == cudaGrids - 1 )
-                cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+                cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
             const int sharedMemory = cudaBlockSize.x * sizeof( Real );
-            tnlBiEllpackSymMatrixVectorProductCuda< Real, Index, StripSize, InVector, OutVector >
+            BiEllpackSymmetricVectorProductCuda< Real, Index, StripSize, InVector, OutVector >
                                                <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                ( kernel_this,
                                                  kernel_inVector,
@@ -1625,13 +1633,14 @@ public:
                                                  gridIdx,
                                                  matrix.warpSize );
         }
-        tnlCuda::freeFromDevice( kernel_this );
-        tnlCuda::freeFromDevice( kernel_inVector );
-        tnlCuda::freeFromDevice( kernel_outVector );
-        checkCudaDevice;
+        Devices::Cuda::freeFromDevice( kernel_this );
+        Devices::Cuda::freeFromDevice( kernel_inVector );
+        Devices::Cuda::freeFromDevice( kernel_outVector );
+        TNL_CHECK_CUDA_DEVICE;
 #endif
     }
 
 };
 
-#endif
+} // namespace Matrices
+} // namespace TNL

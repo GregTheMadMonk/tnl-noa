@@ -24,7 +24,7 @@
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::tnlParallelEikonalSolver()
 {
-	cout << "a" << endl;
+	cout << "a" <<std::endl;
 	this->device = tnlCudaDevice;  /////////////// tnlCuda Device --- vypocet na GPU, TNL::Devices::HostDevice   ---    vypocet na CPU
 
 #ifdef HAVE_CUDA
@@ -34,7 +34,7 @@ tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::tnlPa
 	}
 #endif
 
-	cout << "b" << endl;
+	cout << "b" <<std::endl;
 }
 
 template< typename SchemeHost, typename SchemeDevice, typename Device>
@@ -52,12 +52,12 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 
 bool tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init( const Config::ParameterContainer& parameters )
 {
-	cout << "Initializating solver..." << endl;
+	cout << "Initializating solver..." <<std::endl;
 	const String& meshLocation = parameters.getParameter <String>("mesh");
 	this->mesh.load( meshLocation );
 
 	this->n = parameters.getParameter <int>("subgrid-size");
-	cout << "Setting N to " << this->n << endl;
+	cout << "Setting N to " << this->n <<std::endl;
 
 	this->subMesh.setDimensions( this->n, this->n );
 	this->subMesh.setDomain( Containers::StaticVector<2,double>(0.0, 0.0),
@@ -68,35 +68,35 @@ bool tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 	const String& initialCondition = parameters.getParameter <String>("initial-condition");
 	this->u0.load( initialCondition );
 
-	//cout << this->mesh.getCellCenter(0) << endl;
+	//cout << this->mesh.getCellCenter(0) <<std::endl;
 
 	this->delta = parameters.getParameter <double>("delta");
 	this->delta *= mesh.template getSpaceStepsProducts< 1, 0 >()*mesh.template getSpaceStepsProducts< 0, 1 >();
 
-	cout << "Setting delta to " << this->delta << endl;
+	cout << "Setting delta to " << this->delta <<std::endl;
 
 	this->tau0 = parameters.getParameter <double>("initial-tau");
-	cout << "Setting initial tau to " << this->tau0 << endl;
+	cout << "Setting initial tau to " << this->tau0 <<std::endl;
 	this->stopTime = parameters.getParameter <double>("stop-time");
 
 	this->cflCondition = parameters.getParameter <double>("cfl-condition");
 	this -> cflCondition *= sqrt(mesh.template getSpaceStepsProducts< 1, 0 >()*mesh.template getSpaceStepsProducts< 0, 1 >());
-	cout << "Setting CFL to " << this->cflCondition << endl;
+	cout << "Setting CFL to " << this->cflCondition <<std::endl;
 
 	stretchGrid();
 	this->stopTime /= (double)(this->gridCols);
 	this->stopTime *= (1.0+1.0/((double)(this->n) - 2.0));
-	cout << "Setting stopping time to " << this->stopTime << endl;
+	cout << "Setting stopping time to " << this->stopTime <<std::endl;
 	//this->stopTime = 1.5*((double)(this->n))*parameters.getParameter <double>("stop-time")*this->mesh.template getSpaceStepsProducts< 1, 0 >();
-	//cout << "Setting stopping time to " << this->stopTime << endl;
+	//cout << "Setting stopping time to " << this->stopTime <<std::endl;
 
-	cout << "Initializating scheme..." << endl;
+	cout << "Initializating scheme..." <<std::endl;
 	if(!this->schemeHost.init(parameters))
 	{
-		cerr << "SchemeHost failed to initialize." << endl;
+		cerr << "SchemeHost failed to initialize." <<std::endl;
 		return false;
 	}
-	cout << "Scheme initialized." << endl;
+	cout << "Scheme initialized." <<std::endl;
 
 	test();
 
@@ -107,17 +107,17 @@ bool tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 
 	if(this->device == tnlCudaDevice)
 	{
-	/*cout << "Testing... " << endl;
+	/*cout << "Testing... " <<std::endl;
 	if(this->device == tnlCudaDevice)
 	{
 	if( !initCUDA2D(parameters, gridRows, gridCols) )
 		return false;
 	}*/
-		//cout << "s" << endl;
+		//cout << "s" <<std::endl;
 	cudaMalloc(&(this->cudaSolver), sizeof(tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int >));
-	//cout << "s" << endl;
+	//cout << "s" <<std::endl;
 	cudaMemcpy(this->cudaSolver, this,sizeof(tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int >), cudaMemcpyHostToDevice);
-	//cout << "s" << endl;
+	//cout << "s" <<std::endl;
 	double** tmpdev = NULL;
 	cudaMalloc(&tmpdev, sizeof(double*));
 	//double* tmpw;
@@ -132,7 +132,7 @@ bool tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 	initCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<1,1>>>(this->cudaSolver, (this->tmpw), (this->runcuda),tmpUC);
 	cudaDeviceSynchronize();
 	TNL_CHECK_CUDA_DEVICE;
-	//cout << "s " << endl;
+	//cout << "s " <<std::endl;
 	//cudaMalloc(&(cudaSolver->work_u_cuda), this->work_u.getSize()*sizeof(double));
 	double* tmpu = NULL;
 
@@ -141,7 +141,7 @@ bool tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 	cudaMemcpy((this->tmpw), this->work_u.getData(), this->work_u.getSize()*sizeof(double), cudaMemcpyHostToDevice);
 	cudaDeviceSynchronize();
 	TNL_CHECK_CUDA_DEVICE;
-	//cout << "s "<< endl;
+	//cout << "s "<<std::endl;
 
 	}
 #endif
@@ -152,7 +152,7 @@ bool tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 	{
 
 		if(! tmp[i].setSize(this->n * this->n))
-			cout << "Could not allocate tmp["<< i <<"] array." << endl;
+			cout << "Could not allocate tmp["<< i <<"] array." <<std::endl;
 			tmp[i] = getSubgrid(i);
 		containsCurve = false;
 
@@ -167,11 +167,11 @@ bool tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 		}
 		if(containsCurve)
 		{
-			//cout << "Computing initial SDF on subgrid " << i << "." << endl;
+			//cout << "Computing initial SDF on subgrid " << i << "." <<std::endl;
 			tmp[i] = runSubgrid(0, tmp[i],i);
 			insertSubgrid(tmp[i], i);
 			setSubgridValue(i, 4);
-			//cout << "Computed initial SDF on subgrid " << i  << "." << endl;
+			//cout << "Computed initial SDF on subgrid " << i  << "." <<std::endl;
 		}
 		containsCurve = false;
 
@@ -180,7 +180,7 @@ bool tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 #ifdef HAVE_CUDA
 	else if(this->device == tnlCudaDevice)
 	{
-//		cout << "pre 1 kernel" << endl;
+//		cout << "pre 1 kernel" <<std::endl;
 		cudaDeviceSynchronize();
 		TNL_CHECK_CUDA_DEVICE;
 		dim3 threadsPerBlock(this->n, this->n);
@@ -189,7 +189,7 @@ bool tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 		TNL_CHECK_CUDA_DEVICE;
 		initRunCUDA2D<SchemeTypeHost,SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
-//		cout << "post 1 kernel" << endl;
+//		cout << "post 1 kernel" <<std::endl;
 
 	}
 #endif
@@ -204,9 +204,9 @@ bool tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 		dim3 threadsPerBlock(this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows);
 		//double * test = (double*)malloc(this->work_u.getSize()*sizeof(double));
-		//cout << test[0] <<"   " << test[1] <<"   " << test[2] <<"   " << test[3] << endl;
+		//cout << test[0] <<"   " << test[1] <<"   " << test[2] <<"   " << test[3] <<std::endl;
 		//cudaMemcpy(/*this->work_u.getData()*/ test, (this->tmpw), this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
-		//cout << this->tmpw << "   " <<  test[0] <<"   " << test[1] << "   " <<test[2] << "   " <<test[3] << endl;
+		//cout << this->tmpw << "   " <<  test[0] <<"   " << test[1] << "   " <<test[2] << "   " <<test[3] <<std::endl;
 
 		TNL_CHECK_CUDA_DEVICE;
 
@@ -216,16 +216,16 @@ bool tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 		synchronize2CUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,1>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
 		TNL_CHECK_CUDA_DEVICE;
-		//cout << test[0] << "   " <<test[1] <<"   " << test[2] << "   " <<test[3] << endl;
+		//cout << test[0] << "   " <<test[1] <<"   " << test[2] << "   " <<test[3] <<std::endl;
 		//cudaMemcpy(/*this->work_u.getData()*/ test, (this->tmpw), this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
 		//TNL_CHECK_CUDA_DEVICE;
-		//cout << this->tmpw << "   " <<  test[0] << "   " <<test[1] << "   " <<test[2] <<"   " << test[3] << endl;
+		//cout << this->tmpw << "   " <<  test[0] << "   " <<test[1] << "   " <<test[2] <<"   " << test[3] <<std::endl;
 		//free(test);
 
 	}
 
 #endif
-	cout << "Solver initialized." << endl;
+	cout << "Solver initialized." <<std::endl;
 
 	return true;
 }
@@ -252,7 +252,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 			{
 				VectorType tmp;
 				tmp.setSize(this->n * this->n);
-				//cout << "subMesh: " << i << ", BC: " << getBoundaryCondition(i) << endl;
+				//cout << "subMesh: " << i << ", BC: " << getBoundaryCondition(i) <<std::endl;
 
 				if(getSubgridValue(i) == currentStep+4)
 				{
@@ -290,7 +290,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 				if( ((getBoundaryCondition(i) & 2) )|| (getBoundaryCondition(i) & 1)//)
 					/*	&&(!(getBoundaryCondition(i) & 5) && !(getBoundaryCondition(i) & 10)) */)
 				{
-					//cout << "3 @ " << getBoundaryCondition(i) << endl;
+					//cout << "3 @ " << getBoundaryCondition(i) <<std::endl;
 					tmp = getSubgrid(i);
 					tmp = runSubgrid(1, tmp ,i);
 					insertSubgrid( tmp, 3);
@@ -298,7 +298,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 				if( ((getBoundaryCondition(i) & 4) )|| (getBoundaryCondition(i) & 1)//)
 					/*	&&(!(getBoundaryCondition(i) & 3) && !(getBoundaryCondition(i) & 12)) */)
 				{
-					//cout << "5 @ " << getBoundaryCondition(i) << endl;
+					//cout << "5 @ " << getBoundaryCondition(i) <<std::endl;
 					tmp = getSubgrid(i);
 					tmp = runSubgrid(5, tmp ,i);
 					insertSubgrid( tmp, i);
@@ -306,7 +306,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 				if( ((getBoundaryCondition(i) & 2) )|| (getBoundaryCondition(i) & 8)//)
 					/*	&&(!(getBoundaryCondition(i) & 12) && !(getBoundaryCondition(i) & 3))*/ )
 				{
-					//cout << "10 @ " << getBoundaryCondition(i) << endl;
+					//cout << "10 @ " << getBoundaryCondition(i) <<std::endl;
 					tmp = getSubgrid(i);
 					tmp = runSubgrid(10, tmp ,i);
 					insertSubgrid( tmp, i);
@@ -314,7 +314,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 				if(   ((getBoundaryCondition(i) & 4) )|| (getBoundaryCondition(i) & 8)//)
 					/*&&(!(getBoundaryCondition(i) & 10) && !(getBoundaryCondition(i) & 5)) */)
 				{
-					//cout << "12 @ " << getBoundaryCondition(i) << endl;
+					//cout << "12 @ " << getBoundaryCondition(i) <<std::endl;
 					tmp = getSubgrid(i);
 					tmp = runSubgrid(12, tmp ,i);
 					insertSubgrid( tmp, i);
@@ -338,7 +338,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 #ifdef HAVE_CUDA
 	else if(this->device == tnlCudaDevice)
 	{
-		//cout << "fn" << endl;
+		//cout << "fn" <<std::endl;
 		bool end_cuda = false;
 		dim3 threadsPerBlock(this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows);
@@ -346,7 +346,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 		TNL_CHECK_CUDA_DEVICE;
 		//cudaMalloc(&runcuda,sizeof(bool));
 		//cudaMemcpy(runcuda, &run_host, sizeof(bool), cudaMemcpyHostToDevice);
-		//cout << "fn" << endl;
+		//cout << "fn" <<std::endl;
 		bool* tmpb;
 		//cudaMemcpy(tmpb, &(cudaSolver->runcuda),sizeof(bool*), cudaMemcpyDeviceToHost);
 		//cudaDeviceSynchronize();
@@ -354,22 +354,22 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 		cudaMemcpy(&(this->run_host),this->runcuda,sizeof(int), cudaMemcpyDeviceToHost);
 		cudaDeviceSynchronize();
 		TNL_CHECK_CUDA_DEVICE;
-		//cout << "fn" << endl;
+		//cout << "fn" <<std::endl;
 		int i = 1;
 		time_diff = 0.0;
 		while (run_host || !end_cuda)
 		{
-			cout << "Computing at step "<< i++ << endl;
+			cout << "Computing at step "<< i++ <<std::endl;
 			if(run_host != 0 )
 				end_cuda = true;
 			else
 				end_cuda = false;
-			//cout << "a" << endl;
+			//cout << "a" <<std::endl;
 			cudaDeviceSynchronize();
 			TNL_CHECK_CUDA_DEVICE;
 			start = std::clock();
 			runCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
-			//cout << "a" << endl;
+			//cout << "a" <<std::endl;
 			cudaDeviceSynchronize();
 			time_diff += (std::clock() - start) / (double)(CLOCKS_PER_SEC);
 
@@ -383,25 +383,25 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 			//time_diff += (std::clock() - start) / (double)(CLOCKS_PER_SEC);
 
 
-			//cout << "a" << endl;
+			//cout << "a" <<std::endl;
 			//run_host = false;
-			//cout << "in kernel loop" << run_host << endl;
+			//cout << "in kernel loop" << run_host <<std::endl;
 			//cudaMemcpy(tmpb, &(cudaSolver->runcuda),sizeof(bool*), cudaMemcpyDeviceToHost);
 			cudaMemcpy(&run_host, (this->runcuda),sizeof(int), cudaMemcpyDeviceToHost);
-			//cout << "in kernel loop" << run_host << endl;
+			//cout << "in kernel loop" << run_host <<std::endl;
 		}
-		cout << "Solving time was: " << time_diff << endl;
-		//cout << "b" << endl;
+		cout << "Solving time was: " << time_diff <<std::endl;
+		//cout << "b" <<std::endl;
 
 		//double* tmpu;
 		//cudaMemcpy(tmpu, &(cudaSolver->work_u_cuda),sizeof(double*), cudaMemcpyHostToDevice);
 		//cudaMemcpy(this->work_u.getData(), tmpu, this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
-		//cout << this->work_u.getData()[0] << endl;
+		//cout << this->work_u.getData()[0] <<std::endl;
 
 		//double * test = (double*)malloc(this->work_u.getSize()*sizeof(double));
-		//cout << test[0] << test[1] << test[2] << test[3] << endl;
+		//cout << test[0] << test[1] << test[2] << test[3] <<std::endl;
 		cudaMemcpy(this->work_u.getData()/* test*/, (this->tmpw), this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
-		//cout << this->tmpw << "   " <<  test[0] << test[1] << test[2] << test[3] << endl;
+		//cout << this->tmpw << "   " <<  test[0] << test[1] << test[2] << test[3] <<std::endl;
 		//free(test);
 
 		cudaDeviceSynchronize();
@@ -409,9 +409,9 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 #endif
 	contractGrid();
 	this->u0.save("u-00001.tnl");
-	cout << "Maximum number of calculations on one subgrid was " << this->calculationsCount.absMax() << endl;
-	cout << "Average number of calculations on one subgrid was " << ( (double) this->calculationsCount.sum() / (double) this->calculationsCount.getSize() ) << endl;
-	cout << "Solver finished" << endl;
+	cout << "Maximum number of calculations on one subgrid was " << this->calculationsCount.absMax() <<std::endl;
+	cout << "Average number of calculations on one subgrid was " << ( (double) this->calculationsCount.sum() / (double) this->calculationsCount.getSize() ) <<std::endl;
+	cout << "Solver finished" <<std::endl;
 
 #ifdef HAVE_CUDA
 	if(this->device == tnlCudaDevice)
@@ -428,7 +428,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::synchronize() //needs fix ---- maybe not anymore --- but frankly: yeah, it does -- aaaa-and maybe fixed now
 {
-	cout << "Synchronizig..." << endl;
+	cout << "Synchronizig..." <<std::endl;
 	int tmp1, tmp2;
 	int grid1, grid2;
 
@@ -443,7 +443,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 				grid1 = getSubgridValue(getOwner(tmp1));
 				grid2 = getSubgridValue(getOwner(tmp2));
 				if(getOwner(tmp1)==getOwner(tmp2))
-					cout << "i, j" << i << "," << j << endl;
+					cout << "i, j" << i << "," << j <<std::endl;
 				if ((fabs(this->work_u[tmp1]) < fabs(this->work_u[tmp2]) - this->delta || grid2 == INT_MAX || grid2 == -INT_MAX) && (grid1 != INT_MAX && grid1 != -INT_MAX))
 				{
 					this->work_u[tmp2] = this->work_u[tmp1];
@@ -481,7 +481,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 				grid1 = getSubgridValue(getOwner(tmp1));
 				grid2 = getSubgridValue(getOwner(tmp2));
 				if(getOwner(tmp1)==getOwner(tmp2))
-					cout << "i, j" << i << "," << j << endl;
+					cout << "i, j" << i << "," << j <<std::endl;
 				if ((fabs(this->work_u[tmp1]) < fabs(this->work_u[tmp2]) - this->delta || grid2 == INT_MAX || grid2 == -INT_MAX) && (grid1 != INT_MAX && grid1 != -INT_MAX))
 				{
 					this->work_u[tmp2] = this->work_u[tmp1];
@@ -517,7 +517,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 			setSubgridValue(i, stepValue);
 	}
 
-	cout << "Grid synchronized at step " << (this->currentStep - 1 ) << endl;
+	cout << "Grid synchronized at step " << (this->currentStep - 1 ) <<std::endl;
 
 }
 
@@ -556,7 +556,7 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::stretchGrid()
 {
-	cout << "Stretching grid..." << endl;
+	cout << "Stretching grid..." <<std::endl;
 
 
 	this->gridCols = ceil( ((double)(this->mesh.getDimensions().x()-1)) / ((double)(this->n-1)) );
@@ -565,8 +565,8 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 	//this->gridCols = (this->mesh.getDimensions().x()-1) / (this->n-1) ;
 	//this->gridRows = (this->mesh.getDimensions().y()-1) / (this->n-1) ;
 
-	cout << "Setting gridCols to " << this->gridCols << "." << endl;
-	cout << "Setting gridRows to " << this->gridRows << "." << endl;
+	cout << "Setting gridCols to " << this->gridCols << "." <<std::endl;
+	cout << "Setting gridRows to " << this->gridRows << "." <<std::endl;
 
 	this->subgridValues.setSize(this->gridCols*this->gridRows);
 	this->subgridValues.setValue(0);
@@ -584,11 +584,11 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 	int stretchedSize = this->n*this->n*this->gridCols*this->gridRows;
 
 	if(!this->work_u.setSize(stretchedSize))
-		cerr << "Could not allocate memory for stretched grid." << endl;
+		cerr << "Could not allocate memory for stretched grid." <<std::endl;
 	if(!this->unusedCell.setSize(stretchedSize))
-		cerr << "Could not allocate memory for supporting stretched grid." << endl;
+		cerr << "Could not allocate memory for supporting stretched grid." <<std::endl;
 	int idealStretch =this->mesh.getDimensions().x() + (this->mesh.getDimensions().x()-2)/(this->n-1);
-	cout << idealStretch << endl;
+	cout << idealStretch <<std::endl;
 
 	for(int i = 0; i < stretchedSize; i++)
 	{
@@ -599,17 +599,17 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 
 		if(i%(this->n*this->gridCols) - idealStretch  >= 0)
 		{
-			//cout << i%(this->n*this->gridCols) - idealStretch +1 << endl;
+			//cout << i%(this->n*this->gridCols) - idealStretch +1 <<std::endl;
 			k+= i%(this->n*this->gridCols) - idealStretch +1 ;
 		}
 
 		if(i/(this->n*this->gridCols) - idealStretch + 1  > 0)
 		{
-			//cout << i/(this->n*this->gridCols) - idealStretch + 1  << endl;
+			//cout << i/(this->n*this->gridCols) - idealStretch + 1  <<std::endl;
 			k+= (i/(this->n*this->gridCols) - idealStretch +1 )* this->mesh.getDimensions().x() ;
 		}
 
-		//cout << "i = " << i << " : i-k = " << i-k << endl;
+		//cout << "i = " << i << " : i-k = " << i-k <<std::endl;
 		/*int j=(i % (this->n*this->gridCols)) - ( (this->mesh.getDimensions().x() - this->n)/(this->n - 1) + this->mesh.getDimensions().x() - 1)
 				+ (this->n*this->gridCols - this->mesh.getDimensions().x())*(i/(this->n*this->n*this->gridCols)) ;
 
@@ -627,17 +627,17 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 	}
 
 
-	cout << "Grid stretched." << endl;
+	cout << "Grid stretched." <<std::endl;
 }
 
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::contractGrid()
 {
-	cout << "Contracting grid..." << endl;
+	cout << "Contracting grid..." <<std::endl;
 	int stretchedSize = this->n*this->n*this->gridCols*this->gridRows;
 
 	int idealStretch =this->mesh.getDimensions().x() + (this->mesh.getDimensions().x()-2)/(this->n-1);
-	cout << idealStretch << endl;
+	cout << idealStretch <<std::endl;
 
 	for(int i = 0; i < stretchedSize; i++)
 	{
@@ -646,13 +646,13 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 
 		if((i%(this->n*this->gridCols) - idealStretch  < 0) && (i/(this->n*this->gridCols) - idealStretch + 1  <= 0))
 		{
-			//cout << i <<" : " <<i-k<< endl;
+			//cout << i <<" : " <<i-k<<std::endl;
 			this->u0[i-k] = this->work_u[i];
 		}
 
 	}
 
-	cout << "Grid contracted" << endl;
+	cout << "Grid contracted" <<std::endl;
 }
 
 template< typename SchemeHost, typename SchemeDevice, typename Device>
@@ -717,7 +717,7 @@ tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSu
 		{
 			if((u[subMesh.getCellYSuccessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 0, 1 >() > 1.0)
 			{
-				//cout << "x = 0; y = 0" << endl;
+				//cout << "x = 0; y = 0" <<std::endl;
 				u[i] = u[subMesh.getCellYSuccessor( i )] - subMesh.template getSpaceStepsProducts< 0, 1 >();
 			}
 		}
@@ -725,7 +725,7 @@ tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSu
 		{
 			if((u[subMesh.getCellYPredecessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 0, 1 >() > 1.0)
 			{
-				//cout << "x = 0; y = n" << endl;
+				//cout << "x = 0; y = n" <<std::endl;
 				u[i] = u[subMesh.getCellYPredecessor( i )] - subMesh.template getSpaceStepsProducts< 0, 1 >();
 			}
 		}
@@ -735,7 +735,7 @@ tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSu
 		{
 			if((u[subMesh.getCellYSuccessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 0, 1 >() > 1.0)
 			{
-				//cout << "x = n; y = 0" << endl;
+				//cout << "x = n; y = 0" <<std::endl;
 				u[i] = u[subMesh.getCellYSuccessor( i )] - subMesh.template getSpaceStepsProducts< 0, 1 >();
 			}
 		}
@@ -743,7 +743,7 @@ tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSu
 		{
 			if((u[subMesh.getCellYPredecessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 0, 1 >() > 1.0)
 			{
-				//cout << "x = n; y = n" << endl;
+				//cout << "x = n; y = n" <<std::endl;
 				u[i] = u[subMesh.getCellYPredecessor( i )] - subMesh.template getSpaceStepsProducts< 0, 1 >();
 			}
 		}
@@ -753,7 +753,7 @@ tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSu
 		{
 			if((u[subMesh.getCellXSuccessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 1, 0 >() > 1.0)
 			{
-				//cout << "y = 0; x = 0" << endl;
+				//cout << "y = 0; x = 0" <<std::endl;
 				u[i] = u[subMesh.getCellXSuccessor( i )] - subMesh.template getSpaceStepsProducts< 1, 0 >();
 			}
 		}
@@ -761,7 +761,7 @@ tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSu
 		{
 			if((u[subMesh.getCellXPredecessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 1, 0 >() > 1.0)
 			{
-				//cout << "y = 0; x = n" << endl;
+				//cout << "y = 0; x = n" <<std::endl;
 				u[i] = u[subMesh.getCellXPredecessor( i )] - subMesh.template getSpaceStepsProducts< 1, 0 >();
 			}
 		}
@@ -770,7 +770,7 @@ tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSu
 		else if(y == subMesh.getDimensions().y() - 1 && (boundaryCondition & 1) && x ==0)
 		{
 			if((u[subMesh.getCellXSuccessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 1, 0 >() > 1.0)			{
-				//cout << "y = n; x = 0" << endl;
+				//cout << "y = n; x = 0" <<std::endl;
 				u[i] = u[subMesh.getCellXSuccessor( i )] - subMesh.template getSpaceStepsProducts< 1, 0 >();
 			}
 		}
@@ -778,7 +778,7 @@ tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSu
 		{
 			if((u[subMesh.getCellXPredecessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 1, 0 >() > 1.0)
 			{
-				//cout << "y = n; x = n" << endl;
+				//cout << "y = n; x = n" <<std::endl;
 				u[i] = u[subMesh.getCellXPredecessor( i )] - subMesh.template getSpaceStepsProducts< 1, 0 >();
 			}
 		}
@@ -996,10 +996,10 @@ tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSu
     	  currentTau =  this -> cflCondition / maxResidue;
 
      /* if (maxResidue < 0.05)
-    	  cout << "Max < 0.05" << endl;*/
+    	 std::cout << "Max < 0.05" <<std::endl;*/
       if(currentTau > 1.0 * this->subMesh.template getSpaceStepsProducts< 1, 0 >())
       {
-    	  //cout << currentTau << " >= " << 2.0 * this->subMesh.template getSpaceStepsProducts< 1, 0 >() << endl;
+    	  //cout << currentTau << " >= " << 2.0 * this->subMesh.template getSpaceStepsProducts< 1, 0 >() <<std::endl;
     	  currentTau = 1.0 * this->subMesh.template getSpaceStepsProducts< 1, 0 >();
       }
       /*if(maxResidue > lastResidue)
@@ -1009,7 +1009,7 @@ tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSu
       if( time + currentTau > finalTime ) currentTau = finalTime - time;
 //      for( int i = 0; i < fu.getSize(); i ++ )
 //      {
-//    	  //cout << "Too big RHS! i = " << i << ", fu = " << fu[i] << ", u = " << u[i] << endl;
+//    	  //cout << "Too big RHS! i = " << i << ", fu = " << fu[i] << ", u = " << u[i] <<std::endl;
 //    	  if((u[i]+currentTau * fu[ i ])*u[i] < 0.0 && fu[i] != 0.0 && u[i] != 0.0 )
 //    		  currentTau = fabs(u[i]/(2.0*fu[i]));
 //
@@ -1395,7 +1395,7 @@ void /*tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>
 
 	/*
 	//printf("I am not an empty kernel!\n");
-	//cout << "Synchronizig..." << endl;
+	//cout << "Synchronizig..." <<std::endl;
 	int tmp1, tmp2;
 	int grid1, grid2;
 
@@ -1500,7 +1500,7 @@ void /*tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>
 	//printf("I am not an empty kernel! %d\n", maxi);
 	*(cudaSolver->runcuda) = (maxi > 0);
 	//printf("I am not an empty kernel! 7 %d\n", cudaSolver->boundaryConditions_cuda[0]);
-	//cout << "Grid synchronized at step " << (this->currentStep - 1 ) << endl;
+	//cout << "Grid synchronized at step " << (this->currentStep - 1 ) <<std::endl;
 */
 }
 
@@ -1534,12 +1534,12 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 __global__
 void /*tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::*/initCUDA2D( tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr , int* ptr2, int* ptr3)
 {
-	//cout << "Initializating solver..." << endl;
+	//cout << "Initializating solver..." <<std::endl;
 	//const String& meshLocation = parameters.getParameter <String>("mesh");
 	//this->mesh_cuda.load( meshLocation );
 
 	//this->n_cuda = parameters.getParameter <int>("subgrid-size");
-	//cout << "Setting N << this->n_cuda << endl;
+	//cout << "Setting N << this->n_cuda <<std::endl;
 
 	//this->subMesh_cuda.setDimensions( this->n_cuda, this->n_cuda );
 	//this->subMesh_cuda.setDomain( Containers::StaticVector<2,double>(0.0, 0.0),
@@ -1550,20 +1550,20 @@ void /*tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>
 //	const String& initialCondition = parameters.getParameter <String>("initial-condition");
 //	this->u0.load( initialCondition );
 
-	//cout << this->mesh.getCellCenter(0) << endl;
+	//cout << this->mesh.getCellCenter(0) <<std::endl;
 
 	//this->delta_cuda = parameters.getParameter <double>("delta");
 	//this->delta_cuda *= this->mesh_cuda.template getSpaceStepsProducts< 1, 0 >()*this->mesh_cuda.template getSpaceStepsProducts< 0, 1 >();
 
-	//cout << "Setting delta to " << this->delta << endl;
+	//cout << "Setting delta to " << this->delta <<std::endl;
 
 	//this->tau0_cuda = parameters.getParameter <double>("initial-tau");
-	//cout << "Setting initial tau to " << this->tau0_cuda << endl;
+	//cout << "Setting initial tau to " << this->tau0_cuda <<std::endl;
 	//this->stopTime_cuda = parameters.getParameter <double>("stop-time");
 
 	//this->cflCondition_cuda = parameters.getParameter <double>("cfl-condition");
 	//this -> cflCondition_cuda *= sqrt(this->mesh_cuda.template getSpaceStepsProducts< 1, 0 >()*this->mesh_cuda.template getSpaceStepsProducts< 0, 1 >());
-	//cout << "Setting CFL to " << this->cflCondition << endl;
+	//cout << "Setting CFL to " << this->cflCondition <<std::endl;
 ////
 ////
 
@@ -1601,17 +1601,17 @@ void /*tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>
 	//stretchGrid();
 	//this->stopTime_cuda /= (double)(this->gridCols_cuda);
 	//this->stopTime_cuda *= (1.0+1.0/((double)(this->n_cuda) - 1.0));
-	//cout << "Setting stopping time to " << this->stopTime << endl;
+	//cout << "Setting stopping time to " << this->stopTime <<std::endl;
 	//this->stopTime_cuda = 1.5*((double)(this->n_cuda))*parameters.getParameter <double>("stop-time")*this->mesh_cuda.template getSpaceStepsProducts< 1, 0 >();
-	//cout << "Setting stopping time to " << this->stopTime << endl;
+	//cout << "Setting stopping time to " << this->stopTime <<std::endl;
 
-	//cout << "Initializating scheme..." << endl;
+	//cout << "Initializating scheme..." <<std::endl;
 	//if(!this->schemeDevice.init(parameters))
 //	{
-		//cerr << "Scheme failed to initialize." << endl;
+		//cerr << "Scheme failed to initialize." <<std::endl;
 //		return false;
 //	}
-	//cout << "Scheme initialized." << endl;
+	//cout << "Scheme initialized." <<std::endl;
 
 	//test();
 

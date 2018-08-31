@@ -236,8 +236,8 @@ bool writeFunction(
    for( Index i = 0; i < xSize; i++ )
    {
       for( Index j = 0; j < ySize; j++ )
-         file << i * hx - originX << " " << j * hy - originY << " " << data[ j * xSize + i ] << endl;
-      file << endl;
+         file << i * hx - originX << " " << j * hy - originY << " " << data[ j * xSize + i ] <<std::endl;
+      file <<std::endl;
    }
    return true;
 }
@@ -339,7 +339,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    std::cout << "Setting block size to " << cudaBlockSize.x << "," << cudaBlockSize.y << "," << cudaBlockSize.z << std::endl;
 
    if( verbose )
-      cout << "Starting the solver main loop..." << endl;   
+     std::cout << "Starting the solver main loop..." <<std::endl;   
    
    timer.reset();
    computationTimer.reset();
@@ -393,11 +393,11 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
       time += currentTau;
       iteration++;
       if( verbose && iteration % 1000 == 0 )
-         cout << "Iteration: " << iteration << "\t Time:" << time << "    \r" << flush;                 
+        std::cout << "Iteration: " << iteration << "\t Time:" << time << "    \r" << flush;                 
    }
    timer.stop();
    if( verbose )
-     cout << endl;
+    std::cout <<std::endl;
    
    //cudaMemcpy( u, cuda_u, dofsCount * sizeof( Real ), cudaMemcpyDeviceToHost );
    //writeFunction( "final", u, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
@@ -479,7 +479,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
     * Explicit Euler solver
     */
    if( verbose )
-      cout << "Starting the solver main loop..." << endl;
+     std::cout << "Starting the solver main loop..." <<std::endl;
    
    timer.reset();
    computationTimer.reset();
@@ -533,7 +533,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
    }
    timer.stop();
    if( verbose )
-     cout << endl;
+    std::cout <<std::endl;
 
    
    /****
@@ -595,7 +595,7 @@ int main( int argc, char* argv[] )
 
    const bool verbose = parameters.getParameter< bool >( "verbose" );
    if( verbose )      
-      cout << endl << "Finished..." << endl;
+     std::cout <<std::endl << "Finished..." <<std::endl;
    Logger logger( 72, std::cout );
    logger.writeSeparator();
    logger.writeParameter< const char* >( "Compute time:", "" );

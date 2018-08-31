@@ -8,6 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/****
+ * This class implements AdELL format from:
+ * 
+ * Maggioni M., Berger-Wolf T., 
+ * AdELL: An Adaptive Warp-Balancing ELL Format for Efficient Sparse Matrix-Vector Multiplication on GPUs,
+ * In proceedings of 42nd International Conference on Parallel Processing, 2013.
+ */
+
 #pragma once
 
 #include <TNL/Matrices/Sparse.h>

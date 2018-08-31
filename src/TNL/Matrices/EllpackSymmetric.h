@@ -1,74 +1,69 @@
 /***************************************************************************
-                          tnlEllpackSymMatrix.h  -  description
+                          EllpackSymmetric.h  -  description
                              -------------------
-    begin                : Dec 7, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Aug 30, 2018
+    copyright            : (C) 2018 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLELLPACKSYMMATRIX_H_
-#define TNLELLPACKSYMMATRIX_H_
+#pragma once
 
-#include <matrices/tnlSparseMatrix.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/Matrices/Sparse.h>
+#include <TNL/Containers/Vector.h>
+
+namespace TNL {
+namespace Matrices {
 
 template< typename Device >
-class tnlEllpackSymMatrixDeviceDependentCode;
+class EllpackSymmetricDeviceDependentCode;
 
-template< typename Real, typename Device = tnlHost, typename Index = int >
-class tnlEllpackSymMatrix : public tnlSparseMatrix< Real, Device, Index >
+template< typename Real, typename Device = Devices::Host, typename Index = int >
+class EllpackSymmetric : public Sparse< Real, Device, Index >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::RowLengthsVector RowLengthsVector;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-   typedef tnlEllpackSymMatrix< Real, Device, Index > ThisType;
-   typedef tnlEllpackSymMatrix< Real, tnlHost, Index > HostType;
-   typedef tnlEllpackSymMatrix< Real, tnlCuda, Index > CudaType;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
+   typedef EllpackSymmetric< Real, Device, Index > ThisType;
+   typedef EllpackSymmetric< Real, Devices::Host, Index > HostType;
+   typedef EllpackSymmetric< Real, Devices::Cuda, Index > CudaType;
 
 
-   tnlEllpackSymMatrix();
+   EllpackSymmetric();
 
-   static tnlString getType();
+   static String getType();
 
-   tnlString getTypeVirtual() const;
+   String getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows,
+   void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setRowLengths( const RowLengthsVector& rowLengths );
+   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
    bool setConstantRowLengths( const IndexType& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const tnlEllpackSymMatrix< Real2, Device2, Index2 >& matrix );
+   bool setLike( const EllpackSymmetric< Real2, Device2, Index2 >& matrix );
 
    void reset();
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator == ( const tnlEllpackSymMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator == ( const EllpackSymmetric< Real2, Device2, Index2 >& matrix ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator != ( const tnlEllpackSymMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator != ( const EllpackSymmetric< Real2, Device2, Index2 >& matrix ) const;
 
    /*template< typename Matrix >
    bool copyFrom( const Matrix& matrix,
-                  const RowLengthsVector& rowLengths );*/
+                  const CompressedRowLengthsVector& rowLengths );*/
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -162,12 +157,12 @@ template< typename Vector >
                            OutVector& outVector ) const;
 
    template< typename Real2, typename Index2 >
-   void addMatrix( const tnlEllpackSymMatrix< Real2, Device, Index2 >& matrix,
+   void addMatrix( const EllpackSymmetric< Real2, Device, Index2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
    template< typename Real2, typename Index2 >
-   void getTransposition( const tnlEllpackSymMatrix< Real2, Device, Index2 >& matrix,
+   void getTransposition( const EllpackSymmetric< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector >
@@ -176,15 +171,15 @@ template< typename Vector >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
-   bool load( tnlFile& file );
+   bool load( File& file );
 
-   bool save( const tnlString& fileName ) const;
+   bool save( const String& fileName ) const;
 
-   bool load( const tnlString& fileName );
+   bool load( const String& fileName );
 
-   void print( ostream& str ) const;
+   void print( std::ostream& str ) const;
 
    template< typename InVector,
              typename OutVector >
@@ -197,15 +192,15 @@ template< typename Vector >
 
    protected:
 
-   bool allocateElements();
+   void allocateElements();
 
    IndexType rowLengths, alignedRows;
 
-   typedef tnlEllpackSymMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
-   friend class tnlEllpackSymMatrixDeviceDependentCode< DeviceType >;
+   typedef EllpackSymmetricDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class EllpackSymmetricDeviceDependentCode< DeviceType >;
 };
 
-#include <implementation/matrices/tnlEllpackSymMatrix_impl.h>
+} // namespace Matrices
+} // namespace TNL
 
-
-#endif /* TNLELLPACKSYMMATRIX_H_ */
+#include <TNL/Matrices/EllpackSymmetric_impl.h>

@@ -440,7 +440,7 @@ getExplicitUpdate( const RealType& time,
          /****
           * Laplace operator
           */
-         //cout << "Laplace operator ... " << endl;
+         //cout << "Laplace operator ... " <<std::endl;
          heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
             ( uDofs->getData(), fuDofs->getData(), tau, hx_inv, hy_inv, gridXSize, gridYSize );
          if( cudaGetLastError() != cudaSuccess )

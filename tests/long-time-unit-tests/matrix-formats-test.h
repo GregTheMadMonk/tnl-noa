@@ -18,14 +18,16 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/AdEllpack.h>
+#include <TNL/Matrices/BiEllpack.h>
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Matrices/SlicedEllpack.h>
 #include <TNL/Matrices/ChunkedEllpack.h>
 #include <TNL/Matrices/CSR.h>
-#include <TNL/Matrices/tnlEllpackSymMatrix.h>   
-#include <TNL/Matrices/tnlSlicedEllpackGraphMatrix.h>   
-#include <TNL/Matrices/tnlBiEllpackSymMatrix.h>
-#include <TNL/Matrices/tnlEllpackGraphMatrix.h>
+#include <TNL/Matrices/EllpackSymmetric.h>   
+#include <TNL/Matrices/SlicedEllpackSymmetricGraph.h>   
+#include <TNL/Matrices/BiEllpackSymmetric.h>
+#include <TNL/Matrices/EllpackSymmetricGraph.h>
    
 
 using namespace TNL;
@@ -56,8 +58,7 @@ void setupConfig( Config::ConfigDescription& config )
 
 
 template< typename Matrix >
-
-bool testMatrix( bool sym, const tnlParameterContainer& parameters )
+bool testMatrix( bool sym, const Config::ParameterContainer& parameters )
 {
    Matrix matrix;
    typedef typename Matrix::RealType RealType;
@@ -79,13 +80,13 @@ bool testMatrix( bool sym, const tnlParameterContainer& parameters )
 
    if( !matrix.help( true ) )
    {
-       cout << "Method matrix.help() failed. Aborting!" << endl;
+      std::cout << "Method matrix.help() failed. Aborting!" <<std::endl;
        return false;
    }
    if( ! MatrixReader< Matrix >::verifyMtxFile( file, matrix, verbose ) )
       return false;
 
-   if( parameters.GetParameter< bool >( "hard-test" ) )
+   if( parameters.getParameter< bool >( "hard-test" ) )
    {
       typedef Dense< RealType, DeviceType, IndexType > Dense;
       Dense denseMatrix;
@@ -162,66 +163,66 @@ int main( int argc, char* argv[] )
    const String& matrixFormat = parameters.getParameter< String >( "matrix-format" );
    if( matrixFormat == "dense" )
    {
-       if( !testMatrix< Dense< double, Devices::Host, int > >( parameters ) )
+       if( !testMatrix< Dense< double, Devices::Host, int > >( false, parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "ellpack" )
    {
 
-       if( !testMatrix< Ellpack< double, Devices::Host, int > >( parameters ) )
+       if( !testMatrix< Ellpack< double, Devices::Host, int > >( false, parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "ellpack-sym" )
    {
-       if( !testMatrix< EllpackSymMatrix< double, Devices::Host, int > >( true, parameters ) )
+       if( !testMatrix< EllpackSymmetric< double, Devices::Host, int > >( true, parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "sliced-ellpack" )
    {
-       if( !testMatrix< SlicedEllpack< double, Devices::Host, int > >( parameters ) )
+       if( !testMatrix< SlicedEllpack< double, Devices::Host, int > >( false, parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "sliced-ellpack-graph" )
    {
-       if( !testMatrix< SlicedEllpackGraphMatrix< double, Devices::Host, int > >( true, parameters ) )
+       if( !testMatrix< SlicedEllpackSymmetricGraph< double, Devices::Host, int > >( true, parameters ) )
            return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "chunked-ellpack" )
    {
-       if( !testMatrix< ChunkedEllpack< double, Devices::Host, int > >( parameters ) )
+       if( !testMatrix< ChunkedEllpack< double, Devices::Host, int > >( false, parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "csr" )
    {
-      if( !testMatrix< CSR< double, Devices::Host, int > >( parameters ) )
+      if( !testMatrix< CSR< double, Devices::Host, int > >( false, parameters ) )
          return EXIT_FAILURE;
       return EXIT_SUCCESS;
    }
    if( matrixFormat == "bi-ell" )
    {
-       if( !testMatrix< tnlBiEllpackMatrix< double, tnlHost, int > >( false, parameters ) )
+       if( !testMatrix< BiEllpack< double, Devices::Host, int > >( false, parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "bi-ell-sym" )
    {
-       if( !testMatrix< tnlBiEllpackSymMatrix< double, tnlHost, int > >( true, parameters ) )
+       if( !testMatrix< BiEllpackSymmetric< double, Devices::Host, int > >( true, parameters ) )
            return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "ellpack-graph" )
    {
-       if( !testMatrix< tnlEllpackGraphMatrix< double, tnlHost, int > >( true, parameters ) )
+       if( !testMatrix< EllpackSymmetricGraph< double, Devices::Host, int > >( true, parameters ) )
            return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
-   cerr << "Uknown matrix format " << matrixFormat << "." << endl;
+  std::cerr << "Uknown matrix format " << matrixFormat << "." <<std::endl;
    return EXIT_FAILURE;
 }
 

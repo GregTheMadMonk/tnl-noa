@@ -8,6 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/****
+ * This class implements BiELL format from:
+ * 
+ * Zheng C., Gu S., Gu T.-X., Yang B., Liu X.-P., 
+ * BiELL: A bisection ELLPACK-based storage format for optimizing SpMV on GPUs,
+ * Journal of Parallel and Distributed Computing, 74 (7), pp. 2639-2647, 2014.
+ */
+
 #pragma once
 
 #include <TNL/Matrices/Sparse.h>

@@ -16,7 +16,7 @@
  */
 #pragma once
 
-#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Matrices/Sparse.h>
 #include <TNL/Containers/Vectors/Vector.h>
 
 namespace TNL {
@@ -25,24 +25,24 @@ namespace TNL {
 template< typename Device >
 class COOMatrixDeviceDependentCode;
 
-template< typename Real, typename Device = tnlHost, typename Index = int >
-class COOMatrix : public SparseMatrix < Real, Device, Index >
+template< typename Real, typename Device = Devices::Host, typename Index = int >
+class COOMatrix : public Sparse < Real, Device, Index >
 {
 public:
 
 	typedef Real RealType;
 	typedef Device DeviceType;
 	typedef Index IndexType;
-	typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
+	typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
 	typedef COOMatrix< Real, Device, Index > ThisType;
-	typedef COOMatrix< Real, tnlHost, Index > HostType;
+	typedef COOMatrix< Real, Devices::Host, Index > HostType;
 	typedef COOMatrix< Real, tnlCuda, Index > CudaType;
 
 	COOMatrix();
 
-	static tnlString getType();
+	static String getType();
 
-	tnlString getTypeVirtual() const;
+	String getTypeVirtual() const;
 
 	bool setDimensions(const IndexType rows,
 			   	   	   const IndexType columns);
@@ -51,9 +51,9 @@ public:
 
 	IndexType getNumberOfUsedValues() const;
 
-	bool setRowLengths(const RowLengthsVector& rowLengths);
+	bool setCompressedRowLengths(const CompressedRowLengthsVector& rowLengths);
 
-	void getRowLengths(tnlVector< IndexType, DeviceType, IndexType >& rowLengths) const;
+	void getRowLengths(Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths) const;
 
 	IndexType getRowLength( const IndexType row ) const;
 
@@ -102,13 +102,13 @@ public:
 	typename Vector::RealType rowVectorProduct(const IndexType row,
 											   const Vector& inVector) const;
 
-	bool save(tnlFile& file) const;
+	bool save(File& file) const;
 
-	bool load(tnlFile& file);
+	bool load(File& file);
 
-	bool save(const tnlString& fileName) const;
+	bool save(const String& fileName) const;
 
-	bool load(const tnlString& fileName);
+	bool load(const String& fileName);
 
 	// nejsem si jisty jestli dela to co ma
 	void print(ostream& str) const;
@@ -120,7 +120,7 @@ public:
 
 private:
 
-	tnlVector< Index, Device, Index > rowIndexes;
+	Containers::Vector< Index, Device, Index > rowIndexes;
 	
 	IndexType numberOfUsedValues;
 

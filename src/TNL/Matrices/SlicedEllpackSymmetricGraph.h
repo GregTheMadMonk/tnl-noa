@@ -1,41 +1,36 @@
 /***************************************************************************
-                          tnlSlicedEllpackGraphMatrix.h  -  description
+                          SlicedEllpackSymmetricGraph.h  -  description
                              -------------------
-    begin                : Dec 8, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Aug 30, 2018
+    copyright            : (C) 2018 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSLICEDELLPACKGRAPHMATRIX_H_
-#define TNLSLICEDELLPACKGRAPHMATRIX_H_
+#pragma once
 
-#include <matrices/tnlSparseMatrix.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/Matrices/Sparse.h>
+#include <TNL/Containers/Vector.h>
+
+namespace TNL {
+namespace Matrices {   
 
 template< typename Device >
-class tnlSlicedEllpackGraphMatrixDeviceDependentCode;
+class SlicedEllpackSymmetricGraphDeviceDependentCode;
 
 template< typename Real = double,
-          typename Device = tnlHost,
+          typename Device = Devices::Host,
           typename Index = int,
           int SliceSize = 32 >
-class tnlSlicedEllpackGraphMatrix;
+class SlicedEllpackSymmetricGraph;
 
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Index,
           int SliceSize >
-__global__ void tnlSlicedEllpackGraphMatrix_computeMaximalRowLengthInSlices_CudaKernel( tnlSlicedEllpackGraphMatrix< Real, tnlCuda, Index, SliceSize >* matrix,
-                                                                                       const typename tnlSlicedEllpackGraphMatrix< Real, tnlCuda, Index, SliceSize >::RowLengthsVector* rowLengths,
+__global__ void SlicedEllpackSymmetricGraph_computeMaximalRowLengthInSlices_CudaKernel( SlicedEllpackSymmetricGraph< Real, Devices::Cuda, Index, SliceSize >* matrix,
+                                                                                       const typename SlicedEllpackSymmetricGraph< Real, Devices::Cuda, Index, SliceSize >::RowLengthsVector* rowLengths,
                                                                                        int gridIdx );
 #endif
 
@@ -43,44 +38,44 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-class tnlSlicedEllpackGraphMatrix : public tnlSparseMatrix< Real, Device, Index >
+class SlicedEllpackSymmetricGraph : public Sparse< Real, Device, Index >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::RowLengthsVector RowLengthsVector;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-   typedef tnlSlicedEllpackGraphMatrix< Real, Device, Index > ThisType;
-   typedef tnlSlicedEllpackGraphMatrix< Real, tnlHost, Index > HostType;
-   typedef tnlSlicedEllpackGraphMatrix< Real, tnlCuda, Index > CudaType;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
+   typedef SlicedEllpackSymmetricGraph< Real, Device, Index > ThisType;
+   typedef SlicedEllpackSymmetricGraph< Real, Devices::Host, Index > HostType;
+   typedef SlicedEllpackSymmetricGraph< Real, Devices::Cuda, Index > CudaType;
 
 
-   tnlSlicedEllpackGraphMatrix();
+   SlicedEllpackSymmetricGraph();
 
-   static tnlString getType();
+   static String getType();
 
-   tnlString getTypeVirtual() const;
+   String getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows,
+   void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setRowLengths( const RowLengthsVector& rowLengths );
+   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const tnlSlicedEllpackGraphMatrix< Real2, Device2, Index2, SliceSize >& matrix );
+   bool setLike( const SlicedEllpackSymmetricGraph< Real2, Device2, Index2, SliceSize >& matrix );
 
    void reset();
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator == ( const tnlSlicedEllpackGraphMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator == ( const SlicedEllpackSymmetricGraph< Real2, Device2, Index2 >& matrix ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator != ( const tnlSlicedEllpackGraphMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator != ( const SlicedEllpackSymmetricGraph< Real2, Device2, Index2 >& matrix ) const;
 
    template< typename InVector,
              typename OutVector >
@@ -171,12 +166,12 @@ class tnlSlicedEllpackGraphMatrix : public tnlSparseMatrix< Real, Device, Index 
                        OutVector& outVector ) const;
 
    template< typename Real2, typename Index2 >
-   void addMatrix( const tnlSlicedEllpackGraphMatrix< Real2, Device, Index2 >& matrix,
+   void addMatrix( const SlicedEllpackSymmetricGraph< Real2, Device, Index2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
    template< typename Real2, typename Index2 >
-   void getTransposition( const tnlSlicedEllpackGraphMatrix< Real2, Device, Index2 >& matrix,
+   void getTransposition( const SlicedEllpackSymmetricGraph< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector >
@@ -187,17 +182,17 @@ class tnlSlicedEllpackGraphMatrix : public tnlSparseMatrix< Real, Device, Index 
 
    Index getRealRowLength( const Index row );
 
-   tnlVector< Index, Device, Index > getRealRowLengths();
+   Containers::Vector< Index, Device, Index > getRealRowLengths();
 
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
-   bool load( tnlFile& file );
+   bool load( File& file );
 
-   bool save( const tnlString& fileName ) const;
+   bool save( const String& fileName ) const;
 
-   bool load( const tnlString& fileName );
+   bool load( const String& fileName );
 
-   void print( ostream& str ) const;
+   void print( std::ostream& str ) const;
 
    bool help( bool verbose = false );
 
@@ -214,7 +209,7 @@ class tnlSlicedEllpackGraphMatrix : public tnlSparseMatrix< Real, Device, Index 
 #ifdef HAVE_CUDA
   __device__ __host__
 #endif
-   void copyFromHostToCuda( tnlSlicedEllpackGraphMatrix< Real, tnlHost, Index, SliceSize >& matrix );
+   void copyFromHostToCuda( SlicedEllpackSymmetricGraph< Real, Devices::Host, Index, SliceSize >& matrix );
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -226,43 +221,44 @@ class tnlSlicedEllpackGraphMatrix : public tnlSparseMatrix< Real, Device, Index 
 #endif
    void computePermutationArray();
 
-   tnlVector< Index, Device, Index > getSlicePointers();
+   Containers::Vector< Index, Device, Index > getSlicePointers();
 
-   tnlVector< Index, Device, Index > getSliceRowLengths();
+   Containers::Vector< Index, Device, Index > getSliceRowLengths();
 
-   tnlVector< Index, Device, Index > getPermutationArray();
+   Containers::Vector< Index, Device, Index > getPermutationArray();
 
-   tnlVector< Index, Device, Index > getInversePermutationArray();
+   Containers::Vector< Index, Device, Index > getInversePermutationArray();
 
-   tnlVector< Index, Device, Index > getColorPointers();
+   Containers::Vector< Index, Device, Index > getColorPointers();
 
    protected:
 
-   tnlVector< Index, Device, Index > slicePointers, sliceRowLengths;
+   Containers::Vector< Index, Device, Index > slicePointers, sliceRowLengths;
 
-   typedef tnlSlicedEllpackGraphMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
-   friend class tnlSlicedEllpackGraphMatrixDeviceDependentCode< DeviceType >;
+   typedef SlicedEllpackSymmetricGraphDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class SlicedEllpackSymmetricGraphDeviceDependentCode< DeviceType >;
 
-   tnlVector< Index, Device, Index > permutationArray;
-   tnlVector< Index, Device, Index > inversePermutationArray;
-   tnlVector< Index, Device, Index > colorPointers;
+   Containers::Vector< Index, Device, Index > permutationArray;
+   Containers::Vector< Index, Device, Index > inversePermutationArray;
+   Containers::Vector< Index, Device, Index > colorPointers;
    bool rearranged;
 #ifdef HAVE_CUDA
-   /*friend __global__ void tnlSlicedEllpackGraphMatrix_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize >( tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >* matrix,
-                                                                                      const typename tnlSlicedEllpackGraphMatrix< Real, tnlCuda, Index, SliceSize >::RowLengthsVector* rowLengths,
+   /*friend __global__ void SlicedEllpackSymmetricGraph_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize >( SlicedEllpackMatrix< Real, Devices::Cuda, Index, SliceSize >* matrix,
+                                                                                      const typename SlicedEllpackSymmetricGraph< Real, Devices::Cuda, Index, SliceSize >::RowLengthsVector* rowLengths,
                                                                                       int gridIdx );
     */
    // TODO: The friend declaration above does not work because of __global__ storage specifier. Therefore we declare the following method as public. Fix this, when possible.
 
    public:
-   __device__ void computeMaximalRowLengthInSlicesCuda( const RowLengthsVector& rowLengths,
+   __device__ void computeMaximalRowLengthInSlicesCuda( const CompressedRowLengthsVector& rowLengths,
                                                         const IndexType sliceIdx );
 
 #endif
 
 };
 
-#include <implementation/matrices/tnlSlicedEllpackGraphMatrix_impl.h>
+} // namespace Matrices
+} // namespace TNL
 
+#include <TNL/Matrices/SlicedEllpackSymmetricGraph_impl.h>
 
-#endif /* TNLSLICEDELLPACKGRAPHMATRIX_H_ */

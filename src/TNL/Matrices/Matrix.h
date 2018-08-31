@@ -58,7 +58,8 @@ public:
 #ifdef HAVE_CUDA
     __device__ __host__
 #endif
-    IndexType getNumberOfColors() const;
+    
+    const IndexType& getNumberOfColors() const;
 
    /****
     * TODO: The fast variants of the following methods cannot be virtual.
@@ -98,36 +99,26 @@ public:
 
    template< typename Matrix >
    bool operator != ( const Matrix& matrix ) const;
-
+   
+   void computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector);
+   
    virtual bool save( File& file ) const;
 
    virtual bool load( File& file );
 
    virtual void print( std::ostream& str ) const;
 
-/*
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void computeColorsVector( tnlVector< Index, Device, Index >& colorsVector );
-*/
-
-   bool help( bool verbose = false );
+   bool help( bool verbose = false ) { return true;};
 
 #ifdef  HAVE_CUDA
    __device__ __host__
 #endif
-   void copyFromHostToCuda( tnlMatrix< Real, tnlHost, Index >& matrix );
+   void copyFromHostToCuda( Matrices::Matrix< Real, Devices::Host, Index >& matrix );
 
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
    Index getValuesSize() const;
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void computeColorsVector( tnlVector< Index, Device, Index >& colorsVector );
 
    protected:
 

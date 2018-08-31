@@ -42,7 +42,7 @@ bool MatrixReader< Matrix >::readMtxFile( std::istream& file,
                                              bool verbose,
                                              bool symReader )
 {
-   return MatrixReaderDeviceDependentCode< typename Matrix::DeviceType >::readMtxFile( file, matrix, verbose );
+   return MatrixReaderDeviceDependentCode< typename Matrix::DeviceType >::readMtxFile( file, matrix, verbose, symReader );
 }
 
 template< typename Matrix >
@@ -60,7 +60,7 @@ bool MatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
 
    if( symReader && !symmetricMatrix )
    {
-      cout << "Matrix is not symmetric, but flag for symmetric matrix is given. Aborting." << endl;
+      std::cout << "Matrix is not symmetric, but flag for symmetric matrix is given. Aborting." << std::endl;
       return false;
    }
 
@@ -257,7 +257,7 @@ bool MatrixReader< Matrix >::readMtxHeader( std::istream& file,
 
 template< typename Matrix >
 bool MatrixReader< Matrix >::computeCompressedRowLengthsFromMtxFile( std::istream& file,
-                                                              Containers::Vector< int, Devices::Host, int >& rowLengths,
+                                                              Containers::Vector< int, DeviceType, int >& rowLengths,
                                                               const int columns,
                                                               const int rows,
                                                               bool symmetricMatrix,
@@ -291,7 +291,7 @@ bool MatrixReader< Matrix >::computeCompressedRowLengthsFromMtxFile( std::istrea
          return false;
       }
       if( verbose )
-         cout << " Counting the matrix elements ... " << numberOfElements / 1000 << " thousands      \r" << flush;
+         std::cout << " Counting the matrix elements ... " << numberOfElements / 1000 << " thousands      \r" << std::flush;
 
       if( !symReader ||
           ( symReader && row >= column ) )
@@ -306,6 +306,17 @@ bool MatrixReader< Matrix >::computeCompressedRowLengthsFromMtxFile( std::istrea
       }
       if( symmetricMatrix && row != column && symReader )
       {
+         rowLengths[ column - 1 ]++;
+         if( rowLengths[ column - 1 ] > columns )
+         {
+            std::cerr << "There are more elements ( " << rowLengths[ row - 1 ] << " ) than the matrix columns ( " << columns << " ) at the row " << column << " ." << std::endl;
+            return false;
+         }
+         continue;
+      }
+      else if( symmetricMatrix && row != column && !symReader )
+      {
+          rowLengths[ column - 1 ]++;
       }
    }
    file.clear();
@@ -361,17 +372,6 @@ bool MatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& file,
           matrix.setElement( column - 1, row - 1, value );
           processedElements++;
       }
-         rowLengths[ column - 1 ]++;
-         if( rowLengths[ column - 1 ] > columns )
-         {
-            std::cerr << "There are more elements ( " << rowLengths[ row - 1 ] << " ) than the matrix columns ( " << columns << " ) at the row " << column << " ." << std::endl;
-            return false;
-         }
-         continue;
-      }
-      else if( symmetricMatrix && row != column && !symReader )
-      {
-          rowLengths[ column - 1 ]++;
    }
    file.clear();
    long int fileSize = file.tellg();
@@ -414,10 +414,7 @@ class MatrixReaderDeviceDependentCode< Devices::Host >
                             bool symReader )
    {
       typename Matrix::CompressedRowLengthsVector rowLengths;
-      return MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose );
-
-      if( verbose )
-        std::cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements() << "                       \r" << std::flush;
+      return MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose, symReader );
    }
 };
 
@@ -437,7 +434,7 @@ class MatrixReaderDeviceDependentCode< Devices::Cuda >
 
       HostMatrixType hostMatrix;
       typename Matrix::CompressedRowLengthsVector rowLengths;
-      return MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose );
+      return MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose, symReader );
 
       matrix = hostMatrix;
       return true;

@@ -27,6 +27,7 @@ class MatrixReader
    public:
 
    typedef typename Matrix::IndexType IndexType;
+   typedef typename Matrix::DeviceType DeviceType;
    typedef typename Matrix::RealType RealType;
 
    static bool readMtxFile( const String& fileName,
@@ -42,8 +43,6 @@ class MatrixReader
    static bool readMtxFileHostMatrix( std::istream& file,
                                       Matrix& matrix,
                                       typename Matrix::CompressedRowLengthsVector& rowLengths,
-                                      bool verbose );
-                                      typename Matrix::RowLengthsVector& rowLengths,
                                       bool verbose,
                                       bool symReader );
 
@@ -69,7 +68,7 @@ class MatrixReader
                               bool verbose );
 
    static bool computeCompressedRowLengthsFromMtxFile( std::istream& file,
-                                             Containers::Vector< int, Devices::Host, int >& rowLengths,
+                                             Containers::Vector< int, DeviceType, int >& rowLengths,
                                              const int columns,
                                              const int rows,
                                              bool symmetricMatrix,
