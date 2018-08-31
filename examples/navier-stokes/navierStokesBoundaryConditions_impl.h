@@ -29,13 +29,21 @@ navierStokesBoundaryConditions< Mesh >::navierStokesBoundaryConditions()
 }
 
 template< typename Mesh >
-bool navierStokesBoundaryConditions< Mesh >::setup( const tnlParameterContainer& parameters )
+bool navierStokesBoundaryConditions< Mesh >::setup( const Config::ParameterContainer& parameters )
 {
+<<<<<<< HEAD
    this -> maxInflowVelocity = parameters. getParameter< double >( "max-inflow-velocity" );
    //this -> maxOutflowVelocity = parameters. getParameter< double >( "max-outflow-velocity" );
    this -> startUp = parameters. getParameter< double >( "start-up" );
    this -> T = parameters. getParameter< double >( "T" );
    this -> R = parameters. getParameter< double >( "R" );
+=======
+   this->maxInflowVelocity = parameters. getParameter< double >( "max-inflow-velocity" );
+   //this->maxOutflowVelocity = parameters. getParameter< double >( "max-outflow-velocity" );
+   this->startUp = parameters. getParameter< double >( "start-up" );
+   this->T = parameters. getParameter< double >( "T" );
+   this->R = parameters. getParameter< double >( "R" );
+>>>>>>> develop
    this->p0 = parameters. getParameter< double >( "p0" );
    this->gamma = parameters. getParameter< double >( "gamma" );
    return true;
@@ -67,8 +75,8 @@ void navierStokesBoundaryConditions< Mesh >::apply( const RealType& time,
    const RealType hx = this->mesh->getParametricStep().x();
    const RealType hy = this->mesh->getParametricStep().y();
    RealType startUpCoefficient( 1.0 );
-   if( this -> startUp != 0.0 )
-      startUpCoefficient = Min( ( RealType ) 1.0, time / this -> startUp );
+   if( this->startUp != 0.0 )
+      startUpCoefficient = min( ( RealType ) 1.0, time / this->startUp );
 
    for( IndexType i = 0; i < xSize; i ++ )
    {
@@ -86,14 +94,14 @@ void navierStokesBoundaryConditions< Mesh >::apply( const RealType& time,
       {
          u1[ c1 ] = 0;
          u2[ c1 ] = 0;
-         u1[ c3 ] = sin( M_PI * x ) * startUpCoefficient * this -> maxInflowVelocity;
+         u1[ c3 ] = ::sin( M_PI * x ) * startUpCoefficient * this->maxInflowVelocity;
          u2[ c3 ] = 0;
 
          rho[ c1 ] = rho[ c2 ];
          rho[ c3 ] = rho[ c4 ];
          energy[ c1 ] = energy[ c2 ];
          energy[ c3 ] = energy[ c4 ];
-          //rho[ c3 ] = this -> p_0 / ( this -> R * this -> T );
+          //rho[ c3 ] = this->p_0 / ( this->R * this->T );
       }
    }
    for( IndexType j = 0; j < ySize; j ++ )
@@ -122,10 +130,10 @@ void navierStokesBoundaryConditions< Mesh >::apply( const RealType& time,
          energy[ c1 ] = this->p0 / ( this->gamma - 1.0 ); //energy[ c2 ];// - tau*( energy[ c2 ] - energy[ c1 ] ) / hx;
          energy[ c3 ] = this->p0 / ( this->gamma - 1.0 ); //energy[ c4 ];// - tau*( energy[ c3 ] - energy[ c4 ] ) / hx;
       }
-      /*rho_u1[ c1 ] = rho[ c1 ] * this -> u1[ c1 ];
-      rho_u2[ c1 ] = rho[ c1 ] * this -> u2[ c1 ];
-      rho_u1[ c3 ] = rho[ c3 ] * this -> u1[ c3 ];
-      rho_u2[ c3 ] = rho[ c3 ] * this -> u2[ c3 ];*/
+      /*rho_u1[ c1 ] = rho[ c1 ] * this->u1[ c1 ];
+      rho_u2[ c1 ] = rho[ c1 ] * this->u2[ c1 ];
+      rho_u1[ c3 ] = rho[ c3 ] * this->u1[ c3 ];
+      rho_u2[ c3 ] = rho[ c3 ] * this->u2[ c3 ];*/
     }
 }
 

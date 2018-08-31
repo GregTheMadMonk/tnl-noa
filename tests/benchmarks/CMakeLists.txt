@@ -1,37 +1,29 @@
 ADD_SUBDIRECTORY( share )
+ADD_SUBDIRECTORY( heat-equation-benchmark )
 
 IF( BUILD_CUDA )
-    CUDA_ADD_EXECUTABLE( tnl-cuda-benchmarks${debugExt} tnl-cuda-benchmarks.cu
-                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
-    SET_TARGET_PROPERTIES( tnl-cuda-benchmarks${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
-    TARGET_LINK_LIBRARIES( tnl-cuda-benchmarks${debugExt} tnl${debugExt}-${tnlVersion} ${CUSPARSE_LIBRARY} )                        
-    
-    CUDA_ADD_EXECUTABLE( tnl-benchmark-spmv${debugExt} tnl-benchmark-spmv.cu
-                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
-    SET_TARGET_PROPERTIES( tnl-benchmark-spmv${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
-    TARGET_LINK_LIBRARIES( tnl-benchmark-spmv${debugExt} tnl${debugExt}-${tnlVersion} ${CUSPARSE_LIBRARY} )                        
-    
-    CUDA_ADD_EXECUTABLE( tnl-benchmark-linear-solvers${debugExt} tnl-benchmark-linear-solvers.cu
-                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
-    SET_TARGET_PROPERTIES( tnl-benchmark-linear-solvers${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
-    TARGET_LINK_LIBRARIES( tnl-benchmark-linear-solvers${debugExt} tnl${debugExt}-${tnlVersion} ${CUSPARSE_LIBRARY} )                        
+    CUDA_ADD_EXECUTABLE( tnl-benchmark-blas tnl-benchmark-blas.cu )
+    CUDA_ADD_CUBLAS_TO_TARGET( tnl-benchmark-blas )
+    TARGET_LINK_LIBRARIES( tnl-benchmark-blas tnl )
+
+    CUDA_ADD_EXECUTABLE( tnl-benchmark-spmv tnl-benchmark-spmv.cu )
+    TARGET_LINK_LIBRARIES( tnl-benchmark-spmv tnl ${CUDA_cusparse_LIBRARY} )
+
+    CUDA_ADD_EXECUTABLE( tnl-benchmark-linear-solvers tnl-benchmark-linear-solvers.cu )
+    TARGET_LINK_LIBRARIES( tnl-benchmark-linear-solvers tnl )
 ELSE()
-    ADD_EXECUTABLE( tnl-benchmark-spmv${debugExt} tnl-benchmark-spmv.cpp )
-    ADD_EXECUTABLE( tnl-benchmark-linear-solvers${debugExt} tnl-benchmark-linear-solvers.cpp )
-    SET_TARGET_PROPERTIES( tnl-benchmark-spmv${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
-    SET_TARGET_PROPERTIES( tnl-benchmark-linear-solvers${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
-    TARGET_LINK_LIBRARIES( tnl-benchmark-spmv${debugExt} tnl${debugExt}-${tnlVersion} )
-    TARGET_LINK_LIBRARIES( tnl-benchmark-linear-solvers${debugExt} tnl${debugExt}-${tnlVersion} )
+    ADD_EXECUTABLE( tnl-benchmark-blas tnl-benchmark-blas.cpp )
+    TARGET_LINK_LIBRARIES( tnl-benchmark-blas tnl )
+
+    ADD_EXECUTABLE( tnl-benchmark-spmv tnl-benchmark-spmv.cpp )
+    TARGET_LINK_LIBRARIES( tnl-benchmark-spmv tnl )
+
+    ADD_EXECUTABLE( tnl-benchmark-linear-solvers tnl-benchmark-linear-solvers.cpp )
+    TARGET_LINK_LIBRARIES( tnl-benchmark-linear-solvers tnl )
 ENDIF()
 
-if( BUILD_CUDA )                                                              
-   INSTALL( TARGETS tnl-cuda-benchmarks${debugExt}
-            RUNTIME DESTINATION bin )
-endif()
-
-INSTALL( TARGETS tnl-benchmark-spmv${debugExt}
-                 tnl-benchmark-linear-solvers${debugExt}
+INSTALL( TARGETS
+            tnl-benchmark-blas
+            tnl-benchmark-spmv
+            tnl-benchmark-linear-solvers
          RUNTIME DESTINATION bin )
-
-
-                                            
