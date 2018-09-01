@@ -10,9 +10,8 @@
 
 #pragma once
 
-#include <math.h>
-#include <TNL/Object.h>
-#include <TNL/SharedPointer.h>
+#include "LinearSolver.h"
+
 #include <TNL/Containers/Vector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
@@ -25,20 +24,18 @@ template< typename Matrix,
           typename Preconditioner = Preconditioners::Dummy< typename Matrix :: RealType,
                                                             typename Matrix :: DeviceType,
                                                             typename Matrix :: IndexType> >
-
-class TFQMR : public Object,
-              public IterativeSolver< typename Matrix :: RealType,
-                                      typename Matrix :: IndexType >
+class TFQMR
+: public LinearSolver< Matrix, Preconditioner >,
+  public IterativeSolver< typename Matrix::RealType,
+                          typename Matrix::IndexType >
 {
-   public:
-
-   typedef typename Matrix::RealType RealType;
-   typedef typename Matrix::IndexType IndexType;
-   typedef typename Matrix::DeviceType DeviceType;
-   typedef Matrix MatrixType;
-   typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
+   using Base = LinearSolver< Matrix, Preconditioner >;
+public:
+   using RealType = typename Base::RealType;
+   using DeviceType = typename Base::DeviceType;
+   using IndexType = typename Base::IndexType;
+   using VectorViewType = typename Base::VectorViewType;
+   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
    TFQMR();
 
@@ -50,23 +47,14 @@ class TFQMR : public Object,
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
 
-   void setMatrix( const MatrixPointer& matrix );
+   bool solve( const ConstVectorViewType& b, VectorViewType& x ) override;
 
-   void setPreconditioner( const PreconditionerPointer& preconditioner );
-
-   template< typename Vector >
-   bool solve( const Vector& b, Vector& x );
-
-   protected:
-
+protected:
    void setSize( IndexType size );
 
    Containers::Vector< RealType, DeviceType, IndexType > d, r, w, u, v, r_ast, Au, M_tmp;
 
    IndexType size;
-
-   MatrixPointer matrix;
-   PreconditionerPointer preconditioner;
 };
 
 } // namespace Linear

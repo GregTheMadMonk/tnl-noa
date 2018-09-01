@@ -63,7 +63,6 @@ setup( const Config::ParameterContainer& parameters,
    return true;
 }
 
-
 template< typename Matrix, typename Preconditioner >
 void SOR< Matrix, Preconditioner > :: setOmega( const RealType& omega )
 {
@@ -76,28 +75,12 @@ const typename SOR< Matrix, Preconditioner > :: RealType& SOR< Matrix, Precondit
    return this->omega;
 }
 
-template< typename Matrix,
-          typename Preconditioner >
-void SOR< Matrix, Preconditioner > :: setMatrix( const MatrixPointer& matrix )
-{
-   this->matrix = matrix;
-}
-
-template< typename Matrix,
-           typename Preconditioner >
-void SOR< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerPointer& preconditioner )
-{
-   this->preconditioner = preconditioner;
-}
-
-
 template< typename Matrix, typename Preconditioner >
-   template< typename Vector >
-bool SOR< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
+bool SOR< Matrix, Preconditioner > :: solve( const ConstVectorViewType& b, VectorViewType& x )
 {
-   using ResidueGetter = LinearResidueGetter< Matrix, Vector >;
+   using ResidueGetter = LinearResidueGetter< Matrix, ConstVectorViewType >;
 
-   const IndexType size = matrix -> getRows();   
+   const IndexType size = this->matrix->getRows();
 
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
@@ -107,15 +90,12 @@ bool SOR< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
    while( this->nextIteration() )
    {
       for( IndexType row = 0; row < size; row ++ )
-         matrix->performSORIteration( b,
-                                      row,
-                                      x,
-                                      this->getOmega() );
+         this->matrix->performSORIteration( b, row, x, this->getOmega() );
       // FIXME: the LinearResidueGetter works only on the host
-      this->setResidue( ResidueGetter::getResidue( *matrix, x, b, bNorm ) );
+      this->setResidue( ResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
       this->refreshSolverMonitor();
    }
-   this->setResidue( ResidueGetter::getResidue( *matrix, x, b, bNorm ) );
+   this->setResidue( ResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
 };

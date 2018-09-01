@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <cmath>
+
 #include "GMRES.h"
 
 namespace TNL {
@@ -93,30 +95,11 @@ setRestarting( IndexType rest )
 
 template< typename Matrix,
           typename Preconditioner >
-void
-GMRES< Matrix, Preconditioner >::
-setMatrix( const MatrixPointer& matrix )
-{
-   this->matrix = matrix;
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-void
-GMRES< Matrix, Preconditioner >::
-setPreconditioner( const PreconditionerPointer& preconditioner )
-{
-   this->preconditioner = preconditioner;
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-   template< typename Vector >
 bool
 GMRES< Matrix, Preconditioner >::
-solve( const Vector& b, Vector& x )
+solve( const ConstVectorViewType& b, VectorViewType& x )
 {
-   TNL_ASSERT_TRUE( matrix, "No matrix was set in GMRES. Call setMatrix() before solve()." );
+   TNL_ASSERT_TRUE( this->matrix, "No matrix was set in GMRES. Call setMatrix() before solve()." );
    if( restarting_min <= 0 || restarting_max <= 0 || restarting_min > restarting_max )
    {
       std::cerr << "Wrong value for the GMRES restarting parameters: r_min = " << restarting_min
@@ -129,7 +112,7 @@ solve( const Vector& b, Vector& x )
                 << ", d_max = " << restarting_step_max << std::endl;
       return false;
    }
-   setSize( matrix -> getRows(), restarting_max );
+   setSize( this->matrix->getRows(), restarting_max );
 
    IndexType _size = size;
  
@@ -145,19 +128,19 @@ solve( const Vector& b, Vector& x )
    /****
     * 1. Solve r from M r = b - A x_0
     */
-   if( preconditioner )
+   if( this->preconditioner )
    {
       this->preconditioner->solve( b, _M_tmp );
       normb = _M_tmp.lpNorm( ( RealType ) 2.0 );
 
-      matrix -> vectorProduct( x, _M_tmp );
+      this->matrix->vectorProduct( x, _M_tmp );
       _M_tmp.addVector( b, ( RealType ) 1.0, -1.0 );
 
       this->preconditioner->solve( _M_tmp, _r );
    }
    else
    {
-      matrix -> vectorProduct( x, _r );
+      this->matrix->vectorProduct( x, _r );
       normb = b.lpNorm( ( RealType ) 2.0 );
       _r.addVector( b, ( RealType ) 1.0, -1.0 );
    }
@@ -232,13 +215,13 @@ solve( const Vector& b, Vector& x )
          /****
           * Solve w from M w = A v_i
           */
-         if( preconditioner )
+         if( this->preconditioner )
          {
-            matrix->vectorProduct( vi, _M_tmp );
+            this->matrix->vectorProduct( vi, _M_tmp );
             this->preconditioner->solve( _M_tmp, w );
          }
          else
-             matrix->vectorProduct( vi, w );
+             this->matrix->vectorProduct( vi, w );
  
          //cout << " i = " << i << " vi = " << vi << std::endl;
 
@@ -320,16 +303,16 @@ solve( const Vector& b, Vector& x )
        */
       const RealType beta_old = beta;
       beta = 0.0;
-      if( preconditioner )
+      if( this->preconditioner )
       {
-         matrix -> vectorProduct( x, _M_tmp );
+         this->matrix->vectorProduct( x, _M_tmp );
          _M_tmp.addVector( b, ( RealType ) 1.0, -1.0 );
-         preconditioner -> solve( _M_tmp, _r );
+         this->preconditioner->solve( _M_tmp, _r );
          beta = _r.lpNorm( ( RealType ) 2.0 );
       }
       else
       {
-         matrix -> vectorProduct( x, _r );
+         this->matrix->vectorProduct( x, _r );
          _r.addVector( b, ( RealType ) 1.0, -1.0 );
          beta = _r.lpNorm( ( RealType ) 2.0 );
       }

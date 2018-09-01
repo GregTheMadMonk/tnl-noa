@@ -12,9 +12,8 @@
 
 #pragma once
 
-#include <math.h>
-#include <TNL/Object.h>
-#include <TNL/SharedPointer.h>
+#include "LinearSolver.h"
+
 #include <TNL/Containers/Vector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
@@ -28,20 +27,17 @@ template< typename Matrix,
                                                             typename Matrix::DeviceType,
                                                             typename Matrix::IndexType> >
 class CWYGMRES
-: public Object,
+: public LinearSolver< Matrix, Preconditioner >,
   public IterativeSolver< typename Matrix::RealType,
                           typename Matrix::IndexType >
 {
+   using Base = LinearSolver< Matrix, Preconditioner >;
 public:
-   typedef typename Matrix::RealType RealType;
-   typedef typename Matrix::IndexType IndexType;
-   typedef typename Matrix::DeviceType DeviceType;
-   typedef Matrix MatrixType;
-   typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
-   typedef Containers::Vector< RealType, DeviceType, IndexType > DeviceVector;
-   typedef Containers::Vector< RealType, Devices::Host, IndexType > HostVector;
+   using RealType = typename Base::RealType;
+   using DeviceType = typename Base::DeviceType;
+   using IndexType = typename Base::IndexType;
+   using VectorViewType = typename Base::VectorViewType;
+   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
    CWYGMRES();
 
@@ -57,14 +53,12 @@ public:
 
    void setRestarting( IndexType rest );
 
-   void setMatrix( const MatrixPointer& matrix );
-
-   void setPreconditioner( const PreconditionerPointer& preconditioner );
-
-   template< typename Vector >
-   bool solve( const Vector& b, Vector& x );
+   bool solve( const ConstVectorViewType& b, VectorViewType& x ) override;
 
 protected:
+   using DeviceVector = Containers::Vector< RealType, DeviceType, IndexType >;
+   using HostVector = Containers::Vector< RealType, Devices::Host, IndexType >;
+
    void hauseholder_generate( DeviceVector& Y,
                               HostVector& T,
                               const int& i,
@@ -118,9 +112,6 @@ protected:
    HostVector cs, sn, H, s;
 
    IndexType size, ldSize, restarting_min, restarting_max, restarting_step_min, restarting_step_max;
-
-   MatrixPointer matrix;
-   PreconditionerPointer preconditioner;
 };
 
 } // namespace Linear

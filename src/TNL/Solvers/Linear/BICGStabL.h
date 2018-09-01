@@ -41,9 +41,8 @@
 
 #pragma once
 
-#include <math.h>
-#include <TNL/Object.h>
-#include <TNL/SharedPointer.h>
+#include "LinearSolver.h"
+
 #include <TNL/Containers/Vector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
@@ -53,25 +52,22 @@ namespace Solvers {
 namespace Linear {
 
 template< typename Matrix,
-          typename Preconditioner = Preconditioners::Dummy< typename Matrix :: RealType,
-                                                            typename Matrix :: DeviceType,
-                                                            typename Matrix :: IndexType> >
+          typename Preconditioner = Preconditioners::Dummy< typename Matrix::RealType,
+                                                            typename Matrix::DeviceType,
+                                                            typename Matrix::IndexType> >
 
 class BICGStabL
-   : public Object,
-     public IterativeSolver< typename Matrix :: RealType,
-                             typename Matrix :: IndexType >
+: public LinearSolver< Matrix, Preconditioner >,
+  public IterativeSolver< typename Matrix::RealType,
+                          typename Matrix::IndexType >
 {
+   using Base = LinearSolver< Matrix, Preconditioner >;
 public:
-   typedef typename Matrix::RealType RealType;
-   typedef typename Matrix::IndexType IndexType;
-   typedef typename Matrix::DeviceType DeviceType;
-   typedef Matrix MatrixType;
-   typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
-   typedef Containers::Vector< RealType, DeviceType, IndexType > DeviceVector;
-   typedef Containers::Vector< RealType, Devices::Host, IndexType > HostVector;
+   using RealType = typename Base::RealType;
+   using DeviceType = typename Base::DeviceType;
+   using IndexType = typename Base::IndexType;
+   using VectorViewType = typename Base::VectorViewType;
+   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
    BICGStabL();
 
@@ -83,14 +79,12 @@ public:
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
 
-   void setMatrix( const MatrixPointer& matrix );
-
-   void setPreconditioner( const PreconditionerPointer& preconditioner );
-
-   template< typename Vector >
-   bool solve( const Vector& b, Vector& x );
+   bool solve( const ConstVectorViewType& b, VectorViewType& x ) override;
 
 protected:
+   using DeviceVector = Containers::Vector< RealType, DeviceType, IndexType >;
+   using HostVector = Containers::Vector< RealType, Devices::Host, IndexType >;
+
    void setSize( IndexType size );
 
    int ell = 1;
@@ -105,9 +99,6 @@ protected:
    HostVector T, sigma, g_0, g_1, g_2;
 
    IndexType size, ldSize;
-
-   MatrixPointer matrix;
-   PreconditionerPointer preconditioner;
 };
 
 } // namespace Linear

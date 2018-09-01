@@ -26,7 +26,7 @@ CG< Matrix, Preconditioner > :: CG()
     * Clearing the shared pointer means that there is no
     * preconditioner set.
     */
-   this->preconditioner.clear();   
+   this->preconditioner.clear();
 }
 
 template< typename Matrix,
@@ -60,28 +60,13 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Matrix,
           typename Preconditioner >
-void CG< Matrix, Preconditioner >::setMatrix( const MatrixPointer& matrix )
-{
-   this->matrix = matrix;
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-void CG< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerPointer& preconditioner )
-{
-   this->preconditioner = preconditioner;
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-   template< typename Vector >
 bool
 CG< Matrix, Preconditioner >::
-solve( const Vector& b, Vector& x )
+solve( const ConstVectorViewType& b, VectorViewType& x )
 {
-   using ResidueGetter = LinearResidueGetter< Matrix, Vector >;
+   using ResidueGetter = LinearResidueGetter< Matrix, ConstVectorViewType >;
 
-   this->setSize( matrix->getRows() );
+   this->setSize( this->matrix->getRows() );
 
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
@@ -111,12 +96,12 @@ solve( const Vector& b, Vector& x )
        */
       if( s2 == 0.0 ) alpha = 0.0;
       else alpha = s1 / s2;
- 
+
       /****
        * 2. x_{j+1} = x_j + \alpha_j p_j
        */
       x.addVector( p, alpha );
-      
+
       /****
        * 3. r_{j+1} = r_j - \alpha_j A * p_j
        */
@@ -144,11 +129,11 @@ solve( const Vector& b, Vector& x )
        * 6. r_{j+1} = new_r
        */
       new_r.swap( r );
- 
+
       if( this->getIterations() % 10 == 0 )
-         this->setResidue( ResidueGetter::getResidue( *matrix, x, b, bNorm ) );
+         this->setResidue( ResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
    }
-   this->setResidue( ResidueGetter::getResidue( *matrix, x, b, bNorm ) );
+   this->setResidue( ResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
 }

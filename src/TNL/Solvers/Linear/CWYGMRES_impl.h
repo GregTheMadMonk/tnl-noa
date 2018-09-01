@@ -13,6 +13,7 @@
 #pragma once
 
 #include <type_traits>
+#include <cmath>
 
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/Multireduction.h>
@@ -102,30 +103,11 @@ setRestarting( IndexType rest )
 
 template< typename Matrix,
           typename Preconditioner >
-void
-CWYGMRES< Matrix, Preconditioner >::
-setMatrix( const MatrixPointer& matrix )
-{
-   this->matrix = matrix;
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-void
-CWYGMRES< Matrix, Preconditioner >::
-setPreconditioner( const PreconditionerPointer& preconditioner )
-{
-   this->preconditioner = preconditioner;
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-   template< typename Vector >
 bool
 CWYGMRES< Matrix, Preconditioner >::
-solve( const Vector& b, Vector& x )
+solve( const ConstVectorViewType& b, VectorViewType& x )
 {
-   TNL_ASSERT_TRUE( matrix, "No matrix was set in CWYGMRES. Call setMatrix() before solve()." );
+   TNL_ASSERT_TRUE( this->matrix, "No matrix was set in CWYGMRES. Call setMatrix() before solve()." );
    if( restarting_min <= 0 || restarting_max <= 0 || restarting_min > restarting_max )
    {
       std::cerr << "Wrong value for the GMRES restarting parameters: r_min = " << restarting_min
@@ -138,25 +120,25 @@ solve( const Vector& b, Vector& x )
                 << ", d_max = " << restarting_step_max << std::endl;
       return false;
    }
-   setSize( matrix -> getRows(), restarting_max );
+   setSize( this->matrix->getRows(), restarting_max );
 
    RealType normb( 0.0 ), beta( 0.0 );
    /****
     * 1. Solve r from M r = b - A x_0
     */
-   if( preconditioner )
+   if( this->preconditioner )
    {
       this->preconditioner->solve( b, _M_tmp );
       normb = _M_tmp.lpNorm( ( RealType ) 2.0 );
 
-      matrix->vectorProduct( x, _M_tmp );
+      this->matrix->vectorProduct( x, _M_tmp );
       _M_tmp.addVector( b, ( RealType ) 1.0, -1.0 );
 
       this->preconditioner->solve( _M_tmp, r );
    }
    else
    {
-      matrix->vectorProduct( x, r );
+      this->matrix->vectorProduct( x, r );
       normb = b.lpNorm( ( RealType ) 2.0 );
       r.addVector( b, ( RealType ) 1.0, -1.0 );
    }
@@ -255,13 +237,13 @@ solve( const Vector& b, Vector& x )
             /****
              * Solve w from M w = A v_i
              */
-            if( preconditioner )
+            if( this->preconditioner )
             {
-               matrix->vectorProduct( vi, _M_tmp );
+               this->matrix->vectorProduct( vi, _M_tmp );
                this->preconditioner->solve( _M_tmp, w );
             }
             else
-                matrix -> vectorProduct( vi, w );
+                this->matrix->vectorProduct( vi, w );
 
             /****
              * Apply all previous Hauseholder transformations, using the compact WY representation:
@@ -335,15 +317,15 @@ solve( const Vector& b, Vector& x )
        * r = M.solve(b - A * x);
        */
       const RealType beta_old = beta;
-      if( preconditioner )
+      if( this->preconditioner )
       {
-         matrix->vectorProduct( x, _M_tmp );
+         this->matrix->vectorProduct( x, _M_tmp );
          _M_tmp.addVector( b, ( RealType ) 1.0, -1.0 );
-         preconditioner->solve( _M_tmp, r );
+         this->preconditioner->solve( _M_tmp, r );
       }
       else
       {
-         matrix->vectorProduct( x, r );
+         this->matrix->vectorProduct( x, r );
          r.addVector( b, ( RealType ) 1.0, -1.0 );
       }
       beta = r.lpNorm( ( RealType ) 2.0 );

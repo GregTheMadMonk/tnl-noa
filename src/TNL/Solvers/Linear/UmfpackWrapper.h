@@ -16,8 +16,8 @@
 
 #include <umfpack.h>
 
-#include <TNL/Object.h>
-#include <TNL/Config/ConfigDescription.h>
+#include "LinearSolver.h"
+
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
@@ -25,7 +25,7 @@
 
 namespace TNL {
 namespace Solvers {
-namespace Linear {   
+namespace Linear {
 
 template< typename Matrix >
 struct is_csr_matrix
@@ -41,96 +41,77 @@ struct is_csr_matrix< Matrices::CSR< Real, Device, Index > >
 
 
 template< typename Matrix,
-          typename Preconditioner = Preconditioners::Dummy< typename Matrix :: RealType,
-                                                            typename Matrix :: DeviceType,
-                                                            typename Matrix :: IndexType> >
+          typename Preconditioner = Preconditioners::Dummy< typename Matrix::RealType,
+                                                            typename Matrix::DeviceType,
+                                                            typename Matrix::IndexType> >
 class UmfpackWrapper
-    : public Object,
-      // just to ensure the same interface as other linear solvers
-      public IterativeSolver< typename Matrix::RealType,
-                              typename Matrix::IndexType >
+: public LinearSolver< Matrix, Preconditioner >,
+  // just to ensure the same interface as other linear solvers
+  public IterativeSolver< typename Matrix::RealType,
+                          typename Matrix::IndexType >
 {
+   using Base = LinearSolver< Matrix, Preconditioner >;
 public:
-    typedef typename Matrix :: RealType RealType;
-    typedef typename Matrix :: IndexType IndexType;
-    typedef typename Matrix :: DeviceType DeviceType;
-    typedef Matrix MatrixType;
-    typedef Preconditioner PreconditionerType;
-    typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
-    typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
+   using RealType = typename Base::RealType;
+   using DeviceType = typename Base::DeviceType;
+   using IndexType = typename Base::IndexType;
+   using VectorViewType = typename Base::VectorViewType;
+   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-    UmfpackWrapper()
-    {
-        if( ! is_csr_matrix< Matrix >::value )
-            std::cerr << "The UmfpackWrapper solver is available only for CSR matrices." << std::endl;
-        if( std::is_same< typename Matrix::DeviceType, Devices::Cuda >::value )
-            std::cerr << "The UmfpackWrapper solver is not available on CUDA." << std::endl;
-        if( ! std::is_same< RealType, double >::value )
-            std::cerr << "The UmfpackWrapper solver is available only for double precision." << std::endl;
-        if( ! std::is_same< IndexType, int >::value )
-            std::cerr << "The UmfpackWrapper solver is available only for 'int' index type." << std::endl;
-    }
+   UmfpackWrapper()
+   {
+      if( ! is_csr_matrix< Matrix >::value )
+         std::cerr << "The UmfpackWrapper solver is available only for CSR matrices." << std::endl;
+      if( std::is_same< typename Matrix::DeviceType, Devices::Cuda >::value )
+         std::cerr << "The UmfpackWrapper solver is not available on CUDA." << std::endl;
+      if( ! std::is_same< RealType, double >::value )
+         std::cerr << "The UmfpackWrapper solver is available only for double precision." << std::endl;
+      if( ! std::is_same< IndexType, int >::value )
+         std::cerr << "The UmfpackWrapper solver is available only for 'int' index type." << std::endl;
+   }
 
-    static void configSetup( Config::ConfigDescription& config,
-                             const String& prefix = "" )
-    {}
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" )
+   {}
 
-    bool setup( const Config::ParameterContainer& parameters,
-                const String& prefix = "" )
-    {
-        return false;
-    }
+   bool setup( const Config::ParameterContainer& parameters,
+               const String& prefix = "" )
+   {
+       return false;
+   }
 
-    void setMatrix( const MatrixPointer& matrix )
-    {}
-
-    void setPreconditioner( const PreconditionerPointer& preconditioner )
-    {}
-
-    template< typename Vector >
-    bool solve( const Vector& b, Vector& x )
-    {
-        return false;
-    }
+   bool solve( const ConstVectorViewType& b, VectorViewType& x ) override
+   {
+       return false;
+   }
 };
 
 
 template< typename Preconditioner >
 class UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >
-    : public Object,
-      // just to ensure the same interface as other linear solvers
-      public IterativeSolver< double, int >
+: public LinearSolver< Matrices::CSR< double, Devices::Host, int >, Preconditioner >,
+  // just to ensure the same interface as other linear solvers
+  public IterativeSolver< double, int >
 {
+   using Base = LinearSolver< Matrices::CSR< double, Devices::Host, int >, Preconditioner >;
 public:
-    typedef double RealType;
-    typedef int IndexType;
-    typedef Devices::Host DeviceType;
-    typedef Matrices::CSR< double, Devices::Host, int > MatrixType;
-    typedef Preconditioner PreconditionerType;
-    typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
-    typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
+   using RealType = typename Base::RealType;
+   using DeviceType = typename Base::DeviceType;
+   using IndexType = typename Base::IndexType;
+   using VectorViewType = typename Base::VectorViewType;
+   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-    UmfpackWrapper();
+   UmfpackWrapper();
 
-    String getType() const;
+   String getType() const;
 
-    static void configSetup( Config::ConfigDescription& config,
-                             const String& prefix = "" );
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" );
 
-    bool setup( const Config::ParameterContainer& parameters,
+   bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
 
-    void setMatrix( const MatrixPointer& matrix );
-
-    void setPreconditioner( const PreconditionerPointer& preconditioner );
-
-    template< typename Vector >
-    bool solve( const Vector& b, Vector& x );
-
-protected:
-   MatrixPointer matrix;
-
-   PreconditionerPointer preconditioner;
+   bool solve( const ConstVectorViewType& b, VectorViewType& x ) override;
 };
 
 } // namespace Linear

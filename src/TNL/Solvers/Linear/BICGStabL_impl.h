@@ -67,27 +67,10 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Matrix,
           typename Preconditioner >
-void
-BICGStabL< Matrix, Preconditioner >::setMatrix( const MatrixPointer& matrix )
-{
-   this->matrix = matrix;
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-void
-BICGStabL< Matrix, Preconditioner >::setPreconditioner( const PreconditionerPointer& preconditioner )
-{
-   this->preconditioner = preconditioner;
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-   template< typename Vector >
 bool
-BICGStabL< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
+BICGStabL< Matrix, Preconditioner >::solve( const ConstVectorViewType& b, VectorViewType& x )
 {
-   this->setSize( matrix->getRows() );
+   this->setSize( this->matrix->getRows() );
 
    RealType alpha, beta, gamma, rho_0, rho_1, omega, b_norm;
    DeviceVector r_0, r_j, r_i, u_0, Au, u;
@@ -96,26 +79,26 @@ BICGStabL< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 
    auto matvec = [this]( const DeviceVector& src, DeviceVector& dst )
    {
-      if( preconditioner ) {
-         matrix->vectorProduct( src, M_tmp );
-         preconditioner->solve( M_tmp, dst );
+      if( this->preconditioner ) {
+         this->matrix->vectorProduct( src, M_tmp );
+         this->preconditioner->solve( M_tmp, dst );
       }
       else {
-         matrix->vectorProduct( src, dst );
+         this->matrix->vectorProduct( src, dst );
       }
    };
 
-   if( preconditioner ) {
-      preconditioner->solve( b, M_tmp );
+   if( this->preconditioner ) {
+      this->preconditioner->solve( b, M_tmp );
       b_norm = M_tmp.lpNorm( ( RealType ) 2.0 );
 
-      matrix->vectorProduct( x, M_tmp );
+      this->matrix->vectorProduct( x, M_tmp );
       M_tmp.addVector( b, 1.0, -1.0 );
-      preconditioner->solve( M_tmp, r_0 );
+      this->preconditioner->solve( M_tmp, r_0 );
    }
    else {
       b_norm = b.lpNorm( 2.0 );
-      matrix->vectorProduct( x, r_0 );
+      this->matrix->vectorProduct( x, r_0 );
       r_0.addVector( b, 1.0, -1.0 );
    }
 
@@ -274,13 +257,13 @@ BICGStabL< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
          /****
           * Compute the exact preconditioned residue into the 's' vector.
           */
-         if( preconditioner ) {
-            matrix->vectorProduct( x, M_tmp );
+         if( this->preconditioner ) {
+            this->matrix->vectorProduct( x, M_tmp );
             M_tmp.addVector( b, 1.0, -1.0 );
-            preconditioner->solve( M_tmp, res_tmp );
+            this->preconditioner->solve( M_tmp, res_tmp );
          }
          else {
-            matrix->vectorProduct( x, res_tmp );
+            this->matrix->vectorProduct( x, res_tmp );
             res_tmp.addVector( b, 1.0, -1.0 );
          }
          sigma[ 0 ] = res_tmp.lpNorm( 2.0 );

@@ -10,9 +10,8 @@
 
 #pragma once
 
-#include <math.h>
-#include <TNL/Object.h>
-#include <TNL/SharedPointer.h>
+#include "LinearSolver.h"
+
 #include <TNL/Containers/Vector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
@@ -26,18 +25,17 @@ template< typename Matrix,
                                                             typename Matrix :: DeviceType,
                                                             typename Matrix :: IndexType> >
 class GMRES
-: public Object,
-  public IterativeSolver< typename Matrix :: RealType,
-                          typename Matrix :: IndexType >
+: public LinearSolver< Matrix, Preconditioner >,
+  public IterativeSolver< typename Matrix::RealType,
+                          typename Matrix::IndexType >
 {
+   using Base = LinearSolver< Matrix, Preconditioner >;
 public:
-   typedef typename Matrix::RealType RealType;
-   typedef typename Matrix::IndexType IndexType;
-   typedef typename Matrix::DeviceType DeviceType;
-   typedef Matrix MatrixType;
-   typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
+   using RealType = typename Base::RealType;
+   using DeviceType = typename Base::DeviceType;
+   using IndexType = typename Base::IndexType;
+   using VectorViewType = typename Base::VectorViewType;
+   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
    GMRES();
 
@@ -51,12 +49,7 @@ public:
 
    void setRestarting( IndexType rest );
 
-   void setMatrix( const MatrixPointer& matrix );
-
-   void setPreconditioner( const PreconditionerPointer& preconditioner );
-
-   template< typename Vector >
-   bool solve( const Vector& b, Vector& x );
+   bool solve( const ConstVectorViewType& b, VectorViewType& x ) override;
 
    ~GMRES();
 
@@ -86,10 +79,6 @@ protected:
    Containers::Vector< RealType, Devices::Host, IndexType > _s, _cs, _sn, _H;
 
    IndexType size, restarting_min, restarting_max, restarting_step_min, restarting_step_max;
-
-   MatrixPointer matrix;
-   
-   PreconditionerPointer preconditioner;
 };
 
 } // namespace Linear
