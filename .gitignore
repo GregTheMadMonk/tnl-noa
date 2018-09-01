@@ -1,4 +1,3 @@
-.settings
 /nbproject
 /Debug
 /Release
@@ -6,3 +5,8 @@
 /CMakeLists.txt.user
 /doc/_build
 /Build
+
+# Eclipse project stuff
+/.settings
+/.project
+/.pydevproject

@@ -14,7 +14,6 @@
 #include <TNL/Object.h>
 #include <TNL/SharedPointer.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/SharedVector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
@@ -60,13 +59,13 @@ class BICGStab : public Object,
              typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
    bool solve( const Vector& b, Vector& x );
 
-   ~BICGStab();
-
    protected:
 
-   bool setSize( IndexType size );
+   void setSize( IndexType size );
 
-   Containers::Vector< RealType, DeviceType, IndexType >  r, r_ast, r_new, p, s, Ap, As, M_tmp;
+   bool exact_residue;
+
+   Containers::Vector< RealType, DeviceType, IndexType > r, r_ast, p, s, Ap, As, M_tmp;
 
    MatrixPointer matrix;
    PreconditionerPointer preconditioner;

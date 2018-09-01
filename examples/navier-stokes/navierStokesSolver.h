@@ -55,7 +55,7 @@ class navierStokesSolver
 
    navierStokesSolver();
 
-   static String getTypeStatic();
+   static String getType();
 
    String getPrologHeader() const;
 
@@ -93,7 +93,7 @@ class navierStokesSolver
 
    bool solve();
 
-   void GetExplicitRHS( const RealType& time,
+   void getExplicitUpdate( const RealType& time,
                         const RealType& tau,
                         DofVectorType& _u,
                         DofVectorType& _fu );

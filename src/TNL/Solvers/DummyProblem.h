@@ -10,9 +10,11 @@
 
 #pragma once
 
+#include <TNL/SharedPointer.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Problems/CommonData.h>
 
 namespace TNL {
 namespace Solvers {   
@@ -29,8 +31,14 @@ class DummyProblem
       typedef Index IndexType;
       typedef Containers::Vector< Real, Device, Index > DofVectorType;
       typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
-      typedef DofVectorType MeshDependentDataType;
+      using CommonDataType = Problems::CommonData;
+      using CommonDataPointer = SharedPointer< CommonDataType, Device >;
+      
+      static constexpr bool isTimeDependent(){ return true; };      
 };
+
+class DummySolver
+{};
 
 } // namespace Solvers
 } // namespace TNL

@@ -17,7 +17,8 @@
 //#define CUDA_REDUCTION_PROFILING
 
 #include <TNL/Assert.h>
-#include <TNL/Containers/Algorithms/reduction-operations.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
+#include <TNL/Containers/Algorithms/ReductionOperations.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/CudaMultireductionKernel.h>
 
@@ -47,23 +48,24 @@ static constexpr int Multireduction_minGpuDataSize = 256;//65536; //16384;//1024
  *    deviceInput2: either nullptr or input array of size = size
  *    hostResult: output array of size = n
  */
-template< typename Operation >
+template< typename Operation, typename Index >
 bool
 Multireduction< Devices::Cuda >::
 reduce( Operation& operation,
-        int n,
-        const typename Operation::IndexType size,
-        const typename Operation::RealType* deviceInput1,
-        const typename Operation::IndexType ldInput1,
-        const typename Operation::RealType* deviceInput2,
+        const int n,
+        const Index size,
+        const typename Operation::DataType1* deviceInput1,
+        const Index ldInput1,
+        const typename Operation::DataType2* deviceInput2,
         typename Operation::ResultType* hostResult )
 {
 #ifdef HAVE_CUDA
-   TNL_ASSERT( n > 0, );
-   TNL_ASSERT( size <= ldInput1, );
+   TNL_ASSERT_GT( n, 0, "The number of datasets must be positive." );
+   TNL_ASSERT_LE( size, ldInput1, "The size of the input cannot exceed its leading dimension." );
 
-   typedef typename Operation::IndexType IndexType;
-   typedef typename Operation::RealType RealType;
+   typedef Index IndexType;
+   typedef typename Operation::DataType1 DataType1;
+   typedef typename Operation::DataType2 DataType2;
    typedef typename Operation::ResultType ResultType;
    typedef typename Operation::LaterReductionOperation LaterReductionOperation;
 
@@ -72,17 +74,18 @@ reduce( Operation& operation,
     * Otherwise copy it/them to host and multireduce on CPU.
     */
    if( n * ldInput1 < Multireduction_minGpuDataSize ) {
-      RealType hostArray1[ Multireduction_minGpuDataSize ];
-      if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray1, deviceInput1, n * ldInput1 ) )
+      DataType1 hostArray1[ Multireduction_minGpuDataSize ];
+      if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray1, deviceInput1, n * ldInput1 ) )
          return false;
       if( deviceInput2 ) {
-         RealType hostArray2[ Multireduction_minGpuDataSize ];
-         if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, size ) )
+         using _DT2 = typename std::conditional< std::is_same< DataType2, void >::value, DataType1, DataType2 >::type;
+         _DT2 hostArray2[ Multireduction_minGpuDataSize ];
+         if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray2, (_DT2*) deviceInput2, size ) )
             return false;
          return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, hostArray2, hostResult );
       }
       else {
-         return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, ( RealType* ) nullptr, hostResult );
+         return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, (DataType2*) nullptr, hostResult );
       }
    }
 
@@ -114,7 +117,7 @@ reduce( Operation& operation,
     * Transfer the reduced data from device to host.
     */
    ResultType resultArray[ n * reducedSize ];
-   if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, n * reducedSize ) )
+   if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, n * reducedSize ) )
       return false;
 
    #ifdef CUDA_REDUCTION_PROFILING
@@ -136,17 +139,16 @@ reduce( Operation& operation,
     * Reduce the data on the host system.
     */
    LaterReductionOperation laterReductionOperation;
-   Multireduction< Devices::Host >::reduce( laterReductionOperation, n, reducedSize, resultArray, reducedSize, (RealType*) nullptr, hostResult );
+   Multireduction< Devices::Host >::reduce( laterReductionOperation, n, reducedSize, resultArray, reducedSize, (void*) nullptr, hostResult );
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
       std::cout << "   Multireduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
    #endif
 
-   return checkCudaDevice;
+   return TNL_CHECK_CUDA_DEVICE;
 #else
-   CudaSupportMissingMessage;
-   return false;
+   throw Exceptions::CudaSupportMissing();
 #endif
 };
 
@@ -160,22 +162,23 @@ reduce( Operation& operation,
  *    input2: either nullptr or input array of size = size
  *    hostResult: output array of size = n
  */
-template< typename Operation >
+template< typename Operation, typename Index >
 bool
 Multireduction< Devices::Host >::
 reduce( Operation& operation,
-        int n,
-        const typename Operation::IndexType size,
-        const typename Operation::RealType* input1,
-        const typename Operation::IndexType ldInput1,
-        const typename Operation::RealType* input2,
+        const int n,
+        const Index size,
+        const typename Operation::DataType1* input1,
+        const Index ldInput1,
+        const typename Operation::DataType2* input2,
         typename Operation::ResultType* result )
 {
-   TNL_ASSERT( n > 0, );
-   TNL_ASSERT( size <= ldInput1, );
+   TNL_ASSERT_GT( n, 0, "The number of datasets must be positive." );
+   TNL_ASSERT_LE( size, ldInput1, "The size of the input cannot exceed its leading dimension." );
 
-   typedef typename Operation::IndexType IndexType;
-   typedef typename Operation::RealType RealType;
+   typedef Index IndexType;
+   typedef typename Operation::DataType1 DataType1;
+   typedef typename Operation::DataType2 DataType2;
    typedef typename Operation::ResultType ResultType;
 
    const int block_size = 128;
@@ -201,9 +204,9 @@ reduce( Operation& operation,
       for( int b = 0; b < blocks; b++ ) {
          const int offset = b * block_size;
          for( int k = 0; k < n; k++ ) {
-            const RealType* _input1 = input1 + k * ldInput1;
+            const DataType1* _input1 = input1 + k * ldInput1;
             for( IndexType i = 0; i < block_size; i++ )
-               r[ k ] = operation.reduceOnHost( offset + i, r[ k ], _input1, input2 );
+               operation.firstReduction( r[ k ], offset + i, _input1, input2 );
          }
       }
 
@@ -211,9 +214,9 @@ reduce( Operation& operation,
       #pragma omp single nowait
       {
          for( int k = 0; k < n; k++ ) {
-            const RealType* _input1 = input1 + k * ldInput1;
+            const DataType1* _input1 = input1 + k * ldInput1;
             for( IndexType i = blocks * block_size; i < size; i++ )
-               r[ k ] = operation.reduceOnHost( i, r[ k ], _input1, input2 );
+               operation.firstReduction( r[ k ], i, _input1, input2 );
          }
       }
 
@@ -221,7 +224,7 @@ reduce( Operation& operation,
       #pragma omp critical
       {
          for( int k = 0; k < n; k++ )
-            operation.commonReductionOnDevice( result[ k ], r[ k ] );
+            operation.commonReduction( result[ k ], r[ k ] );
       }
    }
    else {
@@ -232,16 +235,16 @@ reduce( Operation& operation,
       for( int b = 0; b < blocks; b++ ) {
          const int offset = b * block_size;
          for( int k = 0; k < n; k++ ) {
-            const RealType* _input1 = input1 + k * ldInput1;
+            const DataType1* _input1 = input1 + k * ldInput1;
             for( IndexType i = 0; i < block_size; i++ )
-               result[ k ] = operation.reduceOnHost( offset + i, result[ k ], _input1, input2 );
+               operation.firstReduction( result[ k ], offset + i, _input1, input2 );
          }
       }
 
       for( int k = 0; k < n; k++ ) {
-         const RealType* _input1 = input1 + k * ldInput1;
+         const DataType1* _input1 = input1 + k * ldInput1;
          for( IndexType i = blocks * block_size; i < size; i++ )
-            result[ k ] = operation.reduceOnHost( i, result[ k ], _input1, input2 );
+            operation.firstReduction( result[ k ], i, _input1, input2 );
       }
 #ifdef HAVE_OPENMP
    }
@@ -249,6 +252,25 @@ reduce( Operation& operation,
 
    return true;
 }
+
+template< typename Operation, typename Index >
+bool
+Multireduction< Devices::MIC >::
+reduce( Operation& operation,
+        const int n,
+        const Index size,
+        const typename Operation::DataType1* input1,
+        const Index ldInput1,
+        const typename Operation::DataType2* input2,
+        typename Operation::ResultType* result )
+{
+   TNL_ASSERT( n > 0, );
+   TNL_ASSERT( size <= ldInput1, );
+
+   std::cout << "Not Implemented yet Multireduction< Devices::MIC >::reduce" << std::endl;
+   return true;
+}
+
 
 } // namespace Algorithms
 } // namespace Containers

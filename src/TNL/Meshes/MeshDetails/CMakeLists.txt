@@ -1,21 +1,18 @@
-ADD_SUBDIRECTORY( config )
 ADD_SUBDIRECTORY( initializer )
-ADD_SUBDIRECTORY( layers )
+ADD_SUBDIRECTORY( EntityLayers )
+ADD_SUBDIRECTORY( MeshLayers )
 ADD_SUBDIRECTORY( traits )
 
-SET( headers MeshEntityId.h
-             MeshEntityIntegrityChecker.h
+SET( headers ConfigValidator.h
+             EntityStorageRebinder.h
+             IndexPermutationApplier.h
+             MeshEntityIndex.h
              MeshEntityOrientation.h
+             MeshEntityReferenceOrientation.h
              MeshEntity_impl.h
              MeshIntegrityChecker.h
              MeshIntegrityCheckerLayer.h
-             MeshReaderNetgen.h
-             MeshWriterNetgen.h
-             MeshWriterVTKLegacy.h
-             Mesh_impl.h )
+             Mesh_impl.h
+             Traverser_impl.h )
 
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Meshes/MeshDetails )    
-SET( tnl_mesh_SOURCES ${tnl_mesh_griddetails_SOURCES} 
-     PARENT_SCOPE )
-
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Meshes/MeshDetails )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Meshes/MeshDetails )

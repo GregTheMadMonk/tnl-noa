@@ -23,12 +23,12 @@ template< typename Mesh,
           int YDifference = 0,
           int ZDifference = 0,
           typename RealType = typename Mesh::RealType,
-          typename IndexType = typename Mesh::IndexType >
+          typename IndexType = typename Mesh::GlobalIndexType >
 class ForwardFiniteDifference
 {
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename MeshReal,
           typename MeshDevice,
           typename MeshIndex,
@@ -37,19 +37,19 @@ template< int Dimensions,
           int ZDifference,
           typename Real,
           typename Index >
-class ForwardFiniteDifference< Meshes::Grid< Dimensions, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
-: public Operator< Meshes::Grid< Dimensions, MeshReal, MeshDevice, MeshIndex >,
-                      Functions::MeshInteriorDomain, Dimensions, Dimensions, Real, Index >
+class ForwardFiniteDifference< Meshes::Grid< Dimension, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
+: public Operator< Meshes::Grid< Dimension, MeshReal, MeshDevice, MeshIndex >,
+                      Functions::MeshInteriorDomain, Dimension, Dimension, Real, Index >
 {
    public:
  
-      typedef Meshes::Grid< Dimensions, MeshReal, MeshDevice, MeshIndex > MeshType;
+      typedef Meshes::Grid< Dimension, MeshReal, MeshDevice, MeshIndex > MeshType;
       typedef Real RealType;
       typedef MeshDevice DeviceType;
       typedef Index IndexType;
-      typedef ExactDifference< Dimensions, XDifference, YDifference, ZDifference > ExactOperatorType;
+      typedef ExactDifference< Dimension, XDifference, YDifference, ZDifference > ExactOperatorType;
  
-      static constexpr int getMeshDimensions() { return Dimensions; }
+      static constexpr int getMeshDimension() { return Dimension; }
  
       static String getType()
       {
@@ -69,7 +69,7 @@ class ForwardFiniteDifference< Meshes::Grid< Dimensions, MeshReal, MeshDevice, M
                               const MeshEntity& entity,
                               const RealType& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntitiesDimensions() == Dimensions,
+         static_assert( MeshFunction::getEntitiesDimension() == Dimension,
             "Finite differences can be evaluate only on mesh cells, i.e. the dimensions count of the mesh entities of mesh function must be the same as mesh dimensions count." );
          const int XDirection = 1 * ( XDifference != 0 );
          const int YDirection = 1 * ( YDifference != 0 );

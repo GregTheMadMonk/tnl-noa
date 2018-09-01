@@ -1,7 +1,6 @@
 #pragma once
 
 #ifdef HAVE_CUDA
-#ifdef HAVE_CUBLAS
 
 #include <cublas_v2.h>
 
@@ -119,5 +118,4 @@ cublasGscal( cublasHandle_t handle, int n,
     return cublasDscal( handle, n, alpha, x, incx );
 }
 
-#endif
 #endif

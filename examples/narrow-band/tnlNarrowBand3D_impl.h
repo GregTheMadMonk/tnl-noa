@@ -55,7 +55,7 @@ bool tnlNarrowBand< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: i
 
 	if( ! Mesh.load( meshFile ) )
 	{
-		   cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the mesh from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 
@@ -63,7 +63,7 @@ bool tnlNarrowBand< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: i
 	const String& initialCondition = parameters.getParameter <String>("initial-condition");
 	if( ! dofVector.load( initialCondition ) )
 	{
-		   cerr << "I am not able to load the initial condition from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the initial condition from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 	dofVector2.load(initialCondition);
@@ -237,38 +237,38 @@ void tnlNarrowBand< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: u
 {
 	this->Entity.setCoordinates(CoordinatesType(i,j,k));
 	this->Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities(Entity);
+	tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighborEntities(Entity);
 	Real value = dofVector2[Entity.getIndex()];
 	Real a,b,c, tmp;
 
 	if( i == 0 )
-		a = dofVector2[neighbourEntities.template getEntityIndex< 1,  0,  0>()];
+		a = dofVector2[neighborEntities.template getEntityIndex< 1,  0,  0>()];
 	else if( i == Mesh.getDimensions().x() - 1 )
-		a = dofVector2[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
+		a = dofVector2[neighborEntities.template getEntityIndex< -1,  0,  0 >()];
 	else
 	{
-		a = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< -1,  0,  0>()],
-				 dofVector2[neighbourEntities.template getEntityIndex< 1,  0,  0>()] );
+		a = fabsMin( dofVector2[neighborEntities.template getEntityIndex< -1,  0,  0>()],
+				 dofVector2[neighborEntities.template getEntityIndex< 1,  0,  0>()] );
 	}
 
 	if( j == 0 )
-		b = dofVector2[neighbourEntities.template getEntityIndex< 0,  1,  0>()];
+		b = dofVector2[neighborEntities.template getEntityIndex< 0,  1,  0>()];
 	else if( j == Mesh.getDimensions().y() - 1 )
-		b = dofVector2[neighbourEntities.template getEntityIndex< 0,  -1,  0>()];
+		b = dofVector2[neighborEntities.template getEntityIndex< 0,  -1,  0>()];
 	else
 	{
-		b = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< 0,  -1,  0>()],
-				 dofVector2[neighbourEntities.template getEntityIndex< 0,  1,  0>()] );
+		b = fabsMin( dofVector2[neighborEntities.template getEntityIndex< 0,  -1,  0>()],
+				 dofVector2[neighborEntities.template getEntityIndex< 0,  1,  0>()] );
 	}
 
 	if( k == 0 )
-		c = dofVector2[neighbourEntities.template getEntityIndex< 0,  0,  1>()];
+		c = dofVector2[neighborEntities.template getEntityIndex< 0,  0,  1>()];
 	else if( k == Mesh.getDimensions().z() - 1 )
-		c = dofVector2[neighbourEntities.template getEntityIndex< 0,  0,  -1>()];
+		c = dofVector2[neighborEntities.template getEntityIndex< 0,  0,  -1>()];
 	else
 	{
-		c = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< 0,  0,  -1>()],
-				 dofVector2[neighbourEntities.template getEntityIndex< 0,  0,  1>()] );
+		c = fabsMin( dofVector2[neighborEntities.template getEntityIndex< 0,  0,  -1>()],
+				 dofVector2[neighborEntities.template getEntityIndex< 0,  0,  1>()] );
 	}
 
 	Real hD = 3.0*h*h - 2.0*(a*a+b*b+c*c-a*b-a*c-b*c);

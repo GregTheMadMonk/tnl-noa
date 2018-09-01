@@ -10,11 +10,11 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
 #include <TNL/Logger.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/GridDetails/GridEntityTopology.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter.h>
-#include <TNL/Meshes/GridDetails/NeighbourGridEntityGetter.h>
+#include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
 #include <TNL/Meshes/GridEntity.h>
 #include <TNL/Meshes/GridEntityConfig.h>
 
@@ -30,25 +30,26 @@ class Grid< 1, Real, Device, Index > : public Object
 
    typedef Real RealType;
    typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef Containers::StaticVector< 1, Real > VertexType;
+   typedef Index GlobalIndexType;
+   typedef Containers::StaticVector< 1, Real > PointType;
    typedef Containers::StaticVector< 1, Index > CoordinatesType;
    typedef Grid< 1, Real, Devices::Host, Index > HostType;
    typedef Grid< 1, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 1, Real, Device, Index > ThisType;
- 
-   static const int meshDimensions = 1;
- 
-   template< int EntityDimensions,
-             typename Config = GridEntityCrossStencilStorage< 1 > >
-   using MeshEntity = GridEntity< ThisType, EntityDimensions, Config >;
- 
-   typedef MeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
-   typedef MeshEntity< 0 > Face;
-   typedef MeshEntity< 0 > Vertex;
 
-   static constexpr int getMeshDimensions() { return meshDimensions; };
- 
+   // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
+   typedef Index IndexType;
+
+   static constexpr int getMeshDimension() { return 1; };
+
+   template< int EntityDimension,
+             typename Config = GridEntityCrossStencilStorage< 1 > >
+   using EntityType = GridEntity< ThisType, EntityDimension, Config >;
+
+   typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
+   typedef EntityType< 0 > Face;
+   typedef EntityType< 0 > Vertex;
+
    Grid();
 
    static String getType();
@@ -66,48 +67,44 @@ class Grid< 1, Real, Device, Index > : public Object
    __cuda_callable__
    const CoordinatesType& getDimensions() const;
 
-   void setDomain( const VertexType& origin,
-                   const VertexType& proportions );
+   void setDomain( const PointType& origin,
+                   const PointType& proportions );
 
    __cuda_callable__
-   const VertexType& getOrigin() const;
+   inline const PointType& getOrigin() const;
 
    __cuda_callable__
-   const VertexType& getProportions() const;
-   
-   template< typename EntityType >
+   inline const PointType& getProportions() const;
+
+
+   template< int EntiytDimension >
    __cuda_callable__
    IndexType getEntitiesCount() const;
-   
-   template< int EntiytDimensions >
+
+   template< typename Entity >
    __cuda_callable__
    IndexType getEntitiesCount() const;
-   
-   
-   template< typename EntityType >
+
+   template< typename Entity >
    __cuda_callable__
-   EntityType getEntity( const IndexType& entityIndex ) const;
-   
-   template< typename EntityType >
+   inline Entity getEntity( const IndexType& entityIndex ) const;
+
+   template< typename Entity >
    __cuda_callable__
-   Index getEntityIndex( const EntityType& entity ) const;
-   
-   template< typename EntityType >
+   inline Index getEntityIndex( const Entity& entity ) const;
+
    __cuda_callable__
-   RealType getEntityMeasure( const EntityType& entity ) const;
- 
-   __cuda_callable__
-   inline const RealType& getCellMeasure() const;
- 
-   __cuda_callable__
-   const VertexType& getSpaceSteps() const { return this->spaceSteps;}
+   inline const PointType& getSpaceSteps() const;
 
    template< int xPow >
    __cuda_callable__
    const RealType& getSpaceStepsProducts() const;
-   
+
    __cuda_callable__
-   RealType getSmallestSpaceStep() const;
+   inline const RealType& getCellMeasure() const;
+
+   __cuda_callable__
+   inline RealType getSmallestSpaceStep() const;
 
 
    template< typename GridFunction >
@@ -133,28 +130,20 @@ class Grid< 1, Real, Device, Index > : public Object
 
    bool load( const String& fileName );
 
-   bool writeMesh( const String& fileName,
-                   const String& format ) const;
-
-   template< typename MeshFunction >
-   bool write( const MeshFunction& function,
-               const String& fileName,
-               const String& format ) const;
-
-   void writeProlog( Logger& logger );
+   void writeProlog( Logger& logger ) const;
 
    protected:
 
    void computeSpaceSteps();
 
    CoordinatesType dimensions;
- 
+
    IndexType numberOfCells, numberOfVertices;
 
-   VertexType origin, proportions;
- 
-   VertexType spaceSteps;
- 
+   PointType origin, proportions;
+
+   PointType spaceSteps;
+
    RealType spaceStepsProducts[ 5 ];
 };
 

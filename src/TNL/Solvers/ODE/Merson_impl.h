@@ -97,7 +97,7 @@ template< typename Problem >
 String Merson< Problem > :: getType() const
 {
    return String( "Merson< " ) +
-          Problem :: getTypeStatic() +
+          Problem :: getType() +
           String( " >" );
 };
 
@@ -133,19 +133,20 @@ bool Merson< Problem > :: solve( DofVectorPointer& u )
       std::cerr << "No problem was set for the Merson ODE solver." << std::endl;
       return false;
    }
+   if( this->getTau() == 0.0 )
+   {
+      std::cerr << "The time step for the Merson ODE solver is zero." << std::endl;
+      return false;
+   }
    /****
     * First setup the supporting meshes k1...k5 and kAux.
     */
-   if( ! k1->setLike( *u ) ||
-       ! k2->setLike( *u ) ||
-       ! k3->setLike( *u ) ||
-       ! k4->setLike( *u ) ||
-       ! k5->setLike( *u ) ||
-       ! kAux->setLike( *u ) )
-   {
-      std::cerr << "I do not have enough memory to allocate supporting grids for the Merson explicit solver." << std::endl;
-      return false;
-   }
+   k1->setLike( *u );
+   k2->setLike( *u );
+   k3->setLike( *u );
+   k4->setLike( *u );
+   k5->setLike( *u );
+   kAux->setLike( *u );
    k1->setValue( 0.0 );
    k2->setValue( 0.0 );
    k3->setValue( 0.0 );
@@ -254,55 +255,46 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
    /****
     * Compute data transfers statistics
     */
-#ifdef HAVE_NOT_CXX11
-   k1->template touch< IndexType >( 4 );
-   k2->template touch< IndexType >( 1 );
-   k3->template touch< IndexType >( 2 );
-   k4->template touch< IndexType >( 1 );
-   kAux->template touch< IndexType >( 4 );
-   u->template touch< IndexType >( 4 );
-#else
    k1->touch( 4 );
    k2->touch( 1 );
    k3->touch( 2 );
    k4->touch( 1 );
    kAux->touch( 4 );
    u->touch( 4 );
-#endif
 
    RealType tau_3 = tau / 3.0;
 
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
-      this->problem->getExplicitRHS( time, tau, u, k1 );
+      this->problem->getExplicitUpdate( time, tau, u, k1 );
 
    #ifdef HAVE_OPENMP
    #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, tau, tau_3 ) if( Devices::Host::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 1.0 / 3.0 * _k1[ i ] );
-      this->problem->getExplicitRHS( time + tau_3, tau, kAux, k2 );
+      this->problem->getExplicitUpdate( time + tau_3, tau, kAux, k2 );
 
    #ifdef HAVE_OPENMP
    #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k2, tau, tau_3 ) if( Devices::Host::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * 1.0 / 6.0 * ( _k1[ i ] + _k2[ i ] );
-      this->problem->getExplicitRHS( time + tau_3, tau, kAux, k3 );
+      this->problem->getExplicitUpdate( time + tau_3, tau, kAux, k3 );
 
    #ifdef HAVE_OPENMP
    #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, tau, tau_3 ) if( Devices::Host::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.125 * _k1[ i ] + 0.375 * _k3[ i ] );
-      this->problem->getExplicitRHS( time + 0.5 * tau, tau, kAux, k4 );
+      this->problem->getExplicitUpdate( time + 0.5 * tau, tau, kAux, k4 );
 
    #ifdef HAVE_OPENMP
    #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, _k4, tau, tau_3 ) if( Devices::Host::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.5 * _k1[ i ] - 1.5 * _k3[ i ] + 2.0 * _k4[ i ] );
-      this->problem->getExplicitRHS( time + tau, tau, kAux, k5 );
+      this->problem->getExplicitUpdate( time + tau, tau, kAux, k5 );
    }
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
@@ -313,7 +305,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
       this->cudaBlockResidue.setSize( min( cudaBlocks, Devices::Cuda::getMaxGridSize() ) );
       const IndexType threadsPerGrid = Devices::Cuda::getMaxGridSize() * cudaBlockSize.x;
 
-      this->problem->getExplicitRHS( time, tau, u, k1 );
+      this->problem->getExplicitUpdate( time, tau, u, k1 );
       cudaThreadSynchronize();
 
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
@@ -323,7 +315,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
          computeK2Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_kAux[ gridOffset ] );
       }
       cudaThreadSynchronize();
-      this->problem->getExplicitRHS( time + tau_3, tau, kAux, k2 );
+      this->problem->getExplicitUpdate( time + tau_3, tau, kAux, k2 );
       cudaThreadSynchronize();
 
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
@@ -333,7 +325,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
          computeK3Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k2[ gridOffset ], &_kAux[ gridOffset ] );
       }
       cudaThreadSynchronize();
-      this->problem->getExplicitRHS( time + tau_3, tau, kAux, k3 );
+      this->problem->getExplicitUpdate( time + tau_3, tau, kAux, k3 );
       cudaThreadSynchronize();
 
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
@@ -343,7 +335,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
          computeK4Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k3[ gridOffset ], &_kAux[ gridOffset ] );
       }
       cudaThreadSynchronize();
-      this->problem->getExplicitRHS( time + 0.5 * tau, tau, kAux, k4 );
+      this->problem->getExplicitUpdate( time + 0.5 * tau, tau, kAux, k4 );
       cudaThreadSynchronize();
 
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
@@ -353,7 +345,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
          computeK5Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k3[ gridOffset ], &_k4[ gridOffset ], &_kAux[ gridOffset ] );
       }
       cudaThreadSynchronize();
-      this->problem->getExplicitRHS( time + tau, tau, kAux, k5 );
+      this->problem->getExplicitUpdate( time + tau, tau, kAux, k5 );
       cudaThreadSynchronize();
 #endif
    }
@@ -372,17 +364,10 @@ typename Problem :: RealType Merson< Problem > :: computeError( const RealType t
    /****
     * Compute data transfers statistics
     */
-#ifdef HAVE_NOT_CXX11
-   k1->template touch< IndexType >();
-   k3->template touch< IndexType >();
-   k4->template touch< IndexType >();
-   k5->template touch< IndexType >();
-#else
    k1->touch();
    k3->touch();
    k4->touch();
    k5->touch();
-#endif
 
    RealType eps( 0.0 ), maxEps( 0.0 );
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -453,17 +438,10 @@ void Merson< Problem >::computeNewTimeLevel( DofVectorPointer& u,
    /****
     * Compute data transfers statistics
     */
-#ifdef HAVE_NOT_CXX11
-   u->template touch< IndexType >();
-   k1->template touch< IndexType >();
-   k4->template touch< IndexType >();
-   k5->template touch< IndexType >();
-#else
    u->touch();
    k1->touch();
    k4->touch();
    k5->touch();
-#endif
 
    if( std::is_same< DeviceType, Devices::Host >::value )
    {

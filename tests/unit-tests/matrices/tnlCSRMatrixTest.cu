@@ -13,7 +13,7 @@
 #include <TNL/Matrices/CSR.h>
 #include <cstdlib>
 
-#include "tnlSparseMatrixTester.h"
+#include "SparseMatrixTester.h"
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )

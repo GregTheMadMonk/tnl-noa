@@ -22,14 +22,14 @@ namespace Functions {
 template< int Size,
           typename Function >
 class VectorField 
-   : public Functions::Domain< Function::getDomainDimensions(), 
+   : public Functions::Domain< Function::getDomainDimension(), 
                                Function::getDomainType() >
 {
    public:
       
       typedef Function FunctionType;
       typedef typename FunctionType::RealType RealType;
-      typedef typename FunctionType::VertexType VertexType;
+      typedef typename FunctionType::PointType PointType;
       
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
@@ -72,11 +72,11 @@ class VectorField
    
 template< int Size,
           typename Mesh,
-          int MeshEntityDimensions,
+          int MeshEntityDimension,
           typename Real >
-class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
-: public Functions::Domain< MeshFunction< Mesh, MeshEntityDimensions, Real >::getDomainDimensions(), 
-                            MeshFunction< Mesh, MeshEntityDimensions, Real >::getDomainType() >,
+class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
+: public Functions::Domain< MeshFunction< Mesh, MeshEntityDimension, Real >::getDomainDimension(), 
+                            MeshFunction< Mesh, MeshEntityDimension, Real >::getDomainType() >,
    public Object
 {
    public:
@@ -84,11 +84,11 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
       typedef Mesh MeshType;
       typedef Real RealType;
       typedef SharedPointer< MeshType > MeshPointer;
-      typedef MeshFunction< MeshType, MeshEntityDimensions, RealType > FunctionType;
+      typedef MeshFunction< MeshType, MeshEntityDimension, RealType > FunctionType;
       typedef SharedPointer< FunctionType > FunctionPointer;
       typedef typename MeshType::DeviceType DeviceType;
-      typedef typename MeshType::IndexType IndexType;
-      typedef VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, RealType > > ThisType;
+      typedef typename MeshType::GlobalIndexType IndexType;
+      typedef VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, RealType > > ThisType;
       typedef Containers::StaticVector< Size, RealType > VectorType;
 
       static void configSetup( Config::ConfigDescription& config,
@@ -182,6 +182,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
       {
          VectorType v;
          for( int i = 0; i < Size; i++ )
+            // FIXME: the dereferencing operator of FunctionPointer is not __cuda_callable__
             v[ i ] = ( *this->vectorField[ i ] )[ index ];
          return v;
       }
@@ -192,6 +193,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
       {
          VectorType v;
          for( int i = 0; i < Size; i++ )
+            // FIXME: the dereferencing operator of FunctionPointer is not __cuda_callable__
             v[ i ] = ( *this->vectorField[ i ] )( meshEntity );
          return v;
       }
@@ -260,14 +262,14 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimensions, Real > >
    
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Function >
-std::ostream& operator << ( std::ostream& str, const VectorField< Dimensions, Function >& f )
+std::ostream& operator << ( std::ostream& str, const VectorField< Dimension, Function >& f )
 {
-   for( int i = 0; i < Dimensions; i++ )
+   for( int i = 0; i < Dimension; i++ )
    {
       str << "[ " << f[ i ] << " ]";
-      if( i < Dimensions - 1 )
+      if( i < Dimension - 1 )
          str << ", ";
    }
    return str;

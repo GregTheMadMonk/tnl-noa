@@ -102,7 +102,7 @@ template< typename Real >
 __cuda_callable__
 Real
 ParaboloidSDF< 1, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    const Real& x = v.x();
@@ -123,7 +123,7 @@ template< typename Real >
 __cuda_callable__
 Real
 ParaboloidSDF< 2, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    const Real& x = v.x();
@@ -143,7 +143,7 @@ template< typename Real >
 __cuda_callable__
 Real
 ParaboloidSDF< 3, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    const Real& x = v.x();

@@ -20,29 +20,28 @@ namespace Matrices {
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
-class Matrix : public virtual Object
+class Matrix : public Object
 {
-   public:
-
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowsLengthsVector;
+   typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
    typedef Containers::Vector< RealType, DeviceType, IndexType > ValuesVector;
 
    Matrix();
 
-   virtual bool setDimensions( const IndexType rows,
-                               const IndexType columns );
+   virtual void setDimensions( const IndexType rows,
+                                 const IndexType columns );
 
-   virtual bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths ) = 0;
+   virtual void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths ) = 0;
 
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 
-   virtual void getCompressedRowsLengths( Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const;
+   virtual void getCompressedRowLengths( Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const Matrix< Real2, Device2, Index2 >& matrix );
+   void setLike( const Matrix< Real2, Device2, Index2 >& matrix );
 
    virtual IndexType getNumberOfMatrixElements() const = 0;
 
@@ -55,6 +54,12 @@ class Matrix : public virtual Object
 
    __cuda_callable__
    IndexType getColumns() const;
+
+#ifdef HAVE_CUDA
+    __device__ __host__
+#endif
+    
+    const IndexType& getNumberOfColors() const;
 
    /****
     * TODO: The fast variants of the following methods cannot be virtual.
@@ -84,30 +89,40 @@ class Matrix : public virtual Object
 
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
-
-   Matrix< RealType, DeviceType, IndexType >& operator = ( const Matrix< RealType, DeviceType, IndexType >& );
+   
+   const ValuesVector& getValues() const;
+   
+   ValuesVector& getValues();
 
    template< typename Matrix >
    bool operator == ( const Matrix& matrix ) const;
 
    template< typename Matrix >
    bool operator != ( const Matrix& matrix ) const;
-
-   template< typename Matrix >
-   bool copyFrom( const Matrix& matrix,
-                  const CompressedRowsLengthsVector& rowLengths );
-
+   
+   void computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector);
+   
    virtual bool save( File& file ) const;
 
    virtual bool load( File& file );
 
    virtual void print( std::ostream& str ) const;
 
+   bool help( bool verbose = false ) { return true;};
+
+#ifdef  HAVE_CUDA
+   __device__ __host__
+#endif
+   void copyFromHostToCuda( Matrices::Matrix< Real, Devices::Host, Index >& matrix );
+
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+   Index getValuesSize() const;
+
    protected:
 
-   IndexType rows, columns;
-
-   public: // TODO: remove this
+   IndexType rows, columns, numberOfColors;
 
    ValuesVector values;
 };
@@ -123,8 +138,8 @@ template< typename Matrix,
           typename InVector,
           typename OutVector >
 void MatrixVectorProductCuda( const Matrix& matrix,
-                                 const InVector& inVector,
-                                 OutVector& outVector );
+                              const InVector& inVector,
+                              OutVector& outVector );
 
 } // namespace Matrices
 } // namespace TNL

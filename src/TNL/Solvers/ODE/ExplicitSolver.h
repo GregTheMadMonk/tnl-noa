@@ -19,6 +19,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/SharedPointer.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Solvers {

@@ -44,7 +44,7 @@ class ExpBumpBase : public Domain< dimensions, SpaceDomain >
       RealType amplitude, sigma;
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
 class ExpBump
 {
@@ -56,27 +56,21 @@ class ExpBump< 1, Real > : public ExpBumpBase< 1, Real >
    public:
  
       typedef Real RealType;
-      typedef Containers::StaticVector< 1, RealType > VertexType;
+      typedef Containers::StaticVector< 1, RealType > PointType;
 
       static String getType();
 
       ExpBump();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
    __cuda_callable__
-   RealType getPartialDerivative( const VertexType& v,
+   RealType getPartialDerivative( const PointType& v,
                                   const Real& time = 0.0 ) const;
  
    __cuda_callable__
-   RealType operator()( const VertexType& v,
+   RealType operator()( const PointType& v,
                         const RealType& time = 0.0 ) const;
 };
 
@@ -86,27 +80,21 @@ class ExpBump< 2, Real > : public ExpBumpBase< 2, Real >
    public:
  
       typedef Real RealType;
-      typedef Containers::StaticVector< 2, RealType > VertexType;
+      typedef Containers::StaticVector< 2, RealType > PointType;
 
       static String getType();
 
       ExpBump();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
    __cuda_callable__ inline
-   RealType getPartialDerivative( const VertexType& v,
+   RealType getPartialDerivative( const PointType& v,
                                   const Real& time = 0.0 ) const;
  
    __cuda_callable__
-   RealType operator()( const VertexType& v,
+   RealType operator()( const PointType& v,
                         const Real& time = 0.0 ) const;
 };
 
@@ -116,35 +104,29 @@ class ExpBump< 3, Real > : public ExpBumpBase< 3, Real >
    public:
  
       typedef Real RealType;
-      typedef Containers::StaticVector< 3, RealType > VertexType;
+      typedef Containers::StaticVector< 3, RealType > PointType;
 
  
       static String getType();
 
       ExpBump();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
    __cuda_callable__
-   RealType getPartialDerivative( const VertexType& v,
+   RealType getPartialDerivative( const PointType& v,
                                   const Real& time = 0.0 ) const;
  
    __cuda_callable__
-   RealType operator()( const VertexType& v,
+   RealType operator()( const PointType& v,
                         const Real& time = 0.0 ) const;
  
 };
 
-template< int Dimensions,
+template< int Dimension,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const ExpBump< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const ExpBump< Dimension, Real >& f )
 {
    str << "ExpBump. function: amplitude = " << f.getAmplitude() << " sigma = " << f.getSigma();
    return str;

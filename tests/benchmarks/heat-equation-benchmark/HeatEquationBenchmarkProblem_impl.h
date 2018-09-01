@@ -13,9 +13,9 @@ template< typename Mesh,
           typename DifferentialOperator >
 String
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getTypeStatic()
+getType()
 {
-   return String( "HeatEquationBenchmarkProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "HeatEquationBenchmarkProblem< " ) + Mesh :: getType() + " >";
 }
 
 template< typename Mesh,
@@ -62,11 +62,10 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const MeshPointer& meshPointer,
-       const Config::ParameterContainer& parameters,
+setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, "boundary-conditions-" ) ||
+   if( ! this->boundaryConditionPointer->setup( this->getMesh(), parameters, "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
       return false;
    this->cudaKernelType = parameters.getParameter< String >( "cuda-kernel-type" );
@@ -87,13 +86,13 @@ template< typename Mesh,
           typename DifferentialOperator >
 typename HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getDofs( const MeshPointer& meshPointer ) const
+getDofs() const
 {
    /****
     * Return number of  DOFs (degrees of freedom) i.e. number
     * of unknowns to be resolved by the main solver.
     */
-   return meshPointer->template getEntitiesCount< typename MeshType::Cell >();
+   return this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
@@ -102,8 +101,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-bindDofs( const MeshPointer& meshPointer,
-          DofVectorPointer& dofsPointer )
+bindDofs( DofVectorPointer& dofsPointer )
 {
 }
 
@@ -114,12 +112,10 @@ template< typename Mesh,
 bool
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
-                     const MeshPointer& meshPointer,
-                     DofVectorPointer& dofsPointer,
-                     MeshDependentDataPointer& meshDependentData )
+                     DofVectorPointer& dofsPointer )
 {
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-   Functions::MeshFunction< Mesh > u( meshPointer, dofsPointer );
+   Functions::MeshFunction< Mesh > u( this->getMesh(), dofsPointer );
    if( ! u.boundLoad( initialConditionFile ) )
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
@@ -135,21 +131,20 @@ template< typename Mesh,
    template< typename Matrix >
 bool
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setupLinearSystem( const MeshType& mesh,
-                   Matrix& matrix )
+setupLinearSystem( Matrix& matrix )
 {
-   const IndexType dofs = this->getDofs( mesh );
-   typedef typename Matrix::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   CompressedRowsLengthsVectorType rowLengths;
+   const IndexType dofs = this->getDofs();
+   typedef typename Matrix::CompressedRowLengthsVector CompressedRowLengthsVectorType;
+   CompressedRowLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
-   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >( mesh,
+   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
+   matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( this->getMesh(),
                                                                           differentialOperatorPointer,
                                                                           boundaryConditionPointer,
                                                                           rowLengths );
    matrix.setDimensions( dofs, dofs );
-   if( ! matrix.setCompressedRowsLengths( rowLengths ) )
+   if( ! matrix.setCompressedRowLengths( rowLengths ) )
       return false;
    return true;
 }
@@ -162,14 +157,12 @@ bool
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
-              const MeshPointer& meshPointer,
-              DofVectorPointer& dofsPointer,
-              MeshDependentDataPointer& meshDependentData )
+              DofVectorPointer& dofsPointer )
 {
    std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
-   this->bindDofs( meshPointer, dofsPointer );
+   this->bindDofs( dofsPointer );
    MeshFunctionType u;
-   u.bind( meshPointer, *dofsPointer );
+   u.bind( this->getMesh(), *dofsPointer );
    
    FileName fileName;
    fileName.setFileNameBase( "u-" );
@@ -267,11 +260,11 @@ boundaryConditionsTemplatedCompact( const GridType* grid,
    }
 }
 
-/*template< typename EntityType, int Dimensions >
-struct EntityPointer : public EntityPointer< EntityType, Dimensions - 1 >
+/*template< typename EntityType, int Dimension >
+struct EntityPointer : public EntityPointer< EntityType, Dimension - 1 >
 {
    __device__ EntityPointer( const EntityType* ptr )
-      : EntityPointer< EntityType, Dimensions - 1 >( ptr ), pointer( ptr )
+      : EntityPointer< EntityType, Dimension - 1 >( ptr ), pointer( ptr )
    {      
    }
    
@@ -375,12 +368,10 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getExplicitRHS( const RealType& time,
-                const RealType& tau,
-                const MeshPointer& mesh,
-                DofVectorPointer& uDofs,
-                DofVectorPointer& fuDofs,
-                MeshDependentDataPointer& meshDependentData )
+getExplicitUpdate( const RealType& time,
+                   const RealType& tau,
+                   DofVectorPointer& uDofs,
+                   DofVectorPointer& fuDofs )
 {
    /****
     * If you use an explicit solver like Euler or Merson, you
@@ -390,6 +381,7 @@ getExplicitRHS( const RealType& time,
     *
     * You may use supporting mesh dependent data if you need.
     */
+   const MeshPointer& mesh = this->getMesh();
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
       const IndexType gridXSize = mesh->getDimensions().x();
@@ -448,7 +440,7 @@ getExplicitRHS( const RealType& time,
          /****
           * Laplace operator
           */
-         //cout << "Laplace operator ... " << endl;
+         //cout << "Laplace operator ... " <<std::endl;
          heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
             ( uDofs->getData(), fuDofs->getData(), tau, hx_inv, hy_inv, gridXSize, gridYSize );
          if( cudaGetLastError() != cudaSuccess )
@@ -459,7 +451,7 @@ getExplicitRHS( const RealType& time,
       }
       if( this->cudaKernelType == "templated-compact" )
       {
-         typedef typename MeshType::MeshEntity< 2 > CellType;
+         typedef typename MeshType::EntityType< 2 > CellType;
          //typedef typename MeshType::Cell CellType;
          //std::cerr << "Size of entity is ... " << sizeof( TestEntity< MeshType > ) << " vs. " << sizeof( CellType ) << std::endl;
          typedef typename CellType::CoordinatesType CoordinatesType;
@@ -494,7 +486,7 @@ getExplicitRHS( const RealType& time,
                     gridXIdx,
                     gridYIdx );
          cudaThreadSynchronize();
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
          
          //std::cerr << "Computing the heat equation ..." << std::endl;
          for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
@@ -514,7 +506,7 @@ getExplicitRHS( const RealType& time,
                     gridXIdx,
                     gridYIdx );
          cudaThreadSynchronize();         
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
       }
       #endif
       if( this->cudaKernelType == "templated" )
@@ -524,15 +516,12 @@ getExplicitRHS( const RealType& time,
          this->u->bind( mesh, uDofs );
          this->fu->bind( mesh, fuDofs );         
          //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
-         this->explicitUpdater.template update< typename Mesh::Cell >( 
-            time,
-            mesh,
-            this->differentialOperatorPointer,
-            this->boundaryConditionPointer,
-            this->rightHandSidePointer,
-            this->u,
-            this->fu );
-            }
+         explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
+         explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
+         explicitUpdater.setRightHandSide( this->rightHandSidePointer );
+         
+         this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, this->u, this->fu );
+      }
    }
 }
 
@@ -545,11 +534,9 @@ void
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const MeshPointer& mesh,
                       DofVectorPointer& _u,
                       MatrixPointer& matrix,
-                      DofVectorPointer& b,
-                      MeshDependentDataPointer& meshDependentData )
+                      DofVectorPointer& b )
 {
    // TODO: the instance should be "cached" like this->explicitUpdater, but there is a problem with MatrixPointer
    Solvers::PDE::LinearSystemAssembler< Mesh,
@@ -558,21 +545,15 @@ assemblyLinearSystem( const RealType& time,
                              BoundaryCondition,
                              RightHandSide,
                              Solvers::PDE::BackwardTimeDiscretisation,
-                             typename MatrixPointer::ObjectType,
                              typename DofVectorPointer::ObjectType > systemAssembler;
 
    typedef Functions::MeshFunction< Mesh > MeshFunctionType;
    typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-   MeshFunctionPointer u( mesh, *_u );
-   systemAssembler.template assembly< typename Mesh::Cell >( time,
-                                                             tau,
-                                                             mesh,
-                                                             this->differentialOperator,
-                                                             this->boundaryCondition,
-                                                             this->rightHandSide,
-                                                             u,
-                                                             matrix,
-                                                             b );
+   MeshFunctionPointer u( this->getMesh(), *_u );
+   systemAssembler.setDifferentialOperator( this->differentialOperator );
+   systemAssembler.setBoundaryConditions( this->boundaryCondition );
+   systemAssembler.setRightHandSide( this->rightHandSide );
+   systemAssembler.template assembly< typename Mesh::Cell >( time, tau, this->getMesh(), u, matrix, b );
 }
 
 template< typename Mesh,

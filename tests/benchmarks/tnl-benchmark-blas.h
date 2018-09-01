@@ -14,6 +14,7 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Devices/SystemInfo.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 
@@ -117,8 +118,13 @@ main( int argc, char* argv[] )
     const String & logFileName = parameters.getParameter< String >( "log-file" );
     const String & outputMode = parameters.getParameter< String >( "output-mode" );
     const String & precision = parameters.getParameter< String >( "precision" );
-    const std::size_t minSize = parameters.getParameter< std::size_t >( "min-size" );
-    const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
+    // FIXME: getParameter< std::size_t >() does not work with parameters added with addEntry< int >(),
+    // which have a default value. The workaround below works for int values, but it is not possible
+    // to pass 64-bit integer values
+//    const std::size_t minSize = parameters.getParameter< std::size_t >( "min-size" );
+//    const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
+    const std::size_t minSize = parameters.getParameter< int >( "min-size" );
+    const std::size_t maxSize = parameters.getParameter< int >( "max-size" );
     const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
     const unsigned loops = parameters.getParameter< unsigned >( "loops" );
     const unsigned elementsPerRow = parameters.getParameter< unsigned >( "elements-per-row" );
@@ -140,7 +146,7 @@ main( int argc, char* argv[] )
 
     // prepare global metadata
     const int cpu_id = 0;
-    Devices::CacheSizes cacheSizes = Devices::Host::getCPUCacheSizes( cpu_id );
+    Devices::CacheSizes cacheSizes = Devices::SystemInfo::getCPUCacheSizes( cpu_id );
     String cacheInfo = String( cacheSizes.L1data ) + ", "
                         + String( cacheSizes.L1instruction ) + ", "
                         + String( cacheSizes.L2 ) + ", "
@@ -151,15 +157,15 @@ main( int argc, char* argv[] )
                               String( Devices::CudaDeviceInfo::getArchitectureMinor( activeGPU ) );
 #endif
     Benchmark::MetadataMap metadata {
-        { "host name", Devices::Host::getHostname() },
-        { "architecture", Devices::Host::getArchitecture() },
-        { "system", Devices::Host::getSystemName() },
-        { "system release", Devices::Host::getSystemRelease() },
-        { "start time", Devices::Host::getCurrentTime() },
-        { "CPU model name", Devices::Host::getCPUModelName( cpu_id ) },
-        { "CPU cores", Devices::Host::getNumberOfCores( cpu_id ) },
-        { "CPU threads per core", Devices::Host::getNumberOfThreads( cpu_id ) / Devices::Host::getNumberOfCores( cpu_id ) },
-        { "CPU max frequency (MHz)", Devices::Host::getCPUMaxFrequency( cpu_id ) / 1e3 },
+        { "host name", Devices::SystemInfo::getHostname() },
+        { "architecture", Devices::SystemInfo::getArchitecture() },
+        { "system", Devices::SystemInfo::getSystemName() },
+        { "system release", Devices::SystemInfo::getSystemRelease() },
+        { "start time", Devices::SystemInfo::getCurrentTime() },
+        { "CPU model name", Devices::SystemInfo::getCPUModelName( cpu_id ) },
+        { "CPU cores", Devices::SystemInfo::getNumberOfCores( cpu_id ) },
+        { "CPU threads per core", Devices::SystemInfo::getNumberOfThreads( cpu_id ) / Devices::SystemInfo::getNumberOfCores( cpu_id ) },
+        { "CPU max frequency (MHz)", Devices::SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 },
         { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
 #ifdef HAVE_CUDA
         { "GPU name", Devices::CudaDeviceInfo::getDeviceName( activeGPU ) },

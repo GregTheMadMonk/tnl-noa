@@ -28,20 +28,19 @@ Matrix< Real, Device, Index >::Matrix()
 template< typename Real,
           typename Device,
           typename Index >
- bool Matrix< Real, Device, Index >::setDimensions( const IndexType rows,
-                                                       const IndexType columns )
+void Matrix< Real, Device, Index >::setDimensions( const IndexType rows,
+                                                   const IndexType columns )
 {
    TNL_ASSERT( rows > 0 && columns > 0,
-            std::cerr << " rows = " << rows << " columns = " << columns );
+               std::cerr << " rows = " << rows << " columns = " << columns );
    this->rows = rows;
    this->columns = columns;
-   return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-void Matrix< Real, Device, Index >::getCompressedRowsLengths( Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const
+void Matrix< Real, Device, Index >::getCompressedRowLengths( Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
    for( IndexType row = 0; row < this->getRows(); row++ )
@@ -54,9 +53,9 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool Matrix< Real, Device, Index >::setLike( const Matrix< Real2, Device2, Index2 >& matrix )
+void Matrix< Real, Device, Index >::setLike( const Matrix< Real2, Device2, Index2 >& matrix )
 {
-   return setDimensions( matrix.getRows(), matrix.getColumns() );
+   setDimensions( matrix.getRows(), matrix.getColumns() );
 }
 
 template< typename Real,
@@ -80,67 +79,40 @@ Index Matrix< Real, Device, Index >::getColumns() const
 template< typename Real,
           typename Device,
           typename Index >
+const typename Matrix< Real, Device, Index >::ValuesVector&
+Matrix< Real, Device, Index >::
+getValues() const
+{
+   return this->values;
+}
+   
+template< typename Real,
+          typename Device,
+          typename Index >
+typename Matrix< Real, Device, Index >::ValuesVector& 
+Matrix< Real, Device, Index >::
+getValues()
+{
+   return this->values;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+const Index&
+Matrix< Real, Device, Index >::
+getNumberOfColors() const
+{
+   return this->numberOfColors;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void Matrix< Real, Device, Index >::reset()
 {
    this->rows = 0;
    this->columns = 0;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename MatrixT >
-bool Matrix< Real, Device, Index >::copyFrom( const MatrixT& matrix,
-                                              const CompressedRowsLengthsVector& rowLengths )
-{
-   /*tnlStaticTNL_ASSERT( DeviceType::DeviceType == Devices::HostDevice, );
-   tnlStaticTNL_ASSERT( DeviceType::DeviceType == Matrix:DeviceType::DeviceType, );*/
-
-   this->setLike( matrix );
-   if( ! this->setCompressedRowsLengths( rowLengths ) )
-      return false;
-   Containers::Vector< RealType, Devices::Host, IndexType > values;
-   Containers::Vector< IndexType, Devices::Host, IndexType > columns;
-   if( ! values.setSize( this->getColumns() ) ||
-       ! columns.setSize( this->getColumns() ) )
-      return false;
-   for( IndexType row = 0; row < this->getRows(); row++ )
-   {
-      TNL_ASSERT( false, );
-      // TODO: fix this
-      //matrix.getRow( row, columns.getData(), values.getData() );
-      this->setRow( row, columns.getData(), values.getData(), rowLengths.getElement( row ) );
-   }
-   return true;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Matrix< Real, Device, Index >& Matrix< Real, Device, Index >::operator = ( const Matrix< RealType, DeviceType, IndexType >& m )
-{
-   this->setLike( m );
-
-   Containers::Vector< IndexType, DeviceType, IndexType > rowLengths;
-   m.getCompressedRowsLengths( rowLengths );
-   this->setCompressedRowsLengths( rowLengths );
-
-   Containers::Vector< RealType, DeviceType, IndexType > rowValues;
-   Containers::Vector< IndexType, DeviceType, IndexType > rowColumns;
-   const IndexType maxRowLength = rowLengths.max();
-   rowValues.setSize( maxRowLength );
-   rowColumns.setSize( maxRowLength );
-   for( IndexType row = 0; row < this->getRows(); row++ )
-   {
-      m.getRow( row,
-                rowColumns.getData(),
-                rowValues.getData() );
-      this->setRow( row,
-                    rowColumns.getData(),
-                    rowValues.getData(),
-                    m.getRowLength( row ) );
-   }
-   return *this;
 }
 
 template< typename Real,
@@ -168,24 +140,55 @@ bool Matrix< Real, Device, Index >::operator != ( const MatrixT& matrix ) const
    return ! operator == ( matrix );
 }
 
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void 
+Matrix< Real, Device, Index >::
+computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
+{
+    for( IndexType i = this->getRows() - 1; i >= 0; i-- )
+    {
+        // init color array
+        Containers::Vector< Index, Device, Index > usedColors;
+        usedColors.setSize( this->numberOfColors );
+        for( IndexType j = 0; j < this->numberOfColors; j++ )
+            usedColors.setElement( j, 0 );
+
+        // find all colors used in given row
+        for( IndexType j = i + 1; j < this->getColumns(); j++ )
+             if( this->getElement( i, j ) != 0.0 )
+                 usedColors.setElement( colorsVector.getElement( j ), 1 );
+
+        // find unused color
+        bool found = false;
+        for( IndexType j = 0; j < this->numberOfColors; j++ )
+            if( usedColors.getElement( j ) == 0 )
+            {
+                colorsVector.setElement( i, j );
+                found = true;
+                break;
+            }
+        if( !found )
+        {
+            colorsVector.setElement( i, this->numberOfColors );
+            this->numberOfColors++;
+        }
+    }
+}
+
+
 template< typename Real,
           typename Device,
           typename Index >
 bool Matrix< Real, Device, Index >::save( File& file ) const
 {
-#ifdef HAVE_NOT_CXX11
-   if( ! Object::save( file ) ||
-       ! file.write< IndexType, Devices::Host, Index >( &this->rows, 1 ) ||
-       ! file.write< IndexType, Devices::Host, Index >( &this->columns, 1 ) ||
-       ! this->values.save( file ) )
-      return false;
-#else
    if( ! Object::save( file ) ||
        ! file.write( &this->rows ) ||
        ! file.write( &this->columns ) ||
        ! this->values.save( file ) )
       return false;
-#endif
    return true;
 }
 
@@ -194,19 +197,11 @@ template< typename Real,
           typename Index >
 bool Matrix< Real, Device, Index >::load( File& file )
 {
-#ifdef HAVE_NOT_CXX11
-   if( ! Object::load( file ) ||
-       ! file.read< IndexType, Devices::Host, Index >( &this->rows, 1 ) ||
-       ! file.read< IndexType, Devices::Host, Index >( &this->columns, 1 ) ||
-       ! this->values.load( file ) )
-      return false;
-#else
    if( ! Object::load( file ) ||
        ! file.read( &this->rows ) ||
        ! file.read( &this->columns ) ||
        ! this->values.load( file ) )
       return false;
-#endif
    return true;
 }
 
@@ -257,12 +252,12 @@ void MatrixVectorProductCuda( const Matrix& matrix,
                                        kernel_inVector,
                                        kernel_outVector,
                                        gridIdx );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
    }
    Devices::Cuda::freeFromDevice( kernel_this );
    Devices::Cuda::freeFromDevice( kernel_inVector );
    Devices::Cuda::freeFromDevice( kernel_outVector );
-   checkCudaDevice;
+   TNL_CHECK_CUDA_DEVICE;
 #endif
 }
 

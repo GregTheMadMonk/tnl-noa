@@ -19,11 +19,6 @@ namespace TNL {
 
 const char magic_number[] = "TNLMN";
 
-/*Object::Object()
-: deprecatedReadMode( false )
-{
-}*/
-
 String Object :: getType()
 {
    return String( "Object" );
@@ -46,11 +41,7 @@ String Object :: getSerializationTypeVirtual() const
 
 bool Object :: save( File& file ) const
 {
-#ifdef HAVE_NOT_CXX11
-   if( ! file. write< const char, Devices::Host, int >( magic_number, strlen( magic_number ) ) )
-#else
    if( ! file. write( magic_number, strlen( magic_number ) ) )
-#endif
       return false;
    if( ! this->getSerializationTypeVirtual().save( file ) ) return false;
    return true;
@@ -64,10 +55,7 @@ bool Object :: load( File& file )
    if( objectType != this->getSerializationTypeVirtual() )
    {
       std::cerr << "Given file contains instance of " << objectType << " but " << getSerializationTypeVirtual() << " is expected." << std::endl;
-      if( this->deprecatedReadMode )
-         std::cerr << "Loading is forced by the deprecated read mode..." << std::endl;
-      else
-         return false;
+      return false;
    }
    return true;
 }
@@ -80,92 +68,68 @@ bool Object :: boundLoad( File& file )
 bool Object :: save( const String& fileName ) const
 {
    File file;
-   if( ! file. open( fileName, tnlWriteMode ) )
+   if( ! file. open( fileName, IOMode::write ) )
    {
-      std::cerr << "I am not bale to open the file " << fileName << " for writing." << std::endl;
+      std::cerr << "I am not able to open the file " << fileName << " for writing." << std::endl;
       return false;
    }
-   if( ! this->save( file ) )
-      return false;
-   if( ! file. close() )
-   {
-      std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
-      return false;
-   }
-   return true;
+   return this->save( file );
 }
 
 bool Object :: load( const String& fileName )
 {
    File file;
-   if( ! file. open( fileName, tnlReadMode ) )
+   if( ! file. open( fileName, IOMode::read ) )
    {
-      std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
+      std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
       return false;
    }
-   if( ! this->load( file ) )
-      return false;
-   if( ! file. close() )
-   {
-      std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
-      return false;
-   }
-   return true;
+   return this->load( file );
 }
 
 bool Object :: boundLoad( const String& fileName )
 {
    File file;
-   if( ! file. open( fileName, tnlReadMode ) )
+   if( ! file. open( fileName, IOMode::read ) )
    {
-      std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
+      std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
       return false;
    }
-   if( ! this->boundLoad( file ) )
-      return false;
-   if( ! file. close() )
-   {
-      std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
-      return false;
-   }
-   return true;
-}
-
-void Object::setDeprecatedReadMode()
-{
-   this->deprecatedReadMode = true;
+   return this->boundLoad( file );
 }
 
 
 bool getObjectType( File& file, String& type )
 {
    char mn[ 10 ];
-#ifdef HAVE_NOT_CXX11
-   if( ! file. read< char, Devices::Host, int >( mn, strlen( magic_number ) ) )
-#else
    if( ! file. read( mn, strlen( magic_number ) ) )
-#endif
    {
       std::cerr << "Unable to read file " << file. getFileName() << " ... " << std::endl;
       return false;
    }
    if( strncmp( mn, magic_number, 5 ) != 0 &&
-       strncmp( mn, "SIM33", 5 ) != 0 ) return false;
-   if( ! type. load( file ) ) return false;
+       strncmp( mn, "SIM33", 5 ) != 0 )
+   {
+       std::cout << "Not a TNL file (wrong magic number)." << std::endl;
+       return false;
+   }
+   if( ! type. load( file ) )
+   {
+       std::cerr << "Cannot load the object type." << std::endl;
+       return false;
+   }
    return true;
 }
 
 bool getObjectType( const String& fileName, String& type )
 {
    File binaryFile;
-   if( ! binaryFile. open( fileName, tnlReadMode ) )
+   if( ! binaryFile. open( fileName, IOMode::read ) )
    {
       std::cerr << "I am not able to open the file " << fileName << " for detecting the object inside!" << std::endl;
       return false;
    }
-   bool ret_val = getObjectType( binaryFile, type );
-   binaryFile. close();
-   return ret_val;
+   return getObjectType( binaryFile, type );
 }
 
 bool parseObjectType( const String& objectType,

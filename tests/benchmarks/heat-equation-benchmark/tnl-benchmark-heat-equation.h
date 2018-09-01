@@ -59,10 +59,10 @@ class HeatEquationBenchmarkSetter
 
       static bool run( const Config::ParameterContainer & parameters )
       {
-          enum { Dimensions = MeshType::getMeshDimensions() };
+          enum { Dimension = MeshType::getMeshDimension() };
           typedef BenchmarkLaplace< MeshType, Real, Index > ApproximateOperator;
           typedef HeatEquationBenchmarkRhs< MeshType, Real > RightHandSide;
-          typedef Containers::StaticVector < MeshType::getMeshDimensions(), Real > Vertex;
+          typedef Containers::StaticVector < MeshType::getMeshDimension(), Real > Point;
 
          /****
           * Resolve the template arguments of your solver here.
@@ -72,10 +72,10 @@ class HeatEquationBenchmarkSetter
           String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )
           {
-             typedef Functions::Analytic::Constant< Dimensions, Real > Constant;
+             typedef Functions::Analytic::Constant< Dimension, Real > Constant;
              if( boundaryConditionsType == "dirichlet" )
              {
-                typedef Operators::DirichletBoundaryConditions< MeshType, Constant, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+                typedef Operators::DirichletBoundaryConditions< MeshType, Constant, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
                 typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
@@ -88,7 +88,7 @@ class HeatEquationBenchmarkSetter
           typedef Functions::MeshFunction< MeshType > MeshFunction;
           if( boundaryConditionsType == "dirichlet" )
           {
-             typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+             typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
              typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );

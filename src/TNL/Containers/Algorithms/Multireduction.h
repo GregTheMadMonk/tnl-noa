@@ -14,6 +14,7 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/MIC.h>
 
 namespace TNL {
 namespace Containers {
@@ -28,14 +29,14 @@ template<>
 class Multireduction< Devices::Cuda >
 {
 public:
-   template< typename Operation >
+   template< typename Operation, typename Index >
    static bool
    reduce( Operation& operation,
-           int n,
-           const typename Operation::IndexType size,
-           const typename Operation::RealType* deviceInput1,
-           const typename Operation::IndexType ldInput1,
-           const typename Operation::RealType* deviceInput2,
+           const int n,
+           const Index size,
+           const typename Operation::DataType1* deviceInput1,
+           const Index ldInput1,
+           const typename Operation::DataType2* deviceInput2,
            typename Operation::ResultType* hostResult );
 };
 
@@ -43,14 +44,29 @@ template<>
 class Multireduction< Devices::Host >
 {
 public:
-   template< typename Operation >
+   template< typename Operation, typename Index >
    static bool
    reduce( Operation& operation,
-           int n,
-           const typename Operation::IndexType size,
-           const typename Operation::RealType* deviceInput1,
-           const typename Operation::IndexType ldInput1,
-           const typename Operation::RealType* deviceInput2,
+           const int n,
+           const Index size,
+           const typename Operation::DataType1* deviceInput1,
+           const Index ldInput1,
+           const typename Operation::DataType2* deviceInput2,
+           typename Operation::ResultType* hostResult );
+};
+
+template<>
+class Multireduction< Devices::MIC >
+{
+public:
+   template< typename Operation, typename Index >
+   static bool
+   reduce( Operation& operation,
+           const int n,
+           const Index size,
+           const typename Operation::DataType1* deviceInput1,
+           const Index ldInput1,
+           const typename Operation::DataType2* deviceInput2,
            typename Operation::ResultType* hostResult );
 };
 

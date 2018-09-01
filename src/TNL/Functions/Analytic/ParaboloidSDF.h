@@ -65,23 +65,17 @@ class ParaboloidSDF< 1, Real > : public ParaboloidSDFBase< 1, Real >
    public:
 
       typedef Real RealType;
-      typedef Containers::StaticVector< 1, RealType > VertexType;
+      typedef Containers::StaticVector< 1, RealType > PointType;
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
 
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
 
 };
@@ -92,23 +86,17 @@ class ParaboloidSDF< 2, Real > : public ParaboloidSDFBase< 2, Real >
    public:
 
       typedef Real RealType;
-      typedef Containers::StaticVector< 2, RealType > VertexType;
+      typedef Containers::StaticVector< 2, RealType > PointType;
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                                      const Real& time = 0.0 ) const;
 
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
 
 };
@@ -119,25 +107,19 @@ class ParaboloidSDF< 3, Real > : public ParaboloidSDFBase< 3, Real >
    public:
 
       typedef Real RealType;
-      typedef Containers::StaticVector< 3, RealType > VertexType;
+      typedef Containers::StaticVector< 3, RealType > PointType;
 
 
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const PointType& v,
                          const Real& time = 0.0 ) const;
 
       __cuda_callable__
-      RealType operator()( const VertexType& v,
+      RealType operator()( const PointType& v,
                            const Real& time = 0.0 ) const;
 
 };

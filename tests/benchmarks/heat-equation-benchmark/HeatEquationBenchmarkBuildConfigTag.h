@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TNL/Solvers/BuildConfigTags.h>
+#include <TNL/Meshes/BuildConfigTags.h>
 
 namespace TNL {
 
@@ -21,16 +22,6 @@ template<> struct ConfigTagIndex< HeatEquationBenchmarkBuildConfigTag, short int
 template<> struct ConfigTagIndex< HeatEquationBenchmarkBuildConfigTag, long int >{ enum { enabled = false }; };
 
 /****
- * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
- */
-template< int Dimensions, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< HeatEquationBenchmarkBuildConfigTag, Meshes::Grid< Dimensions, Real, Device, Index > >
-      { enum { enabled = ( Dimensions == 2 )  &&
-                         ConfigTagReal< HeatEquationBenchmarkBuildConfigTag, Real >::enabled &&
-                         ConfigTagDevice< HeatEquationBenchmarkBuildConfigTag, Device >::enabled &&
-                         ConfigTagIndex< HeatEquationBenchmarkBuildConfigTag, Index >::enabled }; };
-
-/****
  * Please, chose your preferred time discretisation  here.
  */
 template<> struct ConfigTagTimeDiscretisation< HeatEquationBenchmarkBuildConfigTag, ExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
@@ -44,5 +35,24 @@ template<> struct ConfigTagExplicitSolver< HeatEquationBenchmarkBuildConfigTag, 
 template<> struct ConfigTagExplicitSolver< HeatEquationBenchmarkBuildConfigTag, ExplicitMersonSolverTag >{ enum { enabled = false }; };
 
 } // namespace Solvers
-} // namespace TNL
 
+namespace Meshes {
+namespace BuildConfigTags {
+
+template< int Dimensions > struct GridDimensionTag< HeatEquationBenchmarkBuildConfigTag, Dimensions >{ enum { enabled = ( Dimensions == 2 ) }; };
+
+/****
+ * Turn off support for float and long double.
+ */
+template<> struct GridRealTag< HeatEquationBenchmarkBuildConfigTag, float > { enum { enabled = false }; };
+template<> struct GridRealTag< HeatEquationBenchmarkBuildConfigTag, long double > { enum { enabled = false }; };
+
+/****
+ * Turn off support for short int and long int indexing.
+ */
+template<> struct GridIndexTag< HeatEquationBenchmarkBuildConfigTag, short int >{ enum { enabled = false }; };
+template<> struct GridIndexTag< HeatEquationBenchmarkBuildConfigTag, long int >{ enum { enabled = false }; };
+
+} // namespace BuildConfigTags
+} // namespace Meshes
+} // namespace TNL

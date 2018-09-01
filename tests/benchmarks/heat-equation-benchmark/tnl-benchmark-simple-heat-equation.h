@@ -236,8 +236,8 @@ bool writeFunction(
    for( Index i = 0; i < xSize; i++ )
    {
       for( Index j = 0; j < ySize; j++ )
-         file << i * hx - originX << " " << j * hy - originY << " " << data[ j * xSize + i ] << endl;
-      file << endl;
+         file << i * hx - originX << " " << j * hy - originY << " " << data[ j * xSize + i ] <<std::endl;
+      file <<std::endl;
    }
    return true;
 }
@@ -312,11 +312,11 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    }
    
    typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
-   typedef typename GridType::VertexType VertexType;
+   typedef typename GridType::PointType PointType;
    typedef SharedPointer< GridType > GridPointer;
    GridPointer gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
-   gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
    Containers::Vector< Real, Devices::Cuda, Index > vecU;
    vecU.bind( cuda_u, gridXSize * gridYSize );
    Functions::MeshFunction< GridType > meshFunction;
@@ -339,7 +339,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    std::cout << "Setting block size to " << cudaBlockSize.x << "," << cudaBlockSize.y << "," << cudaBlockSize.z << std::endl;
 
    if( verbose )
-      cout << "Starting the solver main loop..." << endl;   
+     std::cout << "Starting the solver main loop..." <<std::endl;   
    
    timer.reset();
    computationTimer.reset();
@@ -386,22 +386,18 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
          std::cerr << "Copying max_du failed. " << cudaErr << std::endl;
          return false;
       }
-      Real absMax( 0.0 );
       for( Index i = 0; i < cudaUpdateBlocks.x; i++ )
-      {
          const Real a = fabs( max_du[ i ] );
-         absMax = a > absMax ? a : absMax;
-      }
       updateTimer.stop();
             
       time += currentTau;
       iteration++;
       if( verbose && iteration % 1000 == 0 )
-         cout << "Iteration: " << iteration << "\t Time:" << time << "    \r" << flush;                 
+        std::cout << "Iteration: " << iteration << "\t Time:" << time << "    \r" << flush;                 
    }
    timer.stop();
    if( verbose )
-     cout << endl;
+    std::cout <<std::endl;
    
    //cudaMemcpy( u, cuda_u, dofsCount * sizeof( Real ), cudaMemcpyDeviceToHost );
    //writeFunction( "final", u, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
@@ -483,7 +479,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
     * Explicit Euler solver
     */
    if( verbose )
-      cout << "Starting the solver main loop..." << endl;
+     std::cout << "Starting the solver main loop..." <<std::endl;
    
    timer.reset();
    computationTimer.reset();
@@ -511,18 +507,6 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
          aux[ ( gridYSize - 1 ) * gridXSize + i ] = 0.0; //u[ ( gridYSize - 2 ) * gridXSize + i ];
       }
  
-      /*for( Index j = 1; j < gridYSize - 1; j++ )
-         for( Index i = 1; i < gridXSize - 1; i++ )
-         {
-            const Index c = j * gridXSize + i;
-            aux[ c ] = u[ c ] + currentTau * ( ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ] ) * hx_inv +
-                                               ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
-         }
-      Real* swap = aux;
-      aux = u;
-      u = swap;
-      */
-
       for( Index j = 1; j < gridYSize - 1; j++ )
          for( Index i = 1; i < gridXSize - 1; i++ )
          {
@@ -533,14 +517,12 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
       computationTimer.stop();
  
       updateTimer.start();
-      Real absMax( 0.0 ), residue( 0.0 );
+      Real residue( 0.0 );
       for( Index i = 0; i < dofsCount; i++ )
       {
          const Real add = currentTau * aux[ i ];
          u[ i ] += add;
          residue += fabs( add );
-         /*const Real a = fabs( aux[ i ] );
-         absMax = a > absMax ? a : absMax;*/
       }
       updateTimer.stop();
  
@@ -551,17 +533,17 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
    }
    timer.stop();
    if( verbose )
-     cout << endl;
+    std::cout <<std::endl;
 
    
    /****
     * Saving the result
     */
    typedef Meshes::Grid< 2, Real, Devices::Host, Index > GridType;
-   typedef typename GridType::VertexType VertexType;
+   typedef typename GridType::PointType PointType;
    SharedPointer< GridType > gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
-   gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
    Containers::Vector< Real, Devices::Host, Index > vecU;
    vecU.bind( u, gridXSize * gridYSize );
    Functions::MeshFunction< GridType > meshFunction;
@@ -613,7 +595,7 @@ int main( int argc, char* argv[] )
 
    const bool verbose = parameters.getParameter< bool >( "verbose" );
    if( verbose )      
-      cout << endl << "Finished..." << endl;
+     std::cout <<std::endl << "Finished..." <<std::endl;
    Logger logger( 72, std::cout );
    logger.writeSeparator();
    logger.writeParameter< const char* >( "Compute time:", "" );

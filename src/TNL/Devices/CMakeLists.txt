@@ -1,12 +1,17 @@
 set (headers Cuda.h
              Cuda_impl.h
+             CudaCallable.h
              CudaDeviceInfo.h
-             Host.h )
+             Host.h
+             MIC.h
+             SystemInfo.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Devices )
 set( common_SOURCES
      ${CURRENT_DIR}/Cuda.cpp
-     ${CURRENT_DIR}/Host.cpp )
+     ${CURRENT_DIR}/Host.cpp 
+     ${CURRENT_DIR}/MIC.cpp
+     ${CURRENT_DIR}/SystemInfo.cpp )
 
 IF( BUILD_CUDA )
    set( tnl_devices_CUDA__SOURCES
@@ -23,7 +28,4 @@ set( tnl_devices_SOURCES
     
 #SET( libtnlcoreincludedir ${TNL_INCLUDE_DIR}/core )
 #SET( libtnlcoreinclude_HEADERS ${headers} )
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Devices )
-
-
-
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Devices )

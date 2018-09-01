@@ -22,7 +22,7 @@ template< typename Element, typename Device, typename Index >
 String MultiArray< 3, Element, Device, Index > :: getType()
 {
    return String( "Containers::MultiArray< ") +
-          String( Dimensions ) +
+          String( Dimension ) +
           String( ", " ) +
           String( TNL::getType< Element >() ) +
           String( ", " ) +
@@ -57,7 +57,7 @@ String MultiArray< 3, Element, Device, Index > :: getSerializationTypeVirtual() 
 };
 
 template< typename Element, typename Device, typename Index >
-bool MultiArray< 3, Element, Device, Index > :: setDimensions( const Index kSize,
+void MultiArray< 3, Element, Device, Index > :: setDimensions( const Index kSize,
                                                                        const Index jSize,
                                                                        const Index iSize )
 {
@@ -69,11 +69,11 @@ bool MultiArray< 3, Element, Device, Index > :: setDimensions( const Index kSize
    dimensions[ 0 ] = iSize;
    dimensions[ 1 ] = jSize;
    dimensions[ 2 ] = kSize;
-   return Array< Element, Device, Index > :: setSize( iSize * jSize * kSize );
+   Array< Element, Device, Index > :: setSize( iSize * jSize * kSize );
 }
 
 template< typename Element, typename Device, typename Index >
-bool MultiArray< 3, Element, Device, Index > :: setDimensions( const Containers::StaticVector< 3, Index >& dimensions )
+void MultiArray< 3, Element, Device, Index > :: setDimensions( const Containers::StaticVector< 3, Index >& dimensions )
 {
    TNL_ASSERT( dimensions[ 0 ] > 0 && dimensions[ 1 ] > 0 && dimensions[ 2 ],
               std::cerr << "dimensions = " << dimensions );
@@ -83,16 +83,16 @@ bool MultiArray< 3, Element, Device, Index > :: setDimensions( const Containers:
    this->dimensions. x() = dimensions. z();
    this->dimensions. y() = dimensions. y();
    this->dimensions. z() = dimensions. x();
-   return Array< Element, Device, Index > :: setSize( this->dimensions[ 2 ] *
-                                                          this->dimensions[ 1 ] *
-                                                          this->dimensions[ 0 ] );
+   Array< Element, Device, Index > :: setSize( this->dimensions[ 2 ] *
+                                               this->dimensions[ 1 ] *
+                                               this->dimensions[ 0 ] );
 }
 
 template< typename Element, typename Device, typename Index >
    template< typename MultiArrayT >
-bool MultiArray< 3, Element, Device, Index > :: setLike( const MultiArrayT& multiArray )
+void MultiArray< 3, Element, Device, Index > :: setLike( const MultiArrayT& multiArray )
 {
-   return setDimensions( multiArray. getDimensions() );
+   setDimensions( multiArray. getDimensions() );
 }
 
 template< typename Element, typename Device, typename Index >

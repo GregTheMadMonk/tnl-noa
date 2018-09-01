@@ -2,13 +2,16 @@
                           DummyMesh.h  -  description
                              -------------------
     begin                : Apr 17, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    copyright            : (C) 2013 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
 #pragma once
+
+#include <TNL/String.h>
+#include <TNL/Devices/Host.h>
 
 namespace TNL {
 namespace Meshes {
@@ -18,17 +21,13 @@ template< typename Real = double,
           typename Index = int >
 class DummyMesh
 {
-   public:
-
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef DummyMesh< Real, Device, Index > ThisType;
  
-   static const int meshDimensions = 1;
- 
-   constexpr static int getMeshDimensions() { return meshDimensions; }
- 
+   constexpr static int getMeshDimension() { return 1; }
  
    const Real& getParametricStep(){ return 0.0; }
  

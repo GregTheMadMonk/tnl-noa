@@ -35,7 +35,7 @@ class SolverTesterProblem
    typedef Matrices::CSR< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
    typedef Solvers::Linear::Preconditioners::Dummy< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
 
-   static String getTypeStatic() { return String( "simpleProblemSolver< " ) + Mesh :: getTypeStatic() + " >"; };
+   static String getType() { return String( "simpleProblemSolver< " ) + Mesh :: getType() + " >"; };
 
    String getPrologHeader() const { return String( "Simple Problem" ); };
 
@@ -52,7 +52,7 @@ class SolverTesterProblem
 
    DofVectorType& getDofVector() { return this->dofVector;};
 
-   void GetExplicitRHS( const RealType& time,
+   void getExplicitUpdate( const RealType& time,
                         const RealType& tau,
                         DofVectorType& _u,
                         DofVectorType& _fu ){};

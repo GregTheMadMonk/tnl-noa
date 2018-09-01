@@ -22,7 +22,7 @@ template< typename Element, typename Device, typename Index >
 String MultiArray< 1, Element, Device, Index > :: getType()
 {
    return String( "Containers::MultiArray< ") +
-          String( Dimensions ) +
+          String( Dimension ) +
           String( ", " ) +
           String( TNL::getType< Element >() ) +
           String( ", " ) +
@@ -57,28 +57,28 @@ String MultiArray< 1, Element, Device, Index > :: getSerializationTypeVirtual() 
 };
 
 template< typename Element, typename Device, typename Index >
-bool MultiArray< 1, Element, Device, Index > :: setDimensions( const Index iSize )
+void MultiArray< 1, Element, Device, Index > :: setDimensions( const Index iSize )
 {
    TNL_ASSERT( iSize > 0,
               std::cerr << "iSize = " << iSize );
    dimensions[ 0 ] = iSize;
-   return Array< Element, Device, Index >::setSize( iSize );
+   Array< Element, Device, Index >::setSize( iSize );
 }
 
 template< typename Element, typename Device, typename Index >
-bool MultiArray< 1, Element, Device, Index > :: setDimensions( const Containers::StaticVector< 1, Index >& dimensions )
+void MultiArray< 1, Element, Device, Index > :: setDimensions( const Containers::StaticVector< 1, Index >& dimensions )
 {
    TNL_ASSERT( dimensions[ 0 ] > 0,
               std::cerr << " dimensions[ 0 ] = " << dimensions[ 0 ] );
    this->dimensions = dimensions;
-   return Array< Element, Device, Index >::setSize( this->dimensions[ 0 ] );
+   Array< Element, Device, Index >::setSize( this->dimensions[ 0 ] );
 }
 
 template< typename Element, typename Device, typename Index >
    template< typename MultiArrayT >
-bool MultiArray< 1, Element, Device, Index > :: setLike( const MultiArrayT& multiArray )
+void MultiArray< 1, Element, Device, Index > :: setLike( const MultiArrayT& multiArray )
 {
-   return setDimensions( multiArray. getDimensions() );
+   setDimensions( multiArray. getDimensions() );
 }
 
 template< typename Element, typename Device, typename Index >

@@ -48,7 +48,7 @@ write( const VectorFieldType& vectorField,
         entity.getCoordinates().x() ++ )
    {
       entity.refresh();
-      typename MeshType::VertexType v = entity.getCenter();
+      typename MeshType::PointType v = entity.getCenter();
       str << v.x();
       for( int i = 0; i < VectorFieldSize; i++ )
           str << " " << scale * vectorField[ i ]->getData().getElement( entity.getIndex() );
@@ -78,7 +78,7 @@ write( const VectorFieldType& vectorField,
         entity.getCoordinates().x() ++ )
    {
       entity.refresh();
-      typename MeshType::VertexType v = entity.getCenter();
+      typename MeshType::PointType v = entity.getCenter();
       str << v.x();
       for( int i = 0; i < VectorFieldSize; i++ )
           str << " " << scale * vectorField[ i ]->getData().getElement( entity.getIndex() );
@@ -113,7 +113,7 @@ write( const VectorFieldType& vectorField,
            entity.getCoordinates().x() ++ )
       {
          entity.refresh();
-         typename MeshType::VertexType v = entity.getCenter();
+         typename MeshType::PointType v = entity.getCenter();
          str << v.x() << " " << v.y();
          for( int i = 0; i < VectorFieldSize; i++ )
              str << " " << scale * vectorField[ i ]->getData().getElement( entity.getIndex() );
@@ -153,7 +153,7 @@ write( const VectorFieldType& vectorField,
            entity.getCoordinates().x() ++ )
       {
          entity.refresh();
-         typename MeshType::VertexType v = entity.getCenter();
+         typename MeshType::PointType v = entity.getCenter();
          str << v.x() << " " << v.y();
          for( int i = 0; i < VectorFieldSize; i++ )
              str << " " << scale * vectorField[ i ]->getData().getElement( entity.getIndex() );
@@ -174,7 +174,7 @@ write( const VectorFieldType& vectorField,
 
       {
          entity.refresh();
-         typename MeshType::VertexType v = entity.getCenter();
+         typename MeshType::PointType v = entity.getCenter();
          str << v.x() << " " << v.y();
          for( int i = 0; i < VectorFieldSize; i++ )
              str << " " << scale * vectorField[ i ]->getData().getElement( entity.getIndex() );
@@ -211,7 +211,7 @@ write( const VectorFieldType& vectorField,
            entity.getCoordinates().x() ++ )
       {
          entity.refresh();
-         typename MeshType::VertexType v = entity.getCenter();
+         typename MeshType::PointType v = entity.getCenter();
          str << v.x() << " " << v.y();
          for( int i = 0; i < VectorFieldSize; i++ )
              str << " " << scale * vectorField[ i ]->getData().getElement( entity.getIndex() );
@@ -251,7 +251,7 @@ write( const VectorFieldType& vectorField,
               entity.getCoordinates().x() ++ )
          {
             entity.refresh();
-            typename MeshType::VertexType v = entity.getCenter();
+            typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z();
             for( int i = 0; i < VectorFieldSize; i++ )
                 str << " " << scale * vectorField[ i ]->getData().getElement( entity.getIndex() );
@@ -294,7 +294,7 @@ write( const VectorFieldType& vectorField,
               entity.getCoordinates().x() ++ )
          {
             entity.refresh();
-            typename MeshType::VertexType v = entity.getCenter();
+            typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z();
             for( int i = 0; i < VectorFieldSize; i++ )
                 str << " " << scale * vectorField[ i ]->getData().getElement( entity.getIndex() );
@@ -316,7 +316,7 @@ write( const VectorFieldType& vectorField,
               entity.getCoordinates().y() ++ )
          {
             entity.refresh();
-            typename MeshType::VertexType v = entity.getCenter();
+            typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z();
             for( int i = 0; i < VectorFieldSize; i++ )
                 str << " " << scale * vectorField[ i ]->getData().getElement( entity.getIndex() );
@@ -338,7 +338,7 @@ write( const VectorFieldType& vectorField,
               entity.getCoordinates().z() ++ )
          {
             entity.refresh();
-            typename MeshType::VertexType v = entity.getCenter();
+            typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z();
             for( int i = 0; i < VectorFieldSize; i++ )
                 str << " " << scale * vectorField[ i ]->getData().getElement( entity.getIndex() );
@@ -378,7 +378,7 @@ write( const VectorFieldType& vectorField,
               entity.getCoordinates().x() ++ )
          {
             entity.refresh();
-            typename MeshType::VertexType v = entity.getCenter();
+            typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z();
             for( int i = 0; i < VectorFieldSize; i++ )
                 str << " " << scale * vectorField[ i ]->getData().getElement( entity.getIndex() );

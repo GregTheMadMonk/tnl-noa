@@ -35,10 +35,10 @@ class ExplicitTimeStepper
    typedef typename Problem::MeshType MeshType;
    typedef SharedPointer< MeshType > MeshPointer;
    typedef typename ProblemType::DofVectorType DofVectorType;
-   typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
    typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-   typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
    typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
+   
+   static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
 
    ExplicitTimeStepper();
 
@@ -64,16 +64,14 @@ class ExplicitTimeStepper
 
    bool solve( const RealType& time,
                const RealType& stopTime,
-               const MeshPointer& mesh,
-               DofVectorPointer& dofVector,
-               MeshDependentDataPointer& meshDependentData );
+               DofVectorPointer& dofVector );
 
-   void getExplicitRHS( const RealType& time,
+   void getExplicitUpdate( const RealType& time,
                         const RealType& tau,
                         DofVectorPointer& _u,
                         DofVectorPointer& _fu );
    
-   bool writeEpilog( Logger& logger );
+   bool writeEpilog( Logger& logger ) const;
 
    protected:
 
@@ -86,14 +84,6 @@ class ExplicitTimeStepper
 
    RealType timeStep;
 
-   /****
-    * The pointers on the shared pointer is important here to avoid 
-    * memory deallocation in the assignment operator in SharedPointer.
-    */
-   MeshDependentDataPointer* meshDependentData;
-   
-   const MeshPointer* mesh;
- 
    Timer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
  
    long long int allIterations;

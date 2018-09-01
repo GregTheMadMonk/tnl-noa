@@ -22,12 +22,20 @@ class EllpackDeviceDependentCode;
 template< typename Real, typename Device = Devices::Host, typename Index = int >
 class Ellpack : public Sparse< Real, Device, Index >
 {
-   public:
+private:
+   // convenient template alias for controlling the selection of copy-assignment operator
+   template< typename Device2 >
+   using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
 
+   // friend class will be needed for templated assignment operators
+   template< typename Real2, typename Device2, typename Index2 >
+   friend class Ellpack;
+
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
    typedef Ellpack< Real, Device, Index > ThisType;
@@ -43,17 +51,24 @@ class Ellpack : public Sparse< Real, Device, Index >
 
    String getTypeVirtual() const;
 
-   bool setDimensions( const IndexType rows,
+   static String getSerializationType();
+
+   virtual String getSerializationTypeVirtual() const;
+
+   void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
+   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
-   bool setConstantCompressedRowsLengths( const IndexType& rowLengths );
+   void setConstantCompressedRowLengths( const IndexType& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
+   __cuda_callable__
+   IndexType getRowLengthFast( const IndexType row ) const;
+
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const Ellpack< Real2, Device2, Index2 >& matrix );
+   void setLike( const Ellpack< Real2, Device2, Index2 >& matrix );
 
    void reset();
  
@@ -62,10 +77,6 @@ class Ellpack : public Sparse< Real, Device, Index >
 
    template< typename Real2, typename Device2, typename Index2 >
    bool operator != ( const Ellpack< Real2, Device2, Index2 >& matrix ) const;
-
-   /*template< typename Matrix >
-   bool copyFrom( const Matrix& matrix,
-                  const CompressedRowsLengthsVector& rowLengths );*/
 
    __cuda_callable__
    bool setElementFast( const IndexType row,
@@ -156,6 +167,21 @@ class Ellpack : public Sparse< Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
+   template< typename Vector >
+   bool performJacobiIteration( const Vector& b,
+								const IndexType row,
+								const Vector& old_x,
+								Vector& x,
+								const RealType& omega ) const;
+   
+   // copy assignment
+   Ellpack& operator=( const Ellpack& matrix );   
+
+   // cross-device copy assignment
+   template< typename Real2, typename Device2, typename Index2,
+             typename = typename Enabler< Device2 >::type >
+   Ellpack& operator=( const Ellpack< Real2, Device2, Index2 >& matrix );
+
    bool save( File& file ) const;
 
    bool load( File& file );
@@ -166,9 +192,9 @@ class Ellpack : public Sparse< Real, Device, Index >
 
    void print( std::ostream& str ) const;
 
-   protected:
+protected:
 
-   bool allocateElements();
+   void allocateElements();
 
    IndexType rowLengths, alignedRows;
 

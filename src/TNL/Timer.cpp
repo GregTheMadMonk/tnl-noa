@@ -46,99 +46,71 @@ void Timer::stop()
 
    if( ! this->stopState )
    {
-      /****
-       * Real time
-       */
-#ifdef HAVE_TIME
-      struct timeval tp;
-      int rtn = gettimeofday( &tp, NULL );
-      this->totalRealTime += ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec - this->initialRealTime;
-#endif
- 
-      /****
-       * CPU time
-       */
-#ifdef HAVE_SYS_RESOURCE_H
-      rusage initUsage;
-      getrusage(  RUSAGE_SELF, &initUsage );
-      this->totalCPUTime += initUsage. ru_utime. tv_sec + 1.0e-6 * ( double ) initUsage. ru_utime. tv_usec - this->initialCPUTime;
-#endif
- 
-      /****
-       * CPU cycles
-       */
-      this->totalCPUCycles += this->rdtsc() - this->initialCPUCycles;
+      this->totalRealTime += this->readRealTime() - this->initialRealTime;
+      this->totalCPUTime += this->readCPUTime() - this->initialCPUTime;
+      this->totalCPUCycles += this->readCPUCycles() - this->initialCPUCycles;
       this->stopState = true;
    }
 }
 
 void Timer::start()
 {
-   /****
-    * Real time
-    */
-#ifdef HAVE_TIME
-   struct timeval tp;
-   int rtn = gettimeofday( &tp, NULL );
-   this->initialRealTime = ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec;
-#endif
-
-   /****
-    * CPU Time
-    */
-#ifdef HAVE_SYS_RESOURCE_H
-   rusage initUsage;
-   getrusage( RUSAGE_SELF, &initUsage );
-   this->initialCPUTime = initUsage. ru_utime. tv_sec + 1.0e-6 * ( double ) initUsage. ru_utime. tv_usec;
-#endif
- 
-   /****
-    * CPU cycles
-    */
-   this->initialCPUCycles = this->rdtsc();
- 
+   this->initialRealTime = this->readRealTime();
+   this->initialCPUTime = this->readCPUTime();
+   this->initialCPUCycles = this->readCPUCycles(); 
    this->stopState = false;
 }
 
-double Timer::getRealTime()
+double Timer::getRealTime() const
 {
-#ifdef HAVE_TIME
    if( ! this->stopState )
-   {
-      this->stop();
-      this->start();
-   }
+    return this->readRealTime() - this->initialRealTime;
    return this->totalRealTime;
-#else
-   return -1;
-#endif
 }
 
-double Timer::getCPUTime()
+double Timer::getCPUTime() const
 {
-#ifdef HAVE_SYS_RESOURCE_H
    if( ! this->stopState )
-   {
-      this->stop();
-      this->start();
-   }
+    return this->readCPUTime() - this->initialCPUTime;
    return this->totalCPUTime;
-#else
-   return -1;
-#endif
 }
 
-unsigned long long int Timer::getCPUCycles()
+unsigned long long int Timer::getCPUCycles() const
 {
    if( ! this->stopState )
-   {
-      this->stop();
-      this->start();
-   }
+    return this->readCPUCycles() - this->initialCPUCycles;
    return this->totalCPUCycles;
 }
 
-bool Timer::writeLog( Logger& logger, int logLevel )
+double Timer::readRealTime() const
+{
+#ifdef HAVE_TIME
+   struct timeval tp;
+   int rtn = gettimeofday( &tp, NULL );
+   return ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec;
+#else
+   return -1;
+#endif
+}
+
+double Timer::readCPUTime() const
+{
+#ifdef HAVE_SYS_RESOURCE_H
+   rusage initUsage;
+   getrusage( RUSAGE_SELF, &initUsage );
+   return initUsage. ru_utime. tv_sec + 1.0e-6 * ( double ) initUsage. ru_utime. tv_usec;
+#else
+   return -1;
+#endif
+}
+
+unsigned long long int Timer::readCPUCycles() const
+{
+   return this->rdtsc();
+}
+
+
+bool Timer::writeLog( Logger& logger, int logLevel ) const
 {
    logger.writeParameter< double                 >( "Real time:",  this->getRealTime(),  logLevel );
    logger.writeParameter< double                 >( "CPU time:",   this->getCPUTime(),   logLevel );

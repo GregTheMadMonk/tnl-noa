@@ -19,9 +19,13 @@ template< typename Mesh,
           typename Index >
 String
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-getTypeStatic()
+getType()
 {
-   
+   return String( "DirectEikonalProblem< " + 
+                  Mesh::getType() + ", " +
+                  Anisotropy::getType() + ", " +
+                  Real::getType() + ", " +
+                  Index::getType() + " >" );
 }
 
 template< typename Mesh,
@@ -41,7 +45,7 @@ template< typename Mesh,
           typename Index >
 void
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-writeProlog( tnlLogger& logger,
+writeProlog( Logger& logger,
              const Config::ParameterContainer& parameters ) const
 {
    
@@ -53,7 +57,7 @@ template< typename Mesh,
           typename Index >
 bool
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-writeEpilog( tnlLogger& logger )
+writeEpilog( Logger& logger )
 {
    return true;
 }
@@ -64,7 +68,8 @@ template< typename Mesh,
           typename Index >
 bool
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-setup( const Config::ParameterContainer& parameters )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    return true;
 }
@@ -75,9 +80,9 @@ template< typename Mesh,
           typename Index >
 Index
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-getDofs( const MeshType& mesh ) const
+getDofs() const
 {
-   return mesh.template getEntitiesCount< typename MeshType::Cell >();
+   return this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
@@ -86,10 +91,9 @@ template< typename Mesh,
           typename Index >
 void
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-bindDofs( const MeshType& mesh,
-          const DofVectorType& dofs )
+bindDofs( const DofVectorPointer& dofs )
 {
-   this->u.bind( mesh, dofs );
+   this->u.bind( this->getMesh(), dofs );
 }
 
 template< typename Mesh,
@@ -98,13 +102,11 @@ template< typename Mesh,
           typename Index >
 bool
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-setInitialData( const Config::ParameterContainer& parameters,
-                const MeshType& mesh,
-                DofVectorType& dofs,
-                MeshDependentDataType& meshdependentData )
+setInitialCondition( const Config::ParameterContainer& parameters,
+                     DofVectorPointer& dofs )
 {
    String inputFile = parameters.getParameter< String >( "input-file" );
-   this->initialData.setMesh( mesh );
+   this->initialData.setMesh( this->getMesh() );
    if( !this->initialData.boundLoad( inputFile ) )
       return false;
    return true;
@@ -117,9 +119,9 @@ template< typename Mesh,
           typename Index >
 bool
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-solve( const MeshType& mesh,
-       DofVectorType& dofs )
+solve( DofVectorPointer& dofs )
 {
-   tnlFastSweepingMethod< MeshType, AnisotropyType > fsm;
-   fsm.solve( mesh, anisotropy, initialData );
+   FastSweepingMethod< MeshType, AnisotropyType > fsm;
+   fsm.solve( this->getMesh(), anisotropy, initialData );
+   return true;
 }

@@ -13,8 +13,9 @@
 
 #pragma once
 
-#include <problems/tnlPDEProblem.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/Problems/PDEProblem.h>
+#include <TNL/Functions/MeshFunction.h>
+#include <TNL/SharedPointer.h>
 #include "tnlFastSweepingMethod.h"
 
 template< typename Mesh,
@@ -22,49 +23,48 @@ template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlDirectEikonalProblem
-   : public tnlPDEProblem< Mesh,
-                           TimeIndependentProblem,
-                           Real,
-                           typename Mesh::DeviceType,
-                           Index  >
+   : public Problems::PDEProblem< Mesh,
+                                  Real,
+                                  typename Mesh::DeviceType,
+                                  Index  >
 {
    public:
    
       typedef Real RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< Mesh > MeshFunctionType;
-      typedef tnlPDEProblem< Mesh, TimeIndependentProblem, RealType, DeviceType, IndexType > BaseType;
-      typedef Anisotropy AnisotropyType;
+      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
+      typedef Problems::PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      using AnisotropyType = Anisotropy;
 
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
-      using typename BaseType::MeshDependentDataType;
+      using MeshPointer = SharedPointer< MeshType >;
+      using DofVectorPointer = SharedPointer< DofVectorType >;
+      
+      static constexpr bool isTimeDependent() { return false; };
 
-      static String getTypeStatic();
+      static String getType();
 
       String getPrologHeader() const;
 
-      void writeProlog( tnlLogger& logger,
+      void writeProlog( Logger& logger,
                         const Config::ParameterContainer& parameters ) const;
       
-      bool writeEpilog( tnlLogger& logger );
+      bool writeEpilog( Logger& logger );
 
 
-      bool setup( const Config::ParameterContainer& parameters );
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix );
 
-      IndexType getDofs( const MeshType& mesh ) const;
+      IndexType getDofs() const;
 
-      void bindDofs( const MeshType& mesh,
-                     const DofVectorType& dofs );
+      void bindDofs( const DofVectorPointer& dofs );
       
-      bool setInitialData( const Config::ParameterContainer& parameters,
-                           const MeshType& mesh,
-                           DofVectorType& dofs,
-                           MeshDependentDataType& meshdependentData );
+      bool setInitialCondition( const Config::ParameterContainer& parameters,
+                                DofVectorPointer& dofs );
 
-      bool solve( const MeshType& mesh,
-                  DofVectorType& dosf );
+      bool solve( DofVectorPointer& dosf );
 
 
       protected:

@@ -15,9 +15,9 @@
 #include <core/tnlObject.h>
 #include <core/Devices::Host.h>
 #include <TNL/Containers/StaticVector.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/Containers/Vector.h>
 
-template< int Dimensions,
+template< int Dimension,
           typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
@@ -32,12 +32,12 @@ class Grid : public tnlObject
 #include <mesh/grids/GridEntityTopology.h>
 #include <mesh/grids/GridEntityGetter.h>
 #include <mesh/grids/GridEntityConfig.h>
-#include <mesh/grids/NeighbourGridEntityGetter.h>
+#include <mesh/grids/NeighborGridEntityGetter.h>
 #include <core/tnlLogger.h>
 
 // TODO: remove this
 //#include <../tests/benchmarks/heat-equation-benchmark/tnlTestGridEntity.h>
-//#include <../tests/benchmarks/heat-equation-benchmark/tnlTestNeighbourGridEntityGetter2D_impl.h>
+//#include <../tests/benchmarks/heat-equation-benchmark/tnlTestNeighborGridEntityGetter2D_impl.h>
 /////
 
 template< typename Real,
@@ -50,31 +50,31 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Containers::StaticVector< 2, Real > VertexType;
+   typedef Containers::StaticVector< 2, Real > PointType;
    typedef Containers::StaticVector< 2, Index > CoordinatesType;
    typedef Meshes::Grid< 2, Real, Devices::Host, Index > HostType;
    typedef Meshes::Grid< 2, Real, tnlCuda, Index > CudaType;   
    typedef Meshes::Grid< 2, Real, Device, Index > ThisType;
    
-   static const int meshDimensions = 2;
+   static const int meshDimension = 2;
 
-   //template< int EntityDimensions, 
+   //template< int EntityDimension, 
    //          typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   //using MeshEntity = GridEntity< ThisType, EntityDimensions, Config >;
+   //using MeshEntity = GridEntity< ThisType, EntityDimension, Config >;
    
-   //typedef MeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
-   //typedef MeshEntity< meshDimensions - 1, GridEntityNoStencilStorage > Face;
-   //typedef MeshEntity< 0 > Vertex;
+   //typedef MeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
+   //typedef MeshEntity< meshDimension - 1, GridEntityNoStencilStorage > Face;
+   //typedef MeshEntity< 0 > Point;
    
 
    // TODO: remove this
-   template< int EntityDimensions, 
+   template< int EntityDimension, 
              typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimensions, Config >;
-   typedef TestMeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > TestCell;
+   using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimension, Config >;
+   typedef TestMeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > TestCell;
    /////
    
-   static constexpr int getMeshDimensions() { return meshDimensions; };
+   static constexpr int getMeshDimension() { return meshDimension; };
 
    Grid();
 
@@ -93,13 +93,13 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    __cuda_callable__
    inline const CoordinatesType& getDimensions() const;
 
-   void setDomain( const VertexType& origin,
-                   const VertexType& proportions );
+   void setDomain( const PointType& origin,
+                   const PointType& proportions );
    __cuda_callable__
-   inline const VertexType& getOrigin() const;
+   inline const PointType& getOrigin() const;
 
    __cuda_callable__
-   inline const VertexType& getProportions() const;
+   inline const PointType& getProportions() const;
 
    template< typename EntityType >
    __cuda_callable__
@@ -121,7 +121,7 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    RealType getCellMeasure() const;
    
    __cuda_callable__
-   inline VertexType getSpaceSteps() const;
+   inline PointType getSpaceSteps() const;
 
    template< int xPow, int yPow >
    __cuda_callable__
@@ -148,10 +148,10 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
                                                         const typename GridFunction::RealType& p ) const;
 
    //! Method for saving the object to a file as a binary data
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
    //! Method for restoring the object from a file
-   bool load( tnlFile& file );
+   bool load( File& file );
 
    bool save( const String& fileName ) const;
 
@@ -176,9 +176,9 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    
    IndexType numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
 
-   VertexType origin, proportions;
+   PointType origin, proportions;
    
-   VertexType spaceSteps;
+   PointType spaceSteps;
    
    RealType spaceStepsProducts[ 5 ][ 5 ];
   
@@ -192,7 +192,7 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
 #include <core/tnlTNL_ASSERT.h>
 #include <mesh/GnuplotWriter.h>
 #include <mesh/grids/GridEntityGetter_impl.h>
-#include <mesh/grids/NeighbourGridEntityGetter2D_impl.h>
+#include <mesh/grids/NeighborGridEntityGetter2D_impl.h>
 #include <mesh/grids/GridEntityMeasureGetter.h>
 
 using namespace std;
@@ -214,11 +214,11 @@ template< typename Real,
           typename Index >
 String Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
-   return String( "Meshes::Grid< " ) +
-          String( getMeshDimensions() ) + ", " +
-          String( ::getType< RealType >() ) + ", " +
-          String( Device :: getDeviceType() ) + ", " +
-          String( ::getType< IndexType >() ) + " >";
+   return TNL::String( "Meshes::Grid< " ) +
+          TNL::String( getMeshDimension() ) + ", " +
+          TNL::String( ::getType< RealType >() ) + ", " +
+          TNL::String( Device :: getDeviceType() ) + ", " +
+          TNL::String( ::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -310,8 +310,8 @@ template< typename Real,
           typename Index >
 void Meshes::Grid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
 {
-   tnlTNL_ASSERT( xSize > 0, cerr << "xSize = " << xSize );
-   tnlTNL_ASSERT( ySize > 0, cerr << "ySize = " << ySize );
+   tnlTNL_ASSERT( xSize > 0,std::cerr << "xSize = " << xSize );
+   tnlTNL_ASSERT( ySize > 0,std::cerr << "ySize = " << ySize );
 
    this->dimensions.x() = xSize;
    this->dimensions.y() = ySize;
@@ -344,8 +344,8 @@ Meshes::Grid< 2, Real, Device, Index > :: getDimensions() const
 template< typename Real,
           typename Device,
           typename Index >
-void Meshes::Grid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
-                                                     const VertexType& proportions )
+void Meshes::Grid< 2, Real, Device, Index > :: setDomain( const PointType& origin,
+                                                     const PointType& proportions )
 {
    this->origin = origin;
    this->proportions = proportions;
@@ -356,7 +356,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline 
-const typename Meshes::Grid< 2, Real, Device, Index >::VertexType&
+const typename Meshes::Grid< 2, Real, Device, Index >::PointType&
 Meshes::Grid< 2, Real, Device, Index >::getOrigin() const
 {
    return this->origin;
@@ -366,7 +366,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline 
-const typename Meshes::Grid< 2, Real, Device, Index > :: VertexType&
+const typename Meshes::Grid< 2, Real, Device, Index > :: PointType&
    Meshes::Grid< 2, Real, Device, Index > :: getProportions() const
 {
    return this->proportions;
@@ -381,10 +381,10 @@ Index
 Meshes::Grid< 2, Real, Device, Index >:: 
 getEntitiesCount() const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
    
-   switch( EntityType::entityDimensions )
+   switch( EntityType::entityDimension )
    {
       case 2:
          return this->numberOfCells;
@@ -405,8 +405,8 @@ EntityType
 Meshes::Grid< 2, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
    
    return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
@@ -420,8 +420,8 @@ Index
 Meshes::Grid< 2, Real, Device, Index >::
 getEntityIndex( const EntityType& entity ) const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
    
    return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
@@ -454,7 +454,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-typename Meshes::Grid< 2, Real, Device, Index >::VertexType
+typename Meshes::Grid< 2, Real, Device, Index >::PointType
 Meshes::Grid< 2, Real, Device, Index >::
 getSpaceSteps() const
 {
@@ -471,9 +471,9 @@ Meshes::Grid< 2, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
    tnlTNL_ASSERT( xPow >= -2 && xPow <= 2, 
-              cerr << " xPow = " << xPow );
+             std::cerr << " xPow = " << xPow );
    tnlTNL_ASSERT( yPow >= -2 && yPow <= 2, 
-              cerr << " yPow = " << yPow );
+             std::cerr << " yPow = " << yPow );
 
    return this->spaceStepsProducts[ yPow + 2 ][ xPow + 2 ];
 }
@@ -560,7 +560,7 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
+bool Meshes::Grid< 2, Real, Device, Index > :: save( File& file ) const
 {
    if( ! tnlObject::save( file ) )
       return false;
@@ -568,7 +568,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
        ! this->proportions.save( file ) ||
        ! this->dimensions.save( file ) )
    {
-      cerr << "I was not able to save the domain description of a Grid." << endl;
+     std::cerr << "I was not able to save the domain description of a Grid." <<std::endl;
       return false;
    }
    return true;
@@ -577,7 +577,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: load( tnlFile& file )
+bool Meshes::Grid< 2, Real, Device, Index > :: load( File& file )
 {
    if( ! tnlObject::load( file ) )
       return false;
@@ -586,7 +586,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: load( tnlFile& file )
        ! this->proportions.load( file ) ||
        ! dimensions.load( file ) )
    {
-      cerr << "I was not able to load the domain description of a Grid." << endl;
+     std::cerr << "I was not able to load the domain description of a Grid." <<std::endl;
       return false;
    }
    this->setDimensions( dimensions );
@@ -619,7 +619,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
    file. open( fileName. getString(), ios :: out );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << "." << endl;
+     std::cerr << "I am not able to open the file " << fileName << "." <<std::endl;
       return false;
    }
    if( format == "asymptote" )
@@ -627,10 +627,10 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
       file << "size( "
            << this->getProportions(). x() << "cm , "
            << this->getProportions(). y() << "cm );"
-           << endl << endl;
+           <<std::endl <<std::endl;
       MeshEntity< 0 > vertex( *this );
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
-      VertexType v;
+      PointType v;
       for( Index j = 0; j < this->dimensions. y(); j ++ )
       {
          file << "draw( ";
@@ -645,9 +645,9 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             v = vertex.getCenter();
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
-         file << " );" << endl;
+         file << " );" <<std::endl;
       }
-      file << endl;
+      file <<std::endl;
       for( Index i = 0; i < this->dimensions. x(); i ++ )
       {
          file << "draw( ";
@@ -662,9 +662,9 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             v = vertex.getCenter();
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
-         file << " );" << endl;
+         file << " );" <<std::endl;
       }
-      file << endl;
+      file <<std::endl;
 
       MeshEntity< 2 > cell( *this );
       CoordinatesType& cellCoordinates = cell.getCoordinates();
@@ -676,57 +676,57 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             cellCoordinates.y() = j;
             v = vertex.getCenter();
             file << "label( scale(0.33) * Label( \"$" << setprecision( 3 ) << cellMeasure << setprecision( 8 )
-                 << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" << endl;
+                 << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" <<std::endl;
          }
 
       for( Index i = 0; i < this->dimensions. x(); i ++ )
          for( Index j = 0; j < this->dimensions. y(); j ++ )
          {
-            VertexType v1, v2, c;
+            PointType v1, v2, c;
 
             /****
              * East edge normal
              */
-            /*v1 = this->getVertex( CoordinatesType( i + 1, j ), v1 );
-            v2 = this->getVertex( CoordinatesType( i + 1, j + 1 ), v2 );
+            /*v1 = this->getPoint( CoordinatesType( i + 1, j ), v1 );
+            v2 = this->getPoint( CoordinatesType( i + 1, j + 1 ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< 1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" <<std::endl;
             */
             /****
              * West edge normal
              */
-            /*this->getVertex< -1, -1 >( CoordinatesType( i, j ), v1 );
-            this->getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
+            /*this->getPoint< -1, -1 >( CoordinatesType( i, j ), v1 );
+            this->getPoint< -1, 1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< -1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" <<std::endl;
             */
             /****
              * North edge normal
              */
-            /*this->getVertex< 1, 1 >( CoordinatesType( i, j ), v1 );
-            this->getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
+            /*this->getPoint< 1, 1 >( CoordinatesType( i, j ), v1 );
+            this->getPoint< -1, 1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< 0, 1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" <<std::endl;
             */
             /****
              * South edge normal
              */
-            /*this->getVertex< 1, -1 >( CoordinatesType( i, j ), v1 );
-            this->getVertex< -1, -1 >( CoordinatesType( i, j ), v2 );
+            /*this->getPoint< 1, -1 >( CoordinatesType( i, j ), v1 );
+            this->getPoint< -1, -1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< 0, -1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" <<std::endl;
             */
          }
       return true;
@@ -744,16 +744,16 @@ bool Meshes::Grid< 2, Real, Device, Index > :: write( const MeshFunction& functi
 {
    if( this->template getEntitiesCount< Cell >() != function. getSize() )
    {
-      cerr << "The size ( " << function. getSize() 
+     std::cerr << "The size ( " << function. getSize() 
            << " ) of a mesh function does not agree with the DOFs ( " 
-           << this->template getEntitiesCount< Cell >() << " ) of a mesh." << endl;
+           << this->template getEntitiesCount< Cell >() << " ) of a mesh." <<std::endl;
       return false;
    }
    fstream file;
    file. open( fileName. getString(), ios :: out );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << "." << endl;
+     std::cerr << "I am not able to open the file " << fileName << "." <<std::endl;
       return false;
    }
    file << setprecision( 12 );
@@ -765,12 +765,12 @@ bool Meshes::Grid< 2, Real, Device, Index > :: write( const MeshFunction& functi
       {
          for( cellCoordinates.x() = 0; cellCoordinates.x() < getDimensions(). x(); cellCoordinates.x() ++ )
          {
-            VertexType v = cell.getCenter();
+            PointType v = cell.getCenter();
             GnuplotWriter::write( file,  v );
             GnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
-            file << endl;
+            file <<std::endl;
          }
-         file << endl;
+         file <<std::endl;
       }
    }
    file. close();
@@ -784,7 +784,7 @@ void
 Meshes::Grid< 2, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
-   logger.writeParameter( "Dimensions:", getMeshDimensions() );
+   logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );
@@ -801,7 +801,7 @@ writeProlog( tnlLogger& logger )
 
 #ifdef UNDEF
 
-template< int Dimensions,
+template< int Dimension,
           typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
@@ -826,31 +826,31 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Containers::StaticVector< 2, Real > VertexType;
+   typedef Containers::StaticVector< 2, Real > PointType;
    typedef Containers::StaticVector< 2, Index > CoordinatesType;
    typedef Meshes::Grid< 2, Real, Devices::Host, Index > HostType;
    typedef Meshes::Grid< 2, Real, tnlCuda, Index > CudaType;   
    typedef Meshes::Grid< 2, Real, Device, Index > ThisType;
    
-   static const int meshDimensions = 2;
+   static const int meshDimension = 2;
 
-   /*template< int EntityDimensions, 
+   /*template< int EntityDimension, 
              typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   using MeshEntity = GridEntity< ThisType, EntityDimensions, Config >;
+   using MeshEntity = GridEntity< ThisType, EntityDimension, Config >;
    
-   typedef MeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
-   typedef MeshEntity< meshDimensions - 1, GridEntityNoStencilStorage > Face;
-   typedef MeshEntity< 0 > Vertex;*/
+   typedef MeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
+   typedef MeshEntity< meshDimension - 1, GridEntityNoStencilStorage > Face;
+   typedef MeshEntity< 0 > Point;*/
    
 
    // TODO: remove this
-   template< int EntityDimensions, 
+   template< int EntityDimension, 
              typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimensions, Config >;
-   typedef TestMeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
+   using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimension, Config >;
+   typedef TestMeshEntity< meshDimension, GridEntityCrossStencilStorage< 1 > > Cell;
    /////
    
-   static constexpr int getMeshDimensions() { return meshDimensions; };
+   static constexpr int getMeshDimension() { return meshDimension; };
 
    Grid();
 
@@ -869,13 +869,13 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    __cuda_callable__
    inline const CoordinatesType& getDimensions() const;
 
-   void setDomain( const VertexType& origin,
-                   const VertexType& proportions );
+   void setDomain( const PointType& origin,
+                   const PointType& proportions );
    __cuda_callable__
-   inline const VertexType& getOrigin() const;
+   inline const PointType& getOrigin() const;
 
    __cuda_callable__
-   inline const VertexType& getProportions() const;
+   inline const PointType& getProportions() const;
 
    template< typename EntityType >
    __cuda_callable__
@@ -897,7 +897,7 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    RealType getCellMeasure() const;
    
    __cuda_callable__
-   inline VertexType getSpaceSteps() const;
+   inline PointType getSpaceSteps() const;
 
    template< int xPow, int yPow >
    __cuda_callable__
@@ -924,10 +924,10 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
                                                         const typename GridFunction::RealType& p ) const;
 
    //! Method for saving the object to a file as a binary data
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
    //! Method for restoring the object from a file
-   bool load( tnlFile& file );
+   bool load( File& file );
 
    bool save( const String& fileName ) const;
 
@@ -952,9 +952,9 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    
    IndexType numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
 
-   VertexType origin, proportions;
+   PointType origin, proportions;
    
-   VertexType spaceSteps;
+   PointType spaceSteps;
    
    RealType spaceStepsProducts[ 5 ][ 5 ];
   
@@ -979,11 +979,11 @@ template< typename Real,
           typename Index >
 String Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
-   return String( "Meshes::Grid< " ) +
-          String( getMeshDimensions() ) + ", " +
-          String( ::getType< RealType >() ) + ", " +
-          String( Device :: getDeviceType() ) + ", " +
-          String( ::getType< IndexType >() ) + " >";
+   return TNL::String( "Meshes::Grid< " ) +
+          TNL::String( getMeshDimension() ) + ", " +
+          TNL::String( ::getType< RealType >() ) + ", " +
+          TNL::String( Device :: getDeviceType() ) + ", " +
+          TNL::String( ::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -1075,8 +1075,8 @@ template< typename Real,
           typename Index >
 void Meshes::Grid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
 {
-   tnlTNL_ASSERT( xSize > 0, cerr << "xSize = " << xSize );
-   tnlTNL_ASSERT( ySize > 0, cerr << "ySize = " << ySize );
+   tnlTNL_ASSERT( xSize > 0,std::cerr << "xSize = " << xSize );
+   tnlTNL_ASSERT( ySize > 0,std::cerr << "ySize = " << ySize );
 
    this->dimensions.x() = xSize;
    this->dimensions.y() = ySize;
@@ -1109,8 +1109,8 @@ Meshes::Grid< 2, Real, Device, Index > :: getDimensions() const
 template< typename Real,
           typename Device,
           typename Index >
-void Meshes::Grid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
-                                                     const VertexType& proportions )
+void Meshes::Grid< 2, Real, Device, Index > :: setDomain( const PointType& origin,
+                                                     const PointType& proportions )
 {
    this->origin = origin;
    this->proportions = proportions;
@@ -1121,7 +1121,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline 
-const typename Meshes::Grid< 2, Real, Device, Index >::VertexType&
+const typename Meshes::Grid< 2, Real, Device, Index >::PointType&
 Meshes::Grid< 2, Real, Device, Index >::getOrigin() const
 {
    return this->origin;
@@ -1131,7 +1131,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline 
-const typename Meshes::Grid< 2, Real, Device, Index > :: VertexType&
+const typename Meshes::Grid< 2, Real, Device, Index > :: PointType&
    Meshes::Grid< 2, Real, Device, Index > :: getProportions() const
 {
    return this->proportions;
@@ -1146,10 +1146,10 @@ Index
 Meshes::Grid< 2, Real, Device, Index >:: 
 getEntitiesCount() const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
    
-   switch( EntityType::entityDimensions )
+   switch( EntityType::entityDimension )
    {
       case 2:
          return this->numberOfCells;
@@ -1170,8 +1170,8 @@ EntityType
 Meshes::Grid< 2, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
    
    return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
@@ -1185,8 +1185,8 @@ Index
 Meshes::Grid< 2, Real, Device, Index >::
 getEntityIndex( const EntityType& entity ) const
 {
-   static_assert( EntityType::entityDimensions <= 2 &&
-                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimension <= 2 &&
+                  EntityType::entityDimension >= 0, "Wrong grid entity dimension." );
    
    return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
@@ -1219,7 +1219,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-typename Meshes::Grid< 2, Real, Device, Index >::VertexType
+typename Meshes::Grid< 2, Real, Device, Index >::PointType
 Meshes::Grid< 2, Real, Device, Index >::
 getSpaceSteps() const
 {
@@ -1236,9 +1236,9 @@ Meshes::Grid< 2, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
    tnlTNL_ASSERT( xPow >= -2 && xPow <= 2, 
-              cerr << " xPow = " << xPow );
+             std::cerr << " xPow = " << xPow );
    tnlTNL_ASSERT( yPow >= -2 && yPow <= 2, 
-              cerr << " yPow = " << yPow );
+             std::cerr << " yPow = " << yPow );
 
    return this->spaceStepsProducts[ yPow + 2 ][ xPow + 2 ];
 }
@@ -1325,7 +1325,7 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
+bool Meshes::Grid< 2, Real, Device, Index > :: save( File& file ) const
 {
    if( ! tnlObject::save( file ) )
       return false;
@@ -1333,7 +1333,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
        ! this->proportions.save( file ) ||
        ! this->dimensions.save( file ) )
    {
-      cerr << "I was not able to save the domain description of a Grid." << endl;
+     std::cerr << "I was not able to save the domain description of a Grid." <<std::endl;
       return false;
    }
    return true;
@@ -1342,7 +1342,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: load( tnlFile& file )
+bool Meshes::Grid< 2, Real, Device, Index > :: load( File& file )
 {
    if( ! tnlObject::load( file ) )
       return false;
@@ -1351,7 +1351,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: load( tnlFile& file )
        ! this->proportions.load( file ) ||
        ! dimensions.load( file ) )
    {
-      cerr << "I was not able to load the domain description of a Grid." << endl;
+     std::cerr << "I was not able to load the domain description of a Grid." <<std::endl;
       return false;
    }
    this->setDimensions( dimensions );
@@ -1384,7 +1384,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
    file. open( fileName. getString(), ios :: out );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << "." << endl;
+     std::cerr << "I am not able to open the file " << fileName << "." <<std::endl;
       return false;
    }
    if( format == "asymptote" )
@@ -1392,10 +1392,10 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
       file << "size( "
            << this->getProportions(). x() << "cm , "
            << this->getProportions(). y() << "cm );"
-           << endl << endl;
+           <<std::endl <<std::endl;
       TestMeshEntity< 0 > vertex( *this );
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
-      VertexType v;
+      PointType v;
       for( Index j = 0; j < this->dimensions. y(); j ++ )
       {
          file << "draw( ";
@@ -1410,9 +1410,9 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             v = vertex.getCenter();
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
-         file << " );" << endl;
+         file << " );" <<std::endl;
       }
-      file << endl;
+      file <<std::endl;
       for( Index i = 0; i < this->dimensions. x(); i ++ )
       {
          file << "draw( ";
@@ -1427,9 +1427,9 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             v = vertex.getCenter();
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
-         file << " );" << endl;
+         file << " );" <<std::endl;
       }
-      file << endl;
+      file <<std::endl;
 
       TestMeshEntity< 2 > cell( *this );
       CoordinatesType& cellCoordinates = cell.getCoordinates();
@@ -1441,57 +1441,57 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             cellCoordinates.y() = j;
             v = vertex.getCenter();
             file << "label( scale(0.33) * Label( \"$" << setprecision( 3 ) << cellMeasure << setprecision( 8 )
-                 << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" << endl;
+                 << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" <<std::endl;
          }
 
       for( Index i = 0; i < this->dimensions. x(); i ++ )
          for( Index j = 0; j < this->dimensions. y(); j ++ )
          {
-            VertexType v1, v2, c;
+            PointType v1, v2, c;
 
             /****
              * East edge normal
              */
-            /*v1 = this->getVertex( CoordinatesType( i + 1, j ), v1 );
-            v2 = this->getVertex( CoordinatesType( i + 1, j + 1 ), v2 );
+            /*v1 = this->getPoint( CoordinatesType( i + 1, j ), v1 );
+            v2 = this->getPoint( CoordinatesType( i + 1, j + 1 ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< 1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" <<std::endl;
             */
             /****
              * West edge normal
              */
-            /*this->getVertex< -1, -1 >( CoordinatesType( i, j ), v1 );
-            this->getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
+            /*this->getPoint< -1, -1 >( CoordinatesType( i, j ), v1 );
+            this->getPoint< -1, 1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< -1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" <<std::endl;
             */
             /****
              * North edge normal
              */
-            /*this->getVertex< 1, 1 >( CoordinatesType( i, j ), v1 );
-            this->getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
+            /*this->getPoint< 1, 1 >( CoordinatesType( i, j ), v1 );
+            this->getPoint< -1, 1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< 0, 1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" <<std::endl;
             */
             /****
              * South edge normal
              */
-            /*this->getVertex< 1, -1 >( CoordinatesType( i, j ), v1 );
-            this->getVertex< -1, -1 >( CoordinatesType( i, j ), v2 );
+            /*this->getPoint< 1, -1 >( CoordinatesType( i, j ), v1 );
+            this->getPoint< -1, -1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
             this->getEdgeNormal< 0, -1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" <<std::endl;
             */
          }
       return true;
@@ -1518,7 +1518,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: write( const MeshFunction& functi
    file. open( fileName. getString(), ios :: out );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << "." << endl;
+     std::cerr << "I am not able to open the file " << fileName << "." <<std::endl;
       return false;
    }
    file << setprecision( 12 );
@@ -1530,12 +1530,12 @@ bool Meshes::Grid< 2, Real, Device, Index > :: write( const MeshFunction& functi
       {
          for( cellCoordinates.x() = 0; cellCoordinates.x() < getDimensions(). x(); cellCoordinates.x() ++ )
          {
-            VertexType v = cell.getCenter();
+            PointType v = cell.getCenter();
             GnuplotWriter::write( file,  v );
             GnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
-            file << endl;
+            file <<std::endl;
          }
-         file << endl;
+         file <<std::endl;
       }
    }
    file. close();
@@ -1549,7 +1549,7 @@ void
 Meshes::Grid< 2, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
-   logger.writeParameter( "Dimensions:", getMeshDimensions() );
+   logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

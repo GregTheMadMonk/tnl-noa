@@ -41,7 +41,7 @@ class upwindEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef tnlGrid< 1, Real, Device, Index > MeshType;
-      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
@@ -54,11 +54,11 @@ class upwindEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index
                        const RealType& f ) const
       {
          const RealType& hx_inv = entity.getMesh().template getSpaceStepsProducts< -1 >();
-         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities();
 
          const RealType& u_c = u[ entity.getIndex() ];
-         const RealType& u_e = u[ neighbourEntities.template getEntityIndex< 1 >() ];
-         const RealType& u_w = u[ neighbourEntities.template getEntityIndex< -1 >() ];
+         const RealType& u_e = u[ neighborEntities.template getEntityIndex< 1 >() ];
+         const RealType& u_w = u[ neighborEntities.template getEntityIndex< -1 >() ];
 
          if( f > 0.0 )
          {
@@ -94,7 +94,7 @@ class upwindEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef tnlGrid< 2, Real, Device, Index > MeshType;
-      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
 
       static String getType();
@@ -108,12 +108,12 @@ class upwindEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index
          const RealType& hx_inv = entity.getMesh().template getSpaceStepsProducts< -1,  0 >();
          const RealType& hy_inv = entity.getMesh().template getSpaceStepsProducts<  0, -1 >();
 
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();   
+         const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();   
          const RealType& u_c = u[ entity.getIndex() ];
-         const RealType& u_e = u[ neighbourEntities.template getEntityIndex<  1,  0 >() ];
-         const RealType& u_w = u[ neighbourEntities.template getEntityIndex< -1,  0 >() ];
-         const RealType& u_n = u[ neighbourEntities.template getEntityIndex<  0,  1 >() ];
-         const RealType& u_s = u[ neighbourEntities.template getEntityIndex<  0, -1 >() ];
+         const RealType& u_e = u[ neighborEntities.template getEntityIndex<  1,  0 >() ];
+         const RealType& u_w = u[ neighborEntities.template getEntityIndex< -1,  0 >() ];
+         const RealType& u_n = u[ neighborEntities.template getEntityIndex<  0,  1 >() ];
+         const RealType& u_s = u[ neighborEntities.template getEntityIndex<  0, -1 >() ];
          if( f > 0.0 )
          {
             const RealType xf = negativePart( ( u_e - u_c ) * hx_inv );
@@ -151,7 +151,7 @@ class upwindEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef tnlGrid< 3, Real, Device, Index > MeshType;
-      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
@@ -167,14 +167,14 @@ class upwindEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index
          const RealType& hy_inv = entity.getMesh().template getSpaceStepsProducts<  0, -1,  0 >();
          const RealType& hz_inv = entity.getMesh().template getSpaceStepsProducts<  0,  0, -1 >();
 
-         const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+         const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities();
          const RealType& u_c = u[ entity.getIndex() ];
-         const RealType& u_e = u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ];
-         const RealType& u_w = u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ];
-         const RealType& u_n = u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ];
-         const RealType& u_s = u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ];
-         const RealType& u_t = u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ];
-         const RealType& u_b = u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ];
+         const RealType& u_e = u[ neighborEntities.template getEntityIndex<  1,  0,  0 >() ];
+         const RealType& u_w = u[ neighborEntities.template getEntityIndex< -1,  0,  0 >() ];
+         const RealType& u_n = u[ neighborEntities.template getEntityIndex<  0,  1,  0 >() ];
+         const RealType& u_s = u[ neighborEntities.template getEntityIndex<  0, -1,  0 >() ];
+         const RealType& u_t = u[ neighborEntities.template getEntityIndex<  0,  0,  1 >() ];
+         const RealType& u_b = u[ neighborEntities.template getEntityIndex<  0,  0, -1 >() ];
 
          if( f > 0.0 )
          {

@@ -2,6 +2,10 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
+
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -64,12 +68,12 @@ class {problemBaseName}Problem:
       void bindDofs( const MeshPointer& mesh,
                      DofVectorPointer& dofs );
 
-      void getExplicitRHS( const RealType& time,
-                           const RealType& tau,
-                           const MeshPointer& mesh,
-                           DofVectorPointer& _u,
-                           DofVectorPointer& _fu,
-                           MeshDependentDataPointer& meshDependentData );
+      void getExplicitUpdate( const RealType& time,
+                              const RealType& tau,
+                              const MeshPointer& mesh,
+                              DofVectorPointer& _u,
+                              DofVectorPointer& _fu,
+                              MeshDependentDataPointer& meshDependentData );
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
@@ -85,6 +89,16 @@ class {problemBaseName}Problem:
       DifferentialOperatorPointer differentialOperator;
       BoundaryConditionPointer boundaryCondition;
       RightHandSidePointer rightHandSide;
+   
+      TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+
+      TNL::Solvers::PDE::LinearSystemAssembler< Mesh, 
+                                                MeshFunctionType,
+                                                DifferentialOperator,
+                                                BoundaryCondition,
+                                                RightHandSide,
+                                                TNL::Solvers::PDE::BackwardTimeDiscretisation,
+                                                DofVectorType > systemAssembler;
 }};
 
 #include "{problemBaseName}Problem_impl.h"

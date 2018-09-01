@@ -24,8 +24,8 @@
 using namespace TNL;
 using namespace TNL::Problems;
 
-//typedef tnlDefaultBuildMeshConfig BuildConfig;
-typedef Solvers::FastBuildConfig BuildConfig;
+//typedef Solvers::DefaultBuildConfigTag BuildConfig;
+typedef Solvers::FastBuildConfigTag BuildConfig;
 
 template< typename MeshConfig >
 class heatEquationEocConfig
@@ -53,17 +53,17 @@ class heatEquationSetter
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef Containers::StaticVector< MeshType::meshDimensions, Real > Vertex;
+   typedef Containers::StaticVector< MeshType::getMeshDimension(), Real > Point;
 
    static bool run( const Config::ParameterContainer& parameters )
    {
-      enum { Dimensions = MeshType::meshDimensions };
+      enum { Dimension = MeshType::getMeshDimension() };
       typedef Operators::LinearDiffusion< MeshType, Real, Index > ApproximateOperator;
-      typedef Operators::ExactLinearDiffusion< Dimensions > ExactOperator;
-      typedef Functions::TestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
+      typedef Operators::ExactLinearDiffusion< Dimension > ExactOperator;
+      typedef Functions::TestFunction< MeshType::getMeshDimension(), Real, Device > TestFunction;
       typedef HeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
-      typedef Containers::StaticVector < MeshType::meshDimensions, Real > Vertex;
-      typedef Operators::DirichletBoundaryConditions< MeshType, TestFunction, Dimensions, Real, Index > BoundaryConditions;
+      typedef Containers::StaticVector < MeshType::getMeshDimension(), Real > Point;
+      typedef Operators::DirichletBoundaryConditions< MeshType, TestFunction, Dimension, Real, Index > BoundaryConditions;
       typedef HeatEquationEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );

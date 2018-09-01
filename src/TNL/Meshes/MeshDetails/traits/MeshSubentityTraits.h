@@ -2,66 +2,80 @@
                           MeshSubentityTraits.h  -  description
                              -------------------
     begin                : Feb 12, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Containers/StaticArray.h>
-#include <TNL/Containers/SharedArray.h>
 #include <TNL/Meshes/MeshEntity.h>
-#include <TNL/Meshes/MeshConfigBase.h>
-#include <TNL/Meshes/Topologies/MeshEntityTopology.h>
+#include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
+#include <TNL/Meshes/Topologies/SubentityVertexMap.h>
+#include <TNL/Containers/Multimaps/StaticEllpackIndexMultimap.h>
 
 namespace TNL {
 namespace Meshes {
 
-template< typename MeshConfig, typename EntityTopology > class MeshEntityOrientation;
+template< typename MeshConfig, typename EntityTopology >
+class MeshEntityOrientation;
+template< typename MeshConfig, typename EntityTopology >
+class EntitySeed;
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology,
-          int Dimensions >
+          int Dimension >
 class MeshSubentityTraits
 {
-   public:
-      static const bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimensions );
-      static const bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimensions );
+   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType  = typename MeshConfig::LocalIndexType;
 
-      typedef typename MeshConfig::GlobalIndexType                                GlobalIndexType;
-      typedef typename MeshConfig::LocalIndexType                                 LocalIndexType;
-      typedef MeshSubtopology< EntityTopology, Dimensions >                    Subtopology;
-      typedef typename Subtopology::Topology                                      SubentityTopology;
-      typedef MeshEntity< MeshConfig, SubentityTopology >                      SubentityType;
-      typedef MeshEntitySeed< MeshConfig, SubentityTopology >                  Seed;
-      typedef MeshEntityOrientation< MeshConfig, SubentityTopology >           Orientation;
+public:
+   static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
+   static_assert( EntityTopology::dimension > Dimension, "Subentity dimension must be smaller than the entity dimension." );
 
+   static constexpr bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimension );
+   static constexpr bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimension );
+   static constexpr int count = Topologies::Subtopology< EntityTopology, Dimension >::count;
 
-      static const int count = Subtopology::count;
+   using SubentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
+   using SubentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
+   using Seed              = EntitySeed< MeshConfig, SubentityTopology >;
+   using Orientation       = MeshEntityOrientation< MeshConfig, SubentityTopology >;
 
-      typedef Containers::StaticArray< count, GlobalIndexType >              StorageArrayType;
-      typedef Containers::SharedArray< GlobalIndexType,
-                                      Devices::Host,
-                                      LocalIndexType >                      AccessArrayType;
-      typedef Containers::StaticArray< count, GlobalIndexType >              IdArrayType;
-      typedef Containers::StaticArray< count, SubentityType >                SubentityContainerType;
-      typedef Containers::StaticArray< count, Seed >                         SeedArrayType;
-      typedef Containers::StaticArray< count, Orientation >                  OrientationArrayType;
-      typedef Containers::StaticArray< count, LocalIndexType >               IdPermutationArrayType;
+   /****
+    * Type of container for storing of the subentities indices.
+    */
+   // TODO: write general operator= for different SliceSize and remove the '32' here
+   using StorageNetworkType     = StaticEllpackIndexMultimap< count, GlobalIndexType, Device, LocalIndexType, 32 >;
+   using SubentityAccessorType  = typename StorageNetworkType::ValuesAccessorType;
 
-      template< LocalIndexType subentityIndex,
-                LocalIndexType subentityVertexIndex >
-      struct Vertex
-      {
-         enum { index = tnlSubentityVertex< EntityTopology,
-                                            SubentityTopology,
-                                            subentityIndex,
-                                            subentityVertexIndex>::index };
-      };
+   // static array used in MeshSubentitySeedCreator
+   using SeedArrayType          = Containers::StaticArray< count, Seed >;
 
-      static_assert( EntityTopology::dimensions > Dimensions, "You try to create subentities traits where subentity dimensions are not smaller than the entity dimensions." );
+   // orientation and its accessor
+   using OrientationArrayType   = Containers::StaticArray< count, Orientation >;
+   using IdPermutationArrayType = Containers::StaticArray< count, LocalIndexType >;
+
+   template< LocalIndexType subentityIndex,
+             LocalIndexType subentityVertexIndex >
+   struct Vertex
+   {
+      static constexpr int index = Topologies::SubentityVertexMap<
+                  EntityTopology,
+                  SubentityTopology,
+                  subentityIndex,
+                  subentityVertexIndex >::index;
+   };
 };
 
 } // namespace Meshes

@@ -42,34 +42,34 @@ int main( int argc, char* argv[] )
    //if (parameters.GetParameter <String>("scheme") == "godunov")
    //{
    tnlDeviceEnum device;
-   device = tnlHostDevice;
+   device = TNL::Devices::HostDevice;
 
    const int& dim = parameters.getParameter< int >( "dim" );
 
   if(dim == 2)
   {
 
-	   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,tnlHost, int>, double, int > SchemeTypeHost;
+	   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,TNL::Devices::Host, int>, double, int > SchemeTypeHost;
 		/*#ifdef HAVE_CUDA
 		   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,tnlCuda, int>, double, int > SchemeTypeDevice;
 		#endif
 		#ifndef HAVE_CUDA*/
-	   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,tnlHost, int>, double, int > SchemeTypeDevice;
+	   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,TNL::Devices::Host, int>, double, int > SchemeTypeDevice;
 		/*#endif*/
 
-	   if(device==tnlHostDevice)
+	   if(device==TNL::Devices::HostDevice)
 	   {
-		   typedef tnlHost Device;
+		   typedef TNL::Devices::Host Device;
 
 
 		   tnlParallelEikonalSolver<2,SchemeTypeHost,SchemeTypeDevice, Device> solver;
 		   if(!solver.init(parameters))
 		   {
-			   cerr << "Solver failed to initialize." << endl;
+			  std::cerr << "Solver failed to initialize." <<std::endl;
 			   return EXIT_FAILURE;
 		   }
-		   cout << "-------------------------------------------------------------" << endl;
-		   cout << "Starting solver loop..." << endl;
+		  std::cout << "-------------------------------------------------------------" <<std::endl;
+		  std::cout << "Starting solver loop..." <<std::endl;
 		   solver.run();
 	   }
 	   else if(device==tnlCudaDevice )
@@ -80,11 +80,11 @@ int main( int argc, char* argv[] )
 		   tnlParallelEikonalSolver<2,SchemeTypeHost,SchemeTypeDevice, Device> solver;
 		   if(!solver.init(parameters))
 		   {
-			   cerr << "Solver failed to initialize." << endl;
+			  std::cerr << "Solver failed to initialize." <<std::endl;
 			   return EXIT_FAILURE;
 		   }
-		   cout << "-------------------------------------------------------------" << endl;
-		   cout << "Starting solver loop..." << endl;
+		  std::cout << "-------------------------------------------------------------" <<std::endl;
+		  std::cout << "Starting solver loop..." <<std::endl;
 		   solver.run();
 	   }
   // }
@@ -92,27 +92,27 @@ int main( int argc, char* argv[] )
   else if(dim == 3)
   {
 
-	   typedef parallelGodunovEikonalScheme< tnlGrid<3,double,tnlHost, int>, double, int > SchemeTypeHost;
+	   typedef parallelGodunovEikonalScheme< tnlGrid<3,double,TNL::Devices::Host, int>, double, int > SchemeTypeHost;
 		/*#ifdef HAVE_CUDA
 		   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,tnlCuda, int>, double, int > SchemeTypeDevice;
 		#endif
 		#ifndef HAVE_CUDA*/
-	   typedef parallelGodunovEikonalScheme< tnlGrid<3,double,tnlHost, int>, double, int > SchemeTypeDevice;
+	   typedef parallelGodunovEikonalScheme< tnlGrid<3,double,TNL::Devices::Host, int>, double, int > SchemeTypeDevice;
 		/*#endif*/
 
-	   if(device==tnlHostDevice)
+	   if(device==TNL::Devices::HostDevice)
 	   {
-		   typedef tnlHost Device;
+		   typedef TNL::Devices::Host Device;
 
 
 		   tnlParallelEikonalSolver<3,SchemeTypeHost,SchemeTypeDevice, Device> solver;
 		   if(!solver.init(parameters))
 		   {
-			   cerr << "Solver failed to initialize." << endl;
+			  std::cerr << "Solver failed to initialize." <<std::endl;
 			   return EXIT_FAILURE;
 		   }
-		   cout << "-------------------------------------------------------------" << endl;
-		   cout << "Starting solver loop..." << endl;
+		  std::cout << "-------------------------------------------------------------" <<std::endl;
+		  std::cout << "Starting solver loop..." <<std::endl;
 		   solver.run();
 	   }
 	   else if(device==tnlCudaDevice )
@@ -123,19 +123,19 @@ int main( int argc, char* argv[] )
 		   tnlParallelEikonalSolver<3,SchemeTypeHost,SchemeTypeDevice, Device> solver;
 		   if(!solver.init(parameters))
 		   {
-			   cerr << "Solver failed to initialize." << endl;
+			  std::cerr << "Solver failed to initialize." <<std::endl;
 			   return EXIT_FAILURE;
 		   }
-		   cout << "-------------------------------------------------------------" << endl;
-		   cout << "Starting solver loop..." << endl;
+		  std::cout << "-------------------------------------------------------------" <<std::endl;
+		  std::cout << "Starting solver loop..." <<std::endl;
 		   solver.run();
 	   }
  // }
   }
 
    time(&stop);
-   cout << endl;
-   cout << "Running time was: " << difftime(stop,start) << " .... " << (std::clock() - start2) / (double)(CLOCKS_PER_SEC) << endl;
+  std::cout <<std::endl;
+  std::cout << "Running time was: " << difftime(stop,start) << " .... " << (std::clock() - start2) / (double)(CLOCKS_PER_SEC) <<std::endl;
    return EXIT_SUCCESS;
 }
 

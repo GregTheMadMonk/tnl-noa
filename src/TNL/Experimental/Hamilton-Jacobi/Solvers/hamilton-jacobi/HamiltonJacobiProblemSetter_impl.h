@@ -33,16 +33,16 @@ template< typename RealType,
           typename SolverStarter >
 bool HamiltonJacobiProblemSetter< RealType, DeviceType, IndexType, MeshType, ConfigTag, SolverStarter > :: run( const Config::ParameterContainer& parameters )
 {
-   static const int Dimensions = MeshType::getMeshDimensions();
+   static const int Dimensions = MeshType::getMeshDimension();
 
    if( Dimensions <= 0 || Dimensions > 3 )
    {
-      cerr << "The problem is not defined for " << Dimensions << "dimensions." << endl;
+     std::cerr << "The problem is not defined for " << Dimensions << "dimensions." <<std::endl;
       return false;
    }
    else
    {
-      typedef Containers::StaticVector < Dimensions, RealType > Vertex;
+      typedef Containers::StaticVector < Dimensions, RealType > Point;
       typedef tnlConstantFunction< Dimensions, RealType > ConstantFunctionType;
       typedef tnlNeumannBoundaryConditions< MeshType, ConstantFunctionType, RealType, IndexType > BoundaryConditions;
 
@@ -67,7 +67,7 @@ bool HamiltonJacobiProblemSetter< RealType, DeviceType, IndexType, MeshType, Con
            return solverStarter.template run< Solver >( parameters );
       }      
       else
-         cerr << "Unknown scheme '" << schemeName << "'." << endl;
+        std::cerr << "Unknown scheme '" << schemeName << "'." <<std::endl;
 
 
       return false;

@@ -8,15 +8,20 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#include <TNL/Solvers/SolverInitiator.h>
+
+#include <TNL/Devices/Host.h>
+#include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/MIC.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Solvers/MeshTypeResolver.h>
+#include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/Linear/SOR.h>
 #include <TNL/Solvers/Linear/CG.h>
 #include <TNL/Solvers/Linear/BICGStab.h>
 #include <TNL/Solvers/Linear/GMRES.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Solvers/SolverStarter.h>
+#include <TNL/Meshes/DummyMesh.h>
 
 namespace TNL {
 namespace Solvers {   
@@ -25,14 +30,14 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Real,
           typename ConfigTag,
           bool enabled = ConfigTagReal< ConfigTag, Real >::enabled >
-class SolverInitiatorRealResolver{};
+class SolverInitiatorRealResolver {};
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename ConfigTag,
           bool enabled = ConfigTagDevice< ConfigTag, Device >::enabled >
-class SolverInitiatorDeviceResolver{};
+class SolverInitiatorDeviceResolver {};
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
@@ -40,7 +45,16 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Index,
           typename ConfigTag,
           bool enabled = ConfigTagIndex< ConfigTag, Index >::enabled >
-class SolverInitiatorIndexResolver{};
+class SolverInitiatorIndexResolver {};
+
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename ConfigTag,
+          bool enabled = ConfigTagMeshResolve< ConfigTag >::enabled >
+class SolverInitiatorMeshResolver {};
+
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename ConfigTag  >
@@ -59,6 +73,7 @@ bool SolverInitiator< ProblemSetter, ConfigTag > :: run( const Config::Parameter
    return false;
 };
 
+
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename ConfigTag >
@@ -75,6 +90,8 @@ class SolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
             return SolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Host, ConfigTag >::run( parameters );
          if( device == "cuda" )
             return SolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Cuda, ConfigTag >::run( parameters );
+         if(device == "mic")
+             return SolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::MIC, ConfigTag >::run( parameters );
          std::cerr << "The device '" << device << "' is not defined. " << std::endl;
          return false;
       }
@@ -92,6 +109,7 @@ class SolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, false >
          return false;
       }
 };
+
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
@@ -130,6 +148,7 @@ class SolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, fal
       }
 };
 
+
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
@@ -155,10 +174,48 @@ class SolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, ConfigTa
    public:
       static bool run( const Config::ParameterContainer& parameters )
       {
-         return MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::run( parameters );
+         return SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag >::run( parameters );
+      }
+};
+
+
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename ConfigTag >
+class SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >
+{
+   public:
+      static bool run( const Config::ParameterContainer& parameters )
+      {
+         return ProblemSetter< Real,
+                               Device,
+                               Index,
+                               Meshes::DummyMesh< Real, Device, Index >,
+                               ConfigTag,
+                               SolverStarter< ConfigTag > >::template run< Real, Device, Index, ConfigTag >( parameters );
+      }
+};
+
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename ConfigTag >
+class SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
+{
+   // wrapper for MeshTypeResolver
+   template< typename MeshType >
+   using ProblemSetterWrapper = ProblemSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter< ConfigTag > >;
+
+   public:
+      static bool run( const Config::ParameterContainer& parameters )
+      {
+         const String& meshFileName = parameters.getParameter< String >( "mesh" );
+         return Meshes::resolveMeshType< ConfigTag, Device, ProblemSetterWrapper >( meshFileName, parameters );
       }
 };
 
 } // namespace Solvers
 } // namespace TNL
-

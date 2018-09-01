@@ -27,20 +27,24 @@ class MatrixReader
    public:
 
    typedef typename Matrix::IndexType IndexType;
+   typedef typename Matrix::DeviceType DeviceType;
    typedef typename Matrix::RealType RealType;
 
    static bool readMtxFile( const String& fileName,
                             Matrix& matrix,
-                            bool verbose = false );
+                            bool verbose = false,
+                            bool symReader = false );
 
    static bool readMtxFile( std::istream& file,
                             Matrix& matrix,
-                            bool verbose = false );
+                            bool verbose = false,
+                            bool symReader = false );
 
    static bool readMtxFileHostMatrix( std::istream& file,
                                       Matrix& matrix,
-                                      typename Matrix::CompressedRowsLengthsVector& rowLengths,
-                                      bool verbose );
+                                      typename Matrix::CompressedRowLengthsVector& rowLengths,
+                                      bool verbose,
+                                      bool symReader );
 
 
    static bool verifyMtxFile( std::istream& file,
@@ -63,17 +67,19 @@ class MatrixReader
                               bool& symmetricMatrix,
                               bool verbose );
 
-   static bool computeCompressedRowsLengthsFromMtxFile( std::istream& file,
-                                             Containers::Vector< int, Devices::Host, int >& rowLengths,
+   static bool computeCompressedRowLengthsFromMtxFile( std::istream& file,
+                                             Containers::Vector< int, DeviceType, int >& rowLengths,
                                              const int columns,
                                              const int rows,
                                              bool symmetricMatrix,
-                                             bool verbose );
+                                             bool verbose,
+                                             bool symReader = false );
 
    static bool readMatrixElementsFromMtxFile( std::istream& file,
                                               Matrix& matrix,
                                               bool symmetricMatrix,
-                                              bool verbose );
+                                              bool verbose,
+                                              bool symReader );
 
    static bool parseMtxLineWithElement( const String& line,
                                         IndexType& row,

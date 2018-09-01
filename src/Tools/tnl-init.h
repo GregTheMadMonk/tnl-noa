@@ -34,14 +34,14 @@ bool renderFunction( const Config::ParameterContainer& parameters )
    if( ! meshPointer->load( meshFile ) )
       return false;
 
-   typedef Functions::TestFunction< MeshType::meshDimensions, RealType > FunctionType;
+   typedef Functions::TestFunction< MeshType::getMeshDimension(), RealType > FunctionType;
    typedef SharedPointer< FunctionType, typename MeshType::DeviceType > FunctionPointer;
    FunctionPointer function;
    std::cout << "Setting up the function ... " << std::endl;
    if( ! function->setup( parameters, "" ) )
       return false;
    std::cout << "done." << std::endl;
-   typedef Functions::MeshFunction< MeshType, MeshType::meshDimensions > MeshFunctionType;
+   typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimension() > MeshFunctionType;
    typedef SharedPointer< MeshFunctionType, typename MeshType::DeviceType > MeshFunctionPointer;
    MeshFunctionPointer meshFunction( meshPointer );
    //if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
@@ -200,7 +200,7 @@ bool resolveRealType( const Config::ParameterContainer& parameters )
 }
 
 
-template< int Dimensions, typename RealType, typename IndexType >
+template< int Dimension, typename RealType, typename IndexType >
 bool resolveMesh( const Containers::List< String >& parsedMeshType,
                   const Config::ParameterContainer& parameters )
 {
@@ -208,40 +208,40 @@ bool resolveMesh( const Containers::List< String >& parsedMeshType,
    if( parsedMeshType[ 0 ] == "Meshes::Grid" ||
        parsedMeshType[ 0 ] == "tnlGrid" )  // TODO: remove deprecated type name
    {
-      typedef Meshes::Grid< Dimensions, RealType, Devices::Host, IndexType > MeshType;
+      typedef Meshes::Grid< Dimension, RealType, Devices::Host, IndexType > MeshType;
       return resolveRealType< MeshType >( parameters );
    }
    std::cerr << "Unknown mesh type." << std::endl;
    return false;
 }
 
-template< int Dimensions, typename RealType >
+template< int Dimension, typename RealType >
 bool resolveIndexType( const Containers::List< String >& parsedMeshType,
                        const Config::ParameterContainer& parameters )
 {
   std::cout << "+ -> Setting index type to " << parsedMeshType[ 4 ] << " ... " << std::endl;
    if( parsedMeshType[ 4 ] == "int" )
-      return resolveMesh< Dimensions, RealType, int >( parsedMeshType, parameters );
+      return resolveMesh< Dimension, RealType, int >( parsedMeshType, parameters );
 
    if( parsedMeshType[ 4 ] == "long int" )
-      return resolveMesh< Dimensions, RealType, long int >( parsedMeshType, parameters );
+      return resolveMesh< Dimension, RealType, long int >( parsedMeshType, parameters );
 
    return false;
 }
 
-template< int Dimensions >
+template< int Dimension >
 bool resolveRealType( const Containers::List< String >& parsedMeshType,
                       const Config::ParameterContainer& parameters )
 {
   std::cout << "+ -> Setting real type to " << parsedMeshType[ 2 ] << " ... " << std::endl;
    if( parsedMeshType[ 2 ] == "float" )
-      return resolveIndexType< Dimensions, float >( parsedMeshType, parameters );
+      return resolveIndexType< Dimension, float >( parsedMeshType, parameters );
 
    if( parsedMeshType[ 2 ] == "double" )
-      return resolveIndexType< Dimensions, double >( parsedMeshType, parameters );
+      return resolveIndexType< Dimension, double >( parsedMeshType, parameters );
 
    if( parsedMeshType[ 2 ] == "long-double" )
-      return resolveIndexType< Dimensions, long double >( parsedMeshType, parameters );
+      return resolveIndexType< Dimension, long double >( parsedMeshType, parameters );
 
    return false;
 }

@@ -13,8 +13,8 @@
 #include <TNL/Functions/Analytic/SinWaveSDF.h>
 
 namespace TNL {
-   namespace Functions {
-      namespace Analytic {
+namespace Functions {
+namespace Analytic {
 
 template< int dimensions, typename Real >
 SinWaveSDFBase< dimensions, Real >::SinWaveSDFBase()
@@ -106,7 +106,7 @@ template< typename Real >
 __cuda_callable__
 Real
 SinWaveSDF< 1, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -115,7 +115,7 @@ getPartialDerivative( const VertexType& v,
    const RealType distance = ::sqrt( x * x ) + this->phase * this->waveLength / (2.0*M_PI);
    if( XDiffOrder == 0 )
       return this->sinWaveFunctionSDF( distance );
-   TNL_ASSERT( false, std::cerr << "TODO: implement this" );
+   TNL_ASSERT_TRUE( false, "TODO: implement this" );
    return 0.0;
 }
 
@@ -127,7 +127,7 @@ template< typename Real >
 __cuda_callable__
 Real
 SinWaveSDF< 2, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    if( ZDiffOrder != 0 )
@@ -138,7 +138,7 @@ getPartialDerivative( const VertexType& v,
    const RealType distance  = ::sqrt( x * x + y * y ) + this->phase * this->waveLength / (2.0*M_PI);
    if( XDiffOrder == 0 && YDiffOrder == 0)
       return this->sinWaveFunctionSDF( distance );
-   TNL_ASSERT( false, std::cerr << "TODO: implement this" );
+   TNL_ASSERT_TRUE( false, "TODO: implement this" );
    return 0.0;
 }
 
@@ -149,7 +149,7 @@ template< typename Real >
 __cuda_callable__
 Real
 SinWaveSDF< 3, Real >::
-getPartialDerivative( const VertexType& v,
+getPartialDerivative( const PointType& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();
@@ -158,10 +158,10 @@ getPartialDerivative( const VertexType& v,
    const RealType distance  = ::sqrt( x * x +  y * y + z * z ) +  this->phase * this->waveLength / (2.0*M_PI);
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
       return this->sinWaveFunctionSDF( distance );
-   TNL_ASSERT( false, std::cerr << "TODO: implement this" );
+   TNL_ASSERT_TRUE( false, "TODO: implement this" );
    return 0.0;
 }
 
-      } // namespace Analytic
-   } // namespace Functions
+} // namespace Analytic
+} // namespace Functions
 } // namespace TNL

@@ -32,11 +32,11 @@ NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::Navi
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-String NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getTypeStatic()
+String NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getType()
 {
    return String( "NavierStokesSolver< " ) +
-          AdvectionScheme::getTypeStatic() + ", " +
-          DiffusionScheme::getTypeStatic() + " >";
+          AdvectionScheme::getType() + ", " +
+          DiffusionScheme::getType() + " >";
 }
 
 template< typename AdvectionScheme,
@@ -340,15 +340,15 @@ template< typename AdvectionScheme,
    template< typename SolverVectorType >
 void NavierStokesSolver< AdvectionScheme,
                       DiffusionScheme,
-                      BoundaryConditions >::getExplicitRhs( const RealType& time,
+                      BoundaryConditions >::getExplicitUpdate( const RealType& time,
                                                             const RealType& tau,
                                                             SolverVectorType& u,
                                                             SolverVectorType& fu )
 {
-   TNL_ASSERT( this->advection, );
-   TNL_ASSERT( this->u1Viscosity, );
-   TNL_ASSERT( this->u2Viscosity, );
-   TNL_ASSERT( this->boundaryConditions, );
+   TNL_ASSERT_TRUE( this->advection, "advection scheme was not set" );
+   TNL_ASSERT_TRUE( this->u1Viscosity, "diffusion scheme was not set" );
+   TNL_ASSERT_TRUE( this->u2Viscosity, "diffusion scheme was not set" );
+   TNL_ASSERT_TRUE( this->boundaryConditions, "boundary conditions were not set" );
 
    SharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e,
                                                       rho_t, rho_u1_t, rho_u2_t, e_t;
@@ -454,7 +454,7 @@ void NavierStokesSolver< AdvectionScheme,
            continue;
         }
 
-        this->advection->getExplicitRhs( c,
+        this->advection->getExplicitUpdate( c,
                                          rho_t[ c ],
                                          rho_u1_t[ c ],
                                          rho_u2_t[ c ],

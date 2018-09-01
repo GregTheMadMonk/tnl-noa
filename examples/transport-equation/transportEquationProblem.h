@@ -46,55 +46,42 @@ public PDEProblem< Mesh,
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
-      using typename BaseType::MeshDependentDataType;
-      using typename BaseType::MeshDependentDataPointer; 
       
-      static String getTypeStatic();
+      static String getType();
 
       String getPrologHeader() const;
 
       void writeProlog( Logger& logger,
                         const Config::ParameterContainer& parameters ) const;
 
-      bool setup( const MeshPointer& meshPointer,
-                  const Config::ParameterContainer& parameters,
+      bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" );
 
       bool setInitialCondition( const Config::ParameterContainer& parameters,
-                                const MeshPointer& mesh,
-                                DofVectorPointer& dofs,
-                                MeshDependentDataPointer& meshDependentData );
+                                DofVectorPointer& dofs );
 
       template< typename Matrix >
-      bool setupLinearSystem( const MeshPointer& mesh,
-                              Matrix& matrix );
+      bool setupLinearSystem( Matrix& matrix );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
-                         const MeshPointer& mesh,
-                         DofVectorPointer& dofs,
-                         MeshDependentDataPointer& meshDependentData );
+                         DofVectorPointer& dofs );
 
-      IndexType getDofs( const MeshPointer& mesh ) const;
+      IndexType getDofs() const;
 
-      void bindDofs( const MeshPointer& mesh,
-                     DofVectorPointer& dofs );
+      void bindDofs( DofVectorPointer& dofs );
 
-      void getExplicitRHS( const RealType& time,
-                           const RealType& tau,
-                           const MeshPointer& mesh,
-                           DofVectorPointer& _u,
-                           DofVectorPointer& _fu,
-                           MeshDependentDataPointer& meshDependentData );
+      void getExplicitUpdate( const RealType& time,
+                              const RealType& tau,
+                              DofVectorPointer& _u,
+                              DofVectorPointer& _fu );
 
       template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
-                                 const MeshPointer& mesh,
                                  DofVectorPointer& dofs,
                                  Matrix& matrix,
-                                 DofVectorPointer& rightHandSide,
-                                 MeshDependentDataPointer& meshDependentData );
+                                 DofVectorPointer& rightHandSide );
 
    protected:
 

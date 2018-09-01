@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Devices/MIC.h>
+
 namespace TNL {
 namespace Solvers {
 namespace ODE {
@@ -33,7 +35,7 @@ template< typename Problem >
 String Euler< Problem > :: getType() const
 {
    return String( "Euler< " ) +
-          Problem :: getTypeStatic() +
+          Problem :: getType() +
           String( " >" );
 };
 
@@ -74,11 +76,7 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
     * First setup the supporting meshes k1...k5 and k_tmp.
     */
    //timer.start();
-   if( ! k1->setLike( *u ) )
-   {
-      std::cerr << "I do not have enough memory to allocate a supporting grid for the Euler explicit solver." << std::endl;
-      return false;
-   }
+   k1->setLike( *u );
    k1->setValue( 0.0 );
 
 
@@ -102,7 +100,9 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
       /****
        * Compute the RHS
        */
-      this->problem->getExplicitRHS( time, currentTau, u, k1 );
+      //timer.stop();
+      this->problem->getExplicitUpdate( time, currentTau, u, k1 );
+      //timer.start();
 
       RealType lastResidue = this->getResidue();
       RealType maxResidue( 0.0 );
@@ -193,20 +193,47 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
          const IndexType sharedMemory = cudaBlockSize.x * sizeof( RealType );
          const IndexType gridOffset = gridIdx * threadsPerGrid;
          const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
+         const IndexType currentGridSize = Devices::Cuda::getNumberOfBlocks( currentSize, cudaBlockSize.x );
 
-         updateUEuler<<< cudaBlocks, cudaBlockSize, sharedMemory >>>( currentSize,
+         updateUEuler<<< currentGridSize, cudaBlockSize, sharedMemory >>>( currentSize,
                                                                       tau,
                                                                       &_k1[ gridOffset ],
                                                                       &_u[ gridOffset ],
                                                                       this->cudaBlockResidue.getData() );
          localResidue += this->cudaBlockResidue.sum();
          cudaThreadSynchronize();
-         checkCudaDevice;
+         TNL_CHECK_CUDA_DEVICE;
       }
 #endif
    }
-   localResidue /= tau * ( RealType ) size;
+   
+   //MIC
+   if( std::is_same< DeviceType, Devices::MIC >::value )
+   {
+
+#ifdef HAVE_MIC
+      Devices::MICHider<RealType> mu;
+      mu.pointer=_u;
+      Devices::MICHider<RealType> mk1;
+      mk1.pointer=_k1;
+    #pragma offload target(mic) in(mu,mk1,size) inout(localResidue)
+    {
+      #pragma omp parallel for reduction(+:localResidue) firstprivate( mu, mk1 )  
+      for( IndexType i = 0; i < size; i ++ )
+      {
+         const RealType add = tau * mk1.pointer[ i ];
+         mu.pointer[ i ] += add;
+         localResidue += std::fabs( add );
+      }
+    }
+#endif
+   }
+
+   
+   
+   localResidue /= tau * ( RealType ) size;   
    MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this->solver_comm );
+
 }
 
 #ifdef HAVE_CUDA
@@ -218,7 +245,7 @@ __global__ void updateUEuler( const Index size,
                               RealType* cudaBlockResidue )
 {
    extern __shared__ RealType du[];
-   const Index blockOffset = blockIdx. x * blockDim. x;
+   const Index blockOffset = blockIdx. x * blockDim.x;
    const Index i = blockOffset  + threadIdx. x;
    if( i < size )
       u[ i ] += du[ threadIdx.x ] = tau * k1[ i ];

@@ -2,7 +2,7 @@
                           MeshFunctionVTKWriter.h  -  description
                              -------------------
     begin                : Jan 28, 2016
-    copyright            : (C) 2016 by oberhuber
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,225 +10,49 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/Writers/VTKWriter.h>
 
 namespace TNL {
 namespace Functions {   
 
-template< typename, int, typename > class MeshFunction;
-
 template< typename MeshFunction >
 class MeshFunctionVTKWriter
 {
-   public:
- 
-      static bool write( const MeshFunction& function,
-                         std::ostream& str,
-                         const double& scale );
-      
-      static void writeHeader(const MeshFunction& function,
-                         std::ostream& str ){}
-};
+   using MeshType = typename MeshFunction::MeshType;
+   using MeshWriter = Meshes::Writers::VTKWriter< MeshType >;
+   using EntityType = typename MeshType::template EntityType< MeshFunction::getEntitiesDimension() >;
+   using GlobalIndex = typename MeshType::GlobalIndexType;
 
-/***
- * 1D grid, cells
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >
-{
-   public:
-      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
+public:
+   static bool write( const MeshFunction& function,
+                      std::ostream& str,
+                      const double& scale = 1.0,
+                      const String& functionName = "cellFunctionValues" )
+   {
+      const MeshType& mesh = function.getMesh();
+      MeshWriter::template writeEntities< MeshFunction::getEntitiesDimension() >( mesh, str );
+      appendFunction( function, str, functionName, scale );
+      return true;
+   }
 
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-      
-      static void writeHeader(const MeshFunctionType& function,
-                         std::ostream& str );
-};
- 
-/***
- * 1D grid, vertices
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >
-{
-   public:
-      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-      
-      static void writeHeader(const MeshFunctionType& function,
-                         std::ostream& str );
-};
-
-/***
- * 2D grid, cells
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >
-{
-   public:
-      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 2, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-      
-      static void writeHeader(const MeshFunctionType& function,
-                         std::ostream& str );
-};
-
-/***
- * 2D grid, faces
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >
-{
-   public:
-      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-      
-      static void writeHeader(const MeshFunctionType& function,
-                         std::ostream& str );
-};
-
-/***
- * 2D grid, vertices
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >
-{
-   public:
-      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-      
-      static void writeHeader(const MeshFunctionType& function,
-                         std::ostream& str );
-};
-
-/***
- * 3D grid, cells
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >
-{
-   public:
-      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 3, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-      
-      static void writeHeader(const MeshFunctionType& function,
-                         std::ostream& str );
-};
-
-/***
- * 3D grid, faces
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >
-{
-   public:
-      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 2, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-      
-      static void writeHeader(const MeshFunctionType& function,
-                         std::ostream& str );
-};
-
-/***
- * 3D grid, edges
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1, Real > >
-{
-   public:
-      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-      
-      static void writeHeader(const MeshFunctionType& function,
-                         std::ostream& str );
-};
-
-/***
- * 3D grid, vertices
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >
-{
-   public:
-      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-      
-      static void writeHeader(const MeshFunctionType& function,
-                         std::ostream& str );
+   // VTK supports writing multiple functions into the same file.
+   // You can call this after 'write', which initializes the mesh entities,
+   // with different function name.
+   static void appendFunction( const MeshFunction& function,
+                               std::ostream& str,
+                               const String& functionName,
+                               const double& scale = 1.0 )
+   {
+      const MeshType& mesh = function.getMesh();
+      const GlobalIndex entitiesCount = mesh.template getEntitiesCount< EntityType >();
+      str << std::endl << "CELL_DATA " << entitiesCount << std::endl;
+      str << "SCALARS " << functionName << " " << getType< typename MeshFunction::RealType >() << " 1" << std::endl;
+      str << "LOOKUP_TABLE default" << std::endl;
+      for( GlobalIndex i = 0; i < entitiesCount; i++ ) {
+         str << scale * function.getData().getElement( i ) << "\n";
+      }
+   }
 };
 
 } // namespace Functions
 } // namespace TNL
-
-#include <TNL/Functions/MeshFunctionVTKWriter_impl.h>

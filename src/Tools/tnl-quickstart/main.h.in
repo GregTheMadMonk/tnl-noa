@@ -58,10 +58,10 @@ class {problemBaseName}Setter
 
       static bool run( const Config::ParameterContainer & parameters )
       {{
-          enum {{ Dimensions = MeshType::getMeshDimensions() }};
+          enum {{ Dimension = MeshType::getMeshDimension() }};
           typedef {operatorName}< MeshType, Real, Index > ApproximateOperator;
           typedef {problemBaseName}Rhs< MeshType, Real > RightHandSide;    
-          typedef Containers::StaticVector < MeshType::getMeshDimensions(), Real > Vertex;
+          typedef Containers::StaticVector < MeshType::getMeshDimension(), Real > Vertex;
 
          /****
           * Resolve the template arguments of your solver here.
@@ -71,10 +71,10 @@ class {problemBaseName}Setter
           String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )
           {{
-             typedef Functions::Analytic::Constant< Dimensions, Real > ConstantFunction;
+             typedef Functions::Analytic::Constant< Dimension, Real > ConstantFunction;
              if( boundaryConditionsType == "dirichlet" )
              {{
-                typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+                typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunction, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
                 typedef {problemBaseName}Problem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
@@ -86,8 +86,8 @@ class {problemBaseName}Setter
           }}
           typedef Functions::MeshFunction< MeshType > MeshFunction;
           if( boundaryConditionsType == "dirichlet" )
-          {{
-             typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+          {{    
+             typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
              typedef {problemBaseName}Problem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );

@@ -1,4 +1,5 @@
-SET( headers Problem.h
+SET( headers CommonData.h
+             Problem.h
              PDEProblem.h
              PDEProblem_impl.h
              HeatEquationProblem.h
@@ -13,4 +14,4 @@ SET( headers Problem.h
 	     MeanCurvatureFlowProblem_impl.h            
    )
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Problems )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Problems )

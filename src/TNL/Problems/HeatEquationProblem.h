@@ -22,6 +22,8 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Timer.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 namespace TNL {
 namespace Problems {
@@ -53,10 +55,8 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
-      using typename BaseType::MeshDependentDataType;
-      using typename BaseType::MeshDependentDataPointer;
 
-      static String getTypeStatic();
+      static String getType();
 
       String getPrologHeader() const;
 
@@ -66,50 +66,39 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       bool writeEpilog( Logger& logger );
 
 
-      bool setup( const MeshPointer& meshPointer,
-                  const Config::ParameterContainer& parameters,
+      bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );
 
       bool setInitialCondition( const Config::ParameterContainer& parameters,
-                                const MeshPointer& mesh,
-                                DofVectorPointer& dofs,
-                                MeshDependentDataPointer& meshDependentData );
+                                DofVectorPointer& dofs );
 
       template< typename MatrixPointer >
-      bool setupLinearSystem( const MeshPointer& meshPointer,
-                              MatrixPointer& matrixPointer );
+      bool setupLinearSystem( MatrixPointer& matrixPointer );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
-                         const MeshPointer& meshPointer,
-                         DofVectorPointer& dofs,
-                         MeshDependentDataPointer& meshDependentData );
+                         DofVectorPointer& dofs );
 
-      IndexType getDofs( const MeshPointer& meshPointer ) const;
+      IndexType getDofs() const;
 
-      void bindDofs( const MeshPointer& meshPointer,
-                     const DofVectorPointer& dofs );
+      void bindDofs( const DofVectorPointer& dofs );
 
-      void getExplicitRHS( const RealType& time,
-                           const RealType& tau,
-                           const MeshPointer& meshPointer,
-                           DofVectorPointer& _u,
-                           DofVectorPointer& _fu,
-                           MeshDependentDataPointer& meshDependentData );
+      void getExplicitUpdate( const RealType& time,
+                              const RealType& tau,
+                              DofVectorPointer& _u,
+                              DofVectorPointer& _fu );
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
-                                 const MeshPointer& meshPointer,
                                  const DofVectorPointer& dofsPointer,
                                  MatrixPointer& matrixPointer,
-                                 DofVectorPointer& rightHandSidePointer,
-                                 MeshDependentDataPointer& meshDependentData );
-
+                                 DofVectorPointer& rightHandSidePointer );
 
       protected:
          
          MeshFunctionPointer uPointer;
+         MeshFunctionPointer fuPointer;
       
          DifferentialOperatorPointer differentialOperatorPointer;
 
@@ -120,6 +109,14 @@ class HeatEquationProblem : public PDEProblem< Mesh,
          Timer gpuTransferTimer;
          
          Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+         
+         Solvers::PDE::LinearSystemAssembler< Mesh, 
+                                              MeshFunctionType,
+                                              DifferentialOperator,
+                                              BoundaryCondition,
+                                              RightHandSide,
+                                              Solvers::PDE::BackwardTimeDiscretisation,
+                                              DofVectorType > systemAssembler;
 };
 
 } // namespace Problems

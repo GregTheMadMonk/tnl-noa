@@ -7,7 +7,7 @@
 __author__ = "Tomas Oberhuber"
 __date__ = "$May 6, 2015 8:40:59 PM$"
 
-import TNL.Config
+import TNL
 
 def generateRunScript( problemBaseName ):
     file = open( "run-" + problemBaseName, "w" )
@@ -18,14 +18,14 @@ print( "----------------------------------")
 
 definitions = {}
 
-definitions['problemName'] = input( "Problam name:" )
+definitions['problemName'] = input( "Problem name:" )
 definitions['problemBaseName'] = input( "Problem class base name (base name acceptable in C++ code):" )
 definitions['operatorName'] = input( "Operator name:")
 
 ####
 # Makefile
 #
-with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/Makefile.in", 'r') as ftemp:
+with open( TNL.__install_prefix__+"/share/TNL/Makefile.in", 'r') as ftemp:
     templateString = ftemp.read()
 with open( "Makefile", 'w') as file:
     file.write( templateString.format(**definitions ) )
@@ -33,17 +33,17 @@ with open( "Makefile", 'w') as file:
 ####
 # Main files
 #
-with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/main.h.in", 'r') as ftemp:
+with open( TNL.__install_prefix__+"/share/TNL/main.h.in", 'r') as ftemp:
     templateString = ftemp.read()
 with open( definitions['problemBaseName']+".h", 'w') as file:
     file.write( templateString.format(**definitions ) )
 
-with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/main.cu.in", 'r') as ftemp:
+with open( TNL.__install_prefix__+"/share/TNL/main.cu.in", 'r') as ftemp:
     templateString = ftemp.read()
-with open( definitions['problemBaseName']+".cu", 'w') as file:
+with open( definitions['problemBaseName']+"-cuda.cu", 'w') as file:
     file.write( templateString.format(**definitions ) )
 
-with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/main.cpp.in", 'r') as ftemp:
+with open( TNL.__install_prefix__+"/share/TNL/main.cpp.in", 'r') as ftemp:
     templateString = ftemp.read()
 with open( definitions['problemBaseName']+".cpp", 'w') as file:
     file.write( templateString.format(**definitions ) )
@@ -51,12 +51,12 @@ with open( definitions['problemBaseName']+".cpp", 'w') as file:
 ####
 # Problem definition
 #
-with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/problem.h.in", 'r') as ftemp:
+with open( TNL.__install_prefix__+"/share/TNL/problem.h.in", 'r') as ftemp:
     templateString = ftemp.read()
 with open( definitions['problemBaseName'] + "Problem.h", 'w') as file:
     file.write( templateString.format(**definitions ) )
 
-with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/problem_impl.h.in", 'r') as ftemp:
+with open( TNL.__install_prefix__+"/share/TNL/problem_impl.h.in", 'r') as ftemp:
     templateString = ftemp.read()
 with open( definitions['problemBaseName'] + "Problem_impl.h", 'w') as file:
     file.write( templateString.format(**definitions ) )
@@ -65,29 +65,29 @@ with open( definitions['problemBaseName'] + "Problem_impl.h", 'w') as file:
 # Operator
 #
 dimensions = [ '1', '2', '3' ]
-for meshDimensions in dimensions:
-   definitions[ 'meshDimensions' ] = meshDimensions
-   key = 'operatorGridSpecializationHeader_' + meshDimensions + 'D'
-   with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/operator-grid-specialization.h.in", 'r') as ftemp:
+for meshDimension in dimensions:
+   definitions[ 'meshDimension' ] = meshDimension
+   key = 'operatorGridSpecializationHeader_' + meshDimension + 'D'
+   with open( TNL.__install_prefix__+"/share/TNL/operator-grid-specialization.h.in", 'r') as ftemp:
        templateString = ftemp.read()
    definitions[ key ] = templateString.format( **definitions )
 
-   with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/explicit-laplace-grid-" + meshDimensions + "d_impl.h.in", 'r') as ftemp:
+   with open( TNL.__install_prefix__+"/share/TNL/explicit-laplace-grid-" + meshDimension + "d_impl.h.in", 'r') as ftemp:
       definitions[ 'explicitScheme' ] = ftemp.read();
-   with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/implicit-laplace-grid-" + meshDimensions + "d_impl.h.in", 'r') as ftemp:
+   with open( TNL.__install_prefix__+"/share/TNL/implicit-laplace-grid-" + meshDimension + "d_impl.h.in", 'r') as ftemp:
       definitions[ 'semiimplicitScheme' ] = ftemp.read();
 
-   key = 'operatorGridSpecializationImplementation_' + meshDimensions + 'D'
-   with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/operator-grid-specialization_impl.h.in", 'r') as ftemp:
+   key = 'operatorGridSpecializationImplementation_' + meshDimension + 'D'
+   with open( TNL.__install_prefix__+"/share/TNL/operator-grid-specialization_impl.h.in", 'r') as ftemp:
        templateString = ftemp.read()
    definitions[ key ] = templateString.format( **definitions )
 
-with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/operator.h.in", 'r') as ftemp:
+with open( TNL.__install_prefix__+"/share/TNL/operator.h.in", 'r') as ftemp:
     templateString = ftemp.read()
 with open( definitions['operatorName'] + ".h", 'w') as file:
     file.write( templateString.format(**definitions ) )
 
-with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/operator_impl.h.in", 'r') as ftemp:
+with open( TNL.__install_prefix__+"/share/TNL/operator_impl.h.in", 'r') as ftemp:
     templateString = ftemp.read()
 with open( definitions['operatorName'] + "_impl.h", 'w') as file:
     file.write( templateString.format(**definitions ) )
@@ -95,7 +95,7 @@ with open( definitions['operatorName'] + "_impl.h", 'w') as file:
 ####
 # Right-hand side
 #
-with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/rhs.h.in", 'r') as ftemp:
+with open( TNL.__install_prefix__+"/share/TNL/rhs.h.in", 'r') as ftemp:
     templateString = ftemp.read()
 with open( definitions['problemBaseName'] + "Rhs.h", 'w') as file:
     file.write( templateString.format(**definitions ) )
@@ -103,7 +103,7 @@ with open( definitions['problemBaseName'] + "Rhs.h", 'w') as file:
 ####
 # Build config tag
 #
-with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/build-config-tag.h.in", 'r') as ftemp:
+with open( TNL.__install_prefix__+"/share/TNL/build-config-tag.h.in", 'r') as ftemp:
     templateString = ftemp.read()
 with open( definitions['problemBaseName'] + "BuildConfigTag.h", 'w') as file:
     file.write( templateString.format(**definitions ) )
@@ -111,7 +111,7 @@ with open( definitions['problemBaseName'] + "BuildConfigTag.h", 'w') as file:
 ####
 # Run script
 #
-with open( TNL.Config.tnl_install_prefix+"/share/tnl-" + TNL.Config.tnl_version + "/run-script.in", 'r') as ftemp:
+with open( TNL.__install_prefix__+"/share/TNL/run-script.in", 'r') as ftemp:
     templateString = ftemp.read()
 with open( "run-" + definitions['problemBaseName'], 'w') as file:
     file.write( templateString.format(**definitions ) )

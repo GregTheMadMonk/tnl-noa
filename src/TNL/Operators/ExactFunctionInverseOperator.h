@@ -18,17 +18,17 @@
 namespace TNL {
 namespace Operators {
 
-template< int Dimensions,
-          typename InnerOperator= ExactIdentityOperator< Dimensions > >
+template< int Dimension,
+          typename InnerOperator= ExactIdentityOperator< Dimension > >
 class ExactFunctionInverseOperator
-   : public Functions::Domain< Dimensions, Functions::SpaceDomain >
+   : public Functions::Domain< Dimension, Functions::SpaceDomain >
 {
    public:
  
       static String getType()
       {
          return String( "ExactFunctionInverseOperator< " ) +
-                String( Dimensions) + " >";
+                String( Dimension) + " >";
       }
  
       InnerOperator& getInnerOperator()
@@ -45,7 +45,7 @@ class ExactFunctionInverseOperator
       __cuda_callable__
       typename Function::RealType
          operator()( const Function& function,
-                     const typename Function::VertexType& v,
+                     const typename Function::PointType& v,
                      const typename Function::RealType& time = 0.0 ) const
       {
          typedef typename Function::RealType RealType;
@@ -59,7 +59,7 @@ class ExactFunctionInverseOperator
       __cuda_callable__
       typename Function::RealType
          getPartialDerivative( const Function& function,
-                               const typename Function::VertexType& v,
+                               const typename Function::PointType& v,
                                const typename Function::RealType& time = 0.0 ) const
       {
          static_assert( XDerivative >= 0 && YDerivative >= 0 && ZDerivative >= 0,

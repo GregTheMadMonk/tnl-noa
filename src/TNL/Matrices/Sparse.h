@@ -26,7 +26,7 @@ class Sparse : public Matrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename Matrix< RealType, DeviceType, IndexType >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
+   typedef typename Matrix< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Matrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef Containers::Vector< IndexType, DeviceType, IndexType > ColumnIndexesVector;
    typedef Matrix< Real, Device, Index > BaseType;
@@ -34,10 +34,10 @@ class Sparse : public Matrix< Real, Device, Index >
 
    Sparse();
 
-   virtual bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths ) = 0;
+   virtual void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths ) = 0;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const Sparse< Real2, Device2, Index2 >& matrix );
+   void setLike( const Sparse< Real2, Device2, Index2 >& matrix );
 
    IndexType getNumberOfMatrixElements() const;
 
@@ -58,12 +58,19 @@ class Sparse : public Matrix< Real, Device, Index >
 
    protected:
 
-   bool allocateMatrixElements( const IndexType& numberOfMatrixElements );
+   void allocateMatrixElements( const IndexType& numberOfMatrixElements );
 
    Containers::Vector< Index, Device, Index > columnIndexes;
 
    Index maxRowLength;
 };
+
+
+// This cannot be a method of the Sparse class, because the implementation uses
+// methods (marked with __cuda_callable__) which are defined only on the
+// subclasses, but are not virtual methods of Sparse.
+template< typename Matrix1, typename Matrix2 >
+void copySparseMatrix( Matrix1& A, const Matrix2& B );
 
 } // namespace Matrices
 } // namespace TNL

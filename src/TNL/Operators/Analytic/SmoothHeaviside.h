@@ -27,7 +27,7 @@ class SmoothHeaviside : public Functions::Domain< Function::getDomainDimenions()
       
       typedef typename Function::RealType RealType;
       typedef Containers::StaticVector< Function::getDomainDimenions(), 
-                                        RealType > VertexType;
+                                        RealType > PointType;
       
       SmoothHeaviside()
       : sharpness( 1.0 ){}
@@ -49,7 +49,7 @@ class SmoothHeaviside : public Functions::Domain< Function::getDomainDimenions()
       
       __cuda_callable__
       RealType operator()( const Function& function,
-                           const VertexType& vertex,
+                           const PointType& vertex,
                            const RealType& time = 0 ) const
       {
          const RealType aux = function( vertex, time );
@@ -61,7 +61,7 @@ class SmoothHeaviside : public Functions::Domain< Function::getDomainDimenions()
                 int ZDiffOrder = 0 >
       __cuda_callable__
       RealType getPartialDerivative( const Function& function,
-                                     const VertexType& vertex,
+                                     const PointType& vertex,
                                      const RealType& time = 0 ) const
       {
          if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )

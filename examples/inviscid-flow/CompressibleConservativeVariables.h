@@ -22,7 +22,7 @@ class CompressibleConservativeVariables
 {
    public:
       typedef Mesh MeshType;
-      static const int Dimensions = MeshType::getMeshDimensions();
+      static const int Dimensions = MeshType::getMeshDimension();
       typedef typename MeshType::RealType RealType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;

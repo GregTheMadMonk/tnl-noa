@@ -27,15 +27,22 @@ class Timer
 
       void start();
 
-      double getRealTime();
+      double getRealTime() const;
 
-      double getCPUTime();
+      double getCPUTime() const;
 
-      unsigned long long int getCPUCycles();
+      unsigned long long int getCPUCycles() const;
  
-      bool writeLog( Logger& logger, int logLevel = 0 );
+      bool writeLog( Logger& logger, int logLevel = 0 ) const;
  
    protected:
+      
+      double readRealTime() const;
+
+      double readCPUTime() const;
+
+      unsigned long long int readCPUCycles() const;
+      
 
    double initialRealTime, totalRealTime,
           initialCPUTime, totalCPUTime;
@@ -44,7 +51,7 @@ class Timer
  
    bool stopState;
  
-   inline unsigned long long rdtsc()
+   inline unsigned long long rdtsc() const
    {
      unsigned hi, lo;
      __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));

@@ -26,7 +26,7 @@ bool MatrixWriter< Matrix >::writeToGnuplot( std::ostream& str,
       {
          RealType elementValue = matrix.getElement( row, column );
          if(  elementValue != ( RealType ) 0.0 )
-            str << column << " " << row << " " << elementValue << std::endl;
+            str << column << " " << row << " " << elementValue << "\n";
       }
       if( verbose )
         std::cout << "Drawing the row " << row << "      \r" << std::flush;
@@ -86,7 +86,7 @@ bool MatrixWriter< Matrix >::writeEpsBody( std::ostream& str,
          {
             str << ( column - lastColumn ) * elementSize
                 << " " << -( row - lastRow ) * elementSize
-                << " translate newpath 0 0 " << elementSize << " " << elementSize << " rectstroke" << std::endl;
+                << " translate newpath 0 0 " << elementSize << " " << elementSize << " rectstroke\n";
             lastColumn = column;
             lastRow = row;
          }

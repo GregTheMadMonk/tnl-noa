@@ -19,8 +19,8 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Anisotropy >
-tnlFastSweepingMethod< tnlGrid< 2, Real, Device, Index >, Anisotropy >::
-tnlFastSweepingMethod()
+FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
+FastSweepingMethod()
 : maxIterations( 1 )
 {
    
@@ -31,7 +31,7 @@ template< typename Real,
           typename Index,
           typename Anisotropy >
 const Index&
-tnlFastSweepingMethod< tnlGrid< 2, Real, Device, Index >, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
 getMaxIterations() const
 {
    
@@ -42,7 +42,7 @@ template< typename Real,
           typename Index,
           typename Anisotropy >
 void
-tnlFastSweepingMethod< tnlGrid< 2, Real, Device, Index >, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
 setMaxIterations( const IndexType& maxIterations )
 {
    
@@ -53,8 +53,8 @@ template< typename Real,
           typename Index,
           typename Anisotropy >
 void
-tnlFastSweepingMethod< tnlGrid< 2, Real, Device, Index >, Anisotropy >::
-solve( const MeshType& mesh,
+FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
+solve( const MeshPointer& mesh,
        const AnisotropyType& anisotropy,
        MeshFunctionType& u )
 {
@@ -66,18 +66,18 @@ solve( const MeshType& mesh,
    BaseType::initInterface( u, aux, interfaceMap );
    //aux.save( "aux-ini.tnl" );
 
-   typename MeshType::Cell cell( mesh );
+   typename MeshType::Cell cell( *mesh );
    
    IndexType iteration( 0 );
    while( iteration < this->maxIterations )
    {
 
       for( cell.getCoordinates().y() = 0;
-           cell.getCoordinates().y() < mesh.getDimensions().y();
+           cell.getCoordinates().y() < mesh->getDimensions().y();
            cell.getCoordinates().y()++ )
       {
          for( cell.getCoordinates().x() = 0;
-              cell.getCoordinates().x() < mesh.getDimensions().x();
+              cell.getCoordinates().x() < mesh->getDimensions().x();
               cell.getCoordinates().x()++ )
             {
                cell.refresh();
@@ -88,10 +88,10 @@ solve( const MeshType& mesh,
       //aux.save( "aux-1.tnl" );
 
       for( cell.getCoordinates().y() = 0;
-           cell.getCoordinates().y() < mesh.getDimensions().y();
+           cell.getCoordinates().y() < mesh->getDimensions().y();
            cell.getCoordinates().y()++ )
       {
-         for( cell.getCoordinates().x() = mesh.getDimensions().x() - 1;
+         for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
               cell.getCoordinates().x() >= 0 ;
               cell.getCoordinates().x()-- )		
             {
@@ -103,12 +103,12 @@ solve( const MeshType& mesh,
       }
       //aux.save( "aux-2.tnl" );
 
-      for( cell.getCoordinates().y() = mesh.getDimensions().y() - 1;
+      for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
            cell.getCoordinates().y() >= 0 ;
            cell.getCoordinates().y()-- )
          {
          for( cell.getCoordinates().x() = 0;
-              cell.getCoordinates().x() < mesh.getDimensions().x();
+              cell.getCoordinates().x() < mesh->getDimensions().x();
               cell.getCoordinates().x()++ )
             {
                //std::cerr << "3 -> ";
@@ -120,11 +120,11 @@ solve( const MeshType& mesh,
       //aux.save( "aux-3.tnl" );
 
 
-      for( cell.getCoordinates().y() = mesh.getDimensions().y() - 1;
+      for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
            cell.getCoordinates().y() >= 0;
            cell.getCoordinates().y()-- )
          {
-         for( cell.getCoordinates().x() = mesh.getDimensions().x() - 1;
+         for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
               cell.getCoordinates().x() >= 0 ;
               cell.getCoordinates().x()-- )		
             {

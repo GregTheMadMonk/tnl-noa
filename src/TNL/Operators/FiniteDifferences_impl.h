@@ -69,22 +69,22 @@ Real FiniteDifferences< Meshes::Grid< 1, Real, Device, Index > >::getDifference(
    if( YDifferenceOrder > 0 || ZDifferenceOrder > 0 )
       return 0.0;
    const RealType hx = grid.getSpaceSteps().x();
-   auto neighbourEntities = cell.getNeighbourEntities();
+   auto neighborEntities = cell.getNeighborEntities();
    IndexType cellIndex = grid.getEntityIndex( cell );
    if( XDifferenceOrder == 1 )
    {
       if( XDifferenceDirection == 0 )
-         return ( function[ neighbourEntities.template getEntityIndex< 1 >() ] -
-                  function[ neighbourEntities.template getEntityIndex< -1 >() ] ) / ( 2.0 * hx );
+         return ( function[ neighborEntities.template getEntityIndex< 1 >() ] -
+                  function[ neighborEntities.template getEntityIndex< -1 >() ] ) / ( 2.0 * hx );
       else
-         return ( function[ neighbourEntities.template getEntityIndex< XDifferenceDirection >() ] -
+         return ( function[ neighborEntities.template getEntityIndex< XDifferenceDirection >() ] -
                   function[ cellIndex ] ) / ( XDifferenceDirection * hx );
    }
    if( XDifferenceOrder == 2 )
    {
-      return ( function[ neighbourEntities.template getEntityIndex< 1 >() ] -
+      return ( function[ neighborEntities.template getEntityIndex< 1 >() ] -
                2.0 * function[ cellIndex ] +
-               function[ neighbourEntities.template getEntityIndex< -1 >() ] ) / (  hx * hx );
+               function[ neighborEntities.template getEntityIndex< -1 >() ] ) / (  hx * hx );
    }
 }
 
@@ -121,33 +121,33 @@ Real FiniteDifferences< Meshes::Grid< 2, Real, Device, Index > >::getDifference(
 {
    if( ZDifferenceOrder > 0 )
       return 0.0;
-   auto neighbourEntities = cell.getNeighbourEntities();
+   auto neighborEntities = cell.getNeighborEntities();
    IndexType cellIndex = grid.getEntityIndex( cell );
    if( XDifferenceOrder == 1 )
    {
       const RealType hx = grid.getSpaceSteps().x();
-      return ( function[ neighbourEntities.template getEntityIndex< XDifferenceDirection, 0 >( cellIndex ) ] -
+      return ( function[ neighborEntities.template getEntityIndex< XDifferenceDirection, 0 >( cellIndex ) ] -
                function[ cellIndex ] ) / ( XDifferenceDirection * hx );
    }
    if( XDifferenceOrder == 2 )
    {
       const RealType hx = grid.getSpaceSteps().x();
-      return ( function[ neighbourEntities.template getEntityIndex< 1, 0 >( cellIndex ) ] -
+      return ( function[ neighborEntities.template getEntityIndex< 1, 0 >( cellIndex ) ] -
                2.0 * function[ cellIndex ] +
-               function[ neighbourEntities.template getEntityIndex< -1, 0 >( cellIndex ) ] ) / (  hx * hx );
+               function[ neighborEntities.template getEntityIndex< -1, 0 >( cellIndex ) ] ) / (  hx * hx );
    }
    if( YDifferenceOrder == 1 )
    {
       const RealType hy = grid.getSpaceSteps().y();
-      return ( function[ neighbourEntities.template getEntityIndex< 0, YDifferenceDirection >( cellIndex ) ] -
+      return ( function[ neighborEntities.template getEntityIndex< 0, YDifferenceDirection >( cellIndex ) ] -
                function[ cellIndex ] ) / ( YDifferenceDirection * hy );
    }
    if( YDifferenceOrder == 2 )
    {
       const RealType hy = grid.getSpaceSteps().y();
-      return ( function[ neighbourEntities.template getEntityIndex< 0, 1 >( cellIndex ) ] -
+      return ( function[ neighborEntities.template getEntityIndex< 0, 1 >( cellIndex ) ] -
                2.0 * function[ cellIndex ] +
-               function[ neighbourEntities.template getEntityIndex< 0, -1 >( cellIndex ) ] ) / (  hy * hy );
+               function[ neighborEntities.template getEntityIndex< 0, -1 >( cellIndex ) ] ) / (  hy * hy );
    }
 
 
@@ -184,47 +184,47 @@ Real FiniteDifferences< Meshes::Grid< 3, Real, Device, Index > >::getDifference(
                                                                                const CellType& cell,
                                                                                const GridFunction& function )
 {
-   auto neighbourEntities = cell.getNeighbourEntities();
+   auto neighborEntities = cell.getNeighborEntities();
    IndexType cellIndex = grid.getEntityIndex( cell );
 
    if( XDifferenceOrder == 1 )
    {
       const RealType hx = grid.getSpaceSteps().x();
-      return ( function[ neighbourEntities.template getEntityIndex< XDifferenceDirection, 0, 0 >( cellIndex ) ] -
+      return ( function[ neighborEntities.template getEntityIndex< XDifferenceDirection, 0, 0 >( cellIndex ) ] -
                function[ cellIndex ] ) / ( XDifferenceDirection * hx );
    }
    if( XDifferenceOrder == 2 )
    {
       const RealType hx = grid.getSpaceSteps().x();
-      return ( function[ neighbourEntities.template getEntityIndex< 1, 0, 0 >( cellIndex ) ] -
+      return ( function[ neighborEntities.template getEntityIndex< 1, 0, 0 >( cellIndex ) ] -
                2.0 * function[ cellIndex ] +
-               function[ neighbourEntities.template getEntityIndex< -1, 0, 0 >( cellIndex ) ] ) / (  hx * hx );
+               function[ neighborEntities.template getEntityIndex< -1, 0, 0 >( cellIndex ) ] ) / (  hx * hx );
    }
    if( YDifferenceOrder == 1 )
    {
       const RealType hy = grid.getSpaceSteps().y();
-      return ( function[ neighbourEntities.template getEntityIndex< 0, YDifferenceDirection, 0 >( cellIndex ) ] -
+      return ( function[ neighborEntities.template getEntityIndex< 0, YDifferenceDirection, 0 >( cellIndex ) ] -
                function[ cellIndex ] ) / ( YDifferenceDirection * hy );
    }
    if( YDifferenceOrder == 2 )
    {
       const RealType hy = grid.getSpaceSteps().y();
-      return ( function[ neighbourEntities.template getEntityIndex< 0, 1, 0 >( cellIndex ) ] -
+      return ( function[ neighborEntities.template getEntityIndex< 0, 1, 0 >( cellIndex ) ] -
                2.0 * function[ cellIndex ] +
-               function[ neighbourEntities.template getEntityIndex< 0, -1, 0 >( cellIndex ) ] ) / (  hy * hy );
+               function[ neighborEntities.template getEntityIndex< 0, -1, 0 >( cellIndex ) ] ) / (  hy * hy );
    }
    if( ZDifferenceOrder == 1 )
    {
       const RealType hz = grid.getSpaceSteps().z();
-      return ( function[ neighbourEntities.template getEntityIndex< 0, 0, ZDifferenceDirection >( cellIndex ) ] -
+      return ( function[ neighborEntities.template getEntityIndex< 0, 0, ZDifferenceDirection >( cellIndex ) ] -
                function[ cellIndex ] ) / ( ZDifferenceDirection * hz );
    }
    if( ZDifferenceOrder == 2 )
    {
       const RealType hz = grid.getSpaceSteps().z();
-      return ( function[ neighbourEntities.template getEntityIndex< 0, 0, 1 >( cellIndex ) ] -
+      return ( function[ neighborEntities.template getEntityIndex< 0, 0, 1 >( cellIndex ) ] -
                2.0 * function[ cellIndex ] +
-               function[ neighbourEntities.template getEntityIndex< 0, 0, -1 >( cellIndex ) ] ) / (  hz * hz );
+               function[ neighborEntities.template getEntityIndex< 0, 0, -1 >( cellIndex ) ] ) / (  hz * hz );
    }
 
 

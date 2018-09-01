@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Problems/MeanCurvatureFlowProblem.h>
@@ -27,7 +33,7 @@ class MeanCurvatureFlowEocProblem : public MeanCurvatureFlowProblem< Mesh, Bound
 {
    public:
 
-      static String getTypeStatic();
+      static String getType();
 
       bool setup( const Config::ParameterContainer& parameters );
 };

@@ -2,11 +2,17 @@
                           MeshIntegrityChecker.h  -  description
                              -------------------
     begin                : Mar 20, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
+
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Zabka Vitezslav, zabkav@gmail.com
+ */
 
 #pragma once
 
@@ -19,10 +25,10 @@ namespace Meshes {
 template< typename MeshType >
 class MeshIntegrityChecker
 : public MeshIntegrityCheckerLayer< MeshType,
-                                       MeshDimensionsTag< MeshType::Config::CellType::dimensions > >
+                                    DimensionTag< MeshType::Config::CellType::dimension > >
 {
-      typedef MeshDimensionsTag< MeshType::Config::CellType::dimensions > DimensionsTag;
-      typedef MeshIntegrityCheckerLayer< MeshType, DimensionsTag > BaseType;
+      typedef Meshes::DimensionTag< MeshType::Config::CellType::dimension > DimensionTag;
+      typedef MeshIntegrityCheckerLayer< MeshType, DimensionTag > BaseType;
 
    public:
       static bool checkMesh( const MeshType& mesh )

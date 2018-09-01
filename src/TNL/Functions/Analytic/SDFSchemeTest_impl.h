@@ -34,7 +34,7 @@ bool SDFSchemeTestBase< function, Real >::v( const Config::ParameterContainer& p
 
 template< typename function, int Dimensions, typename Real >
    template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-Real SDFSchemeTest< function, 1, Real >::getValue( const Vertex& v,
+Real SDFSchemeTest< function, 1, Real >::getValue( const Point& v,
               const Real& time = 0.0 ) const
 {
    if( YDiffOrder != 0 || ZDiffOrder != 0 || XDiffOrder != 0 )
@@ -47,7 +47,7 @@ Real SDFSchemeTest< function, 1, Real >::getValue( const Vertex& v,
 
 template< typename function, int Dimensions, typename Real >
    template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-Real SDFSchemeTest< function, 2, Real >::getValue( const Vertex& v,
+Real SDFSchemeTest< function, 2, Real >::getValue( const Point& v,
               const Real& time = 0.0 ) const
 {
 	   if( YDiffOrder != 0 || ZDiffOrder != 0 || XDiffOrder != 0 )
@@ -60,7 +60,7 @@ Real SDFSchemeTest< function, 2, Real >::getValue( const Vertex& v,
 
 template< typename function, int Dimensions, typename Real >
    template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
-Real SDFSchemeTest< function, 3, Real >::getValue( const Vertex& v,
+Real SDFSchemeTest< function, 3, Real >::getValue( const Point& v,
               const Real& time = 0.0 ) const
 {
 	   if( YDiffOrder != 0 || ZDiffOrder != 0 || XDiffOrder != 0 )

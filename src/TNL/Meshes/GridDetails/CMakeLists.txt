@@ -15,11 +15,11 @@ SET( headers BoundaryGridEntityChecker.h
              GridEntityTopology.h
              GridTraverser.h
              GridTraverser_impl.h
-             NeighbourGridEntitiesStorage.h
-             NeighbourGridEntityGetter1D_impl.h
-             NeighbourGridEntityGetter2D_impl.h
-             NeighbourGridEntityGetter3D_impl.h
-             NeighbourGridEntityGetter.h
+             NeighborGridEntitiesStorage.h
+             NeighborGridEntityGetter1D_impl.h
+             NeighborGridEntityGetter2D_impl.h
+             NeighborGridEntityGetter3D_impl.h
+             NeighborGridEntityGetter.h
              Traverser_Grid1D.h
              Traverser_Grid1D_impl.h
              Traverser_Grid2D.h
@@ -32,4 +32,4 @@ SET( tnl_mesh_griddetails_SOURCES
      ${CURRENT_DIR}/Grid_impl.cpp
      PARENT_SCOPE )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Meshes/GridDetails )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Meshes/GridDetails )

@@ -40,9 +40,9 @@ class OperatorFunctionTest
    typedef typename OperatorType::RealType RealType;
    typedef typename OperatorType::IndexType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef typename MeshType::VertexType VertexType;
-   typedef Functions::Analytic::ExpBump< MeshType::getMeshDimensions(), RealType > TestFunctionType;
-   typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
+   typedef typename MeshType::PointType PointType;
+   typedef Functions::Analytic::ExpBump< MeshType::getMeshDimension(), RealType > TestFunctionType;
+   typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimension() > MeshFunctionType;
    typedef SharedPointer< MeshType > MeshPointer;
 
    OperatorFunctionTest(){};
@@ -65,7 +65,7 @@ class OperatorFunctionTest
       MeshPointer meshPointer;
       typedef Functions::OperatorFunction< Operator, MeshFunctionType, void, EvaluateOnFly > OperatorFunctionType;
       meshPointer->setDimensions( CoordinatesType( 25 ) );
-      meshPointer->setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
+      meshPointer->setDomain( PointType( -1.0 ), PointType( 2.0 ) );
       TestFunctionType testFunction;
       testFunction.setAmplitude( 1.0 );
       testFunction.setSigma( 1.0 );
@@ -74,7 +74,7 @@ class OperatorFunctionTest
       OperatorType operator_;
       OperatorFunctionType operatorFunction( operator_, f1 );
       operatorFunction.refresh();
-      //cerr << f1.getData() << endl;
+      //cerr << f1.getData() <<std::endl;
       for( IndexType i = 0; i < meshPointer->template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
          auto entity = meshPointer->template getEntity< typename MeshType::Cell >( i );
@@ -94,7 +94,7 @@ class OperatorFunctionTest
       typedef Operators::DirichletBoundaryConditions< MeshType > BoundaryConditionsType;
       typedef Functions::OperatorFunction< Operator, MeshFunctionType, BoundaryConditionsType, EvaluateOnFly > OperatorFunctionType;
       mesh->setDimensions( CoordinatesType( 25 ) );
-      mesh->setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
+      mesh->setDomain( PointType( -1.0 ), PointType( 2.0 ) );
       TestFunctionType testFunction;
       testFunction.setAmplitude( 1.0 );
       testFunction.setSigma( 1.0 );
@@ -104,7 +104,7 @@ class OperatorFunctionTest
       BoundaryConditionsType boundaryConditions;
       OperatorFunctionType operatorFunction( operator_, boundaryConditions, f1 );
       operatorFunction.refresh();
-      //cerr << f1.getData() << endl;
+      //cerr << f1.getData() <<std::endl;
       for( IndexType i = 0; i < mesh->template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
          auto entity = mesh->template getEntity< typename MeshType::Cell >( i );

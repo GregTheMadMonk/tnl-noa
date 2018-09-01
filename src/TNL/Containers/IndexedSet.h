@@ -11,70 +11,45 @@
 #pragma once
 
 #include <map>
-#include <stdexcept>
+#include <ostream>
 
 namespace TNL {
 namespace Containers {
 
-template< typename Element,
-          typename Index,
-          typename Key >
+template< class Key,
+          class Index,
+          class Compare = std::less< Key >,
+          class Allocator = std::allocator< std::pair< const Key, Index > > >
 class IndexedSet
 {
-   public:
+protected:
+   using map_type = std::map< Key, Index, Compare, Allocator >;
+   map_type map;
 
-   typedef Element   ElementType;
-   typedef Index     IndexType;
-   typedef Key       KeyType;
+public:
+   using key_type = Key;
+   using index_type = Index;
+   using value_type = typename map_type::value_type;
+   using size_type = typename map_type::size_type;
 
-   void reset();
+   void clear();
 
-   IndexType getSize() const;
+   size_type size() const;
 
-   IndexType insert( const ElementType &data );
+   Index insert( const Key& key );
 
-   bool find( const ElementType &data, IndexType& index ) const;
+   bool find( const Key& key, Index& index ) const;
 
-   template< typename ArrayType >
-   void toArray( ArrayType& array ) const;
+   size_type count( const Key& key ) const;
 
-   const Element& getElement( KeyType key ) const;
+   size_type erase( const Key& key );
 
-   Element& getElement( KeyType key );
- 
    void print( std::ostream& str ) const;
-
-   protected:
-
-   struct DataWithIndex
-   {
-      // This constructor is here only because of bug in g++, we might fix it later.
-      // http://stackoverflow.com/questions/22357887/comparing-two-mapiterators-why-does-it-need-the-copy-constructor-of-stdpair
-      DataWithIndex(){};
- 
-      DataWithIndex( const DataWithIndex& d ) : data( d.data ), index( d.index) {}
- 
-      explicit DataWithIndex( const Element data) : data( data ) {}
-
-      DataWithIndex( const Element data,
-                     const Index index) : data(data), index(index) {}
-
-      Element data;
-      Index index;
-   };
-
-   typedef std::map< Key, DataWithIndex >      STDMapType;
-   typedef typename STDMapType::value_type     STDMapValueType;
-   typedef typename STDMapType::const_iterator STDMapIteratorType;
-
-   STDMapType map;
-
 };
 
 template< typename Element,
-          typename Index,
-          typename Key >
-std::ostream& operator <<( std::ostream& str, IndexedSet< Element, Index, Key >& set );
+          typename Index >
+std::ostream& operator <<( std::ostream& str, IndexedSet< Element, Index >& set );
 
 } // namespace Containers
 } // namespace TNL

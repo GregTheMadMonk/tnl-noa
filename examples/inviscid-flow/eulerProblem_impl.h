@@ -36,9 +36,9 @@ template< typename Mesh,
           typename InviscidOperators >
 String
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
-getTypeStatic()
+getType()
 {
-   return String( "eulerProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "eulerProblem< " ) + Mesh :: getType() + " >";
 }
 
 template< typename Mesh,
@@ -72,17 +72,16 @@ template< typename Mesh,
           typename InviscidOperators >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
-setup( const MeshPointer& meshPointer,
-       const Config::ParameterContainer& parameters,
+setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->inviscidOperatorsPointer->setup( meshPointer, parameters, prefix + "inviscid-operators-" ) ||
-       ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) ||
+   if( ! this->inviscidOperatorsPointer->setup( this->getMesh(), parameters, prefix + "inviscid-operators-" ) ||
+       ! this->boundaryConditionPointer->setup( this->getMesh(), parameters, prefix + "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, prefix + "right-hand-side-" ) )
       return false;
    this->gamma = parameters.getParameter< double >( "gamma" );
-   velocity->setMesh( meshPointer );
-   pressure->setMesh( meshPointer );
+   velocity->setMesh( this->getMesh() );
+   pressure->setMesh( this->getMesh() );
    return true;
 }
 
@@ -92,13 +91,13 @@ template< typename Mesh,
           typename InviscidOperators >
 typename eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::IndexType
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
-getDofs( const MeshPointer& mesh ) const
+getDofs() const
 {
    /****
     * Return number of  DOFs (degrees of freedom) i.e. number
     * of unknowns to be resolved by the main solver.
     */
-   return this->conservativeVariables->getDofs( mesh );
+   return this->conservativeVariables->getDofs( this->getMesh() );
 }
 
 template< typename Mesh,
@@ -107,10 +106,9 @@ template< typename Mesh,
           typename InviscidOperators >
 void
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
-bindDofs( const MeshPointer& mesh,
-          DofVectorPointer& dofVector )
+bindDofs( DofVectorPointer& dofVector )
 {
-   this->conservativeVariables->bind( mesh, dofVector );
+   this->conservativeVariables->bind( this->getMesh(), dofVector );
 }
 
 template< typename Mesh,
@@ -120,12 +118,10 @@ template< typename Mesh,
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 setInitialCondition( const Config::ParameterContainer& parameters,
-                     const MeshPointer& mesh,
-                     DofVectorPointer& dofs,
-                     MeshDependentDataPointer& meshDependentData )
+                     DofVectorPointer& dofs )
 {
    CompressibleConservativeVariables< MeshType > conservativeVariables;
-   conservativeVariables.bind( mesh, dofs );
+   conservativeVariables.bind( this->getMesh(), dofs );
    const String& initialConditionType = parameters.getParameter< String >( "initial-condition" );
    if( initialConditionType == "riemann-problem" )
    {
@@ -146,21 +142,20 @@ template< typename Mesh,
    template< typename Matrix >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
-setupLinearSystem( const MeshPointer& mesh,
-                   Matrix& matrix )
+setupLinearSystem( Matrix& matrix )
 {
-/*   const IndexType dofs = this->getDofs( mesh );
-   typedef typename Matrix::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   CompressedRowsLengthsVectorType rowLengths;
+/*   const IndexType dofs = this->getDofs();
+   typedef typename Matrix::CompressedRowLengthsVector CompressedRowLengthsVectorType;
+   CompressedRowLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
-   MatrixSetter< MeshType, InviscidOperators, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >( mesh,
+   MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
+   matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( mesh,
                                                                           differentialOperator,
                                                                           boundaryCondition,
                                                                           rowLengths );
    matrix.setDimensions( dofs, dofs );
-   if( ! matrix.setCompressedRowsLengths( rowLengths ) )
+   if( ! matrix.setCompressedRowLengths( rowLengths ) )
       return false;*/
    return true;
 }
@@ -173,13 +168,11 @@ bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
-              const MeshPointer& mesh,
-              DofVectorPointer& dofs,
-              MeshDependentDataPointer& meshDependentData )
+              DofVectorPointer& dofs )
 {
   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
   
-  this->bindDofs( mesh, dofs );
+  this->bindDofs( dofs );
   PhysicalVariablesGetter< MeshType > physicalVariablesGetter;
   physicalVariablesGetter.getVelocity( this->conservativeVariables, this->velocity );
   physicalVariablesGetter.getPressure( this->conservativeVariables, this->gamma, this->pressure );
@@ -212,22 +205,20 @@ template< typename Mesh,
           typename InviscidOperators >
 void
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
-getExplicitRHS( const RealType& time,
-                const RealType& tau,
-                const MeshPointer& mesh,
-                DofVectorPointer& _u,
-                DofVectorPointer& _fu,
-                MeshDependentDataPointer& meshDependentData )
+getExplicitUpdate( const RealType& time,
+                   const RealType& tau,
+                   DofVectorPointer& _u,
+                   DofVectorPointer& _fu )
 {
     typedef typename MeshType::Cell Cell;
     
     /****
      * Bind DOFs
      */
-    this->conservativeVariables->bind( mesh, _u );
-    this->conservativeVariablesRHS->bind( mesh, _fu );
-    this->velocity->setMesh( mesh );
-    this->pressure->setMesh( mesh );
+    this->conservativeVariables->bind( this->getMesh(), _u );
+    this->conservativeVariablesRHS->bind( this->getMesh(), _fu );
+    this->velocity->setMesh( this->getMesh() );
+    this->pressure->setMesh( this->getMesh() );
     
     /****
      * Resolve the physical variables
@@ -253,34 +244,31 @@ getExplicitRHS( const RealType& time,
     * Continuity equation
     */ 
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, ContinuityOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterContinuity; 
-   explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           this->inviscidOperatorsPointer->getContinuityOperator(),
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
-                                                           this->conservativeVariables->getDensity(),
-                                                           this->conservativeVariablesRHS->getDensity() );
+   explicitUpdaterContinuity.setDifferentialOperator( this->inviscidOperatorsPointer->getContinuityOperator() );
+   explicitUpdaterContinuity.setBoundaryConditions( this->boundaryConditionPointer );
+   explicitUpdaterContinuity.setRightHandSide( this->rightHandSidePointer );
+   explicitUpdaterContinuity.template update< typename Mesh::Cell >( time, tau, this->getMesh(), 
+                                                                     this->conservativeVariables->getDensity(),
+                                                                     this->conservativeVariablesRHS->getDensity() );
 
    /****
     * Momentum equations
     */
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumXOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterMomentumX; 
-   explicitUpdaterMomentumX.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           this->inviscidOperatorsPointer->getMomentumXOperator(),
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
+   explicitUpdaterMomentumX.setDifferentialOperator( this->inviscidOperatorsPointer->getMomentumXOperator() );
+   explicitUpdaterMomentumX.setBoundaryConditions( this->boundaryConditionPointer );
+   explicitUpdaterMomentumX.setRightHandSide( this->rightHandSidePointer );   
+   explicitUpdaterMomentumX.template update< typename Mesh::Cell >( time, tau, this->getMesh(),
                                                            ( *this->conservativeVariables->getMomentum() )[ 0 ], // uRhoVelocityX,
                                                            ( *this->conservativeVariablesRHS->getMomentum() )[ 0 ] ); //, fuRhoVelocityX );
 
    if( Dimensions > 1 )
    {
       Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumYOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterMomentumY;
-      explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time,
-                                                              mesh,
-                                                              this->inviscidOperatorsPointer->getMomentumYOperator(),
-                                                              this->boundaryConditionPointer,
-                                                              this->rightHandSidePointer,
+      explicitUpdaterMomentumY.setDifferentialOperator( this->inviscidOperatorsPointer->getMomentumYOperator() );
+      explicitUpdaterMomentumY.setBoundaryConditions( this->boundaryConditionPointer );
+      explicitUpdaterMomentumY.setRightHandSide( this->rightHandSidePointer );         
+      explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time, tau, this->getMesh(),
                                                               ( *this->conservativeVariables->getMomentum() )[ 1 ], // uRhoVelocityX,
                                                               ( *this->conservativeVariablesRHS->getMomentum() )[ 1 ] ); //, fuRhoVelocityX );
    }
@@ -288,11 +276,10 @@ getExplicitRHS( const RealType& time,
    if( Dimensions > 2 )
    {
       Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumZOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterMomentumZ;
-      explicitUpdaterMomentumZ.template update< typename Mesh::Cell >( time,
-                                                              mesh,
-                                                              this->inviscidOperatorsPointer->getMomentumZOperator(),
-                                                              this->boundaryConditionPointer,
-                                                              this->rightHandSidePointer,
+      explicitUpdaterMomentumZ.setDifferentialOperator( this->inviscidOperatorsPointer->getMomentumZOperator() );
+      explicitUpdaterMomentumZ.setBoundaryConditions( this->boundaryConditionPointer );
+      explicitUpdaterMomentumZ.setRightHandSide( this->rightHandSidePointer );               
+      explicitUpdaterMomentumZ.template update< typename Mesh::Cell >( time, tau, this->getMesh(),
                                                               ( *this->conservativeVariables->getMomentum() )[ 2 ], // uRhoVelocityX,
                                                               ( *this->conservativeVariablesRHS->getMomentum() )[ 2 ] ); //, fuRhoVelocityX );
    }
@@ -302,11 +289,10 @@ getExplicitRHS( const RealType& time,
     * Energy equation
     */
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, EnergyOperatorType, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
-   explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           this->inviscidOperatorsPointer->getEnergyOperator(),
-                                                           this->boundaryConditionPointer,
-                                                           this->rightHandSidePointer,
+   explicitUpdaterEnergy.setDifferentialOperator( this->inviscidOperatorsPointer->getEnergyOperator() );
+   explicitUpdaterEnergy.setBoundaryConditions( this->boundaryConditionPointer );
+   explicitUpdaterEnergy.setRightHandSide( this->rightHandSidePointer );                  
+   explicitUpdaterEnergy.template update< typename Mesh::Cell >( time, tau, this->getMesh(),
                                                            this->conservativeVariables->getEnergy(), // uRhoVelocityX,
                                                            this->conservativeVariablesRHS->getEnergy() ); //, fuRhoVelocityX );
    
@@ -315,13 +301,7 @@ getExplicitRHS( const RealType& time,
    this->conservativeVariablesRHS->getMomentum()->write( "momentum", "gnuplot", 0.05 );
    getchar();*/
 
-/*
-   BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
-   boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
-      this->boundaryCondition, 
-      time + tau, 
-       u );*/
- }
+}
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -332,11 +312,9 @@ void
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const MeshPointer& mesh,
                       DofVectorPointer& _u,
                       Matrix& matrix,
-                      DofVectorPointer& b,
-                      MeshDependentDataPointer& meshDependentData )
+                      DofVectorPointer& b )
 {
 /*   LinearSystemAssembler< Mesh,
                              MeshFunctionType,
@@ -350,7 +328,6 @@ assemblyLinearSystem( const RealType& time,
    MeshFunction< Mesh > u( mesh, _u );
    systemAssembler.template assembly< typename Mesh::Cell >( time,
                                                              tau,
-                                                             mesh,
                                                              this->differentialOperator,
                                                              this->boundaryCondition,
                                                              this->rightHandSide,
@@ -367,9 +344,7 @@ bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 postIterate( const RealType& time,
              const RealType& tau,
-             const MeshPointer& mesh,
-             DofVectorPointer& dofs,
-             MeshDependentDataPointer& meshDependentData )
+             DofVectorPointer& dofs )
 {
    /*
     typedef typename MeshType::Cell Cell;

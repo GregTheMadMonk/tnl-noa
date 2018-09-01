@@ -28,7 +28,7 @@ class Heaviside : public Functions::Domain< Dimensions, Functions::SpaceDomain >
       
       typedef Real RealType;
       typedef Containers::StaticVector< Dimensions, 
-                                        RealType > VertexType;
+                                        RealType > PointType;
       
       Heaviside() : multiplicator( 1.0 ) {}
       
@@ -49,7 +49,7 @@ class Heaviside : public Functions::Domain< Dimensions, Functions::SpaceDomain >
       template< typename Function >
       __cuda_callable__
       RealType operator()( const Function& function,
-                           const VertexType& vertex,
+                           const PointType& vertex,
                            const RealType& time = 0 ) const
       {
          const RealType aux = function( vertex, time );
@@ -64,7 +64,7 @@ class Heaviside : public Functions::Domain< Dimensions, Functions::SpaceDomain >
                 int ZDiffOrder = 0 >
       __cuda_callable__
       RealType getPartialDerivative( const Function& function,
-                                     const VertexType& vertex,
+                                     const PointType& vertex,
                                      const RealType& time = 0 ) const
       {
          if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )

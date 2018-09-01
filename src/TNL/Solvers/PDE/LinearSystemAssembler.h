@@ -22,7 +22,6 @@ template< typename Real,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide,
-          typename Matrix,
           typename DofVector >
 class LinearSystemAssemblerTraverserUserData
 {
@@ -41,26 +40,18 @@ class LinearSystemAssemblerTraverserUserData
       
       DofVector* b = NULL;
 
-      Matrix* matrix = NULL;
-
-      void setUserData( const Real& time,
-                        const Real& tau,
-                        const DifferentialOperator* differentialOperator,
-                        const BoundaryConditions* boundaryConditions,
-                        const RightHandSide* rightHandSide,
-                        const MeshFunction* u,
-                        Matrix* matrix,
-                        DofVector* b )
-      {
-         this->time = time;
-         this->tau = tau;
-         this->differentialOperator = differentialOperator;
-         this->boundaryConditions = boundaryConditions;
-         this->rightHandSide = rightHandSide;
-         this->u = u;
-         this->b = b;
-         this->matrix = matrix;
-      }
+      void* matrix = NULL;
+      
+      LinearSystemAssemblerTraverserUserData()
+      : time( 0.0 ),
+        tau( 0.0 ),
+        differentialOperator( NULL ),
+        boundaryConditions( NULL ),
+        rightHandSide( NULL ),
+        u( NULL ),
+        b( NULL ),
+        matrix( NULL )
+      {}
 };
 
 
@@ -70,7 +61,6 @@ template< typename Mesh,
           typename BoundaryConditions,
           typename RightHandSide,
           typename TimeDiscretisation,
-          typename Matrix,
           typename DofVector >
 class LinearSystemAssembler
 {
@@ -80,36 +70,70 @@ class LinearSystemAssembler
    typedef typename MeshFunction::RealType RealType;
    typedef typename MeshFunction::DeviceType DeviceType;
    typedef typename MeshFunction::IndexType IndexType;
-   typedef Matrix MatrixType;
    typedef LinearSystemAssemblerTraverserUserData< RealType,
-                                                      MeshFunction,
-                                                      DifferentialOperator,
-                                                      BoundaryConditions,
-                                                      RightHandSide,
-                                                      MatrixType,
-                                                      DofVector > TraverserUserData;
+                                                   MeshFunction,
+                                                   DifferentialOperator,
+                                                   BoundaryConditions,
+                                                   RightHandSide,
+                                                   DofVector > TraverserUserData;
 
-   typedef SharedPointer< Matrix, DeviceType > MatrixPointer;
+   //typedef SharedPointer< Matrix, DeviceType > MatrixPointer;
    typedef SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
    typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
    typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
    typedef SharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
    typedef SharedPointer< DofVector, DeviceType > DofVectorPointer;
    
-      
-   template< typename EntityType >
+   void setDifferentialOperator( const DifferentialOperatorPointer& differentialOperatorPointer )
+   {
+      this->userDataPointer->differentialOperator = &differentialOperatorPointer.template getData< DeviceType >();
+   }
+
+   void setBoundaryConditions( const BoundaryConditionsPointer& boundaryConditionsPointer )
+   {
+      this->userDataPointer->boundaryConditions = &boundaryConditionsPointer.template getData< DeviceType >();
+   }
+
+   void setRightHandSide( const RightHandSidePointer& rightHandSidePointer )
+   {
+      this->userDataPointer->rightHandSide = &rightHandSidePointer.template getData< DeviceType >();
+   }
+   
+   template< typename EntityType, typename Matrix >
    void assembly( const RealType& time,
                   const RealType& tau,
                   const MeshPointer& meshPointer,
-                  const DifferentialOperatorPointer& differentialOperatorPointer,
-                  const BoundaryConditionsPointer& boundaryConditionsPointer,
-                  const RightHandSidePointer& rightHandSidePointer,
                   const MeshFunctionPointer& uPointer,
-                  MatrixPointer& matrixPointer,
-                  DofVectorPointer& bPointer );
+                  SharedPointer< Matrix >& matrixPointer,
+                  DofVectorPointer& bPointer )
+   {
+      static_assert( std::is_same< MeshFunction,
+                                Containers::Vector< typename MeshFunction::RealType,
+                                           typename MeshFunction::DeviceType,
+                                           typename MeshFunction::IndexType > >::value != true,
+      "Error: I am getting Vector instead of MeshFunction or similar object. You might forget to bind DofVector into MeshFunction in you method getExplicitUpdate."  );
 
- 
-      class TraverserBoundaryEntitiesProcessor
+      const IndexType maxRowLength = matrixPointer.template getData< Devices::Host >().getMaxRowLength();
+      TNL_ASSERT_GT( maxRowLength, 0, "maximum row length must be positive" );
+      this->userDataPointer->time = time;
+      this->userDataPointer->tau = tau;
+      this->userDataPointer->u = &uPointer.template getData< DeviceType >();
+      this->userDataPointer->matrix = ( void* ) &matrixPointer.template modifyData< DeviceType >();
+      this->userDataPointer->b = &bPointer.template modifyData< DeviceType >();
+      Meshes::Traverser< MeshType, EntityType > meshTraverser;
+      meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                      TraverserBoundaryEntitiesProcessor< Matrix> >
+                                                    ( meshPointer,
+                                                      userDataPointer );
+      meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                      TraverserInteriorEntitiesProcessor< Matrix > >
+                                                    ( meshPointer,
+                                                      userDataPointer );
+      
+   }
+
+   template< typename Matrix >
+   class TraverserBoundaryEntitiesProcessor
    {
       public:
  
@@ -125,11 +149,12 @@ class LinearSystemAssembler
                  entity,
                  userData.time + userData.tau,
                  userData.tau,
-                 ( *userData.matrix ),
+                 ( * ( Matrix* ) ( userData.matrix ) ),
                  ( *userData.b ) );
          }
    };
 
+   template< typename Matrix >
    class TraverserInteriorEntitiesProcessor
    {
       public:
@@ -146,7 +171,7 @@ class LinearSystemAssembler
                  entity,
                  userData.time + userData.tau,
                  userData.tau,
-                 ( *userData.matrix ),
+                 ( *( Matrix* )( userData.matrix ) ),
                  ( *userData.b ) );
  
             typedef Functions::FunctionAdapter< MeshType, RightHandSide > RhsFunctionAdapter;
@@ -155,7 +180,7 @@ class LinearSystemAssembler
                ( ( *userData.rightHandSide ),
                  entity,
                  userData.time );
-            TimeDiscretisation::applyTimeDiscretisation( ( *userData.matrix ),
+            TimeDiscretisation::applyTimeDiscretisation( ( *( Matrix* )( userData.matrix ) ),
                                                          ( *userData.b )[ entity.getIndex() ],
                                                          entity.getIndex(),
                                                          MeshFunctionAdapter::getValue( ( *userData.u ), entity, userData.time ),
@@ -171,5 +196,3 @@ protected:
 } // namespace PDE
 } // namespace Solvers
 } // namespace TNL
-
-#include <TNL/Solvers/PDE/LinearSystemAssembler_impl.h>

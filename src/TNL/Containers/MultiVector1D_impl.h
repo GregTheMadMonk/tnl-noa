@@ -22,7 +22,7 @@ template< typename Real, typename Device, typename Index >
 String MultiVector< 1, Real, Device, Index > :: getType()
 {
    return String( "Containers::MultiVector< ") +
-          String( Dimensions ) +
+          String( Dimension ) +
           String( ", " ) +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
@@ -57,28 +57,28 @@ String MultiVector< 1, Real, Device, Index > :: getSerializationTypeVirtual() co
 };
 
 template< typename Real, typename Device, typename Index >
-bool MultiVector< 1, Real, Device, Index > :: setDimensions( const Index iSize )
+void MultiVector< 1, Real, Device, Index > :: setDimensions( const Index iSize )
 {
    TNL_ASSERT( iSize > 0,
               std::cerr << "iSize = " << iSize );
    dimensions[ 0 ] = iSize;
-   return Vector< Real, Device, Index > :: setSize( iSize );
+   Vector< Real, Device, Index > :: setSize( iSize );
 }
 
 template< typename Real, typename Device, typename Index >
-bool MultiVector< 1, Real, Device, Index > :: setDimensions( const StaticVector< Dimensions, Index >& dimensions )
+void MultiVector< 1, Real, Device, Index > :: setDimensions( const StaticVector< Dimension, Index >& dimensions )
 {
    TNL_ASSERT( dimensions[ 0 ] > 0,
               std::cerr << " dimensions[ 0 ] = " << dimensions[ 0 ] );
    this->dimensions = dimensions;
-   return Vector< Real, Device, Index > :: setSize( this->dimensions[ 0 ] );
+   Vector< Real, Device, Index > :: setSize( this->dimensions[ 0 ] );
 }
 
 template< typename Real, typename Device, typename Index >
    template< typename MultiVectorT >
-bool MultiVector< 1, Real, Device, Index > :: setLike( const MultiVectorT& multiVector )
+void MultiVector< 1, Real, Device, Index > :: setLike( const MultiVectorT& multiVector )
 {
-   return setDimensions( multiVector. getDimensions() );
+   setDimensions( multiVector. getDimensions() );
 }
 
 template< typename Real, typename Device, typename Index >

@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #pragma once
 
 #include <TNL/Containers/Vector.h>
@@ -21,7 +27,7 @@ namespace Operators {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType >
+          typename Index = typename Mesh::GlobalIndexType >
 class LinearDiffusion
 {
  
@@ -46,9 +52,9 @@ class LinearDiffusion< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Inde
       typedef Index IndexType;
       typedef ExactLinearDiffusion< 1 > ExactOperatorType;
  
-      static const int Dimensions = MeshType::meshDimensions;
+      static const int Dimension = MeshType::getMeshDimension();
  
-      static constexpr int getMeshDimensions() { return Dimensions; }
+      static constexpr int getMeshDimension() { return Dimension; }
  
       static String getType();
 
@@ -97,9 +103,9 @@ class LinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Ind
       typedef Index IndexType;
       typedef ExactLinearDiffusion< 2 > ExactOperatorType;
  
-      static const int Dimensions = MeshType::meshDimensions;
+      static const int Dimension = MeshType::getMeshDimension();
  
-      static constexpr int getMeshDimensions() { return Dimensions; }
+      static constexpr int getMeshDimension() { return Dimension; }
 
       static String getType();
 
@@ -147,9 +153,9 @@ class LinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Ind
       typedef Index IndexType;
       typedef ExactLinearDiffusion< 3 > ExactOperatorType;
 
-      static const int Dimensions = MeshType::meshDimensions;
+      static const int Dimension = MeshType::getMeshDimension();
  
-      static constexpr int getMeshDimensions() { return Dimensions; }
+      static constexpr int getMeshDimension() { return Dimension; }
 
       static String getType();
 

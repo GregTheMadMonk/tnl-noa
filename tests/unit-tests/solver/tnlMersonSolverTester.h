@@ -99,7 +99,7 @@ class MersonTester : public CppUnit :: TestCase
       return suiteOfTests;
    };
 
-   void GetExplicitRHS( const Real& time,
+   void getExplicitUpdate( const Real& time,
                         GridOld< 2, Real, Devices::Host, int >& u,
                         GridOld< 2, Real, Devices::Host, int >& fu )
    {
@@ -115,7 +115,7 @@ class MersonTester : public CppUnit :: TestCase
          }
    }
 
-   void GetExplicitRHS( const Real& time,
+   void getExplicitUpdate( const Real& time,
                         GridOld< 2, Real, Devices::Cuda, int >& u,
                         GridOld< 2, Real, Devices::Cuda, int >& fu )
    {

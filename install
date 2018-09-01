@@ -1,23 +1,9 @@
 #!/bin/bash
 
-BUILD_DEBUG="yes"
-BUILD_RELEASE="yes"
-
-OPTIONS=""
-
-CMAKE_TEST=`which cmake`    
-if test x${CMAKE_TEST} = "x";
-then
-    echo "Cmake is not installed on your system. Please install it by:"
-    echo ""
-    echo "   sudo apt-get install cmake     on Ubuntu and Debian based systems"
-    echo "   sudo yum install cmake         on RedHat, Fedora or CentOS"
-    echo "   sudo zypper install cmake      on OpenSuse"
-    echo ""
-    echo "You may also install it from the source code at:"
-    echo " http://www.cmake.org/download/"
-    exit 1
-fi
+INSTALL_PREFIX=${HOME}/.local
+BUILD_RELEASE=yes
+BUILD_DEBUG=yes
+#VERBOSE="VERBOSE=1"
 
 for option in "$@"
 do
@@ -35,40 +21,26 @@ then
        mkdir Debug
     fi
     cd Debug
-    if ../build --root-dir=.. --build=Debug ${OPTIONS};
+    if ! ../build --root-dir=.. --build=Debug --install=yes ${OPTIONS}
     then
-        make install
-    else    
        exit 1
     fi
     cd ..
 fi
 
-if test ${BUILD_RELEASE} = "yes";
+if [ ! -d Release ];
 then
     if [ ! -d Release ];
     then
        mkdir Release
     fi
     cd Release
-    if ../build --root-dir=.. --build=Release ${OPTIONS};
+    if ! ../build --root-dir=.. --build=Release --install=yes ${OPTIONS};
     then
-        make install
-    else
         exit 1
     fi
     cd ..
 fi
-
-
-PREFIX=${HOME}/.local
-for option in "$@"
-do
-    case $option in
-        --prefix=*                     ) PREFIX="${option#*=}" ;;
-    esac
-done
-
 
 TNL_TEST=`which tnl-bindir`
 
@@ -98,14 +70,4 @@ then
     echo "export LD_LIBRARY_PATH"
 fi
 
-if test ${BUILD_RELEASE} = "yes";
-then
-    BUILD_PREFIX="Release"
-fi
-if test ${BUILD_DEBUG} = "yes";
-then
-    BUILD_PREFIX="Debug"
-fi
-
 exit 0
-

@@ -11,7 +11,8 @@
 #pragma once
 
 #include <TNL/Math.h>
-#include "SemiImplicitTimeStepper.h"
+#include <TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
+#include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 
 namespace TNL {
 namespace Solvers {
@@ -56,7 +57,7 @@ SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 init( const MeshPointer& mesh )
 {
   std::cout << "Setting up the linear system...";
-   if( ! this->problem->setupLinearSystem( mesh, this->matrix ) )
+   if( ! this->problem->setupLinearSystem( this->matrix ) )
       return false;
    std::cout << " [ OK ]" << std::endl;
    if( this->matrix.getData().getRows() == 0 || this->matrix.getData().getColumns() == 0 )
@@ -69,8 +70,7 @@ init( const MeshPointer& mesh )
       std::cerr << "Please check the method 'setupLinearSystem' in your solver." << std::endl;
       return false;
    }
-   if( ! this->rightHandSidePointer->setSize( this->matrix.getData().getRows() ) )
-      return false;
+   this->rightHandSidePointer->setSize( this->matrix.getData().getRows() );
 
    this->preIterateTimer.reset();
    this->linearSystemAssemblerTimer.reset();
@@ -150,18 +150,17 @@ bool
 SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 solve( const RealType& time,
        const RealType& stopTime,
-       const MeshPointer& mesh,
-       DofVectorPointer& dofVector,
-       MeshDependentDataPointer& meshDependentData )
+       DofVectorPointer& dofVector )
 {
-   TNL_ASSERT( this->problem != 0, );
+   TNL_ASSERT_TRUE( this->problem, "problem was not set" );
    RealType t = time;
    this->linearSystemSolver->setMatrix( this->matrix );
    PreconditionerPointer preconditioner;
    Linear::Preconditioners::SolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerType >
        ::run( *(this->linearSystemSolver), preconditioner );
 
-   while( t < stopTime )
+   // ignore very small steps at the end, most likely caused by truncation errors
+   while( stopTime - t > this->timeStep * 1e-6 )
    {
       RealType currentTau = min( this->timeStep, stopTime - t );
 
@@ -171,11 +170,7 @@ solve( const RealType& time,
       }
 
       this->preIterateTimer.start();
-      if( ! this->problem->preIterate( t,
-                                       currentTau,
-                                       mesh,
-                                       dofVector,
-                                       meshDependentData ) )
+      if( ! this->problem->preIterate( t, currentTau, dofVector ) )
       {
          std::cerr << std::endl << "Preiteration failed." << std::endl;
          return false;
@@ -190,11 +185,9 @@ solve( const RealType& time,
       this->linearSystemAssemblerTimer.start();
       this->problem->assemblyLinearSystem( t,
                                            currentTau,
-                                           mesh,
                                            dofVector,
                                            this->matrix,
-                                           this->rightHandSidePointer,
-                                           meshDependentData );
+                                           this->rightHandSidePointer );
       this->linearSystemAssemblerTimer.stop();
 
 //      if( verbose )
@@ -207,9 +200,11 @@ solve( const RealType& time,
       this->preconditionerUpdateTimer.stop();
 
       this->linearSystemSolverTimer.start();
-      if( ! this->linearSystemSolver->template solve< DofVectorType, Linear::LinearResidueGetter< MatrixType, DofVectorType > >( *this->rightHandSidePointer, *dofVector ) )
+      if( ! this->linearSystemSolver->solve( *this->rightHandSidePointer, *dofVector ) )
       {
          std::cerr << std::endl << "The linear system solver did not converge." << std::endl;
+         // save the linear system for debugging
+         this->problem->saveFailedLinearSystem( *this->matrix, *dofVector, *this->rightHandSidePointer );
          return false;
       }
       this->linearSystemSolverTimer.stop();
@@ -222,11 +217,7 @@ solve( const RealType& time,
          this->solverMonitor->setStage( "Postiteration" );
 
       this->postIterateTimer.start();
-      if( ! this->problem->postIterate( t,
-                                        currentTau,
-                                        mesh,
-                                        dofVector,
-                                        meshDependentData ) )
+      if( ! this->problem->postIterate( t, currentTau, dofVector ) )
       {
          std::cerr << std::endl << "Postiteration failed." << std::endl;
          return false;
@@ -242,7 +233,7 @@ template< typename Problem,
           typename LinearSystemSolver >
 bool
 SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
-writeEpilog( Logger& logger )
+writeEpilog( Logger& logger ) const
 {
    logger.writeParameter< long long int >( "Iterations count:", this->allIterations );
    logger.writeParameter< const char* >( "Pre-iterate time:", "" );

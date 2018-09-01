@@ -8,12 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
 #include <TNL/Containers/Array.h>
 
 namespace TNL {
 namespace Containers {
-
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
 template class Array< float, Devices::Host, int >;
@@ -55,7 +55,7 @@ template class Array< long double, Devices::Cuda, long int >;
 
 #endif
 
-#endif
-
 } // namespace Containers
 } // namespace TNL
+
+#endif // #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

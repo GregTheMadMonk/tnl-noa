@@ -20,7 +20,7 @@
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/Containers/Vector.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
 #include <functions/tnlMeshFunction.h>
@@ -48,7 +48,7 @@ class HamiltonJacobiProblem : public tnlPDEProblem< Mesh,
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
 
-      static String getTypeStatic();
+      static String getType();
 
       String getPrologHeader() const;
 
@@ -73,7 +73,7 @@ class HamiltonJacobiProblem : public tnlPDEProblem< Mesh,
       void bindDofs( const MeshType& mesh,
                      DofVectorType& dofs );
 
-      void getExplicitRHS( const RealType& time,
+      void getExplicitUpdate( const RealType& time,
                            const RealType& tau,
                            const MeshType& mesh,
                            DofVectorType& _u,

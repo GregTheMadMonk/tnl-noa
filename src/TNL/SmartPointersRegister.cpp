@@ -30,7 +30,7 @@ void SmartPointersRegister::remove( SmartPointer* pointer, int deviceId )
    try {
       pointersOnDevices.at( deviceId ).erase( pointer );
    }
-   catch( std::out_of_range ) {
+   catch( const std::out_of_range& ) {
       std::cerr << "Given deviceId " << deviceId << " does not have any pointers yet. "
                 << "Requested to remove pointer " << pointer << ". "
                 << "This is most likely a bug in the smart pointer." << std::endl;
@@ -44,9 +44,9 @@ bool SmartPointersRegister::synchronizeDevice( int deviceId )
       const auto & set = pointersOnDevices.at( deviceId );
       for( auto&& it : set )
          ( *it ).synchronize();
-      return checkCudaDevice;
+      return TNL_CHECK_CUDA_DEVICE;
    }
-   catch( std::out_of_range ) {
+   catch( const std::out_of_range& ) {
       return false;
    }
 }

@@ -31,7 +31,7 @@
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::tnlParallelMapSolver()
 {
-	this->device = tnlHostDevice;  /////////////// tnlCuda Device --- vypocet na GPU, tnlHostDevice   ---    vypocet na CPU
+	this->device = TNL::Devices::HostDevice;  /////////////// tnlCuda Device --- vypocet na GPU, TNL::Devices::HostDevice   ---    vypocet na CPU
 
 #ifdef HAVE_CUDA
 	if(this->device == tnlCudaDevice)
@@ -57,12 +57,12 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 
 bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init( const Config::ParameterContainer& parameters )
 {
-	cout << "Initializating solver..." << endl;
+	cout << "Initializating solver..." <<std::endl;
 	const String& meshLocation = parameters.getParameter <String>("mesh");
 	this->mesh.load( meshLocation );
 
 	this->n = parameters.getParameter <int>("subgrid-size");
-	cout << "Setting N to " << this->n << endl;
+	cout << "Setting N to " << this->n <<std::endl;
 
 	this->subMesh.setDimensions( this->n, this->n );
 	this->subMesh.setDomain( Containers::StaticVector<2,double>(0.0, 0.0),
@@ -76,34 +76,34 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 	/* LOAD MAP */
 	const String& mapFile = parameters.getParameter <String>("map");
 	if(! this->map.load( mapFile ))
-		cout << "Failed to load map file : " << mapFile << endl;
+		cout << "Failed to load map file : " << mapFile <<std::endl;
 
 
 	this->delta = parameters.getParameter <double>("delta");
 	this->delta *= mesh.template getSpaceStepsProducts< 1, 0 >()*mesh.template getSpaceStepsProducts< 0, 1 >();
 
-	cout << "Setting delta to " << this->delta << endl;
+	cout << "Setting delta to " << this->delta <<std::endl;
 
 	this->tau0 = parameters.getParameter <double>("initial-tau");
-	cout << "Setting initial tau to " << this->tau0 << endl;
+	cout << "Setting initial tau to " << this->tau0 <<std::endl;
 	this->stopTime = parameters.getParameter <double>("stop-time");
 
 	this->cflCondition = parameters.getParameter <double>("cfl-condition");
 	this -> cflCondition *= sqrt(mesh.template getSpaceStepsProducts< 1, 0 >()*mesh.template getSpaceStepsProducts< 0, 1 >());
-	cout << "Setting CFL to " << this->cflCondition << endl;
+	cout << "Setting CFL to " << this->cflCondition <<std::endl;
 
 	stretchGrid();
 	this->stopTime /= (double)(this->gridCols);
 	this->stopTime *= (1.0+1.0/((double)(this->n) - 2.0));
-	cout << "Setting stopping time to " << this->stopTime << endl;
+	cout << "Setting stopping time to " << this->stopTime <<std::endl;
 
-	cout << "Initializating scheme..." << endl;
+	cout << "Initializating scheme..." <<std::endl;
 	if(!this->schemeHost.init(parameters))
 	{
-		cerr << "SchemeHost failed to initialize." << endl;
+		cerr << "SchemeHost failed to initialize." <<std::endl;
 		return false;
 	}
-	cout << "Scheme initialized." << endl;
+	cout << "Scheme initialized." <<std::endl;
 
 	test();
 
@@ -123,7 +123,7 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 		cudaMalloc(&(this->tmp_map), this->map_stretched.getSize()*sizeof(double));
 		cudaMalloc(&(this->runcuda), sizeof(int));
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		int* tmpUC;
 		cudaMalloc(&(tmpUC), this->work_u.getSize()*sizeof(int));
@@ -131,19 +131,19 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 
 		initCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<1,1>>>(this->cudaSolver, (this->tmpw), (this->runcuda),tmpUC, tmp_map);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		double* tmpu = NULL;
 		cudaMemcpy(&tmpu, tmpdev,sizeof(double*), cudaMemcpyDeviceToHost);
 		cudaMemcpy((this->tmpw), this->work_u.getData(), this->work_u.getSize()*sizeof(double), cudaMemcpyHostToDevice);
 		cudaMemcpy((this->tmp_map), this->map_stretched.getData(), this->map_stretched.getSize()*sizeof(double), cudaMemcpyHostToDevice);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 	}
 #endif
 
-	if(this->device == tnlHostDevice)
+	if(this->device == TNL::Devices::HostDevice)
 	{
 		VectorType tmp_map;
 		tmp_map.setSize(this->n * this->n);
@@ -151,7 +151,7 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 		{
 
 			if(! tmp[i].setSize(this->n * this->n))
-				cout << "Could not allocate tmp["<< i <<"] array." << endl;
+				cout << "Could not allocate tmp["<< i <<"] array." <<std::endl;
 				tmp[i] = getSubgrid(i);
 			containsCurve = false;
 
@@ -173,11 +173,11 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 										 + (j/this->n) * this->n*this->gridCols
 										 + (j % this->n) ];
 				}
-				//cout << "Computing initial SDF on subgrid " << i << "." << endl;
+				//cout << "Computing initial SDF on subgrid " << i << "." <<std::endl;
 				tmp[i] = runSubgrid(0, tmp[i],i,tmp_map);
 				insertSubgrid(tmp[i], i);
 				setSubgridValue(i, 4);
-				//cout << "Computed initial SDF on subgrid " << i  << "." << endl;
+				//cout << "Computed initial SDF on subgrid " << i  << "." <<std::endl;
 			}
 			containsCurve = false;
 
@@ -187,21 +187,21 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 	else if(this->device == tnlCudaDevice)
 	{
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		dim3 threadsPerBlock(this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		initRunCUDA2D<SchemeTypeHost,SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 	}
 #endif
 
 
 	this->currentStep = 1;
-	if(this->device == tnlHostDevice)
+	if(this->device == TNL::Devices::HostDevice)
 		synchronize();
 #ifdef HAVE_CUDA
 	else if(this->device == tnlCudaDevice)
@@ -211,14 +211,14 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 
 		synchronizeCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 		synchronize2CUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,1>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 	}
 
 #endif
-	cout << "Solver initialized." << endl;
+	cout << "Solver initialized." <<std::endl;
 
 	return true;
 }
@@ -226,7 +226,7 @@ bool tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::init
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run()
 {
-	if(this->device == tnlHostDevice)
+	if(this->device == TNL::Devices::HostDevice)
 	{
 		while ((this->boundaryConditions.max() > 0 )/* || !end*/)
 		{
@@ -316,28 +316,28 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run(
 
 					if(getBoundaryCondition(i) & 3)
 					{
-						//cout << "3 @ " << getBoundaryCondition(i) << endl;
+						//cout << "3 @ " << getBoundaryCondition(i) <<std::endl;
 						tmp = getSubgrid(i);
 						tmp = runSubgrid(3, tmp ,i,tmp_map);
 						insertSubgrid( tmp, i);
 					}
 					if(getBoundaryCondition(i) & 5)
 					{
-						//cout << "5 @ " << getBoundaryCondition(i) << endl;
+						//cout << "5 @ " << getBoundaryCondition(i) <<std::endl;
 						tmp = getSubgrid(i);
 						tmp = runSubgrid(5, tmp ,i,tmp_map);
 						insertSubgrid( tmp, i);
 					}
 					if(getBoundaryCondition(i) & 10)
 					{
-						//cout << "10 @ " << getBoundaryCondition(i) << endl;
+						//cout << "10 @ " << getBoundaryCondition(i) <<std::endl;
 						tmp = getSubgrid(i);
 						tmp = runSubgrid(10, tmp ,i,tmp_map);
 						insertSubgrid( tmp, i);
 					}
 					if(getBoundaryCondition(i) & 12)
 					{
-						//cout << "12 @ " << getBoundaryCondition(i) << endl;
+						//cout << "12 @ " << getBoundaryCondition(i) <<std::endl;
 						tmp = getSubgrid(i);
 						tmp = runSubgrid(12, tmp ,i,tmp_map);
 						insertSubgrid( tmp, i);
@@ -360,24 +360,24 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run(
 		dim3 threadsPerBlock(this->n, this->n);
 		dim3 numBlocks(this->gridCols,this->gridRows);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		bool* tmpb;
 		cudaMemcpy(&(this->run_host),this->runcuda,sizeof(int), cudaMemcpyDeviceToHost);
 		cudaDeviceSynchronize();
-		checkCudaDevice;
+		TNL_CHECK_CUDA_DEVICE;
 
 		int i = 1;
 		time_diff = 0.0;
 		while (run_host || !end_cuda)
 		{
-			cout << "Computing at step "<< i++ << endl;
+			cout << "Computing at step "<< i++ <<std::endl;
 			if(run_host != 0 )
 				end_cuda = true;
 			else
 				end_cuda = false;
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			start = std::clock();
 			runCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
@@ -386,15 +386,15 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run(
 			//start = std::clock();
 			synchronizeCUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			synchronize2CUDA2D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,1>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
-			checkCudaDevice;
+			TNL_CHECK_CUDA_DEVICE;
 			//time_diff += (std::clock() - start) / (double)(CLOCKS_PER_SEC);
 
 			cudaMemcpy(&run_host, (this->runcuda),sizeof(int), cudaMemcpyDeviceToHost);
 		}
-		cout << "Solving time was: " << time_diff << endl;
+		cout << "Solving time was: " << time_diff <<std::endl;
 
 		cudaMemcpy(this->work_u.getData()/* test*/, (this->tmpw), this->work_u.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
 
@@ -403,9 +403,9 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run(
 #endif
 	contractGrid();
 	this->u0.save("u-00001.tnl");
-	cout << "Maximum number of calculations on one subgrid was " << this->calculationsCount.absMax() << endl;
-	cout << "Average number of calculations on one subgrid was " << ( (double) this->calculationsCount.sum() / (double) this->calculationsCount.getSize() ) << endl;
-	cout << "Solver finished" << endl;
+	cout << "Maximum number of calculations on one subgrid was " << this->calculationsCount.absMax() <<std::endl;
+	cout << "Average number of calculations on one subgrid was " << ( (double) this->calculationsCount.sum() / (double) this->calculationsCount.getSize() ) <<std::endl;
+	cout << "Solver finished" <<std::endl;
 
 #ifdef HAVE_CUDA
 	if(this->device == tnlCudaDevice)
@@ -423,7 +423,7 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::run(
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::synchronize() //needs fix ---- maybe not anymore --- but frankly: yeah, it does -- aaaa-and maybe fixed now
 {
-	cout << "Synchronizig..." << endl;
+	cout << "Synchronizig..." <<std::endl;
 	int tmp1, tmp2;
 	int grid1, grid2;
 
@@ -438,7 +438,7 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::sync
 				grid1 = getSubgridValue(getOwner(tmp1));
 				grid2 = getSubgridValue(getOwner(tmp2));
 				if(getOwner(tmp1)==getOwner(tmp2))
-					cout << "i, j" << i << "," << j << endl;
+					cout << "i, j" << i << "," << j <<std::endl;
 				if ((fabs(this->work_u[tmp1]) < fabs(this->work_u[tmp2]) - this->delta || grid2 == INT_MAX || grid2 == -INT_MAX) && (grid1 != INT_MAX && grid1 != -INT_MAX))
 				{
 					this->work_u[tmp2] = this->work_u[tmp1];
@@ -476,7 +476,7 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::sync
 				grid1 = getSubgridValue(getOwner(tmp1));
 				grid2 = getSubgridValue(getOwner(tmp2));
 				if(getOwner(tmp1)==getOwner(tmp2))
-					cout << "i, j" << i << "," << j << endl;
+					cout << "i, j" << i << "," << j <<std::endl;
 				if ((fabs(this->work_u[tmp1]) < fabs(this->work_u[tmp2]) - this->delta || grid2 == INT_MAX || grid2 == -INT_MAX) && (grid1 != INT_MAX && grid1 != -INT_MAX))
 				{
 					this->work_u[tmp2] = this->work_u[tmp1];
@@ -512,7 +512,7 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::sync
 			setSubgridValue(i, stepValue);
 	}
 
-	cout << "Grid synchronized at step " << (this->currentStep - 1 ) << endl;
+	cout << "Grid synchronized at step " << (this->currentStep - 1 ) <<std::endl;
 
 }
 
@@ -551,15 +551,15 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::setB
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::stretchGrid()
 {
-	cout << "Stretching grid..." << endl;
+	cout << "Stretching grid..." <<std::endl;
 
 
 	this->gridCols = ceil( ((double)(this->mesh.getDimensions().x()-1)) / ((double)(this->n-1)) );
 	this->gridRows = ceil( ((double)(this->mesh.getDimensions().y()-1)) / ((double)(this->n-1)) );
 
 
-	cout << "Setting gridCols to " << this->gridCols << "." << endl;
-	cout << "Setting gridRows to " << this->gridRows << "." << endl;
+	cout << "Setting gridCols to " << this->gridCols << "." <<std::endl;
+	cout << "Setting gridRows to " << this->gridRows << "." <<std::endl;
 
 	this->subgridValues.setSize(this->gridCols*this->gridRows);
 	this->subgridValues.setValue(0);
@@ -577,13 +577,13 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::stre
 	int stretchedSize = this->n*this->n*this->gridCols*this->gridRows;
 
 	if(!this->work_u.setSize(stretchedSize))
-		cerr << "Could not allocate memory for stretched grid." << endl;
+		cerr << "Could not allocate memory for stretched grid." <<std::endl;
 	if(!this->map_stretched.setSize(stretchedSize))
-		cerr << "Could not allocate memory for stretched map." << endl;
+		cerr << "Could not allocate memory for stretched map." <<std::endl;
 	if(!this->unusedCell.setSize(stretchedSize))
-		cerr << "Could not allocate memory for supporting stretched grid." << endl;
+		cerr << "Could not allocate memory for supporting stretched grid." <<std::endl;
 	int idealStretch =this->mesh.getDimensions().x() + (this->mesh.getDimensions().x()-2)/(this->n-1);
-	cout << idealStretch << endl;
+	cout << idealStretch <<std::endl;
 
 	for(int i = 0; i < stretchedSize; i++)
 	{
@@ -611,17 +611,17 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::stre
 	}
 
 
-	cout << "Grid stretched." << endl;
+	cout << "Grid stretched." <<std::endl;
 }
 
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::contractGrid()
 {
-	cout << "Contracting grid..." << endl;
+	cout << "Contracting grid..." <<std::endl;
 	int stretchedSize = this->n*this->n*this->gridCols*this->gridRows;
 
 	int idealStretch =this->mesh.getDimensions().x() + (this->mesh.getDimensions().x()-2)/(this->n-1);
-	cout << idealStretch << endl;
+	cout << idealStretch <<std::endl;
 
 	for(int i = 0; i < stretchedSize; i++)
 	{
@@ -635,7 +635,7 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::cont
 
 	}
 
-	cout << "Grid contracted" << endl;
+	cout << "Grid contracted" <<std::endl;
 }
 
 template< typename SchemeHost, typename SchemeDevice, typename Device>
@@ -738,7 +738,7 @@ tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSubgri
 
    double maxResidue( 1.0 );
    tnlGridEntity<MeshType, 2, tnlGridEntityNoStencilStorage > Entity(subMesh);
-   tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+   tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
 
    for( int i = 0; i < u.getSize(); i ++ )
    {
@@ -758,9 +758,9 @@ tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSubgri
       {
 			Entity.setCoordinates(Containers::StaticVector<2,int>(i % subMesh.getDimensions().x(),i / subMesh.getDimensions().x()));
 			Entity.refresh();
-			neighbourEntities.refresh(subMesh,Entity.getIndex());
+			neighborEntities.refresh(subMesh,Entity.getIndex());
 			if(map[i] != 0.0)
-				fu[ i ] = schemeHost.getValue( this->subMesh, i, Containers::StaticVector<2,int>(i % subMesh.getDimensions().x(),i / subMesh.getDimensions().x()), u, time, boundaryCondition,neighbourEntities,map);
+				fu[ i ] = schemeHost.getValue( this->subMesh, i, Containers::StaticVector<2,int>(i % subMesh.getDimensions().x(),i / subMesh.getDimensions().x()), u, time, boundaryCondition,neighborEntities,map);
       }
       maxResidue = fu. absMax();
 
@@ -909,10 +909,10 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runS
    __syncthreads();
 
    tnlGridEntity<MeshType, 2, tnlGridEntityNoStencilStorage > Entity(subMesh);
-   tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+   tnlNeighborGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighborEntities(Entity);
    Entity.setCoordinates(Containers::StaticVector<2,int>(i,j));
    Entity.refresh();
-   neighbourEntities.refresh(subMesh,Entity.getIndex());
+   neighborEntities.refresh(subMesh,Entity.getIndex());
 
 
 	if(map_local[l] == 0.0)
@@ -929,7 +929,7 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runS
 
 	  if(computeFU)
 	  {
-		  fu = schemeHost.getValueDev( this->subMesh, l, Containers::StaticVector<2,int>(i,j), u, time, boundaryCondition, neighbourEntities, map_local);
+		  fu = schemeHost.getValueDev( this->subMesh, l, Containers::StaticVector<2,int>(i,j), u, time, boundaryCondition, neighborEntities, map_local);
 	  	  sharedTau[l]=abs(cfl/fu);
 	  }
 

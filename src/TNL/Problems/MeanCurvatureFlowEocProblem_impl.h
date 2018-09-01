@@ -8,6 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #pragma once
 
 namespace TNL {
@@ -19,9 +25,9 @@ template< typename Mesh,
           typename DifferentialOperator >
 String
 MeanCurvatureFlowEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getTypeStatic()
+getType()
 {
-   return String( "HeatEquationEocProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "HeatEquationEocProblem< " ) + Mesh :: getType() + " >";
 }
 
 template< typename Mesh,

@@ -10,6 +10,10 @@
 
 #pragma once
 
+#include <cmath>
+
+#include <TNL/Solvers/Linear/LinearResidueGetter.h>
+
 namespace TNL {
 namespace Solvers {
 namespace Linear {   

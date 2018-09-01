@@ -62,9 +62,9 @@ class LaxFridrichsMomentumZ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Rea
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         static_assert( MeshEntity::entityDimensions == 1, "Wrong mesh entity dimensions." ); 
-         static_assert( MeshFunction::getEntitiesDimensions() == 1, "Wrong preimage function" ); 
-         //const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
+         static_assert( MeshEntity::getEntityDimension() == 1, "Wrong mesh entity dimensions." ); 
+         static_assert( MeshFunction::getEntitiesDimension() == 1, "Wrong preimage function" ); 
+         //const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities(); 
 
          return 0.0;
       }
@@ -123,9 +123,9 @@ class LaxFridrichsMomentumZ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Rea
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         static_assert( MeshEntity::entityDimensions == 2, "Wrong mesh entity dimensions." ); 
-         static_assert( MeshFunction::getEntitiesDimensions() == 2, "Wrong preimage function" ); 
-         //const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
+         static_assert( MeshEntity::getEntityDimension() == 2, "Wrong mesh entity dimensions." ); 
+         static_assert( MeshFunction::getEntitiesDimension() == 2, "Wrong preimage function" ); 
+         //const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities(); 
 
          return 0.0;
       }
@@ -184,20 +184,20 @@ class LaxFridrichsMomentumZ< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const
       {
-         static_assert( MeshEntity::entityDimensions == 3, "Wrong mesh entity dimensions." ); 
-         static_assert( MeshFunction::getEntitiesDimensions() == 3, "Wrong preimage function" ); 
-         const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
+         static_assert( MeshEntity::getEntityDimension() == 3, "Wrong mesh entity dimensions." ); 
+         static_assert( MeshFunction::getEntitiesDimension() == 3, "Wrong preimage function" ); 
+         const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities(); 
  
          const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1, 0,  0 >(); 
          const RealType& hyInverse = entity.getMesh().template getSpaceStepsProducts< 0, -1,  0 >(); 
          const RealType& hzInverse = entity.getMesh().template getSpaceStepsProducts< 0,  0, -1 >(); 
          const IndexType& center = entity.getIndex(); 
-         const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0,  0 >(); 
-         const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0,  0 >(); 
-         const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1,  0 >(); 
-         const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1,  0 >();
-         const IndexType& up    = neighbourEntities.template getEntityIndex<  0,  0,  1 >(); 
-         const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >();
+         const IndexType& east  = neighborEntities.template getEntityIndex<  1,  0,  0 >(); 
+         const IndexType& west  = neighborEntities.template getEntityIndex< -1,  0,  0 >(); 
+         const IndexType& north = neighborEntities.template getEntityIndex<  0,  1,  0 >(); 
+         const IndexType& south = neighborEntities.template getEntityIndex<  0, -1,  0 >();
+         const IndexType& up    = neighborEntities.template getEntityIndex<  0,  0,  1 >(); 
+         const IndexType& down  = neighborEntities.template getEntityIndex<  0,  0, -1 >();
          
          const RealType& pressure_up    = this->pressure.template getData< DeviceType >()[ up ];
          const RealType& pressure_down  = this->pressure.template getData< DeviceType >()[ down ];

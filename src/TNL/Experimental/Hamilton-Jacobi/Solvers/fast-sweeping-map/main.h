@@ -47,41 +47,41 @@ int main( int argc, char* argv[] )
 
    if(dim == 2)
    {
-		tnlFastSweepingMap<tnlGrid<2,double,tnlHost, int>, double, int> solver;
+		tnlFastSweepingMap<tnlGrid<2,double,TNL::Devices::Host, int>, double, int> solver;
 		if(!solver.init(parameters))
 	   {
-			cerr << "Solver failed to initialize." << endl;
+			cerr << "Solver failed to initialize." <<std::endl;
 			return EXIT_FAILURE;
 	   }
-		checkCudaDevice;
-	   cout << "-------------------------------------------------------------" << endl;
-	   cout << "Starting solver..." << endl;
+		TNL_CHECK_CUDA_DEVICE;
+	  std::cout << "-------------------------------------------------------------" <<std::endl;
+	  std::cout << "Starting solver..." <<std::endl;
 	   solver.run();
    }
 //   else if(dim == 3)
 //   {
-//		tnlFastSweepingMap<tnlGrid<3,double,tnlHost, int>, double, int> solver;
+//		tnlFastSweepingMap<tnlGrid<3,double,TNL::Devices::Host, int>, double, int> solver;
 //		if(!solver.init(parameters))
 //	   {
-//			cerr << "Solver failed to initialize." << endl;
+//			cerr << "Solver failed to initialize." <<std::endl;
 //			return EXIT_FAILURE;
 //	   }
-//		checkCudaDevice;
-//	   cout << "-------------------------------------------------------------" << endl;
-//	   cout << "Starting solver..." << endl;
+//		TNL_CHECK_CUDA_DEVICE;
+//	  std::cout << "-------------------------------------------------------------" <<std::endl;
+//	  std::cout << "Starting solver..." <<std::endl;
 //	   solver.run();
 //   }
    else
    {
-	   cerr << "Unsupported number of dimensions: " << dim << "!" << endl;
+	  std::cerr << "Unsupported number of dimensions: " << dim << "!" <<std::endl;
 	   return EXIT_FAILURE;
    }
 
 
    time(&stop);
-   cout << "Solver stopped..." << endl;
-   cout << endl;
-   cout << "Running time was: " << difftime(stop,start) << " .... " << (std::clock() - start2) / (double)(CLOCKS_PER_SEC) << endl;
+  std::cout << "Solver stopped..." <<std::endl;
+  std::cout <<std::endl;
+  std::cout << "Running time was: " << difftime(stop,start) << " .... " << (std::clock() - start2) / (double)(CLOCKS_PER_SEC) <<std::endl;
    return EXIT_SUCCESS;
 }
 

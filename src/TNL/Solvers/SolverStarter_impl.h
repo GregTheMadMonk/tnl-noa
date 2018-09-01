@@ -14,28 +14,39 @@
 #include <TNL/Logger.h>
 #include <TNL/String.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Solvers/SolverStarter.h>
+#include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/ODE/Merson.h>
 #include <TNL/Solvers/ODE/Euler.h>
 #include <TNL/Solvers/Linear/SOR.h>
 #include <TNL/Solvers/Linear/CG.h>
 #include <TNL/Solvers/Linear/BICGStab.h>
+#include <TNL/Solvers/Linear/BICGStabL.h>
 #include <TNL/Solvers/Linear/GMRES.h>
 #include <TNL/Solvers/Linear/CWYGMRES.h>
 #include <TNL/Solvers/Linear/TFQMR.h>
 #include <TNL/Solvers/Linear/UmfpackWrapper.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
+#include <TNL/Solvers/Linear/Preconditioners/ILU0.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
+#include <TNL/Solvers/PDE/PDESolverTypeResolver.h>
 
 namespace TNL {
 namespace Solvers {   
 
 template< typename Problem,
           typename ConfigTag,
+          bool TimeDependent = Problem::isTimeDependent() >
+class TimeDependencyResolver
+{};
+   
+template< typename Problem,
+          typename ConfigTag,
           typename TimeStepper = typename Problem::TimeStepper >
-class tnlUserDefinedTimeDiscretisationSetter;
+class UserDefinedTimeDiscretisationSetter;
 
 template< typename Problem,
           typename TimeDiscretisation,
@@ -54,7 +65,7 @@ template< typename Problem,
           template<typename, typename, typename> class Preconditioner,
           typename ConfigTag,
           bool enabled = ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitSolver >::enabled >
-class SolverStarterSemiImplicitSolverSetter{};
+class SolverStarterLinearSolverSetter{};
 
 template< typename Problem,
           typename SemiImplicitSolverTag,
@@ -79,13 +90,39 @@ bool SolverStarter< ConfigTag > :: run( const Config::ParameterContainer& parame
        ! Devices::Cuda::setup( parameters ) )
       return false;
    Problem problem;
-   return tnlUserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
+   //return UserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
+   return TimeDependencyResolver< Problem, ConfigTag >::run( problem, parameters );
 }
+
+template< typename Problem,
+          typename ConfigTag>
+class TimeDependencyResolver< Problem, ConfigTag, true >
+{
+   public:
+      static bool run( Problem& problem,
+                       const Config::ParameterContainer& parameters )
+      {
+         return UserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
+      }
+};
+
+template< typename Problem,
+          typename ConfigTag>
+class TimeDependencyResolver< Problem, ConfigTag, false >
+{
+   public:
+      static bool run( Problem& problem,
+                       const Config::ParameterContainer& parameters )
+      {
+         // TODO: This should be improved - at least rename to LinearSolverSetter
+         return SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisationTag, ConfigTag, true >::run( problem, parameters );   
+      }
+};
 
 template< typename Problem,
           typename ConfigTag,
           typename TimeStepper >
-class tnlUserDefinedTimeDiscretisationSetter
+class UserDefinedTimeDiscretisationSetter
 {
    public:
       static bool run( Problem& problem,
@@ -104,7 +141,7 @@ class tnlUserDefinedTimeDiscretisationSetter
 
 template< typename Problem,
           typename ConfigTag >
-class tnlUserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
+class UserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
 {
    public:
       static bool run( Problem& problem,
@@ -179,23 +216,25 @@ class SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisa
          if( discreteSolver != "sor" &&
              discreteSolver != "cg" &&
              discreteSolver != "bicgstab" &&
+             discreteSolver != "bicgstabl" &&
              discreteSolver != "gmres" &&
              discreteSolver != "cwygmres" &&
              discreteSolver != "tfqmr" )
          {
-            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres, cwygmres or tfqmr." << std::endl;
+            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, bicgstabl, gmres, cwygmres or tfqmr." << std::endl;
             return false;
          }
 #else
          if( discreteSolver != "sor" &&
              discreteSolver != "cg" &&
              discreteSolver != "bicgstab" &&
+             discreteSolver != "bicgstabl" &&
              discreteSolver != "gmres" &&
              discreteSolver != "cwygmres" &&
              discreteSolver != "tfqmr" &&
              discreteSolver != "umfpack" )
          {
-            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres, cwygmres, tfqmr or umfpack." << std::endl;
+            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, bicgstabl, gmres, cwygmres, tfqmr or umfpack." << std::endl;
             return false;
          }
 #endif
@@ -206,6 +245,8 @@ class SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisa
             return SolverStarterPreconditionerSetter< Problem, SemiImplicitCGSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "bicgstab" )
             return SolverStarterPreconditionerSetter< Problem, SemiImplicitBICGStabSolverTag, ConfigTag >::run( problem, parameters );
+         if( discreteSolver == "bicgstabl" )
+            return SolverStarterPreconditionerSetter< Problem, SemiImplicitBICGStabLSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "gmres" )
             return SolverStarterPreconditionerSetter< Problem, SemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "cwygmres" )
@@ -228,7 +269,7 @@ class SolverStarterTimeDiscretisationSetter< Problem, ImplicitTimeDiscretisation
       static bool run( Problem& problem,
                        const Config::ParameterContainer& parameters )
       {
-         const String& discreteSolver = parameters. getParameter< String>( "discrete-solver" );
+//         const String& discreteSolver = parameters. getParameter< String>( "discrete-solver" );
          return false;
       }
 };
@@ -283,11 +324,13 @@ class SolverStarterPreconditionerSetter
          const String& preconditioner = parameters.getParameter< String>( "preconditioner" );
 
          if( preconditioner == "none" )
-            return SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Dummy, ConfigTag >::run( problem, parameters );
+            return SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Dummy, ConfigTag >::run( problem, parameters );
          if( preconditioner == "diagonal" )
-            return SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Diagonal, ConfigTag >::run( problem, parameters );
+            return SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Diagonal, ConfigTag >::run( problem, parameters );
+         if( preconditioner == "ilu0" )
+            return SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::ILU0, ConfigTag >::run( problem, parameters );
 
-         std::cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal." << std::endl;
+         std::cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal, ilu0." << std::endl;
          return false;
       }
 };
@@ -296,7 +339,7 @@ template< typename Problem,
           typename SemiImplicitSolverTag,
           template<typename, typename, typename> class Preconditioner,
           typename ConfigTag >
-class SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, false >
+class SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, false >
 {
    public:
       static bool run( Problem& problem,
@@ -311,7 +354,7 @@ template< typename Problem,
           typename SemiImplicitSolverTag,
           template<typename, typename, typename> class Preconditioner,
           typename ConfigTag >
-class SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, true >
+class SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, true >
 {
    public:
       static bool run( Problem& problem,
@@ -339,103 +382,116 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
 {
    this->totalTimer.reset();
    this->totalTimer.start();
+   
+   using SolverMonitorType = IterativeSolverMonitor< typename Problem::RealType,
+                                                     typename Problem::IndexType >;
+   SolverMonitorType solverMonitor, *solverMonitorPointer( &solverMonitor );
  
    /****
-    * Set-up the discrete solver
+    * Open the log file
     */
-   DiscreteSolver discreteSolver;
-   if( ! discreteSolver.setup( parameters ) )
+   const String logFileName = parameters.getParameter< String >( "log-file" );
+   std::ofstream logFile( logFileName.getString() );
+   if( ! logFile ) {
+      std::cerr << "Unable to open the log file " << logFileName << "." << std::endl;
       return false;
-
-   /****
-    * Set-up the time stepper
-    */
-   TimeStepper timeStepper;
-   if( ! timeStepper.setup( parameters ) )
-      return false;
-   timeStepper.setSolver( discreteSolver );
+   }
 
    /****
     * Set-up the PDE solver
     */
-   PDE::TimeDependentPDESolver< Problem, TimeStepper > solver;
-   solver.setProblem( problem );
-   solver.setTimeStepper( timeStepper );
-   if( ! solver.setup( parameters ) )
-      return false;
+   //PDE::TimeDependentPDESolver< Problem, TimeStepper > solver;
+   typename PDE::PDESolverTypeResolver< Problem, DiscreteSolver, TimeStepper >::SolverType solver;
+   solver.setComputeTimer( this->computeTimer );
+   solver.setIoTimer( this->ioTimer );
+   solver.setTotalTimer( this->totalTimer );
+
+   if( problem.getSolverMonitor() )
+      solverMonitorPointer = ( SolverMonitorType* ) problem.getSolverMonitor();
+   solverMonitorPointer->setVerbose( parameters.getParameter< int >( "verbose" ) );
+   solverMonitorPointer->setTimer( this->totalTimer );
+   solver.setSolverMonitor( *solverMonitorPointer );
+   
+   // catching exceptions ala gtest:
+   // https://github.com/google/googletest/blob/59c795ce08be0c8b225bc894f8da6c7954ea5c14/googletest/src/gtest.cc#L2409-L2431
+   const int catch_exceptions = parameters.getParameter< bool >( "catch-exceptions" );
+   if( catch_exceptions ) {
+      try {
+         solver.setProblem( problem );
+         //solver.setTimeStepper( timeStepper ); // TODO: BETTER FIX: This does not make sense for time independent problem
+         if( ! solver.setup( parameters ) )
+            return false;
+      }
+      catch ( const std::exception& e ) {
+         std::cerr << "Setting up the solver failed due to a C++ exception with description: " << e.what() << std::endl;
+         logFile   << "Setting up The solver failed due to a C++ exception with description: " << e.what() << std::endl;
+         return false;
+      }
+      catch (...) {
+         std::cerr << "Setting up the solver failed due to an unknown C++ exception." << std::endl;
+         logFile   << "Setting up The solver failed due to an unknown C++ exception." << std::endl;
+         throw;
+      }
+   }
+   else {
+      solver.setProblem( problem );
+      //solver.setTimeStepper( timeStepper );
+      if( ! solver.setup( parameters ) )
+         return false;
+   }
 
    /****
     * Write a prolog
     */
-   int verbose = parameters.getParameter< int >( "verbose" );
-   parameters. getParameter< int >( "log-width", logWidth );
-   if( verbose )
-   {
-      Logger logger( logWidth,std::cout );
+   const int verbose = parameters.getParameter< int >( "verbose" );
+   parameters.getParameter< int >( "log-width", logWidth );
+   if( verbose ) {
+      Logger logger( logWidth, std::cout );
       solver.writeProlog( logger, parameters );
    }
-   String logFileName;
-   bool haveLogFile = parameters.getParameter< String >( "log-file", logFileName );
-   if( haveLogFile )
-   {
-      std::fstream logFile;
-      logFile.open( logFileName.getString(), std::ios::out );
-      if( ! logFile )
-      {
-         std::cerr << "Unable to open the log file " << logFileName << "." << std::endl;
-         return false;
-      }
-      else
-      {
-         Logger logger( logWidth, logFile );
-         solver.writeProlog( logger, parameters  );
-         logFile.close();
-      }
-   }
-
-   /****
-    * Set-up solver monitor and launch the main loop.
-    */
-   typedef IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > SolverMonitorType;
-   SolverMonitorType _tempSolverMonitor;
-   SolverMonitorType* solverMonitorPointer = &_tempSolverMonitor;
-   if( problem.getSolverMonitor() )
-      solverMonitorPointer = ( SolverMonitorType* ) problem.getSolverMonitor();
-
-   timeStepper.setSolverMonitor( *solverMonitorPointer );
-   solverMonitorPointer->setVerbose( verbose );
-   solverMonitorPointer->setTimer( this->totalTimer );
-   SolverMonitorThread t( *solverMonitorPointer );
+   Logger logger( logWidth, logFile );
+   solver.writeProlog( logger, parameters  );
 
    /****
     * Set-up timers
     */
    this->computeTimer.reset();
    this->ioTimer.reset();
-   solver.setComputeTimer( this->computeTimer );
-   solver.setIoTimer( this->ioTimer );
+   
+   /****
+    * Create solver monitor thread
+    */
+   SolverMonitorThread t( solver.getSolverMonitor() );
 
    /****
     * Start the solver
     */
-   bool returnCode = solver.solve();
-   solverMonitorPointer->stopMainLoop();
-   if( ! returnCode )
-   {
-      if( verbose )
-         std::cerr << std::endl << "The solver did not converge. " << std::endl;
-      std::fstream logFile;
-      logFile.open( logFileName.getString(), std::ios::out | std::ios::app );
-      if( ! logFile )
-      {
-         std::cerr << "Unable to open the log file " << logFileName << "." << std::endl;
+   bool returnCode = true;
+   // catching exceptions ala gtest:
+   // https://github.com/google/googletest/blob/59c795ce08be0c8b225bc894f8da6c7954ea5c14/googletest/src/gtest.cc#L2409-L2431
+   if( catch_exceptions ) {
+      try {
+         returnCode = solver.solve();
+      }
+      catch ( const std::exception& e ) {
+         std::cerr << "The solver failed due to a C++ exception with description: " << e.what() << std::endl;
+         logFile   << "The solver failed due to a C++ exception with description: " << e.what() << std::endl;
          return false;
       }
-      else
-      {
-         logFile << "The solver did not converge. " << std::endl;
-         logFile.close();
+      catch (...) {
+         std::cerr << "The solver failed due to an unknown C++ exception." << std::endl;
+         logFile   << "The solver failed due to an unknown C++ exception." << std::endl;
+         throw;
       }
+   }
+   else {
+      returnCode = solver.solve();
+   }
+
+   if( ! returnCode ) {
+      if( verbose )
+         std::cerr << std::endl << "The solver did not converge. " << std::endl;
+      logFile << "The solver did not converge. " << std::endl;
    }
 
    /****
@@ -448,22 +504,10 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
     * Write an epilog
     */
    if( verbose )
-      writeEpilog(std::cout, solver );
-   if( haveLogFile )
-   {
-      std::fstream logFile;
-      logFile.open( logFileName.getString(), std::ios::out | std::ios::app );
-      if( ! logFile )
-      {
-         std::cerr << "Unable to open the log file " << logFileName << "." << std::endl;
-         return false;
-      }
-      else
-      {
-         writeEpilog( logFile, solver );
-         logFile.close();
-      }
-   }
+      writeEpilog( std::cout, solver );
+   writeEpilog( logFile, solver );
+   logFile.close();
+
    return returnCode;
 }
 

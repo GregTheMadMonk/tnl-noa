@@ -61,7 +61,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 	if( ! Mesh.load( meshFile ) )
 	{
-		   cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the mesh from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 
@@ -69,7 +69,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	const String& initialCondition = parameters.getParameter <String>("initial-condition");
 	if( ! dofVector.load( initialCondition ) )
 	{
-		   cerr << "I am not able to load the initial condition from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the initial condition from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 
@@ -104,7 +104,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 	initCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 
 	return true;
 }
@@ -174,21 +174,21 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 		//cudaDeviceSynchronize();
 	}
 //	cudaDeviceSynchronize();
-//	checkCudaDevice;
+//	TNL_CHECK_CUDA_DEVICE;
 //	for(int i = 0; i < 2*m -1; i++)
 //	{
 //		runCUDA<2><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,2,i);
 //		cudaDeviceSynchronize();
 //	}
 //	cudaDeviceSynchronize();
-//	checkCudaDevice;
+//	TNL_CHECK_CUDA_DEVICE;
 //	for(int i = 0; i < 2*m -1; i++)
 //	{
 //		runCUDA<4><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,4,i);
 //		cudaDeviceSynchronize();
 //	}
 //	cudaDeviceSynchronize();
-//	checkCudaDevice;
+//	TNL_CHECK_CUDA_DEVICE;
 //	for(int i = 0; i < 2*m -1; i++)
 //	{
 //		runCUDA<8><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,8,i);
@@ -234,7 +234,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 //		cudaDeviceSynchronize();
 //	}
 cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 
 	cudaMemcpy(this->dofVector.getData(), cudaDofVector, this->dofVector.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
 	cudaDeviceSynchronize();
@@ -492,7 +492,7 @@ Real tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 
 template<>
-__global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+__global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 {
 
 	if(blockIdx.x+blockIdx.y == k)
@@ -516,7 +516,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 			/*---------------------------------------------------------------------------------------------------------------------------*/
 }
 	template<>
-	__global__ void runCUDA<2>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+	__global__ void runCUDA<2>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 	{
 	if((gridDim.x - blockIdx.x - 1)+blockIdx.y == k)
 	{
@@ -538,7 +538,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 	}
 	}			/*---------------------------------------------------------------------------------------------------------------------------*/
 	template<>
-	__global__ void runCUDA<4>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+	__global__ void runCUDA<4>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 	{
 	if(blockIdx.x+blockIdx.y == gridDim.x+gridDim.y-k-2)
 		{
@@ -564,7 +564,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 	}
 
 	template<>
-	__global__ void runCUDA<8>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+	__global__ void runCUDA<8>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 	{
 	if((gridDim.x - blockIdx.x - 1)+blockIdx.y == gridDim.x+gridDim.y-k-2)
 		{
@@ -595,7 +595,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 
 
 	template<>
-		__global__ void runCUDA<5>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+		__global__ void runCUDA<5>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 		{
 
 			if(blockIdx.x+blockIdx.y == k)
@@ -640,7 +640,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 
 
 	template<>
-		__global__ void runCUDA<10>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+		__global__ void runCUDA<10>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 		{
 			if((gridDim.x - blockIdx.x - 1)+blockIdx.y == k)
 			{
@@ -687,7 +687,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 
 
 	template<>
-	__global__ void runCUDA<15>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+	__global__ void runCUDA<15>(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 	{
 
 		if(blockIdx.x+blockIdx.y == k)
@@ -806,7 +806,7 @@ __global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, d
 
 
 
-__global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
+__global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver)
 {
 	int gx = threadIdx.x + blockDim.x*blockIdx.x;
 	int gy = blockDim.y*blockIdx.y + threadIdx.y;
@@ -825,7 +825,7 @@ __global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, dou
 
 
 
-//__global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+//__global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int k)
 //{
 //
 //	if(sweep==1 && blockIdx.x+blockIdx.y == k)

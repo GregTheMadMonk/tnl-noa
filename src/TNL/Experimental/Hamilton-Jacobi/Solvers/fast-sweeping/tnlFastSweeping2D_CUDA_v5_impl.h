@@ -69,7 +69,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 	if( ! Mesh.load( meshFile ) )
 	{
-		   cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the mesh from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 
@@ -77,7 +77,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	const String& initialCondition = parameters.getParameter <String>("initial-condition");
 	if( ! dofVector.load( initialCondition ) )
 	{
-		   cerr << "I am not able to load the initial condition from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the initial condition from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 
@@ -112,7 +112,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 	initCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 
 	return true;
 }
@@ -179,7 +179,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	runCUDA<<<numBlocks,threadsPerBlock,3*(512+1)*sizeof(double)>>>(this->cudaSolver,0,0);
 
 	cudaDeviceSynchronize();
-	checkCudaDevice;
+	TNL_CHECK_CUDA_DEVICE;
 
 	cudaMemcpy(this->dofVector.getData(), cudaDofVector, this->dofVector.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
 	cudaDeviceSynchronize();
@@ -491,7 +491,7 @@ Real tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 
 
-__global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int i)
+__global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver, int sweep, int i)
 {
 
 	extern __shared__ double u[];
@@ -677,7 +677,7 @@ __global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, doub
 }
 
 
-__global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
+__global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, TNL::Devices::Host, int >, double, int >* solver)
 {
 	int gx = threadIdx.x + blockDim.x*blockIdx.x;
 	int gy = blockDim.y*blockIdx.y + threadIdx.y;

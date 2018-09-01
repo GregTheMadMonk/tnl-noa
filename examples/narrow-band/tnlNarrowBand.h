@@ -17,10 +17,10 @@
 #define TNLNARROWBAND_H_
 
 #include <TNL/Config/ParameterContainer.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Containers/StaticVector.h>
 #include <functions/tnlMeshFunction.h>
-#include <core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <mesh/tnlGrid.h>
 #include <mesh/grids/tnlGridEntity.h>
 #include <limits.h>
@@ -55,7 +55,7 @@ public:
 	typedef Device DeviceType;
 	typedef Index IndexType;
 	typedef tnlGrid< 2, Real, Device, Index > MeshType;
-	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+	typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
@@ -135,7 +135,7 @@ public:
 	typedef Device DeviceType;
 	typedef Index IndexType;
 	typedef tnlGrid< 3, Real, Device, Index > MeshType;
-	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+	typedef TNL::Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
 	tnlNarrowBand();

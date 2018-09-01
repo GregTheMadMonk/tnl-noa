@@ -18,10 +18,17 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/AdEllpack.h>
+#include <TNL/Matrices/BiEllpack.h>
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Matrices/SlicedEllpack.h>
 #include <TNL/Matrices/ChunkedEllpack.h>
 #include <TNL/Matrices/CSR.h>
+#include <TNL/Matrices/EllpackSymmetric.h>   
+#include <TNL/Matrices/SlicedEllpackSymmetricGraph.h>   
+#include <TNL/Matrices/BiEllpackSymmetric.h>
+#include <TNL/Matrices/EllpackSymmetricGraph.h>
+   
 
 using namespace TNL;
 using namespace TNL::Matrices;
@@ -29,13 +36,21 @@ using namespace TNL::Matrices;
 void setupConfig( Config::ConfigDescription& config )
 {
     config.addDelimiter                            ( "General settings:" );
+    
     config.addEntry< String >( "input-file", "Input file name." );
     config.addEntry< String >( "matrix-format", "Matrix format." );
        config.addEntryEnum< String >( "dense" );
        config.addEntryEnum< String >( "ellpack" );
+       config.addEntryEnum< String >( "ellpack-sym" );
+       config.addEntryEnum< String >( "ellpack-graph" );
        config.addEntryEnum< String >( "sliced-ellpack" );
+       config.addEntryEnum< String >( "sliced-ellpack-graph" );
        config.addEntryEnum< String >( "chunked-ellpack" );
        config.addEntryEnum< String >( "csr" );
+       config.addEntryEnum< String >( "bi-ell" );
+       config.addEntryEnum< String >( "bi-ell-sym" );
+       config.addEntryEnum< String >( "ellpack-graph" );
+       
    config.addEntry< bool >( "hard-test", "Comparison against the dense matrix.", false );
    config.addEntry< bool >( "multiplication-test", "Matrix-vector multiplication test.", false );
    config.addEntry< bool >( "verbose", "Verbose mode." );
@@ -43,7 +58,7 @@ void setupConfig( Config::ConfigDescription& config )
 
 
 template< typename Matrix >
-bool testMatrix( const Config::ParameterContainer& parameters )
+bool testMatrix( bool sym, const Config::ParameterContainer& parameters )
 {
    Matrix matrix;
    typedef typename Matrix::RealType RealType;
@@ -59,10 +74,18 @@ bool testMatrix( const Config::ParameterContainer& parameters )
       std::cerr << "Cannot open the file " << fileName << std::endl;
       return false;
    }
-   if( ! Matrices::MatrixReader< Matrix >::readMtxFile( file, matrix, verbose ) )
+
+   if( ! MatrixReader< Matrix >::readMtxFile( file, matrix, verbose, sym ) )
       return false;
-   if( ! Matrices::MatrixReader< Matrix >::verifyMtxFile( file, matrix, verbose ) )
+
+   if( !matrix.help( true ) )
+   {
+      std::cout << "Method matrix.help() failed. Aborting!" <<std::endl;
+       return false;
+   }
+   if( ! MatrixReader< Matrix >::verifyMtxFile( file, matrix, verbose ) )
       return false;
+
    if( parameters.getParameter< bool >( "hard-test" ) )
    {
       typedef Dense< RealType, DeviceType, IndexType > Dense;
@@ -73,6 +96,7 @@ bool testMatrix( const Config::ParameterContainer& parameters )
          return false;
       //matrix.print(std::cout );
       //denseMatrix.print(std::cout );
+
       for( IndexType i = 0; i < matrix.getRows(); i++ )
       {
          for( IndexType j = 0; j < matrix.getColumns(); j++ )
@@ -102,6 +126,7 @@ bool testMatrix( const Config::ParameterContainer& parameters )
       b.setSize( matrix.getRows() );
       for( IndexType i = 0; i < x.getSize(); i++ )
       {
+         b.setValue( 0 );
          x.setValue( 0 );
          x.setElement( i, 1.0 );
          matrix.vectorProduct( x, b );
@@ -138,35 +163,66 @@ int main( int argc, char* argv[] )
    const String& matrixFormat = parameters.getParameter< String >( "matrix-format" );
    if( matrixFormat == "dense" )
    {
-       if( !testMatrix< Dense< double, Devices::Host, int > >( parameters ) )
+       if( !testMatrix< Dense< double, Devices::Host, int > >( false, parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "ellpack" )
    {
-       if( !testMatrix< Ellpack< double, Devices::Host, int > >( parameters ) )
+
+       if( !testMatrix< Ellpack< double, Devices::Host, int > >( false, parameters ) )
+          return EXIT_FAILURE;
+       return EXIT_SUCCESS;
+   }
+   if( matrixFormat == "ellpack-sym" )
+   {
+       if( !testMatrix< EllpackSymmetric< double, Devices::Host, int > >( true, parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "sliced-ellpack" )
    {
-       if( !testMatrix< SlicedEllpack< double, Devices::Host, int > >( parameters ) )
+       if( !testMatrix< SlicedEllpack< double, Devices::Host, int > >( false, parameters ) )
           return EXIT_FAILURE;
+       return EXIT_SUCCESS;
+   }
+   if( matrixFormat == "sliced-ellpack-graph" )
+   {
+       if( !testMatrix< SlicedEllpackSymmetricGraph< double, Devices::Host, int > >( true, parameters ) )
+           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "chunked-ellpack" )
    {
-       if( !testMatrix< ChunkedEllpack< double, Devices::Host, int > >( parameters ) )
+       if( !testMatrix< ChunkedEllpack< double, Devices::Host, int > >( false, parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "csr" )
    {
-       if( !testMatrix< CSR< double, Devices::Host, int > >( parameters ) )
+      if( !testMatrix< CSR< double, Devices::Host, int > >( false, parameters ) )
+         return EXIT_FAILURE;
+      return EXIT_SUCCESS;
+   }
+   if( matrixFormat == "bi-ell" )
+   {
+       if( !testMatrix< BiEllpack< double, Devices::Host, int > >( false, parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
-   std::cerr << "Uknown matrix format " << matrixFormat << "." << std::endl;
+   if( matrixFormat == "bi-ell-sym" )
+   {
+       if( !testMatrix< BiEllpackSymmetric< double, Devices::Host, int > >( true, parameters ) )
+           return EXIT_FAILURE;
+       return EXIT_SUCCESS;
+   }
+   if( matrixFormat == "ellpack-graph" )
+   {
+       if( !testMatrix< EllpackSymmetricGraph< double, Devices::Host, int > >( true, parameters ) )
+           return EXIT_FAILURE;
+       return EXIT_SUCCESS;
+   }
+  std::cerr << "Uknown matrix format " << matrixFormat << "." <<std::endl;
    return EXIT_FAILURE;
 }
 

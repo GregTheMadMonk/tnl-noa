@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/CudaCallable.h>
 #include <TNL/String.h>
 #include <TNL/File.h>
 #include <TNL/Containers/List.h>
@@ -31,10 +31,6 @@ namespace TNL {
 class Object
 {
    public:
-
-      //! Basic constructor
-      __cuda_callable__
-      Object() : deprecatedReadMode( false ) {};
 
       /****
        * Type getter. This returns the type in C++ style - for example the returned value
@@ -69,20 +65,13 @@ class Object
 
       bool boundLoad( const String& fileName );
       
-      void setDeprecatedReadMode();
-
       //! Destructor
       // FIXME: __cuda_callable__ would have to be added to every overriding destructor,
       // even if the object's constructor is not __cuda_callable__
       //   __cuda_callable__
+#ifndef HAVE_MIC
       virtual ~Object(){};
-   
-   
-   protected:
-      
-      // This allows to read old TNL files, it will be removed.
-      bool deprecatedReadMode;
-
+#endif
 };
 
 bool getObjectType( File& file, String& type );

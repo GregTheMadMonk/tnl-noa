@@ -22,7 +22,7 @@ template< typename Real, typename Device, typename Index >
 String MultiVector< 3, Real, Device, Index > :: getType()
 {
    return String( "Containers::MultiVector< ") +
-          String( Dimensions ) +
+          String( Dimension ) +
           String( ", " ) +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
@@ -57,9 +57,9 @@ String MultiVector< 3, Real, Device, Index > :: getSerializationTypeVirtual() co
 };
 
 template< typename Real, typename Device, typename Index >
-bool MultiVector< 3, Real, Device, Index > :: setDimensions( const Index kSize,
-                                                                       const Index jSize,
-                                                                       const Index iSize )
+void MultiVector< 3, Real, Device, Index > :: setDimensions( const Index kSize,
+                                                             const Index jSize,
+                                                             const Index iSize )
 {
    TNL_ASSERT( iSize > 0 && jSize > 0 && kSize > 0,
               std::cerr << "iSize = " << iSize
@@ -73,21 +73,21 @@ bool MultiVector< 3, Real, Device, Index > :: setDimensions( const Index kSize,
 }
 
 template< typename Real, typename Device, typename Index >
-bool MultiVector< 3, Real, Device, Index > :: setDimensions( const StaticVector< 3, Index >& dimensions )
+void MultiVector< 3, Real, Device, Index > :: setDimensions( const StaticVector< 3, Index >& dimensions )
 {
    TNL_ASSERT( dimensions[ 0 ] > 0 && dimensions[ 1 ] > 0 && dimensions[ 2 ],
               std::cerr << "dimensions = " << dimensions );
    this->dimensions = dimensions;
-   return Vector< Real, Device, Index > :: setSize( this->dimensions[ 2 ] *
-                                                          this->dimensions[ 1 ] *
-                                                          this->dimensions[ 0 ] );
+   Vector< Real, Device, Index > :: setSize( this->dimensions[ 2 ] *
+                                             this->dimensions[ 1 ] *
+                                             this->dimensions[ 0 ] );
 }
 
 template< typename Real, typename Device, typename Index >
    template< typename MultiVectorT >
-bool MultiVector< 3, Real, Device, Index > :: setLike( const MultiVectorT& multiVector )
+void MultiVector< 3, Real, Device, Index > :: setLike( const MultiVectorT& multiVector )
 {
-   return setDimensions( multiVector. getDimensions() );
+   setDimensions( multiVector. getDimensions() );
 }
 
 template< typename Real, typename Device, typename Index >

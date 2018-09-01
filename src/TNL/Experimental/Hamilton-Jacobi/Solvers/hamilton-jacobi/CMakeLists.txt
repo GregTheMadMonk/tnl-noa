@@ -7,15 +7,15 @@ set( tnl_hamilton_jacobi_SOURCES
      hamiltonJacobiProblemConfig.h
      tnl-direct-eikonal-solver.h )
                
-ADD_EXECUTABLE(tnl-hamilton-jacobi${debugExt} main.cpp)
-target_link_libraries (tnl-hamilton-jacobi${debugExt} tnl${debugExt}-${tnlVersion} )
+#ADD_EXECUTABLE(tnl-hamilton-jacobi main.cpp)
+#target_link_libraries (tnl-hamilton-jacobi tnl )
 
-ADD_EXECUTABLE(tnl-direct-eikonal-solver${debugExt} tnl-direct-eikonal-solver.cpp )
-target_link_libraries (tnl-direct-eikonal-solver${debugExt} tnl${debugExt}-${tnlVersion} )
+ADD_EXECUTABLE(tnl-direct-eikonal-solver tnl-direct-eikonal-solver.cpp )
+target_link_libraries (tnl-direct-eikonal-solver tnl )
 
 
-INSTALL( TARGETS tnl-hamilton-jacobi${debugExt} 
-                 tnl-direct-eikonal-solver${debugExt}
+INSTALL( TARGETS #tnl-hamilton-jacobi 
+                 tnl-direct-eikonal-solver
          RUNTIME DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
         
