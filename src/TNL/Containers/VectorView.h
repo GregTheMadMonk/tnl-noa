@@ -10,7 +10,7 @@
 
 // Implemented by: Jakub Klinkovský
 
-#pragma once 
+#pragma once
 
 #include <TNL/Containers/ArrayView.h>
 
@@ -82,9 +82,11 @@ public:
 
    Real absMin() const;
 
-   Real lpNorm( Real p ) const;
+   template< typename ResultType = RealType, typename Real_ >
+   ResultType lpNorm( Real_ p ) const;
 
-   Real sum() const;
+   template< typename ResultType = RealType >
+   ResultType sum() const;
 
    template< typename Vector >
    Real differenceMax( const Vector& v ) const;
@@ -98,11 +100,11 @@ public:
    template< typename Vector >
    Real differenceAbsMin( const Vector& v ) const;
 
-   template< typename Vector >
-   Real differenceLpNorm( const Vector& v, Real p ) const;
+   template< typename ResultType = RealType, typename Vector, typename Real_ >
+   ResultType differenceLpNorm( const Vector& v, Real_ p ) const;
 
-   template< typename Vector >
-   Real differenceSum( const Vector& v ) const;
+   template< typename ResultType = RealType, typename Vector >
+   ResultType differenceSum( const Vector& v ) const;
 
    void scalarMultiplication( Real alpha );
 

@@ -50,7 +50,8 @@ TARGET_LINK_LIBRARIES( StaticArrayTest
                            ${GTEST_BOTH_LIBRARIES}
                            tnl )
 
-# NOTE: Vector = Array + VectorOperations, so we test Vector and VectorOperations at the same time
+# NOTE: Vector = Array + VectorOperations, VectorView = ArrayView + VectorOperations,
+# so we test Vector, VectorView and VectorOperations at the same time
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( VectorTest VectorTest.cu
                         OPTIONS ${CXX_TESTS_FLAGS} )
