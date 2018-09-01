@@ -39,7 +39,7 @@ class MultiVector< 1, Real, Device, Index > : public Vector< Real, Device, Index
 
    static String getType();
 
-   String getTypeVirtual() const;
+   virtual String getTypeVirtual() const;
 
    static String getSerializationType();
 
@@ -120,7 +120,7 @@ class MultiVector< 2, Real, Device, Index > : public Vector< Real, Device, Index
 
    static String getType();
 
-   String getTypeVirtual() const;
+   virtual String getTypeVirtual() const;
 
    static String getSerializationType();
 
@@ -202,7 +202,7 @@ class MultiVector< 3, Real, Device, Index > : public Vector< Real, Device, Index
 
    static String getType();
 
-   String getTypeVirtual() const;
+   virtual String getTypeVirtual() const;
 
    static String getSerializationType();
 
@@ -284,7 +284,7 @@ class MultiVector< 4, Real, Device, Index > : public Vector< Real, Device, Index
 
    static String getType();
 
-   String getTypeVirtual() const;
+   virtual String getTypeVirtual() const;
 
    static String getSerializationType();
 
