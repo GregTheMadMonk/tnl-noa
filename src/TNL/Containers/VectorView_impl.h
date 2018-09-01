@@ -19,18 +19,6 @@ namespace Containers {
 template< typename Real,
           typename Device,
           typename Index >
-VectorView< Real, Device, Index >&
-VectorView< Real, Device, Index >::
-operator=( const VectorView& view )
-{
-   ArrayView< Real, Device, Index >::operator=( view );
-   return *this;
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
 String
 VectorView< Real, Device, Index >::
 getType()

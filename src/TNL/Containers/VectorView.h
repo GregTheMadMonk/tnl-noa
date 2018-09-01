@@ -39,11 +39,6 @@ public:
    // inherit all ArrayView's constructors
    using ArrayView< Real, Device, Index >::ArrayView;
 
-   // Copy-assignment does deep copy, just like regular vector, but the sizes
-   // must match (i.e. copy-assignment cannot resize).
-   // TODO: can it be inherited?
-   VectorView< Real, Device, Index >& operator=( const VectorView& view );
-
 
    static String getType();
 
