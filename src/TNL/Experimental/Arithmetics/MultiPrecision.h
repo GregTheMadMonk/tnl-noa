@@ -1,12 +1,24 @@
-/**************************************************
-* filename:             MultiPrecision.h          *
-* created:              November 11, 2017         *
-* author:               Daniel Simon              *
-* mail:                 dansimon93@gmail.com      *
-***************************************************/
+/***************************************************************************
+                          MultiPrecision.h  -  description
+                             -------------------
+    begin                : Nov 11, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 
-/*IMPLEMENTATION OF GMP LIBRARY - FLOATING POINT FUNCTIONS*/
-/* Source: https://gmplib.org/ */
+/* See Copyright Notice in tnl/Copyright */
+
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Daniel Simon, dansimon93@gmail.com
+ */
+
+/****
+ * Wrapper class for GMP library: https://gmplib.org/
+ */
+
+#pragma once
 
 #ifdef HAVE_GMP
 #include <gmp.h>
@@ -15,11 +27,11 @@
 namespace TNL {
 namespace Arithmetics {
     
-class MultiPrecision{
-public:
-    /* NUMBER */
-    mpf_t number;
+class MultiPrecision
+{
+   public:
 
+#ifdef HAVE_GMP    
     /* CONSTRUCTORS */
     MultiPrecision(); // initialize number to 0
     explicit MultiPrecision(int); // assignment of signed long integer
@@ -57,6 +69,9 @@ public:
 
     /* DESTRUCTOR */
     ~MultiPrecision();
+    
+    mpf_t number;
+#endif
 };
 
 MultiPrecision abs(const MultiPrecision);

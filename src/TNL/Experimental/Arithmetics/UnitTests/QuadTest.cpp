@@ -1,9 +1,18 @@
-/**************************************************
-* filename:		QuadTest.cpp	          *
-* created:		October 27, 2017	  *
-* author:		Daniel Simon	 	  *
-* mail:			dansimon93@gmail.com      *
-***************************************************/
+/***************************************************************************
+                          QuadTest.cpp  -  description
+                             -------------------
+    begin                : Oct 27, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Daniel Simon, dansimon93@gmail.com
+ */
 
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
@@ -26,7 +35,7 @@
 using namespace TNL;
 using namespace TNL::Arithmetics;
 
-#ifdef HAVE_GTEST 
+#if ( defined HAVE_GTEST ) && ( defined HAVE_GMP )
 TEST (QuadTest, number_assignment)
 {
     /* Quad */

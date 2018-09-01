@@ -1,14 +1,23 @@
-//
-// Created by daniel on 25.11.17.
-/*
- *  Quad.h
- *
- *  Created by Matěj Novotný on 27.10.2010
- *  Modified by Daniel Simon on 26.11.2017
- *
- *  INFO: Quad and Quadcpp merged in this single class.
- *        Quad edited to use templates.
+/***************************************************************************
+                          Quad.h  -  description
+                             -------------------
+    begin                : Oct 27, 2010
+    copyright            : (C) 2010 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Matěj Novotný
+ * Daniel Simon, dansimon93@gmail.com
  */
+
+#pragma once
+
+#include <TNL/String.h>
 
 namespace TNL {
 namespace Arithmetics {    
@@ -24,6 +33,8 @@ public:
     explicit Quad(const T&);
     explicit Quad(int);
     Quad(const Quad<T>&);
+    
+    static String getType();
 
     /*OVERLOADED OPERATORS*/
     T& operator[](int);

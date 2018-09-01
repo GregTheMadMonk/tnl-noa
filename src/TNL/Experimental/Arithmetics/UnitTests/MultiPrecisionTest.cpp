@@ -1,9 +1,18 @@
-/**************************************************
-* filename:		MultiPrecisionTest.cpp	  *
-* created:		December 1, 2017	  *
-* author:		Daniel Simon	 	  *
-* mail:			dansimon93@gmail.com      *
-***************************************************/
+/***************************************************************************
+                          MultiPrecisionTest.cpp  -  description
+                             -------------------
+    begin                : Dec 1, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Daniel Simon, dansimon93@gmail.com
+ */
 
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>

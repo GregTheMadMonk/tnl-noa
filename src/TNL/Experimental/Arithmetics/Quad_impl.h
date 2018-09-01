@@ -1,12 +1,21 @@
-/*
- *  Quad.cpp
- *
- *  Created by Matěj Novotný on 27.10.2010
- *  Modified by Daniel Simon on 23.11.2017
- *
- *  INFO: Quad and Quadcpp merged in this single class.
- *        Quad edited to use templates.
+/***************************************************************************
+                          Quad_impl.h  -  description
+                             -------------------
+    begin                : Oct 27, 2010
+    copyright            : (C) 2010 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Matěj Novotný
+ * Daniel Simon, dansimon93@gmail.com
  */
+
+#pragma once
 
 #include <cmath>
 #include <cstdio>
@@ -45,6 +54,14 @@ Quad<T>::Quad(const Quad<T>& other) {
     data[1] = other[1];
     data[2] = other[2];
     data[3] = other[3];
+}
+
+template <class T>
+String
+Quad< T >::
+getType()
+{
+   return String( "Quad< " + getType< T >() + " >" );
 }
 
 template <class T>

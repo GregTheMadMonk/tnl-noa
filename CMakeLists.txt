@@ -243,9 +243,14 @@ find_library(GMP_LIBRARIES gmp PATHS $ENV{GMPDIR} ${LIB_INSTALL_DIR})
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GMP DEFAULT_MSG
                                    GMP_INCLUDES GMP_LIBRARIES)
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GMP_INCLUDES} -DHAVE_GMP" )
-set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${GMP_LIBRARIES}" )
-mark_as_advanced(GMP_INCLUDES GMP_LIBRARIES)
+if( ${GMP_INCLUDES} STREQUAL "GMP_INCLUDES-NOTFOUND" OR ${GMP_LIBRARIES} STREQUAL "GMP_LIBRARIES-NOTFOUND" )
+   message( "GMP was not found. Some tests for higher precision arithmetics will not be passed." )
+else()
+   set( HAVE_GMP )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GMP_INCLUDES} -DHAVE_GMP" )
+   set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${GMP_LIBRARIES}" )
+   mark_as_advanced(GMP_INCLUDES GMP_LIBRARIES)
+endif()
 
 ####
 # Check for some system header
