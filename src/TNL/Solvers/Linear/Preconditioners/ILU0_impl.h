@@ -79,7 +79,7 @@ update( const MatrixPointer& matrixPointer )
          const auto L_i = L.getRow( i );
          const auto U_i = U.getRow( N - 1 - i );
 
-         // loop for k = 0, ..., i - 2; but only over the non-zero entries
+         // loop for k = 0, ..., i - 1; but only over the non-zero entries
          for( IndexType c_k = 0; c_k < L_entries; c_k++ ) {
             const auto k = L_i.getElementColumn( c_k );
 

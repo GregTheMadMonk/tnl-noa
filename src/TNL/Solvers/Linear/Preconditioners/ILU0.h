@@ -35,9 +35,9 @@ template< typename Real, typename Index >
 class ILU0< Real, Devices::Host, Index >
 {
 public:
-   typedef Real RealType;
-   typedef Devices::Host DeviceType;
-   typedef Index IndexType;
+   using RealType = Real;
+   using DeviceType = Devices::Host;
+   using IndexType = Index;
 
    template< typename MatrixPointer >
    void update( const MatrixPointer& matrixPointer );
@@ -51,7 +51,6 @@ public:
    }
 
 protected:
-//   Matrices::CSR< RealType, DeviceType, IndexType > A;
    Matrices::CSR< RealType, DeviceType, IndexType > L;
    Matrices::CSR< RealType, DeviceType, IndexType > U;
 };
@@ -169,9 +168,9 @@ template< typename Real, typename Index >
 class ILU0< Real, Devices::MIC, Index >
 {
 public:
-   typedef Real RealType;
-   typedef Devices::MIC DeviceType;
-   typedef Index IndexType;
+   using RealType = Real;
+   using DeviceType = Devices::MIC;
+   using IndexType = Index;
 
    template< typename MatrixPointer >
    void update( const MatrixPointer& matrixPointer )
@@ -189,11 +188,6 @@ public:
    {
       return String( "ILU0" );
    }
-
-protected:
-//   Matrices::CSR< RealType, DeviceType, IndexType > A;
-   Matrices::CSR< RealType, DeviceType, IndexType > L;
-   Matrices::CSR< RealType, DeviceType, IndexType > U;
 };
 
 #endif
