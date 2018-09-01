@@ -37,8 +37,8 @@ class NeighborGridEntityGetter<
 {
    public:
  
-      static const int EntityDimension = 1;
-      static const int NeighborEntityDimension = 1;
+      static constexpr int EntityDimension = 1;
+      static constexpr int NeighborEntityDimension = 1;
       typedef Meshes::Grid< 1, Real, Device, Index > GridType;
       typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
       typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
@@ -108,8 +108,8 @@ class NeighborGridEntityGetter<
 {
    public:
  
-      static const int EntityDimension = 1;
-      static const int NeighborEntityDimension = 1;
+      static constexpr int EntityDimension = 1;
+      static constexpr int NeighborEntityDimension = 1;
       typedef Meshes::Grid< 1, Real, Device, Index > GridType;
       typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
       typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
@@ -119,7 +119,7 @@ class NeighborGridEntityGetter<
       typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
       typedef NeighborGridEntityGetter< GridEntityType, 1, StencilStorage > ThisType;
  
-      static const int stencilSize = Config::getStencilSize();
+      static constexpr int stencilSize = Config::getStencilSize();
  
       __cuda_callable__ inline
       NeighborGridEntityGetter( const GridEntityType& entity )
@@ -206,8 +206,8 @@ class NeighborGridEntityGetter<
 {
    public:
  
-      static const int EntityDimension = 1;
-      static const int NeighborEntityDimension = 0;
+      static constexpr int EntityDimension = 1;
+      static constexpr int NeighborEntityDimension = 0;
       typedef Meshes::Grid< 1, Real, Device, Index > GridType;
       typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
       typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
@@ -279,8 +279,8 @@ class NeighborGridEntityGetter<
 {
    public:
  
-      static const int EntityDimension = 0;
-      static const int NeighborEntityDimension = 1;
+      static constexpr int EntityDimension = 0;
+      static constexpr int NeighborEntityDimension = 1;
       typedef Meshes::Grid< 1, Real, Device, Index > GridType;
       typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
       typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
@@ -350,8 +350,8 @@ class NeighborGridEntityGetter<
 {
    public:
  
-      static const int EntityDimension = 0;
-      static const int NeighborEntityDimension = 1;
+      static constexpr int EntityDimension = 0;
+      static constexpr int NeighborEntityDimension = 1;
       typedef Meshes::Grid< 1, Real, Device, Index > GridType;
       typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
       typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
@@ -421,8 +421,8 @@ class NeighborGridEntityGetter<
 {
    public:
  
-      static const int EntityDimension = 0;
-      static const int NeighborEntityDimension = 0;
+      static constexpr int EntityDimension = 0;
+      static constexpr int NeighborEntityDimension = 0;
       typedef Meshes::Grid< 1, Real, Device, Index > GridType;
       typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
       typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;

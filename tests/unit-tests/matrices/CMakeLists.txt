@@ -1,9 +1,9 @@
 set( headers tnlDenseMatrixTester.h
              tnlTridiagonalMatrixTester.h
              tnlMultidiagonalMatrixTester.h
-             tnlEllpackMatrixTester.h
-             tnlSlicedEllpackMatrixTester.h
-             tnlSparseMatrixTester.h )
+             EllpackMatrixTester.h
+             SlicedEllpackMatrixTester.h
+             SparseMatrixTester.h )
 
 ADD_EXECUTABLE( tnlDenseMatrixTest${mpiExt} ${headers} tnlDenseMatrixTest.cpp )
 TARGET_LINK_LIBRARIES( tnlDenseMatrixTest${mpiExt} ${CPPUNIT_LIBRARIES}
@@ -35,23 +35,23 @@ if( BUILD_CUDA )
                                                                       tnl )
 endif()
 
-ADD_EXECUTABLE( tnlEllpackMatrixTest${mpiExt} ${headers} tnlEllpackMatrixTest.cpp )
-TARGET_LINK_LIBRARIES( tnlEllpackMatrixTest${mpiExt} ${CPPUNIT_LIBRARIES}
+ADD_EXECUTABLE( EllpackMatrixTest${mpiExt} ${headers} EllpackMatrixTest.cpp )
+TARGET_LINK_LIBRARIES( EllpackMatrixTest${mpiExt} ${CPPUNIT_LIBRARIES}
                                                               tnl )
 
 if( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( tnlEllpackMatrixTest-cuda${mpiExt} ${headers} tnlEllpackMatrixTest.cu )
-   TARGET_LINK_LIBRARIES( tnlEllpackMatrixTest-cuda${mpiExt} ${CPPUNIT_LIBRARIES}
+   CUDA_ADD_EXECUTABLE( EllpackMatrixTest-cuda${mpiExt} ${headers} EllpackMatrixTest.cu )
+   TARGET_LINK_LIBRARIES( EllpackMatrixTest-cuda${mpiExt} ${CPPUNIT_LIBRARIES}
                                                                       tnl )
 endif()
 
-ADD_EXECUTABLE( tnlSlicedEllpackMatrixTest${mpiExt} ${headers} tnlSlicedEllpackMatrixTest.cpp )
-TARGET_LINK_LIBRARIES( tnlSlicedEllpackMatrixTest${mpiExt} ${CPPUNIT_LIBRARIES}
+ADD_EXECUTABLE( SlicedEllpackMatrixTest${mpiExt} ${headers} SlicedEllpackMatrixTest.cpp )
+TARGET_LINK_LIBRARIES( SlicedEllpackMatrixTest${mpiExt} ${CPPUNIT_LIBRARIES}
                                                               tnl )
 
 if( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( tnlSlicedEllpackMatrixTest-cuda${mpiExt} ${headers} tnlSlicedEllpackMatrixTest.cu )
-   TARGET_LINK_LIBRARIES( tnlSlicedEllpackMatrixTest-cuda${mpiExt} ${CPPUNIT_LIBRARIES}
+   CUDA_ADD_EXECUTABLE( SlicedEllpackMatrixTest-cuda${mpiExt} ${headers} SlicedEllpackMatrixTest.cu )
+   TARGET_LINK_LIBRARIES( SlicedEllpackMatrixTest-cuda${mpiExt} ${CPPUNIT_LIBRARIES}
                                                                       tnl )
 endif()
 

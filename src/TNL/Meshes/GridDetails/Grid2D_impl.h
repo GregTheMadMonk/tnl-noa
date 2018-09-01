@@ -14,7 +14,6 @@
 #include <iomanip>
 #include <TNL/String.h>
 #include <TNL/Assert.h>
-#include <TNL/Logger.h>
 #include <TNL/Meshes/GridDetails/GnuplotWriter.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter2D_impl.h>
@@ -95,7 +94,7 @@ void Grid< 2, Real, Device, Index > ::computeSpaceStepPowers()
 {
       const RealType& hx = this->spaceSteps.x();
       const RealType& hy = this->spaceSteps.y();
- 
+
       Real auxX, auxY;
       for( int i = 0; i < 5; i++ )
       {
@@ -238,7 +237,7 @@ getEntitiesCount() const
 {
    static_assert( EntityDimension <= 2 &&
                   EntityDimension >= 0, "Wrong grid entity dimensions." );
- 
+
    switch( EntityDimension )
    {
       case 2:
@@ -274,7 +273,7 @@ getEntity( const IndexType& entityIndex ) const
 {
    static_assert( Entity::getEntityDimension() <= 2 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
- 
+
    return GridEntityGetter< ThisType, Entity >::getEntity( *this, entityIndex );
 }
 
@@ -289,7 +288,7 @@ getEntityIndex( const Entity& entity ) const
 {
    static_assert( Entity::getEntityDimension() <= 2 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
- 
+
    return GridEntityGetter< ThisType, Entity >::getEntityIndex( *this, entity );
 }
 

@@ -1,4 +1,4 @@
-if( WITH_TESTS STREQUAL "yes" )
+if( ${WITH_TESTS} )
 
 ADD_SUBDIRECTORY( Containers )
 ADD_SUBDIRECTORY( Matrices )
@@ -48,4 +48,4 @@ ADD_TEST( ObjectTest ${EXECUTABLE_OUTPUT_PATH}/ObjectTest${CMAKE_EXECUTABLE_SUFF
 ADD_TEST( UniquePointerTest ${EXECUTABLE_OUTPUT_PATH}/UniquePointerTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( SaveAndLoadMeshfunctionTest ${EXECUTABLE_OUTPUT_PATH}/SaveAndLoadMeshfunctionTest${CMAKE_EXECUTABLE_SUFFIX} )
 
-endif( WITH_TESTS STREQUAL "yes" )
+endif( ${WITH_TESTS} )

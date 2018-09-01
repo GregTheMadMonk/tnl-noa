@@ -162,8 +162,8 @@ solve( const Vector& b, Vector& x )
    }
    beta = r.lpNorm( ( RealType ) 2.0 );
 
-   //cout << "norm b = " << normb << endl;
-   //cout << " beta = " << beta << endl;
+   //cout << "norm b = " << normb <<std::endl;
+   //cout << " beta = " << beta <<std::endl;
 
 
    if( normb == 0.0 )
@@ -222,7 +222,7 @@ solve( const Vector& b, Vector& x )
        */
       for( IndexType i = 0; i <= m && this->nextIteration(); i++ )
       {
-//         cout << "==== i = " << i << " ====" << endl;
+//        std::cout << "==== i = " << i << " ====" <<std::endl;
 
          /****
           * Generate new Hauseholder transformation from vector z.
@@ -270,14 +270,14 @@ solve( const Vector& b, Vector& x )
             hauseholder_cwy_transposed( z, Y, T, i, w );
          }
 
-//         cout << "vi.norm = " << vi.lpNorm( 2.0 ) << endl;
-//         cout << "H (before rotations) = " << endl;
+//        std::cout << "vi.norm = " << vi.lpNorm( 2.0 ) <<std::endl;
+//        std::cout << "H (before rotations) = " <<std::endl;
 //         for( int i = 0; i <= m; i++ ) {
 //             for( int j = 0; j < m; j++ )
-//                 cout << H[ i + j * (m+1) ] << "\t";
-//             cout << endl;
+//                std::cout << H[ i + j * (m+1) ] << "\t";
+//            std::cout <<std::endl;
 //         }
-//         cout << "s = " << s << endl;
+//        std::cout << "s = " << s <<std::endl;
 
          /****
           * Applying the Givens rotations
@@ -305,18 +305,18 @@ solve( const Vector& b, Vector& x )
             }
          }
 
-//         cout << "H (after rotations) = " << endl;
+//        std::cout << "H (after rotations) = " <<std::endl;
 //         for( int i = 0; i <= m; i++ ) {
 //             for( int j = 0; j < m; j++ )
-//                 cout << H[ i + j * (m+1) ] << "\t";
-//             cout << endl;
+//                std::cout << H[ i + j * (m+1) ] << "\t";
+//            std::cout <<std::endl;
 //         }
-//         cout << "s (after rotations) = " << s << endl;
-//         cout << "residue / normb = " << std::fabs( s[ i ] ) / normb << endl;
+//        std::cout << "s (after rotations) = " << s <<std::endl;
+//        std::cout << "residue / normb = " << std::fabs( s[ i ] ) / normb <<std::endl;
 
 //         for( int k = 0; k <= i; k++ ) {
 //            vk.bind( &V.getData()[ k * ldSize ], size );
-//            cout << "(v" << k << ",v" << i << ") = " << vk.scalarProduct( vi ) << endl;
+//           std::cout << "(v" << k << ",v" << i << ") = " << vk.scalarProduct( vi ) <<std::endl;
 //         }
 
          this->setResidue( std::fabs( s[ i ] ) / normb );
@@ -349,9 +349,9 @@ solve( const Vector& b, Vector& x )
       beta = r.lpNorm( ( RealType ) 2.0 );
       this->setResidue( beta / normb );
 
-//      cout << " x = " << x << endl;
-//      cout << " beta = " << beta << endl;
-//      cout << "residue = " << beta / normb << endl;
+//     std::cout << " x = " << x <<std::endl;
+//     std::cout << " beta = " << beta <<std::endl;
+//     std::cout << "residue = " << beta / normb <<std::endl;
 
       // update parameters for the adaptivity of the restarting parameter
       ++restart_cycles;
@@ -609,8 +609,8 @@ update( IndexType k,
       if( H[ i + i * ( m + 1 ) ] == 0 ) {
 //         for( int _i = 0; _i <= i; _i++ ) {
 //             for( int _j = 0; _j < i; _j++ )
-//                 cout << H[ _i + _j * (m+1) ] << "  ";
-//             cout << endl;
+//                std::cout << H[ _i + _j * (m+1) ] << "  ";
+//            std::cout <<std::endl;
 //         }
          std::cerr << "H.norm = " << H.lpNorm( 2.0 ) << std::endl;
          std::cerr << "s = " << s << std::endl;

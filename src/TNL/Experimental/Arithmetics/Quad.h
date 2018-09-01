@@ -1,84 +1,120 @@
-/*
- *  Quad.h
- *  Quad-C
- *
- *  Created by Matěj Novotný on 27.10.10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
+/***************************************************************************
+                          Quad.h  -  description
+                             -------------------
+    begin                : Oct 27, 2010
+    copyright            : (C) 2010 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Matěj Novotný
+ * Daniel Simon, dansimon93@gmail.com
  */
 
-// Secte dva double
-// Parametry: a,b
-// Vysledek: s
-// Chyba: e
-// Predpokladame: abs(a) >= abs(b)
-void quickTwoSum(double a, double b, double *s, double *e);
+#pragma once
+
+#include <TNL/String.h>
+
+namespace TNL {
+namespace Arithmetics {    
+
+template <class T>
+class Quad
+{
+public:
+    /*INIT*/
+    T data[4];
+
+    Quad();
+    explicit Quad(const T&);
+    explicit Quad(int);
+    Quad(const Quad<T>&);
+    
+    static String getType();
+
+    /*OVERLOADED OPERATORS*/
+    T& operator[](int);
+    const T& operator[](int) const;
+    Quad<T>& operator =(const Quad<T>&);
+    Quad<T>& operator +=(const Quad<T>&);
+    Quad<T>& operator -=(const Quad<T>&);
+    Quad<T>& operator *=(const Quad<T>&);
+    Quad<T>& operator /=(const Quad<T>&);
+    Quad<T>& operator =(const T&);
+    Quad<T>& operator +=(const T&);
+    Quad<T>& operator -=(const T&);
+    Quad<T>& operator *=(const T&);
+    Quad<T>& operator /=(const T&);
+    Quad<T> operator +(const Quad<T>&) const;
+    Quad<T> operator -(const Quad<T>&) const;
+    Quad<T> operator *(const Quad<T>&) const;
+    Quad<T> operator /(const Quad<T>&) const;
+    Quad<T> operator +(const T&) const;
+    Quad<T> operator -(const T&) const;
+    Quad<T> operator *(const T&) const;
+    Quad<T> operator /(const T&) const;
+    Quad<T> operator +();
+    Quad<T> operator -();
+    Quad<T> operator +() const;
+    Quad<T> operator -() const;
+    bool operator ==(const Quad<T>&) const;
+    bool operator !=(const Quad<T>&) const;
+    bool operator <(const Quad<T>&) const;
+    bool operator >(const Quad<T>&) const;
+    bool operator >=(const Quad<T>&) const;
+    bool operator <=(const Quad<T>&) const;
+    explicit operator T() const;
+};
 
 
-// Secte dva double
-// Parametry: a,b
-// Vysledek: s
-// Chyba: e
-void twoSum(double a, double b, double *s, double *e);
+template <typename T>
+Quad<T> operator +(const T&, const Quad<T>&);
+template <typename T>
+Quad<T> operator -(const T&, const Quad<T>&);
+template <typename T>
+Quad<T> operator *(const T&, const Quad<T>&);
+template <typename T>
+Quad<T> operator /(const T&, const Quad<T>&);
 
-// Rozdeli double na 2 casti po 26 bitech
-// Parametr: a
-// Rozdelene cislo: a_hi, a_lo
-void split(double a, double *a_hi, double *a_lo);
+template <typename T>
+Quad<T> abs(const Quad<T>&);
+template <typename T>
+Quad<T> sqrt(const Quad<T>&);
 
-// Vynasobi dva double
-// Parametry: a, b
-// Vysledek: p
-// Chyba: e
-void twoProd(double a, double b, double *p, double *e);
+template <typename T>
+void quickTwoSum(T a, T b, T *s, T *e); // Addition of two doubles
+template <typename T>
+void twoSum(T a, T b, T *s, T *e); // Addition of two doubles
+template <typename T>
+void split(T a, T *a_hi, T *a_lo); // Split double into two 26 bits parts
+template <typename T>
+void twoProd(T a, T b, T *p, T *e); // Multiplication of two doubles
+template <typename T>
+void renormalize(T *a, T *b); // Normalization of number a
+template <typename T>
+void doublePlusQuad(T b, const T *a, T *s); // Addition of double and quad-double
+template <typename T>
+void doubleTimesQuad(T b, const T *a, T *s); // Multiplication of double and quad-double
+template <typename T>
+void quadDivDouble(const T *a, T b, T *s); // Division of two doubles
+template <typename T>
+void quadAdd(const T *a, const T *b, T *s); // Addition of two quad-doubles
+template <typename T>
+void quadAddAccurate(const T *a, const T *b, T *s); // Addition of two quad-doubles ! slower algorhitm
+template <typename T>
+void quadMul(const T *a, const T *b, T *s); // Multiplication of two quad-doubles
+template <typename T>
+void quadMulQuick(const T *a, const T *b, T *s); // Multiplication of two quad-doubles ! faster algorithm
+template <typename T>
+void quadDiv(const T *a, const T *b, T *s); // Division of two quad-doubles
+template <typename T>
+void zeroQuad(T *a); // Reset quad-double
+template <typename T>
+void printQuad(T *a); // Print of quad-double
 
-// Normalizace cisla a
-// Vztup: pole peti prvku a
-// Vystup: pole ctyr prvku b
-void renormalize(double *a, double *b);
-
-// Secte double a quad-double
-// Parametry: double b, pole ctyr prvku a
-// Vysledek: pole ctyr prvku s
-void doublePlusQuad(double b, const double *a, double *s);
-
-// Vynasobi double a quad-double
-// Parametry: double b, pole ctyr prvku a
-// Vysledek: pole ctyr prvku s
-void doubleTimesQuad(double b, const double *a, double *s);
-
-void quadDivDouble(const double *a, double b, double *s);
-
-// Secte dva quad-double
-// Parametry: pole ctyr prvku a,b
-// Vysledek: pole ctyr prvku s
-void quadAdd(const double *a, const double *b, double *s);
-
-// Secte dva quad-double, pomalejsi algoritmus, ktery bude v krajnich priadech prejsi
-// Parametry: pole ctyr prvku a,b
-// Vysledek: pole ctyr prvku s
-void quadAddAccurate(const double *a, const double *b, double *s);
-
-// Vynasobi dva quad-double
-// Parametry: pole ctyr prvku a,b
-// Vysledek: pole ctyr prvku s
-void quadMul(const double *a, const double *b, double *s);
-
-// Vynasobi dva quad-double, rychle
-// Parametry: pole ctyr prvku a,b
-// Vysledek: pole ctyr prvku s
-void quadMulQuick(const double *a, const double *b, double *s);
-
-// Vydeli dva quad-double (a / b)
-// Parametry: pole ctyr prvku a,b
-// Vysledek: pole ctyr prvku s
-void quadDiv(const double *a, const double *b, double *s);
-
-// Vynuluje quad-double
-// Parametr: pole ctyr prvku a
-void zeroQuad(double *a);
-
-// Vytisne quad-double
-// Parametr: pole ctyr prvku a
-void printQuad(double *a);
-                                                          
+} // namespace Arithmetics
+} //namespace TNL

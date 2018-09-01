@@ -1,4 +1,10 @@
-SET( headers Matrix.h
+SET( headers AdEllpack.h
+             AdEllpack_impl.h
+             BiEllpack.h
+             BiEllpack_impl.h
+             COOMatrix.h
+             COOMatrix_impl.h
+             Matrix.h
              Matrix_impl.h
              Dense.h
              Dense_impl.h

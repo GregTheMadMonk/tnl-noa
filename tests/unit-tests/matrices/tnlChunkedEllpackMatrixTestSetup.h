@@ -11,7 +11,7 @@
 #ifndef ChunkedEllpackTESTSETUP_H_
 #define ChunkedEllpackTESTSETUP_H_
 
-#include "tnlSparseMatrixTester.h"
+#include "SparseMatrixTester.h"
 
 using namespace TNL;
 

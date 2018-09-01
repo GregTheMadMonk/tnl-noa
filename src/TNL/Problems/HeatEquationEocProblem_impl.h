@@ -28,9 +28,9 @@ template< typename Mesh,
           typename DifferentialOperator >
 String
 HeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getTypeStatic()
+getType()
 {
-   return String( "heatEquationEocSolver< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "heatEquationEocSolver< " ) + Mesh :: getType() + " >";
 }
 
 template< typename Mesh,
@@ -39,11 +39,10 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 HeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator  >::
-setup( const MeshPointer& meshPointer,
-       const Config::ParameterContainer& parameters,
+setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix ) ||
+   if( ! this->boundaryConditionPointer->setup( this->getMesh(), parameters, prefix ) ||
        ! this->rightHandSidePointer->setup( parameters ) )
       return false;
    return true;

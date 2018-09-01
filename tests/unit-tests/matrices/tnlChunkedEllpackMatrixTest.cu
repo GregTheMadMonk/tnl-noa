@@ -13,7 +13,7 @@
 #include <TNL/Matrices/ChunkedEllpack.h>
 #include <cstdlib>
 
-#include "tnlSparseMatrixTester.h"
+#include "SparseMatrixTester.h"
 #include "tnlChunkedEllpackMatrixTestSetup.h"
 #include "../tnlUnitTestStarter.h"
 

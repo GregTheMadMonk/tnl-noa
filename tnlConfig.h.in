@@ -4,12 +4,6 @@
 
 @HAVE_SYS_IOCTL_H@
 
-#ifdef HAVE_CUDA
-    @HAVE_CUSP@
-
-    @HAVE_CUSPARSE@
-#endif
-
 @HAVE_DCMTK_H@
 
 @HAVE_PNG_H@
@@ -17,7 +11,3 @@
 @HAVE_JPEG_H@
 
 #define TNL_CPP_COMPILER_NAME "@CMAKE_CXX_COMPILER_ID@ @CMAKE_CXX_COMPILER_VERSION@"
-
-#define maxCudaGridSize 65535
-
-#define maxCudaBlockSize 1023

@@ -10,6 +10,10 @@
 
 #pragma once
 
+#include <TNL/Devices/CudaCallable.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Functions/Domain.h>
+
 namespace TNL {
 namespace Functions {   
 

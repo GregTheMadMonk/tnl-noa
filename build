@@ -11,6 +11,7 @@ CMAKE="cmake"
 CMAKE_ONLY="no"
 HELP="no"
 VERBOSE=""
+OFFLINE_BUILD="no"
 
 WITH_CLANG="no"
 WITH_CUDA="yes"
@@ -40,6 +41,7 @@ do
         --cmake=*                        ) CMAKE="${option#*=}" ;;
         --cmake-only=*                   ) CMAKE_ONLY="${option#*=}" ;;
         --verbose                        ) VERBOSE="VERBOSE=1" ;;
+        --offline-build                  ) OFFLINE_BUILD="yes" ;;
         --help                           ) HELP="yes" ;;
         --with-clang=*                   ) WITH_CLANG="${option#*=}" ;;
         --with-mic=*                     ) WITH_MIC="${option#*=}" ;;
@@ -104,6 +106,7 @@ echo "Configuring ${BUILD} $TARGET ..."
 ${CMAKE} ${ROOT_DIR} \
          -DCMAKE_BUILD_TYPE=${BUILD} \
          -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+         -DOFFLINE_BUILD=${OFFLINE_BUILD} \
          -DWITH_MIC=${WITH_MIC} \
          -DWITH_CUDA=${WITH_CUDA} \
          -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH} \

@@ -34,57 +34,44 @@ class HeatEquationBenchmarkProblem:
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorPointer;
-      using typename BaseType::MeshDependentDataType;
-      using typename BaseType::MeshDependentDataPointer;
 
       HeatEquationBenchmarkProblem();
       
-      static String getTypeStatic();
+      static String getType();
 
       String getPrologHeader() const;
 
       void writeProlog( Logger& logger,
                         const Config::ParameterContainer& parameters ) const;
 
-      bool setup( const MeshPointer& meshPointer,
-                  const Config::ParameterContainer& parameters,
+      bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );
 
       bool setInitialCondition( const Config::ParameterContainer& parameters,
-                                const MeshPointer& meshPointer,
-                                DofVectorPointer& dofsPointer,
-                                MeshDependentDataPointer& meshDependentData );
+                                DofVectorPointer& dofsPointer );
 
       template< typename Matrix >
-      bool setupLinearSystem( const MeshType& mesh,
-                              Matrix& matrix );
+      bool setupLinearSystem( Matrix& matrix );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
-                         const MeshPointer& meshPointer,
-                         DofVectorPointer& dofsPointer,
-                         MeshDependentDataPointer& meshDependentData );
+                         DofVectorPointer& dofsPointer );
 
-      IndexType getDofs( const MeshPointer& meshPointer ) const;
+      IndexType getDofs() const;
 
-      void bindDofs( const MeshPointer& meshPointer,
-                     DofVectorPointer& dofsPointer );
+      void bindDofs( DofVectorPointer& dofsPointer );
 
       void getExplicitUpdate( const RealType& time,
-                           const RealType& tau,
-                           const MeshPointer& meshPointer,
-                           DofVectorPointer& _uPointer,
-                           DofVectorPointer& _fuPointer,
-                           MeshDependentDataPointer& meshDependentData );
+                              const RealType& tau,
+                              DofVectorPointer& _uPointer,
+                              DofVectorPointer& _fuPointer );
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
-                                 const MeshPointer& mesh,
                                  DofVectorPointer& dofs,
                                  MatrixPointer& matrix,
-                                 DofVectorPointer& rightHandSide,
-                                 MeshDependentDataPointer& meshDependentData );
+                                 DofVectorPointer& rightHandSide );
       
       ~HeatEquationBenchmarkProblem();
 

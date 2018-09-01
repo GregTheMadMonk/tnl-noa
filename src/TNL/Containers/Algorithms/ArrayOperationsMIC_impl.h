@@ -215,6 +215,44 @@ compareMemory( const Element1* destination,
 #endif
 }
 
+template< typename Element,
+          typename Index >
+bool
+ArrayOperations< Devices::MIC >::
+containsValue( const Element* data,
+               const Index size,
+               const Element& value )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "" );
+#ifdef HAVE_MIC
+   TNL_ASSERT( false, );
+   return false;
+#else
+   throw Exceptions::MICSupportMissing();
+#endif
+}
+
+template< typename Element,
+          typename Index >
+bool
+ArrayOperations< Devices::MIC >::
+containsOnlyValue( const Element* data,
+                   const Index size,
+                   const Element& value )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "" );
+#ifdef HAVE_MIC
+   TNL_ASSERT( false, );
+   return false;
+#else
+   throw Exceptions::MICSupportMissing();
+#endif
+}
+
+
+
 /****
  * Operations MIC -> Host
  */

@@ -37,14 +37,14 @@ inline void Test_Say( const char * message)
 
 int main(void)
 {
-    cout << "Vector on MIC test by hanouvit:" <<endl;
+   std::cout << "Vector on MIC test by hanouvit:" <<endl;
 	
     #ifdef HAVE_ICPC
-            cout << "ICPC in USE" <<endl; 
+           std::cout << "ICPC in USE" <<endl; 
     #endif
 
     #ifdef HAVE_MIC
-            cout << "MIC in USE" <<endl;
+           std::cout << "MIC in USE" <<endl;
     #endif
 
 #ifdef HAVE_MIC

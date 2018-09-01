@@ -33,11 +33,11 @@ template< typename Real,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
 String LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >,
-                           PressureGradient > :: getTypeStatic()
+                           PressureGradient > :: getType()
 {
    return String( "LaxFridrichs< " ) +
-          Meshes::Grid< 2, Real, Device, Index, GridGeometry > :: getTypeStatic() + ", " +
-          PressureGradient :: getTypeStatic() + " >";
+          Meshes::Grid< 2, Real, Device, Index, GridGeometry > :: getType() + ", " +
+          PressureGradient :: getType() + " >";
 }
 
 template< typename Real,

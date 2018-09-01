@@ -16,33 +16,29 @@
 #include <TNL/CudaSharedMemory.h>
 
 namespace TNL {
-namespace Devices {   
+namespace Devices {
 
-__cuda_callable__ 
+__cuda_callable__
 inline constexpr int Cuda::getMaxGridSize()
 {
-   // TODO: make it preprocessor macro constant defined in tnlConfig
    return 65535;
-};
+}
 
 __cuda_callable__
 inline constexpr int Cuda::getMaxBlockSize()
 {
-   // TODO: make it preprocessor macro constant defined in tnlConfig
    return 1024;
-};
+}
 
-__cuda_callable__ 
+__cuda_callable__
 inline constexpr int Cuda::getWarpSize()
 {
-   // TODO: make it preprocessor macro constant defined in tnlConfig
    return 32;
 }
 
 __cuda_callable__
 inline constexpr int Cuda::getNumberOfSharedMemoryBanks()
 {
-   // TODO: make it preprocessor macro constant defined in tnlConfig
    return 32;
 }
 
@@ -162,6 +158,21 @@ template< typename Element >
 __device__ Element* Cuda::getSharedMemory()
 {
    return CudaSharedMemory< Element >();
+}
+
+// TODO: This is only for Kepler and older architectures. Fix it.
+__device__ 
+inline double atomicAdd(double* address, double val)
+{
+    unsigned long long int* address_as_ull = ( unsigned long long int* ) address;
+    unsigned long long int old = *address_as_ull, assumed;
+    do 
+    {
+        assumed = old;
+        old = atomicCAS(address_as_ull, assumed, __double_as_longlong(val + __longlong_as_double( assumed ) ) );
+    } 
+    while( assumed != old );
+    return __longlong_as_double( old );
 }
 #endif /* HAVE_CUDA */
 

@@ -23,7 +23,6 @@ set( headers
      Constants.h
      CudaSharedMemory.h
      CudaStreamPool.h
-     Curve.h
      DevicePointer.h
      File.h
      File_impl.h

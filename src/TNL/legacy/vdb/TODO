@@ -1,0 +1,7 @@
+echo
+echo
+echo "Add integration to tnl library -- that means: templates for"
+echo "Device types. Add updateTree method. Add Values class to store "
+echo "interpoled values in each node. Compare speed with original"
+echo "VDB. Implement on CUDA. Implement 3D version (should be trivial)."
+echo

@@ -24,7 +24,7 @@ class MainBuildConfig
 {
    public:
 
-      static void print() { cerr << "MainBuildConfig" << endl; }
+      static void print() {std::cerr << "MainBuildConfig" <<std::endl; }
 };
 
 /****

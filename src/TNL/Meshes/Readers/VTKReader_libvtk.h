@@ -82,17 +82,16 @@ public:
       TNL_ASSERT_EQ( this->verticesInEntities.at( this->meshDimension ), subvertices, "numbers of cell subvertices do not match" );
 
       using MeshBuilder = MeshBuilder< MeshType >;
-      using VertexIndexType = typename MeshType::MeshTraitsType::template EntityTraits< 0 >::GlobalIndexType;
-      using CellIndexType = typename MeshType::MeshTraitsType::template EntityTraits< MeshType::Config::meshDimension >::GlobalIndexType;
+      using GlobalIndexType = typename MeshType::GlobalIndexType;
 
-      const VertexIndexType numberOfPoints = this->pointsData.size();
-      const CellIndexType numberOfCells = this->entityIdMappings.at( this->meshDimension ).size();
+      const GlobalIndexType numberOfPoints = this->pointsData.size();
+      const GlobalIndexType numberOfCells = this->entityIdMappings.at( this->meshDimension ).size();
 
       MeshBuilder meshBuilder;
       meshBuilder.setPointsCount( numberOfPoints );
       meshBuilder.setCellsCount( numberOfCells );
 
-      for( VertexIndexType i = 0; i < numberOfPoints; i++ ) {
+      for( GlobalIndexType i = 0; i < numberOfPoints; i++ ) {
          typename MeshType::PointType p;
          for( int j = 0; j < p.size; j++ )
             p[ j ] = this->pointsData.at( i )[ j ];
@@ -100,7 +99,7 @@ public:
       }
 
       const auto& cellIdMap = this->entityIdMappings.at( this->meshDimension );
-      for( CellIndexType i = 0; i < numberOfCells; i++ ) {
+      for( GlobalIndexType i = 0; i < numberOfCells; i++ ) {
          const VTKIndexType vtkCellIndex = cellIdMap.at( i );
          const auto& vtkCellSeeds = this->entitySeeds.at( vtkCellIndex );
          using CellSeedType = typename MeshBuilder::CellSeedType;
@@ -129,19 +128,19 @@ public:
    {
       return this->worldDimension;
    }
- 
+
    int
    getMeshDimension() const
    {
       return this->meshDimension;
    }
- 
+
    EntityShape
    getCellShape() const
    {
       return this->entityTypes.at( this->meshDimension );
    }
- 
+
 //   int
 //   getVerticesInCell() const
 //   {
@@ -168,21 +167,21 @@ public:
       // not stored in the VTK file
       return "int";
    }
- 
+
    String
    getLocalIndexType() const
    {
       // not stored in the VTK file
       return "short int";
    }
- 
+
    String
    getIdType() const
    {
       // not stored in the VTK file
       return "int";
    }
- 
+
 protected:
    int worldDimension = 0;
    int meshDimension = 0;

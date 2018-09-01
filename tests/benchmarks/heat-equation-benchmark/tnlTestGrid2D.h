@@ -148,10 +148,10 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
                                                         const typename GridFunction::RealType& p ) const;
 
    //! Method for saving the object to a file as a binary data
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
    //! Method for restoring the object from a file
-   bool load( tnlFile& file );
+   bool load( File& file );
 
    bool save( const String& fileName ) const;
 
@@ -310,8 +310,8 @@ template< typename Real,
           typename Index >
 void Meshes::Grid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
 {
-   tnlTNL_ASSERT( xSize > 0, cerr << "xSize = " << xSize );
-   tnlTNL_ASSERT( ySize > 0, cerr << "ySize = " << ySize );
+   tnlTNL_ASSERT( xSize > 0,std::cerr << "xSize = " << xSize );
+   tnlTNL_ASSERT( ySize > 0,std::cerr << "ySize = " << ySize );
 
    this->dimensions.x() = xSize;
    this->dimensions.y() = ySize;
@@ -471,9 +471,9 @@ Meshes::Grid< 2, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
    tnlTNL_ASSERT( xPow >= -2 && xPow <= 2, 
-              cerr << " xPow = " << xPow );
+             std::cerr << " xPow = " << xPow );
    tnlTNL_ASSERT( yPow >= -2 && yPow <= 2, 
-              cerr << " yPow = " << yPow );
+             std::cerr << " yPow = " << yPow );
 
    return this->spaceStepsProducts[ yPow + 2 ][ xPow + 2 ];
 }
@@ -560,7 +560,7 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
+bool Meshes::Grid< 2, Real, Device, Index > :: save( File& file ) const
 {
    if( ! tnlObject::save( file ) )
       return false;
@@ -568,7 +568,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
        ! this->proportions.save( file ) ||
        ! this->dimensions.save( file ) )
    {
-      cerr << "I was not able to save the domain description of a Grid." << endl;
+     std::cerr << "I was not able to save the domain description of a Grid." <<std::endl;
       return false;
    }
    return true;
@@ -577,7 +577,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: load( tnlFile& file )
+bool Meshes::Grid< 2, Real, Device, Index > :: load( File& file )
 {
    if( ! tnlObject::load( file ) )
       return false;
@@ -586,7 +586,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: load( tnlFile& file )
        ! this->proportions.load( file ) ||
        ! dimensions.load( file ) )
    {
-      cerr << "I was not able to load the domain description of a Grid." << endl;
+     std::cerr << "I was not able to load the domain description of a Grid." <<std::endl;
       return false;
    }
    this->setDimensions( dimensions );
@@ -619,7 +619,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
    file. open( fileName. getString(), ios :: out );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << "." << endl;
+     std::cerr << "I am not able to open the file " << fileName << "." <<std::endl;
       return false;
    }
    if( format == "asymptote" )
@@ -627,7 +627,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
       file << "size( "
            << this->getProportions(). x() << "cm , "
            << this->getProportions(). y() << "cm );"
-           << endl << endl;
+           <<std::endl <<std::endl;
       MeshEntity< 0 > vertex( *this );
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
       PointType v;
@@ -645,9 +645,9 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             v = vertex.getCenter();
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
-         file << " );" << endl;
+         file << " );" <<std::endl;
       }
-      file << endl;
+      file <<std::endl;
       for( Index i = 0; i < this->dimensions. x(); i ++ )
       {
          file << "draw( ";
@@ -662,9 +662,9 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             v = vertex.getCenter();
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
-         file << " );" << endl;
+         file << " );" <<std::endl;
       }
-      file << endl;
+      file <<std::endl;
 
       MeshEntity< 2 > cell( *this );
       CoordinatesType& cellCoordinates = cell.getCoordinates();
@@ -676,7 +676,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             cellCoordinates.y() = j;
             v = vertex.getCenter();
             file << "label( scale(0.33) * Label( \"$" << setprecision( 3 ) << cellMeasure << setprecision( 8 )
-                 << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" << endl;
+                 << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" <<std::endl;
          }
 
       for( Index i = 0; i < this->dimensions. x(); i ++ )
@@ -693,7 +693,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             this->getEdgeNormal< 1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" <<std::endl;
             */
             /****
              * West edge normal
@@ -704,7 +704,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             this->getEdgeNormal< -1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" <<std::endl;
             */
             /****
              * North edge normal
@@ -715,7 +715,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             this->getEdgeNormal< 0, 1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" <<std::endl;
             */
             /****
              * South edge normal
@@ -726,7 +726,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             this->getEdgeNormal< 0, -1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" <<std::endl;
             */
          }
       return true;
@@ -744,16 +744,16 @@ bool Meshes::Grid< 2, Real, Device, Index > :: write( const MeshFunction& functi
 {
    if( this->template getEntitiesCount< Cell >() != function. getSize() )
    {
-      cerr << "The size ( " << function. getSize() 
+     std::cerr << "The size ( " << function. getSize() 
            << " ) of a mesh function does not agree with the DOFs ( " 
-           << this->template getEntitiesCount< Cell >() << " ) of a mesh." << endl;
+           << this->template getEntitiesCount< Cell >() << " ) of a mesh." <<std::endl;
       return false;
    }
    fstream file;
    file. open( fileName. getString(), ios :: out );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << "." << endl;
+     std::cerr << "I am not able to open the file " << fileName << "." <<std::endl;
       return false;
    }
    file << setprecision( 12 );
@@ -768,9 +768,9 @@ bool Meshes::Grid< 2, Real, Device, Index > :: write( const MeshFunction& functi
             PointType v = cell.getCenter();
             GnuplotWriter::write( file,  v );
             GnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
-            file << endl;
+            file <<std::endl;
          }
-         file << endl;
+         file <<std::endl;
       }
    }
    file. close();
@@ -924,10 +924,10 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
                                                         const typename GridFunction::RealType& p ) const;
 
    //! Method for saving the object to a file as a binary data
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
    //! Method for restoring the object from a file
-   bool load( tnlFile& file );
+   bool load( File& file );
 
    bool save( const String& fileName ) const;
 
@@ -1075,8 +1075,8 @@ template< typename Real,
           typename Index >
 void Meshes::Grid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
 {
-   tnlTNL_ASSERT( xSize > 0, cerr << "xSize = " << xSize );
-   tnlTNL_ASSERT( ySize > 0, cerr << "ySize = " << ySize );
+   tnlTNL_ASSERT( xSize > 0,std::cerr << "xSize = " << xSize );
+   tnlTNL_ASSERT( ySize > 0,std::cerr << "ySize = " << ySize );
 
    this->dimensions.x() = xSize;
    this->dimensions.y() = ySize;
@@ -1236,9 +1236,9 @@ Meshes::Grid< 2, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
    tnlTNL_ASSERT( xPow >= -2 && xPow <= 2, 
-              cerr << " xPow = " << xPow );
+             std::cerr << " xPow = " << xPow );
    tnlTNL_ASSERT( yPow >= -2 && yPow <= 2, 
-              cerr << " yPow = " << yPow );
+             std::cerr << " yPow = " << yPow );
 
    return this->spaceStepsProducts[ yPow + 2 ][ xPow + 2 ];
 }
@@ -1325,7 +1325,7 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
+bool Meshes::Grid< 2, Real, Device, Index > :: save( File& file ) const
 {
    if( ! tnlObject::save( file ) )
       return false;
@@ -1333,7 +1333,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
        ! this->proportions.save( file ) ||
        ! this->dimensions.save( file ) )
    {
-      cerr << "I was not able to save the domain description of a Grid." << endl;
+     std::cerr << "I was not able to save the domain description of a Grid." <<std::endl;
       return false;
    }
    return true;
@@ -1342,7 +1342,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool Meshes::Grid< 2, Real, Device, Index > :: load( tnlFile& file )
+bool Meshes::Grid< 2, Real, Device, Index > :: load( File& file )
 {
    if( ! tnlObject::load( file ) )
       return false;
@@ -1351,7 +1351,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: load( tnlFile& file )
        ! this->proportions.load( file ) ||
        ! dimensions.load( file ) )
    {
-      cerr << "I was not able to load the domain description of a Grid." << endl;
+     std::cerr << "I was not able to load the domain description of a Grid." <<std::endl;
       return false;
    }
    this->setDimensions( dimensions );
@@ -1384,7 +1384,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
    file. open( fileName. getString(), ios :: out );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << "." << endl;
+     std::cerr << "I am not able to open the file " << fileName << "." <<std::endl;
       return false;
    }
    if( format == "asymptote" )
@@ -1392,7 +1392,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
       file << "size( "
            << this->getProportions(). x() << "cm , "
            << this->getProportions(). y() << "cm );"
-           << endl << endl;
+           <<std::endl <<std::endl;
       TestMeshEntity< 0 > vertex( *this );
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
       PointType v;
@@ -1410,9 +1410,9 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             v = vertex.getCenter();
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
-         file << " );" << endl;
+         file << " );" <<std::endl;
       }
-      file << endl;
+      file <<std::endl;
       for( Index i = 0; i < this->dimensions. x(); i ++ )
       {
          file << "draw( ";
@@ -1427,9 +1427,9 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             v = vertex.getCenter();
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
-         file << " );" << endl;
+         file << " );" <<std::endl;
       }
-      file << endl;
+      file <<std::endl;
 
       TestMeshEntity< 2 > cell( *this );
       CoordinatesType& cellCoordinates = cell.getCoordinates();
@@ -1441,7 +1441,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             cellCoordinates.y() = j;
             v = vertex.getCenter();
             file << "label( scale(0.33) * Label( \"$" << setprecision( 3 ) << cellMeasure << setprecision( 8 )
-                 << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" << endl;
+                 << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" <<std::endl;
          }
 
       for( Index i = 0; i < this->dimensions. x(); i ++ )
@@ -1458,7 +1458,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             this->getEdgeNormal< 1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" <<std::endl;
             */
             /****
              * West edge normal
@@ -1469,7 +1469,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             this->getEdgeNormal< -1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" <<std::endl;
             */
             /****
              * North edge normal
@@ -1480,7 +1480,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             this->getEdgeNormal< 0, 1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" <<std::endl;
             */
             /****
              * South edge normal
@@ -1491,7 +1491,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName
             this->getEdgeNormal< 0, -1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" <<std::endl;
             */
          }
       return true;
@@ -1518,7 +1518,7 @@ bool Meshes::Grid< 2, Real, Device, Index > :: write( const MeshFunction& functi
    file. open( fileName. getString(), ios :: out );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << "." << endl;
+     std::cerr << "I am not able to open the file " << fileName << "." <<std::endl;
       return false;
    }
    file << setprecision( 12 );
@@ -1533,9 +1533,9 @@ bool Meshes::Grid< 2, Real, Device, Index > :: write( const MeshFunction& functi
             PointType v = cell.getCenter();
             GnuplotWriter::write( file,  v );
             GnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
-            file << endl;
+            file <<std::endl;
          }
-         file << endl;
+         file <<std::endl;
       }
    }
    file. close();
