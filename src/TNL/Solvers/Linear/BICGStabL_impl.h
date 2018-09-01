@@ -83,7 +83,7 @@ BICGStabL< Matrix, Preconditioner >::setPreconditioner( const PreconditionerPoin
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename Vector, typename ResidueGetter >
+   template< typename Vector >
 bool
 BICGStabL< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 {

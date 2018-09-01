@@ -75,7 +75,7 @@ void BICGStab< Matrix, Preconditioner > :: setPreconditioner( const Precondition
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename Vector, typename ResidueGetter >
+   template< typename Vector >
 bool BICGStab< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 {
    this->setSize( matrix->getRows() );

@@ -73,7 +73,7 @@ void TFQMR< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerP
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename Vector, typename ResidueGetter >
+   template< typename Vector >
 bool TFQMR< Matrix, Preconditioner >::solve( const Vector& b, Vector& x )
 {
    this->setSize( matrix -> getRows() );

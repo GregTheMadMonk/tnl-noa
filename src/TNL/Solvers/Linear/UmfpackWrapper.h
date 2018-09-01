@@ -21,7 +21,6 @@
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
-#include <TNL/Solvers/Linear/LinearResidueGetter.h>
 
 
 namespace TNL {
@@ -88,8 +87,7 @@ public:
     void setPreconditioner( const PreconditionerPointer& preconditioner )
     {}
 
-    template< typename Vector,
-              typename ResidueGetter = LinearResidueGetter< MatrixType, Vector > >
+    template< typename Vector >
     bool solve( const Vector& b, Vector& x )
     {
         return false;
@@ -126,8 +124,7 @@ public:
 
     void setPreconditioner( const PreconditionerPointer& preconditioner );
 
-    template< typename Vector,
-              typename ResidueGetter = LinearResidueGetter< MatrixType, Vector > >
+    template< typename Vector >
     bool solve( const Vector& b, Vector& x );
 
 protected:

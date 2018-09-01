@@ -12,6 +12,8 @@
 
 #include "CG.h"
 
+#include <TNL/Solvers/Linear/LinearResidueGetter.h>
+
 namespace TNL {
 namespace Solvers {
 namespace Linear {
@@ -72,11 +74,13 @@ void CG< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerPoin
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename Vector, typename ResidueGetter >
+   template< typename Vector >
 bool
 CG< Matrix, Preconditioner >::
 solve( const Vector& b, Vector& x )
 {
+   using ResidueGetter = LinearResidueGetter< Matrix, Vector >;
+
    this->setSize( matrix->getRows() );
 
    this->resetIterations();

@@ -120,7 +120,7 @@ setPreconditioner( const PreconditionerPointer& preconditioner )
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename Vector, typename ResidueGetter >
+   template< typename Vector >
 bool
 CWYGMRES< Matrix, Preconditioner >::
 solve( const Vector& b, Vector& x )

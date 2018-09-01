@@ -111,7 +111,7 @@ setPreconditioner( const PreconditionerPointer& preconditioner )
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename Vector, typename ResidueGetter >
+   template< typename Vector >
 bool
 GMRES< Matrix, Preconditioner >::
 solve( const Vector& b, Vector& x )

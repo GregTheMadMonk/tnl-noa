@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Solvers/Linear/SOR.h>
+#include <TNL/Solvers/Linear/LinearResidueGetter.h>
 
 namespace TNL {
 namespace Solvers {
@@ -91,9 +92,11 @@ void SOR< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerPoi
 
 
 template< typename Matrix, typename Preconditioner >
-   template< typename Vector, typename ResidueGetter >
+   template< typename Vector >
 bool SOR< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
 {
+   using ResidueGetter = LinearResidueGetter< Matrix, Vector >;
+
    const IndexType size = matrix -> getRows();   
 
    this->resetIterations();
