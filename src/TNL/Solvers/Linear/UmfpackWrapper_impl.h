@@ -119,8 +119,7 @@ finished:
     if( Numeric )
         umfpack_di_free_numeric( &Numeric );
 
-    using ResidueGetter = LinearResidueGetter< typename Base::MatrixType, ConstVectorViewType >;
-    this->setResidue( ResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
+    this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
     this->refreshSolverMonitor( true );
     return status == UMFPACK_OK;
 };

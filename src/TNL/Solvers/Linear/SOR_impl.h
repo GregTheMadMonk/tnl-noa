@@ -78,8 +78,6 @@ const typename SOR< Matrix, Preconditioner > :: RealType& SOR< Matrix, Precondit
 template< typename Matrix, typename Preconditioner >
 bool SOR< Matrix, Preconditioner > :: solve( const ConstVectorViewType& b, VectorViewType& x )
 {
-   using ResidueGetter = LinearResidueGetter< Matrix, ConstVectorViewType >;
-
    const IndexType size = this->matrix->getRows();
 
    this->resetIterations();
@@ -92,10 +90,10 @@ bool SOR< Matrix, Preconditioner > :: solve( const ConstVectorViewType& b, Vecto
       for( IndexType row = 0; row < size; row ++ )
          this->matrix->performSORIteration( b, row, x, this->getOmega() );
       // FIXME: the LinearResidueGetter works only on the host
-      this->setResidue( ResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
+      this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
       this->refreshSolverMonitor();
    }
-   this->setResidue( ResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
+   this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
 };

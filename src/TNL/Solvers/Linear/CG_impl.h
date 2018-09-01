@@ -64,8 +64,6 @@ bool
 CG< Matrix, Preconditioner >::
 solve( const ConstVectorViewType& b, VectorViewType& x )
 {
-   using ResidueGetter = LinearResidueGetter< Matrix, ConstVectorViewType >;
-
    this->setSize( this->matrix->getRows() );
 
    this->resetIterations();
@@ -131,9 +129,9 @@ solve( const ConstVectorViewType& b, VectorViewType& x )
       new_r.swap( r );
 
       if( this->getIterations() % 10 == 0 )
-         this->setResidue( ResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
+         this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
    }
-   this->setResidue( ResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
+   this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
 }
