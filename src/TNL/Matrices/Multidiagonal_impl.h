@@ -576,11 +576,11 @@ void Multidiagonal< Real, Device, Index >::getTransposition( const Multidiagonal
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-bool Multidiagonal< Real, Device, Index > :: performSORIteration( const Vector& b,
-                                                                           const IndexType row,
-                                                                           Vector& x,
-                                                                           const RealType& omega ) const
+   template< typename Vector1, typename Vector2 >
+bool Multidiagonal< Real, Device, Index > :: performSORIteration( const Vector1& b,
+                                                                  const IndexType row,
+                                                                  Vector2& x,
+                                                                  const RealType& omega ) const
 {
    TNL_ASSERT( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row
