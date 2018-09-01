@@ -24,10 +24,22 @@ IF( BUILD_CUDA )
    TARGET_LINK_LIBRARIES( ArrayTest
                               ${GTEST_BOTH_LIBRARIES}
                               tnl )
+
+   CUDA_ADD_EXECUTABLE( ArrayViewTest ArrayViewTest.cu
+                        OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( ArrayViewTest
+                              ${GTEST_BOTH_LIBRARIES}
+                              tnl )
 ELSE(  BUILD_CUDA )
    ADD_EXECUTABLE( ArrayTest ArrayTest.cpp )
    TARGET_COMPILE_OPTIONS( ArrayTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( ArrayTest
+                              ${GTEST_BOTH_LIBRARIES}
+                              tnl )
+
+   ADD_EXECUTABLE( ArrayViewTest ArrayViewTest.cpp )
+   TARGET_COMPILE_OPTIONS( ArrayViewTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( ArrayViewTest
                               ${GTEST_BOTH_LIBRARIES}
                               tnl )
 ENDIF( BUILD_CUDA )
@@ -77,6 +89,7 @@ TARGET_LINK_LIBRARIES( StaticVectorTest
 ADD_TEST( ListTest ${EXECUTABLE_OUTPUT_PATH}/ListTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( ArrayOperationsTest ${EXECUTABLE_OUTPUT_PATH}/ArrayOperationsTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( ArrayTest ${EXECUTABLE_OUTPUT_PATH}/ArrayTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( ArrayViewTest ${EXECUTABLE_OUTPUT_PATH}/ArrayViewTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( StaticArrayTest ${EXECUTABLE_OUTPUT_PATH}/StaticArrayTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( VectorTest ${EXECUTABLE_OUTPUT_PATH}/VectorTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( StaticVectorTest ${EXECUTABLE_OUTPUT_PATH}/StaticVectorTest${CMAKE_EXECUTABLE_SUFFIX} )

@@ -11,12 +11,9 @@
 #pragma once
 
 #include <iostream>
-#include <TNL/File.h>
-#include <TNL/Containers/Array.h>
-#include <TNL/Containers/StaticArray.h>
+
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
-#include <TNL/Math.h>
-#include <TNL/param-types.h>
+#include <TNL/Containers/ArrayIO.h>
 
 #include "ArrayView.h"
 
@@ -32,7 +29,8 @@ ArrayView< Element, Device, Index >::
 ArrayView( Element* data, Index size ) : data(data), size(size)
 {
    TNL_ASSERT_GE( size, 0, "ArrayView size was initialized with a negative size." );
-   TNL_ASSERT_FALSE( data | size, "ArrayView was initialized with a positive address and zero size or zero address and positive size." );
+   TNL_ASSERT_TRUE( (data == nullptr && size == 0) || (data != nullptr && size > 0),
+                    "ArrayView was initialized with a positive address and zero size or zero address and positive size." );
 }
 
 // initialization from other array containers (using shallow copy)
@@ -77,7 +75,7 @@ template< typename Element,
           typename Device,
           typename Index >
 __cuda_callable__
-void ArrayView< Element, Device, Index > :: bind( ArrayView& view )
+void ArrayView< Element, Device, Index >::bind( ArrayView& view )
 {
    this->data = view.getData();
    this->size = view.getSize();
@@ -118,11 +116,23 @@ ArrayView< Element, Device, Index >&
 ArrayView< Element, Device, Index >::
 operator=( const ArrayView& view )
 {
-   TNL_ASSERT_EQ( size, view.size, "The sizes of the array views must be equal, views are not resizable." );
-   if( size > 0 )
-      Algorithms::ArrayOperations< Device > ::
-         template copyMemory< Element, Element, Index >
-                            ( getData(), view.getData(), getSize() );
+   TNL_ASSERT_EQ( getSize(), view.getSize(), "The sizes of the array views must be equal, views are not resizable." );
+   if( getSize() > 0 )
+      Algorithms::ArrayOperations< Device >::copyMemory( getData(), view.getData(), getSize() );
+   return *this;
+}
+
+template< typename Element,
+           typename Device,
+           typename Index >
+   template< typename Element_, typename Device_, typename Index_ >
+ArrayView< Element, Device, Index >&
+ArrayView< Element, Device, Index >::
+operator=( const ArrayView< Element_, Device_, Index_ >& view )
+{
+   TNL_ASSERT_EQ( getSize(), view.getSize(), "The sizes of the array views must be equal, views are not resizable." );
+   if( getSize() > 0 )
+      Algorithms::ArrayOperations< Device, Device_ >::copyMemory( getData(), view.getData(), getSize() );
    return *this;
 }
 
@@ -200,6 +210,28 @@ template< typename Element,
           typename Device,
           typename Index >
 __cuda_callable__
+const
+Element* ArrayView< Element, Device, Index >::
+getData() const
+{
+   return data;
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Element*
+ArrayView< Element, Device, Index >::
+getData()
+{
+   return data;
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
+__cuda_callable__
 Index
 ArrayView< Element, Device, Index >::
 getSize() const
@@ -259,25 +291,25 @@ operator[]( Index i ) const
 template< typename Element,
           typename Device,
           typename Index >
-   template< typename Device_ >
+   template< typename Element_, typename Device_, typename Index_ >
 bool
 ArrayView< Element, Device, Index >::
-operator==( const ArrayView< Element, Device_, Index >& view ) const
+operator==( const ArrayView< Element_, Device_, Index_ >& view ) const
 {
    if( view.getSize() != getSize() )
       return false;
-   return Algorithms::ArrayOperations< Device, Device_ >::
-      template compareMemory< Element, Element, Index >
-                            ( getData(), view.getData(), getSize() );
+   if( getSize() == 0 )
+      return true;
+   return Algorithms::ArrayOperations< Device, Device_ >::compareMemory( getData(), view.getData(), getSize() );
 }
 
 template< typename Element,
           typename Device,
           typename Index >
-   template< typename Device_ >
+   template< typename Element_, typename Device_, typename Index_ >
 bool
 ArrayView< Element, Device, Index >::
-operator!=( const ArrayView< Element, Device_, Index >& view ) const
+operator!=( const ArrayView< Element_, Device_, Index_ >& view ) const
 {
    return ! ( *this == view );
 }
@@ -290,30 +322,27 @@ ArrayView< Element, Device, Index >::
 setValue( Element value )
 {
    TNL_ASSERT_GT( size, 0, "Attempted to set value to an empty array view." );
-   Algorithms::ArrayOperations< Device >::template setMemory< Element, Index >
-                              ( getData(), value, getSize() );
+   Algorithms::ArrayOperations< Device >::setMemory( getData(), value, getSize() );
 }
 
 template< typename Element,
           typename Device,
           typename Index >
-__cuda_callable__ 
-const
-Element* ArrayView< Element, Device, Index >::
-getData() const
-{
-   return data;
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
-__cuda_callable__ 
-Element*
+bool
 ArrayView< Element, Device, Index >::
-getData()
+containsValue( Element value ) const
 {
-   return data;
+   return Algorithms::ArrayOperations< Device >::containsValue( data, size, value );
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
+bool
+ArrayView< Element, Device, Index >::
+containsOnlyValue( Element value ) const
+{
+   return Algorithms::ArrayOperations< Device >::containsOnlyValue( data, size, value );
 }
 
 template< typename Element,
@@ -334,13 +363,13 @@ save( File& file ) const
 {
    TNL_ASSERT( this->size != 0,
               std::cerr << "You try to save empty array." << std::endl );
-   if( ! Object :: save( file ) )
+   if( ! Object::save( file ) )
       return false;
    if( ! file.write( &this->size ) )
       return false;
    if( ! file.write< Element, Device, Index >( this->data, this->size ) )
    {
-      std::cerr << "I was not able to WRITE ArrayView with size " << this->getSize() << std::endl;
+      std::cerr << "I was not able to write ArrayView with size " << this->getSize() << std::endl;
       return false;
    }
    return true;
@@ -361,24 +390,30 @@ template< typename Element,
           typename Index >
 bool
 ArrayView< Element, Device, Index >::
-load( File& file )
+boundLoad( File& file )
 {
-   if( ! Object :: load( file ) )
+   if( ! Object::load( file ) )
       return false;
    Index _size;
    if( ! file.read( &_size, 1 ) )
       return false;
+   if( _size < 0 )
+   {
+      std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
+      return false;
+   }
    if( _size != this->size )
    {
-      std::cerr << "Error: The size " << _size << " of the data to be load is different from the " <<
-                   "allocated array. This is not possible in the shared array." << std::endl;
+      std::cerr << "Error: The size " << _size << " of the data to be load is different from the "
+                   "allocated array. This is not possible in the array view." << std::endl;
       return false;
    }
    if( _size )
    {
-      if( ! file.read< Element, Device, Index >( this->data, this->size ) )
+      if( ! ArrayIO< Element, Device, Index >::load( file, this->data, this->size ) )
       {
-         std::cerr << "I was not able to READ ArrayView with size " << this->getSize() << std::endl;
+         std::cerr << "I was not able to load " << this->getType()
+                   << " with size " << this -> getSize() << std::endl;
          return false;
       }
    }
@@ -390,9 +425,9 @@ template< typename Element,
           typename Index >
 bool
 ArrayView< Element, Device, Index >::
-load( const String& fileName )
+boundLoad( const String& fileName )
 {
-   return Object::load( fileName );
+   return Object::boundLoad( fileName );
 }
 
 

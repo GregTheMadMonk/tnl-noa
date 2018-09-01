@@ -84,6 +84,9 @@ public:
    // must match (i.e. copy-assignment cannot resize).
    ArrayView& operator=( const ArrayView& view );
 
+   template< typename Element_, typename Device_, typename Index_ >
+   ArrayView& operator=( const ArrayView< Element_, Device_, Index_ >& view );
+
 
    static String getType();
 
@@ -101,6 +104,12 @@ public:
    void reset();
 
    __cuda_callable__
+   const Element* getData() const;
+
+   __cuda_callable__
+   Element* getData();
+
+   __cuda_callable__
    Index getSize() const;
 
    void setElement( Index i, Element value );
@@ -113,19 +122,19 @@ public:
    __cuda_callable__
    const Element& operator[]( Index i ) const;
 
-   template< typename Device_ >
-   bool operator==( const ArrayView< Element, Device_, Index >& view ) const;
+   template< typename Element_, typename Device_, typename Index_ >
+   bool operator==( const ArrayView< Element_, Device_, Index_ >& view ) const;
 
-   template< typename Device_ >
-   bool operator!=( const ArrayView< Element, Device_, Index >& view ) const;
+   template< typename Element_, typename Device_, typename Index_ >
+   bool operator!=( const ArrayView< Element_, Device_, Index_ >& view ) const;
 
    void setValue( Element value );
 
-   __cuda_callable__
-   const Element* getData() const;
+   // Checks if there is an element with given value in this array
+   bool containsValue( Element value ) const;
 
-   __cuda_callable__
-   Element* getData();
+   // Checks if all elements in this array have the same given value
+   bool containsOnlyValue( Element value ) const;
 
    //! Returns true if non-zero size is set.
    operator bool() const;
@@ -135,10 +144,9 @@ public:
 
    bool save( const String& fileName ) const;
 
-   // TODO: Does load make sense for views? Shouldn't views always use boundLoad?
-   bool load( File& file );
+   bool boundLoad( File& file );
 
-   bool load( const String& fileName );
+   bool boundLoad( const String& fileName );
 
 protected:
    //! Pointer to allocated data
@@ -146,6 +154,11 @@ protected:
 
    //! Number of allocated elements
    Index size = 0;
+
+private:
+   // load does not make sense for views - they are not resizable
+   bool load( File& file ) {}
+   bool load( const String& fileName ) {}
 };
 
 template< typename Element, typename Device, typename Index >
