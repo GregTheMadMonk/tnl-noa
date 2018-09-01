@@ -34,7 +34,7 @@ class NavierStokesSolver
 
    NavierStokesSolver();
 
-   static String getTypeStatic();
+   static String getType();
 
    void setAdvectionScheme( AdvectionSchemeType& advection );
 

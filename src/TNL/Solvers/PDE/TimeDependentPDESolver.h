@@ -15,6 +15,7 @@
 #include <TNL/Logger.h>
 #include <TNL/SharedPointer.h>
 #include <TNL/Solvers/PDE/PDESolver.h>
+#include <TNL/Solvers/PDE/MeshDependentTimeSteps.h>
 
 namespace TNL {
 namespace Solvers {
@@ -23,8 +24,11 @@ namespace PDE {
 template< typename Problem,
           typename DiscreteSolver,
           typename TimeStepper >
-class TimeDependentPDESolver : public PDESolver< typename Problem::RealType, 
-                                                 typename Problem::IndexType >
+class TimeDependentPDESolver
+   : public PDESolver< typename Problem::RealType, 
+                       typename Problem::IndexType >,
+     public MeshDependentTimeSteps< typename Problem::MeshType,
+                                    typename TimeStepper::RealType >
 {
    public:
 
@@ -35,10 +39,10 @@ class TimeDependentPDESolver : public PDESolver< typename Problem::RealType,
       using ProblemType = Problem;
       typedef typename ProblemType::MeshType MeshType;
       typedef typename ProblemType::DofVectorType DofVectorType;
-      typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
+      typedef typename ProblemType::CommonDataType CommonDataType;
+      typedef typename ProblemType::CommonDataPointer CommonDataPointer;
       typedef SharedPointer< MeshType, DeviceType > MeshPointer;
       typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-      typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
       typedef IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > SolverMonitorType;
       
       static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
@@ -68,10 +72,6 @@ class TimeDependentPDESolver : public PDESolver< typename Problem::RealType,
 
       const RealType& getTimeStep() const;
 
-      bool setTimeStepOrder( const RealType& timeStepOrder );
-
-      const RealType& getTimeStepOrder() const;
-
       bool setSnapshotPeriod( const RealType& period );
 
       const RealType& getSnapshotPeriod() const;
@@ -86,7 +86,7 @@ class TimeDependentPDESolver : public PDESolver< typename Problem::RealType,
 
       DofVectorPointer dofsPointer;
 
-      MeshDependentDataPointer meshDependentDataPointer;
+      CommonDataPointer commonDataPointer;
 
       TimeStepper timeStepper;
       
@@ -94,7 +94,7 @@ class TimeDependentPDESolver : public PDESolver< typename Problem::RealType,
       
       ProblemType* problem;
 
-      RealType initialTime, finalTime, snapshotPeriod, timeStep, timeStepOrder;
+      RealType initialTime, finalTime, snapshotPeriod, timeStep;
 };
 
 } // namespace PDE

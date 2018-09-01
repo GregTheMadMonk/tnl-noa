@@ -74,7 +74,7 @@ class OperatorFunctionTest
       OperatorType operator_;
       OperatorFunctionType operatorFunction( operator_, f1 );
       operatorFunction.refresh();
-      //cerr << f1.getData() << endl;
+      //cerr << f1.getData() <<std::endl;
       for( IndexType i = 0; i < meshPointer->template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
          auto entity = meshPointer->template getEntity< typename MeshType::Cell >( i );
@@ -104,7 +104,7 @@ class OperatorFunctionTest
       BoundaryConditionsType boundaryConditions;
       OperatorFunctionType operatorFunction( operator_, boundaryConditions, f1 );
       operatorFunction.refresh();
-      //cerr << f1.getData() << endl;
+      //cerr << f1.getData() <<std::endl;
       for( IndexType i = 0; i < mesh->template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
          auto entity = mesh->template getEntity< typename MeshType::Cell >( i );

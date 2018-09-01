@@ -11,6 +11,7 @@
 #pragma once
 
 #include "TimeDependentPDESolver.h"
+#include <TNL/Meshes/TypeResolver/TypeResolver.h>
 
 namespace TNL {
 namespace Solvers {
@@ -25,8 +26,7 @@ TimeDependentPDESolver()
   initialTime( 0.0 ),
   finalTime( 0.0 ),
   snapshotPeriod( 0.0 ),
-  timeStep( 1.0 ),
-  timeStepOrder( 0.0 )
+  timeStep( 1.0 )
 {
 }
 
@@ -62,20 +62,24 @@ setup( const Config::ParameterContainer& parameters,
     * Load the mesh from the mesh file
     */
    const String& meshFile = parameters.getParameter< String >( "mesh" );
-   std::cout << "Loading a mesh from the file " << meshFile << "...";
-   if( ! this->meshPointer->load( meshFile ) )
+   if( ! Meshes::loadMesh( meshFile, *this->meshPointer ) )
+      return false;
+   problem->setMesh( this->meshPointer );
+
+   /****
+    * Set-up common data
+    */
+   if( ! this->commonDataPointer->setup( parameters ) )
    {
-      std::cerr << std::endl;
-      std::cerr << "I am not able to load the mesh from the file " << meshFile << "." << std::endl;
-      std::cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << std::endl;
+      std::cerr << "The problem common data initiation failed!" << std::endl;
       return false;
    }
-  std::cout << " [ OK ] " << std::endl;
-
+   problem->setCommonData( this->commonDataPointer );
+   
    /****
     * Setup the problem
     */
-   if( ! problem->setup( this->meshPointer, parameters, prefix ) )
+   if( ! problem->setup( parameters, prefix ) )
    {
       std::cerr << "The problem initiation failed!" << std::endl;
       return false;
@@ -84,34 +88,31 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Set DOFs (degrees of freedom)
     */
-   TNL_ASSERT_GT( problem->getDofs( this->meshPointer ), 0, "number of DOFs must be positive" );
-   this->dofsPointer->setSize( problem->getDofs( this->meshPointer ) );
+   TNL_ASSERT_GT( problem->getDofs(), 0, "number of DOFs must be positive" );
+   this->dofsPointer->setSize( problem->getDofs() );
    this->dofsPointer->setValue( 0.0 );
-   this->problem->bindDofs( this->meshPointer, this->dofsPointer );
-   
-   /****
-    * Set mesh dependent data
-    */
-   this->problem->setMeshDependentData( this->meshPointer, this->meshDependentDataPointer );
-   this->problem->bindMeshDependentData( this->meshPointer, this->meshDependentDataPointer );
+   this->problem->bindDofs( this->dofsPointer );
    
    /***
     * Set-up the initial condition
     */
    std::cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! this->problem->setInitialCondition( parameters, meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
+   if( ! this->problem->setInitialCondition( parameters, this->dofsPointer ) )
       return false;
    std::cout << " [ OK ]" << std::endl;
 
    /****
     * Initialize the time discretisation
     */
-   this->setFinalTime( parameters.getParameter< double >( "final-time" ) );
-   this->setInitialTime( parameters.getParameter< double >( "initial-time" ) );
-   this->setSnapshotPeriod( parameters.getParameter< double >( "snapshot-period" ) );
-   this->setTimeStep( parameters.getParameter< double >( "time-step") );
-   this->setTimeStepOrder( parameters.getParameter< double >( "time-step-order" ) );
+   bool status = true;
+   status &= this->setFinalTime( parameters.getParameter< double >( "final-time" ) );
+             this->setInitialTime( parameters.getParameter< double >( "initial-time" ) );
+   status &= this->setSnapshotPeriod( parameters.getParameter< double >( "snapshot-period" ) );
+   status &= this->setTimeStep( parameters.getParameter< double >( "time-step") );
+   status &= this->setTimeStepOrder( parameters.getParameter< double >( "time-step-order" ) );
+   if( ! status )
+      return false;
 
    /****
     * Set-up the discrete solver
@@ -143,7 +144,7 @@ writeProlog( Logger& logger,
    meshPointer->writeProlog( logger );
    logger.writeSeparator();
    logger.writeParameter< String >( "Time discretisation:", "time-discretisation", parameters );
-   logger.writeParameter< double >( "Initial time step:", this->timeStep * std::pow( meshPointer->getSmallestSpaceStep(), this->timeStepOrder ) );
+   logger.writeParameter< double >( "Initial time step:", this->getRefinedTimeStep( this->meshPointer.getData(), this->timeStep ) );
    logger.writeParameter< double >( "Initial time:", "initial-time", parameters );
    logger.writeParameter< double >( "Final time:", "final-time", parameters );
    logger.writeParameter< double >( "Snapshot period:", "snapshot-period", parameters );
@@ -280,32 +281,6 @@ template< typename Problem,
           typename TimeStepper >
 bool
 TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
-setTimeStepOrder( const RealType& timeStepOrder )
-{
-   if( timeStepOrder < 0 )
-   {
-      std::cerr << "The time step order for TimeDependentPDESolver must be zero or positive value." << std::endl;
-      return false;
-   }
-   this->timeStepOrder = timeStepOrder;
-   return true;
-}
-
-template< typename Problem,
-          typename DiscreteSolver,   
-          typename TimeStepper >
-const typename Problem::RealType&
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
-getTimeStepOrder() const
-{
-   return this->timeStepOrder;
-}
-
-template< typename Problem,
-          typename DiscreteSolver,   
-          typename TimeStepper >
-bool
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
 solve()
 {
    TNL_ASSERT_TRUE( problem, "No problem was set in PDESolver." );
@@ -323,7 +298,7 @@ solve()
    this->computeTimer->reset();
  
    this->ioTimer->start();
-   if( ! this->problem->makeSnapshot( t, step, meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
+   if( ! this->problem->makeSnapshot( t, step, this->dofsPointer ) )
    {
       std::cerr << "Making the snapshot failed." << std::endl;
       return false;
@@ -336,19 +311,19 @@ solve()
     */
    this->timeStepper.setProblem( * ( this->problem ) );
    this->timeStepper.init( this->meshPointer );
-   this->timeStepper.setTimeStep( this->timeStep * std::pow( this->meshPointer.getData().getSmallestSpaceStep(), this->timeStepOrder ) );
+   this->timeStepper.setTimeStep( this->getRefinedTimeStep( this->meshPointer.getData(), this->timeStep ) );
    while( step < allSteps )
    {
       RealType tau = min( this->snapshotPeriod,
                           this->finalTime - t );
-      if( ! this->timeStepper.solve( t, t + tau, this->meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
+      if( ! this->timeStepper.solve( t, t + tau, this->dofsPointer ) )
          return false;
       step ++;
       t += tau;
 
       this->ioTimer->start();
       this->computeTimer->stop();
-      if( ! this->problem->makeSnapshot( t, step, this->meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
+      if( ! this->problem->makeSnapshot( t, step, this->dofsPointer ) )
       {
          std::cerr << "Making the snapshot failed." << std::endl;
          return false;

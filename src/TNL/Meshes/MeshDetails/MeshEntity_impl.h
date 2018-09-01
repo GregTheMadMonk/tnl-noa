@@ -22,474 +22,323 @@ namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
-MeshEntity< MeshConfig, EntityTopology >::
-MeshEntity( const SeedType& entitySeed )
-{
-   typedef typename SeedType::LocalIndexType LocalIndexType;
-   for( LocalIndexType i = 0; i < entitySeed.getCornerIds().getSize(); i++ )
-      this->template setSubentityIndex< 0 >( i, entitySeed.getCornerIds()[ i ] );
-}
-
-
-template< typename MeshConfig,
-          typename EntityTopology >
-MeshEntity< MeshConfig, EntityTopology >::
-MeshEntity()
+__cuda_callable__
+MeshEntity< MeshConfig, Device, EntityTopology >::
+MeshEntity( const MeshEntity& entity )
+   : SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology >( entity ),
+     SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology >( entity ),
+     MeshEntityIndex< typename MeshConfig::IdType >( entity )
 {
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
-MeshEntity< MeshConfig, EntityTopology >::
-~MeshEntity()
+   template< typename Device_ >
+MeshEntity< MeshConfig, Device, EntityTopology >::
+MeshEntity( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity )
+   // no cross-device copy of subentities and superentities here - Mesh constructor has to rebind pointers
+   : MeshEntityIndex< typename MeshConfig::IdType >( entity )
 {
-   //cerr << "   Destroying entity with " << EntityTopology::dimensions << " dimensions..." << std::endl;
+   static_assert( ! std::is_same< Device, Device_ >::value, "this should never happen" );
 }
 
 template< typename MeshConfig,
+          typename Device,
+          typename EntityTopology >
+__cuda_callable__
+MeshEntity< MeshConfig, Device, EntityTopology >& 
+MeshEntity< MeshConfig, Device, EntityTopology >::
+operator=( const MeshEntity& entity )
+{
+   SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology >::operator=( entity );
+   SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology >::operator=( entity );
+   MeshEntityIndex< typename MeshConfig::IdType >::operator=( entity );
+   return *this;
+}
+
+template< typename MeshConfig,
+          typename Device,
+          typename EntityTopology >
+   template< typename Device_ >
+__cuda_callable__
+MeshEntity< MeshConfig, Device, EntityTopology >& 
+MeshEntity< MeshConfig, Device, EntityTopology >::
+operator=( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity )
+{
+   static_assert( ! std::is_same< Device, Device_ >::value, "this should never happen" );
+
+   // no cross-device copy of subentities and superentities here - Mesh::operator= has to rebind pointers
+   MeshEntityIndex< typename MeshConfig::IdType >::operator=( entity );
+   return *this;
+}
+
+template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 String
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 getType()
 {
-   return String( "Mesh< ... >" );
+   return String( "MeshEntity< " ) +
+          MeshConfig::getType() + ", " +
+          EntityTopology::getType() + " >";
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 String
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 getTypeVirtual() const
 {
    return this->getType();
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 bool
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 save( File& file ) const
 {
-   if( ! MeshSubentityStorageLayers< MeshConfig, EntityTopology >::save( file ) /*||
-       ! MeshSuperentityStorageLayers< MeshConfig, EntityTopology >::save( file )*/ )
-      return false;
+   // no I/O for subentities and superentities - not loaded anyway
    return true;
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 bool
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 load( File& file )
 {
-   if( ! MeshSubentityStorageLayers< MeshConfig, EntityTopology >::load( file ) /*||
-       ! MeshSuperentityStorageLayers< MeshConfig, EntityTopology >::load( file ) */ )
-      return false;
+   // no I/O for subentities and superentities - Mesh::load has to rebind pointers
    return true;
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 void
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 print( std::ostream& str ) const
 {
-   str << "\t Mesh entity dimension: " << EntityTopology::dimensions << std::endl;
-   MeshSubentityStorageLayers< MeshConfig, EntityTopology >::print( str );
-   MeshSuperentityAccess< MeshConfig, EntityTopology >::print( str );
+   str << "\t Mesh entity dimension: " << EntityTopology::dimension << std::endl;
+   SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology >::print( str );
+   SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology >::print( str );
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
+__cuda_callable__
 bool
-MeshEntity< MeshConfig, EntityTopology >::
+MeshEntity< MeshConfig, Device, EntityTopology >::
 operator==( const MeshEntity& entity ) const
 {
-   return ( MeshSubentityStorageLayers< MeshConfig, EntityTopology >::operator==( entity ) &&
-            MeshSuperentityAccess< MeshConfig, EntityTopology >::operator==( entity ) &&
-            MeshEntityId< typename MeshConfig::IdType,
-                             typename MeshConfig::GlobalIndexType >::operator==( entity ) );
+   return ( SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology >::operator==( entity ) &&
+            SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology >::operator==( entity ) &&
+            MeshEntityIndex< typename MeshConfig::IdType >::operator==( entity ) );
 }
 
 template< typename MeshConfig,
+          typename Device,
+          typename EntityTopology >
+__cuda_callable__
+bool
+MeshEntity< MeshConfig, Device, EntityTopology >::
+operator!=( const MeshEntity& entity ) const
+{
+   return ! ( *this == entity );
+}
+
+template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
 constexpr int
-MeshEntity< MeshConfig, EntityTopology >::
-getEntityDimension() const
+MeshEntity< MeshConfig, Device, EntityTopology >::
+getEntityDimension()
 {
-   return EntityTopology::dimensions;
+   return EntityTopology::dimension;
 }
 
 /****
  * Subentities
  */
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
-   template< int Subdimensions >
-constexpr bool
-MeshEntity< MeshConfig, EntityTopology >::
-subentitiesAvailable() const
-{
-   return SubentityTraits< Subdimensions >::storageEnabled;
-};
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Subdimensions >
-constexpr typename MeshEntity< MeshConfig, EntityTopology >::LocalIndexType
-MeshEntity< MeshConfig, EntityTopology >::
-getNumberOfSubentities() const
-{
-   return SubentityTraits< Subdimensions >::count;
-};
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Subdimensions >
-typename MeshEntity< MeshConfig, EntityTopology >::GlobalIndexType
-MeshEntity< MeshConfig, EntityTopology >::
-getSubentityIndex( const LocalIndexType localIndex) const
-{
-   static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to get subentity which is not configured for storage." );
-   TNL_ASSERT( 0 <= localIndex &&
-              localIndex < SubentityTraits< Subdimensions >::count,
-              std::cerr << "localIndex = " << localIndex
-                   << " subentitiesCount = "
-                   << SubentityTraits< Subdimensions >::count );
-   typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >  SubentityBaseType;
-   return SubentityBaseType::getSubentityIndex( MeshDimensionTag< Subdimensions >(),
-                                                localIndex );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Subdimensions >
-typename MeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< Subdimensions >::AccessArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
- getSubentitiesIndices()
-{
-   static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to get subentities which are not configured for storage." );
-   typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >  SubentityBaseType;
-   return SubentityBaseType::getSubentitiesIndices( MeshDimensionTag< Subdimensions >() );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Subdimensions >
-const typename MeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< Subdimensions >::AccessArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-getSubentitiesIndices() const
-{
-   static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to set subentities which are not configured for storage." );
-   typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >  SubentityBaseType;
-   return SubentityBaseType::getSubentitiesIndices( MeshDimensionTag< Subdimensions >() );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int SuperDimension >
-typename MeshEntity< MeshConfig, EntityTopology >::LocalIndexType
-MeshEntity< MeshConfig, EntityTopology >::
-getNumberOfSuperentities() const
-{
-   static_assert( SuperentityTraits< SuperDimension >::available, "You try to get number of superentities which are not configured for storage." );
-   typedef MeshSuperentityAccess< MeshConfig, EntityTopology >  SuperentityBaseType;
-   return SuperentityBaseType::getNumberOfSuperentities( MeshDimensionTag< SuperDimension >() );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int SuperDimension >
-typename MeshEntity< MeshConfig, EntityTopology >::GlobalIndexType
-MeshEntity< MeshConfig, EntityTopology >::
-getSuperentityIndex( const LocalIndexType localIndex ) const
-{
-   static_assert( SuperentityTraits< SuperDimension >::storageEnabled, "You try to get superentity which is not configured for storage." );
-   TNL_ASSERT( localIndex < this->getNumberOfSuperentities< SuperDimension >(),
-              std::cerr << " localIndex = " << localIndex
-                   << " this->getNumberOfSuperentities< Dimension >() = " << this->getNumberOfSuperentities< SuperDimension >() << std::endl; );
-   typedef MeshSuperentityAccess< MeshConfig, EntityTopology >  SuperentityBaseType;
-   return SuperentityBaseType::getSuperentityIndex( MeshDimensionTag< SuperDimension >(),
-                                                    localIndex );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int SuperDimension >
-typename MeshEntity< MeshConfig, EntityTopology >::template SuperentityTraits< SuperDimension >::AccessArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-getSuperentitiesIndices()
-{
-   static_assert( SuperentityTraits< SuperDimension >::storageEnabled, "You try to get superentities which are not configured for storage." );
-   typedef MeshSuperentityAccess< MeshConfig, EntityTopology >  SuperentityBaseType;
-   //return SuperentityBaseType::getSuperentitiesIndices( MeshDimensionTag< Dimension >() );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int SuperDimension >
-const typename MeshEntity< MeshConfig, EntityTopology >::template SuperentityTraits< SuperDimension >::AccessArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-getSuperentitiesIndices() const
-{
-   static_assert( SuperentityTraits< SuperDimension >::storageEnabled, "You try to get superentities which are not configured for storage." );
-   typedef MeshSuperentityAccess< MeshConfig, EntityTopology >  SuperentityBaseType;
-   return SuperentityBaseType::getSubentitiesIndices( MeshDimensionTag< SuperDimension >() );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-constexpr typename MeshEntity< MeshConfig, EntityTopology >::LocalIndexType
-MeshEntity< MeshConfig, EntityTopology >::
-getNumberOfVertices() const
+constexpr typename MeshEntity< MeshConfig, Device, EntityTopology >::LocalIndexType
+MeshEntity< MeshConfig, Device, EntityTopology >::
+getVerticesCount()
 {
    return SubentityTraits< 0 >::count;
 }
 
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
-typename MeshEntity< MeshConfig, EntityTopology >::GlobalIndexType
-MeshEntity< MeshConfig, EntityTopology >::
+typename MeshEntity< MeshConfig, Device, EntityTopology >::GlobalIndexType
+MeshEntity< MeshConfig, Device, EntityTopology >::
 getVertexIndex( const LocalIndexType localIndex ) const
 {
-   return this->getSubentityIndex< 0 >( localIndex  );
+   return this->template getSubentityIndex< 0 >( localIndex  );
 }
 
-template< typename MeshConfig,
-          typename EntityTopology >
-typename MeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< 0 >::AccessArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-getVerticesIndices()
-{
-   return this->getSubentitiesIndices< 0 >();
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-const typename MeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< 0 >::AccessArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-getVerticesIndices() const
-{
-   return this->getSubentitiesIndices< 0 >();
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Dimension >
-typename MeshEntity< MeshConfig, EntityTopology >::IdPermutationArrayAccessorType
-MeshEntity< MeshConfig, EntityTopology >::
-subentityOrientation( LocalIndexType index ) const
-{
-   static const LocalIndexType subentitiesCount = SubentityTraits< Dimension >::count;
-   TNL_ASSERT( 0 <= index && index < subentitiesCount, );
-
-   return SubentityStorageLayers::subentityOrientation( MeshDimensionTag< Dimension >(), index );
-}
-
-/****
- * Mesh initialization method
- */
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Subdimensions >
-void
-MeshEntity< MeshConfig, EntityTopology >::
-setSubentityIndex( const LocalIndexType localIndex,
-                   const GlobalIndexType globalIndex )
-{
-   static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to set subentity which is not configured for storage." );
-   TNL_ASSERT( 0 <= localIndex &&
-              localIndex < SubentityTraits< Subdimensions >::count,
-              std::cerr << "localIndex = " << localIndex
-                   << " subentitiesCount = "
-                   << SubentityTraits< Subdimensions >::count );
-   typedef MeshSubentityStorageLayers< MeshConfig, EntityTopology >  SubentityBaseType;
-   SubentityBaseType::setSubentityIndex( MeshDimensionTag< Subdimensions >(),
-                                         localIndex,
-                                         globalIndex );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Subdimensions >
-typename MeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< Subdimensions >::IdArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-subentityIdsArray()
-{
-   return SubentityStorageLayers::subentityIdsArray( MeshDimensionTag< Subdimensions >() );
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Superdimensions >
-typename MeshEntity< MeshConfig, EntityTopology >::IdArrayAccessorType&
-MeshEntity< MeshConfig, EntityTopology >::
-superentityIdsArray()
-{
-   return SuperentityAccessBase::superentityIdsArray( MeshDimensionTag< Superdimensions >());
-}
-
-template< typename MeshConfig,
-          typename EntityTopology >
-   template< int Subdimensions >
-typename MeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< Subdimensions >::OrientationArrayType&
-MeshEntity< MeshConfig, EntityTopology >::
-subentityOrientationsArray()
-{
-   return SubentityStorageLayers::subentityOrientationsArray( MeshDimensionTag< Subdimensions >() );
-}
 
 /****
  * Vertex entity specialization
  */
-template< typename MeshConfig >
-String
-MeshEntity< MeshConfig, MeshVertexTopology >::
-getType()
+template< typename MeshConfig, typename Device >
+__cuda_callable__
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
+MeshEntity( const MeshEntity& entity )
+   : SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >( entity ),
+     MeshEntityIndex< typename MeshConfig::IdType >( entity )
 {
-   return String( "Mesh< ... >" );
+   setPoint( entity.getPoint() );
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
+   template< typename Device_ >
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
+MeshEntity( const MeshEntity< MeshConfig, Device_, Topologies::Vertex >& entity )
+   // no cross-device copy of superentities here - Mesh constructor has to rebind pointers
+   : MeshEntityIndex< typename MeshConfig::IdType >( entity )
+{
+   static_assert( ! std::is_same< Device, Device_ >::value, "this should never happen" );
+
+   setPoint( entity.getPoint() );
+}
+
+template< typename MeshConfig, typename Device >
+__cuda_callable__
+MeshEntity< MeshConfig, Device, Topologies::Vertex >& 
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
+operator=( const MeshEntity& entity )
+{
+   SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::operator=( entity );
+   MeshEntityIndex< typename MeshConfig::IdType >::operator=( entity );
+   setPoint( entity.getPoint() );
+   return *this;
+}
+
+template< typename MeshConfig, typename Device >
+   template< typename Device_ >
+__cuda_callable__
+MeshEntity< MeshConfig, Device, Topologies::Vertex >& 
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
+operator=( const MeshEntity< MeshConfig, Device_, Topologies::Vertex >& entity )
+{
+   static_assert( ! std::is_same< Device, Device_ >::value, "this should never happen" );
+
+   // no cross-device copy of superentities here - Mesh::operator= has to rebind pointers
+   MeshEntityIndex< typename MeshConfig::IdType >::operator=( entity );
+   setPoint( entity.getPoint() );
+   return *this;
+}
+
+template< typename MeshConfig, typename Device >
 String
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
+getType()
+{
+   return String( "MeshEntity< ... >" );
+}
+
+template< typename MeshConfig, typename Device >
+String
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 getTypeVirtual() const
 {
    return this->getType();
 }
 
-template< typename MeshConfig >
-MeshEntity< MeshConfig, MeshVertexTopology >::
-~MeshEntity()
-{
-   //cerr << "   Destroying entity with " << MeshVertexTopology::dimensions << " dimensions..." << std::endl;
-}
-
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 bool
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 save( File& file ) const
 {
-   if( //! MeshSuperentityStorageLayers< MeshConfig, MeshVertexTopology >::save( file ) ||
-       ! point.save( file ) )
+   // no I/O for superentities - not loaded anyway
+   if( ! point.save( file ) )
       return false;
    return true;
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 bool
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 load( File& file )
 {
-   if( //! MeshSuperentityStorageLayers< MeshConfig, MeshVertexTopology >::load( file ) ||
-       ! point.load( file ) )
+   // no I/O for superentities - Mesh::load has to rebind pointers
+   if( ! point.load( file ) )
       return false;
    return true;
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
 void
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 print( std::ostream& str ) const
 {
-   str << "\t Mesh entity dimension: " << MeshVertexTopology::dimensions << std::endl;
-   str << "\t Coordinates = ( " << point << " )";
-   MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::print( str );
+   str << "\t Mesh entity dimension: " << Topologies::Vertex::dimension << std::endl;
+   str << "\t Coordinates = " << point << std::endl;
+   SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::print( str );
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
+__cuda_callable__
 bool
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 operator==( const MeshEntity& entity ) const
 {
-   return ( //MeshSuperentityAccess< MeshConfig, MeshVertexTopology >::operator==( entity ) &&
-            MeshEntityId< typename MeshConfig::IdType,
-                             typename MeshConfig::GlobalIndexType >::operator==( entity ) &&
+   return ( SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::operator==( entity ) &&
+            MeshEntityIndex< typename MeshConfig::IdType >::operator==( entity ) &&
             point == entity.point );
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
+__cuda_callable__
+bool
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
+operator!=( const MeshEntity& entity ) const
+{
+   return ! ( *this == entity );
+}
+
+template< typename MeshConfig, typename Device >
 constexpr int
-MeshEntity< MeshConfig, MeshVertexTopology >::
-getEntityDimension() const
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
+getEntityDimension()
 {
-   return EntityTopology::dimensions;
+   return EntityTopology::dimension;
 }
 
-template< typename MeshConfig >
-   template< int Superdimensions >
-typename MeshEntity< MeshConfig, MeshVertexTopology >::LocalIndexType
-MeshEntity< MeshConfig, MeshVertexTopology >::
-getNumberOfSuperentities() const
-{
-   typedef MeshSuperentityAccess< MeshConfig, MeshVertexTopology >  SuperentityBaseType;
-   return SuperentityBaseType::getNumberOfSuperentities( MeshDimensionTag< Superdimensions >() );
-}
-
-template< typename MeshConfig >
-   template< int Superdimensions >
-typename MeshEntity< MeshConfig, MeshVertexTopology >::template SuperentityTraits< Superdimensions >::AccessArrayType&
-MeshEntity< MeshConfig, MeshVertexTopology >::
-getSuperentitiesIndices()
-{
-   typedef MeshSuperentityAccess< MeshConfig, MeshVertexTopology >  SuperentityBaseType;
-   return SuperentityBaseType::getSuperentitiesIndices( MeshDimensionTag< Superdimensions >() );
-}
-
-template< typename MeshConfig >
-   template< int Superdimensions >
-const typename MeshEntity< MeshConfig, MeshVertexTopology >::template SuperentityTraits< Superdimensions >::AccessArrayType&
-MeshEntity< MeshConfig, MeshVertexTopology >::
-getSuperentitiesIndeces() const
-{
-   typedef MeshSuperentityAccess< MeshConfig, MeshVertexTopology >  SuperentityBaseType;
-   return SuperentityBaseType::getSubentitiesIndices( MeshDimensionTag< Superdimensions >() );
-}
-
-template< typename MeshConfig >
-   template< int Dimension >
-typename MeshEntity< MeshConfig, MeshVertexTopology >::GlobalIndexType
-MeshEntity< MeshConfig, MeshVertexTopology >::
-getSuperentityIndex( const LocalIndexType localIndex ) const
-{
-   TNL_ASSERT( localIndex < this->getNumberOfSuperentities< Dimension >(),
-              std::cerr << " localIndex = " << localIndex
-                   << " this->getNumberOfSuperentities< Dimension >() = " << this->getNumberOfSuperentities< Dimension >() << std::endl; );
-   typedef MeshSuperentityAccess< MeshConfig, MeshVertexTopology >  SuperentityBaseType;
-   return SuperentityBaseType::getSuperentityIndex( MeshDimensionTag< Dimension >(),
-                                                    localIndex );
-}
-
-template< typename MeshConfig >
-typename MeshEntity< MeshConfig, MeshVertexTopology >::PointType
-MeshEntity< MeshConfig, MeshVertexTopology >::
+template< typename MeshConfig, typename Device >
+__cuda_callable__
+typename MeshEntity< MeshConfig, Device, Topologies::Vertex >::PointType
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 getPoint() const
 {
    return this->point;
 }
 
-template< typename MeshConfig >
+template< typename MeshConfig, typename Device >
+__cuda_callable__
 void
-MeshEntity< MeshConfig, MeshVertexTopology >::
+MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 setPoint( const PointType& point )
 {
    this->point = point;
 }
 
-template< typename MeshConfig >
-   template< int Superdimensions >
-typename MeshEntity< MeshConfig, MeshVertexTopology >::MeshTraitsType::IdArrayAccessorType&
-MeshEntity< MeshConfig, MeshVertexTopology >::
-superentityIdsArray()
-{
-   return SuperentityAccessBase::superentityIdsArray( MeshDimensionTag< Superdimensions >());
-}
-
 template< typename MeshConfig,
+          typename Device,
           typename EntityTopology >
-std::ostream& operator <<( std::ostream& str, const MeshEntity< MeshConfig, EntityTopology >& entity )
+std::ostream& operator<<( std::ostream& str, const MeshEntity< MeshConfig, Device, EntityTopology >& entity )
 {
    entity.print( str );
    return str;
@@ -497,4 +346,3 @@ std::ostream& operator <<( std::ostream& str, const MeshEntity< MeshConfig, Enti
 
 } // namespace Meshes
 } // namespace TNL
-

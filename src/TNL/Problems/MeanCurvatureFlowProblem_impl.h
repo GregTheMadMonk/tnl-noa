@@ -36,9 +36,9 @@ template< typename Mesh,
           typename DifferentialOperator >
 String
 MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getTypeStatic()
+getType()
 {
-   return String( "tnlMeanCurvativeFlowProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "tnlMeanCurvativeFlowProblem< " ) + Mesh :: getType() + " >";
 }
 
 template< typename Mesh,

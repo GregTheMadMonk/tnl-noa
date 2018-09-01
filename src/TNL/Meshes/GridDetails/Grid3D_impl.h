@@ -14,7 +14,6 @@
 #include <iomanip>
 #include <TNL/String.h>
 #include <TNL/Assert.h>
-#include <TNL/Logger.h>
 #include <TNL/Meshes/GridDetails/GnuplotWriter.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter3D_impl.h>
@@ -94,7 +93,7 @@ void Grid< 3, Real, Device, Index > :: computeSpaceSteps()
       const RealType& hx = this->spaceSteps.x();
       const RealType& hy = this->spaceSteps.y();
       const RealType& hz = this->spaceSteps.z();
- 
+
       Real auxX, auxY, auxZ;
       for( int i = 0; i < 5; i++ )
       {
@@ -191,7 +190,7 @@ void Grid< 3, Real, Device, Index > :: setDimensions( const Index xSize, const I
                          this->numberOfDyEdges +
                          this->numberOfDzEdges;
    this->numberOfVertices = ( xSize + 1 ) * ( ySize + 1 ) * ( zSize + 1 );
- 
+
    this->cellZNeighborsStep = xSize * ySize;
 
    computeSpaceSteps();
@@ -258,7 +257,7 @@ getEntitiesCount() const
 {
    static_assert( EntityDimension <= 3 &&
                   EntityDimension >= 0, "Wrong grid entity dimensions." );
- 
+
    switch( EntityDimension )
    {
       case 3:
@@ -296,7 +295,7 @@ getEntity( const IndexType& entityIndex ) const
 {
    static_assert( Entity::getEntityDimension() <= 3 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
- 
+
    return GridEntityGetter< ThisType, Entity >::getEntity( *this, entityIndex );
 }
 
@@ -311,7 +310,7 @@ getEntityIndex( const Entity& entity ) const
 {
    static_assert( Entity::getEntityDimension() <= 3 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
- 
+
    return GridEntityGetter< ThisType, Entity >::getEntityIndex( *this, entity );
 }
 
@@ -506,71 +505,8 @@ bool Grid< 3, Real, Device, Index > :: load( const String& fileName )
 };
 
 template< typename Real,
-           typename Device,
-           typename Index >
-bool Grid< 3, Real, Device, Index >::writeMesh( const String& fileName,
-                                                   const String& format ) const
-{
-   /*****
-    * TODO: implement this
-    */
-   return true;
-}
-
-template< typename Real,
           typename Device,
           typename Index >
-   template< typename MeshFunction >
-bool Grid< 3, Real, Device, Index > :: write( const MeshFunction& function,
-                                                 const String& fileName,
-                                                 const String& format ) const
-{
-   if( this->template getEntitiesCount< Cell >() != function. getSize() )
-   {
-      std::cerr << "The size ( " << function. getSize()
-           << " ) of a mesh function does not agree with the DOFs ( " << this->template getEntitiesCount< Cell >() << " ) of a mesh." << std::endl;
-      return false;
-   }
-   std::fstream file;
-   file. open( fileName. getString(), std::ios::out );
-   if( ! file )
-   {
-      std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
-      return false;
-   }
-   file << std::setprecision( 12 );
-   if( format == "gnuplot" )
-   {
-      Cell cell( *this );
-      for( cell.getCoordinates().z() = 0;
-           cell.getCoordinates().z() < getDimensions().z();
-           cell.getCoordinates().z()++ )
-      {
-         for( cell.getCoordinates().y() = 0;
-              cell.getCoordinates().y() < getDimensions().y();
-              cell.getCoordinates().y()++ )
-         {
-            for( cell.getCoordinates().x() = 0;
-                 cell.getCoordinates().x() < getDimensions().x();
-                 cell.getCoordinates().x()++ )
-            {
-               PointType v = cell.getCenter();
-               GnuplotWriter::write( file, v );
-               GnuplotWriter::write( file, function[ this->template getEntityIndex( cell ) ] );
-               file << std::endl;
-            }
-         }
-         file << std::endl;
-      }
-   }
-
-   file. close();
-   return true;
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
 void
 Grid< 3, Real, Device, Index >::
 writeProlog( Logger& logger ) const

@@ -17,12 +17,11 @@ ADD_SUBDIRECTORY( legacy )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
 
-set( headers 
+set( headers
      Assert.h
      Constants.h
      CudaSharedMemory.h
      CudaStreamPool.h
-     Curve.h
      DevicePointer.h
      File.h
      File_impl.h
@@ -42,7 +41,7 @@ set( headers
      Timer.h
      UniquePointer.h )
 
-set( common_SOURCES 
+set( common_SOURCES
      File.cpp
      FileName.cpp
      Object.cpp
@@ -50,7 +49,7 @@ set( common_SOURCES
      SmartPointersRegister.cpp
      String.cpp
      Timer.cpp )
-     
+
 set( tnl_SOURCES ${tnl_config_SOURCES}
                  ${tnl_containers_SOURCES}
                  ${tnl_devices_SOURCES}
@@ -63,8 +62,8 @@ set( tnl_SOURCES ${tnl_config_SOURCES}
                  ${tnl_solvers_SOURCES}
 
                  ${tnl_core_SOURCES}
-                 ${tnl_legacy_SOURCES}                 
-                                                   
+                 ${tnl_legacy_SOURCES}
+
                  ${common_SOURCES} )
 
 set( tnl_CUDA__SOURCES ${tnl_config_CUDA__SOURCES}
@@ -82,52 +81,56 @@ set( tnl_CUDA__SOURCES ${tnl_config_CUDA__SOURCES}
                        ${tnl_core_CUDA__SOURCES}
                        ${tnl_legacy_CUDA__SOURCES}
                        ${common_SOURCES} )
-                 
-                 
+
+
+ADD_LIBRARY( tnl_static STATIC ${tnl_SOURCES} )
+INSTALL( TARGETS tnl_static DESTINATION lib )
+
 if( BUILD_CUDA )
    CUDA_ADD_LIBRARY( tnl SHARED ${tnl_CUDA__SOURCES}
-                                                  OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
-    if( HAVE_CUBLAS )
-       CUDA_ADD_CUBLAS_TO_TARGET( tnl )
-    endif( HAVE_CUBLAS )
+                     OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
+   # the static library with CUDA support has to be built separately
+   CUDA_ADD_LIBRARY( tnl-cuda_static STATIC ${tnl_CUDA__SOURCES} )
+   INSTALL( TARGETS tnl-cuda_static DESTINATION lib )
 else( BUILD_CUDA )
-   ADD_LIBRARY( tnl SHARED 
-                ${tnl_SOURCES} )
+   ADD_LIBRARY( tnl SHARED ${tnl_SOURCES} )
 #ifMIC
   #TARGET_COMPILE_DEFINITIONS( tnl PUBLIC -DHAVE_MIC )
-endif( BUILD_CUDA )                                    
-               
-SET_TARGET_PROPERTIES( tnl PROPERTIES 
+endif( BUILD_CUDA )
+
+SET_TARGET_PROPERTIES( tnl PROPERTIES
                        VERSION ${tnlVersion} )
-TARGET_LINK_LIBRARIES( tnl 
-                       ${DCMTK_LIBRARIES})
+TARGET_LINK_LIBRARIES( tnl
+                       ${DCMTK_LIBRARIES} )
 
 
 INSTALL( TARGETS tnl DESTINATION lib )
 
 IF( BUILD_MPI )
-   
+
+   ADD_LIBRARY( tnl-mpi_static STATIC ${tnl_SOURCES} )
+   INSTALL( TARGETS tnl-mpi_static DESTINATION lib )
+
    if( BUILD_CUDA )
-      CUDA_ADD_LIBRARY( tnl-mpi-${tnlVersion} SHARED ${tnl_CUDA__SOURCES} 
-                                                         OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
-      if( HAVE_CUBLAS )
-         CUDA_ADD_CUBLAS_TO_TARGET( tnl-mpi-${tnlVersion} )
-      endif( HAVE_CUBLAS )
+      CUDA_ADD_LIBRARY( tnl-mpi SHARED ${tnl_CUDA__SOURCES}
+                        OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
+      # the static library with CUDA support has to be built separately
+      CUDA_ADD_LIBRARY( tnl-mpi-cuda_static STATIC ${tnl_CUDA__SOURCES} )
+      INSTALL( TARGETS tnl-mpi-cuda_static DESTINATION lib )
    else( BUILD_CUDA )
-         ADD_LIBRARY( tnl-mpi-${tnlVersion} SHARED
-                      ${tnl_SOURCES} )  
-   endif( BUILD_CUDA )                        
-   
-   SET_TARGET_PROPERTIES( tnl-mpi-${tnlVersion} PROPERTIES
-                          VERSION ${tnlVersion} ) 
-#   SET_TARGET_PROPERTIES( tnl-mpi-${tnlVersion} 
+      ADD_LIBRARY( tnl-mpi SHARED ${tnl_SOURCES} )
+   endif( BUILD_CUDA )
+
+   SET_TARGET_PROPERTIES( tnl-mpi PROPERTIES
+                          VERSION ${tnlVersion} )
+#   SET_TARGET_PROPERTIES( tnl-mpi
 #                          LINK_INTERFACE_LIBRARIES "")
 
-   
-   TARGET_LINK_LIBRARIES( tnl-mpi-${tnlVersion} 
+
+   TARGET_LINK_LIBRARIES( tnl-mpi
                           ${MPI_LIBRARIES} )
-   INSTALL( TARGETS tnl-mpi-${tnlVersion} DESTINATION lib )
-                                                                
-ENDIF()
+   INSTALL( TARGETS tnl-mpi DESTINATION lib )
+
+endif()
 
 INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY} )

@@ -35,7 +35,7 @@ template< typename Problem >
 String Euler< Problem > :: getType() const
 {
    return String( "Euler< " ) +
-          Problem :: getTypeStatic() +
+          Problem :: getType() +
           String( " >" );
 };
 
@@ -193,8 +193,9 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
          const IndexType sharedMemory = cudaBlockSize.x * sizeof( RealType );
          const IndexType gridOffset = gridIdx * threadsPerGrid;
          const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
+         const IndexType currentGridSize = Devices::Cuda::getNumberOfBlocks( currentSize, cudaBlockSize.x );
 
-         updateUEuler<<< cudaBlocks, cudaBlockSize, sharedMemory >>>( currentSize,
+         updateUEuler<<< currentGridSize, cudaBlockSize, sharedMemory >>>( currentSize,
                                                                       tau,
                                                                       &_k1[ gridOffset ],
                                                                       &_u[ gridOffset ],

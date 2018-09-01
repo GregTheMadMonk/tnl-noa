@@ -29,9 +29,9 @@ template< typename Mesh,
           typename DifferentialOperator >
 String
 transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getTypeStatic()
+getType()
 {
-   return String( "transportEquationProblemEoc< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "transportEquationProblemEoc< " ) + Mesh :: getType() + " >";
 }
 
 template< typename Mesh,
@@ -52,13 +52,12 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const MeshPointer& meshPointer,
-       const Config::ParameterContainer& parameters,
+setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->velocityField->setup( meshPointer, parameters, prefix + "velocity-field-" ) ||
-       ! this->differentialOperatorPointer->setup( meshPointer, parameters, prefix ) ||
-       ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) )
+   if( ! this->velocityField->setup( this->getMesh(), parameters, prefix + "velocity-field-" ) ||
+       ! this->differentialOperatorPointer->setup( this->getMesh(), parameters, prefix ) ||
+       ! this->boundaryConditionPointer->setup( this->getMesh(), parameters, prefix + "boundary-conditions-" ) )
       return false;
    
    /****
@@ -70,7 +69,7 @@ setup( const MeshPointer& meshPointer,
    static const int Dimension = Mesh::getMeshDimension();
    typedef typename MeshPointer::ObjectType MeshType;
    typedef Functions::MeshFunction< MeshType > MeshFunction;
-   SharedPointer< MeshFunction > u( meshPointer );
+   SharedPointer< MeshFunction > u( this->getMesh() );
    if( initialCondition == "heaviside-vector-norm" )
    {
       typedef Functions::Analytic::VectorNorm< Dimension, RealType > VectorNormType;
@@ -130,11 +129,9 @@ template< typename Mesh,
 bool
 transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
-                     const MeshPointer& meshPointer,
-                     DofVectorPointer& dofs,
-                     MeshDependentDataPointer& meshDependentData )
+                     DofVectorPointer& dofs )
 {
-   this->bindDofs( meshPointer, dofs );
+   this->bindDofs( dofs );
    //const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    FileName fileName;
    fileName.setFileNameBase( "exact-u-" );

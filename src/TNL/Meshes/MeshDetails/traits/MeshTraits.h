@@ -2,7 +2,7 @@
                           MeshTraits.h  -  description
                              -------------------
     begin                : Feb 11, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -18,57 +18,49 @@
 
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/SharedArray.h>
-#include <TNL/Containers/ConstSharedArray.h>
-#include <TNL/Meshes/MeshDimensionTag.h>
+#include <TNL/Meshes/DimensionTag.h>
+#include <TNL/Meshes/Topologies/Vertex.h>
 
 namespace TNL {
 namespace Meshes {
 
-struct MeshVertexTopology;
-template< typename MeshConfig, typename EntityTopology > class MeshEntity;
-template< typename MeshConfig, typename EntityTopology > class MeshEntitySeed;
-template< typename MeshConfig, int Dimension > class MeshEntityTraits;
-template< typename MeshConfig, typename MeshEntity, int SubDimension > class MeshSubentityTraits;
-template< typename MeshConfig, typename MeshEntity, int SuperDimension > class MeshSuperentityTraits;
+template< typename MeshConfig, typename Device, typename EntityTopology > class MeshEntity;
+template< typename MeshConfig, typename EntityTopology > class EntitySeed;
+template< typename MeshConfig, typename Device, int Dimension > class MeshEntityTraits;
+template< typename MeshConfig, typename Device, typename MeshEntity, int Subdimension > class MeshSubentityTraits;
+template< typename MeshConfig, typename Device, typename MeshEntity, int Superdimension > class MeshSuperentityTraits;
 
 template< typename MeshConfig,
           typename Device = Devices::Host >
 class MeshTraits
 {
-   public:
- 
-      static const int meshDimension = MeshConfig::CellTopology::dimensions;
-      static const int worldDimension = MeshConfig::worldDimension;
+public:
+   static constexpr int meshDimension  = MeshConfig::CellTopology::dimension;
+   static constexpr int worldDimension = MeshConfig::worldDimension;
 
-      typedef Device                                                               DeviceType;
-      typedef typename MeshConfig::GlobalIndexType                                 GlobalIndexType;
-      typedef typename MeshConfig::LocalIndexType                                  LocalIndexType;
- 
-      typedef typename MeshConfig::CellTopology                                    CellTopology;
-      typedef MeshEntity< MeshConfig, CellTopology >                            CellType;
-      typedef MeshEntity< MeshConfig, MeshVertexTopology >                   VertexType;
-      typedef Containers::StaticVector< worldDimension, typename MeshConfig::RealType >    PointType;
-      typedef MeshEntitySeed< MeshConfig, CellTopology >                        CellSeedType;
- 
-      typedef Containers::Array< PointType, Devices::Host, GlobalIndexType >                  PointArrayType;
-      typedef Containers::Array< CellSeedType, Devices::Host, GlobalIndexType >               CellSeedArrayType;
-      typedef Containers::Array< GlobalIndexType, Devices::Host, GlobalIndexType >            GlobalIdArrayType;
-      typedef Containers::tnlConstSharedArray< GlobalIndexType, Devices::Host, LocalIndexType >  IdArrayAccessorType;
-      typedef Containers::tnlConstSharedArray< LocalIndexType, Devices::Host, LocalIndexType >   IdPermutationArrayAccessorType;
- 
-      template< int Dimension > using EntityTraits =
-         MeshEntityTraits< MeshConfig, Dimension >;
- 
-      template< typename EntityTopology, int SubDimension > using SubentityTraits =
-         MeshSubentityTraits< MeshConfig, EntityTopology, SubDimension >;
- 
-      template< typename EntityTopology, int SuperDimension > using SuperentityTraits =
-         MeshSuperentityTraits< MeshConfig, EntityTopology, SuperDimension >;
- 
- 
-      typedef MeshDimensionTag< meshDimension >                                   DimensionTag;
+   using DeviceType        = Device;
+   using GlobalIndexType   = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType    = typename MeshConfig::LocalIndexType;
 
+   using CellTopology      = typename MeshConfig::CellTopology;
+   using CellType          = MeshEntity< MeshConfig, Device, CellTopology >;
+   using VertexType        = MeshEntity< MeshConfig, Device, Topologies::Vertex >;
+   using PointType         = Containers::StaticVector< worldDimension, typename MeshConfig::RealType >;
+   using CellSeedType      = EntitySeed< MeshConfig, CellTopology >;
+
+   using PointArrayType    = Containers::Array< PointType, DeviceType, GlobalIndexType >;
+   using CellSeedArrayType = Containers::Array< CellSeedType, DeviceType, GlobalIndexType >;
+
+   template< int Dimension >
+   using EntityTraits = MeshEntityTraits< MeshConfig, DeviceType, Dimension >;
+
+   template< typename EntityTopology, int Subdimension >
+   using SubentityTraits = MeshSubentityTraits< MeshConfig, DeviceType, EntityTopology, Subdimension >;
+
+   template< typename EntityTopology, int Superdimension >
+   using SuperentityTraits = MeshSuperentityTraits< MeshConfig, DeviceType, EntityTopology, Superdimension >;
+
+   using DimensionTag = Meshes::DimensionTag< meshDimension >;
 };
 
 } // namespace Meshes

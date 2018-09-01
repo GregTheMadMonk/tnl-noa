@@ -53,9 +53,9 @@ class SparseRow
 
    protected:
 
-      Real* values;
+	   Real* values;
 
-      Index* columns;
+	   Index* columns;
 
       Index length, step;
 };

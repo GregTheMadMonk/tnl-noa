@@ -207,10 +207,46 @@ compareMemory( const Element1* destination,
    return result;
 }
 
+template< typename Element,
+          typename Index >
+bool
+ArrayOperations< Devices::Cuda >::
+containsValue( const Element* data,
+               const Index size,
+               const Element& value )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "" );
+   if( size == 0 ) return false;
+   bool result = false;
+   Algorithms::ParallelReductionContainsValue< Element > reductionContainsValue;
+   reductionContainsValue.setValue( value );
+   Reduction< Devices::Cuda >::reduce( reductionContainsValue, size, data, 0, result );
+   return result;
+}
+
+template< typename Element,
+          typename Index >
+bool
+ArrayOperations< Devices::Cuda >::
+containsOnlyValue( const Element* data,
+                   const Index size,
+                   const Element& value )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "" );
+   if( size == 0 ) return false;
+   bool result = false;
+   Algorithms::ParallelReductionContainsOnlyValue< Element > reductionContainsOnlyValue;
+   reductionContainsOnlyValue.setValue( value );
+   Reduction< Devices::Cuda >::reduce( reductionContainsOnlyValue, size, data, 0, result );
+   return result;
+}
+
+
 /****
  * Operations CUDA -> Host
  */
-
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >

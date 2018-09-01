@@ -24,9 +24,9 @@ template< typename Mesh,
 		  typename HamiltonJacobi,
 		  typename BoundaryCondition,
 		  typename RightHandSide>
-String HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide > :: getTypeStatic()
+String HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide > :: getType()
 {
-   return String( "hamiltonJacobiSolver< " ) + Mesh  :: getTypeStatic() + " >";
+   return String( "hamiltonJacobiSolver< " ) + Mesh  :: getType() + " >";
 }
 
 template< typename Mesh,
@@ -67,7 +67,7 @@ bool HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide 
    const String& meshFile = parameters.GetParameter< String >( "mesh" );
    if( ! this->mesh.load( meshFile ) )
    {
-	   cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+	  std::cerr << "I am not able to load the mesh from the file " << meshFile << "." <<std::endl;
 	   return false;
    }
 
@@ -125,7 +125,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if( ! this->solution.boundLoad( initialConditionFile ) )
    {
-      cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
+     std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." <<std::endl;
       return false;
    }
    return true;
@@ -143,7 +143,7 @@ makeSnapshot( const RealType& time,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData  )
 {
-   cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
+  std::cout <<std::endl << "Writing output at time " << time << " step " << step << "." <<std::endl;
 
    String fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );

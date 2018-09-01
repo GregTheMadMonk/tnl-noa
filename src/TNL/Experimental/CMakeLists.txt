@@ -1,3 +1,4 @@
-ADD_SUBDIRECTORY( Arithmetics )
-ADD_SUBDIRECTORY( Multimaps )
-ADD_SUBDIRECTORY( Hamilton-Jacobi )
+add_subdirectory( Arithmetics )
+if( ${WITH_EXAMPLES} )
+   add_subdirectory( Hamilton-Jacobi )
+endif()

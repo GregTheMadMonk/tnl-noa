@@ -1,16 +1,22 @@
+ADD_SUBDIRECTORY( Geometry )
 ADD_SUBDIRECTORY( GridDetails )
 ADD_SUBDIRECTORY( MeshDetails )
+ADD_SUBDIRECTORY( Readers )
 ADD_SUBDIRECTORY( Topologies )
+ADD_SUBDIRECTORY( TypeResolver )
+ADD_SUBDIRECTORY( Writers )
 
-SET( headers Grid.h
-             GridEntity.h
-             GridEntityConfig.h
+SET( headers BuildConfigTags.h
+             DefaultConfig.h
+             DimensionTag.h
              DummyMesh.h
-             MeshDimensionTag.h             
-             Mesh.h
+             GridEntityConfig.h
+             GridEntity.h
+             Grid.h
+             MeshBuilder.h
              MeshEntity.h
+             Mesh.h
              Traverser.h
-             MeshConfigBase.h
     )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Meshes )    

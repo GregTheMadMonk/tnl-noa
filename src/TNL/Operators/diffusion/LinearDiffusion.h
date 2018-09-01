@@ -54,7 +54,7 @@ class LinearDiffusion< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Inde
  
       static const int Dimension = MeshType::getMeshDimension();
  
-      static constexpr int getDimension() { return Dimension; }
+      static constexpr int getMeshDimension() { return Dimension; }
  
       static String getType();
 
@@ -105,7 +105,7 @@ class LinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Ind
  
       static const int Dimension = MeshType::getMeshDimension();
  
-      static constexpr int getDimension() { return Dimension; }
+      static constexpr int getMeshDimension() { return Dimension; }
 
       static String getType();
 
@@ -155,7 +155,7 @@ class LinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Ind
 
       static const int Dimension = MeshType::getMeshDimension();
  
-      static constexpr int getDimension() { return Dimension; }
+      static constexpr int getMeshDimension() { return Dimension; }
 
       static String getType();
 

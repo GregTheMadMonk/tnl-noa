@@ -79,7 +79,7 @@ bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 
 	if( ! Mesh.load( meshFile ) )
 	{
-		   cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the mesh from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 
@@ -87,13 +87,13 @@ bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 	const String& initialCondition = parameters.getParameter <String>("initial-condition");
 	if( ! dofVector.load( initialCondition ) )
 	{
-		   cerr << "I am not able to load the initial condition from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the initial condition from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 
 	const String& mapFile = parameters.getParameter <String>("map");
 	if(! this->map.load( mapFile ))
-		cout << "Failed to load map file : " << mapFile << endl;
+		cout << "Failed to load map file : " << mapFile <<std::endl;
 
 	h = Mesh.template getSpaceStepsProducts< 1, 0 >();
 	//Entity.refresh();
@@ -174,7 +174,7 @@ bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 		cudaDeviceSynchronize();
 		TNL_CHECK_CUDA_DEVICE;
 		cntr++;
-		cout << "Finished set of sweeps #" << cntr << "           " << run << endl;
+		cout << "Finished set of sweeps #" << cntr << "           " << run <<std::endl;
 	}
 
 	cudaDeviceSynchronize();

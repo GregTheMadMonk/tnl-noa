@@ -31,14 +31,14 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
       
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef SharedPointer< MeshType > MeshPointer;
-      static const int Dimensions = MeshType::getMeshDimension();
+      static const int Dimension = MeshType::getMeshDimension();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef VelocityFunction VelocityFunctionType;
-      typedef Functions::VectorField< Dimensions, VelocityFunctionType > VelocityFieldType;
+      typedef Functions::VectorField< Dimension, VelocityFunctionType > VelocityFieldType;
       typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
       
       static void configSetup( Config::ConfigDescription& config,
@@ -123,14 +123,14 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
       
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef SharedPointer< MeshType > MeshPointer;
-      static const int Dimensions = MeshType::getMeshDimension();
+      static const int Dimension = MeshType::getMeshDimension();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef VelocityFunction VelocityFunctionType;
-      typedef Functions::VectorField< Dimensions, VelocityFunctionType > VelocityFieldType;
+      typedef Functions::VectorField< Dimension, VelocityFunctionType > VelocityFieldType;
       typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
       
       static void configSetup( Config::ConfigDescription& config,
@@ -221,14 +221,14 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
       
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef SharedPointer< MeshType > MeshPointer;
-      static const int Dimensions = MeshType::getMeshDimension();
+      static const int Dimension = MeshType::getMeshDimension();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef VelocityFunction VelocityFunctionType;
-      typedef Functions::VectorField< Dimensions, VelocityFunctionType > VelocityFieldType;
+      typedef Functions::VectorField< Dimension, VelocityFunctionType > VelocityFieldType;
       typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
       
       static void configSetup( Config::ConfigDescription& config,

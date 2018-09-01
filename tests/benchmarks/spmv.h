@@ -15,6 +15,7 @@
 #include "benchmarks.h"
 
 #include <TNL/Containers/List.h>
+#include <TNL/DevicePointer.h>
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Matrices/SlicedEllpack.h>
@@ -74,7 +75,7 @@ void setCudaTestMatrix( Matrix& matrix,
 #ifdef HAVE_CUDA
     typedef typename Matrix::IndexType IndexType;
     typedef typename Matrix::RealType RealType;
-    Matrix* kernel_matrix = Devices::Cuda::passToDevice( matrix );
+    DevicePointer< Matrix > kernel_matrix( matrix );
     dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
     const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
     const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
@@ -83,10 +84,9 @@ void setCudaTestMatrix( Matrix& matrix,
             cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
         setCudaTestMatrixKernel< Matrix >
             <<< cudaGridSize, cudaBlockSize >>>
-            ( kernel_matrix, elementsPerRow, gridIdx );
+            ( &kernel_matrix.template modifyData< Devices::Cuda >(), elementsPerRow, gridIdx );
         TNL_CHECK_CUDA_DEVICE;
     }
-    Devices::Cuda::freeFromDevice( kernel_matrix );
 #endif
 }
 

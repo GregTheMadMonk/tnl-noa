@@ -29,7 +29,7 @@ addElement( Vector& v,
             const typename Vector::RealType& value )
 {
    // v[ i ] += value;
-   //cout << "Errorous function, not clear wher should be called (device or Host)" << endl;
+   //cout << "Errorous function, not clear wher should be called (device or Host)" <<std::endl;
    v.setElement(i,v.getElemet(i)+value);
 }
 
@@ -42,7 +42,7 @@ addElement( Vector& v,
             const typename Vector::RealType& thisElementMultiplicator )
 {
    //v[ i ] = thisElementMultiplicator * v[ i ] + value;
-   //cout << "Errorous function, not clear wher should be called (device or Host)" << endl;
+   //cout << "Errorous function, not clear wher should be called (device or Host)" <<std::endl;
    v.setElement(i,thisElementMultiplicator*v.getElemet(i)+value);
 }
 
