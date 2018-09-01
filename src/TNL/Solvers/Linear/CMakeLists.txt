@@ -22,26 +22,3 @@ SET( headers BICGStab.h
    )
 
 INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Solvers/Linear )
-
-if( ${WITH_TEMPLATES_INSTANTIATION} )
-   SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Solvers/Linear )
-
-   set( common_SOURCES ${CURRENT_DIR}/GMRES_impl.cpp
-                       ${CURRENT_DIR}/SOR_impl.cpp )
-
-   set( tnl_solvers_linear_SOURCES
-        ${tnl_solvers_linear_krylov_SOURCES}
-        ${tnl_solvers_linear_preconditioners_SOURCES}
-        ${tnl_solvers_linear_stationary_SOURCES}
-        ${common_SOURCES}
-        PARENT_SCOPE )
-
-   if( BUILD_CUDA)
-      set( tnl_solvers_linear_CUDA__SOURCES
-           ${tnl_solvers_linear_krylov_CUDA__SOURCES}
-           ${tnl_solvers_linear_preconditioners_CUDA_SOURCES}
-           ${tnl_solvers_linear_stationary_CUDA__SOURCES}
-           ${common_SOURCES}
-           PARENT_SCOPE )
-   endif()
-endif()
