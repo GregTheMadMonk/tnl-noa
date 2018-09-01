@@ -1,15 +1,9 @@
 #!/bin/bash
 
-TARGET=TNL
-INSTALL_PREFIX=${HOME}/local
-WITH_CUDA=no
-TEMPLATE_EXPLICIT_INSTANTIATION=yes
+INSTALL_PREFIX=${HOME}/.local
+BUILD_RELEASE=yes
+BUILD_DEBUG=yes
 #VERBOSE="VERBOSE=1"
-
-CMAKE="cmake"
-CPUS=`grep -c processor /proc/cpuinfo`
-#CPUS="1"
-
 
 for option in "$@"
 do
@@ -48,16 +42,6 @@ then
     cd ..
 fi
 
-
-PREFIX=${HOME}/.local
-for option in "$@"
-do
-    case $option in
-        --prefix=*                     ) PREFIX="${option#*=}" ;;
-    esac
-done
-
-
 TNL_TEST=`which tnl-bindir`
 
 if test x${TNL_TEST} = x;
@@ -84,15 +68,6 @@ then
     echo "fi"
     echo "export PATH"
     echo "export LD_LIBRARY_PATH"
-fi
-
-if test ${BUILD_RELEASE} = "yes";
-then
-    BUILD_PREFIX="Release"
-fi
-if test ${BUILD_DEBUG} = "yes";
-then
-    BUILD_PREFIX="Debug"
 fi
 
 exit 0

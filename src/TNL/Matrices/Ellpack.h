@@ -131,25 +131,6 @@ public:
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
 
-   RealType getElementInRow( const IndexType row,
-						const IndexType indexInRow ) const
-   {
-		typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
-		IndexType elementPtr = DDCType::getRowBegin( *this, row );
-		const IndexType step = DDCType::getElementStep( *this );
-		elementPtr += indexInRow * step;
-		return this->values.getElement( elementPtr );
-   }
-	RealType getColumnInRow( const IndexType row,
-						 const IndexType indexInRow ) const
-	{
-		typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
-		IndexType elementPtr = DDCType::getRowBegin( *this, row );
-		const IndexType step = DDCType::getElementStep( *this );
-		elementPtr += indexInRow * step;
-		return this->columnIndexes.getElement( elementPtr );
-	}
-
    __cuda_callable__
    void getRowFast( const IndexType row,
                     IndexType* columns,

@@ -28,7 +28,7 @@ template< typename Real,
 __device__ __host__
 #endif
 Index BiEllpack< Real, Device, Index, StripSize >::power( const IndexType number,
-								   const IndexType exponent ) const
+							   const IndexType exponent ) const
 {
     if( exponent >= 0 )
     {

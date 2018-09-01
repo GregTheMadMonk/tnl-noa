@@ -51,11 +51,11 @@ class SparseRow
  
       void print( std::ostream& str ) const;
 
-  // protected:
+   protected:
 
-	  const Real* values;
+	   Real* values;
 
-	  const Index* columns;
+	   Index* columns;
 
       Index length, step;
 };

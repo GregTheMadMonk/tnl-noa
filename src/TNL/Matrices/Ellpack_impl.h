@@ -577,19 +577,19 @@ bool Ellpack< Real, Device, Index > :: performSORIteration( const Vector& b,
 }
 
 template< typename Real,
-		  typename Device,
-		  typename Index >
+          typename Device,
+          typename Index >
    template< typename Vector >
-bool tnlEllpackMatrix< Real, Device, Index > :: performJacobiIteration( const Vector& b,
-																		const IndexType row,
-																		const Vector& old_x,
-																		Vector& x,
-																		const RealType& omega ) const
+bool
+Ellpack< Real, Device, Index >::
+performJacobiIteration( const Vector& b,
+                        const IndexType row,
+                        const Vector& old_x,
+                        Vector& x,
+                        const RealType& omega ) const
 {
-   tnlAssert( row >=0 && row < this->getRows(),
-			  cerr << "row = " << row
-				   << " this->getRows() = " << this->getRows()
-				   << " this->getName() = " << this->getName() << endl );
+   TNL_ASSERT( row >=0 && row < this->getRows(),
+               std::cerr << "row = " << row << " this->getRows() = " << this->getRows() << std::endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
@@ -609,7 +609,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: performJacobiIteration( const Ve
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-	  cerr << "There is zero on the diagonal in " << row << "-th row of thge matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
+	  std::cerr << "There is zero on the diagonal in " << row << "-th row of the matrix. I cannot perform the Jacobi iteration." << std::endl;
 	  return false;
    }
    x[ row ] = ( 1.0 - omega ) * old_x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
