@@ -422,7 +422,6 @@ Real Ellpack< Real, Device, Index >::getElement( const IndexType row,
           this->columnIndexes.getElement( elementPtr ) != this->getPaddingIndex() ) elementPtr += step;
    if( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) == column )
       return this->values.getElement( elementPtr );
-   throw "Nenasel";
    return 0.0;
 }
 
