@@ -14,6 +14,7 @@ VERBOSE=""
 OFFLINE_BUILD="no"
 
 WITH_CLANG="no"
+WITH_MPI="yes"
 WITH_CUDA="yes"
 WITH_CUDA_ARCH="auto"
 WITH_OPENMP="yes"
@@ -44,6 +45,7 @@ do
         --offline-build                  ) OFFLINE_BUILD="yes" ;;
         --help                           ) HELP="yes" ;;
         --with-clang=*                   ) WITH_CLANG="${option#*=}" ;;
+        --with-mpi=*                     ) WITH_MPI="${option#*=}" ;;
         --with-mic=*                     ) WITH_MIC="${option#*=}" ;;
         --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
         --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;
@@ -78,12 +80,13 @@ then
     echo "   --build-jobs=NUM                      Number of processes to be used for the build. It is set to the number of available CPU cores by default."
     echo "   --prefix=PATH                         Prefix for the installation directory. ${HOME}/local by default."
     echo "   --install=yes/no                      Enables the installation of TNL files."
-    echo "   --with-mic=yes/no                     Enable MIC (Intel Xeon Phi). 'no' by default (Intel Compiler required)."
-    echo "   --with-cuda=yes/no                    Enable CUDA. 'yes' by default (CUDA Toolkit is required)."
-    echo "   --with-cuda-arch=all/auto/30/35/...   Choose CUDA architecture. 'auto' by default."
-    echo "   --with-openmp=yes/no                  Enable OpenMP. 'yes' by default."
-    echo "   --with-tests=yes/no                   Enable unit tests. 'yes' by default."
-    echo "   --with-coverage=yes/no                Enable code coverage reports for unit tests. 'no' by default (lcov is required)."
+    echo "   --with-mpi=yes/no                     Enables MPI. 'no' by default (Intel Compiler required)."
+    echo "   --with-mic=yes/no                     Enables MIC (Intel Xeon Phi). 'no' by default (Intel Compiler required)."
+    echo "   --with-cuda=yes/no                    Enables CUDA. 'yes' by default (CUDA Toolkit is required)."
+    echo "   --with-cuda-arch=all/auto/30/35/...   Chooses CUDA architecture. 'auto' by default."
+    echo "   --with-openmp=yes/no                  Enables OpenMP. 'yes' by default."
+    echo "   --with-tests=yes/no                   Enables unit tests. 'yes' by default."
+    echo "   --with-coverage=yes/no                Enables code coverage reports for unit tests. 'no' by default (lcov is required)."
     echo "   --with-examples=yes/no                Compile the 'examples' directory. 'yes' by default."
     echo "   --with-templates-instantiation=yes/no Precompiles some TNL templates during the build. 'no' by default."
     echo "   --cmake=CMAKE                         Path to cmake. 'cmake' by default."
@@ -98,6 +101,21 @@ if test ${WITH_CLANG} = "yes";
 then
    export CXX=clang++
    export CC=clang
+fi
+
+if test ${WITH_MPI} = "yes";
+then
+    if ! [ -x  "$(command -v mpic++)" ]; then
+       echo "Warning:mpic++ is not installed on this system. MPI support is turned off." 
+    else
+       export CXX=mpic++
+       export CUDA_HOST_COMPILER=mpic++
+    fi
+    if ! [ -x  "$(command -v mpicc)" ]; then
+       echo "Warning: mpicc is not installed on this system." 
+    else
+       export CC=mpicc
+    fi
 fi
 
 

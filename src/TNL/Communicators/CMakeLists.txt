@@ -1,4 +1,6 @@
 SET( headers MpiCommunicator.h
-             NoDistrCommunicator.h )
+             MpiDefs.h             
+             NoDistrCommunicator.h 
+    )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Communicators )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Communicators )

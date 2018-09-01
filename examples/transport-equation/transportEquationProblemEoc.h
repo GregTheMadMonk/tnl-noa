@@ -22,9 +22,10 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename CommType,
           typename DifferentialOperator >
 class transportEquationProblemEoc:
-public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
+public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >
 {
    public:
 
@@ -32,7 +33,7 @@ public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Differe
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator > BaseType;
+      typedef transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator > BaseType;
       typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
@@ -40,7 +41,8 @@ public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Differe
       typedef typename DifferentialOperator::VelocityFieldType VelocityFieldType;
       typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
       
-
+      
+      typedef CommType CommunicatorType;
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;

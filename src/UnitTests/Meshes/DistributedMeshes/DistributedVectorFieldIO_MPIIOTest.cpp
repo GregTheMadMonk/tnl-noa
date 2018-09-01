@@ -1,41 +1,48 @@
 
-#ifdef HAVE_GTEST
-  
-#include <gtest/gtest.h>
 
+
+#ifdef HAVE_GTEST
+      #include <gtest/gtest.h>
 #ifdef HAVE_MPI
 
-#include "DistributedGridIOTest.h"
+#include <TNL/Communicators/MpiCommunicator.h>
+#include "DistributedVectorFieldIO_MPIIOTestBase.h"
 
-TEST( DistributedGridIO, Save_1D )
+using namespace TNL::Communicators;
+
+typedef MpiCommunicator CommunicatorType;
+
+TEST( DistributedVectorFieldIO_MPIIO, Save_1D )
 {
-    TestDistributedGridIO<1,Host>::TestSave();
+    TestDistributedVectorFieldMPIIO<1,2,Host>::TestSave();
 }
 
-TEST( DistributedGridIO, Save_2D )
+TEST( DistributedVectorFieldIO_MPIIO, Save_2D )
 {
-    TestDistributedGridIO<2,Host>::TestSave();
+    TestDistributedVectorFieldMPIIO<2,3,Host>::TestSave();
 }
 
-TEST( DistributedGridIO, Save_3D )
+TEST( DistributedVectorFieldIO_MPIIO, Save_3D )
 {
-    TestDistributedGridIO<3,Host>::TestSave();
+    TestDistributedVectorFieldMPIIO<3,2,Host>::TestSave();
 }
 
-TEST( DistributedGridIO, Load_1D )
+
+TEST( DistributedVectorFieldIO_MPIIO, Load_1D )
 {
-    TestDistributedGridIO<1,Host>::TestLoad();
+    TestDistributedVectorFieldMPIIO<1,2,Host>::TestLoad();
 }
 
-TEST( DistributedGridIO, Load_2D )
+TEST( DistributedVectorFieldIO_MPIIO, Load_2D )
 {
-    TestDistributedGridIO<2,Host>::TestLoad();
+    TestDistributedVectorFieldMPIIO<2,3,Host>::TestLoad();
 }
 
-TEST( DistributedGridIO, Load_3D )
+TEST( DistributedVectorFieldIO_MPIIO, Load_3D )
 {
-    TestDistributedGridIO<3,Host>::TestLoad();
+    TestDistributedVectorFieldMPIIO<3,2,Host>::TestLoad();
 }
+
 
 #else
 TEST(NoMPI, NoTest)
@@ -49,7 +56,7 @@ TEST(NoMPI, NoTest)
 #if (defined(HAVE_GTEST) && defined(HAVE_MPI))
 #include <sstream>
 
-  class MinimalistBuffredPrinter : public ::testing::EmptyTestEventListener {
+  class MinimalistBufferedPrinter : public ::testing::EmptyTestEventListener {
       
   private:
       std::stringstream sout;
@@ -73,7 +80,7 @@ TEST(NoMPI, NoTest)
     // Called after a test ends.
     virtual void OnTestEnd(const ::testing::TestInfo& test_info) 
     {
-        int rank=CommunicatorType::GetRank();
+        int rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
         sout<< test_info.test_case_name() <<"." << test_info.name() << " End." <<std::endl;
         std::cout << rank << ":" << std::endl << sout.str()<< std::endl;
         sout.str( std::string() );
@@ -82,7 +89,7 @@ TEST(NoMPI, NoTest)
   };
 #endif
 
-#include "../GtestMissingError.h"
+#include "../../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST
@@ -93,9 +100,11 @@ int main( int argc, char* argv[] )
           ::testing::UnitTest::GetInstance()->listeners();
 
        delete listeners.Release(listeners.default_result_printer());
-       listeners.Append(new MinimalistBuffredPrinter);
+       listeners.Append(new MinimalistBufferedPrinter);
 
-       CommunicatorType::Init(argc,argv);
+       CommunicatorType::Init(argc,argv );
+       CommunicatorType::setRedirection( false );
+       CommunicatorType::setupRedirection();
     #endif
        int result= RUN_ALL_TESTS();
 

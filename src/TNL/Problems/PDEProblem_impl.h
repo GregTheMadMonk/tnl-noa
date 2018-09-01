@@ -11,16 +11,18 @@
 #pragma once
 
 #include <TNL/Problems/PDEProblem.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 namespace TNL {
 namespace Problems {
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 String
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 getType()
 {
    return String( "PDEProblem< " ) +
@@ -31,107 +33,146 @@ getType()
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 String
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 getPrologHeader() const
 {
    return String( "General PDE Problem" );
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 void
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 bool
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 writeEpilog( Logger& logger ) const
 {
    return true;
 }
 
 template< typename Mesh,
+          typename Communicator,
+          typename Real,
+          typename Device,
+          typename Index >
+typename PDEProblem< Mesh, Communicator, Real, Device, Index >::IndexType
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
+subdomainOverlapSize()
+{ 
+   return 1;
+}
+
+template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 void
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
+getSubdomainOverlaps( const Config::ParameterContainer& parameters,
+                      const String& prefix,
+                      const MeshType& mesh,
+                      SubdomainOverlapsType& lower,
+                      SubdomainOverlapsType& upper )
+{
+   using namespace Meshes::DistributedMeshes;
+   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( mesh.getDistributedMesh(), lower, upper, this->subdomainOverlapSize() );
+}
+      
+template< typename Mesh,
+          typename Communicator,
+          typename Real,
+          typename Device,
+          typename Index >
+void
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 setMesh( MeshPointer& meshPointer)
 {
    this->meshPointer = meshPointer;
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
-const typename PDEProblem< Mesh, Real, Device, Index >::MeshPointer&
-PDEProblem< Mesh, Real, Device, Index >::getMesh() const
+const typename PDEProblem< Mesh, Communicator, Real, Device, Index >::MeshPointer&
+PDEProblem< Mesh, Communicator, Real, Device, Index >::getMesh() const
 {
    return this->meshPointer;
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
-typename PDEProblem< Mesh, Real, Device, Index >::MeshPointer&
-PDEProblem< Mesh, Real, Device, Index >::getMesh()
+typename PDEProblem< Mesh, Communicator, Real, Device, Index >::MeshPointer&
+PDEProblem< Mesh, Communicator, Real, Device, Index >::getMesh()
 {
    return this->meshPointer;
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 void
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 setCommonData( CommonDataPointer& commonData )
 {
    this->commonDataPointer = commonData;
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
-const typename PDEProblem< Mesh, Real, Device, Index >::CommonDataPointer&
-PDEProblem< Mesh, Real, Device, Index >::
+const typename PDEProblem< Mesh, Communicator, Real, Device, Index >::CommonDataPointer&
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 getCommonData() const
 {
    return this->commonDataPointer;
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
-typename PDEProblem< Mesh, Real, Device, Index >::CommonDataPointer&
-PDEProblem< Mesh, Real, Device, Index >::
+typename PDEProblem< Mesh, Communicator, Real, Device, Index >::CommonDataPointer&
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 getCommonData()
 {
    return this->commonDataPointer;
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 bool
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 preIterate( const RealType& time,
             const RealType& tau,
             DofVectorPointer& dofs )
@@ -140,23 +181,25 @@ preIterate( const RealType& time,
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 void
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 setExplicitBoundaryConditions( const RealType& time,
                                DofVectorPointer& dofs )
 {
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
     template< typename Matrix >
 void
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 saveFailedLinearSystem( const Matrix& matrix,
                         const DofVectorType& dofs,
                         const DofVectorType& rhs ) const
@@ -168,11 +211,12 @@ saveFailedLinearSystem( const Matrix& matrix,
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 bool
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 postIterate( const RealType& time,
              const RealType& tau,
              DofVectorPointer& dofs )
@@ -181,11 +225,12 @@ postIterate( const RealType& time,
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Real,
           typename Device,
           typename Index >
 Solvers::SolverMonitor*
-PDEProblem< Mesh, Real, Device, Index >::
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
 getSolverMonitor()
 {
    return 0;

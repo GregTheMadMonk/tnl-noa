@@ -11,8 +11,10 @@
 #include <problems/tnlPDEProblem.h>
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy = tnlConstanstFunction< Mesh > >
 class tnlFastSweepingSolver  : public tnlPDEProblem< Mesh,
+                                                     Communicator,
                                                      typename Mesh::RealType,
                                                      typename Mesh::DeviceType,
                                                      typename Mesh::IndexType  >

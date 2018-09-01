@@ -30,6 +30,7 @@ TimeDependentPDESolver()
 {
 }
 
+
 template< typename Problem,
           typename DiscreteSolver,   
           typename TimeStepper >
@@ -62,8 +63,11 @@ setup( const Config::ParameterContainer& parameters,
     * Load the mesh from the mesh file
     */
    const String& meshFile = parameters.getParameter< String >( "mesh" );
-   if( ! Meshes::loadMesh( meshFile, *this->meshPointer ) )
+   if( ! Meshes::loadMesh< typename Problem::CommunicatorType >( meshFile, *this->meshPointer, distrMesh ) )
       return false;
+   if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *this->meshPointer, distrMesh, *problem ) )
+      return false;
+   
    problem->setMesh( this->meshPointer );
 
    /****
@@ -165,7 +169,7 @@ writeProlog( Logger& logger,
    logger.writeParameter< int >( "Maximal number of iterations:", "max-iterations", parameters );
    logger.writeParameter< int >( "Minimal number of iterations:", "min-iterations", parameters );
    logger.writeSeparator();
-   return BaseType::writeProlog( logger, parameters );
+   return BaseType::template writeProlog< typename Problem::CommunicatorType >( logger, parameters );
 }
 
 template< typename Problem,

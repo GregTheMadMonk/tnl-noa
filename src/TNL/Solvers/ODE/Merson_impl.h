@@ -13,6 +13,8 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ParameterContainer.h>
+#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
 
 #include "Merson.h"
 
@@ -421,11 +423,7 @@ typename Problem :: RealType Merson< Problem > :: computeError( const RealType t
       }
 #endif
    }
-   #ifdef USE_MPI
-        TNLMPI::Allreduce( eps, maxEps, 1, MPI_MAX);
-   #else
-        maxEps=eps;
-   #endif
+   Problem::CommunicatorType::Allreduce( &eps, &maxEps, 1, MPI_MAX, Problem::CommunicatorType::AllGroup );
    return maxEps;
 }
 
@@ -492,11 +490,12 @@ void Merson< Problem >::computeNewTimeLevel( DofVectorPointer& u,
    }
 
    localResidue /= tau * ( RealType ) size;
-#ifdef USE_MPI
+   Problem::CommunicatorType::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, Problem::CommunicatorType::AllGroup);
+/*#ifdef USE_MPI
    TNLMPI::Allreduce( localResidue, currentResidue, 1, MPI_SUM);
 #else
    currentResidue=localResidue;
-#endif
+#endif*/
 
 }
 

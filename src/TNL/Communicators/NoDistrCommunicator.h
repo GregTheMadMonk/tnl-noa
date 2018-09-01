@@ -10,106 +10,131 @@
 
 #pragma once
 
+#include <TNL/Logger.h>
+#include <TNL/Communicators/MpiDefs.h>
+
+#ifdef HAVE_MPI
+#include <mpi.h>
+#endif
+
 namespace TNL {
 namespace Communicators {
         
-    class NoDistrCommunicator
-    {
+class NoDistrCommunicator
+{
 
 
-        public:
+   public:
 
-        typedef int Request;
-        static Request NullRequest;
+      typedef int Request;
+      typedef int CommunicationGroup;
+      static Request NullRequest;
+      static CommunicationGroup AllGroup;
 
-        static bool isAvailable()
-        {
-            return true;
-        }
+      static void configSetup( Config::ConfigDescription& config, const String& prefix = "" ){};
+ 
+      static bool setup( const Config::ParameterContainer& parameters,
+                         const String& prefix = "" )
+      {
+         return true;
+      }
+      
+      static void Init(int argc, char **argv, bool redirect=false)
+      {
+          NullRequest=-1;
+      }
+      
+      static void setRedirection( bool redirect_ ) {}
+      
+      static void setupRedirection(){}
 
-        static void Init(int argc, char **argv, bool redirect=false)
-        {
-            NullRequest=-1;
-        };
+      static void Finalize(){}
 
-        static void Finalize()
-        {
-        };
+      static bool IsInitialized()
+      {   
+          return true;
+      }
 
-        static bool IsInitialized()
-        {   
-            return true;
-        };
+      static bool isDistributed()
+      {
+          return false;
+      }
 
-        static bool isDistributed()
-        {
-            return false;
-        };
+      static int GetRank(CommunicationGroup group)
+      {
+          return 0;
+      }
 
-        static int GetRank()
-        {
-            return 0;
-        };
+      static int GetSize(CommunicationGroup group)
+      {
+          return 1;
+      }
 
-        static int GetSize()
-        {
-            return 1;
-        };
+      static void DimsCreate(int nproc, int dim, int *distr)
+      {
+          for(int i=0;i<dim;i++)
+          {
+              distr[i]=1;
+          }
+      }
 
-        static void DimsCreate(int nproc, int dim, int *distr)
-        {
-            for(int i=0;i<dim;i++)
-            {
-                distr[i]=1;
-            }
-        };
+      static void Barrier(CommunicationGroup group)
+      {
+      };
 
-        static void Barrier()
-        {
-        };
+      template <typename T>
+      static Request ISend( const T *data, int count, int dest, CommunicationGroup group)
+      {
+          return 1;
+      }
 
-        template <typename T>
-        static Request ISend( const T *data, int count, int dest)
-        {
-            return 1;
-        };    
+      template <typename T>
+      static Request IRecv( const T *data, int count, int src, CommunicationGroup group)
+      {
+          return 1;
+      }
 
-        template <typename T>
-        static Request IRecv( const T *data, int count, int src)
-        {
-            return 1;
-        };
+      static void WaitAll(Request *reqs, int length)
+      {
+      }
 
-        static void WaitAll(Request *reqs, int length)
-        {
-        };
+      template< typename T > 
+      static void Bcast(  T& data, int count, int root, CommunicationGroup group)
+      {
+      }
 
-        template< typename T > 
-        static void Bcast(  T& data, int count, int root)
-        {
-        };
+      template< typename T >
+      static void Allreduce( T* data,
+                             T* reduced_data,
+                             int count,
+                             const MPI_Op &op,
+                             CommunicationGroup group )
+      {
+         memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
+      }
 
-       /* template< typename T >
-        static void Allreduce( T& data,
-                     T& reduced_data,
-                     int count,
-                     const MPI_Op &op)
-        {
-                MPI::COMM_WORLD.Allreduce((void*) &data, (void*) &reduced_data,count,MPIDataType(data),op);
-        };
+      template< typename T >
+      static void Reduce( T* data,
+                          T* reduced_data,
+                          int count,
+                          MPI_Op &op,
+                          int root,
+                          CommunicationGroup group )
+      {
+         memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
+      }
 
-        template< typename T >
-        static void Reduce( T& data,
-                    T& reduced_data,
-                    int count,
-                    MPI_Op &op,
-                    int root)
-        {
-             MPI::COMM_WORLD.Reduce((void*) &data, (void*) &reduced_data,count,MPIDataType(data),op,root);
-        };*/
-    };
+      static void CreateNewGroup(bool meToo, int myRank, CommunicationGroup &oldGroup, CommunicationGroup &newGroup)
+      {
+         newGroup=oldGroup;
+      }
 
-    int NoDistrCommunicator::NullRequest;
+      static void writeProlog( Logger& logger ){};
+};
+
+
+  int NoDistrCommunicator::NullRequest;
+  int NoDistrCommunicator::AllGroup;
 
 } // namespace Communicators
 } // namespace TNL

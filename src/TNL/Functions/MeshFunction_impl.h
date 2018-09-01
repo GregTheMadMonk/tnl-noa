@@ -36,7 +36,7 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const MeshPointer& meshPointer )
 {
 
-    SetupSynchronizer(meshPointer->GetDistMesh());
+    SetupSynchronizer(meshPointer->getDistributedMesh());
 
    this->meshPointer=meshPointer;
    this->data.setSize( getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
@@ -52,7 +52,7 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const ThisType& meshFunction )
 {
 
-    SetupSynchronizer(meshFunction.meshPointer->GetDistMesh());
+    SetupSynchronizer(meshFunction.meshPointer->getDistributedMesh());
 
    this->meshPointer=meshFunction.meshPointer;
    this->data.bind( meshFunction.getData() );
@@ -68,14 +68,12 @@ MeshFunction( const MeshPointer& meshPointer,
               const IndexType& offset )
 //: meshPointer( meshPointer )
 {
-
-    SetupSynchronizer(meshPointer->GetDistMesh());
+   TNL_ASSERT_GE( data.getSize(), meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
+                  "The input vector is not large enough for binding to the mesh function." );      
+    SetupSynchronizer(meshPointer->getDistributedMesh());
 
    this->meshPointer=meshPointer;
    this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
-   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
-               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
-                         << "this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() );   
 }
 
 
@@ -89,14 +87,13 @@ MeshFunction( const MeshPointer& meshPointer,
               const IndexType& offset )
 //: meshPointer( meshPointer )
 {
+   TNL_ASSERT_GE( data->getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
+                  "The input vector is not large enough for binding to the mesh function." );      
 
-    SetupSynchronizer(meshPointer->GetDistMesh());
+    SetupSynchronizer(meshPointer->getDistributedMesh());
 
    this->meshPointer=meshPointer;
    this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
-   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
-               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
-                         << "this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() );   
 }
 
 template< typename Mesh,
@@ -191,7 +188,7 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 bind( ThisType& meshFunction )
 {
 
-    SetupSynchronizer(meshFunction.meshPointer->GetDistMesh());
+    SetupSynchronizer(meshFunction.meshPointer->getDistributedMesh());
 
    this->meshPointer=meshFunction.meshPointer;
    this->data.bind( meshFunction.getData() );
@@ -207,14 +204,17 @@ bind( const MeshPointer& meshPointer,
       const Vector& data,
       const IndexType& offset )
 {
+   TNL_ASSERT_GE( data.getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
+                  "The input vector is not large enough for binding to the mesh function." );    
+   
+   SetupSynchronizer(meshPointer->getDistributedMesh());
+  
+   this->meshPointer = meshPointer;
 
-    SetupSynchronizer(meshPointer->GetDistMesh());
+    
 
    this->meshPointer=meshPointer;
    this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
-   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
-               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
-                         << "this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() );   
 }
 
 template< typename Mesh,
@@ -227,14 +227,15 @@ bind( const MeshPointer& meshPointer,
       const SharedPointer< Vector >& data,
       const IndexType& offset )
 {
+   TNL_ASSERT_GE( data->getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
+                   "The input vector is not large enough for binding to the mesh function." );      
 
-    SetupSynchronizer(meshPointer->GetDistMesh());
+   SetupSynchronizer(meshPointer->getDistributedMesh());
+
+   this->meshPointer = meshPointer;
 
    this->meshPointer=meshPointer;
    this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
-   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
-               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
-                         << "this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() );   
 }
 
 
@@ -246,13 +247,10 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 setMesh( const MeshPointer& meshPointer )
 {
 
-    SetupSynchronizer(meshPointer->GetDistMesh());
+   SetupSynchronizer(meshPointer->getDistributedMesh());
 
    this->meshPointer=meshPointer;
    this->data.setSize( getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
-   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
-               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
-                         << "this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() );   
 }
 
 template< typename Mesh,
@@ -546,10 +544,10 @@ template< typename Mesh,
 template< typename CommunicatorType>
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >:: 
-Synchronize()
+synchronize()
 {
-    auto distrMesh = this->getMesh().GetDistMesh();
-    if(distrMesh != NULL && distrMesh->IsDistributed())
+    auto distrMesh = this->getMesh().getDistributedMesh();
+    if(distrMesh != NULL && distrMesh->isDistributed())
     {
         this->synchronizer.template Synchronize<CommunicatorType>(*this);
     }
@@ -564,7 +562,7 @@ SetupSynchronizer(DistributedMeshType *distrMesh )
 {
     if(distrMesh)//pokud síť kterou se snaží uživatel nastavit je distruibuovaná
     {
-        if(this->getMesh().GetDistMesh()!=distrMesh)//pokud má nová síť jinou distribuovanou síť než předchozí
+        if(this->getMesh().getDistributedMesh()!=distrMesh)//pokud má nová síť jinou distribuovanou síť než předchozí
         {
             this->synchronizer.SetDistributedGrid(distrMesh);
         }

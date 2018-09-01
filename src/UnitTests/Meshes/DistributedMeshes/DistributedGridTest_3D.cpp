@@ -3,11 +3,12 @@
 
 #ifdef HAVE_MPI    
 
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
-#include <TNL/Functions/MeshFunction.h>
 #include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
-#include "Functions.h"
+#include "../../Functions/Functions.h"
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -114,7 +115,7 @@ Expected 27 process
 template<typename DofType,typename GridType>
 void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType::RealType expectedValue)
 {
-    if(rank==0)//Bottom Nord West
+    if(rank==0)//Bottom North West
     {
         checkConner(grid,dof,true, true, true, expectedValue );
         checkXDirectionEdge(grid,dof,true,true,expectedValue);
@@ -125,14 +126,14 @@ void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType:
         checkZFace(grid, dof, true, expectedValue);
     }    
 
-    if(rank==1)//Bottom Nord Center
+    if(rank==1)//Bottom North Center
     {
         checkXDirectionEdge(grid,dof,true,true,expectedValue);
         checkYFace(grid, dof, true, expectedValue);
         checkZFace(grid, dof, true, expectedValue);
     }
 
-    if(rank==2)//Bottom Nord East
+    if(rank==2)//Bottom North East
     {
         checkConner(grid,dof,true, true, false, expectedValue );
         checkXDirectionEdge(grid,dof,true,true,expectedValue);
@@ -192,19 +193,19 @@ void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType:
         checkZFace(grid, dof, true, expectedValue);
     }
 
-    if(rank==9)//Center Nord West
+    if(rank==9)//Center North West
     {
         checkZDirectionEdge(grid,dof,true,true,expectedValue);
         checkXFace(grid, dof, true, expectedValue);
         checkYFace(grid, dof, true, expectedValue);
     }    
 
-    if(rank==10)//Center Nord Center
+    if(rank==10)//Center North Center
     {
         checkYFace(grid, dof, true, expectedValue);
     }
 
-    if(rank==11)//Center Nord East
+    if(rank==11)//Center North East
     {
         checkZDirectionEdge(grid,dof,true,false,expectedValue);
         checkXFace(grid, dof, false, expectedValue);
@@ -246,7 +247,7 @@ void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType:
         checkYFace(grid, dof, false, expectedValue);
     }
 
-    if(rank==18)//Top Nord West
+    if(rank==18)//Top North West
     {
         checkConner(grid,dof,false, true, true, expectedValue );
         checkXDirectionEdge(grid,dof,false,true,expectedValue);
@@ -257,14 +258,14 @@ void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType:
         checkZFace(grid, dof, false, expectedValue);
     }    
 
-    if(rank==19)//Top Nord Center
+    if(rank==19)//Top North Center
     {
         checkXDirectionEdge(grid,dof,false,true,expectedValue);
         checkYFace(grid, dof, true, expectedValue);
         checkZFace(grid, dof, false, expectedValue);
     }
 
-    if(rank==20)//Top Nord East
+    if(rank==20)//Top North East
     {
         checkConner(grid,dof,false, true, false, expectedValue );
         checkXDirectionEdge(grid,dof,false,true,expectedValue);
@@ -589,85 +590,88 @@ void check_Inner_3D(int rank, GridType grid, DofType dof, typename DofType::Real
 
 /*
  * Light check of 3D distributed grid and its synchronization. 
- * expected 9 processors
+ * expected 27 processes
  */
 typedef MpiCommunicator CommunicatorType;
-typedef Grid<3,double,Host,int> MeshType;
-typedef MeshFunction<MeshType> MeshFunctionType;
+typedef Grid<3,double,Host,int> GridType;
+typedef MeshFunction<GridType> MeshFunctionType;
 typedef Vector<double,Host,int> DofType;
-typedef typename MeshType::Cell Cell;
-typedef typename MeshType::IndexType IndexType; 
-typedef typename MeshType::PointType PointType; 
-typedef DistributedMesh<MeshType> DistributedGridType;
+typedef typename GridType::Cell Cell;
+typedef typename GridType::IndexType IndexType; 
+typedef typename GridType::PointType PointType; 
+typedef DistributedMesh<GridType> DistributedGridType;
      
-class DistributedGirdTest_3D : public ::testing::Test {
- protected:
+class DistributedGirdTest_3D : public ::testing::Test
+{
+   protected:
 
-    static DistributedGridType *distrgrid;
-    static DofType *dof;
+      static DistributedGridType *distrgrid;
+      static DofType *dof;
 
-    static SharedPointer<MeshType> gridptr;
-    static SharedPointer<MeshFunctionType> meshFunctionptr;
+      static SharedPointer<GridType> gridptr;
+      static SharedPointer<MeshFunctionType> meshFunctionptr;
 
-    static MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > constFunctionEvaluator;
-    static SharedPointer< ConstFunction<double,3>, Host > constFunctionPtr;
+      static MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > constFunctionEvaluator;
+      static SharedPointer< ConstFunction<double,3>, Host > constFunctionPtr;
 
-    static MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,3> > linearFunctionEvaluator;
-    static SharedPointer< LinearFunction<double,3>, Host > linearFunctionPtr;
+      static MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,3> > linearFunctionEvaluator;
+      static SharedPointer< LinearFunction<double,3>, Host > linearFunctionPtr;
 
-    static int rank;
-    static int nproc;    
-     
-  // Per-test-case set-up.
-  // Called before the first test in this test case.
-  // Can be omitted if not needed.
-  static void SetUpTestCase() {
-      
-    int size=10;
-    rank=MPI::COMM_WORLD.Get_rank();
-    nproc=MPI::COMM_WORLD.Get_size();
-    
-    PointType globalOrigin;
-    PointType globalProportions;
-    MeshType globalGrid;
-    
-    globalOrigin.x()=-0.5;
-    globalOrigin.y()=-0.5;
-    globalOrigin.z()=-0.5;    
-    globalProportions.x()=size;
-    globalProportions.y()=size;
-    globalProportions.z()=size;
-        
-    globalGrid.setDimensions(size,size,size);
-    globalGrid.setDomain(globalOrigin,globalProportions);
-    
-    typename DistributedGridType::CoordinatesType overlap;
-    overlap.setValue(1);
-    distrgrid=new DistributedGridType();
-    distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
-    
-    distrgrid->SetupGrid(*gridptr);
-    dof=new DofType(gridptr->template getEntitiesCount< Cell >());
-    
-    meshFunctionptr->bind(gridptr,*dof);   
-    constFunctionPtr->Number=rank;
-    
-  }
+      static int rank;
+      static int nproc;    
 
-  // Per-test-case tear-down.
-  // Called after the last test in this test case.
-  // Can be omitted if not needed.
-  static void TearDownTestCase() {
-      delete dof;
-      delete distrgrid;
+      // Per-test-case set-up.
+      // Called before the first test in this test case.
+      // Can be omitted if not needed.
+      static void SetUpTestCase()
+      {
 
-  }
+         int size=10;
+         rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
+         nproc=CommunicatorType::GetSize(CommunicatorType::AllGroup);
 
+         PointType globalOrigin;
+         PointType globalProportions;
+         GridType globalGrid;
+
+         globalOrigin.x()=-0.5;
+         globalOrigin.y()=-0.5;
+         globalOrigin.z()=-0.5;    
+         globalProportions.x()=size;
+         globalProportions.y()=size;
+         globalProportions.z()=size;
+
+         globalGrid.setDimensions(size,size,size);
+         globalGrid.setDomain(globalOrigin,globalProportions);
+
+         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+         distrgrid=new DistributedGridType();
+         distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3, 3 ) );
+         distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid );
+         distrgrid->setupGrid(*gridptr);    
+         SubdomainOverlapsGetter< GridType, CommunicatorType >::getOverlaps( distrgrid, lowerOverlap, upperOverlap, 1 );
+         distrgrid->setOverlaps( lowerOverlap, upperOverlap );
+
+         distrgrid->setupGrid(*gridptr);
+         dof=new DofType(gridptr->template getEntitiesCount< Cell >());
+
+         meshFunctionptr->bind(gridptr,*dof);   
+         constFunctionPtr->Number=rank;
+      }
+
+      // Per-test-case tear-down.
+      // Called after the last test in this test case.
+      // Can be omitted if not needed.
+      static void TearDownTestCase()
+      {
+         delete dof;
+         delete distrgrid;
+      }
 };
 
 DistributedGridType *DistributedGirdTest_3D::distrgrid=NULL;
 DofType *DistributedGirdTest_3D::dof=NULL;
-SharedPointer<MeshType> DistributedGirdTest_3D::gridptr;
+SharedPointer<GridType> DistributedGirdTest_3D::gridptr;
 SharedPointer<MeshFunctionType> DistributedGirdTest_3D::meshFunctionptr;
 MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > DistributedGirdTest_3D::constFunctionEvaluator;
 SharedPointer< ConstFunction<double,3>, Host > DistributedGirdTest_3D::constFunctionPtr;
@@ -683,7 +687,7 @@ TEST_F(DistributedGirdTest_3D, evaluateAllEntities)
     //All entities, witout overlap
     setDof_3D(*dof,-1);
     constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-    //Printer<MeshType,DofType>::print_dof(rank,*gridptr,*dof);
+    //Printer<GridType,DofType>::print_dof(rank,*gridptr,*dof);
     check_Boundary_3D(rank, *gridptr, *dof, rank);
     check_Overlap_3D(rank, *gridptr, *dof, -1);
     check_Inner_3D(rank, *gridptr, *dof, rank);
@@ -707,14 +711,14 @@ TEST_F(DistributedGirdTest_3D, evaluateInteriorEntities)
     check_Boundary_3D(rank, *gridptr, *dof, -1);
     check_Overlap_3D(rank, *gridptr, *dof, -1);
     check_Inner_3D(rank, *gridptr, *dof, rank);
-}    
+}   
 
 TEST_F(DistributedGirdTest_3D, LinearFunctionTest)
 {
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_3D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-    meshFunctionptr->template Synchronize<CommunicatorType>();
+    meshFunctionptr->template synchronize<CommunicatorType>();
     
     int count =gridptr->template getEntitiesCount< Cell >();
     for(int i=0;i<count;i++)
@@ -745,7 +749,7 @@ TEST(NoMPI, NoTest)
 #if (defined(HAVE_GTEST) && defined(HAVE_MPI))
 #include <sstream>
 
-  class MinimalistBuffredPrinter : public ::testing::EmptyTestEventListener {
+  class MinimalistBufferedPrinter : public ::testing::EmptyTestEventListener {
       
   private:
       std::stringstream sout;
@@ -769,7 +773,7 @@ TEST(NoMPI, NoTest)
     // Called after a test ends.
     virtual void OnTestEnd(const ::testing::TestInfo& test_info) 
     {
-        int rank=CommunicatorType::GetRank();
+        int rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
         sout<< test_info.test_case_name() <<"." << test_info.name() << " End." <<std::endl;
         std::cout << rank << ":" << std::endl << sout.str()<< std::endl;
         sout.str( std::string() );
@@ -789,7 +793,7 @@ int main( int argc, char* argv[] )
           ::testing::UnitTest::GetInstance()->listeners();
 
        delete listeners.Release(listeners.default_result_printer());
-       listeners.Append(new MinimalistBuffredPrinter);
+       listeners.Append(new MinimalistBufferedPrinter);
 
        CommunicatorType::Init(argc,argv);
     #endif

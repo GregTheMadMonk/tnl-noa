@@ -41,7 +41,8 @@ printStackBacktraceAndAbort( int sig = 0 )
    else
       fprintf( stderr, "Aborting due to signal %d...\n", sig );
    printStackBacktrace();
-   abort();
+   throw( 0 );
+   //abort();
 }
 
 /*

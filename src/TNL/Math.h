@@ -27,12 +27,17 @@ template< typename T1, typename T2, typename ResultType = typename std::common_t
 __cuda_callable__ inline
 ResultType min( const T1& a, const T2& b )
 {
-#if defined(__CUDA_ARCH__)
-   return ::min( (ResultType) a, (ResultType) b );
-#elif defined(__MIC__)
-   return a < b ? a : b;
-#else
+#if __cplusplus >= 201402L
+   // std::min is constexpr since C++14 so it can be reused directly
    return std::min( (ResultType) a, (ResultType) b );
+#else
+ #if defined(__CUDA_ARCH__)
+   return ::min( (ResultType) a, (ResultType) b );
+ #elif defined(__MIC__)
+   return a < b ? a : b;
+ #else
+   return std::min( (ResultType) a, (ResultType) b );
+ #endif
 #endif
 }
 
@@ -46,12 +51,17 @@ template< typename T1, typename T2, typename ResultType = typename std::common_t
 __cuda_callable__
 ResultType max( const T1& a, const T2& b )
 {
-#if defined(__CUDA_ARCH__)
-   return ::max( (ResultType) a, (ResultType) b );
-#elif defined(__MIC__)
-   return a > b ? a : b;
-#else
+#if __cplusplus >= 201402L
+   // std::max is constexpr since C++14 so it can be reused directly
    return std::max( (ResultType) a, (ResultType) b );
+#else
+ #if defined(__CUDA_ARCH__)
+   return ::max( (ResultType) a, (ResultType) b );
+ #elif defined(__MIC__)
+   return a > b ? a : b;
+ #else
+   return std::max( (ResultType) a, (ResultType) b );
+ #endif
 #endif
 }
 

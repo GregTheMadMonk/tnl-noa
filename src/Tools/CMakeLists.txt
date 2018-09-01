@@ -28,14 +28,18 @@ target_link_libraries (tnl-image-converter tnl ${PNG_LIBRARIES} ${JPEG_LIBRARIES
 ADD_EXECUTABLE(tnl-dicom-reader tnl-dicom-reader.cpp )
 target_link_libraries (tnl-dicom-reader tnl ${DCMTK_LIBRARIES} )
 
+ADD_EXECUTABLE(tnl-lattice-init tnl-lattice-init.cpp )
+target_link_libraries (tnl-lattice-init tnl )
+
 ADD_EXECUTABLE( tnl-functions-benchmark functions-benchmark.cpp )
 target_link_libraries( tnl-functions-benchmark tnl )
 
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnl-cuda-arch tnl-cuda-arch.cu )
-   INSTALL( TARGETS tnl-cuda-arch
-            RUNTIME DESTINATION bin
-            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+# TODO: Fix this -- https://cmake.org/pipermail/cmake/2013-September/055755.html
+#   INSTALL( TARGETS tnl-cuda-arch
+#            RUNTIME DESTINATION bin
+#            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 ENDIF()
 
 INSTALL( TARGETS tnl-init
@@ -46,6 +50,7 @@ INSTALL( TARGETS tnl-init
                  tnl-mesh-converter
                  tnl-dicom-reader
                  tnl-image-converter
+                 tnl-lattice-init
          DESTINATION bin )
 
 INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-bindir

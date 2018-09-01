@@ -61,7 +61,7 @@ endif()
 
 # set Debug/Release options
 set( CMAKE_CXX_FLAGS "-std=c++11 -pthread -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
-set( CMAKE_CXX_FLAGS_DEBUG "-g -rdynamic" )
+set( CMAKE_CXX_FLAGS_DEBUG "-g -rdynamic -ftemplate-backtrace-limit=0" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG" )
 #set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
 # pass -rdynamic only in Debug mode
@@ -164,7 +164,7 @@ if( WITH_CUDA STREQUAL "yes" )
                 set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/src/Tools/tnl-cuda-arch.cu)
                 message( "Compiling tnl-cuda-arch ..." )
                 file( MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
-                execute_process( COMMAND nvcc --compiler-bindir ${CUDA_HOST_COMPILER} ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
+                execute_process( COMMAND nvcc --compiler-bindir ${CUDA_HOST_COMPILER} --std=c++11 ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
                                  RESULT_VARIABLE CUDA_ARCH_RESULT
                                  OUTPUT_VARIABLE CUDA_ARCH_OUTPUT
                                  ERROR_VARIABLE CUDA_ARCH_OUTPUT )
@@ -189,7 +189,7 @@ if( WITH_CUDA STREQUAL "yes" )
                 endif()
             endif()
         endif()
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES -lineinfo )
         # TODO: this is necessary only due to a bug in cmake
         set( CUDA_ADD_LIBRARY_OPTIONS -shared )
 
@@ -415,11 +415,12 @@ LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 #Pokracujeme dalsimi podadresari
 add_subdirectory( src )
 add_subdirectory( share )
-add_subdirectory( tests )
-
-if( ${WITH_EXAMPLES} )
+if( WITH_TESTS STREQUAL "yes" )
+    add_subdirectory( tests )
+endif( WITH_TESTS STREQUAL "yes" )
+if( WITH_EXAMPLES STREQUAL "yes" )
    add_subdirectory( examples )
-endif()
+endif( WITH_EXAMPLES STREQUAL "yes" )
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")
 set(CPACK_PACKAGE_VENDOR "MMG")

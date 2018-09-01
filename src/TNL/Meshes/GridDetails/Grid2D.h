@@ -131,9 +131,9 @@ class Grid< 2, Real, Device, Index > : public Object
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const;
    
-   void SetDistMesh(DistributedMeshType * distGrid);
+   void setDistMesh(DistributedMeshType * distGrid);
    
-   DistributedMeshType * GetDistMesh(void) const;
+   DistributedMeshType * getDistributedMesh() const;
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;

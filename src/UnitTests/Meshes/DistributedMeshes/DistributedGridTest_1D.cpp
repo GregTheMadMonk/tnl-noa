@@ -13,10 +13,11 @@
 #ifdef HAVE_MPI    
 
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
-#include "Functions.h"
+#include "../../Functions/Functions.h"
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -86,64 +87,72 @@ void check_Inner_1D(int rank, int nproc, DofType dof, typename DofType::RealType
  */
 
 typedef MpiCommunicator CommunicatorType;
-typedef Grid<1,double,Host,int> MeshType;
-typedef MeshFunction<MeshType> MeshFunctionType;
+typedef Grid<1,double,Host,int> GridType;
+typedef MeshFunction<GridType> MeshFunctionType;
 typedef Vector<double,Host,int> DofType;
-typedef typename MeshType::Cell Cell;
-typedef typename MeshType::IndexType IndexType; 
-typedef typename MeshType::PointType PointType; 
-typedef DistributedMesh<MeshType> DistributedMeshType;
+typedef typename GridType::Cell Cell;
+typedef typename GridType::IndexType IndexType; 
+typedef typename GridType::PointType PointType; 
+typedef DistributedMesh<GridType> DistributedGridType;
      
-class DistributedGirdTest_1D : public ::testing::Test {
- protected:
+class DistributedGirdTest_1D : public ::testing::Test
+{
+   protected:
 
-    static DistributedMesh<MeshType> *distrgrid;
-    static DofType *dof;
+      static DistributedMesh< GridType > *distrgrid;
+      static DofType *dof;
 
-    static SharedPointer<MeshType> gridptr;
-    static SharedPointer<MeshFunctionType> meshFunctionptr;
+      static SharedPointer< GridType > gridptr;
+      static SharedPointer< MeshFunctionType > meshFunctionptr;
 
-    static MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,1> > constFunctionEvaluator;
-    static SharedPointer< ConstFunction<double,1>, Host > constFunctionPtr;
+      static MeshFunctionEvaluator< MeshFunctionType, ConstFunction< double, 1 > > constFunctionEvaluator;
+      static SharedPointer< ConstFunction< double, 1 >, Host > constFunctionPtr;
 
-    static MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,1> > linearFunctionEvaluator;
-    static SharedPointer< LinearFunction<double,1>, Host > linearFunctionPtr;
+      static MeshFunctionEvaluator< MeshFunctionType, LinearFunction< double, 1 > > linearFunctionEvaluator;
+      static SharedPointer< LinearFunction< double, 1 >, Host > linearFunctionPtr;
 
-    static int rank;
-    static int nproc;    
-     
-  // Per-test-case set-up.
-  // Called before the first test in this test case.
-  // Can be omitted if not needed.
-  static void SetUpTestCase() {
-      
-    int size=10;
-    rank=CommunicatorType::GetRank();
-    nproc=CommunicatorType::GetSize();
-    
-    PointType globalOrigin;
-    PointType globalProportions;
-    MeshType globalGrid;
-    
-    globalOrigin.x()=-0.5;    
-    globalProportions.x()=size;
+      static int rank;
+      static int nproc;    
 
-        
-    globalGrid.setDimensions(size);
-    globalGrid.setDomain(globalOrigin,globalProportions);
-    
-    typename DistributedMeshType::CoordinatesType overlap;
-    overlap.setValue(1);
-    distrgrid=new DistributedMeshType();
-    distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap);
-    
-    distrgrid->SetupGrid(*gridptr);
-    dof=new DofType(gridptr->template getEntitiesCount< Cell >());
-    
-    meshFunctionptr->bind(gridptr,*dof);
-    
-    constFunctionPtr->Number=rank;
-  }
+      // Per-test-case set-up.
+      // Called before the first test in this test case.
+      // Can be omitted if not needed.
+      static void SetUpTestCase()
+      {
+         int size=10;
+         rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
+         nproc=CommunicatorType::GetSize(CommunicatorType::AllGroup);
+
+         PointType globalOrigin;
+         PointType globalProportions;
+         GridType globalGrid;
+
+         globalOrigin.x()=-0.5;    
+         globalProportions.x()=size;
+
+
+         globalGrid.setDimensions(size);
+         globalGrid.setDomain(globalOrigin,globalProportions);
+
+         typename DistributedGridType::CoordinatesType overlap;
+         overlap.setValue(1);
+         distrgrid=new DistributedGridType();
+
+         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+         distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid );
+         distrgrid->setupGrid(*gridptr);    
+         SubdomainOverlapsGetter< GridType, CommunicatorType >::getOverlaps( distrgrid, lowerOverlap, upperOverlap, 1 );
+         distrgrid->setOverlaps( lowerOverlap, upperOverlap );
+
+         //distrgrid->template setGlobalGrid<CommunicatorType>(globalGrid,overlap,overlap); // TODO: fix this
+
+         distrgrid->setupGrid(*gridptr);
+         dof=new DofType(gridptr->template getEntitiesCount< Cell >());
+
+         meshFunctionptr->bind(gridptr,*dof);
+
+         constFunctionPtr->Number=rank;
+      }
 
   // Per-test-case tear-down.
   // Called after the last test in this test case.
@@ -154,9 +163,9 @@ class DistributedGirdTest_1D : public ::testing::Test {
   }
 };
 
-DistributedMesh<MeshType> *DistributedGirdTest_1D::distrgrid=NULL;
+DistributedMesh<GridType> *DistributedGirdTest_1D::distrgrid=NULL;
 DofType *DistributedGirdTest_1D::dof=NULL;
-SharedPointer<MeshType> DistributedGirdTest_1D::gridptr;
+SharedPointer<GridType> DistributedGirdTest_1D::gridptr;
 SharedPointer<MeshFunctionType> DistributedGirdTest_1D::meshFunctionptr;
 MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,1> > DistributedGirdTest_1D::constFunctionEvaluator;
 SharedPointer< ConstFunction<double,1>, Host > DistributedGirdTest_1D::constFunctionPtr;
@@ -171,7 +180,7 @@ TEST_F(DistributedGirdTest_1D, evaluateAllEntities)
     //All entities, witout overlap
     setDof_1D(*dof,-1);
     constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-    //Printer<MeshType,DofType>::print_dof(rank,*gridptr,*dof);
+    //Printer<GridType,DofType>::print_dof(rank,*gridptr,*dof);
     check_Boundary_1D(rank, nproc, *dof, rank);
     check_Overlap_1D(rank, nproc, *dof, -1);
     check_Inner_1D(rank, nproc, *dof, rank);
@@ -202,7 +211,7 @@ TEST_F(DistributedGirdTest_1D, LinearFunctionTest)
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_1D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-    meshFunctionptr->template Synchronize<CommunicatorType>();
+    meshFunctionptr->template synchronize<CommunicatorType>();
 
     auto entite= gridptr->template getEntity< Cell >(0);
     entite.refresh();
@@ -217,7 +226,7 @@ TEST_F(DistributedGirdTest_1D, SynchronizerNeighborTest)
 {
     setDof_1D(*dof,-1);
     constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-    meshFunctionptr->template Synchronize<CommunicatorType>();
+    meshFunctionptr->template synchronize<CommunicatorType>();
 
     if(rank!=0)
         EXPECT_EQ((*dof)[0],rank-1)<< "Left Overlap was filled by wrong process.";
@@ -238,7 +247,7 @@ TEST(NoMPI, NoTest)
 #if (defined(HAVE_GTEST) && defined(HAVE_MPI))
 #include <sstream>
 
-  class MinimalistBuffredPrinter : public ::testing::EmptyTestEventListener {
+  class MinimalistBufferedPrinter : public ::testing::EmptyTestEventListener {
       
   private:
       std::stringstream sout;
@@ -262,7 +271,7 @@ TEST(NoMPI, NoTest)
     // Called after a test ends.
     virtual void OnTestEnd(const ::testing::TestInfo& test_info) 
     {
-        int rank=MPI::COMM_WORLD.Get_rank();
+		int rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
         sout<< test_info.test_case_name() <<"." << test_info.name() << " End." <<std::endl;
         std::cout << rank << ":" << std::endl << sout.str()<< std::endl;
         sout.str( std::string() );
@@ -282,7 +291,7 @@ int main( int argc, char* argv[] )
           ::testing::UnitTest::GetInstance()->listeners();
 
        delete listeners.Release(listeners.default_result_printer());
-       listeners.Append(new MinimalistBuffredPrinter);
+       listeners.Append(new MinimalistBufferedPrinter);
 
        CommunicatorType::Init(argc,argv);
     #endif

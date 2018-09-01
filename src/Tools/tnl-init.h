@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNL_INIT_H_
-#define TNL_INIT_H_
+#pragma once 
 
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Containers/Vector.h>
@@ -21,6 +20,7 @@
 
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 #include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/MpiCommunicator.h>
@@ -36,7 +36,9 @@ template< typename MeshType,
 bool renderFunction( const Config::ParameterContainer& parameters )
 {
 
-   Meshes::DistributedMeshes::DistributedMesh<MeshType> distributedMesh;
+   using namespace  Meshes::DistributedMeshes;
+   using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh<MeshType>;
+   DistributedGridType distributedMesh;
    SharedPointer< MeshType > meshPointer;
    MeshType globalMesh;
 
@@ -48,10 +50,12 @@ bool renderFunction( const Config::ParameterContainer& parameters )
        if( ! globalMesh.load( meshFile ) )
           return false;
    
-       typename Meshes::DistributedMeshes::DistributedMesh<MeshType>::CoordinatesType overlap;
-       overlap.setValue(1);
-       distributedMesh.template setGlobalGrid<CommunicatorType>(globalMesh,overlap); 
-       distributedMesh.SetupGrid(*meshPointer);
+       // TODO: This should work with no overlaps
+       distributedMesh.template setGlobalGrid<CommunicatorType>(globalMesh);
+       typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+       SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedMesh, lowerOverlap, upperOverlap, 1 );
+       distributedMesh.setOverlaps( lowerOverlap, upperOverlap );
+       distributedMesh.setupGrid(*meshPointer);
     }
     else
     {
@@ -117,7 +121,8 @@ bool renderFunction( const Config::ParameterContainer& parameters )
 
       if(CommunicatorType::isDistributed())
       {
-        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(outputFile, *meshFunction );
+         if( ! Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(outputFile, *meshFunction ) )
+            return false;
       }
       else
       {
@@ -142,8 +147,7 @@ bool resolvCommunicator( const Config::ParameterContainer& parameters )
     if(Communicators::MpiCommunicator::isDistributed())
     {
         Communicators::NoDistrCommunicator::Finalize();
-        bool ret=renderFunction<MeshType,RealType, Communicators::MpiCommunicator,xDiff,yDiff,zDiff>(parameters); 
-        Communicators::MpiCommunicator::Finalize();
+        bool ret=renderFunction<MeshType,RealType, Communicators::MpiCommunicator,xDiff,yDiff,zDiff>(parameters);
         return ret;
     }
 #endif
@@ -323,6 +327,3 @@ bool resolveMeshType( const Containers::List< String >& parsedMeshType,
 
    return false;
 }
-
-
-#endif /* TNL_INIT_H_ */

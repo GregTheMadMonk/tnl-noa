@@ -11,12 +11,14 @@ using namespace TNL::Problems;
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-           typename DifferentialOperator >
+          typename Communicator,
+          typename DifferentialOperator >
 class HeatEquationBenchmarkProblem:
    public PDEProblem< Mesh,
-                         typename DifferentialOperator::RealType,
-                         typename Mesh::DeviceType,
-                         typename DifferentialOperator::IndexType >
+                      Communicator,
+                      typename DifferentialOperator::RealType,
+                      typename Mesh::DeviceType,
+                      typename DifferentialOperator::IndexType >
 {
    public:
 
@@ -25,11 +27,12 @@ class HeatEquationBenchmarkProblem:
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
       typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       
+      typedef Communicator CommunicatorType;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;

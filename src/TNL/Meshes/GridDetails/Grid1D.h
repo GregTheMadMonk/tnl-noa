@@ -81,9 +81,8 @@ class Grid< 1, Real, Device, Index > : public Object
 
    __cuda_callable__
    inline const PointType& getProportions() const;
-
-
-   template< int EntiytDimension >
+ 
+   template< int EntityDimension >
    __cuda_callable__
    IndexType getEntitiesCount() const;
 
@@ -126,9 +125,9 @@ class Grid< 1, Real, Device, Index > : public Object
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const;
    
-   void SetDistMesh(DistributedMeshType * distMesh);
+   void setDistMesh(DistributedMeshType * distMesh);
    
-   DistributedMeshType * GetDistMesh(void) const;
+   DistributedMeshType * getDistributedMesh() const;
 
    /****
     *  Method for saving the object to a file as a binary data

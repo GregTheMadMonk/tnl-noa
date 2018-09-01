@@ -1,20 +1,20 @@
-    ADD_EXECUTABLE( tnlMeshFuncttionEvaluateTest ${headers} MeshFunctionEvauateTest.cpp )   
-    TARGET_LINK_LIBRARIES( tnlMeshFuncttionEvaluateTest ${CPPUNIT_LIBRARIES}
+    ADD_EXECUTABLE( MeshFunctionEvaluateTest ${headers} MeshFunctionEvaluateTest.cpp )   
+    TARGET_LINK_LIBRARIES( MeshFunctionEvaluateTest ${CPPUNIT_LIBRARIES}
                                                            tnl )
-    TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTest PUBLIC "-DDIMENSION=2" )
-   	TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTest PUBLIC "-DXDISTR -DYDISTR" )
+    TARGET_COMPILE_DEFINITIONS( MeshFunctionEvaluateTest PUBLIC "-DDIMENSION=2" )
+   	TARGET_COMPILE_DEFINITIONS( MeshFunctionEvaluateTest PUBLIC "-DXDISTR -DYDISTR" )
 
-    ADD_EXECUTABLE( tnlMeshFuncttionEvaluateTestX ${headers} MeshFunctionEvauateTest.cpp )   
-    TARGET_LINK_LIBRARIES( tnlMeshFuncttionEvaluateTestX ${CPPUNIT_LIBRARIES}
+    ADD_EXECUTABLE( MeshFunctionEvaluateTestX ${headers} MeshFunctionEvaluateTest.cpp )   
+    TARGET_LINK_LIBRARIES( MeshFunctionEvaluateTestX ${CPPUNIT_LIBRARIES}
                                                            tnl )
-   	TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTestX PUBLIC "-DDIMENSION=2" )
-   	TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTestX PUBLIC "-DXDISTR" )
+   	TARGET_COMPILE_DEFINITIONS( MeshFunctionEvaluateTestX PUBLIC "-DDIMENSION=2" )
+   	TARGET_COMPILE_DEFINITIONS( MeshFunctionEvaluateTestX PUBLIC "-DXDISTR" )
 
-    ADD_EXECUTABLE( tnlMeshFuncttionEvaluateTestY ${headers} MeshFunctionEvauateTest.cpp )   
-    TARGET_LINK_LIBRARIES( tnlMeshFuncttionEvaluateTestY ${CPPUNIT_LIBRARIES}
+    ADD_EXECUTABLE( MeshFunctionEvaluateTestY ${headers} MeshFunctionEvaluateTest.cpp )   
+    TARGET_LINK_LIBRARIES( MeshFunctionEvaluateTestY ${CPPUNIT_LIBRARIES}
                                                            tnl )
-   	TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTestY PUBLIC "-DDIMENSION=2" )
-   	TARGET_COMPILE_DEFINITIONS( tnlMeshFuncttionEvaluateTestY PUBLIC "-DYDISTR" )
+   	TARGET_COMPILE_DEFINITIONS( MeshFunctionEvaluateTestY PUBLIC "-DDIMENSION=2" )
+   	TARGET_COMPILE_DEFINITIONS( MeshFunctionEvaluateTestY PUBLIC "-DYDISTR" )
 
 
     ADD_EXECUTABLE( mpiio-save-test ${headers} mpiio-save-test.cpp )   
@@ -43,7 +43,7 @@ IF( BUILD_CUDA )
     TARGET_LINK_LIBRARIES( mpi-gpu-test ${CPPUNIT_LIBRARIES}
                                                    tnl )   
 
-    CUDA_ADD_EXECUTABLE( GPUmeshFunctionEvaluateTest ${headers} GPUmeshFuncitonEvaluateTest.cu )
+    CUDA_ADD_EXECUTABLE( GPUmeshFunctionEvaluateTest ${headers} GPUmeshFunctionEvaluateTest.cu )
     TARGET_LINK_LIBRARIES( GPUmeshFunctionEvaluateTest ${CPPUNIT_LIBRARIES}
                                            tnl )   
 

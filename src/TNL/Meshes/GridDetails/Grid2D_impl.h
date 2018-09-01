@@ -422,7 +422,7 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-void Grid< 2, Real, Device, Index >:: SetDistMesh(DistributedMeshType* distMesh)
+void Grid< 2, Real, Device, Index >:: setDistMesh(DistributedMeshType* distMesh)
 {
     this->distGrid=distMesh;
 }
@@ -431,7 +431,7 @@ template< typename Real,
           typename Device,
           typename Index >
 DistributedMeshes::DistributedMesh <Grid< 2, Real, Device, Index >> * 
-Grid< 2, Real, Device, Index >:: GetDistMesh(void) const
+Grid< 2, Real, Device, Index >:: getDistributedMesh(void) const
 {
     return this->distGrid;
 }
@@ -495,6 +495,8 @@ void
 Grid< 2, Real, Device, Index >::
 writeProlog( Logger& logger ) const
 {
+   if( this->getDistributedMesh() && this->getDistributedMesh()->isDistributed() )
+      return this->getDistributedMesh()->writeProlog( logger );
    logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );

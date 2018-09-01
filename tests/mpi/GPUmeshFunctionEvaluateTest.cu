@@ -1,34 +1,28 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 #include <iostream>
-#include <sstream>
-
-using namespace std;
 
 
-#ifdef HAVE_MPI
+#if defined(HAVE_MPI) && defined(HAVE_CUDA)
 
+#include <TNL/Timer.h>
+#include <TNL/SharedPointer.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
-#include <TNL/Timer.h>
-#include  <TNL/SharedPointer.h>
 
-//#define DIMENSION 3
+using namespace std;
+
+#define DIMENSION 3
 //#define OUTPUT 
-//#define XDISTR
+#define XDISTR
 //#define YDISTR
 //#define ZDISTR
 
-#include "../../src/UnitTests/Mpi/Functions.h"
+#include "../../src/UnitTests/Functions/Functions.h"
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -37,23 +31,25 @@ using namespace TNL::Meshes::DistributedMeshes;
 using namespace TNL::Communicators;
 using namespace TNL::Functions;
 using namespace TNL::Devices;
-#endif
+
  
 int main ( int argc, char *argv[])
 {
     
-#ifdef HAVE_MPI
   Timer all,setup,eval,sync;
-    
+  
+  typedef Cuda Device;  
+  //typedef Host Device;  
 
   typedef MpiCommunicator CommunicatorType;
   //typedef NoDistrCommunicator CommType;
-  typedef Grid<DIMENSION, double,Host,int> MeshType;
+  typedef Grid<DIMENSION, double,Device,int> MeshType;
   typedef MeshFunction<MeshType> MeshFunctionType;
-  typedef Vector<double,Host,int> DofType;
+  typedef Vector<double,Device,int> DofType;
   typedef typename MeshType::Cell Cell;
   typedef typename MeshType::IndexType IndexType; 
   typedef typename MeshType::PointType PointType; 
+  using CoordinatesType = MeshType::CoordinatesType;
   
   typedef DistributedMesh<MeshType> DistributedMeshType;
   
@@ -62,7 +58,7 @@ int main ( int argc, char *argv[])
   
   CommunicatorType::Init(argc,argv);
 
-  int size=9;
+  int size=10;
   int cycles=1;
   if(argc==3)
   {
@@ -86,7 +82,7 @@ int main ( int argc, char *argv[])
  globalGrid.setDomain(globalOrigin,globalProportions);
 
  
- int distr[DIMENSION];
+ CoordinatesType distr;
  for(int i=0;i<DIMENSION;i++) 
     distr[i]=1;
 
@@ -102,34 +98,34 @@ int main ( int argc, char *argv[])
      distr[2]=0;
  #endif
 
- typename MeshType::CoordinatesType overlap;
- overlap.setValue(1);
- DistributedMeshType distrgrid;
- distrgrid.template setGlobalGrid<CommunicatorType>(globalGrid,overlap, distr); 
+   DistributedMeshType distrgrid;
+   distrgrid.setDomainDecomposition( distr );
+   distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid );
+   typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
+   distrgrid.setOverlaps( lowerOverlap, upperOverlap );
    
- SharedPointer<MeshType> gridptr;
- SharedPointer<MeshFunctionType> meshFunctionptr;
- MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
- MeshFunctionEvaluator< MeshFunctionType, ConstFunctionType > constFunctionEvaluator;
+   SharedPointer<MeshType> gridptr;
+   SharedPointer<MeshFunctionType> meshFunctionptr;
+   MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
+   MeshFunctionEvaluator< MeshFunctionType, ConstFunctionType > constFunctionEvaluator;
  
-  distrgrid.SetupGrid(*gridptr);
+   distrgrid.setupGrid(*gridptr);
   
-  DofType dof(gridptr->template getEntitiesCount< Cell >());
+   DofType dof(gridptr->template getEntitiesCount< Cell >());
 
-  dof.setValue(0);
+   dof.setValue(0);
   
   meshFunctionptr->bind(gridptr,dof);  
   
-  SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
-  SharedPointer< ConstFunctionType, Host > constFunctionPtr; 
+  SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
+  SharedPointer< ConstFunctionType, Device > constFunctionPtr; 
    
-  
-  
   setup.stop();
   
   double sum=0.0;
 
-  constFunctionPtr->Number=CommunicatorType::GetRank();
+  constFunctionPtr->Number=CommunicatorType::GetRank(CommunicatorType::AllGroup);
   
   for(int i=0;i<cycles;i++)
     {    
@@ -137,24 +133,24 @@ int main ( int argc, char *argv[])
         
         constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
         //linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
-        CommunicatorType::Barrier();
+        CommunicatorType::Barrier(CommunicatorType::AllGroup);
         eval.stop();
 
         sync.start();    
-        meshFunctionptr->template Synchronize<CommunicatorType>();
-        CommunicatorType::Barrier();
+        meshFunctionptr->template synchronize<CommunicatorType>();
+        CommunicatorType::Barrier(CommunicatorType::AllGroup);
         sync.stop();
 
-        sum+=dof[gridptr->getDimensions().x()/2]; //dummy acces to array    
+        ///sum+=dof[gridptr->getDimensions().x()/2]; //dummy acces to array    
     }
   all.stop();
   
 #ifdef OUTPUT    
   //print local dof
-  Printer<MeshType,DofType>::print_dof(CommunicatorType::GetRank(),*gridptr, dof);
+  Printer<MeshType,DofType>::print_dof(CommunicatorType::GetRank(CommunicatorType::AllGroup),*gridptr, dof);
 #endif
   
-  if(CommunicatorType::GetRank()==0)
+  if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
   {
     cout << sum <<endl<<endl;  
     
@@ -173,11 +169,18 @@ int main ( int argc, char *argv[])
 
   CommunicatorType::Finalize();
 
-
-
-#else
-  std::cout<<"MPI not Supported." << std::endl;
-#endif
   return 0;
 
 }
+
+#else
+
+using namespace std;
+
+int main(void)
+{
+    cout << "MPI or Cuda missing...." <<endl;
+}
+#endif
+
+

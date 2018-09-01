@@ -1,3 +1,5 @@
+ADD_SUBDIRECTORY( DistributedMeshes )
+
 ADD_EXECUTABLE( BoundaryTagsTest BoundaryTagsTest.cpp )
 TARGET_COMPILE_OPTIONS( BoundaryTagsTest PRIVATE ${CXX_TESTS_FLAGS} )
 TARGET_LINK_LIBRARIES( BoundaryTagsTest

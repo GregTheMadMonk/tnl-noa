@@ -167,7 +167,7 @@ setGrid( Grid& grid,
     origin.x() = 0.0;
     origin.y() = 0.0;
     proportions.x() = 1.0;
-    proportions.y() = ( double ) grid.getDimensions().x() / ( double ) grid.getDimensions().y();
+    proportions.y() = ( double ) grid.getDimensions().y() / ( double ) grid.getDimensions().x();
     grid.setDomain( origin, proportions );
     if( verbose )
     {

@@ -39,7 +39,8 @@ set( headers
      StaticFor.h
      String.h
      Timer.h
-     UniquePointer.h )
+     UniquePointer.h
+     StaticVectorFor.h )
 
 set( common_SOURCES
      File.cpp

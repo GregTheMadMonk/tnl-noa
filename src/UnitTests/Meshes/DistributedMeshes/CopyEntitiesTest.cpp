@@ -13,7 +13,7 @@
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
 
-#include "Functions.h"
+#include "../../Functions/Functions.h"
 
 using namespace TNL::Containers;
 using namespace TNL::Meshes;
@@ -224,7 +224,7 @@ TEST( CopyEntitiesTest, 3D )
 
 #endif
 
-#include "../GtestMissingError.h"
+#include "../../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST
