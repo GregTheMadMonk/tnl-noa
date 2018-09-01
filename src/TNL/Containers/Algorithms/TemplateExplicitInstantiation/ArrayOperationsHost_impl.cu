@@ -73,54 +73,6 @@ template double      ArrayOperations< Devices::Host >::getMemoryElement< double 
 template long double ArrayOperations< Devices::Host >::getMemoryElement< long double >( long double* data );
 #endif
 
-template char&        ArrayOperations< Devices::Host >::getArrayElementReference< char,        int >( char* data, const int i );
-template int&         ArrayOperations< Devices::Host >::getArrayElementReference< int,         int >( int* data, const int i );
-template long int&    ArrayOperations< Devices::Host >::getArrayElementReference< long int,    int >( long int* data, const int i );
-#ifdef INSTANTIATE_FLOAT
-template float&       ArrayOperations< Devices::Host >::getArrayElementReference< float,       int >( float* data, const int i );
-#endif
-template double&      ArrayOperations< Devices::Host >::getArrayElementReference< double,      int >( double* data, const int i );
-#ifdef INSTANTIATE_LONG_DOUBLE
-template long double& ArrayOperations< Devices::Host >::getArrayElementReference< long double, int >( long double* data, const int i );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-template char&        ArrayOperations< Devices::Host >::getArrayElementReference< char,        long int >( char* data, const long int i );
-template int&         ArrayOperations< Devices::Host >::getArrayElementReference< int,         long int >( int* data, const long int i );
-template long int&    ArrayOperations< Devices::Host >::getArrayElementReference< long int,    long int >( long int* data, const long int i );
-#ifdef INSTANTIATE_FLOAT
-template float&       ArrayOperations< Devices::Host >::getArrayElementReference< float,       long int >( float* data, const long int i );
-#endif
-template double&      ArrayOperations< Devices::Host >::getArrayElementReference< double,      long int >( double* data, const long int i );
-#ifdef INSTANTIATE_LONG_DOUBLE
-template long double& ArrayOperations< Devices::Host >::getArrayElementReference< long double, long int >( long double* data, const long int i );
-#endif
-#endif
-
-template const char&        ArrayOperations< Devices::Host >::getArrayElementReference< char,        int >( const char* data, const int i );
-template const int&         ArrayOperations< Devices::Host >::getArrayElementReference< int,         int >( const int* data, const int i );
-template const long int&    ArrayOperations< Devices::Host >::getArrayElementReference< long int,    int >( const long int* data, const int i );
-#ifdef INSTANTIATE_FLOAT
-template const float&       ArrayOperations< Devices::Host >::getArrayElementReference< float,       int >( const float* data, const int i );
-#endif
-template const double&      ArrayOperations< Devices::Host >::getArrayElementReference< double,      int >( const double* data, const int i );
-#ifdef INSTANTIATE_LONG_DOUBLE
-template const long double& ArrayOperations< Devices::Host >::getArrayElementReference< long double, int >( const long double* data, const int i );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-template const char&        ArrayOperations< Devices::Host >::getArrayElementReference< char,        long int >( const char* data, const long int i );
-template const int&         ArrayOperations< Devices::Host >::getArrayElementReference< int,         long int >( const int* data, const long int i );
-template const long int&    ArrayOperations< Devices::Host >::getArrayElementReference< long int,    long int >( const long int* data, const long int i );
-#ifdef INSTANTIATE_FLOAT
-template const float&       ArrayOperations< Devices::Host >::getArrayElementReference< float,       long int >( const float* data, const long int i );
-#endif
-template const double&      ArrayOperations< Devices::Host >::getArrayElementReference< double,      long int >( const double* data, const long int i );
-#ifdef INSTANTIATE_LONG_DOUBLE
-template const long double& ArrayOperations< Devices::Host >::getArrayElementReference< long double, long int >( const long double* data, const long int i );
-#endif
-#endif
-
 template bool ArrayOperations< Devices::Host >::copyMemory< char,               char, int >( char* destination, const char* source, const int size );
 template bool ArrayOperations< Devices::Host >::copyMemory< int,                 int, int >( int* destination, const int* source, const int size );
 template bool ArrayOperations< Devices::Host >::copyMemory< long int,       long int, int >( long int* destination, const long int* source, const int size );
