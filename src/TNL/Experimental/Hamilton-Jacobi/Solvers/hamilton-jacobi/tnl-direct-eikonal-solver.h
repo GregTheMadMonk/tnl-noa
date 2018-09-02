@@ -20,14 +20,16 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/Grid.h>
 #include "tnlDirectEikonalProblem.h"
+#include "MainBuildConfig.h"
 
 using namespace TNL;
 
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
-typedef Solvers::FastBuildConfigTag BuildConfig;
+//typedef Solvers::FastBuildConfig BuildConfig;
+typedef HamiltonJacobiBuildConfig BuildConfig;
 
 template< typename MeshConfig >
-class tnlDirectEikonalSolverConfig
+class DirectEikonalSolverConfig
 {
    public:
       static void configSetup( Config::ConfigDescription& config )
@@ -44,7 +46,7 @@ template< typename Real,
           typename MeshConfig,
           typename SolverStarter,
           typename CommunicatorType >
-class tnlDirectEikonalSolverSetter
+class DirectEikonalSolverSetter
 {
    public:
 
@@ -66,7 +68,7 @@ class tnlDirectEikonalSolverSetter
 
 int main( int argc, char* argv[] )
 {
-   if( ! Solvers::Solver< tnlDirectEikonalSolverSetter, tnlDirectEikonalSolverConfig, BuildConfig >::run( argc, argv ) )
+   if( ! Solvers::Solver< DirectEikonalSolverSetter, DirectEikonalSolverConfig, BuildConfig >::run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

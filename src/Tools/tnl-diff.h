@@ -300,6 +300,7 @@ bool computeDifference( const MeshPointer& meshPointer, const String& objectType
    if( objectType == "Containers::Vector" ||
        objectType == "tnlVector" || objectType == "tnlSharedVector" )   // TODO: remove deprecated type name
       return computeDifferenceOfVectors< MeshPointer, Element, Real, Index >( meshPointer, parameters );
+   std::cerr << "Unknown object type " << objectType << "." << std::endl;
    return false;
 }
 
