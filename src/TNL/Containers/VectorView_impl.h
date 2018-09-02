@@ -129,42 +129,42 @@ operator/=( RealType c )
 template< typename Real,
           typename Device,
           typename Index >
-Real
+typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::
 max() const
 {
-   return Algorithms::VectorOperations< Device >::getVectorMax( *this );
+   return Algorithms::VectorOperations< Device >::template getVectorMax< VectorView, NonConstReal >( *this );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-Real
+typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::
 min() const
 {
-   return Algorithms::VectorOperations< Device >::getVectorMin( *this );
+   return Algorithms::VectorOperations< Device >::template getVectorMin< VectorView, NonConstReal >( *this );
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-Real
+typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::
 absMax() const
 {
-   return Algorithms::VectorOperations< Device >::getVectorAbsMax( *this );
+   return Algorithms::VectorOperations< Device >::template getVectorAbsMax< VectorView, NonConstReal >( *this );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-Real
+typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::
 absMin() const
 {
-   return Algorithms::VectorOperations< Device >::getVectorAbsMin( *this );
+   return Algorithms::VectorOperations< Device >::template getVectorAbsMin< VectorView, NonConstReal >( *this );
 }
 
 template< typename Real,
@@ -193,11 +193,11 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-Real
+typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::
 differenceMax( const Vector& v ) const
 {
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceMax( *this, v );
+   return Algorithms::VectorOperations< Device >::template getVectorDifferenceMax< VectorView, Vector, NonConstReal >( *this, v );
 }
 
 
@@ -205,10 +205,10 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-Real
+typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::differenceMin( const Vector& v ) const
 {
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceMin( *this, v );
+   return Algorithms::VectorOperations< Device >::template getVectorDifferenceMin< VectorView, Vector, NonConstReal >( *this, v );
 }
 
 
@@ -216,22 +216,22 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-Real
+typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::
 differenceAbsMax( const Vector& v ) const
 {
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceAbsMax( *this, v );
+   return Algorithms::VectorOperations< Device >::template getVectorDifferenceAbsMax< VectorView, Vector, NonConstReal >( *this, v );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-template< typename Vector >
-Real
+   template< typename Vector >
+typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::
 differenceAbsMin( const Vector& v ) const
 {
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceAbsMin( *this, v );
+   return Algorithms::VectorOperations< Device >::template getVectorDifferenceAbsMin< VectorView, Vector, NonConstReal >( *this, v );
 }
 
 template< typename Real,
@@ -270,18 +270,18 @@ scalarMultiplication( Real alpha )
 template< typename Real,
           typename Device,
           typename Index >
-template< typename Vector >
-Real
+   template< typename Vector >
+typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::
 scalarProduct( const Vector& v )
 {
-   return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
+   return Algorithms::VectorOperations< Device >::template getScalarProduct< VectorView, Vector, NonConstReal >( *this, v );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-template< typename Vector >
+   template< typename Vector >
 void
 VectorView< Real, Device, Index >::
 addVector( const Vector& x, Real alpha, Real thisMultiplicator )

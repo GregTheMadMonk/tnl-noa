@@ -46,13 +46,13 @@ addElement( Vector& v,
    v.setElement(i,thisElementMultiplicator*v.getElemet(i)+value);
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorMax( const Vector& v )
 {
    //tady je možnost paralelizace
-   typename Vector::RealType result;
+   ResultType result;
    typename Vector::IndexType size=v.getSize();
    Devices::MICHider<const typename Vector::RealType > vct;
    vct.pointer=v.getData();
@@ -69,13 +69,13 @@ getVectorMax( const Vector& v )
    return result;
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorMin( const Vector& v )
 {
    //tady je možnost paralelizace
-   typename Vector::RealType result;
+   ResultType result;
    typename Vector::IndexType size=v.getSize();
    Devices::MICHider<const typename Vector::RealType > vct;
    vct.pointer=v.getData();
@@ -92,13 +92,13 @@ getVectorMin( const Vector& v )
    return result;
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorAbsMax( const Vector& v )
 {
    //tady je možnost paralelizace
-   typename Vector::RealType result;
+   ResultType result;
    typename Vector::IndexType size=v.getSize();
    Devices::MICHider<const typename Vector::RealType > vct;
    vct.pointer=v.getData();
@@ -115,13 +115,13 @@ getVectorAbsMax( const Vector& v )
    return result;
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorAbsMin( const Vector& v )
 {
    //tady je možnost paralelizace
-   typename Vector::RealType result;
+   ResultType result;
    typename Vector::IndexType size=v.getSize();
    Devices::MICHider<const typename Vector::RealType > vct;
    vct.pointer=v.getData();
@@ -243,8 +243,8 @@ getVectorSum( const Vector& v )
    return result;
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorDifferenceMax( const Vector1& v1,
                         const Vector2& v2 )
@@ -254,7 +254,7 @@ getVectorDifferenceMax( const Vector1& v1,
    TNL_ASSERT( v1. getSize() > 0, );
    TNL_ASSERT( v1. getSize() == v2. getSize(), );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v1. getSize();
    Devices::MICHider<const Real > vct1;
    Devices::MICHider<const Real > vct2;
@@ -270,8 +270,8 @@ getVectorDifferenceMax( const Vector1& v1,
    return result;
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorDifferenceMin( const Vector1& v1,
                         const Vector2& v2 )
@@ -281,7 +281,7 @@ getVectorDifferenceMin( const Vector1& v1,
    TNL_ASSERT( v1. getSize() > 0, );
    TNL_ASSERT( v1. getSize() == v2. getSize(), );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v1. getSize();
    Devices::MICHider<const Real > vct1;
    Devices::MICHider<const Real > vct2;
@@ -297,8 +297,8 @@ getVectorDifferenceMin( const Vector1& v1,
    return result;
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorDifferenceAbsMax( const Vector1& v1,
                            const Vector2& v2 )
@@ -308,7 +308,7 @@ getVectorDifferenceAbsMax( const Vector1& v1,
    TNL_ASSERT( v1. getSize() > 0, );
    TNL_ASSERT( v1. getSize() == v2. getSize(), );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v1. getSize();
    Devices::MICHider<const Real > vct1;
    Devices::MICHider<const Real > vct2;
@@ -324,8 +324,8 @@ getVectorDifferenceAbsMax( const Vector1& v1,
    return result;
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getVectorDifferenceAbsMin( const Vector1& v1,
                            const Vector2& v2 )
@@ -335,7 +335,7 @@ getVectorDifferenceAbsMin( const Vector1& v1,
    TNL_ASSERT( v1. getSize() > 0, );
    TNL_ASSERT( v1. getSize() == v2. getSize(), );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v1. getSize();
    Devices::MICHider<const Real > vct1;
    Devices::MICHider<const Real > vct2;
@@ -499,8 +499,8 @@ vectorScalarMultiplication( Vector& v,
 }
 
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::MIC >::
 getScalarProduct( const Vector1& v1,
                   const Vector2& v2 )
@@ -510,7 +510,7 @@ getScalarProduct( const Vector1& v1,
    TNL_ASSERT( v1. getSize() > 0, );
    TNL_ASSERT( v1. getSize() == v2. getSize(), );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v1. getSize();
    Devices::MICHider<const Real > vct1;
    Devices::MICHider<const Real > vct2;

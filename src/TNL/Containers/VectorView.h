@@ -29,6 +29,7 @@ template< typename Real = double,
 class VectorView
 : public ArrayView< Real, Device, Index >
 {
+   using NonConstReal = typename std::remove_const< Real >::type;
 public:
    using RealType = Real;
    using DeviceType = Device;
@@ -69,43 +70,43 @@ public:
 
    VectorView< Real, Device, Index >& operator/=( RealType c );
 
-   Real max() const;
+   NonConstReal max() const;
 
-   Real min() const;
+   NonConstReal min() const;
 
-   Real absMax() const;
+   NonConstReal absMax() const;
 
-   Real absMin() const;
+   NonConstReal absMin() const;
 
-   template< typename ResultType = RealType, typename Real_ >
+   template< typename ResultType = NonConstReal, typename Real_ >
    ResultType lpNorm( Real_ p ) const;
 
-   template< typename ResultType = RealType >
+   template< typename ResultType = NonConstReal >
    ResultType sum() const;
 
    template< typename Vector >
-   Real differenceMax( const Vector& v ) const;
+   NonConstReal differenceMax( const Vector& v ) const;
 
    template< typename Vector >
-   Real differenceMin( const Vector& v ) const;
+   NonConstReal differenceMin( const Vector& v ) const;
 
    template< typename Vector >
-   Real differenceAbsMax( const Vector& v ) const;
+   NonConstReal differenceAbsMax( const Vector& v ) const;
 
    template< typename Vector >
-   Real differenceAbsMin( const Vector& v ) const;
+   NonConstReal differenceAbsMin( const Vector& v ) const;
 
-   template< typename ResultType = RealType, typename Vector, typename Real_ >
+   template< typename ResultType = NonConstReal, typename Vector, typename Real_ >
    ResultType differenceLpNorm( const Vector& v, Real_ p ) const;
 
-   template< typename ResultType = RealType, typename Vector >
+   template< typename ResultType = NonConstReal, typename Vector >
    ResultType differenceSum( const Vector& v ) const;
 
    void scalarMultiplication( Real alpha );
 
    //! Computes scalar dot product
    template< typename Vector >
-   Real scalarProduct( const Vector& v );
+   NonConstReal scalarProduct( const Vector& v );
 
    //! Computes Y = alpha * X + Y.
    template< typename Vector >

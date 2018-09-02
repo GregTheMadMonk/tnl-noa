@@ -715,6 +715,31 @@ TEST( VectorSpecialCasesTest, assignmentThroughView )
       EXPECT_EQ( v_view[ i ], 42 );
 }
 
+TEST( VectorSpecialCasesTest, operationsOnConstView )
+{
+   using VectorType = Containers::Vector< int, Devices::Host >;
+   using ViewType = VectorView< const int, Devices::Host >;
+
+   VectorType u( 100 ), v( 100 );
+   ViewType u_view( u ), v_view( v );
+
+   u.setValue( 1 );
+   v.setValue( 1 );
+
+   EXPECT_EQ( u_view.max(), 1 );
+   EXPECT_EQ( u_view.min(), 1 );
+   EXPECT_EQ( u_view.absMax(), 1 );
+   EXPECT_EQ( u_view.absMin(), 1 );
+   EXPECT_EQ( u_view.lpNorm( 1 ), 100 );
+   EXPECT_EQ( u_view.differenceMax( v_view ), 0 );
+   EXPECT_EQ( u_view.differenceMin( v_view ), 0 );
+   EXPECT_EQ( u_view.differenceAbsMax( v_view ), 0 );
+   EXPECT_EQ( u_view.differenceAbsMin( v_view ), 0 );
+   EXPECT_EQ( u_view.differenceLpNorm( v_view, 1 ), 0 );
+   EXPECT_EQ( u_view.differenceSum( v_view ), 0 );
+   EXPECT_EQ( u_view.scalarProduct( v_view ), 100 );
+}
+
 #endif // HAVE_GTEST
 
 
