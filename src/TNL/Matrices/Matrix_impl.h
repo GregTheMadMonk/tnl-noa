@@ -140,6 +140,19 @@ bool Matrix< Real, Device, Index >::operator != ( const MatrixT& matrix ) const
    return ! operator == ( matrix );
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+void
+Matrix< Real, Device, Index >::
+copyFromHostToCuda( Matrix< Real, Devices::Host, Index >& matrix )
+{
+    this->numberOfColors = matrix.getNumberOfColors();
+    this->columns = matrix.getColumns();
+    this->rows = matrix.getRows();
+
+    this->values.setSize( matrix.getValuesSize() );
+}
 
 template< typename Real,
           typename Device,
