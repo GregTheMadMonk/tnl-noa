@@ -24,9 +24,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Index BiEllpack< Real, Device, Index, StripSize >::power( const IndexType number,
 							   const IndexType exponent ) const
 {
@@ -131,9 +129,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Index BiEllpack< Real, Device, Index, StripSize >::getStripLength( const IndexType strip ) const
 {
 	TNL_ASSERT( strip >= 0,
@@ -148,9 +144,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Index BiEllpack< Real, Device, Index, StripSize >::getNumberOfGroups( const IndexType row ) const
 {
 	TNL_ASSERT( row >=0 && row < this->getRows(),
@@ -256,9 +250,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 bool BiEllpack< Real, Device, Index, StripSize >::setElementFast( const IndexType row,
 																		   const IndexType column,
 																		   const RealType& value )
@@ -316,9 +308,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 bool BiEllpack< Real, Device, Index, StripSize >::addElementFast( const IndexType row,
 																	   	   const IndexType column,
 																	   	   const RealType& value,
@@ -492,9 +482,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Real BiEllpack< Real, Device, Index, StripSize >::getElementFast( const IndexType row,
 																	   	   const IndexType column ) const
 {
@@ -588,9 +576,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Index BiEllpack< Real, Device, Index, StripSize >::getGroupLength( const Index strip,
 																 	 	    const Index group ) const
 {
@@ -1321,7 +1307,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-__device__
+__cuda_callable__
 void BiEllpack< Real, Device, Index, StripSize >::performRowBubbleSortCudaKernel( const typename BiEllpack< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths,
 																						   const IndexType strip )
 {
@@ -1378,7 +1364,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-__device__
+__cuda_callable__
 void BiEllpack< Real, Device, Index, StripSize >::computeColumnSizesCudaKernel( const typename BiEllpack< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths,
 																						 const IndexType numberOfStrips,
 																						 const IndexType strip )

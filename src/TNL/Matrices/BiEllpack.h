@@ -66,9 +66,7 @@ public:
 					 const IndexType column,
 					 const RealType& value );
 
-#ifdef HAVE_CUDA
-	__device__ __host__
-#endif
+   __cuda_callable__
 	bool setElementFast( const IndexType row,
 						 const IndexType column,
 						 const RealType& value );
@@ -78,9 +76,7 @@ public:
 					 const RealType& value,
 					 const RealType& thisElementMultiplicator = 1.0 );
 
-#ifdef HAVE_CUDA
-	__device__ __host__
-#endif
+   __cuda_callable__
 	bool addElementFast( const IndexType row,
 						 const IndexType column,
 						 const RealType& value,
@@ -100,9 +96,7 @@ public:
 	RealType getElement( const IndexType row,
 					 	 const IndexType column ) const;
 
-#ifdef HAVE_CUDA
-	__device__ __host__
-#endif
+   __cuda_callable__
 	RealType getElementFast( const IndexType row,
 							 const IndexType column ) const;
 
@@ -111,9 +105,7 @@ public:
 			 	    IndexType* columns,
 			 	    RealType* values ) const;
 
-#ifdef HAVE_CUDA
-	__device__ __host__
-#endif
+   __cuda_callable__
 	IndexType getGroupLength( const IndexType strip,
 							  const IndexType group ) const;
 
@@ -129,9 +121,7 @@ public:
 
 	void setVirtualRows(const IndexType rows);
 
-#ifdef HAVE_CUDA
-	__device__ __host__
-#endif
+   __cuda_callable__
 	IndexType getNumberOfGroups( const IndexType row ) const;
 
 	bool vectorProductTest() const;
@@ -155,36 +145,26 @@ public:
 
 	template< typename InVector,
 			  typename OutVector >
-#ifdef HAVE_CUDA
-	__device__
-#endif
+   __cuda_callable__
 	void spmvCuda( const InVector& inVector,
 				   OutVector& outVector,
 				   /*const IndexType warpStart,
 				   const IndexType inWarpIdx*/
 				   int globalIdx ) const;
 
-#ifdef HAVE_CUDA
-	__device__ __host__
-#endif
+   __cuda_callable__
 	IndexType getStripLength( const IndexType strip ) const;
 
-#ifdef HAVE_CUDA
-	__device__
-#endif
+   __cuda_callable__
 	void performRowBubbleSortCudaKernel( const typename BiEllpack< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths,
 										 const IndexType strip );
 
-#ifdef HAVE_CUDA
-	__device__
-#endif
+   __cuda_callable__
 	void computeColumnSizesCudaKernel( const typename BiEllpack< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths,
 									   const IndexType numberOfStrips,
 									   const IndexType strip );
 
-#ifdef HAVE_CUDA
-	__device__
-#endif
+   __cuda_callable__
 	IndexType power( const IndexType number,
 				     const IndexType exponent ) const;
 

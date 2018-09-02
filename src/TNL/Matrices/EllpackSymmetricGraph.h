@@ -65,9 +65,7 @@ class EllpackSymmetricGraph : public Sparse< Real, Device, Index >
    bool copyFrom( const Matrix& matrix,
                   const CompressedRowLengthsVector& rowLengths );*/
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value );
@@ -76,9 +74,7 @@ class EllpackSymmetricGraph : public Sparse< Real, Device, Index >
                     const IndexType column,
                     const RealType& value );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value,
@@ -90,9 +86,7 @@ class EllpackSymmetricGraph : public Sparse< Real, Device, Index >
                     const RealType& thisElementMultiplicator = 1.0 );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setRowFast( const IndexType row,
                     const IndexType* columnIndexes,
                     const RealType* values,
@@ -104,9 +98,7 @@ class EllpackSymmetricGraph : public Sparse< Real, Device, Index >
                 const IndexType elements );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addRowFast( const IndexType row,
                     const IndexType* columns,
                     const RealType* values,
@@ -119,18 +111,14 @@ class EllpackSymmetricGraph : public Sparse< Real, Device, Index >
                 const IndexType numberOfElements,
                 const RealType& thisElementMultiplicator = 1.0 );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    RealType getElementFast( const IndexType row,
                             const IndexType column ) const;
 
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void getRowFast( const IndexType row,
                     IndexType* columns,
                     RealType* values ) const;
@@ -139,10 +127,8 @@ class EllpackSymmetricGraph : public Sparse< Real, Device, Index >
                 IndexType* columns,
                 RealType* values ) const;
 
-template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   template< typename Vector >
+   __cuda_callable__
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
@@ -159,21 +145,17 @@ template< typename Vector >
 #ifdef HAVE_CUDA
    template< typename InVector,
              typename OutVector >
-   __device__
+   __cuda_callable__
    void spmvCuda( const InVector& inVector,
                   OutVector& outVector,
                   const int globalIdx,
                   const int color ) const;
 #endif
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void computePermutationArray();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool rearrangeMatrix( bool verbose );
 
    bool save( File& file ) const;
@@ -190,39 +172,25 @@ template< typename Vector >
 
    void verifyPermutationArray();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getRowLengthsInt() const;
 
-#ifdef HAVE_CUDA
-    __device__ __host__
-#endif
-    Index getAlignedRows() const;
+   __cuda_callable__
+   Index getAlignedRows() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getRowsOfColor( IndexType color ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void copyFromHostToCuda( EllpackSymmetricGraph< Real, Devices::Host, Index >& matrix );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Containers::Vector< Index, Device, Index > getPermutationArray();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Containers::Vector< Index, Device, Index > getInversePermutation();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Containers::Vector< Index, Device, Index > getColorPointers();
 
    protected:
