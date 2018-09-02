@@ -7,14 +7,13 @@
 
 #pragma once
 
-#include <core/tnlTypeInfo.h>
-#include <functions/tnlFunctions.h>
+#include <limits>
 
 template< typename Real,
           typename Device,
           typename Index >
 void
-tnlDirectEikonalMethodsBase< tnlGrid< 1, Real, Device, Index > >::
+tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >::
 initInterface( const MeshFunctionType& input,
                MeshFunctionType& output,
                InterfaceMapType& interfaceMap  )
@@ -43,8 +42,8 @@ initInterface( const MeshFunctionType& input,
          }
       }
       output[ cell.getIndex() ] =
-      c > 0 ? tnlTypeInfo< RealType >::getMaxValue() :
-             -tnlTypeInfo< RealType >::getMaxValue();
+      c > 0 ? std::numeric_limits< RealType >::max() :
+             -std::numeric_limits< RealType >::max();
       interfaceMap[ cell.getIndex() ] = false;
    }
 }
@@ -54,7 +53,7 @@ template< typename Real,
           typename Index >
    template< typename MeshEntity >
 void
-tnlDirectEikonalMethodsBase< tnlGrid< 1, Real, Device, Index > >::
+tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >::
 updateCell( MeshFunctionType& u,
             const MeshEntity& cell )
 {
@@ -65,7 +64,7 @@ template< typename Real,
           typename Device,
           typename Index >
 void
-tnlDirectEikonalMethodsBase< tnlGrid< 2, Real, Device, Index > >::
+tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
 initInterface( const MeshFunctionType& input,
                MeshFunctionType& output,
                InterfaceMapType& interfaceMap  )
@@ -98,8 +97,8 @@ initInterface( const MeshFunctionType& input,
             }
          }
          output[ cell.getIndex() ] =
-            c > 0 ? tnlTypeInfo< RealType >::getMaxValue() :
-                   -tnlTypeInfo< RealType >::getMaxValue();  
+            c > 0 ? std::numeric_limits< RealType >::max() :
+                   -std::numeric_limits< RealType >::max();  
          interfaceMap[ cell.getIndex() ] = false;
       }
 }
@@ -109,7 +108,7 @@ template< typename Real,
           typename Index >
    template< typename MeshEntity >
 void
-tnlDirectEikonalMethodsBase< tnlGrid< 2, Real, Device, Index > >::
+tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
 updateCell( MeshFunctionType& u,
             const MeshEntity& cell )
 {
@@ -126,7 +125,7 @@ updateCell( MeshFunctionType& u,
       a = u[ neighborEntities.template getEntityIndex< -1,  0 >() ];
    else
    {
-      a = ArgAbsMin( u[ neighborEntities.template getEntityIndex< -1,  0 >() ],
+      a = argAbsMin( u[ neighborEntities.template getEntityIndex< -1,  0 >() ],
                      u[ neighborEntities.template getEntityIndex<  1,  0 >() ] );
    }
 
@@ -136,18 +135,18 @@ updateCell( MeshFunctionType& u,
       b = u[ neighborEntities.template getEntityIndex< 0,  -1 >() ];
    else
    {
-      b = ArgAbsMin( u[ neighborEntities.template getEntityIndex< 0,  -1 >() ],
+      b = argAbsMin( u[ neighborEntities.template getEntityIndex< 0,  -1 >() ],
                      u[ neighborEntities.template getEntityIndex< 0,   1 >() ] );
    }
 
-   if( fabs( a ) == tnlTypeInfo< Real >::getMaxValue() && 
-       fabs( b ) == tnlTypeInfo< Real >::getMaxValue() )
+   if( fabs( a ) == std::numeric_limits< Real >::max() && 
+       fabs( b ) == std::numeric_limits< Real >::max() )
       return;
-   if( fabs( a ) == tnlTypeInfo< Real >::getMaxValue() ||
-       fabs( b ) == tnlTypeInfo< Real >::getMaxValue() ||
+   if( fabs( a ) == std::numeric_limits< Real >::max() ||
+       fabs( b ) == std::numeric_limits< Real >::max() ||
        fabs( a - b ) >= h )
    {
-      tmp = ArgAbsMin( a, b ) + sign( value ) * h;
+      tmp = argAbsMin( a, b ) + sign( value ) * h;
       /*   std::cerr << "a = " << a << " b = " << b << " h = " << h 
              << " ArgAbsMin( a, b ) = " << ArgAbsMin( a, b ) << " sign( value ) = " << sign( value )
              << " sign( value ) * h = " << sign( value ) * h
@@ -164,7 +163,7 @@ updateCell( MeshFunctionType& u,
    else
       tmp = 0.5 * ( a + b + sign( value ) * sqrt( 2.0 * h * h - ( a - b ) * ( a - b ) ) );
 
-   u[ cell.getIndex() ] = ArgAbsMin( value, tmp );
+   u[ cell.getIndex() ] = argAbsMin( value, tmp );
    //std::cerr << ArgAbsMin( value, tmp ) << " ";   
 }
 
@@ -173,7 +172,7 @@ template< typename Real,
           typename Device,
           typename Index >
 void
-tnlDirectEikonalMethodsBase< tnlGrid< 3, Real, Device, Index > >::
+tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
 initInterface( const MeshFunctionType& input,
                MeshFunctionType& output,
                InterfaceMapType& interfaceMap  )
@@ -214,8 +213,8 @@ initInterface( const MeshFunctionType& input,
                }
             }
             output[ cell.getIndex() ] =
-               c > 0 ? tnlTypeInfo< RealType >::getMaxValue() :
-                      -tnlTypeInfo< RealType >::getMaxValue();
+               c > 0 ? std::numeric_limits< RealType >::max() :
+                      -std::numeric_limits< RealType >::max();
             interfaceMap[ cell.getIndex() ] = false;
          }
 }
@@ -225,7 +224,7 @@ template< typename Real,
           typename Index >
    template< typename MeshEntity >
 void
-tnlDirectEikonalMethodsBase< tnlGrid< 3, Real, Device, Index > >::
+tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
 updateCell( MeshFunctionType& u,
             const MeshEntity& cell )
 {

@@ -13,23 +13,24 @@
 
 #pragma once
 
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfigTag.h>
-#include <solvers/tnlBuildConfigTags.h>
-#include <functions/tnlConstantFunction.h>
-#include <functions/tnlMeshFunction.h>
-//#include <problems/tnlHeatEquationProblem.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Solvers/Solver.h>
+#include <TNL/Solvers/FastBuildConfigTag.h>
+#include <TNL/Solvers/BuildConfigTags.h>
+#include <TNL/Functions/Analytic/Constant.h>
+#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Meshes/Grid.h>
 #include "tnlDirectEikonalProblem.h"
 
+using namespace TNL;
+
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
-typedef tnlFastBuildConfig BuildConfig;
+typedef Solvers::FastBuildConfigTag BuildConfig;
 
 template< typename MeshConfig >
 class tnlDirectEikonalSolverConfig
 {
    public:
-      static void configSetup( tnlConfigDescription& config )
+      static void configSetup( Config::ConfigDescription& config )
       {
          config.addDelimiter( "Direct eikonal equation solver settings:" );
          config.addRequiredEntry< String >( "input-file", "Input file." );
@@ -41,7 +42,8 @@ template< typename Real,
           typename Index,
           typename MeshType,
           typename MeshConfig,
-          typename SolverStarter >
+          typename SolverStarter,
+          typename CommunicatorType >
 class tnlDirectEikonalSolverSetter
 {
    public:
@@ -50,13 +52,13 @@ class tnlDirectEikonalSolverSetter
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef Containers::StaticVector< MeshType::meshDimensions, Real > Point;
+   typedef Containers::StaticVector< MeshType::getMeshDimension(), Real > Point;
 
    static bool run( const Config::ParameterContainer& parameters )
    {
-      enum { Dimensions = MeshType::meshDimensions };
-      typedef tnlConstantFunction< Dimensions, Real > Anisotropy;
-      typedef tnlDirectEikonalProblem< MeshType, Anisotropy > Problem;
+      static const int Dimension = MeshType::getMeshDimension();
+      typedef Functions::Analytic::Constant< Dimension, Real > Anisotropy;
+      typedef tnlDirectEikonalProblem< MeshType, CommunicatorType, Anisotropy > Problem;
       SolverStarter solverStarter;
       return solverStarter.template run< Problem >( parameters );
    };
@@ -64,7 +66,7 @@ class tnlDirectEikonalSolverSetter
 
 int main( int argc, char* argv[] )
 {
-   if( ! tnlSolver< tnlDirectEikonalSolverSetter, tnlDirectEikonalSolverConfig, BuildConfig >::run( argc, argv ) )
+   if( ! Solvers::Solver< tnlDirectEikonalSolverSetter, tnlDirectEikonalSolverConfig, BuildConfig >::run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

@@ -8,16 +8,19 @@ SET( headers Domain.h
              MeshFunctionEvaluator.h
              MeshFunctionEvaluator_impl.h
              MeshFunctionGnuplotWriter.h
-             MeshFunctionGnuplotWriter_impl.h
              MeshFunctionNormGetter.h
              MeshFunctionVTKWriter.h
-             MeshFunctionVTKWriter_impl.h             
              OperatorFunction.h
              TestFunction.h             
              TestFunction_impl.h
              VectorField.h
+             VectorFieldEvaluator.h
+             VectorFieldEvaluator_impl.h
              VectorFieldGnuplotWriter.h
              VectorFieldGnuplotWriter_impl.h
+             VectorFieldVTKWriter.h
+             VectorFieldVTKWriter_impl.h
+             CutMeshFunction.h
  )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Functions )
@@ -35,4 +38,4 @@ set( tnl_functions_SOURCES
      ${common_SOURCES}
      PARENT_SCOPE )
         
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Functions )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Functions )

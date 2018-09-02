@@ -10,6 +10,7 @@
 
 #pragma once 
 
+#include <TNL/Math.h>
 #include <TNL/Containers/Algorithms/VectorOperations.h>
 
 namespace TNL {
@@ -90,13 +91,13 @@ getVectorAbsMax( const Vector& v )
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   Real result = std::fabs( v.getElement( 0 ) );
+   Real result = TNL::abs( v.getElement( 0 ) );
    const Index n = v.getSize();
 #if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
 #pragma omp parallel for reduction(max:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 1; i < n; i ++ )
-      result = max( result, ( Real ) std::fabs( v.getElement( i ) ) );
+      result = max( result, ( Real ) TNL::abs( v.getElement( i ) ) );
    return result;
 }
 
@@ -111,38 +112,37 @@ getVectorAbsMin( const Vector& v )
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   Real result = std::fabs( v.getElement( 0 ) );
+   Real result = TNL::abs( v.getElement( 0 ) );
    const Index n = v.getSize();
 #if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
 #pragma omp parallel for reduction(min:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 1; i < n; i ++ )
-      result = min( result, ( Real ) std::fabs( v.getElement( i ) ) );
+      result = min( result, ( Real ) TNL::abs( v.getElement( i ) ) );
    return result;
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorL1Norm( const Vector& v )
 {
-   typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 0; i < n; i ++ )
-      result += std::fabs( v[ i ] );
+      result += TNL::abs( v[ i ] );
    return result;
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorL2Norm( const Vector& v )
 {
@@ -160,7 +160,7 @@ getVectorL2Norm( const Vector& v )
    const Real* V = v.getData();
 #endif
 
-   Real result1 = 0, result2 = 0, result3 = 0, result4 = 0;
+   ResultType result1 = 0, result2 = 0, result3 = 0, result4 = 0;
    Index i = 0;
    const Index unroll_limit = n - n % 4;
 #ifdef HAVE_OPENMP
@@ -190,7 +190,7 @@ getVectorL2Norm( const Vector& v )
 
 #else // OPTIMIZED_VECTOR_HOST_OPERATIONS
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
@@ -203,44 +203,42 @@ getVectorL2Norm( const Vector& v )
 #endif // OPTIMIZED_VECTOR_HOST_OPERATIONS
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType, typename Real_ >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorLpNorm( const Vector& v,
-                 const typename Vector::RealType& p )
+                 const Real_ p )
 {
-   typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_GE( p, 1.0, "Parameter of the L^p norm must be at least 1.0." );
 
    if( p == 1.0 )
-      return getVectorL1Norm( v );
+      return getVectorL1Norm< Vector, ResultType >( v );
    if( p == 2.0 )
-      return getVectorL2Norm( v );
+      return getVectorL2Norm< Vector, ResultType >( v );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 0; i < n; i ++ )
-      result += std::pow( std::fabs( v[ i ] ), p );
+      result += std::pow( TNL::abs( v[ i ] ), p );
    return std::pow( result, 1.0 / p );
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorSum( const Vector& v )
 {
-   typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
@@ -306,13 +304,13 @@ getVectorDifferenceAbsMax( const Vector1& v1,
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   Real result = std::fabs( v1.getElement( 0 ) - v2.getElement( 0 ) );
+   Real result = TNL::abs( v1.getElement( 0 ) - v2.getElement( 0 ) );
    const Index n = v1.getSize();
 #if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
 #pragma omp parallel for reduction(max:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 1; i < n; i ++ )
-      result =  max( result, ( Real ) std::fabs( v1.getElement( i ) - v2.getElement( i ) ) );
+      result =  max( result, ( Real ) TNL::abs( v1.getElement( i ) - v2.getElement( i ) ) );
    return result;
 }
 
@@ -328,40 +326,39 @@ getVectorDifferenceAbsMin( const Vector1& v1,
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   Real result = std::fabs( v1[ 0 ] - v2[ 0 ] );
+   Real result = TNL::abs( v1[ 0 ] - v2[ 0 ] );
    const Index n = v1.getSize();
 #if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
 #pragma omp parallel for reduction(min:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 1; i < n; i ++ )
-      result =  min( result, ( Real ) std::fabs( v1[ i ] - v2[ i ] ) );
+      result =  min( result, ( Real ) TNL::abs( v1[ i ] - v2[ i ] ) );
    return result;
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorDifferenceL1Norm( const Vector1& v1,
                            const Vector2& v2 )
 {
-   typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v1.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 0; i < n; i ++ )
-      result += std::fabs( v1[ i ] - v2[ i ] );
+      result += TNL::abs( v1[ i ] - v2[ i ] );
    return result;
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorDifferenceL2Norm( const Vector1& v1,
                            const Vector2& v2 )
@@ -372,28 +369,27 @@ getVectorDifferenceL2Norm( const Vector1& v1,
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v1.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 0; i < n; i ++ )
    {
-      Real aux = std::fabs( v1[ i ] - v2[ i ] );
+      Real aux = TNL::abs( v1[ i ] - v2[ i ] );
       result += aux * aux;
    }
    return std::sqrt( result );
 }
 
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType, typename Real_ >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorDifferenceLpNorm( const Vector1& v1,
                            const Vector2& v2,
-                           const typename Vector1::RealType& p )
+                           const Real_ p )
 {
-   typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
@@ -401,33 +397,32 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    TNL_ASSERT_GE( p, 1.0, "Parameter of the L^p norm must be at least 1.0." );
 
    if( p == 1.0 )
-      return getVectorDifferenceL1Norm( v1, v2 );
+      return getVectorDifferenceL1Norm< Vector1, Vector2, ResultType >( v1, v2 );
    if( p == 2.0 )
-      return getVectorDifferenceL2Norm( v1, v2 );
+      return getVectorDifferenceL2Norm< Vector1, Vector2, ResultType >( v1, v2 );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v1.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 0; i < n; i ++ )
-      result += std::pow( std::fabs( v1.getElement( i ) - v2.getElement( i ) ), p );
+      result += std::pow( TNL::abs( v1.getElement( i ) - v2.getElement( i ) ), p );
    return std::pow( result, 1.0 / p );
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorDifferenceSum( const Vector1& v1,
                         const Vector2& v2 )
 {
-   typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
    const Index n = v1.getSize();
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold

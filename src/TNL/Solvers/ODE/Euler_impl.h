@@ -11,6 +11,8 @@
 #pragma once
 
 #include <TNL/Devices/MIC.h>
+#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
 
 namespace TNL {
 namespace Solvers {
@@ -35,7 +37,7 @@ template< typename Problem >
 String Euler< Problem > :: getType() const
 {
    return String( "Euler< " ) +
-          Problem :: getTypeStatic() +
+          Problem :: getType() +
           String( " >" );
 };
 
@@ -136,7 +138,7 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
          currentTau = this -> getStopTime() - time; //we don't want to keep such tau
       else this -> tau = currentTau;
 
-      this -> refreshSolverMonitor();
+      this->refreshSolverMonitor();
 
       /****
        * Check stop conditions.
@@ -158,8 +160,8 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
 
 template< typename Problem >
 void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
-                                                       RealType tau,
-                                                       RealType& currentResidue )
+                                              RealType tau,
+                                              RealType& currentResidue )
 {
    RealType localResidue = RealType( 0.0 );
    const IndexType size = k1->getSize();
@@ -193,8 +195,9 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
          const IndexType sharedMemory = cudaBlockSize.x * sizeof( RealType );
          const IndexType gridOffset = gridIdx * threadsPerGrid;
          const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
+         const IndexType currentGridSize = Devices::Cuda::getNumberOfBlocks( currentSize, cudaBlockSize.x );
 
-         updateUEuler<<< cudaBlocks, cudaBlockSize, sharedMemory >>>( currentSize,
+         updateUEuler<<< currentGridSize, cudaBlockSize, sharedMemory >>>( currentSize,
                                                                       tau,
                                                                       &_k1[ gridOffset ],
                                                                       &_u[ gridOffset ],
@@ -227,12 +230,9 @@ void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
     }
 #endif
    }
-
-   
-   
-   localResidue /= tau * ( RealType ) size;   
-   MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this->solver_comm );
-
+   localResidue /= tau * ( RealType ) size;
+   Problem::CommunicatorType::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, Problem::CommunicatorType::AllGroup );
+   //std::cerr << "Local residue = " << localResidue << " - globalResidue = " << currentResidue << std::endl;
 }
 
 #ifdef HAVE_CUDA

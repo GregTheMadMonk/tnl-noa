@@ -118,9 +118,7 @@ bool
 ExplicitTimeStepper< Problem, OdeSolver >::
 solve( const RealType& time,
        const RealType& stopTime,
-       const MeshPointer& mesh,
-       DofVectorPointer& dofVector,
-       MeshDependentDataPointer& meshDependentData )
+       DofVectorPointer& dofVector )
 {
    TNL_ASSERT_TRUE( this->odeSolver, "ODE solver was not set" );
    mainTimer.start();
@@ -130,11 +128,9 @@ solve( const RealType& time,
    this->odeSolver->setStopTime( stopTime );
    if( this->odeSolver->getMinIterations() )
       this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< Problem >::RealType ) this->odeSolver->getMinIterations() );
-   this->mesh = &mesh;
-   this->meshDependentData = &meshDependentData;
    if( ! this->odeSolver->solve( dofVector ) )
       return false;
-   this->problem->setExplicitBoundaryConditions( stopTime, *this->mesh, dofVector, *this->meshDependentData );
+   this->problem->setExplicitBoundaryConditions( stopTime, dofVector );
    mainTimer.stop();
    this->allIterations += this->odeSolver->getIterations();
    return true;
@@ -155,11 +151,7 @@ getExplicitUpdate( const RealType& time,
    }
 
    this->preIterateTimer.start();
-   if( ! this->problem->preIterate( time,
-                                    tau,
-                                    *this->mesh,
-                                    u,
-                                    *this->meshDependentData ) )
+   if( ! this->problem->preIterate( time, tau, u ) )
    {
       std::cerr << std::endl << "Preiteration failed." << std::endl;
       return;
@@ -171,19 +163,15 @@ getExplicitUpdate( const RealType& time,
       this->solverMonitor->setStage( "Explicit update" );
 
    this->explicitUpdaterTimer.start();
-   this->problem->setExplicitBoundaryConditions( time, *this->mesh, u, *this->meshDependentData );
-   this->problem->getExplicitUpdate( time, tau, *this->mesh, u, fu, *this->meshDependentData );
+   this->problem->setExplicitBoundaryConditions( time, u );
+   this->problem->getExplicitUpdate( time, tau, u, fu );
    this->explicitUpdaterTimer.stop();
 
    if( this->solverMonitor )
       this->solverMonitor->setStage( "Postiteration" );
 
    this->postIterateTimer.start();
-   if( ! this->problem->postIterate( time,
-                                     tau,
-                                     *this->mesh,
-                                     u,
-                                     *this->meshDependentData ) )
+   if( ! this->problem->postIterate( time, tau, u ) )
    {
       std::cerr << std::endl << "Postiteration failed." << std::endl;
       return;
@@ -196,7 +184,7 @@ template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
 bool
 ExplicitTimeStepper< Problem, OdeSolver >::
-writeEpilog( Logger& logger )
+writeEpilog( Logger& logger ) const
 {
    logger.writeParameter< long long int >( "Iterations count:", this->allIterations );
    logger.writeParameter< const char* >( "Pre-iterate time:", "" );

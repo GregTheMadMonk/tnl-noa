@@ -362,6 +362,10 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >
       __cuda_callable__ inline
       PointType getCenter() const;
 
+      // compatibility with meshes, equivalent to getCenter
+      __cuda_callable__ inline
+      PointType getPoint() const;
+
       __cuda_callable__ inline
       const RealType getMeasure() const;
  

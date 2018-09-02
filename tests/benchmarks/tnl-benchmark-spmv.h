@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNL_BENCHMARK_SPMV_H_
-#define TNL_BENCHMARK_SPMV_H_
+#pragma once
 
 #include <fstream>
 #include <iomanip>
@@ -21,8 +20,15 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Matrices/CSR.h>
+#include <TNL/Matrices/AdEllpack.h>
+#include <TNL/Matrices/BiEllpack.h>
+#include <TNL/Matrices/BiEllpackSymmetric.h>
 #include <TNL/Matrices/Ellpack.h>
+#include <TNL/Matrices/EllpackSymmetric.h>
+#include <TNL/Matrices/EllpackSymmetricGraph.h>
 #include <TNL/Matrices/SlicedEllpack.h>
+#include <TNL/Matrices/SlicedEllpackSymmetric.h>
+#include <TNL/Matrices/SlicedEllpackSymmetricGraph.h>
 #include <TNL/Matrices/ChunkedEllpack.h>
 #include <TNL/Matrices/MatrixReader.h>
 #include <TNL/Timer.h>
@@ -363,7 +369,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
       CSRCudaType cudaCSR;
       //cout << "Copying matrix to GPU... ";
       cudaCSR = csrMatrix;
-      ::tnlCusparseCSR< Real > cusparseCSR;
+      TNL::CusparseCSR< Real > cusparseCSR;
       cusparseCSR.init( cudaCSR, &cusparseHandle );
       benchmarkMatrix( cusparseCSR,
                        cudaX,
@@ -548,41 +554,104 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
 #endif
       ellpackMatrix.reset();
 
-      typedef SlicedEllpack< Real, Devices::Host, int > SlicedEllpackType;
-      SlicedEllpackType slicedEllpack;
-      Matrices::copySparseMatrix( slicedEllpack, csrMatrix );
-      allocatedElements = slicedEllpack.getNumberOfMatrixElements();
-      padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
-      logFile << "    " << padding << std::endl;
-      benchmarkMatrix( slicedEllpack,
-                       hostX,
-                       hostB,
-                       nonzeroElements,
-                       "SlicedEllpack Host",
-                       stopTime,
-                       baseline,
-                       verbose,
-                       logFile );
+      typedef Matrices::EllpackSymmetric< Real, Devices::Host, int > EllpackSymmetricType;
+      EllpackSymmetricType EllpackSymmetric;
+      if( ! MatrixReader< EllpackSymmetricType >::readMtxFile( inputFileName, EllpackSymmetric, verbose, true ) )
+         writeTestFailed( logFile, 7 );
+      else
+      {
+         allocatedElements = EllpackSymmetric.getNumberOfMatrixElements();
+         padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
+         logFile << "    " << padding <<std::endl;
+         benchmarkMatrix( EllpackSymmetric,
+                          hostX,
+                          hostB,
+                          nonzeroElements,
+                          "EllpackSym Host",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         EllpackSymmetric.reset();
 #ifdef HAVE_CUDA
-      typedef SlicedEllpack< Real, Devices::Cuda, int > SlicedEllpackCudaType;
-      SlicedEllpackCudaType cudaSlicedEllpack;
-      std::cout << "Copying matrix to GPU... ";
-      cudaSlicedEllpack = slicedEllpack;
-      std::cout << " done.   \r";
-      benchmarkMatrix( cudaSlicedEllpack,
-                       cudaX,
-                       cudaB,
-                       nonzeroElements,
-                       "SlicedEllpack Cuda",
-                       stopTime,
-                       baseline,
-                       verbose,
-                       logFile );
-      cudaSlicedEllpack.reset();
-#endif
-      slicedEllpack.reset();
+         typedef Matrices::EllpackSymmetric< Real, Devices::Cuda, int > EllpackSymmetricCudaType;
+         EllpackSymmetricCudaType cudaEllpackSymmetric;
+        std::cout << "Copying matrix to GPU... ";
+         for( int i = 0; i < rowLengthsHost.getSize(); i++ )
+             rowLengthsHost[ i ] = EllpackSymmetric.getRowLength( i );
+         rowLengthsCuda = rowLengthsHost;
 
-      typedef ChunkedEllpack< Real, Devices::Host, int > ChunkedEllpackType;
+         // TODO: fix this
+         //if( ! cudaEllpackSymmetric.copyFrom( EllpackSymmetric, rowLengthsCuda ) )
+         {
+           std::cerr << "I am not able to transfer the matrix on GPU." <<std::endl;
+            writeTestFailed( logFile, 3 );
+         }
+         //else
+         {
+           std::cout << " done.   \r";
+            benchmarkMatrix( cudaEllpackSymmetric,
+                             cudaX,
+                             cudaB,
+                             nonzeroElements,
+                             "EllpackSym Cuda",
+                             stopTime,
+                             baseline,
+                             verbose,
+                             logFile );
+         }
+         cudaEllpackSymmetric.reset();
+#endif
+      }
+
+      typedef Matrices::SlicedEllpack< Real, Devices::Host, int > SlicedEllpackMatrixType;
+      SlicedEllpackMatrixType slicedEllpackMatrix;
+      if( ! Matrices::MatrixReader< SlicedEllpackMatrixType >::readMtxFile( inputFileName, slicedEllpackMatrix, verbose ) )
+         writeTestFailed( logFile, 7 );
+      else
+      {
+         allocatedElements = slicedEllpackMatrix.getNumberOfMatrixElements();
+         padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100;
+         logFile << "    " << padding <<std::endl;
+         benchmarkMatrix( slicedEllpackMatrix,
+                          hostX,
+                          hostB,
+                          nonzeroElements,
+                          "SlicedEllpack Host",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+#ifdef HAVE_CUDA
+         typedef Matrices::SlicedEllpack< Real, Devices::Cuda, int > SlicedEllpackMatrixCudaType;
+         SlicedEllpackMatrixCudaType cudaSlicedEllpackMatrix;
+         for( int i = 0; i < rowLengthsHost.getSize(); i++ )
+              rowLengthsHost[ i ] = slicedEllpackMatrix.getRowLength( i );
+         rowLengthsCuda = rowLengthsHost;
+         // TODO: fix
+         //if( ! cudaSlicedEllpackMatrix.copyFrom( slicedEllpackMatrix, rowLengthsCuda ) )
+         {
+            std::cerr << "Nejde zkopirovat" <<std::endl;
+             writeTestFailed( logFile, 3 );
+         }
+         //else
+         {
+           std::cout << " done.    \r";
+            benchmarkMatrix( cudaSlicedEllpackMatrix,
+                             cudaX,
+                             cudaB,
+                             nonzeroElements,
+                             "SlicedEllpack Cuda",
+                             stopTime,
+                             baseline,
+                             verbose,
+                             logFile );
+         }
+         cudaSlicedEllpackMatrix.reset();        
+#endif         
+      }
+
+      typedef Matrices::ChunkedEllpack< Real, Devices::Host, int > ChunkedEllpackType;
       ChunkedEllpackType chunkedEllpack;
       Matrices::copySparseMatrix( chunkedEllpack, csrMatrix );
       allocatedElements = chunkedEllpack.getNumberOfMatrixElements();
@@ -597,8 +666,9 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                        baseline,
                        verbose,
                        logFile );
+         
 #ifdef HAVE_CUDA
-      typedef ChunkedEllpack< Real, Devices::Cuda, int > ChunkedEllpackCudaType;
+      typedef Matrices::ChunkedEllpack< Real, Devices::Cuda, int > ChunkedEllpackCudaType;
       ChunkedEllpackCudaType cudaChunkedEllpack;
       std::cout << "Copying matrix to GPU... ";
       cudaChunkedEllpack = chunkedEllpack;
@@ -614,7 +684,216 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                        logFile );
       cudaChunkedEllpack.reset();
 #endif
-      chunkedEllpack.reset();
+
+      typedef Matrices::BiEllpack< Real, Devices::Host, int > BiEllpackMatrixType;
+      BiEllpackMatrixType biEllpackMatrix;
+      // TODO: I did not check this during git merging, but I hope its gonna work
+      //   Tomas Oberhuber
+      //    copySparseMatrix( biEllpackMatrix, csrMatrix ); // TODO:Fix the getRow method to be compatible with othr formats
+      /*if( ! biEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
+         writeTestFailed( logFile, 7 );
+      else*/
+      {
+         allocatedElements = biEllpackMatrix.getNumberOfMatrixElements();
+         padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
+         logFile << "    " << padding <<std::endl;
+         benchmarkMatrix( biEllpackMatrix,
+                          hostX,
+                          hostB,
+                          nonzeroElements,
+                          "BiEllpack Host",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         biEllpackMatrix.reset();
+
+#ifdef HAVE_CUDA
+         typedef Matrices::BiEllpack< Real, Devices::Cuda, int > BiEllpackMatrixCudaType;
+         BiEllpackMatrixCudaType cudaBiEllpackMatrix;
+         // TODO: I did not check this during git merging, but I hope its gonna work
+         //   Tomas Oberhuber
+         //    copySparseMatrix( biEllpackMatrix, csrMatrix ); // TODO:Fix the getRow method to be compatible with othr formats
+        std::cout << "Copying matrix to GPU... ";
+         /*if( ! cudaBiEllpackMatrix.copyFrom( biEllpackMatrix, rowLengthsCuda ) )
+         {
+           std::cerr << "I am not able to transfer the matrix on GPU." <<std::endl;
+            writeTestFailed( logFile, 3 );
+         }
+         else*/
+         {
+           std::cout << " done.    \r";
+            benchmarkMatrix( cudaBiEllpackMatrix,
+                             cudaX,
+                             cudaB,
+                             nonzeroElements,
+                             "BiEllpack Cuda",
+                             stopTime,
+                             baseline,
+                             verbose,
+                             logFile );
+         }
+         cudaBiEllpackMatrix.reset();
+#endif
+      }
+
+      typedef Matrices::SlicedEllpackSymmetric< Real, Devices::Host, int > SlicedEllpackSymmetricType;
+      SlicedEllpackSymmetricType slicedEllpackSymmetric;
+      if( ! Matrices::MatrixReader< SlicedEllpackSymmetricType >::readMtxFile( inputFileName, slicedEllpackSymmetric, verbose, true ) )
+         writeTestFailed( logFile, 7 );
+      else
+      {
+         allocatedElements = slicedEllpackSymmetric.getNumberOfMatrixElements();
+         padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
+         logFile << "    " << padding <<std::endl;
+         benchmarkMatrix( slicedEllpackSymmetric,
+                          hostX,
+                          hostB,
+                          nonzeroElements,
+                          "SlicedEllpackSym Host",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         slicedEllpackSymmetric.reset();
+#ifdef HAVE_CUDA
+         typedef Matrices::SlicedEllpackSymmetric< Real, Devices::Cuda, int > SlicedEllpackSymmetricCudaType;
+         SlicedEllpackSymmetricCudaType cudaSlicedEllpackSymmetric;
+        std::cout << "Copying matrix to GPU... ";
+         for( int i = 0; i < rowLengthsHost.getSize(); i++ )
+             rowLengthsHost[ i ] = slicedEllpackSymmetric.getRowLength( i );
+         rowLengthsCuda = rowLengthsHost;
+         // TODO: fiox the nest line
+         //if( ! cudaSlicedEllpackSymmetric.copyFrom( slicedEllpackSymmetric, rowLengthsCuda ) )
+         {
+           std::cerr << "I am not able to transfer the matrix on GPU." <<std::endl;
+            writeTestFailed( logFile, 3 );
+         }
+         //else
+         {
+           std::cout << " done.   \r";
+            benchmarkMatrix( cudaSlicedEllpackSymmetric,
+                             cudaX,
+                             cudaB,
+                             nonzeroElements,
+                             "SlicedEllpackSym Cuda",
+                             stopTime,
+                             baseline,
+                             verbose,
+                             logFile );
+         }
+         cudaSlicedEllpackSymmetric.reset();
+#endif
+      }
+
+      typedef Matrices::EllpackSymmetricGraph< Real, Devices::Host, int > EllpackSymmetricGraphMatrixType;
+      EllpackSymmetricGraphMatrixType EllpackSymmetricGraphMatrix;
+      if( ! Matrices::MatrixReader< EllpackSymmetricGraphMatrixType >::readMtxFile( inputFileName, EllpackSymmetricGraphMatrix, verbose, true ) ||
+          ! EllpackSymmetricGraphMatrix.help() )
+         writeTestFailed( logFile, 7 );
+      else
+      {
+         allocatedElements = EllpackSymmetricGraphMatrix.getNumberOfMatrixElements();
+         padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
+         logFile << "    " << padding <<std::endl;
+         benchmarkMatrix( EllpackSymmetricGraphMatrix,
+                          hostX,
+                          hostB,
+                          nonzeroElements,
+                          "Ellpack Graph Host",
+                          stopTime,
+                          baseline,
+                          verbose,
+                          logFile );
+         EllpackSymmetricGraphMatrix.reset();
+#ifdef HAVE_CUDA
+         typedef Matrices::EllpackSymmetricGraph< Real, Devices::Cuda, int > EllpackSymmetricGraphMatrixCudaType;
+         EllpackSymmetricGraphMatrixCudaType cudaEllpackSymmetricGraphMatrix;
+        std::cout << "Copying matrix to GPU... ";
+         for( int i = 0; i < rowLengthsHost.getSize(); i++ )
+             rowLengthsHost[ i ] = EllpackSymmetricGraphMatrix.getRowLength( i );
+         rowLengthsCuda = rowLengthsHost;
+         // TODO: fix it
+         //if( ! cudaEllpackSymmetricGraphMatrix.copyFrom( EllpackSymmetricGraphMatrix, rowLengthsCuda ) ) 
+         {
+            writeTestFailed( logFile, 3 );
+         }
+         //else if( ! cudaEllpackSymmetricGraphMatrix.help() )
+         {
+            writeTestFailed( logFile, 3 );
+         } 
+         //else
+         {
+            std::cout << " done.   \r";
+            benchmarkMatrix( cudaEllpackSymmetricGraphMatrix,
+                             cudaX,
+                             cudaB,
+                             nonzeroElements,
+                             "Ellpack Graph Cuda",
+                             stopTime,
+                             baseline,
+                             verbose,
+                             logFile );
+         }
+         cudaEllpackSymmetricGraphMatrix.reset();
+#endif
+      }
+
+      
+        typedef Matrices::AdEllpack< Real, Devices::Host, int > AdEllpackMatrixType;
+        AdEllpackMatrixType adEllpackMatrix;
+         // TODO: I did not check this during git merging, but I hope its gonna work
+         //   Tomas Oberhuber
+        //copySparseMatrix( adEllpackMatrix, csrMatrix ); // TODO:Fix the getRow method to be compatible with othr formats
+        /*if( ! adEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
+           writeTestFailed( logFile, 7 );
+        else*/
+        {
+           allocatedElements = adEllpackMatrix.getNumberOfMatrixElements();
+           padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
+           logFile << "    " << padding <<std::endl;
+           benchmarkMatrix( adEllpackMatrix,
+                            hostX,
+                            hostB,
+                            nonzeroElements,
+                            "AdEllpack Host",
+                            stopTime,
+                            baseline,
+                            verbose,
+                            logFile );
+           adEllpackMatrix.reset();
+        }
+      
+#ifdef HAVE_CUDA
+         typedef Matrices::AdEllpack< Real, Devices::Cuda, int > AdEllpackMatrixCudaType;
+         AdEllpackMatrixCudaType cudaAdEllpackMatrix;
+         // TODO: I did not check this during git merging, but I hope its gonna work
+         //   Tomas Oberhuber
+        //copySparseMatrix( adEllpackMatrix, csrMatrix ); // TODO:Fix the getRow method to be compatible with othr formats
+        std::cout << "Copying matrix to GPU... ";
+         /*if( ! cudaAdEllpackMatrix.copyFrom( csrMatrix, rowLengthsCuda ) )
+         {
+           std::cerr << "I am not able to transfer the matrix on GPU." <<std::endl;
+            writeTestFailed( logFile, 3 );
+         }
+         else*/
+         {
+	    allocatedElements = cudaAdEllpackMatrix.getNumberOfMatrixElements();
+	    padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
+            logFile << "    " << padding <<std::endl;
+           std::cout << " done.    \r";
+            benchmarkMatrix( cudaAdEllpackMatrix,
+                             cudaX,
+                             cudaB,
+                             nonzeroElements,
+                             "AdEllpack Cuda",
+                             stopTime,
+                             baseline,
+                             verbose,
+                             logFile );
+           cudaAdEllpackMatrix.reset();
+	}
+#endif
    }
    return true;
 }
@@ -640,5 +919,3 @@ int main( int argc, char* argv[] )
          return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }
-
-#endif /* TNL_BENCHMARK_SPMV_H_ */

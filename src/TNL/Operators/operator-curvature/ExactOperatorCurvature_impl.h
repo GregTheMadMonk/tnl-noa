@@ -25,9 +25,7 @@ getType()
 
 template< typename OperatorQ >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Function, typename Point, typename Real >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlExactOperatorQ< 1 >::
 getValue( const Function& function,
@@ -52,9 +50,7 @@ getType()
 }
 
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Function, typename Point, typename Real >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlExactOperatorQ< 2 >::
 getValue( const Function& function,

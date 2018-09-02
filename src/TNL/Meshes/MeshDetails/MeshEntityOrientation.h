@@ -25,23 +25,19 @@ template< typename MeshConfig,
           typename EntityTopology>
 class MeshEntityOrientation
 {
-   template< typename, typename> friend class MeshEntityReferenceOrientation;
+   template< typename, typename>
+   friend class MeshEntityReferenceOrientation;
 
    public:
-      typedef typename MeshTraits< MeshConfig >::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
+      using LocalIndexType = typename MeshTraits< MeshConfig >::LocalIndexType;
+      using IdPermutationArrayType = typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, 0 >::IdPermutationArrayType;
 
-      IdPermutationArrayAccessorType getSubvertexPermutation() const
+      const IdPermutationArrayType& getSubvertexPermutation() const
       {
-         IdPermutationArrayAccessorType accessor;
-         accessor.bind( this->subvertexPermutation );
-         return accessor;
-         //return this->subvertexPermutation.subarray( 0, this->subvertexPermutation.getSize() );
+         return subvertexPermutation;
       }
 
    private:
-      typedef typename MeshTraits< MeshConfig >::LocalIndexType        LocalIndexType;
-      typedef typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, 0 >::IdPermutationArrayType IdPermutationArrayType;
-
       void setPermutationValue( LocalIndexType index, LocalIndexType value )
       {
          this->subvertexPermutation[ index ] = value;

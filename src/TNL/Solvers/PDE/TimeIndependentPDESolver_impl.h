@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTimeIndependentPDESolver_impl.h  -  description
+                          TimeIndependentPDESolver_impl.h  -  description
                              -------------------
     begin                : Jan 15, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -17,27 +17,34 @@
 
 #pragma once 
 
-#include <solvers/pde/tnlTimeIndependentPDESolver.h>
+#include <TNL/Solvers/PDE/TimeIndependentPDESolver.h>
 
-template< typename Problem >
-tnlTimeIndependentPDESolver< Problem >::
-tnlTimeIndependentPDESolver()
-: problem( 0 ),
-  computeTimer( 0 )
+namespace TNL {
+namespace Solvers {
+namespace PDE {   
+
+
+template< typename Problem,
+          typename DiscreteSolver >
+TimeIndependentPDESolver< Problem, DiscreteSolver >::
+TimeIndependentPDESolver()
+: problem( 0 )
 {
 }
 
-template< typename Problem >
+template< typename Problem,
+          typename DiscreteSolver >
 void
-tnlTimeIndependentPDESolver< Problem >::
-configSetup( tnlConfigDescription& config,
+TimeIndependentPDESolver< Problem, DiscreteSolver >::
+configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
 }
 
-template< typename Problem >
+template< typename Problem,
+          typename DiscreteSolver >
 bool
-tnlTimeIndependentPDESolver< Problem >::
+TimeIndependentPDESolver< Problem, DiscreteSolver >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -45,57 +52,70 @@ setup( const Config::ParameterContainer& parameters,
     * Load the mesh from the mesh file
     */
    const String& meshFile = parameters.getParameter< String >( "mesh" );
-   cout << "Loading a mesh from the file " << meshFile << "...";
-   if( ! this->mesh.load( meshFile ) )
+   std::cout << "Loading a mesh from the file " << meshFile << "...";
+   if( ! this->mesh->load( meshFile ) )
    {
-      cerr << endl;
-      cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
-      cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << endl;
+      std::cerr << std::endl;
+      std::cerr << "I am not able to load the mesh from the file " << meshFile << "." << std::endl;
+      std::cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << std::endl;
       return false;
    }
-   cout << " [ OK ] " << endl;
+   std::cout << " [ OK ] " << std::endl;
+   
+   /****
+    * Set-up common data
+    */
+   if( ! this->commonDataPointer->setup( parameters ) )
+   {
+      std::cerr << "The problem common data initiation failed!" << std::endl;
+      return false;
+   }
+   problem->setCommonData( this->commonDataPointer );
+   
+   /****
+    * Setup the problem
+    */
+   if( ! problem->setup( parameters, prefix ) )
+   {
+      std::cerr << "The problem initiation failed!" << std::endl;
+      return false;
+   }   
 
    /****
     * Set DOFs (degrees of freedom)
     */
-   TNL_ASSERT_GT( problem->getDofs( this->mesh ), 0, "number of DOFs must be positive" );
-   this->dofs.setSize( problem->getDofs( this->mesh ) );
-   this->dofs.setValue( 0.0 );
-   this->problem->bindDofs( this->mesh, this->dofs );   
+   TNL_ASSERT_GT( problem->getDofs(), 0, "number of DOFs must be positive" );
+   this->dofs->setSize( problem->getDofs() );
+   this->dofs->setValue( 0.0 );
+   this->problem->bindDofs( this->dofs );   
    
-   /****
-    * Set mesh dependent data
-    */
-   this->problem->setMeshDependentData( this->mesh, this->meshDependentData );
-   this->problem->bindMeshDependentData( this->mesh, this->meshDependentData );
    
    /***
     * Set-up the initial condition
     */
-   cout << "Setting up the initial condition ... ";
+   std::cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! this->problem->setInitialData( parameters, this->mesh, this->dofs, this->meshDependentData ) )
+   if( ! this->problem->setInitialCondition( parameters, this->dofs ) )
       return false;
-   cout << " [ OK ]" << endl;
+   std::cout << " [ OK ]" << std::endl;
    
    return true;
 }
 
-template< typename Problem >
+template< typename Problem,
+          typename DiscreteSolver >
 bool
-tnlTimeIndependentPDESolver< Problem >::
-writeProlog( tnlLogger& logger,
+TimeIndependentPDESolver< Problem, DiscreteSolver >::
+writeProlog( Logger& logger,
              const Config::ParameterContainer& parameters )
 {
    logger.writeHeader( problem->getPrologHeader() );
    problem->writeProlog( logger, parameters );
    logger.writeSeparator();
-   mesh.writeProlog( logger );
+   mesh->writeProlog( logger );
    logger.writeSeparator();
    const String& solverName = parameters. getParameter< String >( "discrete-solver" );
    logger.writeParameter< String >( "Discrete solver:", "discrete-solver", parameters );
-   if( solverName == "merson" )
-      logger.writeParameter< double >( "Adaptivity:", "merson-adaptivity", parameters, 1 );
    if( solverName == "sor" )
       logger.writeParameter< double >( "Omega:", "sor-omega", parameters, 1 );
    if( solverName == "gmres" )
@@ -116,36 +136,26 @@ writeProlog( tnlLogger& logger,
    return true;
 }
 
-template< typename Problem >
+template< typename Problem,
+          typename DiscreteSolver >
 void
-tnlTimeIndependentPDESolver< Problem >::
+TimeIndependentPDESolver< Problem, DiscreteSolver >::
 setProblem( ProblemType& problem )
 {
    this->problem = &problem;
 }
 
-template< typename Problem >
-void tnlTimeIndependentPDESolver< Problem > :: setIoTimer( tnlTimer& ioTimer )
-{
-  // this->ioTimer = &ioTimer;
-}
-
-template< typename Problem >
-void tnlTimeIndependentPDESolver< Problem > :: setComputeTimer( tnlTimer& computeTimer )
-{
-   this->computeTimer = &computeTimer;
-}
-
-template< typename Problem >
+template< typename Problem,
+          typename DiscreteSolver >
 bool
-tnlTimeIndependentPDESolver< Problem >::
+TimeIndependentPDESolver< Problem, DiscreteSolver >::
 solve()
 {
    TNL_ASSERT_TRUE( problem, "No problem was set in tnlPDESolver." );
 
    this->computeTimer->reset();
    this->computeTimer->start();
-   if( ! this->problem->solve( this->mesh, this->dofs ) )
+   if( ! this->problem->solve( this->dofs ) )
    {
       this->computeTimer->stop();
       return false;
@@ -154,10 +164,15 @@ solve()
    return true;
 }
 
-template< typename Problem >
+template< typename Problem,
+          typename DiscreteSolver >
 bool
-tnlTimeIndependentPDESolver< Problem >::
-writeEpilog( tnlLogger& logger ) const
+TimeIndependentPDESolver< Problem, DiscreteSolver >::
+writeEpilog( Logger& logger ) const
 {
    return this->problem->writeEpilog( logger );
 }
+
+} // namespace PDE
+} // namespace Solvers
+} // namespace TNL

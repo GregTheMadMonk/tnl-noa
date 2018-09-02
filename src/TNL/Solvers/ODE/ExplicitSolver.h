@@ -19,6 +19,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/SharedPointer.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Solvers {
@@ -63,8 +64,6 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
    void setMaxTau( const RealType& maxTau );
 
    const RealType& getMaxTau() const;
-
-   void setMPIComm( MPI_Comm comm );
  
    void setVerbose( IndexType v );
 
@@ -96,8 +95,6 @@ protected:
    RealType tau;
 
    RealType maxTau;
-
-   MPI_Comm solver_comm;
 
    IndexType verbosity;
 

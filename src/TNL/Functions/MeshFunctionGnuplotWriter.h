@@ -13,175 +13,73 @@
 #include <TNL/Meshes/Grid.h>
 
 namespace TNL {
-namespace Functions {
 
-template< typename, int, typename > class MeshFunction;
+namespace Meshes {
+   template< typename, typename, typename > class MeshEntity;
+}
+
+namespace Functions {
 
 template< typename MeshFunction >
 class MeshFunctionGnuplotWriter
 {
-   public:
+   using MeshType = typename MeshFunction::MeshType;
+   using EntityType = typename MeshType::template EntityType< MeshFunction::getEntitiesDimension() >;
+   using GlobalIndex = typename MeshType::GlobalIndexType;
 
-      static bool write( const MeshFunction& function,
-                         std::ostream& str,
-                         const double& scale );
-};
+   template< typename Entity, int dim = Entity::getEntityDimension() >
+   struct center
+   {
+      static auto get( const Entity& entity ) -> decltype(entity.getCenter())
+      {
+         return entity.getCenter();
+      }
+   };
 
-/***
- * 1D grids cells
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >
-{
-   public:
-      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
+   template< typename Entity >
+   struct center< Entity, 0 >
+   {
+      static auto get( const Entity& entity ) -> decltype(entity.getPoint())
+      {
+         return entity.getPoint();
+      }
+   };
 
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-};
+   template< typename MeshConfig, typename Device, typename Topology, int dim >
+   struct center< TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >, dim >
+   {
+      static int get( const TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >& entity )
+      {
+         throw "not implemented";
+      }
+   };
 
-/***
- * 1D grids vertices
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >
-{
-   public:
-      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
+   template< typename MeshConfig, typename Device, typename Topology >
+   struct center< TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >, 0 >
+   {
+      static int get( const TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >& entity )
+      {
+         throw "not implemented";
+      }
+   };
 
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-};
-
-
-/***
- * 2D grids cells
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >
-{
-   public:
-      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 2, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-};
-
-/***
- * 2D grids faces
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >
-{
-   public:
-      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-};
-
-/***
- * 2D grids vertices
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >
-{
-   public:
-      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-};
-
-
-/***
- * 3D grids cells
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >
-{
-   public:
-      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 3, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-};
-
-/***
- * 3D grids faces
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >
-{
-   public:
-      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 2, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
-};
-
-/***
- * 3D grids vertices
- */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real >
-class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >
-{
-   public:
-      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         std::ostream& str,
-                         const double& scale );
+public:
+   static bool write( const MeshFunction& function,
+                      std::ostream& str,
+                      const double& scale = 1.0 )
+   {
+      const MeshType& mesh = function.getMesh();
+      const GlobalIndex entitiesCount = mesh.template getEntitiesCount< EntityType >();
+      for( GlobalIndex i = 0; i < entitiesCount; i++ ) {
+         const EntityType& entity = mesh.template getEntity< EntityType >( i );
+         typename MeshType::PointType v = center< EntityType >::get( entity );
+         for( int j = 0; j < v.getSize(); j++ )
+            str << v[ j ] << " ";
+         str << scale * function.getData().getElement( i ) << "\n";
+      }
+      return true;
+   }
 };
 
 } // namespace Functions
 } // namespace TNL
-
-#include <TNL/Functions/MeshFunctionGnuplotWriter_impl.h>

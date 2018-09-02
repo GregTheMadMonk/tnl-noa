@@ -14,11 +14,13 @@
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Solvers/SolverConfig.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Communicators/MpiCommunicator.h>
 
 namespace TNL {
 namespace Solvers {
    
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
           template< typename MeshConfig > class ProblemConfig,
           typename MeshConfig >
 bool
@@ -32,12 +34,19 @@ run( int argc, char* argv[] )
    configDescription.addDelimiter( "Parallelization setup:" );
    Devices::Host::configSetup( configDescription );
    Devices::Cuda::configSetup( configDescription );
+   Communicators::NoDistrCommunicator::configSetup( configDescription );
+   Communicators::MpiCommunicator::configSetup( configDescription );
+   
+   Communicators::NoDistrCommunicator::Init(argc,argv);
+   Communicators::MpiCommunicator::Init(argc,argv);
 
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return false;
 
    SolverInitiator< ProblemSetter, MeshConfig > solverInitiator;
-   return solverInitiator.run( parameters );
+   bool ret= solverInitiator.run( parameters );
+
+	return ret;
 };
 
 } // namespace Solvers

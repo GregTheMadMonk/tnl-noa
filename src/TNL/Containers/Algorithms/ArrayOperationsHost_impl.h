@@ -15,6 +15,8 @@
 
 #include <TNL/tnlConfig.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/Reduction.h>
+#include <TNL/Containers/Algorithms/ReductionOperations.h>
 
 namespace TNL {
 namespace Containers {   
@@ -101,7 +103,18 @@ copyMemory( DestinationElement* destination,
    if( std::is_same< DestinationElement, SourceElement >::value &&
        ( std::is_fundamental< DestinationElement >::value ||
          std::is_pointer< DestinationElement >::value ) )
+   {
+      // GCC 8.1 complains that we bypass a non-trivial copy-constructor
+      // (in C++17 we could use constexpr if to avoid compiling this branch in that case)
+      #if defined(__GNUC__) && ( __GNUC__ > 8 || ( __GNUC__ == 8 && __GNUC_MINOR__ > 0 ) ) && !defined(__clang__) && !defined(__NVCC__)
+         #pragma GCC diagnostic push
+         #pragma GCC diagnostic ignored "-Wclass-memaccess"
+      #endif
       memcpy( destination, source, size * sizeof( DestinationElement ) );
+      #if defined(__GNUC__) && !defined(__clang__) && !defined(__NVCC__)
+         #pragma GCC diagnostic pop
+      #endif
+   }
    else
       for( Index i = 0; i < size; i ++ )
          destination[ i ] = ( DestinationElement ) source[ i ];
@@ -117,6 +130,8 @@ compareMemory( const DestinationElement* destination,
                const SourceElement* source,
                const Index size )
 {
+   TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
    if( std::is_same< DestinationElement, SourceElement >::value &&
        ( std::is_fundamental< DestinationElement >::value ||
          std::is_pointer< DestinationElement >::value ) )
@@ -130,6 +145,43 @@ compareMemory( const DestinationElement* destination,
             return false;
    return true;
 }
+
+template< typename Element,
+          typename Index >
+bool
+ArrayOperations< Devices::Host >::
+containsValue( const Element* data,
+               const Index size,
+               const Element& value )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "" );
+
+   for( Index i = 0; i < size; i ++ )
+      if( data[ i ] == value )
+         return true;
+   return false;
+}
+
+template< typename Element,
+          typename Index >
+bool
+ArrayOperations< Devices::Host >::
+containsOnlyValue( const Element* data,
+                   const Index size,
+                   const Element& value )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "" );
+
+   if( size == 0 ) return false;
+
+   for( Index i = 0; i < size; i ++ )
+      if( ! ( data[ i ] == value ) )
+         return false;
+   return true;
+}
+
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 

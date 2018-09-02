@@ -5,4 +5,4 @@ SET( headers Euler.h
              ExplicitSolver.h
              ExplicitSolver_impl.h )
                 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Solvers/ODE )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Solvers/ODE )

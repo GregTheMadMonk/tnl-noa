@@ -14,6 +14,9 @@
 #include <TNL/Logger.h>
 #include <TNL/String.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/ODE/Merson.h>
@@ -32,14 +35,21 @@
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
+#include <TNL/Solvers/PDE/PDESolverTypeResolver.h>
 
 namespace TNL {
 namespace Solvers {   
 
 template< typename Problem,
           typename ConfigTag,
+          bool TimeDependent = Problem::isTimeDependent() >
+class TimeDependencyResolver
+{};
+   
+template< typename Problem,
+          typename ConfigTag,
           typename TimeStepper = typename Problem::TimeStepper >
-class tnlUserDefinedTimeDiscretisationSetter;
+class UserDefinedTimeDiscretisationSetter;
 
 template< typename Problem,
           typename TimeDiscretisation,
@@ -58,7 +68,7 @@ template< typename Problem,
           template<typename, typename, typename> class Preconditioner,
           typename ConfigTag,
           bool enabled = ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitSolver >::enabled >
-class SolverStarterSemiImplicitSolverSetter{};
+class SolverStarterLinearSolverSetter{};
 
 template< typename Problem,
           typename SemiImplicitSolverTag,
@@ -80,16 +90,45 @@ bool SolverStarter< ConfigTag > :: run( const Config::ParameterContainer& parame
     * Create and set-up the problem
     */
    if( ! Devices::Host::setup( parameters ) ||
-       ! Devices::Cuda::setup( parameters ) )
+       ! Devices::Cuda::setup( parameters ) ||
+       ! Communicators::NoDistrCommunicator::setup( parameters ) ||
+       ! Communicators::MpiCommunicator::setup( parameters ) 
+    )
       return false;
    Problem problem;
-   return tnlUserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
+   //return UserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
+   return TimeDependencyResolver< Problem, ConfigTag >::run( problem, parameters );
 }
+
+template< typename Problem,
+          typename ConfigTag>
+class TimeDependencyResolver< Problem, ConfigTag, true >
+{
+   public:
+      static bool run( Problem& problem,
+                       const Config::ParameterContainer& parameters )
+      {
+         return UserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
+      }
+};
+
+template< typename Problem,
+          typename ConfigTag>
+class TimeDependencyResolver< Problem, ConfigTag, false >
+{
+   public:
+      static bool run( Problem& problem,
+                       const Config::ParameterContainer& parameters )
+      {
+         // TODO: This should be improved - at least rename to LinearSolverSetter
+         return SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisationTag, ConfigTag, true >::run( problem, parameters );   
+      }
+};
 
 template< typename Problem,
           typename ConfigTag,
           typename TimeStepper >
-class tnlUserDefinedTimeDiscretisationSetter
+class UserDefinedTimeDiscretisationSetter
 {
    public:
       static bool run( Problem& problem,
@@ -102,13 +141,14 @@ class tnlUserDefinedTimeDiscretisationSetter
             return false;
          }
          SolverStarter< ConfigTag > solverStarter;
-         return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters, timeStepper );
+         // TODO: Solve the set-up of the DiscreteSOlver type in some better way
+         return solverStarter.template runPDESolver< Problem, TimeStepper, typename Problem::DiscreteSolver >( problem, parameters );
       }
 };
 
 template< typename Problem,
           typename ConfigTag >
-class tnlUserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
+class UserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
 {
    public:
       static bool run( Problem& problem,
@@ -121,9 +161,23 @@ class tnlUserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
          if( timeDiscretisation == "explicit" )
             return SolverStarterTimeDiscretisationSetter< Problem, ExplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
          if( timeDiscretisation == "semi-implicit" )
+         {
+            if( Problem::CommunicatorType::isDistributed() )
+            {
+               std::cerr << "TNL currently does not support semi-implicit solvers with MPI." << std::endl;
+               return false;
+            }
             return SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
+         }
          if( timeDiscretisation == "implicit" )
+         {
+            if( Problem::CommunicatorType::isDistributed() )
+            {
+               std::cerr << "TNL currently does not support implicit solvers with MPI." << std::endl;
+               return false;
+            }            
             return SolverStarterTimeDiscretisationSetter< Problem, ImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
+         }
          std::cerr << "Uknown time discretisation: " << timeDiscretisation << "." << std::endl;
          return false;
       }
@@ -291,11 +345,11 @@ class SolverStarterPreconditionerSetter
          const String& preconditioner = parameters.getParameter< String>( "preconditioner" );
 
          if( preconditioner == "none" )
-            return SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Dummy, ConfigTag >::run( problem, parameters );
+            return SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Dummy, ConfigTag >::run( problem, parameters );
          if( preconditioner == "diagonal" )
-            return SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Diagonal, ConfigTag >::run( problem, parameters );
+            return SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Diagonal, ConfigTag >::run( problem, parameters );
          if( preconditioner == "ilu0" )
-            return SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::ILU0, ConfigTag >::run( problem, parameters );
+            return SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::ILU0, ConfigTag >::run( problem, parameters );
 
          std::cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal, ilu0." << std::endl;
          return false;
@@ -306,7 +360,7 @@ template< typename Problem,
           typename SemiImplicitSolverTag,
           template<typename, typename, typename> class Preconditioner,
           typename ConfigTag >
-class SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, false >
+class SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, false >
 {
    public:
       static bool run( Problem& problem,
@@ -321,7 +375,7 @@ template< typename Problem,
           typename SemiImplicitSolverTag,
           template<typename, typename, typename> class Preconditioner,
           typename ConfigTag >
-class SolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, true >
+class SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, true >
 {
    public:
       static bool run( Problem& problem,
@@ -349,22 +403,11 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
 {
    this->totalTimer.reset();
    this->totalTimer.start();
+   
+   using SolverMonitorType = IterativeSolverMonitor< typename Problem::RealType,
+                                                     typename Problem::IndexType >;
+   SolverMonitorType solverMonitor, *solverMonitorPointer( &solverMonitor );
  
-   /****
-    * Set-up the discrete solver
-    */
-   DiscreteSolver discreteSolver;
-   if( ! discreteSolver.setup( parameters ) )
-      return false;
-
-   /****
-    * Set-up the time stepper
-    */
-   TimeStepper timeStepper;
-   if( ! timeStepper.setup( parameters ) )
-      return false;
-   timeStepper.setSolver( discreteSolver );
-
    /****
     * Open the log file
     */
@@ -378,14 +421,25 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Set-up the PDE solver
     */
-   PDE::TimeDependentPDESolver< Problem, TimeStepper > solver;
+   //PDE::TimeDependentPDESolver< Problem, TimeStepper > solver;
+   typename PDE::PDESolverTypeResolver< Problem, DiscreteSolver, TimeStepper >::SolverType solver;
+   solver.setComputeTimer( this->computeTimer );
+   solver.setIoTimer( this->ioTimer );
+   solver.setTotalTimer( this->totalTimer );
+
+   if( problem.getSolverMonitor() )
+      solverMonitorPointer = ( SolverMonitorType* ) problem.getSolverMonitor();
+   solverMonitorPointer->setVerbose( parameters.getParameter< int >( "verbose" ) );
+   solverMonitorPointer->setTimer( this->totalTimer );
+   solver.setSolverMonitor( *solverMonitorPointer );
+   
    // catching exceptions ala gtest:
    // https://github.com/google/googletest/blob/59c795ce08be0c8b225bc894f8da6c7954ea5c14/googletest/src/gtest.cc#L2409-L2431
    const int catch_exceptions = parameters.getParameter< bool >( "catch-exceptions" );
    if( catch_exceptions ) {
       try {
          solver.setProblem( problem );
-         solver.setTimeStepper( timeStepper );
+         //solver.setTimeStepper( timeStepper ); // TODO: BETTER FIX: This does not make sense for time independent problem
          if( ! solver.setup( parameters ) )
             return false;
       }
@@ -402,7 +456,7 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    }
    else {
       solver.setProblem( problem );
-      solver.setTimeStepper( timeStepper );
+      //solver.setTimeStepper( timeStepper );
       if( ! solver.setup( parameters ) )
          return false;
    }
@@ -420,26 +474,15 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    solver.writeProlog( logger, parameters  );
 
    /****
-    * Set-up solver monitor and launch the main loop.
-    */
-   typedef IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > SolverMonitorType;
-   SolverMonitorType _tempSolverMonitor;
-   SolverMonitorType* solverMonitorPointer = &_tempSolverMonitor;
-   if( problem.getSolverMonitor() )
-      solverMonitorPointer = ( SolverMonitorType* ) problem.getSolverMonitor();
-
-   timeStepper.setSolverMonitor( *solverMonitorPointer );
-   solverMonitorPointer->setVerbose( verbose );
-   solverMonitorPointer->setTimer( this->totalTimer );
-   SolverMonitorThread t( *solverMonitorPointer );
-
-   /****
     * Set-up timers
     */
    this->computeTimer.reset();
    this->ioTimer.reset();
-   solver.setComputeTimer( this->computeTimer );
-   solver.setIoTimer( this->ioTimer );
+   
+   /****
+    * Create solver monitor thread
+    */
+   SolverMonitorThread t( solver.getSolverMonitor() );
 
    /****
     * Start the solver
@@ -466,7 +509,6 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
       returnCode = solver.solve();
    }
 
-   solverMonitorPointer->stopMainLoop();
    if( ! returnCode ) {
       if( verbose )
          std::cerr << std::endl << "The solver did not converge. " << std::endl;

@@ -18,7 +18,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/CSR.h>
 
-#ifdef HAVE_CUDA
+#if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
 #include <cusparse.h>
 #endif
 
@@ -66,7 +66,7 @@ public:
 
    ILU0()
    {
-#ifdef HAVE_CUDA
+#if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
       cusparseCreate( &handle );
 #endif
    }
@@ -84,14 +84,14 @@ public:
 
    ~ILU0()
    {
-#ifdef HAVE_CUDA
+#if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
       resetMatrices();
       cusparseDestroy( handle );
 #endif
    }
 
 protected:
-#ifdef HAVE_CUDA
+#if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
    Matrices::CSR< RealType, DeviceType, IndexType > A;
    Containers::Vector< RealType, DeviceType, IndexType > y;
 

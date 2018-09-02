@@ -14,7 +14,6 @@
 #include <iomanip>
 #include <TNL/String.h>
 #include <TNL/Assert.h>
-#include <TNL/Logger.h>
 #include <TNL/Meshes/GridDetails/GnuplotWriter.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter1D_impl.h>
@@ -29,7 +28,8 @@ template< typename Real,
           typename Index >
 Grid< 1, Real, Device, Index >::Grid()
 : numberOfCells( 0 ),
-  numberOfVertices( 0 )
+  numberOfVertices( 0 ),
+        distGrid(nullptr)
 {
 }
 
@@ -77,13 +77,39 @@ void Grid< 1, Real, Device, Index >::computeSpaceSteps()
    if( this->getDimensions().x() != 0 )
    {
       this->spaceSteps.x() = this->proportions.x() / ( Real )  this->getDimensions().x();
+      this->computeSpaceStepPowers();
+   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 1, Real, Device, Index > ::computeSpaceStepPowers()
+{
       const RealType& hx = this->spaceSteps.x();
       this->spaceStepsProducts[ 0 ] = 1.0 / ( hx * hx );
       this->spaceStepsProducts[ 1 ] = 1.0 / hx;
       this->spaceStepsProducts[ 2 ] = 1.0;
       this->spaceStepsProducts[ 3 ] = hx;
       this->spaceStepsProducts[ 4 ] = hx * hx;
-   }
+   
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 1, Real, Device, Index > ::computeProportions()
+{
+    this->proportions.x()=this->dimensions.x()*this->spaceSteps.x();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 1, Real, Device, Index > :: setOrigin( const PointType& origin)
+{
+   this->origin = origin;
 }
 
 template< typename Real,
@@ -159,7 +185,7 @@ getEntitiesCount() const
 {
    static_assert( EntityDimension <= 1 &&
                   EntityDimension >= 0, "Wrong grid entity dimensions." );
- 
+
    switch( EntityDimension )
    {
       case 1:
@@ -193,7 +219,7 @@ getEntity( const IndexType& entityIndex ) const
 {
    static_assert( Entity::getEntityDimension() <= 1 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
- 
+
    return GridEntityGetter< ThisType, Entity >::getEntity( *this, entityIndex );
 }
 
@@ -208,7 +234,7 @@ getEntityIndex( const Entity& entity ) const
 {
    static_assert( Entity::getEntityDimension() <= 1 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
- 
+
    return GridEntityGetter< ThisType, Entity >::getEntityIndex( *this, entity );
 }
 
@@ -221,6 +247,18 @@ Grid< 1, Real, Device, Index >::
 getSpaceSteps() const
 {
    return this->spaceSteps;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+inline void 
+Grid< 1, Real, Device, Index >::
+setSpaceSteps(const typename Grid< 1, Real, Device, Index >::PointType& steps)
+{
+    this->spaceSteps=steps;
+    computeSpaceStepPowers();
+    computeProportions();
 }
 
 template< typename Real,
@@ -266,7 +304,7 @@ Grid< 1, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
                                                         const GridFunction& f2 ) const
 {
    typename GridFunction::RealType maxDiff( -1.0 );
- 
+
    Cell cell( *this );
    for( cell.getCoordinates().x() = 0;
         cell.getCoordinates().x() < getDimensions().x();
@@ -302,6 +340,23 @@ Grid< 1, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
    return ::pow( lpNorm, 1.0 / p );
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 1, Real, Device, Index >:: setDistMesh(DistributedMeshType * distMesh)
+{
+    this->distGrid=distMesh;
+}
+   
+template< typename Real,
+          typename Device,
+          typename Index >
+DistributedMeshes::DistributedMesh <Grid< 1, Real, Device, Index >> * 
+Grid< 1, Real, Device, Index >:: getDistributedMesh(void) const
+{
+    return this->distGrid;
+}
+    
 template< typename Real,
           typename Device,
           typename Index >
@@ -355,65 +410,14 @@ bool Grid< 1, Real, Device, Index >::load( const String& fileName )
 }
 
 template< typename Real,
-           typename Device,
-           typename Index >
-bool Grid< 1, Real, Device, Index >::writeMesh( const String& fileName,
-                                                   const String& format ) const
-{
-   /*****
-    * TODO: implement this
-    */
-   return true;
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
-   template< typename MeshFunction >
-bool Grid< 1, Real, Device, Index >::write( const MeshFunction& function,
-                                                 const String& fileName,
-                                                 const String& format ) const
-{
-   if( this->template getEntitiesCount< Cell >() != function. getSize() )
-   {
-      std::cerr << "The size ( " << function. getSize()
-           << " ) of the mesh function does not agree with the DOFs ( "
-           << this->template getEntitiesCount< Cell >() << " ) of a mesh." << std::endl;
-      return false;
-   }
-   std::fstream file;
-   file. open( fileName. getString(), std::ios::out );
-   if( ! file )
-   {
-      std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
-      return false;
-   }
-   file << std::setprecision( 12 );
-   const RealType hx = getSpaceSteps(). x();
-   if( format == "gnuplot" )
-   {
-      typename ThisType::template EntityType< getMeshDimension() > entity( *this );
-      for( entity.getCoordinates().x() = 0;
-           entity.getCoordinates().x() < getDimensions(). x();
-           entity.getCoordinates().x() ++ )
-      {
-         PointType v = entity.getCenter();
-         GnuplotWriter::write( file,  v );
-         GnuplotWriter::write( file,  function[ this->getEntityIndex( entity ) ] );
-         file << std::endl;
-      }
-   }
-   file. close();
-   return true;
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 void
 Grid< 1, Real, Device, Index >::
-writeProlog( Logger& logger )
+writeProlog( Logger& logger ) const
 {
+   if( this->getDistributedMesh() && this->getDistributedMesh()->isDistributed() )
+      return this->getDistributedMesh()->writeProlog( logger );
    logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );

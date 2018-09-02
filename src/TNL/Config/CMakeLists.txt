@@ -23,4 +23,4 @@ SET( tnl_config_CUDA__SOURCES
      PARENT_SCOPE )
 endif()    
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Config )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Config )

@@ -20,7 +20,7 @@ namespace Matrices {
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
-class Matrix : public virtual Object
+class Matrix : public Object
 {
 public:
    typedef Real RealType;
@@ -32,7 +32,7 @@ public:
    Matrix();
 
    virtual void setDimensions( const IndexType rows,
-                               const IndexType columns );
+                                 const IndexType columns );
 
    virtual void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths ) = 0;
 
@@ -54,6 +54,9 @@ public:
 
    __cuda_callable__
    IndexType getColumns() const;
+
+   __cuda_callable__    
+   const IndexType& getNumberOfColors() const;
 
    /****
     * TODO: The fast variants of the following methods cannot be virtual.
@@ -83,22 +86,35 @@ public:
 
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
+   
+   const ValuesVector& getValues() const;
+   
+   ValuesVector& getValues();
 
    template< typename Matrix >
    bool operator == ( const Matrix& matrix ) const;
 
    template< typename Matrix >
    bool operator != ( const Matrix& matrix ) const;
-
+   
+   void computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector);
+   
    virtual bool save( File& file ) const;
 
    virtual bool load( File& file );
 
    virtual void print( std::ostream& str ) const;
 
-protected:
+   bool help( bool verbose = false ) { return true;};
 
-   IndexType rows, columns;
+   void copyFromHostToCuda( Matrices::Matrix< Real, Devices::Host, Index >& matrix );
+
+   __cuda_callable__
+   Index getValuesSize() const;
+
+   protected:
+
+   IndexType rows, columns, numberOfColors;
 
    ValuesVector values;
 };

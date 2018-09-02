@@ -19,39 +19,43 @@ namespace TNL {
 namespace Images {   
 
 template< typename Index = int >
-class tnlPGMImage : public Image< Index >
+class PGMImage : public Image< Index >
 {
    public:
  
       typedef Index IndexType;
  
-      tnlPGMImage();
+      PGMImage();
  
       bool openForRead( const String& fileName );
  
-      template< typename Real,
+      template< typename MeshReal,
                 typename Device,
-                typename Vector >
+                typename Real >
       bool read( const RegionOfInterest< Index > roi,
-                 const Meshes::Grid< 2, Real, Device, Index >& grid,
-                 Vector& vector );
+                 Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
  
       template< typename Real,
                 typename Device >
       bool openForWrite( const String& fileName,
                          Meshes::Grid< 2, Real, Device, Index >& grid,
                          bool binary = true );
- 
+
+      // TODO: obsolete
       template< typename Real,
                 typename Device,
                 typename Vector >
       bool write( const Meshes::Grid< 2, Real, Device, Index >& grid,
                   Vector& vector );
-
+      
+      template< typename MeshReal,
+                typename Device,
+                typename Real >
+      bool write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
  
       void close();
  
-      ~tnlPGMImage();
+      ~PGMImage();
  
       protected:
  

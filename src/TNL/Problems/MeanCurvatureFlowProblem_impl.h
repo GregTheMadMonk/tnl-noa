@@ -36,9 +36,9 @@ template< typename Mesh,
           typename DifferentialOperator >
 String
 MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getTypeStatic()
+getType()
 {
-   return String( "tnlMeanCurvativeFlowProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "tnlMeanCurvativeFlowProblem< " ) + Mesh :: getType() + " >";
 }
 
 template< typename Mesh,
@@ -258,19 +258,6 @@ assemblyLinearSystem( const RealType& time,
   std::cout << std::endl << u << std::endl;
    getchar();
    //abort();*/
-}
-
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
-    template< typename Matrix >
-void
-MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-saveFailedLinearSystem( const Matrix& matrix,
-                        const DofVectorType& dofs,
-                        const DofVectorType& rightHandSide ) const
-{
 }
 
 } // namespace Problems

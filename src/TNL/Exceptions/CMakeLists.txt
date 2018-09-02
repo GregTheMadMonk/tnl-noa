@@ -2,6 +2,8 @@ SET( headers CudaBadAlloc.h
              CudaRuntimeError.h
              CudaSupportMissing.h
              MICBadAlloc.h
-             MICSupportMissing.h )
+             MICSupportMissing.h
+             MPISupportMissing.h
+             UnsupportedDimension.h )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Exceptions )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Exceptions )

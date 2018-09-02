@@ -50,6 +50,7 @@
 #include <stdio.h>
 
 #include <TNL/Devices/CudaCallable.h>
+#include <TNL/Debugging/StackBacktrace.h>
 
 namespace TNL {
 namespace Assert {
@@ -88,6 +89,9 @@ printDiagnosticsHost( const char* assertion,
        << "Function: " << function << "\n"
        << "Line: " << line << "\n"
        << "Diagnostics:\n" << diagnostics << std::endl;
+
+	PrintStackBacktrace;
+
    throw AssertionError( str.str() );
 }
 
@@ -108,6 +112,8 @@ printDiagnosticsHost( const char* assertion,
              << "Function: " << function << "\n"
              << "Line: " << line << "\n"
              << "Diagnostics:\n" << diagnostics << std::endl;
+
+	PrintStackBacktrace;
 }
 #endif // TNL_THROW_ASSERTION_ERROR
 
@@ -282,7 +288,7 @@ TNL_IMPL_CMP_HELPER_( GT, > );
 } // namespace TNL
 
 // Internal macro wrapping the __PRETTY_FUNCTION__ "magic".
-#if defined( __NVCC__ ) && ( __CUDACC_VER__ < 80000 )
+#if defined( __NVCC__ ) && ( __CUDACC_VER_MAJOR__ < 8 )
     #define __TNL_PRETTY_FUNCTION "(not known in CUDA 7.5 or older)"
 #else
     #define __TNL_PRETTY_FUNCTION __PRETTY_FUNCTION__

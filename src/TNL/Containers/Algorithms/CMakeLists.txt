@@ -6,8 +6,6 @@ set( headers ArrayOperations.h
              ArrayOperationsMIC_impl.h
              cuda-prefix-sum.h
              cuda-prefix-sum_impl.h
-             reduction-operations.h
-             CublasWrapper.h
              CudaMultireductionKernel.h
              CudaReductionBuffer.h
              CudaReductionKernel.h
@@ -15,10 +13,11 @@ set( headers ArrayOperations.h
              Multireduction_impl.h
              Reduction.h
              Reduction_impl.h
+             ReductionOperations.h
              VectorOperations.h
              VectorOperationsHost_impl.h
              VectorOperationsCuda_impl.h
              VectorOperationsMIC_impl.h
    )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Containers/Algorithms )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Containers/Algorithms )

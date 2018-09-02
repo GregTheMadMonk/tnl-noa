@@ -1,4 +1,4 @@
-/***************************************************************************
+   /***************************************************************************
                           tnl-diff.cpp  -  description
                              -------------------
     begin                : Nov 17, 2013
@@ -67,23 +67,14 @@ int main( int argc, char* argv[] )
    {
       int dimensions = atoi( parsedMeshType[ 1 ].getString() );
       if( dimensions == 1 )
-      {
-         typedef Meshes::Grid< 1, double, Devices::Host, int > MeshType;
-         if( ! processFiles< MeshType >( parameters ) )
+         if( ! resolveGridRealType< 1 >( parsedMeshType, parameters ) )
             return EXIT_FAILURE;
-      }
       if( dimensions == 2 )
-      {
-         typedef Meshes::Grid< 2, double, Devices::Host, int > MeshType;
-         if( ! processFiles< MeshType >( parameters ) )
+         if( ! resolveGridRealType< 2 >( parsedMeshType, parameters ) )
             return EXIT_FAILURE;
-      }
       if( dimensions == 3 )
-      {
-         typedef Meshes::Grid< 3, double, Devices::Host, int > MeshType;
-         if( ! processFiles< MeshType >( parameters ) )
+         if( ! resolveGridRealType< 3 >( parsedMeshType, parameters ) )
             return EXIT_FAILURE;
-      }
       return EXIT_SUCCESS;
    }
    return EXIT_FAILURE;

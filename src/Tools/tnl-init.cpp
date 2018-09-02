@@ -17,6 +17,10 @@
 #include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Meshes/Grid.h>
 
+#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Communicators/MpiCommunicator.h>
+
+
 using namespace TNL;
 
 void setupConfig( Config::ConfigDescription& config )
@@ -43,14 +47,23 @@ void setupConfig( Config::ConfigDescription& config )
    Functions::TestFunction< 1 >::configSetup( config );
 }
 
+
+
 int main( int argc, char* argv[] )
 {
-   Config::ParameterContainer parameters;
-   Config::ConfigDescription conf_desc;
 
-   setupConfig( conf_desc );
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription configDescription;
+
+   setupConfig( configDescription );
+   
+   Communicators::NoDistrCommunicator::configSetup( configDescription );
+   Communicators::MpiCommunicator::configSetup( configDescription );
+   
+   Communicators::NoDistrCommunicator::Init(argc,argv);
+   Communicators::MpiCommunicator::Init(argc,argv);   
  
-   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
+   if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return EXIT_FAILURE;
 
    String meshFile = parameters. getParameter< String >( "mesh" );
@@ -69,5 +82,10 @@ int main( int argc, char* argv[] )
    }
    if( ! resolveMeshType( parsedMeshType, parameters ) )
       return EXIT_FAILURE;
+
+#ifdef HAVE_MPI
+   Communicators::MpiCommunicator::Finalize();
+#endif
+      
    return EXIT_SUCCESS;
 }

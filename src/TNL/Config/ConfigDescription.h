@@ -128,7 +128,7 @@ class ConfigDescription
                return ( ( ConfigEntry< T > * ) entries[ i ] ) -> default_value;
             else return NULL;
          }
-      std::cerr << "Asking for the default value of uknown parameter." << std::endl;
+      std::cerr << "Asking for the default value of unknown parameter." << std::endl;
       return NULL;
    }
  
@@ -144,7 +144,7 @@ class ConfigDescription
                return ( ( ConfigEntry< T > * ) entries[ i ] ) -> default_value;
             else return NULL;
          }
-      std::cerr << "Asking for the default value of uknown parameter." << std::endl;
+      std::cerr << "Asking for the default value of unknown parameter." << std::endl;
       return NULL;
    }
 

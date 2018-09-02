@@ -15,7 +15,7 @@
 #include <TNL/Containers/List.h>
 #include <TNL/File.h>
 #include <TNL/Math.h>
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    #include <mpi.h>
 #endif
 
@@ -27,6 +27,12 @@ String::String()
    : string( nullptr ), length( 0 )
 {
    setString( nullptr );
+}
+
+String::String( char* c, int prefix_cut_off, int sufix_cut_off )
+   : string( nullptr ), length( 0 )
+{
+   setString( c, prefix_cut_off, sufix_cut_off );
 }
 
 String::String( const char* c, int prefix_cut_off, int sufix_cut_off )
@@ -384,9 +390,9 @@ bool String::load( File& file )
    return true;
 }
 
-void String::MPIBcast( int root, MPI_Comm comm )
+/*void String :: MPIBcast( int root, MPI_Comm comm )
 {
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    dbgFunctionName( "mString", "MPIBcast" );
    int iproc;
    MPI_Comm_rank( MPI_COMM_WORLD, &iproc );
@@ -410,8 +416,8 @@ void String::MPIBcast( int root, MPI_Comm comm )
    dbgExpr( string );
 #endif
 }
-
-bool String::getLine( std::istream& stream )
+*/
+bool String :: getLine( std::istream& stream )
 {
    std::string str;
    getline( stream, str );

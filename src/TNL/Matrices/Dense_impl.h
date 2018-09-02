@@ -13,10 +13,6 @@
 #include <TNL/Assert.h>
 #include <TNL/Matrices/Dense.h>
 
-#ifdef HAVE_CUDA
-#include <TNL/Containers/Algorithms/reduction-operations.h>
-#endif
-
 namespace TNL {
 namespace Matrices {   
 

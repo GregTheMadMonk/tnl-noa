@@ -681,6 +681,19 @@ template< int Dimension,
           typename Index,
           typename Config >
 __cuda_callable__ inline
+typename Meshes::Grid< Dimension, Real, Device, Index >::PointType
+GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::
+getPoint() const
+{
+   return getCenter();
+}
+
+template< int Dimension,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename Config >
+__cuda_callable__ inline
 const typename GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::RealType
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::
 getMeasure() const

@@ -57,7 +57,11 @@ class StaticVector : public StaticArray< Size, Real >
    //! Multiplication with number
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
-
+   
+   //! Division by number
+   __cuda_callable__
+   StaticVector& operator /= ( const Real& c );
+   
    //! Addition operator
    __cuda_callable__
    StaticVector operator + ( const StaticVector& u ) const;
@@ -155,6 +159,10 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    //! Multiplication with number
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
+   
+   //! Division by number
+   __cuda_callable__
+   StaticVector& operator /= ( const Real& c );   
 
    //! Addition operator
    __cuda_callable__
@@ -257,6 +265,10 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
 
+   //! Division by number
+   __cuda_callable__
+   StaticVector& operator /= ( const Real& c );   
+
    //! Adding operator
    __cuda_callable__
    StaticVector operator + ( const StaticVector& u ) const;
@@ -357,6 +369,11 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    //! Multiplication with number
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
+   
+   //! Division by number
+   __cuda_callable__
+   StaticVector& operator /= ( const Real& c );
+   
 
    //! Addition operator
    __cuda_callable__
@@ -437,7 +454,7 @@ namespace Containers {
 
 template< typename Real >
 StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
-                                             const StaticVector< 3, Real >& v )
+                                       const StaticVector< 3, Real >& v )
 {
    StaticVector< 3, Real > p;
    p[ 0 ] = u[ 1 ] * v[ 2 ] - u[ 2 ] * v[ 1 ];
@@ -447,23 +464,56 @@ StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
 }
 
 template< typename Real >
-Real tnlScalarProduct( const StaticVector< 2, Real >& u,
-                       const StaticVector< 2, Real >& v )
+Real ScalarProduct( const StaticVector< 2, Real >& u,
+                    const StaticVector< 2, Real >& v )
 {
    return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ];
 }
 
 template< typename Real >
-Real tnlScalarProduct( const StaticVector< 3, Real >& u,
-                       const StaticVector< 3, Real >& v )
+Real ScalarProduct( const StaticVector< 3, Real >& u,
+                    const StaticVector< 3, Real >& v )
 {
    return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ] + u[ 2 ] * v[ 2 ];
 }
 
+/*template< typename T1,
+          typename T2>
+StaticVector<1, T1> tnlDotProduct( const StaticVector< 1, T1 >& u,
+                       const StaticVector< 1, T2 >& v )
+{
+   StaticVector<1, T1> ret;
+   ret[0]=u[0]*v[0];
+   return ret;
+}
+
+template< typename T1,
+          typename T2>
+StaticVector<2, T1> tnlDotProduct( const StaticVector< 2, T1 >& u,
+                       const StaticVector< 2, T2 >& v )
+{
+   StaticVector<2, T1> ret;
+   ret[0]=u[0]*v[0];
+   ret[1]=u[1]*v[1];
+   return ret;
+}
+
+template< typename T1,
+          typename T2>
+StaticVector<3, T1> tnlDotProduct( const StaticVector< 3, T1 >& u,
+                       const StaticVector< 3, T2 >& v )
+{
+   StaticVector<3, T1> ret;
+   ret[0]=u[0]*v[0];
+   ret[1]=u[1]*v[1];
+   ret[2]=u[2]*v[2];
+   return ret;
+}*/
+
 template< typename Real >
-Real tnlTriangleArea( const StaticVector< 2, Real >& a,
-                      const StaticVector< 2, Real >& b,
-                      const StaticVector< 2, Real >& c )
+Real TriangleArea( const StaticVector< 2, Real >& a,
+                   const StaticVector< 2, Real >& b,
+                   const StaticVector< 2, Real >& c )
 {
    StaticVector< 3, Real > u1, u2;
    u1. x() = b. x() - a. x();
@@ -478,9 +528,9 @@ Real tnlTriangleArea( const StaticVector< 2, Real >& a,
 }
 
 template< typename Real >
-Real tnlTriangleArea( const StaticVector< 3, Real >& a,
-                      const StaticVector< 3, Real >& b,
-                      const StaticVector< 3, Real >& c )
+Real TriangleArea( const StaticVector< 3, Real >& a,
+                   const StaticVector< 3, Real >& b,
+                   const StaticVector< 3, Real >& c )
 {
    StaticVector< 3, Real > u1, u2;
    u1. x() = b. x() - a. x();
@@ -491,7 +541,7 @@ Real tnlTriangleArea( const StaticVector< 3, Real >& a,
    u2. z() = c. z() - a. z();
 
    const StaticVector< 3, Real > v = VectorProduct( u1, u2 );
-   return 0.5 * TNL::sqrt( tnlScalarProduct( v, v ) );
+   return 0.5 * TNL::sqrt( ScalarProduct( v, v ) );
 }
 
 } // namespace Containers

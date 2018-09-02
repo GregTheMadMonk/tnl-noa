@@ -14,97 +14,107 @@
 #pragma once
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 String
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-getTypeStatic()
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+getType()
 {
-   
+   return String( "DirectEikonalProblem< " + 
+                  Mesh::getType() + ", " +
+                  Anisotropy::getType() + ", " +
+                  Real::getType() + ", " +
+                  Index::getType() + " >" );
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 String
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 getPrologHeader() const
 {
    return String( "Direct eikonal solver" );
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 void
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-writeProlog( tnlLogger& logger,
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+writeProlog( Logger& logger,
              const Config::ParameterContainer& parameters ) const
 {
    
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 bool
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-writeEpilog( tnlLogger& logger )
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+writeEpilog( Logger& logger )
 {
    return true;
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 bool
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-setup( const Config::ParameterContainer& parameters )
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    return true;
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 Index
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-getDofs( const MeshType& mesh ) const
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+getDofs() const
 {
-   return mesh.template getEntitiesCount< typename MeshType::Cell >();
+   return this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 void
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-bindDofs( const MeshType& mesh,
-          const DofVectorType& dofs )
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+bindDofs( const DofVectorPointer& dofs )
 {
-   this->u.bind( mesh, dofs );
+   this->u.bind( this->getMesh(), dofs );
 }
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 bool
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-setInitialData( const Config::ParameterContainer& parameters,
-                const MeshType& mesh,
-                DofVectorType& dofs,
-                MeshDependentDataType& meshdependentData )
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+setInitialCondition( const Config::ParameterContainer& parameters,
+                     DofVectorPointer& dofs )
 {
    String inputFile = parameters.getParameter< String >( "input-file" );
-   this->initialData.setMesh( mesh );
+   this->initialData.setMesh( this->getMesh() );
    if( !this->initialData.boundLoad( inputFile ) )
       return false;
    return true;
@@ -112,14 +122,15 @@ setInitialData( const Config::ParameterContainer& parameters,
 
 
 template< typename Mesh,
+          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 bool
-tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-solve( const MeshType& mesh,
-       DofVectorType& dofs )
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+solve( DofVectorPointer& dofs )
 {
-   tnlFastSweepingMethod< MeshType, AnisotropyType > fsm;
-   fsm.solve( mesh, anisotropy, initialData );
+   FastSweepingMethod< MeshType, AnisotropyType > fsm;
+   fsm.solve( this->getMesh(), anisotropy, initialData );
+   return true;
 }

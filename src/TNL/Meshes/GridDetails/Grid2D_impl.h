@@ -14,7 +14,6 @@
 #include <iomanip>
 #include <TNL/String.h>
 #include <TNL/Assert.h>
-#include <TNL/Logger.h>
 #include <TNL/Meshes/GridDetails/GnuplotWriter.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter2D_impl.h>
@@ -32,7 +31,8 @@ Grid< 2, Real, Device, Index > :: Grid()
   numberOfNxFaces( 0 ),
   numberOfNyFaces( 0 ),
   numberOfFaces( 0 ),
-  numberOfVertices( 0 )
+  numberOfVertices( 0 ),
+  distGrid(nullptr)
 {
 }
 
@@ -82,9 +82,19 @@ void Grid< 2, Real, Device, Index > :: computeSpaceSteps()
    {
       this->spaceSteps.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
       this->spaceSteps.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
+      this->computeSpaceStepPowers();
+   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+void Grid< 2, Real, Device, Index > ::computeSpaceStepPowers()
+{
       const RealType& hx = this->spaceSteps.x();
       const RealType& hy = this->spaceSteps.y();
- 
+
       Real auxX, auxY;
       for( int i = 0; i < 5; i++ )
       {
@@ -129,7 +139,15 @@ void Grid< 2, Real, Device, Index > :: computeSpaceSteps()
             this->spaceStepsProducts[ i ][ j ] = auxX * auxY;
          }
       }
-   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 2, Real, Device, Index > ::computeProportions()
+{
+    this->proportions.x()=this->dimensions.x()*this->spaceSteps.x();
+    this->proportions.y()=this->dimensions.y()*this->spaceSteps.y();
 }
 
 template< typename Real,
@@ -182,6 +200,14 @@ void Grid< 2, Real, Device, Index > :: setDomain( const PointType& origin,
 template< typename Real,
           typename Device,
           typename Index >
+void Grid< 2, Real, Device, Index > :: setOrigin( const PointType& origin)
+{
+   this->origin = origin;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 __cuda_callable__ inline
 const typename Grid< 2, Real, Device, Index >::PointType&
 Grid< 2, Real, Device, Index >::getOrigin() const
@@ -211,7 +237,7 @@ getEntitiesCount() const
 {
    static_assert( EntityDimension <= 2 &&
                   EntityDimension >= 0, "Wrong grid entity dimensions." );
- 
+
    switch( EntityDimension )
    {
       case 2:
@@ -247,7 +273,7 @@ getEntity( const IndexType& entityIndex ) const
 {
    static_assert( Entity::getEntityDimension() <= 2 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
- 
+
    return GridEntityGetter< ThisType, Entity >::getEntity( *this, entityIndex );
 }
 
@@ -262,7 +288,7 @@ getEntityIndex( const Entity& entity ) const
 {
    static_assert( Entity::getEntityDimension() <= 2 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
- 
+
    return GridEntityGetter< ThisType, Entity >::getEntityIndex( *this, entity );
 }
 
@@ -275,6 +301,18 @@ Grid< 2, Real, Device, Index >::
 getSpaceSteps() const
 {
    return this->spaceSteps;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+inline void 
+Grid< 2, Real, Device, Index >::
+setSpaceSteps(const typename Grid< 2, Real, Device, Index >::PointType& steps)
+{
+    this->spaceSteps=steps;
+    computeSpaceStepPowers();
+    computeProportions();
 }
 
 template< typename Real,
@@ -384,6 +422,23 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
+void Grid< 2, Real, Device, Index >:: setDistMesh(DistributedMeshType* distMesh)
+{
+    this->distGrid=distMesh;
+}
+   
+template< typename Real,
+          typename Device,
+          typename Index >
+DistributedMeshes::DistributedMesh <Grid< 2, Real, Device, Index >> * 
+Grid< 2, Real, Device, Index >:: getDistributedMesh(void) const
+{
+    return this->distGrid;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 bool Grid< 2, Real, Device, Index > :: save( File& file ) const
 {
    if( ! Object::save( file ) )
@@ -436,178 +491,12 @@ bool Grid< 2, Real, Device, Index > :: load( const String& fileName )
 template< typename Real,
           typename Device,
           typename Index >
-bool Grid< 2, Real, Device, Index > :: writeMesh( const String& fileName,
-                                                     const String& format ) const
-{
-   std::fstream file;
-   file. open( fileName. getString(), std::ios::out );
-   if( ! file )
-   {
-      std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
-      return false;
-   }
-   if( format == "asymptote" )
-   {
-      file << "size( "
-           << this->getProportions(). x() << "cm , "
-           << this->getProportions(). y() << "cm );"
-           << std::endl << std::endl;
-      Vertex vertex( *this );
-      CoordinatesType& vertexCoordinates = vertex.getCoordinates();
-      PointType v;
-      for( Index j = 0; j < this->dimensions. y(); j ++ )
-      {
-         file << "draw( ";
-         vertexCoordinates.x() = 0;
-         vertexCoordinates.y() = j;
-         v = vertex.getCenter();
-         file << "( " << v. x() << ", " << v. y() << " )";
-         for( Index i = 0; i < this->dimensions. x(); i ++ )
-         {
-            vertexCoordinates.x() = i + 1;
-            vertexCoordinates.y() = j;
-            v = vertex.getCenter();
-            file << "--( " << v. x() << ", " << v. y() << " )";
-         }
-         file << " );" << std::endl;
-      }
-      file << std::endl;
-      for( Index i = 0; i < this->dimensions. x(); i ++ )
-      {
-         file << "draw( ";
-         vertexCoordinates.x() = i;
-         vertexCoordinates.y() = 0;
-         v = vertex.getCenter();
-         file << "( " << v. x() << ", " << v. y() << " )";
-         for( Index j = 0; j < this->dimensions. y(); j ++ )
-         {
-            vertexCoordinates.x() = i;
-            vertexCoordinates.y() = j + 1;
-            v = vertex.getCenter();
-            file << "--( " << v. x() << ", " << v. y() << " )";
-         }
-         file << " );" << std::endl;
-      }
-      file << std::endl;
-
-      Cell cell( *this );
-      CoordinatesType& cellCoordinates = cell.getCoordinates();
-      const RealType cellMeasure = this->getSpaceSteps().x() * this->getSpaceSteps().y();
-      for( Index i = 0; i < this->dimensions. x(); i ++ )
-         for( Index j = 0; j < this->dimensions. y(); j ++ )
-         {
-            cellCoordinates.x() = i;
-            cellCoordinates.y() = j;
-            v = vertex.getCenter();
-            file << "label( scale(0.33) * Label( \"$" << std::setprecision( 3 ) << cellMeasure << std::setprecision( 8 )
-                 << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" << std::endl;
-         }
-
-      for( Index i = 0; i < this->dimensions. x(); i ++ )
-         for( Index j = 0; j < this->dimensions. y(); j ++ )
-         {
-            PointType v1, v2, c;
-
-            /****
-             * East edge normal
-             */
-            /*v1 = this->getPoint( CoordinatesType( i + 1, j ), v1 );
-            v2 = this->getPoint( CoordinatesType( i + 1, j + 1 ), v2 );
-            c = ( ( Real ) 0.5 ) * ( v1 + v2 );
-            this->getEdgeNormal< 1, 0 >( CoordinatesType( i, j ), v );
-            v *= 0.5;
-            file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << std::endl;
-            */
-            /****
-             * West edge normal
-             */
-            /*this->getPoint< -1, -1 >( CoordinatesType( i, j ), v1 );
-            this->getPoint< -1, 1 >( CoordinatesType( i, j ), v2 );
-            c = ( ( Real ) 0.5 ) * ( v1 + v2 );
-            this->getEdgeNormal< -1, 0 >( CoordinatesType( i, j ), v );
-            v *= 0.5;
-            file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << std::endl;
-            */
-            /****
-             * North edge normal
-             */
-            /*this->getPoint< 1, 1 >( CoordinatesType( i, j ), v1 );
-            this->getPoint< -1, 1 >( CoordinatesType( i, j ), v2 );
-            c = ( ( Real ) 0.5 ) * ( v1 + v2 );
-            this->getEdgeNormal< 0, 1 >( CoordinatesType( i, j ), v );
-            v *= 0.5;
-            file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << std::endl;
-            */
-            /****
-             * South edge normal
-             */
-            /*this->getPoint< 1, -1 >( CoordinatesType( i, j ), v1 );
-            this->getPoint< -1, -1 >( CoordinatesType( i, j ), v2 );
-            c = ( ( Real ) 0.5 ) * ( v1 + v2 );
-            this->getEdgeNormal< 0, -1 >( CoordinatesType( i, j ), v );
-            v *= 0.5;
-            file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << std::endl;
-            */
-         }
-      return true;
-   }
-   return false;
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
-   template< typename MeshFunction >
-bool Grid< 2, Real, Device, Index > :: write( const MeshFunction& function,
-                                                 const String& fileName,
-                                                 const String& format ) const
-{
-   if( this->template getEntitiesCount< Cell >() != function. getSize() )
-   {
-      std::cerr << "The size ( " << function. getSize()
-           << " ) of a mesh function does not agree with the DOFs ( "
-           << this->template getEntitiesCount< Cell >() << " ) of a mesh." << std::endl;
-      return false;
-   }
-   std::fstream file;
-   file. open( fileName. getString(), std::ios::out );
-   if( ! file )
-   {
-      std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
-      return false;
-   }
-   file << std::setprecision( 12 );
-   if( format == "gnuplot" )
-   {
-      Cell cell( *this );
-      CoordinatesType& cellCoordinates = cell.getCoordinates();
-      for( cellCoordinates.y() = 0; cellCoordinates.y() < getDimensions(). y(); cellCoordinates.y() ++ )
-      {
-         for( cellCoordinates.x() = 0; cellCoordinates.x() < getDimensions(). x(); cellCoordinates.x() ++ )
-         {
-            PointType v = cell.getCenter();
-            GnuplotWriter::write( file,  v );
-            GnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
-            file << std::endl;
-         }
-         file << std::endl;
-      }
-   }
-   file. close();
-   return true;
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
 void
 Grid< 2, Real, Device, Index >::
-writeProlog( Logger& logger )
+writeProlog( Logger& logger ) const
 {
+   if( this->getDistributedMesh() && this->getDistributedMesh()->isDistributed() )
+      return this->getDistributedMesh()->writeProlog( logger );
    logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );

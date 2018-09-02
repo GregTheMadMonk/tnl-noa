@@ -19,8 +19,8 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Anisotropy >
-tnlFastSweepingMethod< tnlGrid< 3, Real, Device, Index >, Anisotropy >::
-tnlFastSweepingMethod()
+FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >::
+FastSweepingMethod()
 : maxIterations( 1 )
 {
    
@@ -31,7 +31,7 @@ template< typename Real,
           typename Index,
           typename Anisotropy >
 const Index&
-tnlFastSweepingMethod< tnlGrid< 3, Real, Device, Index >, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >::
 getMaxIterations() const
 {
    
@@ -42,7 +42,7 @@ template< typename Real,
           typename Index,
           typename Anisotropy >
 void
-tnlFastSweepingMethod< tnlGrid< 3, Real, Device, Index >, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >::
 setMaxIterations( const IndexType& maxIterations )
 {
    
@@ -53,8 +53,8 @@ template< typename Real,
           typename Index,
           typename Anisotropy >
 void
-tnlFastSweepingMethod< tnlGrid< 3, Real, Device, Index >, Anisotropy >::
-solve( const MeshType& mesh,
+FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >::
+solve( const MeshPointer& mesh,
        const AnisotropyType& anisotropy,
        MeshFunctionType& u )
 {

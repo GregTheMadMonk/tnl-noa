@@ -10,7 +10,9 @@
 
 #pragma once
 
-#include <TNL/Containers/DynamicTypeTag.h>
+#include <type_traits>
+
+#include <TNL/Object.h>
 #include <TNL/File.h>
 
 namespace TNL {
@@ -19,7 +21,7 @@ namespace Containers {
 template< typename Element,
           typename Device,
           typename Index,
-          bool DynamicType = DynamicTypeTag< Element >::value >
+          bool Elementwise = std::is_base_of< Object, Element >::value >
 class ArrayIO
 {};
 

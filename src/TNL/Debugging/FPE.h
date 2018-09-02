@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshConfigBase.h  -  description
+                          FPE.h  -  description
                              -------------------
     begin                : Nov 6, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.
@@ -41,7 +41,8 @@ printStackBacktraceAndAbort( int sig = 0 )
    else
       fprintf( stderr, "Aborting due to signal %d...\n", sig );
    printStackBacktrace();
-   abort();
+   throw( 0 );
+   //abort();
 }
 
 /*

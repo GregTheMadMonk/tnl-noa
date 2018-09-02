@@ -18,7 +18,7 @@
 #include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
-#include <TNL/Containers/Algorithms/reduction-operations.h>
+#include <TNL/Containers/Algorithms/ReductionOperations.h>
 
 namespace TNL {
 namespace Containers {   
@@ -60,24 +60,32 @@ freeMemory( Element* data )
 }
 
 template< typename Element >
-void
+__cuda_callable__ void
 ArrayOperations< Devices::Cuda >::
 setMemoryElement( Element* data,
                   const Element& value )
 {
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
+#ifdef __CUDAARCH__
+   *data = value;
+#else   
    ArrayOperations< Devices::Cuda >::setMemory( data, value, 1 );
+#endif   
 }
 
 template< typename Element >
-Element
+__cuda_callable__ Element
 ArrayOperations< Devices::Cuda >::
 getMemoryElement( const Element* data )
 {
    TNL_ASSERT_TRUE( data, "Attempted to get data through a nullptr." );
+#ifdef __CUDAARCH__
+   return *data;
+#else   
    Element result;
    ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< Element, Element, int >( &result, data, 1 );
    return result;
+#endif   
 }
 
 template< typename Element, typename Index >
@@ -201,16 +209,54 @@ compareMemory( const Element1* destination,
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
    //TODO: The parallel reduction on the CUDA device with different element types is needed.
-   bool result;
-   Algorithms::tnlParallelReductionEqualities< Element1, Index > reductionEqualities;
-   reductionOnCudaDevice( reductionEqualities, size, destination, source, result );
+   bool result = false;
+   Algorithms::ParallelReductionEqualities< Element1, Element2 > reductionEqualities;
+   Reduction< Devices::Cuda >::reduce( reductionEqualities, size, destination, source, result );
    return result;
 }
+
+template< typename Element,
+          typename Index >
+bool
+ArrayOperations< Devices::Cuda >::
+containsValue( const Element* data,
+               const Index size,
+               const Element& value )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "" );
+   if( size == 0 ) return false;
+   bool result = false;
+   using Operation = Algorithms::ParallelReductionContainsValue< Element >;
+   Operation reductionContainsValue;
+   reductionContainsValue.setValue( value );
+   Reduction< Devices::Cuda >::template reduce< Operation, Index >( reductionContainsValue, size, data, 0, result );
+   return result;
+}
+
+template< typename Element,
+          typename Index >
+bool
+ArrayOperations< Devices::Cuda >::
+containsOnlyValue( const Element* data,
+                   const Index size,
+                   const Element& value )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "" );
+   if( size == 0 ) return false;
+   bool result = false;
+   using Operation = Algorithms::ParallelReductionContainsOnlyValue< Element >;
+   Operation reductionContainsOnlyValue;
+   reductionContainsOnlyValue.setValue( value );
+   Reduction< Devices::Cuda >::template reduce< Operation, Index >( reductionContainsOnlyValue, size, data, 0, result );
+   return result;
+}
+
 
 /****
  * Operations CUDA -> Host
  */
-
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >

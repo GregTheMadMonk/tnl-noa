@@ -143,7 +143,7 @@ class Cuda
     * reinterpret_cast works too.
     * See http://stackoverflow.com/a/19339004/4180822 for reference.
     */
-   template< typename Element, size_t Alignment = sizeof( Element ) >
+   template< typename Element >
    static __device__ Element* getSharedMemory();
 #endif
 

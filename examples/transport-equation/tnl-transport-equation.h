@@ -63,7 +63,8 @@ template< typename Real,
           typename Index,
           typename MeshType,
           typename ConfigTag,
-          typename SolverStarter >
+          typename SolverStarter,
+          typename CommunicatorType  >
 class advectionSetter
 {
    public:
@@ -89,13 +90,13 @@ class advectionSetter
          if( boundaryConditionsType == "dirichlet" )
          {
             typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunctionType, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-            typedef transportEquationProblem< MeshType, BoundaryConditions, ConstantFunctionType, DifferentialOperatorType > Problem;
+            typedef transportEquationProblem< MeshType, BoundaryConditions, ConstantFunctionType, CommunicatorType, DifferentialOperatorType > Problem;
             return callSolverStarter< Problem >( parameters );
          }
          if( boundaryConditionsType == "neumann" )
          {
             typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunctionType, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-            typedef transportEquationProblem< MeshType, BoundaryConditions, ConstantFunctionType, DifferentialOperatorType > Problem;
+            typedef transportEquationProblem< MeshType, BoundaryConditions, ConstantFunctionType, CommunicatorType, DifferentialOperatorType > Problem;
             return callSolverStarter< Problem >( parameters );
          }
          std::cerr << "Unknown boundary conditions type: " << boundaryConditionsType << "." << std::endl;

@@ -10,11 +10,14 @@
 
 #pragma once
 
+#include <TNL/Logger.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/GridEntity.h>
 #include <TNL/Meshes/GridDetails/GridEntityTopology.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter.h>
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
+#include <TNL/Meshes/GridEntity.h>
+#include <TNL/Meshes/GridEntityConfig.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace TNL {
 namespace Meshes {
@@ -34,28 +37,22 @@ class Grid< 2, Real, Device, Index > : public Object
    typedef Grid< 2, Real, Devices::Host, Index > HostType;
    typedef Grid< 2, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 2, Real, Device, Index > ThisType;
+
+   typedef DistributedMeshes::DistributedMesh <ThisType> DistributedMeshType;
  
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
- 
+
    static constexpr int getMeshDimension() { return 2; };
 
    template< int EntityDimension,
-             typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
+             typename Config = GridEntityCrossStencilStorage< 1 > >
    using EntityType = GridEntity< ThisType, EntityDimension, Config >;
- 
-   typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
-   typedef EntityType< getMeshDimension() - 1, GridEntityNoStencilStorage > Face;
-   typedef EntityType< 0 > Vertex;
-   
 
-   // TODO: remove this
-   //template< int EntityDimension, 
-   //          typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   //using TestEntityType = tnlTestGridEntity< ThisType, EntityDimension, Config >;
-   //typedef TestEntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > TestCell;
-   /////
-   
+   typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
+   typedef EntityType< getMeshDimension() - 1 > Face;
+   typedef EntityType< 0 > Vertex;
+
    Grid();
 
    static String getType();
@@ -75,6 +72,9 @@ class Grid< 2, Real, Device, Index > : public Object
 
    void setDomain( const PointType& origin,
                    const PointType& proportions );
+
+   void setOrigin( const PointType& origin);
+
    __cuda_callable__
    inline const PointType& getOrigin() const;
 
@@ -85,33 +85,36 @@ class Grid< 2, Real, Device, Index > : public Object
    template< int EntityDimension >
    __cuda_callable__
    IndexType getEntitiesCount() const;
-   
+
    template< typename Entity >
    __cuda_callable__
    inline IndexType getEntitiesCount() const;
- 
+
    template< typename Entity >
    __cuda_callable__
    inline Entity getEntity( const IndexType& entityIndex ) const;
- 
+
    template< typename Entity >
    __cuda_callable__
    inline Index getEntityIndex( const Entity& entity ) const;
 
    __cuda_callable__
+
    inline const PointType& getSpaceSteps() const;
+
+   inline void setSpaceSteps(const PointType& steps);
 
    template< int xPow, int yPow >
    __cuda_callable__
    const RealType& getSpaceStepsProducts() const;
-   
+
    __cuda_callable__
    inline const RealType& getCellMeasure() const;
- 
+
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
 
- 
+
    template< typename GridFunction >
    typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;
 
@@ -127,6 +130,10 @@ class Grid< 2, Real, Device, Index > : public Object
    typename GridFunction::RealType getDifferenceLpNorm( const GridFunction& f1,
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const;
+   
+   void setDistMesh(DistributedMeshType * distGrid);
+   
+   DistributedMeshType * getDistributedMesh() const;
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -138,30 +145,29 @@ class Grid< 2, Real, Device, Index > : public Object
 
    bool load( const String& fileName );
 
-   bool writeMesh( const String& fileName,
-                   const String& format ) const;
-
-   template< typename MeshFunction >
-   bool write( const MeshFunction& function,
-               const String& fileName,
-               const String& format ) const;
-
-   void writeProlog( Logger& logger );
+   void writeProlog( Logger& logger ) const;
 
    protected:
+   
+   void computeProportions();
+       
+   __cuda_callable__
+   void computeSpaceStepPowers();
 
    __cuda_callable__
    void computeSpaceSteps();
 
    CoordinatesType dimensions;
- 
+
    IndexType numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
 
    PointType origin, proportions;
- 
+
    PointType spaceSteps;
- 
+
    RealType spaceStepsProducts[ 5 ][ 5 ];
+   
+   DistributedMeshType *distGrid;
  
    template< typename, typename, int >
    friend class GridEntityGetter;

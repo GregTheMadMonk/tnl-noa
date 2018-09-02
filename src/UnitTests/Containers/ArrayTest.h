@@ -32,6 +32,7 @@ struct MyData
    __cuda_callable__
    MyData( T v ) : data(v) {}
 
+   __cuda_callable__
    bool operator==( const MyData& v ) const { return data == v.data; }
 
    // operator used in tests, not necessary for Array to work
@@ -325,6 +326,40 @@ TYPED_TEST( ArrayTest, elementwiseAccess )
    testArrayElementwiseAccess( ArrayType() );
 }
 
+TYPED_TEST( ArrayTest, containsValue )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+   using ElementType = typename ArrayType::ElementType;
+
+   ArrayType array;
+   array.setSize( 1024 );
+   for( int i = 0; i < array.getSize(); i++ )
+      array.setElement( i, ( ElementType ) ( i % 10 ) );
+
+   for( int i = 0; i < 10; i++ )
+      EXPECT_TRUE( ( array.containsValue( ( ElementType ) i ) ) );
+
+   for( int i = 10; i < 20; i++ )
+      EXPECT_FALSE( ( array.containsValue( ( ElementType ) i ) ) );
+}
+
+TYPED_TEST( ArrayTest, containsOnlyValue )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+   using ElementType = typename ArrayType::ElementType;
+
+   ArrayType array;
+   array.setSize( 1024 );
+   for( int i = 0; i < array.getSize(); i++ )
+      array.setElement( i, ( ElementType ) ( i % 10 ) );
+
+   for( int i = 0; i < 20; i++ )
+      EXPECT_FALSE( ( array.containsOnlyValue( ( ElementType ) i ) ) );
+
+   array.setValue( 100 );
+   EXPECT_TRUE( ( array.containsOnlyValue( ( ElementType ) 100 ) ) );
+}
+
 TYPED_TEST( ArrayTest, comparisonOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
@@ -359,22 +394,26 @@ TYPED_TEST( ArrayTest, comparisonOperator )
    EXPECT_TRUE( u == v );
 }
 
-// TODO: comparison with different device
-// TODO: missing implementation of relevant reduction operation on CUDA with different types
-/*
 TYPED_TEST( ArrayTest, comparisonOperatorWithDifferentType )
 {
-   Array< short, typename ArrayType::DeviceType, short > z( 10 );
-   for( int i = 0; i < 10; i ++ )
-      z.setElement( i, i );
-   EXPECT_TRUE( u == z );
-   EXPECT_FALSE( u != z );
-   for( int i = 0; i < 10; i ++ )
-      z.setElement( i, 2 * i );
-   EXPECT_FALSE( u == z );
-   EXPECT_TRUE( u != z );
+   using DeviceType = typename TestFixture::ArrayType::DeviceType;
+   using ArrayType1 = Array< short, DeviceType >;
+   using ArrayType2 = Array< float, Devices::Host >;
+
+   ArrayType1 u( 10 );
+   ArrayType2 v( 10 );
+   for( int i = 0; i < 10; i++ ) {
+      u.setElement( i, i );
+      v.setElement( i, i );
+   }
+   EXPECT_TRUE( u == v );
+   EXPECT_FALSE( u != v );
+
+   // the comparison will be in floats
+   v.setElement( 0, 0.1f );
+   EXPECT_FALSE( u == v );
+   EXPECT_TRUE( u != v );
 }
-*/
 
 TYPED_TEST( ArrayTest, assignmentOperator )
 {
@@ -418,26 +457,17 @@ void testArrayAssignmentWithDifferentType()
 
    v.setValue( 0 );
    v = u;
-// TODO: missing implementation of relevant reduction operation on CUDA with different types
-//   EXPECT_EQ( v, u );
-   for( int i = 0; i < 10; i++ )
-      EXPECT_EQ( v.getElement( i ), i );
+   EXPECT_EQ( v, u );
 
    // assignment from host to device
    v.setValue( 0 );
    v = u_host;
-// TODO: missing implementation of relevant reduction operation on CUDA with different types
-//   EXPECT_EQ( v, u_host );
-   for( int i = 0; i < 10; i++ )
-      EXPECT_EQ( v.getElement( i ), i );
+   EXPECT_EQ( v, u_host );
 
    // assignment from host to device
    v_host.setValue( 0 );
    v_host = u;
-// TODO: missing implementation of relevant reduction operation on CUDA with different types
-//   EXPECT_EQ( v_host, u );
-   for( int i = 0; i < 10; i++ )
-      EXPECT_EQ( v_host.getElement( i ), i );
+   EXPECT_EQ( v_host, u );
 }
 
 template< typename ArrayType,
@@ -557,7 +587,7 @@ TYPED_TEST( ArrayTest, referenceCountingBind )
 // TODO: test all __cuda_callable__ methods from a CUDA kernel
 
 #endif // HAVE_GTEST
-   
+
 
 #include "../GtestMissingError.h"
 int main( int argc, char* argv[] )

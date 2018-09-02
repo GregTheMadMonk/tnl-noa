@@ -25,15 +25,19 @@
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
+#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+
 namespace TNL {
 namespace Problems {
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename Communicator,
           typename DifferentialOperator = Operators::LinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
 class HeatEquationProblem : public PDEProblem< Mesh,
+                                               Communicator,
                                                typename DifferentialOperator::RealType,
                                                typename Mesh::DeviceType,
                                                typename DifferentialOperator::IndexType  >
@@ -45,7 +49,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
       typedef Matrices::SlicedEllpack< RealType, DeviceType, IndexType > MatrixType;
       typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
@@ -55,10 +59,10 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
-      using typename BaseType::MeshDependentDataType;
-      using typename BaseType::MeshDependentDataPointer;
 
-      static String getTypeStatic();
+      typedef Communicator CommunicatorType;
+
+      static String getType();
 
       String getPrologHeader() const;
 
@@ -68,50 +72,34 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       bool writeEpilog( Logger& logger );
 
 
-      bool setup( const MeshPointer& meshPointer,
-                  const Config::ParameterContainer& parameters,
+      bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );
 
       bool setInitialCondition( const Config::ParameterContainer& parameters,
-                                const MeshPointer& mesh,
-                                DofVectorPointer& dofs,
-                                MeshDependentDataPointer& meshDependentData );
+                                DofVectorPointer& dofs );
 
       template< typename MatrixPointer >
-      bool setupLinearSystem( const MeshPointer& meshPointer,
-                              MatrixPointer& matrixPointer );
+      bool setupLinearSystem( MatrixPointer& matrixPointer );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
-                         const MeshPointer& meshPointer,
-                         DofVectorPointer& dofs,
-                         MeshDependentDataPointer& meshDependentData );
+                         DofVectorPointer& dofs );
 
-      IndexType getDofs( const MeshPointer& meshPointer ) const;
+      IndexType getDofs() const;
 
-      void bindDofs( const MeshPointer& meshPointer,
-                     const DofVectorPointer& dofs );
+      void bindDofs( const DofVectorPointer& dofs );
 
       void getExplicitUpdate( const RealType& time,
                               const RealType& tau,
-                              const MeshPointer& meshPointer,
                               DofVectorPointer& _u,
-                              DofVectorPointer& _fu,
-                              MeshDependentDataPointer& meshDependentData );
+                              DofVectorPointer& _fu );
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
-                                 const MeshPointer& meshPointer,
                                  const DofVectorPointer& dofsPointer,
                                  MatrixPointer& matrixPointer,
-                                 DofVectorPointer& rightHandSidePointer,
-                                 MeshDependentDataPointer& meshDependentData );
-
-      template< typename Matrix >
-      void saveFailedLinearSystem( const Matrix& matrix,
-                                   const DofVectorType& dofs,
-                                   const DofVectorType& rightHandSide ) const;
+                                 DofVectorPointer& rightHandSidePointer );
 
       protected:
          
@@ -135,6 +123,9 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                                               RightHandSide,
                                               Solvers::PDE::BackwardTimeDiscretisation,
                                               DofVectorType > systemAssembler;
+
+        Meshes::DistributedMeshes::DistrGridIOTypes distributedIOType;
+
 };
 
 } // namespace Problems

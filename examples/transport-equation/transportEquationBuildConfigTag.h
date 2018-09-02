@@ -12,6 +12,7 @@
 #pragma once
 
 #include <TNL/Solvers/BuildConfigTags.h>
+#include <TNL/Meshes/BuildConfigTags.h>
 
 namespace TNL {
 
@@ -32,17 +33,6 @@ template<> struct ConfigTagIndex< transportEquationBuildConfigTag, short int >{ 
 template<> struct ConfigTagIndex< transportEquationBuildConfigTag, long int >{ enum { enabled = false }; };
 
 /****
- * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
- */
-
-template< int Dimensions, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< transportEquationBuildConfigTag, Meshes::Grid< Dimensions, Real, Device, Index > >
-      { enum { enabled = ConfigTagDimension< transportEquationBuildConfigTag, Dimensions >::enabled  &&
-                         ConfigTagReal< transportEquationBuildConfigTag, Real >::enabled &&
-                         ConfigTagDevice< transportEquationBuildConfigTag, Device >::enabled &&
-                         ConfigTagIndex< transportEquationBuildConfigTag, Index >::enabled }; };
-
-/****
  * Please, chose your preferred time discretisation  here.
  */
 template<> struct ConfigTagTimeDiscretisation< transportEquationBuildConfigTag, ExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
@@ -55,4 +45,24 @@ template<> struct ConfigTagTimeDiscretisation< transportEquationBuildConfigTag, 
 template<> struct ConfigTagExplicitSolver< transportEquationBuildConfigTag, Solvers::ExplicitEulerSolverTag >{ enum { enabled = true }; };
 
 } // namespace Solvers
+
+namespace Meshes {
+namespace BuildConfigTags {
+
+template< int Dimensions > struct GridDimensionTag< transportEquationBuildConfigTag, Dimensions >{ enum { enabled = true }; };
+
+/****
+ * Turn off support for float and long double.
+ */
+template<> struct GridRealTag< transportEquationBuildConfigTag, float > { enum { enabled = false }; };
+template<> struct GridRealTag< transportEquationBuildConfigTag, long double > { enum { enabled = false }; };
+
+/****
+ * Turn off support for short int and long int indexing.
+ */
+template<> struct GridIndexTag< transportEquationBuildConfigTag, short int >{ enum { enabled = false }; };
+template<> struct GridIndexTag< transportEquationBuildConfigTag, long int >{ enum { enabled = false }; };
+
+} // namespace BuildConfigTags
+} // namespace Meshes
 } // namespace TNL

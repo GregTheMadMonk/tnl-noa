@@ -11,50 +11,57 @@
 #pragma once
 
 #include <TNL/Solvers/BuildConfigTags.h>
+#include <TNL/Meshes/BuildConfigTags.h>
 
 namespace TNL {
+
+class HeatEquationBuildConfigTag{};
+
 namespace Solvers {
    
-class HeatEquationBuildConfig
-{
-   public:
-
-      static void print() { std::cerr << "HeatEquationBuildConfig" << std::endl; }
-};
-
 /****
  * Turn off support for float and long double.
  */
-template<> struct ConfigTagReal< HeatEquationBuildConfig, float > { enum { enabled = false }; };
-template<> struct ConfigTagReal< HeatEquationBuildConfig, long double > { enum { enabled = false }; };
+template<> struct ConfigTagReal< HeatEquationBuildConfigTag, float > { enum { enabled = false }; };
+template<> struct ConfigTagReal< HeatEquationBuildConfigTag, long double > { enum { enabled = false }; };
 
 /****
  * Turn off support for short int and long int indexing.
  */
-template<> struct ConfigTagIndex< HeatEquationBuildConfig, short int >{ enum { enabled = false }; };
-template<> struct ConfigTagIndex< HeatEquationBuildConfig, long int >{ enum { enabled = false }; };
-
-/****
- * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
- */
-template< int Dimension, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< HeatEquationBuildConfig, Meshes::Grid< Dimension, Real, Device, Index > >
-      { enum { enabled = ConfigTagDimension< HeatEquationBuildConfig, Dimension >::enabled  &&
-                         ConfigTagReal< HeatEquationBuildConfig, Real >::enabled &&
-                         ConfigTagDevice< HeatEquationBuildConfig, Device >::enabled &&
-                         ConfigTagIndex< HeatEquationBuildConfig, Index >::enabled }; };
+template<> struct ConfigTagIndex< HeatEquationBuildConfigTag, short int >{ enum { enabled = false }; };
+template<> struct ConfigTagIndex< HeatEquationBuildConfigTag, long int >{ enum { enabled = true }; };
 
 /****
  * Please, chose your preferred time discretization  here.
  */
-template<> struct ConfigTagTimeDiscretisation< HeatEquationBuildConfig, ExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
-template<> struct ConfigTagTimeDiscretisation< HeatEquationBuildConfig, SemiImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
-template<> struct ConfigTagTimeDiscretisation< HeatEquationBuildConfig, ImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
+template<> struct ConfigTagTimeDiscretisation< HeatEquationBuildConfigTag, ExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
+template<> struct ConfigTagTimeDiscretisation< HeatEquationBuildConfigTag, SemiImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
+template<> struct ConfigTagTimeDiscretisation< HeatEquationBuildConfigTag, ImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
 
 /****
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
-template<> struct ConfigTagExplicitSolver< HeatEquationBuildConfig, ExplicitEulerSolverTag >{ enum { enabled = false }; };
+template<> struct ConfigTagExplicitSolver< HeatEquationBuildConfigTag, ExplicitEulerSolverTag >{ enum { enabled = false }; };
 
 } // namespace Solvers
+
+namespace Meshes {
+namespace BuildConfigTags {
+
+template< int Dimensions > struct GridDimensionTag< HeatEquationBuildConfigTag, Dimensions >{ enum { enabled = true }; };
+
+/****
+ * Turn off support for float and long double.
+ */
+template<> struct GridRealTag< HeatEquationBuildConfigTag, float > { enum { enabled = false }; };
+template<> struct GridRealTag< HeatEquationBuildConfigTag, long double > { enum { enabled = false }; };
+
+/****
+ * Turn off support for short int and long int indexing.
+ */
+template<> struct GridIndexTag< HeatEquationBuildConfigTag, short int >{ enum { enabled = false }; };
+template<> struct GridIndexTag< HeatEquationBuildConfigTag, long int >{ enum { enabled = false }; };
+
+} // namespace BuildConfigTags
+} // namespace Meshes
 } // namespace TNL

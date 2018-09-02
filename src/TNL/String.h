@@ -12,8 +12,6 @@
 
 #include <iostream>
 #include <sstream>
-#include <TNL/mpi-supp.h>
-
 
 namespace TNL {
 
@@ -21,6 +19,8 @@ class File;
 namespace Containers {
    template< class T > class List;
 }
+
+class String;
 
 template< typename T >
 String convertToString( const T& value );
@@ -45,6 +45,11 @@ public:
    String( const char* c,
            int prefix_cut_off = 0,
            int sufix_cut_off = 0 );
+   
+   String( char* c,
+           int prefix_cut_off = 0,
+           int sufix_cut_off = 0 );
+
 
    static String getType();
 
@@ -141,7 +146,7 @@ public:
    bool load( File& file );
 
    //! Broadcast to other nodes in MPI cluster
-   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+//   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
    //! Read one line from given stream.
    bool getLine( std::istream& stream );

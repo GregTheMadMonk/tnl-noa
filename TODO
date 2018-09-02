@@ -1,6 +1,14 @@
-- pridet execution policy https://github.com/harrism/hemi/blob/master/hemi/execution_policy.h
-- prejmenova Assert na TNL_ASSERT a rozsirit asserce podobne jako v GTest
-- odstranit paramee lazy ze smart pointeru
+TODO:
+- pri zpracovani dat z MRI jde vetsinou o prilis male snimky na optimalni vyuziti GPU (ve 2D). Kdyby se ale pomoci CUDA streamu provadelo vice 
+  vypoctu soucasne, mohlo by se dosahnout mnohem lepsiho urychleni
+
+TODO:
+- objekt NeighborEnities by mohl vracet i lokalni index dane neighbor entity, coz je potreba pro spravne vkladani maticovych elementu,
+  ted se tyto indexy doplnuji rucne podle znalosti indexovani v gridu. Jelikoz neighbor entities mohou znat typ okoli/vzor numerickeho schematu,
+  dokazaly by se prizpusobit i ruznym patternum. To by pak vyresilo i skladani operatoru s ruznymi patterny.
+
+TODO:
+- pridat execution policy https://github.com/harrism/hemi/blob/master/hemi/execution_policy.h
 
 TODO:
  - implementovat tnlMixedGridBoundaryConditions, kde by se pro kazdou stranu gridu definoval jiny zvlastni typ
@@ -15,11 +23,6 @@ TODO:
  - data by se na hostu preskupila do souvisleho bloku dat a ten se prenesl najednou
 
 
-TODO:
-
-TODO:
- - zavest namespaces
-
 TODO: CUDA unified memory
  - pretizit operator new s cudaMallocManaged, pak by bylo mozne vytvaret CUDA objekty pristupne pro host a device
  - v TNL solveru by pak vlastne jen stacilo vytvaret objekty pomoci new
@@ -28,24 +31,11 @@ TODO: CUDA unified memory
 se s nimi pracovat postaru
  - bylo by dobre to obalit unique poinetry, aby se nemusela delat dealokace rucne
 
-TODO: shared pointery
- - mohli bysme pomoci nich odstranit Shared objekty
- - asi by bylo lepsi datcounter z shared pointeru primo do array a tento counter by se alokoval az po porvnim sdileni dat
- - diky tomu by se array mohlo vytvaret i na gpu bez nutnosti dynamicke alokace, jen by nebylo mozne delat bind (nebo nejaky zjednoduseny)
-
-TODO: Mesh
- * vsechny traits zkusit presunout do jednotneho MeshTraits, tj. temer MeshConfigTraits ale pojmenovat jako MeshTraits
- * omezit tnlDimesnionsTag - asi to ale nepujde
-   - ale pozor na konstrukce jako BaseType::superentityIdsArray< SuperDimensionTag >( DimensionsTag ); ( v tnlMesh.h)
- * prejmenovat Tagy v topologies na Topology zrejme
- * zrusit tnlStorageTraits
-
 
 TODO: implementace maticovych resicu
       * Gaussova eliminace
       * SOR metoda
       * Jacobiho metoda
-      * TFQMR metoda
       * IDR metody 
 
 TODO: Nahradit sablonovy parametr dimenze sitove entity za typ entity. Pak by se mohlo zkusit, napriklad u gridu
@@ -55,12 +45,5 @@ TODO: Nahradit sablonovy parametr dimenze sitove entity za typ entity. Pak by se
       objemy nebo delky entyt apod.
       za tim ucelem nahradit setIndex v grdi entity za update(), aby to bylo obecnejsi
 
-TODO: implementovat tridu tnlFileName pro generovani jmen souboru
-
 TODO: metodu pro tnlString pro nahrazeni napr. podretezce XXXXX indexem 00001 tj. uXXXXX.bin -> u00001.bin
       to by melo byt robustnejsi, nez doposavadni pristup 
-
-TODO: vyjimky 
-
-TODO: prubezne ukladani vysledku behem vypoctu 
-                 

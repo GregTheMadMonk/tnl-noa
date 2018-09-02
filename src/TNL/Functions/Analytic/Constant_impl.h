@@ -67,6 +67,7 @@ template< int Dimension,
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder >
+__cuda_callable__
 Real
 Constant< Dimension, Real >::
 getPartialDerivative( const PointType& v,

@@ -1,4 +1,10 @@
-SET( headers Matrix.h
+SET( headers AdEllpack.h
+             AdEllpack_impl.h
+             BiEllpack.h
+             BiEllpack_impl.h
+             COOMatrix.h
+             COOMatrix_impl.h
+             Matrix.h
              Matrix_impl.h
              Dense.h
              Dense_impl.h
@@ -47,4 +53,4 @@ if( BUILD_CUDA )
         PARENT_SCOPE )
 endif()
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Matrices )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Matrices )

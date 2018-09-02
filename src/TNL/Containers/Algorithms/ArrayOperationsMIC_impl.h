@@ -20,7 +20,7 @@
 #include <TNL/Exceptions/MICBadAlloc.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
-#include <TNL/Containers/Algorithms/reduction-operations.h>
+#include <TNL/Containers/Algorithms/ReductionOperations.h>
 
 namespace TNL {
 namespace Containers {
@@ -191,9 +191,9 @@ compareMemory( const Element1* destination,
    }
    else
    {
-      Devices::MICHider<const Element1> src_ptr;
+      Devices::MICHider<const Element2> src_ptr;
       src_ptr.pointer=source;
-      Devices::MICHider<const Element2> dst_ptr;
+      Devices::MICHider<const Element1> dst_ptr;
       dst_ptr.pointer=destination;
       bool ret=false;
       #pragma offload target(mic) in(src_ptr,dst_ptr,size) out(ret)
@@ -214,6 +214,44 @@ compareMemory( const Element1* destination,
    throw Exceptions::MICSupportMissing();
 #endif
 }
+
+template< typename Element,
+          typename Index >
+bool
+ArrayOperations< Devices::MIC >::
+containsValue( const Element* data,
+               const Index size,
+               const Element& value )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "" );
+#ifdef HAVE_MIC
+   TNL_ASSERT( false, );
+   return false;
+#else
+   throw Exceptions::MICSupportMissing();
+#endif
+}
+
+template< typename Element,
+          typename Index >
+bool
+ArrayOperations< Devices::MIC >::
+containsOnlyValue( const Element* data,
+                   const Index size,
+                   const Element& value )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
+   TNL_ASSERT_GE( size, 0, "" );
+#ifdef HAVE_MIC
+   TNL_ASSERT( false, );
+   return false;
+#else
+   throw Exceptions::MICSupportMissing();
+#endif
+}
+
+
 
 /****
  * Operations MIC -> Host

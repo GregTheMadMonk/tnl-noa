@@ -57,9 +57,9 @@ template< typename Element,
    template<typename ArrayType>
 void IndexedMap< Element, Index, Key >::toArray( ArrayType& array ) const
 {
-   Assert( array.getSize() == getSize(),
-              std::cerr << "array.getSize() = " << array.getSize()
-                   << " getSize() = " << getSize() );
+   TNL_ASSERT( array.getSize() == getSize(),
+               std::cerr << "array.getSize() = " << array.getSize()
+                         << " getSize() = " << getSize() );
 
    for( STDMapIteratorType iter = map.begin();
         iter != map.end();

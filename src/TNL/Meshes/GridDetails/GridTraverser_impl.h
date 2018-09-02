@@ -264,7 +264,7 @@ processEntities(
    if( stream == 0 )
    {
       cudaStreamSynchronize( s );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
    }
 */
 }
@@ -381,23 +381,6 @@ GridTraverser2D(
    coordinates.x() = begin.x() + Devices::Cuda::getGlobalThreadIdx_x( gridIdx );
    coordinates.y() = begin.y() + Devices::Cuda::getGlobalThreadIdx_y( gridIdx );
    
-   /*if( processOnlyBoundaryEntities && 
-      ( GridEntity::getMeshDimension() == 2 || GridEntity::getMeshDimension() == 0 ) )
-   {
-      if( coordinates.x() == begin.x() || coordinates.x() == end.x() ||
-          coordinates.y() == begin.y() || coordinates.y() == end.y() )
-      {
-         GridEntity entity( *grid, coordinates, gridEntityParameters... );
-         entity.refresh();
-         EntitiesProcessor::processEntity
-         ( *grid,
-           *userData,
-           entity );
-      }
-      return;
-   }*/
-   
-   
    if( coordinates <= end )
    {
       GridEntity entity( *grid, coordinates, gridEntityParameters... );
@@ -504,7 +487,7 @@ processEntities(
 {
 #ifdef HAVE_CUDA
    if( processOnlyBoundaryEntities && 
-      ( GridEntity::getMeshDimension() == 2 || GridEntity::getMeshDimension() == 0 ) )
+       ( GridEntity::getEntityDimension() == 2 || GridEntity::getEntityDimension() == 0 ) )
    {
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocksCountAlongX, cudaGridsCountAlongX,
@@ -998,7 +981,7 @@ processEntities(
 {
 #ifdef HAVE_CUDA   
    if( processOnlyBoundaryEntities && 
-      ( GridEntity::getMeshDimension() == 3 || GridEntity::getMeshDimension() == 0 ) )
+       ( GridEntity::getEntityDimension() == 3 || GridEntity::getEntityDimension() == 0 ) )
    {
       dim3 cudaBlockSize( 16, 16 );
       const IndexType entitiesAlongX = end.x() - begin.x() + 1;
@@ -1212,7 +1195,7 @@ processEntities(
    if( stream == 0 )
    {
       cudaStreamSynchronize( s );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
    }
  */
 }

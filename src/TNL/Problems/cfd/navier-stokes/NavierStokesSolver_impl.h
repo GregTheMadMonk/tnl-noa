@@ -32,11 +32,11 @@ NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::Navi
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-String NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getTypeStatic()
+String NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getType()
 {
    return String( "NavierStokesSolver< " ) +
-          AdvectionScheme::getTypeStatic() + ", " +
-          DiffusionScheme::getTypeStatic() + " >";
+          AdvectionScheme::getType() + ", " +
+          DiffusionScheme::getType() + " >";
 }
 
 template< typename AdvectionScheme,

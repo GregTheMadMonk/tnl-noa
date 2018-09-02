@@ -111,7 +111,12 @@ bool IterativeSolver< Real, Index> :: checkNextIteration()
 {
    this->refreshSolverMonitor();
 
-   if( std::isnan( this->getResidue() ) ||
+   if(
+#ifndef HAVE_CUDA      
+      std::isnan( this->getResidue() ) ||
+      // TODO: Fix this !!!!
+      // this does not work (at least) with nvcc 8.0 and g++ 5.4
+#endif      
        this->getIterations() > this->getMaxIterations()  ||
        ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() >= this->getMinIterations() ) ||
        ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() >= this->getMinIterations() ) )

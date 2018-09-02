@@ -7,8 +7,6 @@ SET( headers IterativeSolver.h
              IterativeSolver_impl.h
              BuildConfigTags.h
              FastBuildConfigTag.h
-             MeshTypeResolver.h
-             MeshTypeResolver_impl.h
              Solver.h
              Solver_impl.h
              SolverStarter.h
@@ -41,4 +39,4 @@ set( tnl_solvers_SOURCES
      ${common_SOURCES}
      PARENT_SCOPE )
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Solvers )
+INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Solvers )

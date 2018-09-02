@@ -10,33 +10,45 @@
 
 #pragma once
 
-#include <TNL/Object.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Logger.h>
-#include <TNL/Timer.h>
 #include <TNL/SharedPointer.h>
+#include <TNL/Solvers/PDE/PDESolver.h>
+#include <TNL/Solvers/PDE/MeshDependentTimeSteps.h>
+
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+
 
 namespace TNL {
 namespace Solvers {
 namespace PDE {   
 
 template< typename Problem,
+          typename DiscreteSolver,
           typename TimeStepper >
-class TimeDependentPDESolver : public Object
+class TimeDependentPDESolver
+   : public PDESolver< typename Problem::RealType, 
+                       typename Problem::IndexType >,
+     public MeshDependentTimeSteps< typename Problem::MeshType,
+                                    typename TimeStepper::RealType >
 {
    public:
 
-      typedef typename TimeStepper::RealType RealType;
-      typedef typename TimeStepper::DeviceType DeviceType;
-      typedef typename TimeStepper::IndexType IndexType;
-      typedef Problem ProblemType;
+      using RealType = typename Problem::RealType;
+      using DeviceType = typename Problem::DeviceType;
+      using IndexType = typename Problem::IndexType;
+      using BaseType = PDESolver< RealType, IndexType >;
+      using ProblemType = Problem;
       typedef typename ProblemType::MeshType MeshType;
       typedef typename ProblemType::DofVectorType DofVectorType;
-      typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
+      typedef typename ProblemType::CommonDataType CommonDataType;
+      typedef typename ProblemType::CommonDataPointer CommonDataPointer;
       typedef SharedPointer< MeshType, DeviceType > MeshPointer;
       typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-      typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
+      typedef IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > SolverMonitorType;
+      
+      static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
 
       TimeDependentPDESolver();
 
@@ -48,8 +60,6 @@ class TimeDependentPDESolver : public Object
 
       bool writeProlog( Logger& logger,
                         const Config::ParameterContainer& parameters );
-
-      void setTimeStepper( TimeStepper& timeStepper );
 
       void setProblem( ProblemType& problem );
 
@@ -65,17 +75,9 @@ class TimeDependentPDESolver : public Object
 
       const RealType& getTimeStep() const;
 
-      bool setTimeStepOrder( const RealType& timeStepOrder );
-
-      const RealType& getTimeStepOrder() const;
-
       bool setSnapshotPeriod( const RealType& period );
 
       const RealType& getSnapshotPeriod() const;
-
-      void setIoTimer( Timer& ioTimer);
-
-      void setComputeTimer( Timer& computeTimer );
 
       bool solve();
 
@@ -85,17 +87,19 @@ class TimeDependentPDESolver : public Object
 
       MeshPointer meshPointer;
 
+      Meshes::DistributedMeshes::DistributedMesh<MeshType> distrMesh;
+
       DofVectorPointer dofsPointer;
 
-      MeshDependentDataPointer meshDependentDataPointer;
+      CommonDataPointer commonDataPointer;
 
-      TimeStepper* timeStepper;
-
-      RealType initialTime, finalTime, snapshotPeriod, timeStep, timeStepOrder;
-
+      TimeStepper timeStepper;
+      
+      DiscreteSolver discreteSolver;
+      
       ProblemType* problem;
 
-      Timer *ioTimer, *computeTimer;
+      RealType initialTime, finalTime, snapshotPeriod, timeStep;
 };
 
 } // namespace PDE

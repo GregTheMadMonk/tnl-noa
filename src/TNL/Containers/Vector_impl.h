@@ -228,25 +228,27 @@ Real Vector< Real, Device, Index >::absMin() const
 template< typename Real,
           typename Device,
           typename Index >
-Real Vector< Real, Device, Index >::lpNorm( const Real& p ) const
+   template< typename ResultType, typename Real_ >
+ResultType Vector< Real, Device, Index >::lpNorm( const Real_ p ) const
 {
-   return Algorithms::VectorOperations< Device >::getVectorLpNorm( *this, p );
+   return Algorithms::VectorOperations< Device >::template getVectorLpNorm< Vector, ResultType >( *this, p );
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-Real Vector< Real, Device, Index >::sum() const
+   template< typename ResultType >
+ResultType Vector< Real, Device, Index >::sum() const
 {
-   return Algorithms::VectorOperations< Device >::getVectorSum( *this );
+   return Algorithms::VectorOperations< Device >::template getVectorSum< Vector, ResultType >( *this );
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-template< typename VectorT >
+   template< typename VectorT >
 Real Vector< Real, Device, Index >::differenceMax( const VectorT& v ) const
 {
    return Algorithms::VectorOperations< Device >::getVectorDifferenceMax( *this, v );
@@ -256,7 +258,7 @@ Real Vector< Real, Device, Index >::differenceMax( const VectorT& v ) const
 template< typename Real,
           typename Device,
           typename Index >
-template< typename VectorT >
+   template< typename VectorT >
 Real Vector< Real, Device, Index >::differenceMin( const VectorT& v ) const
 {
    return Algorithms::VectorOperations< Device >::getVectorDifferenceMin( *this, v );
@@ -266,7 +268,7 @@ Real Vector< Real, Device, Index >::differenceMin( const VectorT& v ) const
 template< typename Real,
           typename Device,
           typename Index >
-template< typename VectorT >
+   template< typename VectorT >
 Real Vector< Real, Device, Index >::differenceAbsMax( const VectorT& v ) const
 {
    return Algorithms::VectorOperations< Device >::getVectorDifferenceAbsMax( *this, v );
@@ -275,7 +277,7 @@ Real Vector< Real, Device, Index >::differenceAbsMax( const VectorT& v ) const
 template< typename Real,
           typename Device,
           typename Index >
-template< typename VectorT >
+   template< typename VectorT >
 Real Vector< Real, Device, Index >::differenceAbsMin( const VectorT& v ) const
 {
    return Algorithms::VectorOperations< Device >::getVectorDifferenceAbsMin( *this, v );
@@ -284,20 +286,20 @@ Real Vector< Real, Device, Index >::differenceAbsMin( const VectorT& v ) const
 template< typename Real,
           typename Device,
           typename Index >
-template< typename VectorT >
-Real Vector< Real, Device, Index >::differenceLpNorm( const VectorT& v, const Real& p ) const
+   template< typename ResultType, typename VectorT, typename Real_ >
+ResultType Vector< Real, Device, Index >::differenceLpNorm( const VectorT& v, const Real_ p ) const
 {
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceLpNorm( *this, v, p );
+   return Algorithms::VectorOperations< Device >::template getVectorDifferenceLpNorm< Vector, VectorT, ResultType >( *this, v, p );
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-template< typename VectorT >
-Real Vector< Real, Device, Index >::differenceSum( const VectorT& v ) const
+   template< typename ResultType, typename VectorT >
+ResultType Vector< Real, Device, Index >::differenceSum( const VectorT& v ) const
 {
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceSum( *this, v );
+   return Algorithms::VectorOperations< Device >::template getVectorDifferenceSum< Vector, VectorT, ResultType >( *this, v );
 }
 
 
@@ -322,7 +324,7 @@ Real Vector< Real, Device, Index >::scalarProduct( const VectorT& v ) const
 template< typename Real,
           typename Device,
           typename Index >
-template< typename VectorT >
+   template< typename VectorT >
 void
 Vector< Real, Device, Index >::
 addVector( const VectorT& x,

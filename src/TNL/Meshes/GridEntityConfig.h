@@ -25,7 +25,7 @@ class GridEntityStencilStorageTag
 {
    public:
  
-      static const int stencilStorage = storage;
+      static constexpr int stencilStorage = storage;
 };
 
 /****

@@ -93,9 +93,9 @@ ParameterContainer::
    parameters. DeepEraseAll();
 }
 
-void ParameterContainer::MPIBcast( int root, MPI_Comm mpi_comm )
+/*void ParameterContainer::MPIBcast( int root, MPI_Comm mpi_comm )
 {
-#ifdef HAVE_MPI
+#ifdef USE_MPI
    int i;
    int size = parameters. getSize();
    :: MPIBcast( size, 1, root, mpi_comm );
@@ -106,7 +106,7 @@ void ParameterContainer::MPIBcast( int root, MPI_Comm mpi_comm )
          tnlParameterBase* param = parameters[ i ];
          param -> type. MPIBcast( root, MPI_COMM_WORLD );
          param -> name. MPIBcast( root, MPI_COMM_WORLD );
-         if( param -> type == "mString" )
+         if( param -> type == "String" )
          {
             ( ( tnlParameter< String >* ) param ) -> value. MPIBcast( root, mpi_comm );
          }
@@ -161,7 +161,7 @@ void ParameterContainer::MPIBcast( int root, MPI_Comm mpi_comm )
    }
 #endif
 }
-
+*/
 bool
 parseCommandLine( int argc, char* argv[],
                   const Config::ConfigDescription& config_description,
@@ -203,7 +203,7 @@ parseCommandLine( int argc, char* argv[],
          Containers::List< String > parsedEntryType;
          if( ! parseObjectType( entryType, parsedEntryType ) )
          {
-            std::cerr << "Internal error: Uknown config entry type " << entryType << "." << std::endl;
+            std::cerr << "Internal error: Unknown config entry type " << entryType << "." << std::endl;
             return false;
          }
          if( parsedEntryType[ 0 ] == "List" )
@@ -265,22 +265,22 @@ parseCommandLine( int argc, char* argv[],
             }
             if( string_list )
             {
-               parameters. addParameter< Containers::List< String > >( option, *string_list );
+               parameters.addParameter< Containers::List< String > >( option, *string_list );
                delete string_list;
             }
             if( bool_list )
             {
-               parameters. addParameter< Containers::List< bool > >( option, *bool_list );
+               parameters.addParameter< Containers::List< bool > >( option, *bool_list );
                delete bool_list;
             }
             if( integer_list )
             {
-               parameters. addParameter< Containers::List< int > >( option, *integer_list );
+               parameters.addParameter< Containers::List< int > >( option, *integer_list );
                delete integer_list;
             }
             if( real_list )
             {
-               parameters. addParameter< Containers::List< double > >( option, *real_list );
+               parameters.addParameter< Containers::List< double > >( option, *real_list );
                delete real_list;
             }
             if( i < argc ) i --;
@@ -292,7 +292,7 @@ parseCommandLine( int argc, char* argv[],
             {
                if( ! ( ( ConfigEntry< String >* ) entry )->checkValue( value ) )
                   return false;
-                parameters. addParameter< String >( option, value );
+                parameters.addParameter< String >( option, value );
                 continue;
             }
             if( parsedEntryType[ 0 ] == "bool" )
@@ -303,12 +303,12 @@ parseCommandLine( int argc, char* argv[],
                   std::cerr << "Yes/true or no/false is required for the parameter " << option << "." << std::endl;
                   parse_error = true;
                }
-               else parameters. addParameter< bool >( option, bool_val );
+               else parameters.addParameter< bool >( option, bool_val );
                continue;
             }
             if( parsedEntryType[ 0 ] == "int" )
             {
-               /*if( ! isdigit( value ) )
+               /*if( ! std::isdigit( value ) ) //TODO: Check for real number
                {
                   std::cerr << "Integer constant is required for the parameter " << option << "." << std::endl;
                   parse_error = true;
@@ -316,11 +316,11 @@ parseCommandLine( int argc, char* argv[],
                }*/
                if( ! ( ( ConfigEntry< int >* ) entry )->checkValue( atoi( value ) ) )
                   return false;
-               parameters. addParameter< int >( option, atoi( value ) );
+               parameters.addParameter< int >( option, atoi( value ) );
             }
             if( parsedEntryType[ 0 ] == "double" )
             {
-               /*if( ! isdigit( value ) )
+               /*if( ! std::isdigit( value ) )  //TODO: Check for real number
                {
                   std::cerr << "Real constant is required for the parameter " << option << "." << std::endl;
                   parse_error = true;
@@ -328,7 +328,7 @@ parseCommandLine( int argc, char* argv[],
                }*/
                if( ! ( ( ConfigEntry< double >* ) entry )->checkValue( atof( value ) ) )
                   return false;
-               parameters. addParameter< double >( option, atof( value ) );
+               parameters.addParameter< double >( option, atof( value ) );
             }
          }
       }
