@@ -74,7 +74,7 @@ if( CXX_COMPILER_NAME MATCHES "icpc" )
    message( "Intel compiler detected..."    )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_ICPC -wd2568 -wd2571 -wd2570")
    #####
-   #  Check for MIC 
+   #  Check for MIC
    #
    if( ${WITH_MIC} )
       message( "Enabled MIC support." )
@@ -121,7 +121,7 @@ endif()
 #####
 # Check for CUDA
 #
-if( WITH_CUDA STREQUAL "yes" )
+if( ${WITH_CUDA} )
     find_package( CUDA )
     if( CUDA_FOUND )
         set( BUILD_CUDA TRUE)
@@ -189,44 +189,11 @@ if( WITH_CUDA STREQUAL "yes" )
                 endif()
             endif()
         endif()
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES -lineinfo )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES )
         # TODO: this is necessary only due to a bug in cmake
         set( CUDA_ADD_LIBRARY_OPTIONS -shared )
-
-        ####
-        # Check for CUSP
-        #
-        find_path( CUSP_INCLUDE_DIR cusp/hyb_matrix.h  
-                   DOC "CUSP headers." )
-        if( ${CUSP_INCLUDE_DIR} STREQUAL "CUSP_INCLUDE_DIR-NOTFOUND" )
-            message( "CUSP not found." )
-            set( HAVE_CUSP "//#define HAVE_CUSP 1" )
-        else()      
-            message( "CUSP found. -- ${CUSP_INCLUDE_DIR}" )
-            set( HAVE_CUSP "#define HAVE_CUSP 1" )
-            cuda_include_directories( ${CUSP_INCLUDE_DIR} )
-        endif()
-        
-        ####
-        # Check for CUSPARSE
-        #
-        if( NOT WITH_CUSPARSE STREQUAL "no" )
-           find_path( CUSPARSE_INCLUDE_DIR cusparse.h
-                      /usr/local/cuda/include                   
-                      ${CUDA_INCLUDE_DIRS}  
-                      DOC "CUSPARSE headers." )
-           if( ${CUSPARSE_INCLUDE_DIR} STREQUAL "CUSPARSE_INCLUDE_DIR-NOTFOUND" )
-               message( "CUSPARSE not found." )
-               set( HAVE_CUSPARSE "//#define HAVE_CUSPARSE 1" )
-           else()      
-               message( "CUSPARSE found. -- ${CUSPARSE_INCLUDE_DIR}" )
-               set( HAVE_CUSPARSE "#define HAVE_CUSPARSE 1" )
-               cuda_include_directories( ${CUSPARSE_INCLUDE_DIR} )
-               set( CUSPARSE_LIBRARY "${CUDA_cusparse_LIBRARY}" )
-           endif()            
-        endif( NOT WITH_CUSPARSE STREQUAL "no" )        
-    endif( CUDA_FOUND )
-endif( WITH_CUDA STREQUAL "yes" )
+    endif()
+endif()
 
 
 ####
