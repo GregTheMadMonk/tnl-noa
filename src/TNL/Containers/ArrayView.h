@@ -57,12 +57,13 @@ public:
    ArrayView( ArrayView&& ) = default;
 
    // initialization from other array containers (using shallow copy)
+   template< typename Element_ >  // template catches both const and non-const qualified Element
    __cuda_callable__
-   ArrayView( Array< Element, Device, Index >& array );
+   ArrayView( Array< Element_, Device, Index >& array );
 
-   template< int Size >
+   template< int Size, typename Element_ >  // template catches both const and non-const qualified Element
    __cuda_callable__
-   ArrayView( StaticArray< Size, Element >& array );
+   ArrayView( StaticArray< Size, Element_ >& array );
 
 
    // methods for rebinding (reinitialization)
@@ -72,12 +73,13 @@ public:
    __cuda_callable__
    void bind( ArrayView& view );
 
+   template< typename Element_ >  // template catches both const and non-const qualified Element
    __cuda_callable__
-   void bind( Array< Element, Device, Index >& array );
+   void bind( Array< Element_, Device, Index >& array );
 
-   template< int Size >
+   template< int Size, typename Element_ >  // template catches both const and non-const qualified Element
    __cuda_callable__
-   void bind( StaticArray< Size, Element >& array );
+   void bind( StaticArray< Size, Element_ >& array );
 
 
    // Copy-assignment does deep copy, just like regular array, but the sizes

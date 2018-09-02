@@ -37,20 +37,21 @@ ArrayView( Element* data, Index size ) : data(data), size(size)
 template< typename Element,
           typename Device,
           typename Index >
+   template< typename Element_ >
 __cuda_callable__
 ArrayView< Element, Device, Index >::
-ArrayView( Array< Element, Device, Index >& array )
+ArrayView( Array< Element_, Device, Index >& array )
 {
-   this->bind( array );
+   this->bind( array.getData(), array.getSize() );
 }
 
 template< typename Element,
           typename Device,
           typename Index >
-   template< int Size >
+   template< int Size, typename Element_ >
 __cuda_callable__
 ArrayView< Element, Device, Index >::
-ArrayView( StaticArray< Size, Element >& array )
+ArrayView( StaticArray< Size, Element_ >& array )
 {
    this->bind( array );
 }
@@ -65,7 +66,8 @@ ArrayView< Element, Device, Index >::
 bind( Element* data, Index size )
 {
    TNL_ASSERT_GE( size, 0, "ArrayView size was initialized with a negative size." );
-   TNL_ASSERT_FALSE( data | size, "ArrayView was initialized with a positive address and zero size or zero address and positive size." );
+   TNL_ASSERT_TRUE( (data == nullptr && size == 0) || (data != nullptr && size > 0),
+                    "ArrayView was initialized with a positive address and zero size or zero address and positive size." );
 
    this->data = data;
    this->size = size;
@@ -77,33 +79,31 @@ template< typename Element,
 __cuda_callable__
 void ArrayView< Element, Device, Index >::bind( ArrayView& view )
 {
-   this->data = view.getData();
-   this->size = view.getSize();
+   bind( view.getData(), view.getSize() );
 }
 
 template< typename Element,
           typename Device,
           typename Index >
+   template< typename Element_ >
 __cuda_callable__
 void
 ArrayView< Element, Device, Index >::
-bind( Array< Element, Device, Index >& array )
+bind( Array< Element_, Device, Index >& array )
 {
-   this->data = array.getData();
-   this->size = array.getSize();
+   bind( array.getData(), array.getSize() );
 }
 
 template< typename Element,
           typename Device,
           typename Index >
-   template< int Size >
+   template< int Size, typename Element_ >
 __cuda_callable__
 void
 ArrayView< Element, Device, Index >::
-bind( StaticArray< Size, Element >& array )
+bind( StaticArray< Size, Element_ >& array )
 {
-   this->data = array.getData();
-   this->size = Size;
+   bind( array.getData(), Size );
 }
 
 
