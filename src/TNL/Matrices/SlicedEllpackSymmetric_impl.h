@@ -156,9 +156,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::setElementFast( const IndexType row,
                                                                                   const IndexType column,
                                                                                   const Real& value )
@@ -182,9 +180,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::addElementFast( const IndexType row,
                                                                                   const IndexType column,
                                                                                   const RealType& value,
@@ -281,9 +277,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool SlicedEllpackSymmetric< Real, Device, Index, SliceSize > :: setRowFast( const IndexType row,
                                                                                 const IndexType* columnIndexes,
                                                                                 const RealType* values,
@@ -352,9 +346,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool SlicedEllpackSymmetric< Real, Device, Index, SliceSize > :: addRowFast( const IndexType row,
                                                                                 const IndexType* columns,
                                                                                 const RealType* values,
@@ -383,9 +375,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::getElementFast( const IndexType row,
                                                                                   const IndexType column ) const
 {
@@ -432,9 +422,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::getRowFast( const IndexType row,
                                                                               IndexType* columns,
                                                                               RealType* values ) const
@@ -477,9 +465,7 @@ template< typename Real,
           int SliceSize >
 template< typename InVector,
           typename OutVector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::rowVectorProduct( const IndexType row,
                                                                                     const InVector& inVector,
                                                                                     OutVector& outVector ) const
@@ -856,9 +842,7 @@ class SlicedEllpackSymmetricDeviceDependentCode< Devices::Cuda >
       template< typename Real,
                 typename Index,
                 int SliceSize >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static void initRowTraverseFast( const SlicedEllpackSymmetric< Real, Device, Index, SliceSize >& matrix,
                                        const Index row,
                                        Index& rowBegin,

@@ -55,11 +55,8 @@ public:
    __cuda_callable__
    IndexType getColumns() const;
 
-#ifdef HAVE_CUDA
-    __device__ __host__
-#endif
-    
-    const IndexType& getNumberOfColors() const;
+   __cuda_callable__    
+   const IndexType& getNumberOfColors() const;
 
    /****
     * TODO: The fast variants of the following methods cannot be virtual.
@@ -110,14 +107,9 @@ public:
 
    bool help( bool verbose = false ) { return true;};
 
-#ifdef  HAVE_CUDA
-   __device__ __host__
-#endif
    void copyFromHostToCuda( Matrices::Matrix< Real, Devices::Host, Index >& matrix );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Index getValuesSize() const;
 
    protected:

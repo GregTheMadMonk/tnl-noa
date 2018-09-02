@@ -28,9 +28,7 @@ EllpackSymmetricGraph< Real, Device, Index > :: EllpackSymmetricGraph()
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-  __device__ __host__
-#endif
+__cuda_callable__
 Index EllpackSymmetricGraph< Real, Device, Index >::getRowLengthsInt() const
 {
     return this->rowLengths;
@@ -101,9 +99,7 @@ void EllpackSymmetricGraph< Real, Device, Index >::setCompressedRowLengths( cons
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 Index EllpackSymmetricGraph< Real, Device, Index >::getRowsOfColor( IndexType color ) const
 {
    return this->colorPointers.getElement( color + 1 ) - this->colorPointers.getElement( color );
@@ -178,9 +174,7 @@ void EllpackSymmetricGraph< Real, Device, Index >::computeColorsVector( Containe
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 void EllpackSymmetricGraph< Real, Device, Index >::computePermutationArray()
 {
    // init vector of colors and permutation array
@@ -244,9 +238,7 @@ void EllpackSymmetricGraph< Real, Device, Index >::verifyPermutationArray()
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 bool EllpackSymmetricGraph< Real, Device, Index >::rearrangeMatrix( bool verbose )
 {
    // first we need to know permutation
@@ -303,9 +295,7 @@ bool EllpackSymmetricGraph< Real, Device, Index >::rearrangeMatrix( bool verbose
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-  __device__ __host__
-#endif
+__cuda_callable__
 Containers::Vector< Index, Device, Index > EllpackSymmetricGraph< Real, Device, Index >::getPermutationArray()
 {
     return this->permutationArray;
@@ -314,9 +304,7 @@ Containers::Vector< Index, Device, Index > EllpackSymmetricGraph< Real, Device, 
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-  __device__ __host__
-#endif
+__cuda_callable__
 Containers::Vector< Index, Device, Index > EllpackSymmetricGraph< Real, Device, Index >::getInversePermutation()
 {
     return this->inversePermutationArray;
@@ -325,9 +313,7 @@ Containers::Vector< Index, Device, Index > EllpackSymmetricGraph< Real, Device, 
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-  __device__ __host__
-#endif
+__cuda_callable__
 Containers::Vector< Index, Device, Index > EllpackSymmetricGraph< Real, Device, Index >::getColorPointers()
 {
     return this->colorPointers;
@@ -336,9 +322,7 @@ Containers::Vector< Index, Device, Index > EllpackSymmetricGraph< Real, Device, 
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-  __device__ __host__
-#endif
+__cuda_callable__
 void EllpackSymmetricGraph< Real, Device, Index >::copyFromHostToCuda( EllpackSymmetricGraph< Real, Devices::Host, Index >& matrix )
 {
     //  TODO: fix
@@ -432,9 +416,7 @@ bool EllpackSymmetricGraph< Real, Device, Index >::copyFrom( const Matrix& matri
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool EllpackSymmetricGraph< Real, Device, Index > :: setElementFast( const IndexType row,
                                                                      const IndexType column,
                                                                      const Real& value )
@@ -456,9 +438,7 @@ bool EllpackSymmetricGraph< Real, Device, Index > :: setElement( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool EllpackSymmetricGraph< Real, Device, Index > :: addElementFast( const IndexType row,
                                                                      const IndexType column,
                                                                      const RealType& value,
@@ -547,9 +527,7 @@ bool EllpackSymmetricGraph< Real, Device, Index > :: addElement( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool EllpackSymmetricGraph< Real, Device, Index > :: setRowFast( const IndexType row,
                                                                  const IndexType* columnIndexes,
                                                                  const RealType* values,
@@ -615,9 +593,7 @@ bool EllpackSymmetricGraph< Real, Device, Index > :: setRow( const IndexType row
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool EllpackSymmetricGraph< Real, Device, Index > :: addRowFast( const IndexType row,
                                                                  const IndexType* columns,
                                                                  const RealType* values,
@@ -644,9 +620,7 @@ bool EllpackSymmetricGraph< Real, Device, Index > :: addRow( const IndexType row
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real EllpackSymmetricGraph< Real, Device, Index >::getElementFast( const IndexType row,
                                                                    const IndexType column ) const
 {
@@ -695,9 +669,7 @@ Real EllpackSymmetricGraph< Real, Device, Index >::getElement( const IndexType r
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void EllpackSymmetricGraph< Real, Device, Index >::getRowFast( const IndexType row,
                                                                IndexType* columns,
                                                                RealType* values ) const
@@ -739,9 +711,7 @@ template< typename Real,
           typename Device,
           typename Index >
   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename Vector::RealType EllpackSymmetricGraph< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                           const Vector& vector ) const
 {
@@ -936,7 +906,7 @@ template< typename Real,
           typename Index >
 template< typename InVector,
           typename OutVector >
-__device__
+__cuda_callable__
 void EllpackSymmetricGraph< Real, Device, Index >::spmvCuda( const InVector& inVector,
                                                              OutVector& outVector,
                                                              const int globalIdx,
@@ -990,9 +960,7 @@ class EllpackSymmetricGraphDeviceDependentCode< Devices::Cuda >
 
       template< typename Real,
                 typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static Index getRowBegin( const EllpackSymmetricGraph< Real, Device, Index >& matrix,
                                 const Index row )
       {
@@ -1001,9 +969,7 @@ class EllpackSymmetricGraphDeviceDependentCode< Devices::Cuda >
 
       template< typename Real,
                 typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static Index getRowEnd( const EllpackSymmetricGraph< Real, Device, Index >& matrix,
                                 const Index row )
       {
@@ -1012,9 +978,7 @@ class EllpackSymmetricGraphDeviceDependentCode< Devices::Cuda >
 
       template< typename Real,
                 typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static Index getElementStep( const EllpackSymmetricGraph< Real, Device, Index >& matrix )
       {
          return matrix.alignedRows;

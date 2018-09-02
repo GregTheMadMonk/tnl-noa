@@ -81,9 +81,7 @@ class SlicedEllpackSymmetricGraph : public Sparse< Real, Device, Index >
              typename OutVector >
    void vectorProductHost( const InVector& inVector, OutVector& outVector ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value );
@@ -92,9 +90,7 @@ class SlicedEllpackSymmetricGraph : public Sparse< Real, Device, Index >
                     const IndexType column,
                     const RealType& value );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value,
@@ -105,9 +101,7 @@ class SlicedEllpackSymmetricGraph : public Sparse< Real, Device, Index >
                     const RealType& value,
                     const RealType& thisElementMultiplicator = 1.0 );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setRowFast( const IndexType row,
                     const IndexType* columnIndexes,
                     const RealType* values,
@@ -118,9 +112,7 @@ class SlicedEllpackSymmetricGraph : public Sparse< Real, Device, Index >
                 const RealType* values,
                 const IndexType elements );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addRowFast( const IndexType row,
                     const IndexType* columns,
                     const RealType* values,
@@ -133,18 +125,14 @@ class SlicedEllpackSymmetricGraph : public Sparse< Real, Device, Index >
                 const IndexType numberOfElements,
                 const RealType& thisElementMultiplicator = 1.0 );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    RealType getElementFast( const IndexType row,
                             const IndexType column ) const;
 
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void getRowFast( const IndexType row,
                     IndexType* columns,
                     RealType* values ) const;
@@ -154,9 +142,7 @@ class SlicedEllpackSymmetricGraph : public Sparse< Real, Device, Index >
                 RealType* values ) const;
 
    template< typename Vector >
-   #ifdef HAVE_CUDA
-      __device__ __host__
-   #endif
+   __cuda_callable__
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
@@ -206,19 +192,12 @@ class SlicedEllpackSymmetricGraph : public Sparse< Real, Device, Index >
                   const int color ) const;
 #endif
 
-#ifdef HAVE_CUDA
-  __device__ __host__
-#endif
-   void copyFromHostToCuda( SlicedEllpackSymmetricGraph< Real, Devices::Host, Index, SliceSize >& matrix );
+    void copyFromHostToCuda( SlicedEllpackSymmetricGraph< Real, Devices::Host, Index, SliceSize >& matrix );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool rearrangeMatrix( bool verbose = false );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void computePermutationArray();
 
    Containers::Vector< Index, Device, Index > getSlicePointers();

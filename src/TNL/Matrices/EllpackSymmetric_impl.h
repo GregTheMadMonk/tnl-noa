@@ -163,9 +163,7 @@ bool EllpackSymmetric< Real, Device, Index >::copyFrom( const Matrix& matrix,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool EllpackSymmetric< Real, Device, Index > :: setElementFast( const IndexType row,
                                                                 const IndexType column,
                                                                 const Real& value )
@@ -187,9 +185,7 @@ bool EllpackSymmetric< Real, Device, Index > :: setElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool EllpackSymmetric< Real, Device, Index > :: addElementFast( const IndexType row,
                                                                 const IndexType column,
                                                                 const RealType& value,
@@ -285,9 +281,7 @@ bool EllpackSymmetric< Real, Device, Index > :: addElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool EllpackSymmetric< Real, Device, Index > :: setRowFast( const IndexType row,
                                                             const IndexType* columnIndexes,
                                                             const RealType* values,
@@ -353,9 +347,7 @@ bool EllpackSymmetric< Real, Device, Index > :: setRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool EllpackSymmetric< Real, Device, Index > :: addRowFast( const IndexType row,
                                                             const IndexType* columns,
                                                             const RealType* values,
@@ -382,9 +374,7 @@ bool EllpackSymmetric< Real, Device, Index > :: addRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real EllpackSymmetric< Real, Device, Index >::getElementFast( const IndexType row,
                                                               const IndexType column ) const
 {
@@ -430,9 +420,7 @@ Real EllpackSymmetric< Real, Device, Index >::getElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void EllpackSymmetric< Real, Device, Index >::getRowFast( const IndexType row,
                                                           IndexType* columns,
                                                           RealType* values ) const
@@ -693,9 +681,7 @@ template< typename Real,
         typename Device,
         typename Index >
 template< typename Vector >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+__cuda_callable__
 typename Vector::RealType EllpackSymmetric< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                      const Vector& vector ) const
 {
@@ -719,7 +705,7 @@ template< typename Real,
           typename Index >
 template< typename InVector,
           typename OutVector >
-__device__
+__cuda_callable__
 void EllpackSymmetric< Real, Device, Index >::spmvCuda( const InVector& inVector,
                                                            OutVector& outVector,
                                                            int rowId ) const
@@ -766,9 +752,7 @@ class EllpackSymmetricDeviceDependentCode< Devices::Cuda >
 
       template< typename Real,
                 typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static Index getRowBegin( const EllpackSymmetric< Real, Device, Index >& matrix,
                                 const Index row )
       {
@@ -777,9 +761,7 @@ class EllpackSymmetricDeviceDependentCode< Devices::Cuda >
 
       template< typename Real,
                 typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static Index getRowEnd( const EllpackSymmetric< Real, Device, Index >& matrix,
                                 const Index row )
       {
@@ -789,9 +771,7 @@ class EllpackSymmetricDeviceDependentCode< Devices::Cuda >
 
       template< typename Real,
                 typename Index >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static Index getElementStep( const EllpackSymmetric< Real, Device, Index >& matrix )
       {
          return matrix.alignedRows;

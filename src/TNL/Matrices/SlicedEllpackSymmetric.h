@@ -77,9 +77,7 @@ class SlicedEllpackSymmetric : public Sparse< Real, Device, Index >
    template< typename Real2, typename Device2, typename Index2 >
    bool operator != ( const SlicedEllpackSymmetric< Real2, Device2, Index2 >& matrix ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value );
@@ -88,9 +86,7 @@ class SlicedEllpackSymmetric : public Sparse< Real, Device, Index >
                     const IndexType column,
                     const RealType& value );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value,
@@ -101,9 +97,7 @@ class SlicedEllpackSymmetric : public Sparse< Real, Device, Index >
                     const RealType& value,
                     const RealType& thisElementMultiplicator = 1.0 );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setRowFast( const IndexType row,
                     const IndexType* columnIndexes,
                     const RealType* values,
@@ -114,9 +108,7 @@ class SlicedEllpackSymmetric : public Sparse< Real, Device, Index >
                 const RealType* values,
                 const IndexType elements );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addRowFast( const IndexType row,
                     const IndexType* columns,
                     const RealType* values,
@@ -129,18 +121,15 @@ class SlicedEllpackSymmetric : public Sparse< Real, Device, Index >
                 const IndexType numberOfElements,
                 const RealType& thisElementMultiplicator = 1.0 );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    RealType getElementFast( const IndexType row,
                             const IndexType column ) const;
 
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
+   __cuda_callable__
    void getRowFast( const IndexType row,
                     IndexType* columns,
                     RealType* values ) const;
@@ -151,9 +140,7 @@ class SlicedEllpackSymmetric : public Sparse< Real, Device, Index >
 
    template< typename InVector,
              typename OutVector >
-   #ifdef HAVE_CUDA
-      __device__ __host__
-   #endif
+   __cuda_callable__
    void rowVectorProduct( const IndexType row,
                           const InVector& inVector,
                           OutVector& outVector ) const;
@@ -165,9 +152,7 @@ class SlicedEllpackSymmetric : public Sparse< Real, Device, Index >
 
    template< typename InVector,
              typename OutVector >
-#ifdef HAVE_CUDA
-   __device__
-#endif
+   __cuda_callable__
    void spmvCuda( const InVector& inVector,
                   OutVector& outVector,
                   int globalIdx ) const;

@@ -268,9 +268,7 @@ bool tnlMatrix< Real, Device, Index >::help( bool verbose )
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-  __device__ __host__
-#endif
+__cuda_callable__
 void tnlMatrix< Real, Device, Index >::copyFromHostToCuda( tnlMatrix< Real, Devices::Host, Index >& matrix )
 {
     this->numberOfColors = matrix.getNumberOfColors();
