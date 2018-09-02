@@ -44,9 +44,12 @@ public:
       this->matrix = matrix;
    }
 
-   void setPreconditioner( const PreconditionerPointer& preconditioner );
+   void setPreconditioner( const PreconditionerPointer& preconditioner )
+   {
+      this->preconditioner = preconditioner;
+   }
 
-   virtual bool solve( const ConstVectorViewType& b, VectorViewType& x ) = 0;
+   virtual bool solve( ConstVectorViewType b, VectorViewType x ) = 0;
 
 protected:
    MatrixPointer matrix;

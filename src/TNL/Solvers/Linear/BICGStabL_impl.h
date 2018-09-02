@@ -68,7 +68,7 @@ setup( const Config::ParameterContainer& parameters,
 template< typename Matrix,
           typename Preconditioner >
 bool
-BICGStabL< Matrix, Preconditioner >::solve( const ConstVectorViewType& b, VectorViewType& x )
+BICGStabL< Matrix, Preconditioner >::solve( ConstVectorViewType b, VectorViewType x )
 {
    this->setSize( this->matrix->getRows() );
 

@@ -46,7 +46,7 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Preconditioner >
 bool UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
-solve( const ConstVectorViewType& b, VectorViewType& x )
+solve( ConstVectorViewType b, VectorViewType x )
 {
     TNL_ASSERT_EQ( this->matrix->getRows(), this->matrix->getColumns(), "matrix must be square" );
     TNL_ASSERT_EQ( this->matrix->getColumns(), x.getSize(), "wrong size of the solution vector" );

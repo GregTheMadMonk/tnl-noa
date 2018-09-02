@@ -50,7 +50,7 @@ public:
 
    const RealType& getOmega() const;
 
-   bool solve( const ConstVectorViewType& b, VectorViewType& x ) override;
+   bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
 protected:
    RealType omega;

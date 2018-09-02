@@ -62,7 +62,7 @@ template< typename Matrix,
           typename Preconditioner >
 bool
 CG< Matrix, Preconditioner >::
-solve( const ConstVectorViewType& b, VectorViewType& x )
+solve( ConstVectorViewType b, VectorViewType x )
 {
    this->setSize( this->matrix->getRows() );
 

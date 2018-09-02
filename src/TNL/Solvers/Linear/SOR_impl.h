@@ -76,7 +76,7 @@ const typename SOR< Matrix, Preconditioner > :: RealType& SOR< Matrix, Precondit
 }
 
 template< typename Matrix, typename Preconditioner >
-bool SOR< Matrix, Preconditioner > :: solve( const ConstVectorViewType& b, VectorViewType& x )
+bool SOR< Matrix, Preconditioner > :: solve( ConstVectorViewType b, VectorViewType x )
 {
    const IndexType size = this->matrix->getRows();
 

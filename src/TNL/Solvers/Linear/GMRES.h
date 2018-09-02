@@ -49,7 +49,7 @@ public:
 
    void setRestarting( IndexType rest );
 
-   bool solve( const ConstVectorViewType& b, VectorViewType& x ) override;
+   bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
    ~GMRES();
 

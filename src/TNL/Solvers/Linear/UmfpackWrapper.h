@@ -80,7 +80,7 @@ public:
        return false;
    }
 
-   bool solve( const ConstVectorViewType& b, VectorViewType& x ) override
+   bool solve( ConstVectorViewType b, VectorViewType x ) override
    {
        return false;
    }
@@ -111,7 +111,7 @@ public:
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
 
-   bool solve( const ConstVectorViewType& b, VectorViewType& x ) override;
+   bool solve( ConstVectorViewType b, VectorViewType x ) override;
 };
 
 } // namespace Linear

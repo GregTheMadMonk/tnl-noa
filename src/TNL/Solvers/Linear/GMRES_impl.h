@@ -97,7 +97,7 @@ template< typename Matrix,
           typename Preconditioner >
 bool
 GMRES< Matrix, Preconditioner >::
-solve( const ConstVectorViewType& b, VectorViewType& x )
+solve( ConstVectorViewType b, VectorViewType x )
 {
    TNL_ASSERT_TRUE( this->matrix, "No matrix was set in GMRES. Call setMatrix() before solve()." );
    if( restarting_min <= 0 || restarting_max <= 0 || restarting_min > restarting_max )

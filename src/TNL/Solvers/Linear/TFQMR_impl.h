@@ -61,7 +61,7 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Matrix,
           typename Preconditioner >
-bool TFQMR< Matrix, Preconditioner >::solve( const ConstVectorViewType& b, VectorViewType& x )
+bool TFQMR< Matrix, Preconditioner >::solve( ConstVectorViewType b, VectorViewType x )
 {
    this->setSize( this->matrix->getRows() );
 
