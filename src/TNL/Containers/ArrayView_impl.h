@@ -12,8 +12,8 @@
 
 #include <iostream>
 
+#include <TNL/param-types.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
-#include <TNL/Containers/ArrayIO.h>
 
 #include "ArrayView.h"
 
@@ -148,36 +148,6 @@ getType()
                   TNL::getType< Element >() + ", " +
                   Device::getDeviceType() + ", " +
                   TNL::getType< Index >() + " >";
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
-String
-ArrayView< Element, Device, Index >::
-getTypeVirtual() const
-{
-   return getType();
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
-String
-ArrayView< Element, Device, Index >::
-getSerializationType()
-{
-   return Array< Element, Device, Index >::getType();
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
-String
-ArrayView< Element, Device, Index >::
-getSerializationTypeVirtual() const
-{
-   return getSerializationType();
 }
 
 
@@ -352,82 +322,6 @@ ArrayView< Element, Device, Index >::
 operator bool() const
 {
    return data;
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
-bool
-ArrayView< Element, Device, Index >::
-save( File& file ) const
-{
-   TNL_ASSERT( this->size != 0,
-              std::cerr << "You try to save empty array." << std::endl );
-   if( ! Object::save( file ) )
-      return false;
-   if( ! file.write( &this->size ) )
-      return false;
-   if( ! file.write< Element, Device, Index >( this->data, this->size ) )
-   {
-      std::cerr << "I was not able to write ArrayView with size " << this->getSize() << std::endl;
-      return false;
-   }
-   return true;
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
-bool
-ArrayView< Element, Device, Index >::
-save( const String& fileName ) const
-{
-   return Object::save( fileName );
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
-bool
-ArrayView< Element, Device, Index >::
-boundLoad( File& file )
-{
-   if( ! Object::load( file ) )
-      return false;
-   Index _size;
-   if( ! file.read( &_size, 1 ) )
-      return false;
-   if( _size < 0 )
-   {
-      std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
-      return false;
-   }
-   if( _size != this->size )
-   {
-      std::cerr << "Error: The size " << _size << " of the data to be load is different from the "
-                   "allocated array. This is not possible in the array view." << std::endl;
-      return false;
-   }
-   if( _size )
-   {
-      if( ! ArrayIO< Element, Device, Index >::load( file, this->data, this->size ) )
-      {
-         std::cerr << "I was not able to load " << this->getType()
-                   << " with size " << this -> getSize() << std::endl;
-         return false;
-      }
-   }
-   return true;
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
-bool
-ArrayView< Element, Device, Index >::
-boundLoad( const String& fileName )
-{
-   return Object::boundLoad( fileName );
 }
 
 

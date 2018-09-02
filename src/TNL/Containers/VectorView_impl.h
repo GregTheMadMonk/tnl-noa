@@ -29,36 +29,6 @@ getType()
                   TNL::getType< Index >() + " >";
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-String
-VectorView< Real, Device, Index >::
-getTypeVirtual() const
-{
-   return getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String
-VectorView< Real, Device, Index >::
-getSerializationType()
-{
-   return Vector< Real, Devices::Host, Index >::getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String
-VectorView< Real, Device, Index >::
-getSerializationTypeVirtual() const
-{
-   return this->getSerializationType();
-}
-
 
 template< typename Real,
           typename Device,

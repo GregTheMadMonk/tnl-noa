@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include <TNL/Object.h>
-#include <TNL/File.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 
@@ -30,7 +28,6 @@ template< typename Element,
           typename Device = Devices::Host,
           typename Index = int >
 class ArrayView
-: public Object
 {
 public:
    using ElementType = Element;
@@ -92,12 +89,6 @@ public:
 
    static String getType();
 
-   virtual String getTypeVirtual() const;
-
-   static String getSerializationType();
-
-   virtual String getSerializationTypeVirtual() const;
-
 
    __cuda_callable__
    void swap( ArrayView& view );
@@ -141,26 +132,12 @@ public:
    //! Returns true if non-zero size is set.
    operator bool() const;
 
-   //! Method for saving the object to a file as a binary data.
-   bool save( File& file ) const;
-
-   bool save( const String& fileName ) const;
-
-   bool boundLoad( File& file );
-
-   bool boundLoad( const String& fileName );
-
 protected:
    //! Pointer to allocated data
    Element* data = nullptr;
 
    //! Number of allocated elements
    Index size = 0;
-
-private:
-   // load does not make sense for views - they are not resizable
-   bool load( File& file ) {}
-   bool load( const String& fileName ) {}
 };
 
 template< typename Element, typename Device, typename Index >

@@ -483,59 +483,6 @@ TYPED_TEST( ArrayViewTest, assignmentOperatorWithDifferentType )
    testArrayAssignmentWithDifferentType< ArrayType >();
 }
 
-TYPED_TEST( ArrayViewTest, saveAndBoundLoad )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-   using ViewType = typename TestFixture::ViewType;
-
-   ArrayType a( 100 ), b( 100 );
-   for( int i = 0; i < 100; i ++ )
-      b.setElement( i, 3.14147 );
-
-   ViewType u( a ), v( b );
-   File file;
-   file.open( "test-file.tnl", IOMode::write );
-   EXPECT_TRUE( v.save( file ) );
-   file.close();
-   file.open( "test-file.tnl", IOMode::read );
-   EXPECT_TRUE( u.boundLoad( file ) );
-   EXPECT_EQ( u, v );
-
-   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
-}
-
-TYPED_TEST( ArrayViewTest, boundLoad )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-   using ViewType = typename TestFixture::ViewType;
-
-   ArrayType u, v, w;
-   v.setSize( 100 );
-   for( int i = 0; i < 100; i ++ )
-      v.setElement( i, 3.14147 );
-   File file;
-   file.open( "test-file.tnl", IOMode::write );
-   EXPECT_TRUE( v.save( file ) );
-   file.close();
-
-   w.setSize( 100 );
-   u.bind( w );
-   file.open( "test-file.tnl", IOMode::read );
-   EXPECT_TRUE( u.boundLoad( file ) );
-   EXPECT_EQ( u, v );
-   EXPECT_EQ( u.getData(), w.getData() );
-
-   u.setSize( 50 );
-   file.open( "test-file.tnl", IOMode::read );
-   EXPECT_FALSE( u.boundLoad( file ) );
-
-   u.reset();
-   file.open( "test-file.tnl", IOMode::read );
-   EXPECT_TRUE( u.boundLoad( file ) );
-
-   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
-}
-
 // TODO: test all __cuda_callable__ methods from a CUDA kernel
 
 #endif // HAVE_GTEST

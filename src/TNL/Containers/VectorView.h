@@ -43,12 +43,6 @@ public:
 
    static String getType();
 
-   virtual String getTypeVirtual() const;
-
-   static String getSerializationType();
-
-   virtual String getSerializationTypeVirtual() const;
-
 
    // All other Vector methods follow...
    void addElement( IndexType i, RealType value );
