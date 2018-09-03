@@ -6,18 +6,18 @@ set( tnl_flow_sw_SOURCES
      navierStokes.cu )
                
 IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE(tnl-navier-stokes-sw${debugExt} navierStokes.cu)
-   target_link_libraries (tnl-navier-stokes-sw${debugExt} tnl${debugExt}-${tnlVersion}  ${CUSPARSE_LIBRARY} )
+   CUDA_ADD_EXECUTABLE(tnl-navier-stokes-sw navierStokes.cu)
+   target_link_libraries (tnl-navier-stokes-sw tnl ${CUSPARSE_LIBRARY} )
 ELSE(  BUILD_CUDA )               
-   ADD_EXECUTABLE(tnl-navier-stokes-sw${debugExt} navierStokes.cpp)     
-   target_link_libraries (tnl-navier-stokes-sw${debugExt} tnl${debugExt}-${tnlVersion} )
+   ADD_EXECUTABLE(tnl-navier-stokes-sw navierStokes.cpp)     
+   target_link_libraries (tnl-navier-stokes-sw tnl )
 ENDIF( BUILD_CUDA )
 
 
-INSTALL( TARGETS tnl-navier-stokes-sw${debugExt}
+INSTALL( TARGETS tnl-navier-stokes-sw
          RUNTIME DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
         
 INSTALL( FILES run-navier-stokes-sw
                ${tnl_inviscid_flow_SOURCES}
-         DESTINATION share/tnl-${tnlVersion}/examples/navier-stokes-sw )
+         DESTINATION ${TNL_TARGET_DATA_DIRECTORY}/examples/navier-stokes-sw )

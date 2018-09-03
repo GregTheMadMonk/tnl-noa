@@ -33,9 +33,10 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators >
+          typename InviscidOperators,
+          typename Communicator >
 String
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
 getTypeStatic()
 {
    return String( "navierStokesProblem< " ) + Mesh :: getTypeStatic() + " >";
@@ -44,9 +45,10 @@ getTypeStatic()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators >
+          typename InviscidOperators,
+          typename Communicator >
 String
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
 getPrologHeader() const
 {
    return String( "Inviscid flow solver" );
@@ -55,9 +57,10 @@ getPrologHeader() const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators >
+          typename InviscidOperators,
+          typename Communicator >
 void
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
@@ -69,9 +72,10 @@ writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) cons
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators >
+          typename InviscidOperators,
+          typename Communicator >
 bool
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
 setup( const MeshPointer& meshPointer,
        const Config::ParameterContainer& parameters,
        const String& prefix )
@@ -89,9 +93,10 @@ setup( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators >
-typename navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::IndexType
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
+          typename InviscidOperators,
+          typename Communicator >
+typename navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::IndexType
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
 getDofs( const MeshPointer& mesh ) const
 {
    /****
@@ -104,9 +109,10 @@ getDofs( const MeshPointer& mesh ) const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators >
+          typename InviscidOperators,
+          typename Communicator >
 void
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
 bindDofs( const MeshPointer& mesh,
           DofVectorPointer& dofVector )
 {
@@ -116,9 +122,10 @@ bindDofs( const MeshPointer& mesh,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators >
+          typename InviscidOperators,
+          typename Communicator >
 bool
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshPointer& mesh,
                      DofVectorPointer& dofs,
@@ -145,10 +152,11 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators >
+          typename InviscidOperators,
+          typename Communicator >
    template< typename Matrix >
 bool
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
 setupLinearSystem( const MeshPointer& mesh,
                    Matrix& matrix )
 {
@@ -171,9 +179,10 @@ setupLinearSystem( const MeshPointer& mesh,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators >
+          typename InviscidOperators,
+          typename Communicator >
 bool
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshPointer& mesh,
@@ -216,9 +225,10 @@ makeSnapshot( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators >
+          typename InviscidOperators,
+          typename Communicator >
 void
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
 getExplicitUpdate( const RealType& time,
                    const RealType& tau,
                    const MeshPointer& mesh,
@@ -355,10 +365,11 @@ getExplicitUpdate( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators >
+          typename InviscidOperators,
+          typename Communicator >
    template< typename Matrix >
 void
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshPointer& mesh,
@@ -391,9 +402,10 @@ assemblyLinearSystem( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators >
+          typename InviscidOperators,
+          typename Communicator >
 bool
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
 postIterate( const RealType& time,
              const RealType& tau,
              const MeshPointer& mesh,

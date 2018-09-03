@@ -1,5 +1,4 @@
-#ifndef eulerBUILDCONFIGTAG_H_
-#define eulerBUILDCONFIGTAG_H_
+#pragma once
 
 #include <TNL/Solvers/BuildConfigTags.h>
 
@@ -21,18 +20,6 @@ template<> struct ConfigTagReal< eulerBuildConfigTag, long double > { enum { ena
 template<> struct ConfigTagIndex< eulerBuildConfigTag, short int >{ enum { enabled = false }; };
 template<> struct ConfigTagIndex< eulerBuildConfigTag, long int >{ enum { enabled = false }; };
 
-//template< int Dimension > struct ConfigTagDimension< eulerBuildConfigTag, Dimension >{ enum { enabled = ( Dimension == 1 ) }; };
-
-/****
- * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
- */
-template< int Dimension, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< eulerBuildConfigTag, Meshes::Grid< Dimension, Real, Device, Index > >
-      { enum { enabled = ConfigTagDimension< eulerBuildConfigTag, Dimension >::enabled  &&
-                         ConfigTagReal< eulerBuildConfigTag, Real >::enabled &&
-                         ConfigTagDevice< eulerBuildConfigTag, Device >::enabled &&
-                         ConfigTagIndex< eulerBuildConfigTag, Index >::enabled }; };
-
 /****
  * Please, chose your preferred time discretisation  here.
  */
@@ -46,6 +33,24 @@ template<> struct ConfigTagTimeDiscretisation< eulerBuildConfigTag, ImplicitTime
 template<> struct ConfigTagExplicitSolver< eulerBuildConfigTag, ExplicitEulerSolverTag >{ enum { enabled = true }; };
 
 } // namespace Solvers
-} // namespace TNL
 
-#endif /* eulerBUILDCONFIGTAG_H_ */
+namespace Meshes {
+namespace BuildConfigTags {
+
+template< int Dimensions > struct GridDimensionTag< eulerBuildConfigTag, Dimensions >{ enum { enabled = ( Dimensions == 1 ) }; };
+
+/****
+ * Turn off support for float and long double.
+ */
+template<> struct GridRealTag< eulerBuildConfigTag, float > { enum { enabled = false }; };
+template<> struct GridRealTag< eulerBuildConfigTag, long double > { enum { enabled = false }; };
+
+/****
+ * Turn off support for short int and long int indexing.
+ */
+template<> struct GridIndexTag< eulerBuildConfigTag, short int >{ enum { enabled = false }; };
+template<> struct GridIndexTag< eulerBuildConfigTag, long int >{ enum { enabled = false }; };
+
+} // namespace BuildConfigTags
+} // namespace Meshes
+} // namespace TNL

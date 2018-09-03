@@ -6,18 +6,18 @@ set( tnl_inviscid_flow_vl_SOURCES
      euler.cu )
                
 IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE(tnl-euler-vl${debugExt} euler.cu)
-   target_link_libraries (tnl-euler-vl${debugExt} tnl${debugExt}-${tnlVersion}  ${CUSPARSE_LIBRARY} )
+   CUDA_ADD_EXECUTABLE(tnl-euler-vl euler.cu)
+   target_link_libraries (tnl-euler-vl tnl )
 ELSE(  BUILD_CUDA )               
-   ADD_EXECUTABLE(tnl-euler-vl${debugExt} euler.cpp)     
-   target_link_libraries (tnl-euler-vl${debugExt} tnl${debugExt}-${tnlVersion} )
+   ADD_EXECUTABLE(tnl-euler-vl euler.cpp)     
+   target_link_libraries (tnl-euler-vl tnl )
 ENDIF( BUILD_CUDA )
 
 
-INSTALL( TARGETS tnl-euler-vl${debugExt}
+INSTALL( TARGETS tnl-euler-vl
          RUNTIME DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
         
 INSTALL( FILES run-euler-vl
                ${tnl_inviscid_flow_SOURCES}
-         DESTINATION share/tnl-${tnlVersion}/examples/inviscid-flow-vl )
+         DESTINATION ${TNL_TARGET_DATA_DIRECTORY}/examples/inviscid-flow-vl )

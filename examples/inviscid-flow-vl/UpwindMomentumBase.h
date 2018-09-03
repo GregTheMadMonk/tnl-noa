@@ -57,6 +57,7 @@ class UpwindMomentumBase
           this->pressure = pressure;
       };
 
+      __cuda_callable__
       RealType positiveMainMomentumFlux( const RealType& density, const RealType& velocity, const RealType& pressure ) const
       {
          const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
@@ -71,6 +72,7 @@ class UpwindMomentumBase
             return density * velocity * velocity + pressure;
       };
 
+      __cuda_callable__
       RealType negativeMainMomentumFlux( const RealType& density, const RealType& velocity, const RealType& pressure ) const
       {
          const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
@@ -85,6 +87,7 @@ class UpwindMomentumBase
             return 0; 
       };
 
+      __cuda_callable__
       RealType positiveOtherMomentumFlux( const RealType& density, const RealType& velocity_main, const RealType& velocity_other, const RealType& pressure ) const
       {
          const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
@@ -97,6 +100,7 @@ class UpwindMomentumBase
             return density * velocity_main * velocity_other;
       };
 
+      __cuda_callable__
       RealType negativeOtherMomentumFlux( const RealType& density, const RealType& velocity_main, const RealType& velocity_other, const RealType& pressure ) const
       {
          const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );

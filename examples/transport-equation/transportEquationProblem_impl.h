@@ -163,7 +163,7 @@ makeSnapshot( const RealType& time,
               DofVectorPointer& dofs )
 {
    std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
-   this->bindDofs( this->getMesh(), dofs );
+   this->bindDofs( dofs );
    MeshFunctionType printDofs( this->getMesh(), dofs );
    FileName fileName;
    fileName.setFileNameBase( "u-" );

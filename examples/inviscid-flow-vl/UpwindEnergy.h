@@ -119,6 +119,7 @@ class UpwindEnergy< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index 
       using typename BaseType::VelocityFieldPointer;
       using BaseType::Dimensions;      
 
+      __cuda_callable__
       RealType positiveEnergyFlux( const RealType& density, const RealType& velocity_main, const RealType& pressure ) const
       {
          const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
@@ -136,6 +137,7 @@ class UpwindEnergy< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index 
             return velocity_main * ( pressure + pressure / ( this->gamma - 1.0 ) + 0.5 * density * ( velocity_main * velocity_main ) );
       };
       
+      __cuda_callable__
       RealType negativeEnergyFlux( const RealType& density, const RealType& velocity_main, const RealType& pressure ) const
       {
          const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );

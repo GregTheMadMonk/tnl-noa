@@ -50,7 +50,6 @@ public PDEProblem< Mesh,
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
-      using typename BaseType::MeshDependentDataPointer;
 
       static String getType();
 

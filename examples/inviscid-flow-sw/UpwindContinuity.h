@@ -65,9 +65,10 @@ class UpwindContinuityBase
           this->velocity = velocity;
       };
 
+      __cuda_callable__
       RealType positiveDensityFlux( const RealType& density, const RealType& velocity, const RealType& pressure ) const
       {
-         const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
+         const RealType& speedOfSound = TNL::sqrt( this->gamma * pressure / density );
          const RealType& machNumber = velocity / speedOfSound;
          if ( machNumber <= -1.0 )
             return 0.0;
@@ -79,9 +80,10 @@ class UpwindContinuityBase
             return density * velocity;
       };
 
+      __cuda_callable__
       RealType negativeDensityFlux( const RealType& density, const RealType& velocity, const RealType& pressure ) const
       {
-         const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
+         const RealType& speedOfSound = TNL::sqrt( this->gamma * pressure / density );
          const RealType& machNumber = velocity / speedOfSound;
          if ( machNumber <= -1.0 )
             return density * velocity;
@@ -91,13 +93,7 @@ class UpwindContinuityBase
             return density * speedOfSound / ( 2 * this->gamma ) * ( machNumber - 1.0 );
         else 
             return 0.0;
-      };
-      
-      RealType multiply (const RealType& a, const RealType& b ) const
-      {
-         return a * b;
-      };
-      
+      };      
 
       protected:
          
