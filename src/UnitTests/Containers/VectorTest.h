@@ -15,7 +15,6 @@
 #ifdef HAVE_GTEST
 #include <limits>
 
-#include <TNL/Experimental/Arithmetics/MultiPrecision.h>
 #include <TNL/Experimental/Arithmetics/Quad.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/File.h>
