@@ -10,8 +10,9 @@ SET( headers BICGStab.h
              CWYGMRES_impl.h
              GMRES.h
              GMRES_impl.h
+             Jacobi.h
              LinearResidueGetter.h
-             LinearResidueGetter_impl.h              
+             LinearResidueGetter_impl.h
              SOR.h
              SOR_impl.h
              TFQMR.h
