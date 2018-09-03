@@ -8,9 +8,11 @@
 
 #pragma once
 
-#include <TNL/Object.h>
-#include <TNL/Solvers/IterativeSolver.h>
+#include "LinearSolver.h"
+
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
+#include <TNL/Solvers/IterativeSolver.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
 
 namespace TNL {
@@ -21,24 +23,24 @@ template< typename Matrix,
           typename Preconditioner = Preconditioners::Dummy< typename Matrix::RealType,
                                                             typename Matrix::DeviceType,
                                                             typename Matrix::IndexType> >
-class Jacobi : public Object,
-               public IterativeSolver< typename Matrix::RealType,
-                                       typename Matrix::IndexType >
+class Jacobi
+: public LinearSolver< Matrix, Preconditioner >,
+  public IterativeSolver< typename Matrix::RealType,
+                          typename Matrix::IndexType >
 {
-   public:
-
-   typedef typename Matrix::RealType RealType;
-   typedef typename Matrix::IndexType IndexType;
-   typedef typename Matrix::DeviceType DeviceType;
-   typedef Matrix MatrixType;
-   typedef Preconditioner PreconditionerType;
-
+   using Base = LinearSolver< Matrix, Preconditioner >;
+public:
+   using RealType = typename Base::RealType;
+   using DeviceType = typename Base::DeviceType;
+   using IndexType = typename Base::IndexType;
+   using VectorViewType = typename Base::VectorViewType;
+   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
    Jacobi() : omega(0) {}
 
    String getType() const
    {
-      return String( "Jacobi< " ) + this->matrix->getType() + ", " +   this->preconditioner->getType() + " >";
+      return String( "Jacobi< " ) + this->matrix->getType() + ", " + this->preconditioner->getType() + " >";
    }
 
    static void configSetup( Config::ConfigDescription& config,
@@ -59,31 +61,22 @@ class Jacobi : public Object,
       return true;
    }
 
-   void setOmega( const RealType& omega )
+   void setOmega( RealType omega )
    {
       this->omega = omega;
    }
 
-   const RealType& getOmega() const
+   RealType getOmega() const
    {
       return omega;
    }
 
-   void setMatrix( const MatrixType& matrix )
+   bool solve( ConstVectorViewType b, VectorViewType x ) override
    {
-      this->matrix = &matrix;
-   }
+      const IndexType size = this->matrix->getRows();
 
-   void setPreconditioner( const Preconditioner& preconditioner )
-   {
-      this->preconditioner = &preconditioner;
-   }
-
-   template< typename Vector,
-             typename ResidueGetter = LinearResidueGetter< Matrix, Vector > >
-   bool solve( const Vector& b, Vector& x, Vector& aux)
-   {
-      const IndexType size = matrix->getRows();
+      Containers::Vector< RealType, DeviceType, IndexType > aux;
+      aux.setSize( size );
 
       this->resetIterations();
       this->setResidue( this->getConvergenceResidue() + 1.0 );
@@ -93,21 +86,18 @@ class Jacobi : public Object,
       while( this->nextIteration() )
       {
          for( IndexType row = 0; row < size; row ++ )
-            matrix->performJacobiIteration( b, row, x, aux, this->getOmega() );
-        for( IndexType row = 0; row < size; row ++ )
-            matrix->performJacobiIteration( b, row, aux, x, this->getOmega() );
-         this->setResidue( ResidueGetter::getResidue( *matrix, x, b, bNorm ) );
+            this->matrix->performJacobiIteration( b, row, x, aux, this->getOmega() );
+         for( IndexType row = 0; row < size; row ++ )
+            this->matrix->performJacobiIteration( b, row, aux, x, this->getOmega() );
+         this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
       }
-      this->setResidue( ResidueGetter::getResidue( *matrix, x, b, bNorm ) );
+      this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
       this->refreshSolverMonitor();
       return this->checkConvergence();
    }
 
-   protected:
-
-      RealType omega;
-      const MatrixType* matrix;
-      const PreconditionerType* preconditioner;
+protected:
+   RealType omega;
 };
 
 } // namespace Linear
