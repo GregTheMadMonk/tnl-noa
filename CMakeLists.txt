@@ -24,6 +24,7 @@ option(WITH_MIC "Build with MIC support" OFF)
 option(WITH_CUDA "Build with CUDA support" ON)
 set(WITH_CUDA_ARCH "auto" CACHE STRING "Build for these CUDA architectures")
 option(WITH_OPENMP "Build with OpenMP support" ON)
+option(WITH_GMP "Build with GMP support" OFF)
 option(WITH_TESTS "Build tests" ON)
 option(WITH_COVERAGE "Enable code coverage reports from unit tests" OFF)
 option(WITH_EXAMPLES "Compile the 'examples' directory" ON)
@@ -244,30 +245,32 @@ endif()
 ####
 # Test for GMP 
 #
-if (GMP_INCLUDES AND GMP_LIBRARIES)
-   set(GMP_FIND_QUIETLY TRUE)
-endif (GMP_INCLUDES AND GMP_LIBRARIES)
+if( ${WITH_GMP} )
+   if (GMP_INCLUDES AND GMP_LIBRARIES)
+      set(GMP_FIND_QUIETLY TRUE)
+   endif (GMP_INCLUDES AND GMP_LIBRARIES)
 
-find_path(GMP_INCLUDES
-   NAMES
-   gmp.h
-   PATHS
-   $ENV{GMPDIR}
-   ${INCLUDE_INSTALL_DIR}
-)
+   find_path(GMP_INCLUDES
+      NAMES
+      gmp.h
+      PATHS
+      $ENV{GMPDIR}
+      ${INCLUDE_INSTALL_DIR}
+   )
 
-find_library(GMP_LIBRARIES gmp PATHS $ENV{GMPDIR} ${LIB_INSTALL_DIR})
+   find_library(GMP_LIBRARIES gmp PATHS $ENV{GMPDIR} ${LIB_INSTALL_DIR})
 
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(GMP DEFAULT_MSG
-                                   GMP_INCLUDES GMP_LIBRARIES)
-if( ${GMP_INCLUDES} STREQUAL "GMP_INCLUDES-NOTFOUND" OR ${GMP_LIBRARIES} STREQUAL "GMP_LIBRARIES-NOTFOUND" )
-   message( "GMP was not found. Some tests for higher precision arithmetics will not be passed." )
-else()
-   set( HAVE_GMP )
-   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GMP_INCLUDES} -DHAVE_GMP" )
-   set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${GMP_LIBRARIES}" )
-   mark_as_advanced(GMP_INCLUDES GMP_LIBRARIES)
+   include(FindPackageHandleStandardArgs)
+   find_package_handle_standard_args(GMP DEFAULT_MSG
+                                      GMP_INCLUDES GMP_LIBRARIES)
+   if( ${GMP_INCLUDES} STREQUAL "GMP_INCLUDES-NOTFOUND" OR ${GMP_LIBRARIES} STREQUAL "GMP_LIBRARIES-NOTFOUND" )
+      message( "GMP was not found. Some tests for higher precision arithmetics will not be passed." )
+   else()
+      set( HAVE_GMP )
+      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GMP_INCLUDES} -DHAVE_GMP" )
+      set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${GMP_LIBRARIES}" )
+      mark_as_advanced(GMP_INCLUDES GMP_LIBRARIES)
+   endif()
 endif()
 
 ####
@@ -430,6 +433,7 @@ message( "   WITH_MIC=${WITH_MIC}" )
 message( "   WITH_CUDA=${WITH_CUDA}" )
 message( "   WITH_CUDA_ARCH=${WITH_CUDA_ARCH}" )
 message( "   WITH_OPENMP=${WITH_OPENMP}" )
+message( "   WITH_GMP=${WITH_GMP}" )
 message( "   WITH_TESTS=${WITH_TESTS}" )
 message( "   WITH_COVERAGE=${WITH_COVERAGE}" )
 message( "   WITH_EXAMPLES=${WITH_EXAMPLES}" )
