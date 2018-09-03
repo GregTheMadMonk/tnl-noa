@@ -55,9 +55,6 @@ public:
    __cuda_callable__
    IndexType getColumns() const;
 
-   __cuda_callable__    
-   const IndexType& getNumberOfColors() const;
-
    /****
     * TODO: The fast variants of the following methods cannot be virtual.
     * If they were, they could not be used in the CUDA kernels. If CUDA allows it
@@ -96,19 +93,29 @@ public:
 
    template< typename Matrix >
    bool operator != ( const Matrix& matrix ) const;
-   
-   void computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector);
-   
+
    virtual bool save( File& file ) const;
 
    virtual bool load( File& file );
 
    virtual void print( std::ostream& str ) const;
 
+
+   // TODO: method for symmetric matrices, should not be in general Matrix interface
+   __cuda_callable__
+   const IndexType& getNumberOfColors() const;
+
+   // TODO: method for symmetric matrices, should not be in general Matrix interface
+   void computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector);
+
+   // TODO: what is this supposed to do?!?  There are redefinitions only in the
+   // EllpackSymmetricGraph and SlicedEllpackSymmetricGraph classes...
    bool help( bool verbose = false ) { return true;};
 
+   // TODO: copy should be done in the operator= and it should work the other way too
    void copyFromHostToCuda( Matrices::Matrix< Real, Devices::Host, Index >& matrix );
 
+   // TODO: missing implementation!
    __cuda_callable__
    Index getValuesSize() const;
 
