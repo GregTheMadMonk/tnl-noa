@@ -14,7 +14,6 @@
 
 #include <type_traits>
 
-#include <TNL/Object.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/CSR.h>
 
@@ -23,12 +22,25 @@ namespace Solvers {
 namespace Linear {
 namespace Preconditioners {
 
-template< typename Real, typename Device, typename Index >
-class ILUT
+// implementation template
+template< typename Matrix, typename Real, typename Device, typename Index >
+class ILUT_impl
 {};
 
-template< typename Real, typename Index >
-class ILUT< Real, Devices::Host, Index >
+// actual template to be used by users
+template< typename Matrix >
+class ILUT
+: public ILUT_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >
+{
+public:
+   String getType() const
+   {
+      return String( "ILUT" );
+   }
+};
+
+template< typename Matrix, typename Real, typename Index >
+class ILUT_impl< Matrix, Real, Devices::Host, Index >
 {
 public:
    using RealType = Real;
@@ -39,16 +51,10 @@ public:
 // TODO: setup parameters from CLI
 //   ILUT( Index p, Real tau ) : p(p), tau(tau) {}
 
-   template< typename MatrixPointer >
-   void update( const MatrixPointer& matrixPointer );
+   void update( const Matrix& matrix );
 
    template< typename Vector1, typename Vector2 >
    bool solve( const Vector1& b, Vector2& x ) const;
-
-   String getType() const
-   {
-      return String( "ILUT" );
-   }
 
 protected:
    Index p = 8;
@@ -59,16 +65,15 @@ protected:
    Matrices::CSR< RealType, DeviceType, IndexType > U;
 };
 
-template< typename Real, typename Index >
-class ILUT< Real, Devices::Cuda, Index >
+template< typename Matrix, typename Real, typename Index >
+class ILUT_impl< Matrix, Real, Devices::Cuda, Index >
 {
 public:
    using RealType = Real;
    using DeviceType = Devices::Cuda;
    using IndexType = Index;
 
-   template< typename MatrixPointer >
-   void update( const MatrixPointer& matrixPointer )
+   void update( const Matrix& matrix )
    {
       throw std::runtime_error("Not Iplemented yet for CUDA");
    }
@@ -78,23 +83,17 @@ public:
    {
       throw std::runtime_error("Not Iplemented yet for CUDA");
    }
-
-   String getType() const
-   {
-      return String( "ILUT" );
-   }
 };
 
-template< typename Real, typename Index >
-class ILUT< Real, Devices::MIC, Index >
+template< typename Matrix, typename Real, typename Index >
+class ILUT_impl< Matrix, Real, Devices::MIC, Index >
 {
 public:
    using RealType = Real;
    using DeviceType = Devices::MIC;
    using IndexType = Index;
 
-   template< typename MatrixPointer >
-   void update( const MatrixPointer& matrixPointer )
+   void update( const Matrix& matrix )
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
    }
@@ -103,11 +102,6 @@ public:
    bool solve( const Vector1& b, Vector2& x ) const
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
-   }
-
-   String getType() const
-   {
-      return String( "ILUT" );
    }
 };
 

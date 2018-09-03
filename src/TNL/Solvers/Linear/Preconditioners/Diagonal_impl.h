@@ -17,7 +17,7 @@
 namespace TNL {
 namespace Solvers {
 namespace Linear {
-namespace Preconditioners {   
+namespace Preconditioners {
 
 #ifdef HAVE_CUDA
 template< typename Real, typename Index, typename Matrix >
@@ -49,30 +49,29 @@ __global__ void elementwiseVectorDivisionKernel( const Real* left,
 }
 #endif
 
-template< typename Real, typename Device, typename Index >
-   template< typename MatrixPointer >
+template< typename Matrix >
 void
-Diagonal< Real, Device, Index >::
-update( const MatrixPointer& matrix )
+Diagonal< Matrix >::
+update( const Matrix& matrix )
 {
 //  std::cout << getType() << "->setMatrix()" << std::endl;
 
-   TNL_ASSERT_GT( matrix->getRows(), 0, "empty matrix" );
-   TNL_ASSERT_EQ( matrix->getRows(), matrix->getColumns(), "matrix must be square" );
+   TNL_ASSERT_GT( matrix.getRows(), 0, "empty matrix" );
+   TNL_ASSERT_EQ( matrix.getRows(), matrix.getColumns(), "matrix must be square" );
 
-   if( diagonal.getSize() != matrix->getRows() )
-      diagonal.setSize( matrix->getRows() );
+   if( diagonal.getSize() != matrix.getRows() )
+      diagonal.setSize( matrix.getRows() );
 
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
       for( int i = 0; i < diagonal.getSize(); i++ ) {
-         diagonal[ i ] = matrix->getElement( i, i );
+         diagonal[ i ] = matrix.getElement( i, i );
       }
    }
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      const Index& size = diagonal.getSize();
+      const IndexType& size = diagonal.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
       cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
@@ -87,10 +86,10 @@ update( const MatrixPointer& matrix )
    }
 }
 
-template< typename Real, typename Device, typename Index >
+template< typename Matrix >
    template< typename Vector1, typename Vector2 >
 bool
-Diagonal< Real, Device, Index >::
+Diagonal< Matrix >::
 solve( const Vector1& b, Vector2& x ) const
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -102,7 +101,7 @@ solve( const Vector1& b, Vector2& x ) const
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      const Index& size = diagonal.getSize();
+      const IndexType& size = diagonal.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
       cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      

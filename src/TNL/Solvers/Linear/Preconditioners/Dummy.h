@@ -16,14 +16,12 @@
 namespace TNL {
 namespace Solvers {
 namespace Linear {
-namespace Preconditioners {   
+namespace Preconditioners {
 
-template< typename Real, typename Device, typename Index >
+template< typename Matrix >
 class Dummy
 {
-   public:
-
-   template< typename Matrix >
+public:
    void update( const Matrix& matrix ) {}
 
    template< typename Vector1, typename Vector2 >
@@ -42,28 +40,23 @@ class Dummy
 template< typename LinearSolver, typename Preconditioner >
 class SolverStarterSolverPreconditionerSetter
 {
-   public:
-       
-      static void run( LinearSolver& solver,
-                       SharedPointer< Preconditioner, typename LinearSolver::DeviceType >& preconditioner )
-      {
-         solver.setPreconditioner( preconditioner );
-      }
+public:
+   static void run( LinearSolver& solver,
+                    SharedPointer< Preconditioner, typename LinearSolver::DeviceType >& preconditioner )
+   {
+      solver.setPreconditioner( preconditioner );
+   }
 };
 
-template< typename LinearSolver, typename Real, typename Device, typename Index >
-class SolverStarterSolverPreconditionerSetter< LinearSolver, Dummy< Real, Device, Index > >
+template< typename LinearSolver >
+class SolverStarterSolverPreconditionerSetter< LinearSolver, Dummy< typename LinearSolver::MatrixType > >
 {
-   public:
-
-      typedef Device DeviceType;
-      typedef Dummy< Real, DeviceType, Index > PreconditionerType;
-   
-      static void run( LinearSolver& solver,
-                       SharedPointer< PreconditionerType, typename LinearSolver::DeviceType >& preconditioner )
-      {
-         // do nothing
-      }
+public:
+   static void run( LinearSolver& solver,
+                    SharedPointer< Dummy< typename LinearSolver::MatrixType >, typename LinearSolver::DeviceType >& preconditioner )
+   {
+      // do nothing
+   }
 };
 
 } // namespace Preconditioners

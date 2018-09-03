@@ -41,9 +41,7 @@ struct is_csr_matrix< Matrices::CSR< Real, Device, Index > >
 
 
 template< typename Matrix,
-          typename Preconditioner = Preconditioners::Dummy< typename Matrix::RealType,
-                                                            typename Matrix::DeviceType,
-                                                            typename Matrix::IndexType> >
+          typename Preconditioner = Preconditioners::Dummy< Matrix > >
 class UmfpackWrapper
 : public LinearSolver< Matrix, Preconditioner >,
   // just to ensure the same interface as other linear solvers

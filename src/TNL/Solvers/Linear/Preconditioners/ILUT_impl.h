@@ -22,16 +22,15 @@ namespace Solvers {
 namespace Linear {
 namespace Preconditioners {
 
-template< typename Real, typename Index >
-   template< typename MatrixPointer >
+template< typename Matrix, typename Real, typename Index >
 void
-ILUT< Real, Devices::Host, Index >::
-update( const MatrixPointer& matrixPointer )
+ILUT_impl< Matrix, Real, Devices::Host, Index >::
+update( const Matrix& matrix )
 {
-   TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
-   TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
+   TNL_ASSERT_GT( matrix.getRows(), 0, "empty matrix" );
+   TNL_ASSERT_EQ( matrix.getRows(), matrix.getColumns(), "matrix must be square" );
 
-   const IndexType N = matrixPointer->getRows();
+   const IndexType N = matrix.getRows();
 
    L.setDimensions( N, N );
    U.setDimensions( N, N );
@@ -47,8 +46,8 @@ update( const MatrixPointer& matrixPointer )
    L_rowLengths.setSize( N );
    U_rowLengths.setSize( N );
    for( IndexType i = 0; i < N; i++ ) {
-      const auto row = matrixPointer->getRow( i );
-      const auto max_length = matrixPointer->getRowLength( i );
+      const auto row = matrix.getRow( i );
+      const auto max_length = matrix.getRowLength( i );
       IndexType L_entries = 0;
       IndexType U_entries = 0;
       for( IndexType j = 0; j < max_length; j++ ) {
@@ -91,8 +90,8 @@ update( const MatrixPointer& matrixPointer )
    // Incomplete LU factorization with threshold
    // (see Saad - Iterative methods for sparse linear systems, section 10.4)
    for( IndexType i = 0; i < N; i++ ) {
-      const auto max_length = matrixPointer->getRowLength( i );
-      const auto A_i = matrixPointer->getRow( i );
+      const auto max_length = matrix.getRowLength( i );
+      const auto A_i = matrix.getRow( i );
 
       RealType A_i_norm = 0.0;
 
@@ -120,7 +119,7 @@ update( const MatrixPointer& matrixPointer )
          if( w_k == 0.0 )
             continue;
 
-         w_k /= matrixPointer->getElementFast( k, k );
+         w_k /= matrix.getElementFast( k, k );
 
          // apply dropping rule to w_k
          if( std::abs( w_k ) < tau_i )
@@ -230,10 +229,10 @@ update( const MatrixPointer& matrixPointer )
    std::cout << std::flush;
 }
 
-template< typename Real, typename Index >
+template< typename Matrix, typename Real, typename Index >
    template< typename Vector1, typename Vector2 >
 bool
-ILUT< Real, Devices::Host, Index >::
+ILUT_impl< Matrix, Real, Devices::Host, Index >::
 solve( const Vector1& b, Vector2& x ) const
 {
    TNL_ASSERT_EQ( b.getSize(), L.getRows(), "wrong size of the right hand side" );

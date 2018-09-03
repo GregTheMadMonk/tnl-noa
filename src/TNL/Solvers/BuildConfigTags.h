@@ -92,9 +92,7 @@ class  SemiImplicitSORSolverTag
 {
 public:
     template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
-                                                                        typename Matrix::DeviceType,
-                                                                        typename Matrix::IndexType > >
+              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
     using Template = Linear::SOR< Matrix, Preconditioner >;
 };
 
@@ -102,9 +100,7 @@ class  SemiImplicitCGSolverTag
 {
 public:
     template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
-                                                                        typename Matrix::DeviceType,
-                                                                        typename Matrix::IndexType > >
+              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
     using Template = Linear::CG< Matrix, Preconditioner >;
 };
 
@@ -112,9 +108,7 @@ class  SemiImplicitBICGStabSolverTag
 {
 public:
     template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
-                                                                        typename Matrix::DeviceType,
-                                                                        typename Matrix::IndexType > >
+              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
     using Template = Linear::BICGStab< Matrix, Preconditioner >;
 };
 
@@ -122,9 +116,7 @@ class  SemiImplicitBICGStabLSolverTag
 {
 public:
     template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
-                                                                        typename Matrix::DeviceType,
-                                                                        typename Matrix::IndexType > >
+              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
     using Template = Linear::BICGStabL< Matrix, Preconditioner >;
 };
 
@@ -132,9 +124,7 @@ class  SemiImplicitCWYGMRESSolverTag
 {
 public:
     template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
-                                                                        typename Matrix::DeviceType,
-                                                                        typename Matrix::IndexType > >
+              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
     using Template = Linear::CWYGMRES< Matrix, Preconditioner >;
 };
 
@@ -142,9 +132,7 @@ class  SemiImplicitGMRESSolverTag
 {
 public:
     template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
-                                                                        typename Matrix::DeviceType,
-                                                                        typename Matrix::IndexType > >
+              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
     using Template = Linear::GMRES< Matrix, Preconditioner >;
 };
 
@@ -152,9 +140,7 @@ class  SemiImplicitTFQMRSolverTag
 {
 public:
     template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
-                                                                        typename Matrix::DeviceType,
-                                                                        typename Matrix::IndexType > >
+              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
     using Template = Linear::TFQMR< Matrix, Preconditioner >;
 };
 
@@ -163,9 +149,7 @@ class  SemiImplicitUmfpackSolverTag
 {
 public:
     template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< typename Matrix::RealType,
-                                                                        typename Matrix::DeviceType,
-                                                                        typename Matrix::IndexType > >
+              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
     using Template = Linear::UmfpackWrapper< Matrix, Preconditioner >;
 };
 #endif

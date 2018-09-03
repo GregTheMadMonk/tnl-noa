@@ -196,7 +196,7 @@ solve( const RealType& time,
          this->solverMonitor->setStage( "Solving the linear system" );
 
       this->preconditionerUpdateTimer.start();
-      preconditioner->update( this->matrix );
+      preconditioner->update( *this->matrix );
       this->preconditionerUpdateTimer.stop();
 
       this->linearSystemSolverTimer.start();

@@ -14,7 +14,6 @@
 
 #include <type_traits>
 
-#include <TNL/Object.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/CSR.h>
 
@@ -27,61 +26,62 @@ namespace Solvers {
 namespace Linear {
 namespace Preconditioners {
 
-template< typename Real, typename Device, typename Index >
-class ILU0
+// implementation template
+template< typename Matrix, typename Real, typename Device, typename Index >
+class ILU0_impl
 {};
 
-template< typename Real, typename Index >
-class ILU0< Real, Devices::Host, Index >
+// actual template to be used by users
+template< typename Matrix >
+class ILU0
+: public ILU0_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >
+{
+public:
+   String getType() const
+   {
+      return String( "ILU0" );
+   }
+};
+
+template< typename Matrix, typename Real, typename Index >
+class ILU0_impl< Matrix, Real, Devices::Host, Index >
 {
 public:
    using RealType = Real;
    using DeviceType = Devices::Host;
    using IndexType = Index;
 
-   template< typename MatrixPointer >
-   void update( const MatrixPointer& matrixPointer );
+   void update( const Matrix& matrix );
 
    template< typename Vector1, typename Vector2 >
    bool solve( const Vector1& b, Vector2& x ) const;
-
-   String getType() const
-   {
-      return String( "ILU0" );
-   }
 
 protected:
    Matrices::CSR< RealType, DeviceType, IndexType > L;
    Matrices::CSR< RealType, DeviceType, IndexType > U;
 };
 
-template<>
-class ILU0< double, Devices::Cuda, int >
+template< typename Matrix >
+class ILU0_impl< Matrix, double, Devices::Cuda, int >
 {
 public:
    using RealType = double;
    using DeviceType = Devices::Cuda;
    using IndexType = int;
 
-   ILU0()
+   ILU0_impl()
    {
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
       cusparseCreate( &handle );
 #endif
    }
 
-   template< typename MatrixPointer >
-   void update( const MatrixPointer& matrixPointer );
+   void update( const Matrix& matrix );
 
    template< typename Vector1, typename Vector2 >
    bool solve( const Vector1& b, Vector2& x ) const;
 
-   String getType() const
-   {
-      return String( "ILU0" );
-   }
-
-   ~ILU0()
+   ~ILU0_impl()
    {
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
       resetMatrices();
@@ -164,16 +164,15 @@ protected:
 };
 
 #ifdef HAVE_MIC
-template< typename Real, typename Index >
-class ILU0< Real, Devices::MIC, Index >
+template< typename Matrix, typename Real, typename Index >
+class ILU0_impl< Matrix, Real, Devices::MIC, Index >
 {
 public:
    using RealType = Real;
    using DeviceType = Devices::MIC;
    using IndexType = Index;
 
-   template< typename MatrixPointer >
-   void update( const MatrixPointer& matrixPointer )
+   void update( const Matrix& matrix )
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
    }
@@ -183,13 +182,7 @@ public:
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
    }
-
-   String getType() const
-   {
-      return String( "ILU0" );
-   }
 };
-
 #endif
 
 } // namespace Preconditioners

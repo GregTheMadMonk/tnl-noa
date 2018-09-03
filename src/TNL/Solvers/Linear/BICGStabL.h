@@ -52,10 +52,7 @@ namespace Solvers {
 namespace Linear {
 
 template< typename Matrix,
-          typename Preconditioner = Preconditioners::Dummy< typename Matrix::RealType,
-                                                            typename Matrix::DeviceType,
-                                                            typename Matrix::IndexType> >
-
+          typename Preconditioner = Preconditioners::Dummy< Matrix > >
 class BICGStabL
 : public LinearSolver< Matrix, Preconditioner >,
   public IterativeSolver< typename Matrix::RealType,

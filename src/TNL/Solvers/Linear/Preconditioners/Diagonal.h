@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <TNL/Object.h>
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
@@ -20,16 +19,15 @@ namespace Solvers {
 namespace Linear {
 namespace Preconditioners {
 
-template< typename Real, typename Device, typename Index >
+template< typename Matrix >
 class Diagonal
 {
-   public:
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef Containers::Vector< Real, Device, Index > VectorType;
+public:
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
 
-   template< typename Matrix >
    void update( const Matrix& matrix );
 
    template< typename Vector1, typename Vector2 >
@@ -40,7 +38,7 @@ class Diagonal
       return String( "Diagonal" );
    }
 
-   protected:
+protected:
    VectorType diagonal;
 };
 

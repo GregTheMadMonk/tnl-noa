@@ -65,7 +65,7 @@ class SolverStarterExplicitSolverSetter{};
 
 template< typename Problem,
           typename SemiImplicitSolver,
-          template<typename, typename, typename> class Preconditioner,
+          template<typename> class Preconditioner,
           typename ConfigTag,
           bool enabled = ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitSolver >::enabled >
 class SolverStarterLinearSolverSetter{};
@@ -358,7 +358,7 @@ class SolverStarterPreconditionerSetter
 
 template< typename Problem,
           typename SemiImplicitSolverTag,
-          template<typename, typename, typename> class Preconditioner,
+          template<typename> class Preconditioner,
           typename ConfigTag >
 class SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, false >
 {
@@ -373,7 +373,7 @@ class SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Precondit
 
 template< typename Problem,
           typename SemiImplicitSolverTag,
-          template<typename, typename, typename> class Preconditioner,
+          template<typename> class Preconditioner,
           typename ConfigTag >
 class SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, true >
 {
@@ -385,7 +385,7 @@ class SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Precondit
          typedef typename MatrixType::RealType RealType;
          typedef typename MatrixType::DeviceType DeviceType;
          typedef typename MatrixType::IndexType IndexType;
-         typedef typename SemiImplicitSolverTag::template Template< MatrixType, Preconditioner< RealType, DeviceType, IndexType > > LinearSystemSolver;
+         typedef typename SemiImplicitSolverTag::template Template< MatrixType, Preconditioner< MatrixType > > LinearSystemSolver;
          typedef PDE::SemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
          typedef typename TimeStepper::LinearSystemSolverType LinearSystemSolverType;
          SolverStarter< ConfigTag > solverStarter;

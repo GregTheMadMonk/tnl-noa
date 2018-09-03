@@ -19,18 +19,17 @@
 namespace TNL {
 namespace Solvers {
 namespace Linear {
-namespace Preconditioners {   
+namespace Preconditioners {
 
-template< typename Real, typename Index >
-   template< typename MatrixPointer >
+template< typename Matrix, typename Real, typename Index >
 void
-ILU0< Real, Devices::Host, Index >::
-update( const MatrixPointer& matrixPointer )
+ILU0_impl< Matrix, Real, Devices::Host, Index >::
+update( const Matrix& matrix )
 {
-   TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
-   TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
+   TNL_ASSERT_GT( matrix.getRows(), 0, "empty matrix" );
+   TNL_ASSERT_EQ( matrix.getRows(), matrix.getColumns(), "matrix must be square" );
 
-   const IndexType N = matrixPointer->getRows();
+   const IndexType N = matrix.getRows();
 
    L.setDimensions( N, N );
    U.setDimensions( N, N );
@@ -41,8 +40,8 @@ update( const MatrixPointer& matrixPointer )
    L_rowLengths.setSize( N );
    U_rowLengths.setSize( N );
    for( IndexType i = 0; i < N; i++ ) {
-       const auto row = matrixPointer->getRow( i );
-       const auto max_length = matrixPointer->getRowLength( i );
+       const auto row = matrix.getRow( i );
+       const auto max_length = matrix.getRowLength( i );
        IndexType L_entries = 0;
        IndexType U_entries = 0;
        for( IndexType j = 0; j < max_length; j++ ) {
@@ -64,10 +63,10 @@ update( const MatrixPointer& matrixPointer )
    // The factors L and U are stored separately and the rows of U are reversed.
    for( IndexType i = 0; i < N; i++ ) {
       // copy all non-zero entries from A into L and U
-      const auto max_length = matrixPointer->getRowLength( i );
+      const auto max_length = matrix.getRowLength( i );
       IndexType columns[ max_length ];
       RealType values[ max_length ];
-      matrixPointer->getRowFast( i, columns, values );
+      matrix.getRowFast( i, columns, values );
 
       const auto L_entries = L_rowLengths[ i ];
       const auto U_entries = U_rowLengths[ N - 1 - i ];
@@ -103,10 +102,10 @@ update( const MatrixPointer& matrixPointer )
    }
 }
 
-template< typename Real, typename Index >
+template< typename Matrix, typename Real, typename Index >
    template< typename Vector1, typename Vector2 >
 bool
-ILU0< Real, Devices::Host, Index >::
+ILU0_impl< Matrix, Real, Devices::Host, Index >::
 solve( const Vector1& b, Vector2& x ) const
 {
    TNL_ASSERT_EQ( b.getSize(), L.getRows(), "wrong size of the right hand side" );
@@ -154,10 +153,10 @@ solve( const Vector1& b, Vector2& x ) const
 }
 
 
-   template< typename MatrixPointer >
+template< typename Matrix >
 void
-ILU0< double, Devices::Cuda, int >::
-update( const MatrixPointer& matrixPointer )
+ILU0_impl< Matrix, double, Devices::Cuda, int >::
+update( const Matrix& matrix )
 {
 #ifdef HAVE_CUDA
 #ifdef HAVE_CUSPARSE
@@ -263,9 +262,10 @@ update( const MatrixPointer& matrixPointer )
 #endif
 }
 
+template< typename Matrix >
    template< typename Vector1, typename Vector2 >
 bool
-ILU0< double, Devices::Cuda, int >::
+ILU0_impl< Matrix, double, Devices::Cuda, int >::
 solve( const Vector1& b, Vector2& x ) const
 {
 #ifdef HAVE_CUDA
