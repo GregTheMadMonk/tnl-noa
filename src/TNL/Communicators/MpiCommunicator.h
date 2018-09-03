@@ -39,6 +39,7 @@
 
 namespace TNL {
 namespace Communicators {
+namespace {
 
 class MpiCommunicator
 {
@@ -526,7 +527,8 @@ template<> class MPITypeResolver<long double>
 };
 #endif
 
-}//namespace Communicators
+} // namespace <unnamed>
+} // namespace Communicators
 } // namespace TNL
 
 #define TNL_MPI_PRINT( message )                                                                                         \
