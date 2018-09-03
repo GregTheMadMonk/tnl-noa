@@ -143,7 +143,7 @@ bool processImages( const Config::ParameterContainer& parameters )
    return true;
 }
 
-bool processTNLFiles( const Config::ParameterContainer& parameters )
+bool processFiles( const Config::ParameterContainer& parameters )
 {
    const Containers::List< String >& inputFiles = parameters.getParameter< Containers::List< String > >( "input-files" );
    const String& imageFormat = parameters.getParameter< String >( "image-format" );
@@ -232,7 +232,7 @@ int main( int argc, char* argv[] )
       if( realType == "long double" &&  ! processImages< long double >( parameters ) )
          return EXIT_FAILURE;
    }
-   if( parameters.checkParameter( "input-files" ) && ! processTNLFiles( parameters ) )
+   if( parameters.checkParameter( "input-files" ) && ! processFiles( parameters ) )
       return EXIT_FAILURE;
 
    return EXIT_SUCCESS;

@@ -23,10 +23,10 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 String
-transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 getType()
 {
    return String( "transportEquationProblem< " ) + Mesh :: getType() + " >";
@@ -35,10 +35,10 @@ getType()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 String
-transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 getPrologHeader() const
 {
    return String( "Transport Equation" );
@@ -47,10 +47,10 @@ getPrologHeader() const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 void
-transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
@@ -62,17 +62,16 @@ writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) cons
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 bool
-transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
-setup( const MeshPointer& meshPointer,
-       const Config::ParameterContainer& parameters,
+transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
+setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->velocityField->setup( meshPointer, parameters, prefix + "velocity-field-" ) ||
-       ! this->differentialOperatorPointer->setup( meshPointer, parameters, prefix ) ||
-       ! this->boundaryConditionPointer->setup( meshPointer, parameters, prefix + "boundary-conditions-" ) )
+   if( ! this->velocityField->setup( this->getMesh(), parameters, prefix + "velocity-field-" ) ||
+       ! this->differentialOperatorPointer->setup( this->getMesh(), parameters, prefix ) ||
+       ! this->boundaryConditionPointer->setup( this->getMesh(), parameters, prefix + "boundary-conditions-" ) )
       return false;
    return true;
 }
@@ -80,46 +79,43 @@ setup( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
-typename transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::IndexType
-transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
-getDofs( const MeshPointer& mesh ) const
+typename transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::IndexType
+transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
+getDofs() const
 {
    /****
     * Return number of  DOFs (degrees of freedom) i.e. number
     * of unknowns to be resolved by the main solver.
     */
-   return mesh->template getEntitiesCount< typename MeshType::Cell >();
+   return this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 void
-transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
-bindDofs( const MeshPointer& meshPointer,
-          DofVectorPointer& dofVector )
+transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
+bindDofs( DofVectorPointer& dofVector )
 {
-   const IndexType dofs = meshPointer->template getEntitiesCount< typename MeshType::Cell >();
-   this->uPointer->bind( meshPointer, dofVector );
+   //const IndexType dofs = this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
+   this->uPointer->bind( this->getMesh(), dofVector );
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 bool
-transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
-                     const MeshPointer& meshPointer,
-                     DofVectorPointer& dofs,
-                     MeshDependentDataPointer& meshDependentData )
+                     DofVectorPointer& dofs )
 {
-   this->bindDofs( meshPointer, dofs );
+   this->bindDofs( dofs );
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if( ! this->uPointer->boundLoad( initialConditionFile ) )
    {
@@ -132,15 +128,14 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
    template< typename Matrix >
 bool
-transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
-setupLinearSystem( const MeshPointer& mesh,
-                   Matrix& matrix )
+transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
+setupLinearSystem( Matrix& matrix )
 {
-   /*const IndexType dofs = this->getDofs( mesh );
+   /*const IndexType dofs = this->getDofs();
    typedef typename Matrix::ObjectType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
    SharedPointer< CompressedRowsLengthsVectorType > rowLengths;
    if( ! rowLengths->setSize( dofs ) )
@@ -159,18 +154,16 @@ setupLinearSystem( const MeshPointer& mesh,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 bool
-transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
-              const MeshPointer& mesh,
-              DofVectorPointer& dofs,
-              MeshDependentDataPointer& meshDependentData )
+              DofVectorPointer& dofs )
 {
    std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
-   this->bindDofs( mesh, dofs );
+   this->bindDofs( dofs );
    FileName fileName;
    fileName.setFileNameBase( "u-" );
    fileName.setExtension( "tnl" );
@@ -183,16 +176,14 @@ makeSnapshot( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 void
-transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 getExplicitUpdate( const RealType& time,
-                const RealType& tau,
-                const MeshPointer& mesh,
-                DofVectorPointer& _u,
-                DofVectorPointer& _fu,
-                MeshDependentDataPointer& meshDependentData )
+                   const RealType& tau,
+                   DofVectorPointer& _u,
+                   DofVectorPointer& _fu )
 {
    /****
     * If you use an explicit solver like Euler or Merson, you
@@ -202,9 +193,10 @@ getExplicitUpdate( const RealType& time,
     *
     * You may use supporting mesh dependent data if you need.
     */
+   const MeshPointer& mesh = this->getMesh();
    typedef typename MeshType::Cell Cell;
    int count = ::sqrt(mesh->template getEntitiesCount< Cell >());
-   this->bindDofs( mesh, _u );
+   this->bindDofs( _u );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    SharedPointer< MeshFunctionType > u( mesh, _u ); 
    SharedPointer< MeshFunctionType > fu( mesh, _fu );
@@ -213,24 +205,22 @@ getExplicitUpdate( const RealType& time,
    explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
    explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
    explicitUpdater.setRightHandSide( this->rightHandSidePointer );
-   explicitUpdater.template update< typename Mesh::Cell, CommType >( time, tau, mesh, u, fu );
+   explicitUpdater.template update< typename Mesh::Cell, Communicator >( time, tau, mesh, u, fu );
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
    template< typename Matrix >
 void
-transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const MeshPointer& mesh,
                       DofVectorPointer& _u,
                       Matrix& matrix,
-                      DofVectorPointer& b,
-                      MeshDependentDataPointer& meshDependentData )
+                      DofVectorPointer& b )
 {
 }
 

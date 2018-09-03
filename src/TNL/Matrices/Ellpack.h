@@ -167,8 +167,15 @@ public:
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
+   template< typename Vector >
+   bool performJacobiIteration( const Vector& b,
+								const IndexType row,
+								const Vector& old_x,
+								Vector& x,
+								const RealType& omega ) const;
+   
    // copy assignment
-   Ellpack& operator=( const Ellpack& matrix );
+   Ellpack& operator=( const Ellpack& matrix );   
 
    // cross-device copy assignment
    template< typename Real2, typename Device2, typename Index2,

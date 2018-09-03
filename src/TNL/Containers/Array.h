@@ -49,7 +49,7 @@ class Array : public Object
 
       static String getType();
 
-      String getTypeVirtual() const;
+      virtual String getTypeVirtual() const;
 
       static String getSerializationType();
 
@@ -85,10 +85,10 @@ class Array : public Object
       void setElement( const Index& i, const Element& x );
 
       Element getElement( const Index& i ) const;
-      
+
       // Checks if there is an element with value v in this array
       bool containsValue( const Element& v ) const;
-      
+
       // Checks if all elements in this array have the same value v
       bool containsOnlyValue( const Element& v ) const;
 

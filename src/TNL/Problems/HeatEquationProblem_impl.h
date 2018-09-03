@@ -30,10 +30,10 @@ namespace Problems {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 String
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 getType()
 {
    return String( "HeatEquationProblem< " ) + Mesh :: getType() + " >";
@@ -42,10 +42,10 @@ getType()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 String
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 getPrologHeader() const
 {
    return String( "Heat equation" );
@@ -54,10 +54,10 @@ getPrologHeader() const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 void
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
 }
@@ -65,10 +65,10 @@ writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) cons
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 bool
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 writeEpilog( Logger& logger )
 {
    return true;
@@ -77,15 +77,14 @@ writeEpilog( Logger& logger )
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 bool
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
-setup( const MeshPointer& meshPointer,
-       const Config::ParameterContainer& parameters,
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
+setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, "boundary-conditions-" ) )
+   if( ! this->boundaryConditionPointer->setup( this->getMesh(), parameters, "boundary-conditions-" ) )
    {
       std::cerr << "I was not able to initialize the boundary conditions." << std::endl;
       return false;
@@ -108,45 +107,42 @@ setup( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
-typename HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::IndexType
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
-getDofs( const MeshPointer& meshPointer ) const
+typename HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::IndexType
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
+getDofs() const
 {
    /****
     * Set-up DOFs and supporting grid functions
     */
-   return meshPointer->template getEntitiesCount< typename MeshType::Cell >();
+   return this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 void
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
-bindDofs( const MeshPointer& meshPointer,
-          const DofVectorPointer& dofVector )
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
+bindDofs( const DofVectorPointer& dofVector )
 {
-   const IndexType dofs = meshPointer->template getEntitiesCount< typename MeshType::Cell >();
-   this->uPointer->bind( meshPointer, dofVector );
+   const IndexType dofs = this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
+   this->uPointer->bind( this->getMesh(), dofVector );
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 bool
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
-                     const MeshPointer& meshPointer,
-                     DofVectorPointer& dofs,
-                     MeshDependentDataPointer& meshDependentData )
+                     DofVectorPointer& dofs )
 {
-   this->bindDofs( meshPointer, dofs );
+   this->bindDofs( dofs );
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    std::cout<<"setInitialCondition" <<std::endl; 
    if(CommunicatorType::isDistributed())
@@ -172,21 +168,20 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
    template< typename MatrixPointer >          
 bool
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
-setupLinearSystem( const MeshPointer& meshPointer,
-                   MatrixPointer& matrixPointer )
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
+setupLinearSystem( MatrixPointer& matrixPointer )
 {
-   const IndexType dofs = this->getDofs( meshPointer );
+   const IndexType dofs = this->getDofs();
    typedef typename MatrixPointer::ObjectType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
    SharedPointer< CompressedRowLengthsVectorType > rowLengthsPointer;
    rowLengthsPointer->setSize( dofs );
    Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >(
-      meshPointer,
+      this->getMesh(),
       differentialOperatorPointer,
       boundaryConditionPointer,
       rowLengthsPointer );
@@ -199,19 +194,17 @@ setupLinearSystem( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 bool
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
-              const MeshPointer& meshPointer,
-              DofVectorPointer& dofs,
-              MeshDependentDataPointer& meshDependentData )
+              DofVectorPointer& dofs )
 {
    std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
 
-   this->bindDofs( meshPointer, dofs );
+   this->bindDofs( dofs );
 
    FileName fileName;
    fileName.setFileNameBase( "u-" );
@@ -236,16 +229,14 @@ makeSnapshot( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 void
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 getExplicitUpdate( const RealType& time,
-                const RealType& tau,
-                const MeshPointer& meshPointer,
-                DofVectorPointer& uDofs,
-                DofVectorPointer& fuDofs,
-                MeshDependentDataPointer& meshDependentData )
+                   const RealType& tau,
+                   DofVectorPointer& uDofs,
+                   DofVectorPointer& fuDofs )
 {
    /****
     * If you use an explicit solver like Euler or Merson, you
@@ -255,40 +246,37 @@ getExplicitUpdate( const RealType& time,
     *
     * You may use supporting vectors again if you need.
     */
-
-   this->bindDofs( meshPointer, uDofs );
-   MeshFunctionPointer fuPointer( meshPointer, fuDofs );
-   this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
-   this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
-   this->explicitUpdater.setRightHandSide( this->rightHandSidePointer );
-   this->explicitUpdater.template update< typename Mesh::Cell, CommType >( time, tau, meshPointer, this->uPointer, fuPointer );
-
+   
+   this->bindDofs( uDofs );
+   MeshFunctionPointer fuPointer( this->getMesh(), fuDofs );
+   this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer ),
+   this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer ),
+   this->explicitUpdater.setRightHandSide( this->rightHandSidePointer ),
+   this->explicitUpdater.template update< typename Mesh::Cell, Communicator >( time, tau, this->getMesh(), this->uPointer, fuPointer );
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
     template< typename MatrixPointer > 
 void
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const MeshPointer& meshPointer,
                       const DofVectorPointer& dofsPointer,
                       MatrixPointer& matrixPointer,
-                      DofVectorPointer& bPointer,
-                      MeshDependentDataPointer& meshDependentData )
+                      DofVectorPointer& bPointer )
 {
-   this->bindDofs( meshPointer, dofsPointer );
+   this->bindDofs( dofsPointer );
    this->systemAssembler.setDifferentialOperator( this->differentialOperatorPointer );
    this->systemAssembler.setBoundaryConditions( this->boundaryConditionPointer );
    this->systemAssembler.setRightHandSide( this->rightHandSidePointer );
    this->systemAssembler.template assembly< typename Mesh::Cell, typename MatrixPointer::ObjectType >( 
       time,
       tau,
-      meshPointer,
+      this->getMesh(),
       this->uPointer,
       matrixPointer,
       bPointer );

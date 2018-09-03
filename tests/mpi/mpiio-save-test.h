@@ -88,6 +88,6 @@ int main(int argc, char **argv)
 
 #else
 
-main(){}
+int main(){}
 
 #endif

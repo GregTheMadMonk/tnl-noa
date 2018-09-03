@@ -1,13 +1,20 @@
-set( headers FlopsCounter.h
-             Quad.h
-             Quadcpp.h
-             Real.h
-              )
+ADD_SUBDIRECTORY( UnitTests )
 
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Experimental/Arithemtics )
+set( headers FlopsCounter.h
+             Quad.h # Modified by D. Simon
+             Quad_impl.h # Modified by D. Simon  
+             Real.h
+             MultiPrecision.h #Added by D. Simon
+             #Double.h #Added by D. Simon
+             #Double_impl.h #Added by D. Simon
+             )
+
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Experimental/Arithmetics )
 
 set( tnl_experimental_arithmetics_SOURCES 
-                 ${CURRENT_DIR}/FlopsCounter.cpp )
+                 ${CURRENT_DIR}/FlopsCounter.cpp
+                 ${CURRENT_DIR}/MultiPrecision.cpp #Added by D.Simon
+                 )
 
 set( tnl_experimental_arithmetics_CUDA__SOURCES )
 

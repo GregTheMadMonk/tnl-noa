@@ -65,11 +65,11 @@ int main( int argc, char* argv[] )
 		   tnlParallelEikonalSolver<2,SchemeTypeHost,SchemeTypeDevice, Device> solver;
 		   if(!solver.init(parameters))
 		   {
-			   cerr << "Solver failed to initialize." << endl;
+			  std::cerr << "Solver failed to initialize." <<std::endl;
 			   return EXIT_FAILURE;
 		   }
-		   cout << "-------------------------------------------------------------" << endl;
-		   cout << "Starting solver loop..." << endl;
+		  std::cout << "-------------------------------------------------------------" <<std::endl;
+		  std::cout << "Starting solver loop..." <<std::endl;
 		   solver.run();
 	   }
 	   else if(device==tnlCudaDevice )
@@ -80,11 +80,11 @@ int main( int argc, char* argv[] )
 		   tnlParallelEikonalSolver<2,SchemeTypeHost,SchemeTypeDevice, Device> solver;
 		   if(!solver.init(parameters))
 		   {
-			   cerr << "Solver failed to initialize." << endl;
+			  std::cerr << "Solver failed to initialize." <<std::endl;
 			   return EXIT_FAILURE;
 		   }
-		   cout << "-------------------------------------------------------------" << endl;
-		   cout << "Starting solver loop..." << endl;
+		  std::cout << "-------------------------------------------------------------" <<std::endl;
+		  std::cout << "Starting solver loop..." <<std::endl;
 		   solver.run();
 	   }
   // }
@@ -108,11 +108,11 @@ int main( int argc, char* argv[] )
 		   tnlParallelEikonalSolver<3,SchemeTypeHost,SchemeTypeDevice, Device> solver;
 		   if(!solver.init(parameters))
 		   {
-			   cerr << "Solver failed to initialize." << endl;
+			  std::cerr << "Solver failed to initialize." <<std::endl;
 			   return EXIT_FAILURE;
 		   }
-		   cout << "-------------------------------------------------------------" << endl;
-		   cout << "Starting solver loop..." << endl;
+		  std::cout << "-------------------------------------------------------------" <<std::endl;
+		  std::cout << "Starting solver loop..." <<std::endl;
 		   solver.run();
 	   }
 	   else if(device==tnlCudaDevice )
@@ -123,19 +123,19 @@ int main( int argc, char* argv[] )
 		   tnlParallelEikonalSolver<3,SchemeTypeHost,SchemeTypeDevice, Device> solver;
 		   if(!solver.init(parameters))
 		   {
-			   cerr << "Solver failed to initialize." << endl;
+			  std::cerr << "Solver failed to initialize." <<std::endl;
 			   return EXIT_FAILURE;
 		   }
-		   cout << "-------------------------------------------------------------" << endl;
-		   cout << "Starting solver loop..." << endl;
+		  std::cout << "-------------------------------------------------------------" <<std::endl;
+		  std::cout << "Starting solver loop..." <<std::endl;
 		   solver.run();
 	   }
  // }
   }
 
    time(&stop);
-   cout << endl;
-   cout << "Running time was: " << difftime(stop,start) << " .... " << (std::clock() - start2) / (double)(CLOCKS_PER_SEC) << endl;
+  std::cout <<std::endl;
+  std::cout << "Running time was: " << difftime(stop,start) << " .... " << (std::clock() - start2) / (double)(CLOCKS_PER_SEC) <<std::endl;
    return EXIT_SUCCESS;
 }
 

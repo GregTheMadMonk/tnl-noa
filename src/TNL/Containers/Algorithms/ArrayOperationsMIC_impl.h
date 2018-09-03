@@ -78,24 +78,6 @@ getMemoryElement( const Element* data )
 }
 
 template< typename Element, typename Index >
-Element&
-ArrayOperations< Devices::MIC >::
-getArrayElementReference( Element* data, const Index i )
-{
-   TNL_ASSERT( data, );
-   return data[ i ];
-}
-
-template< typename Element, typename Index >
-const
-Element& ArrayOperations< Devices::MIC >::
-getArrayElementReference( const Element* data, const Index i )
-{
-   TNL_ASSERT( data, );
-   return data[ i ];
-}
-
-template< typename Element, typename Index >
 bool
 ArrayOperations< Devices::MIC >::
 setMemory( Element* data,

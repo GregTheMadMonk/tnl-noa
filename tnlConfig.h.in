@@ -4,10 +4,6 @@
 
 @HAVE_SYS_IOCTL_H@
 
-#ifdef HAVE_CUDA
-    @HAVE_CUSPARSE@
-#endif
-
 @HAVE_DCMTK_H@
 
 @HAVE_PNG_H@

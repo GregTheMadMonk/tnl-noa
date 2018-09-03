@@ -34,7 +34,7 @@ class Vector : public Containers::Array< Real, Device, Index >
 
    static String getType();
 
-   String getTypeVirtual() const;
+   virtual String getTypeVirtual() const;
 
    static String getSerializationType();
 

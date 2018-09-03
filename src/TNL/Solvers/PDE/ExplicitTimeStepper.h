@@ -35,9 +35,7 @@ class ExplicitTimeStepper
       typedef typename Problem::MeshType MeshType;
       typedef SharedPointer< MeshType > MeshPointer;
       typedef typename ProblemType::DofVectorType DofVectorType;
-      typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
       typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-      typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
       typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
       using CommunicatorType = typename Problem::CommunicatorType;
 
@@ -63,13 +61,11 @@ class ExplicitTimeStepper
 
       bool setTimeStep( const RealType& tau );
 
-      const RealType& getTimeStep() const;
-
       bool solve( const RealType& time,
-                  const RealType& stopTime,
-                  const MeshPointer& mesh,
-                  DofVectorPointer& dofVector,
-                  MeshDependentDataPointer& meshDependentData );
+                   const RealType& stopTime,
+                   DofVectorPointer& dofVector );
+
+      const RealType& getTimeStep() const;
 
       void getExplicitUpdate( const RealType& time,
                            const RealType& tau,
@@ -86,14 +82,7 @@ class ExplicitTimeStepper
 
       Problem* problem;
 
-
       RealType timeStep;
-
-      /****
-       * The pointers on the shared pointer is important here to avoid 
-       * memory deallocation in the assignment operator in SharedPointer.
-       */
-      MeshDependentDataPointer* meshDependentData;
 
       const MeshPointer* mesh;
 

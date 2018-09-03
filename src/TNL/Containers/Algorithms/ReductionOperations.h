@@ -582,61 +582,58 @@ protected:
 template< typename Data, typename Result = bool >
 class ParallelReductionContainsValue : public ParallelReductionLogicalOr< Result >
 {
-   public:
-      using DataType1 = Data;
-      using DataType2 = Data;
-      using ResultType = Result;
-      using LaterReductionOperation = ParallelReductionLogicalOr< Result >;
+public:
+   using DataType1 = Data;
+   using DataType2 = Data;
+   using ResultType = Result;
+   using LaterReductionOperation = ParallelReductionLogicalOr< Result >;
 
-      template< typename Index >
-      __cuda_callable__ void
-      firstReduction( ResultType& result,
-                      const Index& index,
-                      const DataType1* data1,
-                      const DataType2* data2 )
-      {
-         result = result || ( data1[ index ] == value );
-      }
-      
-      void setValue( const Data& v )
-      {
-         this->value = v;
-      }
-      
-   protected:
-      Data value;
+   template< typename Index >
+   __cuda_callable__ void
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
+   {
+      result = result || ( data1[ index ] == value );
+   }
+
+   void setValue( const Data& v )
+   {
+      this->value = v;
+   }
+
+protected:
+   Data value;
 };
 
 template< typename Data, typename Result = bool >
 class ParallelReductionContainsOnlyValue : public ParallelReductionLogicalAnd< Result >
 {
-   public:
-      using DataType1 = Data;
-      using DataType2 = Data;
-      using ResultType = Result;
-      using LaterReductionOperation = ParallelReductionLogicalAnd< Result >;
+public:
+   using DataType1 = Data;
+   using DataType2 = Data;
+   using ResultType = Result;
+   using LaterReductionOperation = ParallelReductionLogicalAnd< Result >;
 
-      template< typename Index >
-      __cuda_callable__ void
-      firstReduction( ResultType& result,
-                      const Index& index,
-                      const DataType1* data1,
-                      const DataType2* data2 )
-      {
-         result = result && ( data1[ index ] == value );
-      }
-      
-      void setValue( const Data& v )
-      {
-         this->value = v;
-      }
-      
-   protected:
-      Data value;
+   template< typename Index >
+   __cuda_callable__ void
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
+   {
+      result = result && ( data1[ index ] == value );
+   }
+
+   void setValue( const Data& v )
+   {
+      this->value = v;
+   }
+
+protected:
+   Data value;
 };
-
-
-
 
 } // namespace Algorithms
 } // namespace Containers

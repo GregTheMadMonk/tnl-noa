@@ -12,7 +12,7 @@
 #include <TNL/Devices/Host.h>
 #include <cstdlib>
 
-#include "tnlSparseMatrixTester.h"
+#include "SparseMatrixTester.h"
 #include <TNL/Matrices/CSR.h>
 #include "../tnlUnitTestStarter.h"
 

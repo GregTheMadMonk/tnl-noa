@@ -28,7 +28,7 @@ getType()
    return String( "PDEProblem< " ) +
           Mesh::getType() + ", " +
           TNL::getType< Real >() + ", " +
-          TNL::getType< Device >() + ", " +
+          Device::getDeviceType() + ", " +
           TNL::getType< Index >() + " >";
 }
 
@@ -96,22 +96,38 @@ getSubdomainOverlaps( const Config::ParameterContainer& parameters,
    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( mesh.getDistributedMesh(), lower, upper, this->subdomainOverlapSize() );
 }
       
-
+template< typename Mesh,
+          typename Communicator,
+          typename Real,
+          typename Device,
+          typename Index >
+void
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
+setMesh( MeshPointer& meshPointer)
+{
+   this->meshPointer = meshPointer;
+}
 
 template< typename Mesh,
           typename Communicator,
           typename Real,
           typename Device,
           typename Index >
-bool
-PDEProblem< Mesh, Communicator, Real, Device, Index >::
-setMeshDependentData( const MeshPointer& mesh,
-                      MeshDependentDataPointer& meshDependentData )
+const typename PDEProblem< Mesh, Communicator, Real, Device, Index >::MeshPointer&
+PDEProblem< Mesh, Communicator, Real, Device, Index >::getMesh() const
 {
-   /****
-    * Set-up auxiliary data depending on the numerical mesh
-    */
-   return true;
+   return this->meshPointer;
+}
+
+template< typename Mesh,
+          typename Communicator,
+          typename Real,
+          typename Device,
+          typename Index >
+typename PDEProblem< Mesh, Communicator, Real, Device, Index >::MeshPointer&
+PDEProblem< Mesh, Communicator, Real, Device, Index >::getMesh()
+{
+   return this->meshPointer;
 }
 
 template< typename Mesh,
@@ -121,9 +137,33 @@ template< typename Mesh,
           typename Index >
 void
 PDEProblem< Mesh, Communicator, Real, Device, Index >::
-bindMeshDependentData( const MeshPointer& mesh,
-                       MeshDependentDataPointer& meshDependentData )
+setCommonData( CommonDataPointer& commonData )
 {
+   this->commonDataPointer = commonData;
+}
+
+template< typename Mesh,
+          typename Communicator,
+          typename Real,
+          typename Device,
+          typename Index >
+const typename PDEProblem< Mesh, Communicator, Real, Device, Index >::CommonDataPointer&
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
+getCommonData() const
+{
+   return this->commonDataPointer;
+}
+
+template< typename Mesh,
+          typename Communicator,
+          typename Real,
+          typename Device,
+          typename Index >
+typename PDEProblem< Mesh, Communicator, Real, Device, Index >::CommonDataPointer&
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
+getCommonData()
+{
+   return this->commonDataPointer;
 }
 
 template< typename Mesh,
@@ -135,9 +175,7 @@ bool
 PDEProblem< Mesh, Communicator, Real, Device, Index >::
 preIterate( const RealType& time,
             const RealType& tau,
-            const MeshPointer& meshPointer,
-            DofVectorPointer& dofs,
-            MeshDependentDataPointer& meshDependentData )
+            DofVectorPointer& dofs )
 {
    return true;
 }
@@ -150,9 +188,7 @@ template< typename Mesh,
 void
 PDEProblem< Mesh, Communicator, Real, Device, Index >::
 setExplicitBoundaryConditions( const RealType& time,
-                               const MeshPointer& meshPointer,
-                               DofVectorPointer& dofs,
-                               MeshDependentDataPointer& meshDependentData )
+                               DofVectorPointer& dofs )
 {
 }
 
@@ -183,9 +219,7 @@ bool
 PDEProblem< Mesh, Communicator, Real, Device, Index >::
 postIterate( const RealType& time,
              const RealType& tau,
-             const MeshPointer& meshPointer,
-             DofVectorPointer& dofs,
-             MeshDependentDataPointer& meshDependentData )
+             DofVectorPointer& dofs )
 {
    return true;
 }

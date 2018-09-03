@@ -329,37 +329,36 @@ TYPED_TEST( ArrayTest, elementwiseAccess )
 TYPED_TEST( ArrayTest, containsValue )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   using ElementType = typename ArrayType::ElementType;
 
    ArrayType array;
    array.setSize( 1024 );
+
    for( int i = 0; i < array.getSize(); i++ )
-      array.setElement( i, ( ElementType ) ( i % 10 ) );
-   
+      array.setElement( i, i % 10 );
+
    for( int i = 0; i < 10; i++ )
-      EXPECT_TRUE( ( array.containsValue( ( ElementType ) i ) ) );
+      EXPECT_TRUE( array.containsValue( i ) );
 
    for( int i = 10; i < 20; i++ )
-      EXPECT_FALSE( ( array.containsValue( ( ElementType ) i ) ) );
+      EXPECT_FALSE( array.containsValue( i ) );
 }
 
 TYPED_TEST( ArrayTest, containsOnlyValue )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   using ElementType = typename ArrayType::ElementType;
 
    ArrayType array;
    array.setSize( 1024 );
-   for( int i = 0; i < array.getSize(); i++ )
-      array.setElement( i, ( ElementType ) ( i % 10 ) );
-   
-   for( int i = 0; i < 20; i++ )
-      EXPECT_FALSE( ( array.containsOnlyValue( ( ElementType ) i ) ) );
-   
-   array.setValue( 100 );
-   EXPECT_TRUE( ( array.containsOnlyValue( ( ElementType ) 100 ) ) );
-}
 
+   for( int i = 0; i < array.getSize(); i++ )
+      array.setElement( i, i % 10 );
+
+   for( int i = 0; i < 20; i++ )
+      EXPECT_FALSE( array.containsOnlyValue( i ) );
+
+   array.setValue( 100 );
+   EXPECT_TRUE( array.containsOnlyValue( 100 ) );
+}
 
 TYPED_TEST( ArrayTest, comparisonOperator )
 {
@@ -465,7 +464,7 @@ void testArrayAssignmentWithDifferentType()
    v = u_host;
    EXPECT_EQ( v, u_host );
 
-   // assignment from host to device
+   // assignment from device to host
    v_host.setValue( 0 );
    v_host = u;
    EXPECT_EQ( v_host, u );
@@ -588,7 +587,7 @@ TYPED_TEST( ArrayTest, referenceCountingBind )
 // TODO: test all __cuda_callable__ methods from a CUDA kernel
 
 #endif // HAVE_GTEST
-   
+
 
 #include "../GtestMissingError.h"
 int main( int argc, char* argv[] )

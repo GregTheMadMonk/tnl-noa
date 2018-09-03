@@ -57,7 +57,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 	if( ! Mesh.load( meshFile ) )
 	{
-		   cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the mesh from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 
@@ -65,7 +65,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	const String& initialCondition = parameters.getParameter <String>("initial-condition");
 	if( ! dofVector.load( initialCondition ) )
 	{
-		   cerr << "I am not able to load the initial condition from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the initial condition from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 	dofVector2.load(initialCondition);
@@ -80,7 +80,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	else
 		exactInput=true;
 
-	cout << "a" << endl;
+	cout << "a" <<std::endl;
 	return initGrid();
 }
 
@@ -184,7 +184,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 			}
 	}
-	cout << "a" << endl;
+	cout << "a" <<std::endl;
 
 //	Real tmp = 0.0;
 //	Real ax=0.5/sqrt(2.0);
@@ -320,7 +320,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 	//data.setLike(dofVector2.getData());
 	//data=dofVector2.getData();
-	//cout << data.getType() << endl;
+	//cout << data.getType() <<std::endl;
 	dofVector2.save("u-00000.tnl");
 	//dofVector2.getData().save("u-00000.tnl");
 
@@ -379,7 +379,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 //	data.setLike(dofVector2.getData());
 //	data = dofVector2.getData();
-//	cout << data.getType() << endl;
+//	cout << data.getType() <<std::endl;
 	dofVector2.save("u-00001.tnl");
 	//dofVector2.getData().save("u-00001.tnl");
 
@@ -432,7 +432,7 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	dofVector2[Entity.getIndex()] = fabsMin(value, tmp);
 
 //	if(dofVector2[Entity.getIndex()] > 1.0)
-//		cout << value << "    " << tmp << " " << dofVector2[Entity.getIndex()] << endl;
+//		cout << value << "    " << tmp << " " << dofVector2[Entity.getIndex()] <<std::endl;
 }
 
 

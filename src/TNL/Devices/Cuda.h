@@ -188,7 +188,15 @@ class Cuda
 std::ostream& operator << ( std::ostream& str, const dim3& d );
 #endif
 
+#ifdef HAVE_CUDA
+#if __CUDA_ARCH__ < 600
+namespace {
+   __device__ double atomicAdd(double* address, double val);
+}
+#endif
+#endif
+
 } // namespace Devices
-} // namespace TNL   
-   
+} // namespace TNL
+
 #include <TNL/Devices/Cuda_impl.h>

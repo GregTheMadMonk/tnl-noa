@@ -63,15 +63,27 @@ setup( const Config::ParameterContainer& parameters,
     * Load the mesh from the mesh file
     */
    const String& meshFile = parameters.getParameter< String >( "mesh" );
-   if( ! Meshes::loadMesh< typename Problem::CommunicatorType >( meshFile, *meshPointer, distrMesh ) )
+   if( ! Meshes::loadMesh< typename Problem::CommunicatorType >( meshFile, *this->meshPointer, distrMesh ) )
       return false;
-   if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *meshPointer, distrMesh, *problem ) )
+   if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *this->meshPointer, distrMesh, *problem ) )
       return false;
+   
+   problem->setMesh( this->meshPointer );
+
+   /****
+    * Set-up common data
+    */
+   if( ! this->commonDataPointer->setup( parameters ) )
+   {
+      std::cerr << "The problem common data initiation failed!" << std::endl;
+      return false;
+   }
+   problem->setCommonData( this->commonDataPointer );
    
    /****
     * Setup the problem
     */
-   if( ! problem->setup( this->meshPointer, parameters, prefix ) )
+   if( ! problem->setup( parameters, prefix ) )
    {
       std::cerr << "The problem initiation failed!" << std::endl;
       return false;
@@ -80,23 +92,17 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Set DOFs (degrees of freedom)
     */
-   TNL_ASSERT_GT( problem->getDofs( this->meshPointer ), 0, "number of DOFs must be positive" );
-   this->dofsPointer->setSize( problem->getDofs( this->meshPointer ) );
+   TNL_ASSERT_GT( problem->getDofs(), 0, "number of DOFs must be positive" );
+   this->dofsPointer->setSize( problem->getDofs() );
    this->dofsPointer->setValue( 0.0 );
-   this->problem->bindDofs( this->meshPointer, this->dofsPointer );
-   
-   /****
-    * Set mesh dependent data
-    */
-   this->problem->setMeshDependentData( this->meshPointer, this->meshDependentDataPointer );
-   this->problem->bindMeshDependentData( this->meshPointer, this->meshDependentDataPointer );
+   this->problem->bindDofs( this->dofsPointer );
    
    /***
     * Set-up the initial condition
     */
    std::cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! this->problem->setInitialCondition( parameters, meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
+   if( ! this->problem->setInitialCondition( parameters, this->dofsPointer ) )
       return false;
    std::cout << " [ OK ]" << std::endl;
 
@@ -296,7 +302,7 @@ solve()
    this->computeTimer->reset();
  
    this->ioTimer->start();
-   if( ! this->problem->makeSnapshot( t, step, meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
+   if( ! this->problem->makeSnapshot( t, step, this->dofsPointer ) )
    {
       std::cerr << "Making the snapshot failed." << std::endl;
       return false;
@@ -314,14 +320,14 @@ solve()
    {
       RealType tau = min( this->snapshotPeriod,
                           this->finalTime - t );
-      if( ! this->timeStepper.solve( t, t + tau, this->meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
+      if( ! this->timeStepper.solve( t, t + tau, this->dofsPointer ) )
          return false;
       step ++;
       t += tau;
 
       this->ioTimer->start();
       this->computeTimer->stop();
-      if( ! this->problem->makeSnapshot( t, step, this->meshPointer, this->dofsPointer, this->meshDependentDataPointer ) )
+      if( ! this->problem->makeSnapshot( t, step, this->dofsPointer ) )
       {
          std::cerr << "Making the snapshot failed." << std::endl;
          return false;
