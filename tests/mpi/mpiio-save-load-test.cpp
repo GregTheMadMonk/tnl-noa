@@ -99,6 +99,6 @@ int main(int argc, char **argv)
 
 #else
 
-main(){}
-#endif
+int main(){}
 
+#endif
