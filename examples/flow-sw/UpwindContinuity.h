@@ -71,8 +71,10 @@ class UpwindContinuityBase
          const RealType& machNumber = velocity / speedOfSound;
          if ( machNumber <= -1.0 )
             return 0.0;
+        else if ( machNumber <= 0.0 )
+            return density * speedOfSound / ( 2 * this->gamma ) * ( machNumber + 1.0 );
         else if ( machNumber <= 1.0 )
-            return density * speedOfSound / 4.0 * ( machNumber + 1.0 ) * ( machNumber + 1.0 );
+            return density * speedOfSound / ( 2 * this->gamma ) * ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 );
         else 
             return density * velocity;
       };
@@ -83,8 +85,10 @@ class UpwindContinuityBase
          const RealType& machNumber = velocity / speedOfSound;
          if ( machNumber <= -1.0 )
             return density * velocity;
+        else if ( machNumber <= 0.0 )
+            return density * speedOfSound / ( 2 * this->gamma ) * ( ( 2.0 * this->gamma - 1.0 ) * machNumber - 1.0 );
         else if ( machNumber <= 1.0 )
-            return - density * speedOfSound / 4.0 * ( machNumber - 1.0 ) * ( machNumber - 1.0 );
+            return density * speedOfSound / ( 2 * this->gamma ) * ( machNumber - 1.0 );
         else 
             return 0.0;
       };

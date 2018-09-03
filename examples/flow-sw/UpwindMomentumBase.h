@@ -57,16 +57,21 @@ class UpwindMomentumBase
           this->pressure = pressure;
       };
 
+      void setDynamicalViscosity( const RealType& dynamicalViscosity )
+      {
+         this->dynamicalViscosity = dynamicalViscosity;
+      }
+
       RealType positiveMainMomentumFlux( const RealType& density, const RealType& velocity, const RealType& pressure ) const
       {
          const RealType& speedOfSound = std::sqrt( this->gamma * pressure / density );
          const RealType& machNumber = velocity / speedOfSound;
          if ( machNumber <= -1.0 )
             return 0;
+        else if ( machNumber <= 0.0 )
+            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( machNumber + 1.0 ) * ( machNumber + 1.0 ) );
         else if ( machNumber <= 1.0 )
-            return density * speedOfSound / 4.0 * ( machNumber + 1.0 ) * ( machNumber + 1.0 )
-                 * ( ( 2.0 * speedOfSound ) / this->gamma ) 
-                 * ( 1.0 + ( this->gamma - 1.0 ) * machNumber / 2.0 );
+            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( 2.0 * ( this->gamma - 1.0 ) * machNumber  * machNumber + (machNumber + 1.0 ) * (machNumber + 1.0 ) );
         else 
             return density * velocity * velocity + pressure;
       };
@@ -77,10 +82,10 @@ class UpwindMomentumBase
          const RealType& machNumber = velocity / speedOfSound;
          if ( machNumber <= -1.0 )
             return density * velocity * velocity + pressure;
+        else if ( machNumber <= 0.0 )
+            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( 2.0 * ( this->gamma - 1.0 ) * machNumber * machNumber + (machNumber - 1.0 ) * (machNumber - 1.0 ) );
         else if ( machNumber <= 1.0 )
-            return - density * speedOfSound / 4.0 * ( machNumber - 1.0 ) * ( machNumber - 1.0 )
-                 * ( ( 2.0 * speedOfSound ) / this->gamma ) 
-                 * ( - 1.0 + ( this->gamma - 1.0 ) * machNumber / 2.0 );
+            return density * speedOfSound * speedOfSound / ( 2 * this->gamma ) * ( ( machNumber - 1.0 ) * ( machNumber - 1.0 ) );
         else 
             return 0; 
       };
@@ -91,8 +96,10 @@ class UpwindMomentumBase
          const RealType& machNumber = velocity_main / speedOfSound;
          if ( machNumber <= -1.0 )
             return 0.0;
+        else if ( machNumber <= 0.0 )
+            return density * speedOfSound / ( 2 * this->gamma ) * ( machNumber + 1.0 ) * velocity_other;
         else if ( machNumber <= 1.0 )
-            return density * speedOfSound / 4.0 * ( machNumber + 1.0 ) * ( machNumber + 1.0 ) * velocity_other;
+            return density * speedOfSound / ( 2 * this->gamma ) * ( ( 2.0 * this->gamma - 1.0 ) * machNumber + 1.0 ) * velocity_other;
         else 
             return density * velocity_main * velocity_other;
       };
@@ -103,8 +110,10 @@ class UpwindMomentumBase
          const RealType& machNumber = velocity_main / speedOfSound;
          if ( machNumber <= -1.0 )
             return density * velocity_main * velocity_other;
+        else if ( machNumber <= 0.0 )
+            return density * speedOfSound / ( 2 * this->gamma ) * ( ( 2.0 * this->gamma - 1.0 ) * machNumber - 1.0 ) * velocity_other;
         else if ( machNumber <= 1.0 )
-            return - density * speedOfSound / 4 * ( machNumber - 1.0 ) * ( machNumber - 1.0 ) * velocity_other;
+            return density * speedOfSound / ( 2 * this->gamma ) * ( machNumber - 1.0 ) * velocity_other;
         else 
             return 0.0;
       };
@@ -118,6 +127,8 @@ class UpwindMomentumBase
          VelocityFieldPointer velocity;
          
          MeshFunctionPointer pressure;
+
+         RealType dynamicalViscosity;
 
          MeshFunctionPointer density;
 
