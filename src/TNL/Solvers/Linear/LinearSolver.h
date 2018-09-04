@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <TNL/Solvers/Linear/Preconditioners/Preconditioner.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/SharedPointer.h>
 
@@ -19,7 +20,7 @@ namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Matrix, typename Preconditioner >
+template< typename Matrix >
 class LinearSolver
 {
 public:
@@ -30,7 +31,7 @@ public:
    using ConstVectorViewType = Containers::VectorView< typename std::add_const< RealType >::type, DeviceType, IndexType >;
    using MatrixType = Matrix;
    using MatrixPointer = SharedPointer< typename std::add_const< MatrixType >::type >;
-   using PreconditionerType = Preconditioner;
+   using PreconditionerType = Preconditioners::Preconditioner< MatrixType >;
    using PreconditionerPointer = SharedPointer< typename std::add_const< PreconditionerType >::type, DeviceType >;
 
    LinearSolver() = default;

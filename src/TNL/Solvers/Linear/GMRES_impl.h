@@ -18,9 +18,8 @@ namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Matrix,
-           typename Preconditioner >
-GMRES< Matrix, Preconditioner >::
+template< typename Matrix >
+GMRES< Matrix >::
 GMRES()
 : size( 0 ),
   restarting_min( 10 ),
@@ -35,17 +34,15 @@ GMRES()
    this->preconditioner.clear();
 }
 
-template< typename Matrix,
-          typename Preconditioner >
-GMRES< Matrix, Preconditioner >::
+template< typename Matrix >
+GMRES< Matrix >::
 ~GMRES()
 {
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 String
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 getType() const
 {
    return String( "GMRES< " ) +
@@ -53,10 +50,9 @@ getType() const
           this->preconditioner -> getType() + " >";
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
@@ -67,10 +63,9 @@ configSetup( Config::ConfigDescription& config,
    config.addEntry< int >( prefix + "gmres-restarting-step-max", "Maximal adjusting step for the adaptivity of the GMRES restarting parameter.", 3 );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 bool
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -82,10 +77,9 @@ setup( const Config::ParameterContainer& parameters,
    return true;
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 setRestarting( IndexType rest )
 {
    if( size != 0 )
@@ -93,10 +87,9 @@ setRestarting( IndexType rest )
    restarting_max = rest;
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 bool
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 solve( ConstVectorViewType b, VectorViewType x )
 {
    TNL_ASSERT_TRUE( this->matrix, "No matrix was set in GMRES. Call setMatrix() before solve()." );
@@ -330,11 +323,10 @@ solve( ConstVectorViewType b, VectorViewType x )
    return this->checkConvergence();
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
    template< typename VectorT >
 void
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 update( IndexType k,
         IndexType m,
         const Containers::Vector< RealType, Devices::Host, IndexType >& H,
@@ -366,10 +358,9 @@ update( IndexType k,
    }
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 generatePlaneRotation( RealType& dx,
                        RealType& dy,
                        RealType& cs,
@@ -395,10 +386,9 @@ generatePlaneRotation( RealType& dx,
       }
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 applyPlaneRotation( RealType& dx,
                     RealType& dy,
                     RealType& cs,
@@ -409,10 +399,9 @@ applyPlaneRotation( RealType& dx,
    dx = temp;
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 setSize( IndexType _size, IndexType m )
 {
    if( size == _size && restarting_max == m )

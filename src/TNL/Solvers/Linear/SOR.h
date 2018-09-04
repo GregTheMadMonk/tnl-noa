@@ -12,21 +12,19 @@
 
 #include "LinearSolver.h"
 
-#include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
 
 namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Matrix,
-          typename Preconditioner = Preconditioners::Dummy< Matrix > >
+template< typename Matrix >
 class SOR
-: public LinearSolver< Matrix, Preconditioner >,
+: public LinearSolver< Matrix >,
   public IterativeSolver< typename Matrix::RealType,
                           typename Matrix::IndexType >
 {
-   using Base = LinearSolver< Matrix, Preconditioner >;
+   using Base = LinearSolver< Matrix >;
 public:
    using RealType = typename Base::RealType;
    using DeviceType = typename Base::DeviceType;

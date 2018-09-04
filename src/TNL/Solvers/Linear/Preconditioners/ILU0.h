@@ -14,6 +14,8 @@
 
 #include <type_traits>
 
+#include "Preconditioner.h"
+
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/CSR.h>
 
@@ -45,16 +47,18 @@ public:
 
 template< typename Matrix, typename Real, typename Index >
 class ILU0_impl< Matrix, Real, Devices::Host, Index >
+: public Preconditioner< Matrix >
 {
 public:
    using RealType = Real;
    using DeviceType = Devices::Host;
    using IndexType = Index;
+   using typename Preconditioner< Matrix >::VectorViewType;
+   using typename Preconditioner< Matrix >::ConstVectorViewType;
 
-   void update( const Matrix& matrix );
+   virtual void update( const Matrix& matrix ) override;
 
-   template< typename Vector1, typename Vector2 >
-   bool solve( const Vector1& b, Vector2& x ) const;
+   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
 
 protected:
    Matrices::CSR< RealType, DeviceType, IndexType > L;
@@ -63,11 +67,14 @@ protected:
 
 template< typename Matrix >
 class ILU0_impl< Matrix, double, Devices::Cuda, int >
+: public Preconditioner< Matrix >
 {
 public:
    using RealType = double;
    using DeviceType = Devices::Cuda;
    using IndexType = int;
+   using typename Preconditioner< Matrix >::VectorViewType;
+   using typename Preconditioner< Matrix >::ConstVectorViewType;
 
    ILU0_impl()
    {
@@ -76,10 +83,9 @@ public:
 #endif
    }
 
-   void update( const Matrix& matrix );
+   virtual void update( const Matrix& matrix ) override;
 
-   template< typename Vector1, typename Vector2 >
-   bool solve( const Vector1& b, Vector2& x ) const;
+   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
 
    ~ILU0_impl()
    {
@@ -163,27 +169,27 @@ protected:
 #endif
 };
 
-#ifdef HAVE_MIC
 template< typename Matrix, typename Real, typename Index >
 class ILU0_impl< Matrix, Real, Devices::MIC, Index >
+: public Preconditioner< Matrix >
 {
 public:
    using RealType = Real;
    using DeviceType = Devices::MIC;
    using IndexType = Index;
+   using typename Preconditioner< Matrix >::VectorViewType;
+   using typename Preconditioner< Matrix >::ConstVectorViewType;
 
-   void update( const Matrix& matrix )
+   virtual void update( const Matrix& matrix ) override
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
    }
 
-   template< typename Vector1, typename Vector2 >
-   bool solve( const Vector1& b, Vector2& x ) const
+   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
    }
 };
-#endif
 
 } // namespace Preconditioners
 } // namespace Linear

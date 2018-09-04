@@ -74,7 +74,7 @@ update( const Matrix& matrix )
       const IndexType& size = diagonal.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
-      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
+      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
       Devices::Cuda::synchronizeDevice();
       matrixDiagonalToVectorKernel<<< cudaBlocks, cudaBlockSize >>>(
@@ -87,10 +87,9 @@ update( const Matrix& matrix )
 }
 
 template< typename Matrix >
-   template< typename Vector1, typename Vector2 >
 bool
 Diagonal< Matrix >::
-solve( const Vector1& b, Vector2& x ) const
+solve( ConstVectorViewType b, VectorViewType x ) const
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
@@ -104,7 +103,7 @@ solve( const Vector1& b, Vector2& x ) const
       const IndexType& size = diagonal.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
-      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
+      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
       elementwiseVectorDivisionKernel<<< cudaBlocks, cudaBlockSize >>>(
             b.getData(),

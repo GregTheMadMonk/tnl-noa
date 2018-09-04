@@ -25,9 +25,8 @@ namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Matrix,
-          typename Preconditioner >
-CWYGMRES< Matrix, Preconditioner >::
+template< typename Matrix >
+CWYGMRES< Matrix >::
 CWYGMRES()
 : size( 0 ),
   ldSize( 0 ),
@@ -43,17 +42,15 @@ CWYGMRES()
    this->preconditioner.clear();   
 }
 
-template< typename Matrix,
-          typename Preconditioner >
-CWYGMRES< Matrix, Preconditioner >::
+template< typename Matrix >
+CWYGMRES< Matrix >::
 ~CWYGMRES()
 {
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 String
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 getType() const
 {
    return String( "CWYGMRES< " ) +
@@ -61,10 +58,9 @@ getType() const
           this->preconditioner -> getType() + " >";
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
@@ -75,10 +71,9 @@ configSetup( Config::ConfigDescription& config,
    config.addEntry< int >( prefix + "gmres-restarting-step-max", "Maximal adjusting step for the adaptivity of the GMRES restarting parameter.", 3 );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 bool
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -90,10 +85,9 @@ setup( const Config::ParameterContainer& parameters,
    return true;
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 setRestarting( IndexType rest )
 {
    if( size != 0 )
@@ -101,10 +95,9 @@ setRestarting( IndexType rest )
    restarting_max = rest;
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 bool
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 solve( ConstVectorViewType b, VectorViewType x )
 {
    TNL_ASSERT_TRUE( this->matrix, "No matrix was set in CWYGMRES. Call setMatrix() before solve()." );
@@ -369,10 +362,9 @@ copyTruncatedVectorKernel( DestinationElement* destination,
 }
 #endif
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 hauseholder_generate( DeviceVector& Y,
                       HostVector& T,
                       const int& i,
@@ -453,10 +445,9 @@ hauseholder_generate( DeviceVector& Y,
    }
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 hauseholder_apply_trunc( HostVector& out,
                          DeviceVector& Y,
                          HostVector& T,
@@ -487,10 +478,9 @@ hauseholder_apply_trunc( HostVector& out,
    }
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 hauseholder_cwy( DeviceVector& v,
                  DeviceVector& Y,
                  HostVector& T,
@@ -524,10 +514,9 @@ hauseholder_cwy( DeviceVector& v,
    v.setElement( i, 1.0 + v.getElement( i ) );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 hauseholder_cwy_transposed( DeviceVector& z,
                             DeviceVector& Y,
                             HostVector& T,
@@ -566,11 +555,10 @@ hauseholder_cwy_transposed( DeviceVector& z,
                                          1.0, z.getData() );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
    template< typename Vector >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 update( IndexType k,
         IndexType m,
         const HostVector& H,
@@ -610,10 +598,9 @@ update( IndexType k,
                                          1.0, x.getData() );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 generatePlaneRotation( RealType& dx,
                        RealType& dy,
                        RealType& cs,
@@ -639,9 +626,8 @@ generatePlaneRotation( RealType& dx,
       }
 }
 
-template< typename Matrix,
-          typename Preconditioner >
-void CWYGMRES< Matrix, Preconditioner > ::
+template< typename Matrix >
+void CWYGMRES< Matrix > ::
 applyPlaneRotation( RealType& dx,
                     RealType& dy,
                     RealType& cs,
@@ -652,9 +638,8 @@ applyPlaneRotation( RealType& dx,
    dx = temp;
 }
 
-template< typename Matrix,
-          typename Preconditioner >
-void CWYGMRES< Matrix, Preconditioner > :: setSize( IndexType _size, IndexType m )
+template< typename Matrix >
+void CWYGMRES< Matrix > :: setSize( IndexType _size, IndexType m )
 {
    if( size == _size && restarting_max == m )
       return;

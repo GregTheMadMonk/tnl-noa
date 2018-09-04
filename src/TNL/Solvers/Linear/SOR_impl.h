@@ -15,10 +15,10 @@
 
 namespace TNL {
 namespace Solvers {
-namespace Linear {   
+namespace Linear {
 
-template< typename Matrix, typename Preconditioner >
-SOR< Matrix, Preconditioner > :: SOR()
+template< typename Matrix >
+SOR< Matrix > :: SOR()
 : omega( 1.0 )
 {
    /****
@@ -28,18 +28,17 @@ SOR< Matrix, Preconditioner > :: SOR()
    this->preconditioner.clear();   
 }
 
-template< typename Matrix, typename Preconditioner >
-String SOR< Matrix, Preconditioner > :: getType() const
+template< typename Matrix >
+String SOR< Matrix > :: getType() const
 {
    return String( "SOR< " ) +
           this->matrix -> getType() + ", " +
           this->preconditioner -> getType() + " >";
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-SOR< Matrix, Preconditioner >::
+SOR< Matrix >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
@@ -47,10 +46,9 @@ configSetup( Config::ConfigDescription& config,
    config.addEntry< double >( prefix + "sor-omega", "Relaxation parameter of the SOR method.", 1.0 );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 bool
-SOR< Matrix, Preconditioner >::
+SOR< Matrix >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -63,20 +61,20 @@ setup( const Config::ParameterContainer& parameters,
    return true;
 }
 
-template< typename Matrix, typename Preconditioner >
-void SOR< Matrix, Preconditioner > :: setOmega( const RealType& omega )
+template< typename Matrix >
+void SOR< Matrix > :: setOmega( const RealType& omega )
 {
    this->omega = omega;
 }
 
-template< typename Matrix, typename Preconditioner >
-const typename SOR< Matrix, Preconditioner > :: RealType& SOR< Matrix, Preconditioner > :: getOmega( ) const
+template< typename Matrix >
+const typename SOR< Matrix > :: RealType& SOR< Matrix > :: getOmega( ) const
 {
    return this->omega;
 }
 
-template< typename Matrix, typename Preconditioner >
-bool SOR< Matrix, Preconditioner > :: solve( ConstVectorViewType b, VectorViewType x )
+template< typename Matrix >
+bool SOR< Matrix > :: solve( ConstVectorViewType b, VectorViewType x )
 {
    const IndexType size = this->matrix->getRows();
 

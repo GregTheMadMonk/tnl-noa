@@ -19,7 +19,6 @@
 #include "LinearSolver.h"
 
 #include <TNL/Matrices/CSR.h>
-#include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
 
 
@@ -40,15 +39,14 @@ struct is_csr_matrix< Matrices::CSR< Real, Device, Index > >
 };
 
 
-template< typename Matrix,
-          typename Preconditioner = Preconditioners::Dummy< Matrix > >
+template< typename Matrix >
 class UmfpackWrapper
-: public LinearSolver< Matrix, Preconditioner >,
+: public LinearSolver< Matrix >,
   // just to ensure the same interface as other linear solvers
   public IterativeSolver< typename Matrix::RealType,
                           typename Matrix::IndexType >
 {
-   using Base = LinearSolver< Matrix, Preconditioner >;
+   using Base = LinearSolver< Matrix >;
 public:
    using RealType = typename Base::RealType;
    using DeviceType = typename Base::DeviceType;
@@ -85,13 +83,13 @@ public:
 };
 
 
-template< typename Preconditioner >
-class UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >
-: public LinearSolver< Matrices::CSR< double, Devices::Host, int >, Preconditioner >,
+template<>
+class UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >
+: public LinearSolver< Matrices::CSR< double, Devices::Host, int > >,
   // just to ensure the same interface as other linear solvers
   public IterativeSolver< double, int >
 {
-   using Base = LinearSolver< Matrices::CSR< double, Devices::Host, int >, Preconditioner >;
+   using Base = LinearSolver< Matrices::CSR< double, Devices::Host, int > >;
 public:
    using RealType = typename Base::RealType;
    using DeviceType = typename Base::DeviceType;

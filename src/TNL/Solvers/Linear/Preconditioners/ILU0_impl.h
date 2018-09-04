@@ -103,10 +103,9 @@ update( const Matrix& matrix )
 }
 
 template< typename Matrix, typename Real, typename Index >
-   template< typename Vector1, typename Vector2 >
 bool
 ILU0_impl< Matrix, Real, Devices::Host, Index >::
-solve( const Vector1& b, Vector2& x ) const
+solve( ConstVectorViewType b, VectorViewType x ) const
 {
    TNL_ASSERT_EQ( b.getSize(), L.getRows(), "wrong size of the right hand side" );
    TNL_ASSERT_EQ( x.getSize(), L.getRows(), "wrong size of the solution vector" );
@@ -263,10 +262,9 @@ update( const Matrix& matrix )
 }
 
 template< typename Matrix >
-   template< typename Vector1, typename Vector2 >
 bool
 ILU0_impl< Matrix, double, Devices::Cuda, int >::
-solve( const Vector1& b, Vector2& x ) const
+solve( ConstVectorViewType b, VectorViewType x ) const
 {
 #ifdef HAVE_CUDA
 #ifdef HAVE_CUSPARSE

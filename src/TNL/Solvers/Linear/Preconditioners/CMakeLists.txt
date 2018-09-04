@@ -1,4 +1,4 @@
-SET( headers Dummy.h
+SET( headers Preconditioner.h
              Diagonal.h
              Diagonal_impl.h
              ILU0.h

@@ -22,30 +22,30 @@ namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Preconditioner >
-UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
+template<>
+UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >::
 UmfpackWrapper()
 {}
 
-template< typename Preconditioner >
+template<>
 void
-UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
+UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
 }
 
-template< typename Preconditioner >
+template<>
 bool
-UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
+UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
     return true;
 }
 
-template< typename Preconditioner >
-bool UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
+template<>
+bool UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >::
 solve( ConstVectorViewType b, VectorViewType x )
 {
     TNL_ASSERT_EQ( this->matrix->getRows(), this->matrix->getColumns(), "matrix must be square" );

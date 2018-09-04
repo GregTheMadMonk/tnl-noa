@@ -20,7 +20,6 @@
 #include <TNL/Solvers/Linear/GMRES.h>
 #include <TNL/Solvers/Linear/TFQMR.h>
 #include <TNL/Solvers/Linear/UmfpackWrapper.h>
-#include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 
 namespace TNL {
 namespace Solvers {   
@@ -91,66 +90,58 @@ template< typename ConfigTag, typename ExplicitSolver > struct ConfigTagExplicit
 class  SemiImplicitSORSolverTag
 {
 public:
-    template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
-    using Template = Linear::SOR< Matrix, Preconditioner >;
+    template< typename Matrix >
+    using Template = Linear::SOR< Matrix >;
 };
 
 class  SemiImplicitCGSolverTag
 {
 public:
-    template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
-    using Template = Linear::CG< Matrix, Preconditioner >;
+    template< typename Matrix >
+    using Template = Linear::CG< Matrix >;
 };
 
 class  SemiImplicitBICGStabSolverTag
 {
 public:
-    template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
-    using Template = Linear::BICGStab< Matrix, Preconditioner >;
+    template< typename Matrix >
+    using Template = Linear::BICGStab< Matrix >;
 };
 
 class  SemiImplicitBICGStabLSolverTag
 {
 public:
-    template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
-    using Template = Linear::BICGStabL< Matrix, Preconditioner >;
+    template< typename Matrix >
+    using Template = Linear::BICGStabL< Matrix >;
 };
 
 class  SemiImplicitCWYGMRESSolverTag
 {
 public:
-    template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
-    using Template = Linear::CWYGMRES< Matrix, Preconditioner >;
+    template< typename Matrix >
+    using Template = Linear::CWYGMRES< Matrix >;
 };
 
 class  SemiImplicitGMRESSolverTag
 {
 public:
-    template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
-    using Template = Linear::GMRES< Matrix, Preconditioner >;
+    template< typename Matrix >
+    using Template = Linear::GMRES< Matrix >;
 };
 
 class  SemiImplicitTFQMRSolverTag
 {
 public:
-    template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
-    using Template = Linear::TFQMR< Matrix, Preconditioner >;
+    template< typename Matrix >
+    using Template = Linear::TFQMR< Matrix >;
 };
 
 #ifdef HAVE_UMFPACK
 class  SemiImplicitUmfpackSolverTag
 {
 public:
-    template< typename Matrix,
-              typename Preconditioner = Linear::Preconditioners::Dummy< Matrix > >
-    using Template = Linear::UmfpackWrapper< Matrix, Preconditioner >;
+    template< typename Matrix >
+    using Template = Linear::UmfpackWrapper< Matrix >;
 };
 #endif
 

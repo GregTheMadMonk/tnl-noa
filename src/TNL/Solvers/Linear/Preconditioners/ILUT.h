@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <type_traits>
+#include "Preconditioner.h"
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/CSR.h>
@@ -41,20 +41,22 @@ public:
 
 template< typename Matrix, typename Real, typename Index >
 class ILUT_impl< Matrix, Real, Devices::Host, Index >
+: public Preconditioner< Matrix >
 {
 public:
    using RealType = Real;
    using DeviceType = Devices::Host;
    using IndexType = Index;
+   using typename Preconditioner< Matrix >::VectorViewType;
+   using typename Preconditioner< Matrix >::ConstVectorViewType;
    using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
 
 // TODO: setup parameters from CLI
 //   ILUT( Index p, Real tau ) : p(p), tau(tau) {}
 
-   void update( const Matrix& matrix );
+   virtual void update( const Matrix& matrix ) override;
 
-   template< typename Vector1, typename Vector2 >
-   bool solve( const Vector1& b, Vector2& x ) const;
+   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
 
 protected:
    Index p = 8;
@@ -67,19 +69,21 @@ protected:
 
 template< typename Matrix, typename Real, typename Index >
 class ILUT_impl< Matrix, Real, Devices::Cuda, Index >
+: public Preconditioner< Matrix >
 {
 public:
    using RealType = Real;
    using DeviceType = Devices::Cuda;
    using IndexType = Index;
+   using typename Preconditioner< Matrix >::VectorViewType;
+   using typename Preconditioner< Matrix >::ConstVectorViewType;
 
-   void update( const Matrix& matrix )
+   virtual void update( const Matrix& matrix ) override
    {
       throw std::runtime_error("Not Iplemented yet for CUDA");
    }
 
-   template< typename Vector1, typename Vector2 >
-   bool solve( const Vector1& b, Vector2& x ) const
+   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override
    {
       throw std::runtime_error("Not Iplemented yet for CUDA");
    }
@@ -87,19 +91,21 @@ public:
 
 template< typename Matrix, typename Real, typename Index >
 class ILUT_impl< Matrix, Real, Devices::MIC, Index >
+: public Preconditioner< Matrix >
 {
 public:
    using RealType = Real;
    using DeviceType = Devices::MIC;
    using IndexType = Index;
+   using typename Preconditioner< Matrix >::VectorViewType;
+   using typename Preconditioner< Matrix >::ConstVectorViewType;
 
-   void update( const Matrix& matrix )
+   virtual void update( const Matrix& matrix ) override
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
    }
 
-   template< typename Vector1, typename Vector2 >
-   bool solve( const Vector1& b, Vector2& x ) const
+   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
    }

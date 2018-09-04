@@ -29,7 +29,6 @@
 #include <TNL/Solvers/Linear/CWYGMRES.h>
 #include <TNL/Solvers/Linear/TFQMR.h>
 #include <TNL/Solvers/Linear/UmfpackWrapper.h>
-#include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
 #include <TNL/Solvers/Linear/Preconditioners/ILU0.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
@@ -345,7 +344,7 @@ class SolverStarterPreconditionerSetter
          const String& preconditioner = parameters.getParameter< String>( "preconditioner" );
 
          if( preconditioner == "none" )
-            return SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Dummy, ConfigTag >::run( problem, parameters );
+            return SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Preconditioner, ConfigTag >::run( problem, parameters );
          if( preconditioner == "diagonal" )
             return SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Diagonal, ConfigTag >::run( problem, parameters );
          if( preconditioner == "ilu0" )

@@ -12,7 +12,6 @@
 
 #include <TNL/Math.h>
 #include <TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
-#include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 
 namespace TNL {
 namespace Solvers {

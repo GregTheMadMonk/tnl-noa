@@ -20,9 +20,8 @@ namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Matrix,
-          typename Preconditioner >
-BICGStabL< Matrix, Preconditioner >::BICGStabL()
+template< typename Matrix >
+BICGStabL< Matrix >::BICGStabL()
 {
    /****
     * Clearing the shared pointer means that there is no
@@ -31,20 +30,18 @@ BICGStabL< Matrix, Preconditioner >::BICGStabL()
    this->preconditioner.clear();
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 String
-BICGStabL< Matrix, Preconditioner >::getType() const
+BICGStabL< Matrix >::getType() const
 {
    return String( "BICGStabL< " ) +
           this->matrix -> getType() + ", " +
           this->preconditioner -> getType() + " >";
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-BICGStabL< Matrix, Preconditioner >::
+BICGStabL< Matrix >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
@@ -53,10 +50,9 @@ configSetup( Config::ConfigDescription& config,
    config.addEntry< bool >( prefix + "bicgstab-exact-residue", "Whether the BiCGstab should compute the exact residue in each step (true) or to use a cheap approximation (false).", false );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 bool
-BICGStabL< Matrix, Preconditioner >::
+BICGStabL< Matrix >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -65,10 +61,9 @@ setup( const Config::ParameterContainer& parameters,
    return IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 bool
-BICGStabL< Matrix, Preconditioner >::solve( ConstVectorViewType b, VectorViewType x )
+BICGStabL< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 {
    this->setSize( this->matrix->getRows() );
 
@@ -282,10 +277,9 @@ BICGStabL< Matrix, Preconditioner >::solve( ConstVectorViewType b, VectorViewTyp
    return this->checkConvergence();
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-BICGStabL< Matrix, Preconditioner >::setSize( IndexType size )
+BICGStabL< Matrix >::setSize( IndexType size )
 {
    this->size = ldSize = size;
    R.setSize( (ell + 1) * ldSize );

@@ -18,9 +18,8 @@ namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Matrix,
-          typename Preconditioner >
-TFQMR< Matrix, Preconditioner > :: TFQMR()
+template< typename Matrix >
+TFQMR< Matrix > :: TFQMR()
 : size( 0 )
 {
    /****
@@ -30,38 +29,34 @@ TFQMR< Matrix, Preconditioner > :: TFQMR()
    this->preconditioner.clear();   
 }
 
-template< typename Matrix,
-          typename Preconditioner >
-String TFQMR< Matrix, Preconditioner > :: getType() const
+template< typename Matrix >
+String TFQMR< Matrix > :: getType() const
 {
    return String( "TFQMR< " ) +
           this->matrix -> getType() + ", " +
           this->preconditioner -> getType() + " >";
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-TFQMR< Matrix, Preconditioner >::
+TFQMR< Matrix >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 bool
-TFQMR< Matrix, Preconditioner >::
+TFQMR< Matrix >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
    return IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
-bool TFQMR< Matrix, Preconditioner >::solve( ConstVectorViewType b, VectorViewType x )
+template< typename Matrix >
+bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 {
    this->setSize( this->matrix->getRows() );
 
@@ -162,9 +157,8 @@ bool TFQMR< Matrix, Preconditioner >::solve( ConstVectorViewType b, VectorViewTy
    return this->checkConvergence();
 }
 
-template< typename Matrix,
-          typename Preconditioner >
-void TFQMR< Matrix, Preconditioner > :: setSize( IndexType size )
+template< typename Matrix >
+void TFQMR< Matrix > :: setSize( IndexType size )
 {
    if( this->size == size )
       return;

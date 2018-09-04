@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Object.h>
+#include <TNL/Containers/VectorView.h>
 #include <TNL/SharedPointer.h>
 
 namespace TNL {
@@ -19,13 +19,19 @@ namespace Linear {
 namespace Preconditioners {
 
 template< typename Matrix >
-class Dummy
+class Preconditioner
 {
 public:
-   void update( const Matrix& matrix ) {}
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using VectorViewType = Containers::VectorView< RealType, DeviceType, IndexType >;
+   using ConstVectorViewType = Containers::VectorView< typename std::add_const< RealType >::type, DeviceType, IndexType >;
 
-   template< typename Vector1, typename Vector2 >
-   bool solve( const Vector1& b, Vector2& x ) const
+   virtual void update( const Matrix& matrix )
+   {}
+
+   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const
    {
       TNL_ASSERT_TRUE( false, "The solve() method of a dummy preconditioner should not be called." );
       return true;
@@ -33,7 +39,7 @@ public:
 
    String getType() const
    {
-      return String( "Dummy" );
+      return String( "Preconditioner" );
    }
 };
 
@@ -49,11 +55,11 @@ public:
 };
 
 template< typename LinearSolver >
-class SolverStarterSolverPreconditionerSetter< LinearSolver, Dummy< typename LinearSolver::MatrixType > >
+class SolverStarterSolverPreconditionerSetter< LinearSolver, Preconditioner< typename LinearSolver::MatrixType > >
 {
 public:
    static void run( LinearSolver& solver,
-                    SharedPointer< Dummy< typename LinearSolver::MatrixType >, typename LinearSolver::DeviceType >& preconditioner )
+                    SharedPointer< Preconditioner< typename LinearSolver::MatrixType >, typename LinearSolver::DeviceType >& preconditioner )
    {
       // do nothing
    }

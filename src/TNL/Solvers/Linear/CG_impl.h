@@ -18,9 +18,8 @@ namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Matrix,
-          typename Preconditioner >
-CG< Matrix, Preconditioner > :: CG()
+template< typename Matrix >
+CG< Matrix > :: CG()
 {
    /****
     * Clearing the shared pointer means that there is no
@@ -29,39 +28,35 @@ CG< Matrix, Preconditioner > :: CG()
    this->preconditioner.clear();
 }
 
-template< typename Matrix,
-           typename Preconditioner >
-String CG< Matrix, Preconditioner > :: getType() const
+template< typename Matrix >
+String CG< Matrix > :: getType() const
 {
    return String( "CG< " ) +
           this->matrix -> getType() + ", " +
           this->preconditioner -> getType() + " >";
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CG< Matrix, Preconditioner >::
+CG< Matrix >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 bool
-CG< Matrix, Preconditioner >::
+CG< Matrix >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
    return IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 bool
-CG< Matrix, Preconditioner >::
+CG< Matrix >::
 solve( ConstVectorViewType b, VectorViewType x )
 {
    this->setSize( this->matrix->getRows() );
@@ -136,9 +131,8 @@ solve( ConstVectorViewType b, VectorViewType x )
    return this->checkConvergence();
 }
 
-template< typename Matrix,
-          typename Preconditioner >
-void CG< Matrix, Preconditioner > :: setSize( IndexType size )
+template< typename Matrix >
+void CG< Matrix > :: setSize( IndexType size )
 {
    r.setSize( size );
    new_r.setSize( size );
