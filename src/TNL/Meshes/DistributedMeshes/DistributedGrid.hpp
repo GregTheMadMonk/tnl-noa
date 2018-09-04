@@ -389,7 +389,7 @@ setupNeighbors()
       if( this->isThereNeighbor( direction ) )
          this->neighbors[ i ] = this->getRankOfProcCoord( coordinates );
       else
-         this->neighbors[ i ] =- 1;
+         this->neighbors[ i ] = -1;
       
       // Handling periodic neighbors
       for( int d = 0; d < Dimension; d++ )
