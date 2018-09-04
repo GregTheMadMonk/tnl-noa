@@ -113,7 +113,6 @@ if( ${CXX_COMPILER_NAME} STREQUAL "mpic++" )
    message( "MPI compiler detected."    )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
    set( CUDA_HOST_COMPILER "mpic++" )
-
 endif()
 
 ####
@@ -150,6 +149,22 @@ if( ${WITH_CUDA} )
                set( CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} )
             endif()
         endif()
+        # An extra CUDA_ARCH_HOST_COMPILER variable for compiling tnl-cuda-arch alone,
+        # because it SHOULD NOT be compiled using mpic++, which would cause weird
+        # RPATH_CHANGE error in cmake.
+        # FIXME: find better solution to switch between MPI-enabled and MPI-disabled binaries in cmake
+        if( NOT $ENV{CUDA_ARCH_HOST_COMPILER} STREQUAL "" )
+           message( "-- Setting CUDA_ARCH_HOST_COMPILER to '$ENV{CUDA_ARCH_HOST_COMPILER}'" )
+           set( CUDA_ARCH_HOST_COMPILER $ENV{CUDA_ARCH_HOST_COMPILER} )
+        else()
+            if( EXISTS "${CUDA_TOOLKIT_ROOT_DIR}/bin/g++" )
+               message( "-- Setting CUDA_ARCH_HOST_COMPILER to '${CUDA_TOOLKIT_ROOT_DIR}/bin/g++'" )
+               set( CUDA_ARCH_HOST_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/g++" )
+            else()
+               message( "-- Setting CUDA_ARCH_HOST_COMPILER to '${CMAKE_CXX_COMPILER}'" )
+               set( CUDA_ARCH_HOST_COMPILER ${CMAKE_CXX_COMPILER} )
+            endif()
+        endif()
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA)
         # disable false compiler warnings
         #   reference for the -Xcudafe flag: http://stackoverflow.com/questions/14831051/how-to-disable-compiler-warnings-with-nvcc/17095910#17095910
@@ -173,7 +188,7 @@ if( ${WITH_CUDA} )
                 set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/src/Tools/tnl-cuda-arch.cu)
                 message( "Compiling tnl-cuda-arch ..." )
                 file( MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
-                execute_process( COMMAND nvcc --compiler-bindir ${CUDA_HOST_COMPILER} --std=c++11 ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
+                execute_process( COMMAND nvcc --compiler-bindir ${CUDA_ARCH_HOST_COMPILER} --std=c++11 ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
                                  RESULT_VARIABLE CUDA_ARCH_RESULT
                                  OUTPUT_VARIABLE CUDA_ARCH_OUTPUT
                                  ERROR_VARIABLE CUDA_ARCH_OUTPUT )
