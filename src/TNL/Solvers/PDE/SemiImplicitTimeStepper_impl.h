@@ -12,47 +12,50 @@
 
 #include <TNL/Math.h>
 #include <TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
+#include <TNL/Solvers/LinearSolverTypeResolver.h>
 
 namespace TNL {
 namespace Solvers {
-namespace PDE {   
+namespace PDE {
 
-template< typename Problem,
-          typename LinearSystemSolver >
-SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
-SemiImplicitTimeStepper()
-: problem( 0 ),
-  linearSystemSolver( 0 ),
-  timeStep( 0 ),
-  allIterations( 0 )
-{
-};
-
-template< typename Problem,
-          typename LinearSystemSolver >
+template< typename Problem >
 void
-SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+SemiImplicitTimeStepper< Problem >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    config.addEntry< bool >( "verbose", "Verbose mode.", true );
 }
 
-template< typename Problem,
-          typename LinearSystemSolver >
+template< typename Problem >
 bool
-SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+SemiImplicitTimeStepper< Problem >::
 setup( const Config::ParameterContainer& parameters,
-      const String& prefix )
+       const String& prefix )
 {
    this->verbose = parameters.getParameter< bool >( "verbose" );
+
+   // set up the linear solver
+   linearSystemSolver = getLinearSolver< MatrixType >( parameters );
+   if( ! linearSystemSolver )
+      return false;
+   if( ! linearSystemSolver->setup( parameters ) )
+      return false;
+
+   // set up the preconditioner
+   preconditioner = getPreconditioner< MatrixType >( parameters );
+   if( preconditioner ) {
+      linearSystemSolver->setPreconditioner( preconditioner );
+      if( ! preconditioner->setup( parameters ) )
+         return false;
+   }
+
    return true;
 }
 
-template< typename Problem,
-          typename LinearSystemSolver >
+template< typename Problem >
 bool
-SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+SemiImplicitTimeStepper< Problem >::
 init( const MeshPointer& mesh )
 {
   std::cout << "Setting up the linear system...";
@@ -81,37 +84,25 @@ init( const MeshPointer& mesh )
    return true;
 }
 
-template< typename Problem,
-          typename LinearSystemSolver >
+template< typename Problem >
 void
-SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+SemiImplicitTimeStepper< Problem >::
 setProblem( ProblemType& problem )
 {
    this->problem = &problem;
 };
 
-template< typename Problem,
-          typename LinearSystemSolver >
+template< typename Problem >
 Problem*
-SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+SemiImplicitTimeStepper< Problem >::
 getProblem() const
 {
     return this->problem;
 };
 
-template< typename Problem,
-          typename LinearSystemSolver >
+template< typename Problem >
 void
-SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
-setSolver( LinearSystemSolver& linearSystemSolver )
-{
-   this->linearSystemSolver = &linearSystemSolver;
-}
-
-template< typename Problem,
-          typename LinearSystemSolver >
-void
-SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+SemiImplicitTimeStepper< Problem >::
 setSolverMonitor( SolverMonitorType& solverMonitor )
 {
    this->solverMonitor = &solverMonitor;
@@ -119,19 +110,9 @@ setSolverMonitor( SolverMonitorType& solverMonitor )
       this->linearSystemSolver->setSolverMonitor( solverMonitor );
 }
 
-template< typename Problem,
-          typename LinearSystemSolver >
-LinearSystemSolver*
-SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
-getSolver() const
-{
-   return this->linearSystemSolver;
-}
-
-template< typename Problem,
-          typename LinearSystemSolver >
+template< typename Problem >
 bool
-SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+SemiImplicitTimeStepper< Problem >::
 setTimeStep( const RealType& timeStep )
 {
    if( timeStep <= 0.0 )
@@ -143,20 +124,19 @@ setTimeStep( const RealType& timeStep )
    return true;
 };
 
-template< typename Problem,
-          typename LinearSystemSolver >
+template< typename Problem >
 bool
-SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+SemiImplicitTimeStepper< Problem >::
 solve( const RealType& time,
        const RealType& stopTime,
        DofVectorPointer& dofVector )
 {
    TNL_ASSERT_TRUE( this->problem, "problem was not set" );
-   RealType t = time;
+
+   // set the matrix for the linear solver
    this->linearSystemSolver->setMatrix( this->matrix );
-   PreconditionerPointer preconditioner;
-   Linear::Preconditioners::SolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerType >
-       ::run( *(this->linearSystemSolver), preconditioner );
+
+   RealType t = time;
 
    // ignore very small steps at the end, most likely caused by truncation errors
    while( stopTime - t > this->timeStep * 1e-6 )
@@ -194,9 +174,12 @@ solve( const RealType& time,
       if( this->solverMonitor )
          this->solverMonitor->setStage( "Solving the linear system" );
 
-      this->preconditionerUpdateTimer.start();
-      preconditioner->update( *this->matrix );
-      this->preconditionerUpdateTimer.stop();
+      if( this->preconditioner )
+      {
+         this->preconditionerUpdateTimer.start();
+         preconditioner->update( *this->matrix );
+         this->preconditionerUpdateTimer.stop();
+      }
 
       this->linearSystemSolverTimer.start();
       if( ! this->linearSystemSolver->solve( *this->rightHandSidePointer, *dofVector ) )
@@ -228,10 +211,9 @@ solve( const RealType& time,
    return true;
 }
 
-template< typename Problem,
-          typename LinearSystemSolver >
+template< typename Problem >
 bool
-SemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+SemiImplicitTimeStepper< Problem >::
 writeEpilog( Logger& logger ) const
 {
    logger.writeParameter< long long int >( "Iterations count:", this->allIterations );

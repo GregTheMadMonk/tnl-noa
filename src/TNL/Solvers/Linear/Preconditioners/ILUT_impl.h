@@ -23,6 +23,17 @@ namespace Linear {
 namespace Preconditioners {
 
 template< typename Matrix, typename Real, typename Index >
+bool
+ILUT_impl< Matrix, Real, Devices::Host, Index >::
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
+{
+   p = parameters.getParameter< int >( "ilut-p" );
+   tau = parameters.getParameter< double >( "ilut-threshold" );
+   return true;
+}
+
+template< typename Matrix, typename Real, typename Index >
 void
 ILUT_impl< Matrix, Real, Devices::Host, Index >::
 update( const Matrix& matrix )

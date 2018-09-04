@@ -40,7 +40,7 @@ public:
                             const String& prefix = "" );
 
    bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" );
+               const String& prefix = "" ) override;
 
    void setOmega( const RealType& omega );
 

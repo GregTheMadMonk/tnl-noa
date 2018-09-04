@@ -28,23 +28,6 @@ UmfpackWrapper()
 {}
 
 template<>
-void
-UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >::
-configSetup( Config::ConfigDescription& config,
-             const String& prefix )
-{
-}
-
-template<>
-bool
-UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >::
-setup( const Config::ParameterContainer& parameters,
-       const String& prefix )
-{
-    return true;
-}
-
-template<>
 bool UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >::
 solve( ConstVectorViewType b, VectorViewType x )
 {

@@ -54,6 +54,9 @@ public:
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
+   // to avoid ambiguity
+   using Base::configSetup;
+
    UmfpackWrapper()
    {
       if( ! is_csr_matrix< Matrix >::value )
@@ -64,16 +67,6 @@ public:
          std::cerr << "The UmfpackWrapper solver is available only for double precision." << std::endl;
       if( ! std::is_same< IndexType, int >::value )
          std::cerr << "The UmfpackWrapper solver is available only for 'int' index type." << std::endl;
-   }
-
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" )
-   {}
-
-   bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" )
-   {
-       return false;
    }
 
    bool solve( ConstVectorViewType b, VectorViewType x ) override
@@ -100,12 +93,6 @@ public:
    UmfpackWrapper();
 
    String getType() const;
-
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" );
-
-   bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" );
 
    bool solve( ConstVectorViewType b, VectorViewType x ) override;
 };

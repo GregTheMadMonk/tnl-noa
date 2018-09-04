@@ -37,11 +37,11 @@ public:
 
    String getType() const;
 
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" );
+   // to avoid ambiguity
+   using Base::configSetup;
 
    bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" );
+               const String& prefix = "" ) override;
 
    bool solve( ConstVectorViewType b, VectorViewType x ) override;
 

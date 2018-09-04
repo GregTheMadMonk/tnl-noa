@@ -37,15 +37,6 @@ String CG< Matrix > :: getType() const
 }
 
 template< typename Matrix >
-void
-CG< Matrix >::
-configSetup( Config::ConfigDescription& config,
-             const String& prefix )
-{
-   //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
-}
-
-template< typename Matrix >
 bool
 CG< Matrix >::
 setup( const Config::ParameterContainer& parameters,

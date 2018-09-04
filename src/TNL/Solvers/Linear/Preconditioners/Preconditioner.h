@@ -12,6 +12,7 @@
 
 #include <TNL/Containers/VectorView.h>
 #include <TNL/SharedPointer.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
 namespace Solvers {
@@ -28,6 +29,16 @@ public:
    using VectorViewType = Containers::VectorView< RealType, DeviceType, IndexType >;
    using ConstVectorViewType = Containers::VectorView< typename std::add_const< RealType >::type, DeviceType, IndexType >;
 
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" )
+   {}
+
+   virtual bool setup( const Config::ParameterContainer& parameters,
+                       const String& prefix = "" )
+   {
+      return true;
+   }
+
    virtual void update( const Matrix& matrix )
    {}
 
@@ -40,28 +51,6 @@ public:
    String getType() const
    {
       return String( "Preconditioner" );
-   }
-};
-
-template< typename LinearSolver, typename Preconditioner >
-class SolverStarterSolverPreconditionerSetter
-{
-public:
-   static void run( LinearSolver& solver,
-                    SharedPointer< Preconditioner, typename LinearSolver::DeviceType >& preconditioner )
-   {
-      solver.setPreconditioner( preconditioner );
-   }
-};
-
-template< typename LinearSolver >
-class SolverStarterSolverPreconditionerSetter< LinearSolver, Preconditioner< typename LinearSolver::MatrixType > >
-{
-public:
-   static void run( LinearSolver& solver,
-                    SharedPointer< Preconditioner< typename LinearSolver::MatrixType >, typename LinearSolver::DeviceType >& preconditioner )
-   {
-      // do nothing
    }
 };
 

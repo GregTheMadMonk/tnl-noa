@@ -46,7 +46,7 @@ public:
    }
 
    bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" )
+               const String& prefix = "" ) override
    {
       IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
       this->setOmega( parameters.getParameter< double >( prefix + "jacobi-omega" ) );

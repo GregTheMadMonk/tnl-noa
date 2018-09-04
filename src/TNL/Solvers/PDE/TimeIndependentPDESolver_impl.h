@@ -24,27 +24,24 @@ namespace Solvers {
 namespace PDE {   
 
 
-template< typename Problem,
-          typename DiscreteSolver >
-TimeIndependentPDESolver< Problem, DiscreteSolver >::
+template< typename Problem >
+TimeIndependentPDESolver< Problem >::
 TimeIndependentPDESolver()
 : problem( 0 )
 {
 }
 
-template< typename Problem,
-          typename DiscreteSolver >
+template< typename Problem >
 void
-TimeIndependentPDESolver< Problem, DiscreteSolver >::
+TimeIndependentPDESolver< Problem >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
 }
 
-template< typename Problem,
-          typename DiscreteSolver >
+template< typename Problem >
 bool
-TimeIndependentPDESolver< Problem, DiscreteSolver >::
+TimeIndependentPDESolver< Problem >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -102,10 +99,9 @@ setup( const Config::ParameterContainer& parameters,
    return true;
 }
 
-template< typename Problem,
-          typename DiscreteSolver >
+template< typename Problem >
 bool
-TimeIndependentPDESolver< Problem, DiscreteSolver >::
+TimeIndependentPDESolver< Problem >::
 writeProlog( Logger& logger,
              const Config::ParameterContainer& parameters )
 {
@@ -136,19 +132,17 @@ writeProlog( Logger& logger,
    return true;
 }
 
-template< typename Problem,
-          typename DiscreteSolver >
+template< typename Problem >
 void
-TimeIndependentPDESolver< Problem, DiscreteSolver >::
+TimeIndependentPDESolver< Problem >::
 setProblem( ProblemType& problem )
 {
    this->problem = &problem;
 }
 
-template< typename Problem,
-          typename DiscreteSolver >
+template< typename Problem >
 bool
-TimeIndependentPDESolver< Problem, DiscreteSolver >::
+TimeIndependentPDESolver< Problem >::
 solve()
 {
    TNL_ASSERT_TRUE( problem, "No problem was set in tnlPDESolver." );
@@ -164,10 +158,9 @@ solve()
    return true;
 }
 
-template< typename Problem,
-          typename DiscreteSolver >
+template< typename Problem >
 bool
-TimeIndependentPDESolver< Problem, DiscreteSolver >::
+TimeIndependentPDESolver< Problem >::
 writeEpilog( Logger& logger ) const
 {
    return this->problem->writeEpilog( logger );

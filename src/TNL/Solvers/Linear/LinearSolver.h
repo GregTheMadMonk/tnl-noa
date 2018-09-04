@@ -34,11 +34,15 @@ public:
    using PreconditionerType = Preconditioners::Preconditioner< MatrixType >;
    using PreconditionerPointer = SharedPointer< typename std::add_const< PreconditionerType >::type, DeviceType >;
 
-   LinearSolver() = default;
-
-   LinearSolver( const MatrixPointer& matrix, const PreconditionerPointer& preconditioner )
-      : matrix(matrix), preconditioner(preconditioner)
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" )
    {}
+
+   virtual bool setup( const Config::ParameterContainer& parameters,
+                       const String& prefix = "" )
+   {
+      return true;
+   }
 
    void setMatrix( const MatrixPointer& matrix )
    {

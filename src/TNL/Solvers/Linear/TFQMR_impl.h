@@ -38,15 +38,6 @@ String TFQMR< Matrix > :: getType() const
 }
 
 template< typename Matrix >
-void
-TFQMR< Matrix >::
-configSetup( Config::ConfigDescription& config,
-             const String& prefix )
-{
-   //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
-}
-
-template< typename Matrix >
 bool
 TFQMR< Matrix >::
 setup( const Config::ParameterContainer& parameters,

@@ -41,7 +41,7 @@ public:
                             const String& prefix = "" );
 
    bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" );
+               const String& prefix = "" ) override;
 
    bool solve( ConstVectorViewType b, VectorViewType x ) override;
 

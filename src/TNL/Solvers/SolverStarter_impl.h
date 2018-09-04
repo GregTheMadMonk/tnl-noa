@@ -21,19 +21,8 @@
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/ODE/Merson.h>
 #include <TNL/Solvers/ODE/Euler.h>
-#include <TNL/Solvers/Linear/SOR.h>
-#include <TNL/Solvers/Linear/CG.h>
-#include <TNL/Solvers/Linear/BICGStab.h>
-#include <TNL/Solvers/Linear/BICGStabL.h>
-#include <TNL/Solvers/Linear/GMRES.h>
-#include <TNL/Solvers/Linear/CWYGMRES.h>
-#include <TNL/Solvers/Linear/TFQMR.h>
-#include <TNL/Solvers/Linear/UmfpackWrapper.h>
-#include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
-#include <TNL/Solvers/Linear/Preconditioners/ILU0.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
-#include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 #include <TNL/Solvers/PDE/PDESolverTypeResolver.h>
 
 namespace TNL {
@@ -62,18 +51,6 @@ template< typename Problem,
           bool enabled = ConfigTagExplicitSolver< ConfigTag, ExplicitSolver >::enabled >
 class SolverStarterExplicitSolverSetter{};
 
-template< typename Problem,
-          typename SemiImplicitSolver,
-          template<typename> class Preconditioner,
-          typename ConfigTag,
-          bool enabled = ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitSolver >::enabled >
-class SolverStarterLinearSolverSetter{};
-
-template< typename Problem,
-          typename SemiImplicitSolverTag,
-          typename ConfigTag >
-class SolverStarterPreconditionerSetter;
-
 
 template< typename ConfigTag >
 SolverStarter< ConfigTag > :: SolverStarter()
@@ -95,7 +72,6 @@ bool SolverStarter< ConfigTag > :: run( const Config::ParameterContainer& parame
     )
       return false;
    Problem problem;
-   //return UserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
    return TimeDependencyResolver< Problem, ConfigTag >::run( problem, parameters );
 }
 
@@ -140,8 +116,7 @@ class UserDefinedTimeDiscretisationSetter
             return false;
          }
          SolverStarter< ConfigTag > solverStarter;
-         // TODO: Solve the set-up of the DiscreteSOlver type in some better way
-         return solverStarter.template runPDESolver< Problem, TimeStepper, typename Problem::DiscreteSolver >( problem, parameters );
+         return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters );
       }
 };
 
@@ -174,7 +149,7 @@ class UserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
             {
                std::cerr << "TNL currently does not support implicit solvers with MPI." << std::endl;
                return false;
-            }            
+            }
             return SolverStarterTimeDiscretisationSetter< Problem, ImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
          }
          std::cerr << "Uknown time discretisation: " << timeDiscretisation << "." << std::endl;
@@ -187,9 +162,9 @@ class UserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
  */
 
 template< typename Problem,
-          typename TimeDiscretisation,
+          typename TimeDiscretisationTag,
           typename ConfigTag >
-class SolverStarterTimeDiscretisationSetter< Problem, TimeDiscretisation, ConfigTag, false >
+class SolverStarterTimeDiscretisationSetter< Problem, TimeDiscretisationTag, ConfigTag, false >
 {
    public:
       static bool run( Problem& problem,
@@ -231,53 +206,9 @@ class SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisa
       static bool run( Problem& problem,
                        const Config::ParameterContainer& parameters )
       {
-         const String& discreteSolver = parameters. getParameter< String>( "discrete-solver" );
-#ifndef HAVE_UMFPACK
-         if( discreteSolver != "sor" &&
-             discreteSolver != "cg" &&
-             discreteSolver != "bicgstab" &&
-             discreteSolver != "bicgstabl" &&
-             discreteSolver != "gmres" &&
-             discreteSolver != "cwygmres" &&
-             discreteSolver != "tfqmr" )
-         {
-            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, bicgstabl, gmres, cwygmres or tfqmr." << std::endl;
-            return false;
-         }
-#else
-         if( discreteSolver != "sor" &&
-             discreteSolver != "cg" &&
-             discreteSolver != "bicgstab" &&
-             discreteSolver != "bicgstabl" &&
-             discreteSolver != "gmres" &&
-             discreteSolver != "cwygmres" &&
-             discreteSolver != "tfqmr" &&
-             discreteSolver != "umfpack" )
-         {
-            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, bicgstabl, gmres, cwygmres, tfqmr or umfpack." << std::endl;
-            return false;
-         }
-#endif
-
-         if( discreteSolver == "sor" )
-            return SolverStarterPreconditionerSetter< Problem, SemiImplicitSORSolverTag, ConfigTag >::run( problem, parameters );
-         if( discreteSolver == "cg" )
-            return SolverStarterPreconditionerSetter< Problem, SemiImplicitCGSolverTag, ConfigTag >::run( problem, parameters );
-         if( discreteSolver == "bicgstab" )
-            return SolverStarterPreconditionerSetter< Problem, SemiImplicitBICGStabSolverTag, ConfigTag >::run( problem, parameters );
-         if( discreteSolver == "bicgstabl" )
-            return SolverStarterPreconditionerSetter< Problem, SemiImplicitBICGStabLSolverTag, ConfigTag >::run( problem, parameters );
-         if( discreteSolver == "gmres" )
-            return SolverStarterPreconditionerSetter< Problem, SemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
-         if( discreteSolver == "cwygmres" )
-            return SolverStarterPreconditionerSetter< Problem, SemiImplicitCWYGMRESSolverTag, ConfigTag >::run( problem, parameters );
-         if( discreteSolver == "tfqmr" )
-            return SolverStarterPreconditionerSetter< Problem, SemiImplicitTFQMRSolverTag, ConfigTag >::run( problem, parameters );
-#ifdef HAVE_UMFPACK
-         if( discreteSolver == "umfpack" )
-            return SolverStarterPreconditionerSetter< Problem, SemiImplicitUmfpackSolverTag, ConfigTag >::run( problem, parameters );
-#endif
-         return false;
+         typedef PDE::SemiImplicitTimeStepper< Problem > TimeStepper;
+         SolverStarter< ConfigTag > solverStarter;
+         return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters );
       }
 };
 
@@ -322,81 +253,14 @@ class SolverStarterExplicitSolverSetter< Problem, ExplicitSolverTag, ConfigTag, 
                        const Config::ParameterContainer& parameters )
       {
          typedef PDE::ExplicitTimeStepper< Problem, ExplicitSolverTag::template Template > TimeStepper;
-         typedef typename ExplicitSolverTag::template Template< TimeStepper > ExplicitSolver;
          SolverStarter< ConfigTag > solverStarter;
-         return solverStarter.template runPDESolver< Problem, TimeStepper, ExplicitSolver >( problem, parameters );
+         return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters );
       }
 };
-
-/****
- * Setting the semi-implicit solver
- */
-
-template< typename Problem,
-          typename SemiImplicitSolverTag,
-          typename ConfigTag >
-class SolverStarterPreconditionerSetter
-{
-   public:
-      static bool run( Problem& problem,
-                       const Config::ParameterContainer& parameters )
-      {
-         const String& preconditioner = parameters.getParameter< String>( "preconditioner" );
-
-         if( preconditioner == "none" )
-            return SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Preconditioner, ConfigTag >::run( problem, parameters );
-         if( preconditioner == "diagonal" )
-            return SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Diagonal, ConfigTag >::run( problem, parameters );
-         if( preconditioner == "ilu0" )
-            return SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::ILU0, ConfigTag >::run( problem, parameters );
-
-         std::cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal, ilu0." << std::endl;
-         return false;
-      }
-};
-
-template< typename Problem,
-          typename SemiImplicitSolverTag,
-          template<typename> class Preconditioner,
-          typename ConfigTag >
-class SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, false >
-{
-   public:
-      static bool run( Problem& problem,
-                       const Config::ParameterContainer& parameters )
-      {
-         std::cerr << "The semi-implicit solver " << parameters.getParameter< String >( "discrete-solver" ) << " is not supported." << std::endl;
-         return false;
-      }
-};
-
-template< typename Problem,
-          typename SemiImplicitSolverTag,
-          template<typename> class Preconditioner,
-          typename ConfigTag >
-class SolverStarterLinearSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, true >
-{
-   public:
-      static bool run( Problem& problem,
-                       const Config::ParameterContainer& parameters )
-      {
-         typedef typename Problem::MatrixType MatrixType;
-         typedef typename MatrixType::RealType RealType;
-         typedef typename MatrixType::DeviceType DeviceType;
-         typedef typename MatrixType::IndexType IndexType;
-         typedef typename SemiImplicitSolverTag::template Template< MatrixType, Preconditioner< MatrixType > > LinearSystemSolver;
-         typedef PDE::SemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
-         typedef typename TimeStepper::LinearSystemSolverType LinearSystemSolverType;
-         SolverStarter< ConfigTag > solverStarter;
-         return solverStarter.template runPDESolver< Problem, TimeStepper, LinearSystemSolverType >( problem, parameters );
-      }
-};
-
 
 template< typename ConfigTag >
    template< typename Problem,
-             typename TimeStepper,
-             typename DiscreteSolver >
+             typename TimeStepper >
 bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
                                                  const Config::ParameterContainer& parameters )
 {
@@ -420,8 +284,7 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Set-up the PDE solver
     */
-   //PDE::TimeDependentPDESolver< Problem, TimeStepper > solver;
-   typename PDE::PDESolverTypeResolver< Problem, DiscreteSolver, TimeStepper >::SolverType solver;
+   typename PDE::PDESolverTypeResolver< Problem, TimeStepper >::SolverType solver;
    solver.setComputeTimer( this->computeTimer );
    solver.setIoTimer( this->ioTimer );
    solver.setTotalTimer( this->totalTimer );
@@ -438,7 +301,6 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    if( catch_exceptions ) {
       try {
          solver.setProblem( problem );
-         //solver.setTimeStepper( timeStepper ); // TODO: BETTER FIX: This does not make sense for time independent problem
          if( ! solver.setup( parameters ) )
             return false;
       }

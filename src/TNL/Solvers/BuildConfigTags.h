@@ -12,17 +12,9 @@
 
 #include <TNL/Solvers/ODE/Merson.h>
 #include <TNL/Solvers/ODE/Euler.h>
-#include <TNL/Solvers/Linear/SOR.h>
-#include <TNL/Solvers/Linear/CG.h>
-#include <TNL/Solvers/Linear/BICGStab.h>
-#include <TNL/Solvers/Linear/BICGStabL.h>
-#include <TNL/Solvers/Linear/CWYGMRES.h>
-#include <TNL/Solvers/Linear/GMRES.h>
-#include <TNL/Solvers/Linear/TFQMR.h>
-#include <TNL/Solvers/Linear/UmfpackWrapper.h>
 
 namespace TNL {
-namespace Solvers {   
+namespace Solvers {
 
 class DefaultBuildConfigTag {};
 
@@ -83,69 +75,6 @@ public:
 };
 
 template< typename ConfigTag, typename ExplicitSolver > struct ConfigTagExplicitSolver{ enum { enabled = true }; };
-
-/****
- * All semi-implicit solvers are enabled by default
- */
-class  SemiImplicitSORSolverTag
-{
-public:
-    template< typename Matrix >
-    using Template = Linear::SOR< Matrix >;
-};
-
-class  SemiImplicitCGSolverTag
-{
-public:
-    template< typename Matrix >
-    using Template = Linear::CG< Matrix >;
-};
-
-class  SemiImplicitBICGStabSolverTag
-{
-public:
-    template< typename Matrix >
-    using Template = Linear::BICGStab< Matrix >;
-};
-
-class  SemiImplicitBICGStabLSolverTag
-{
-public:
-    template< typename Matrix >
-    using Template = Linear::BICGStabL< Matrix >;
-};
-
-class  SemiImplicitCWYGMRESSolverTag
-{
-public:
-    template< typename Matrix >
-    using Template = Linear::CWYGMRES< Matrix >;
-};
-
-class  SemiImplicitGMRESSolverTag
-{
-public:
-    template< typename Matrix >
-    using Template = Linear::GMRES< Matrix >;
-};
-
-class  SemiImplicitTFQMRSolverTag
-{
-public:
-    template< typename Matrix >
-    using Template = Linear::TFQMR< Matrix >;
-};
-
-#ifdef HAVE_UMFPACK
-class  SemiImplicitUmfpackSolverTag
-{
-public:
-    template< typename Matrix >
-    using Template = Linear::UmfpackWrapper< Matrix >;
-};
-#endif
-
-template< typename ConfigTag, typename SemiImplicitSolver > struct ConfigTagSemiImplicitSolver{ enum { enabled = true }; };
 
 } // namespace Solvers
 } // namespace TNL

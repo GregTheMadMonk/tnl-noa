@@ -37,6 +37,13 @@ public:
    {
       return String( "ILUT" );
    }
+
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" )
+   {
+      config.addEntry< int >( prefix + "ilut-p", "Number of additional non-zero entries to allocate on each row of the factors L and U.", 0 );
+      config.addEntry< double >( prefix + "ilut-threshold", "Threshold for droppping small entries.", 1e-4 );
+   }
 };
 
 template< typename Matrix, typename Real, typename Index >
@@ -51,15 +58,15 @@ public:
    using typename Preconditioner< Matrix >::ConstVectorViewType;
    using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
 
-// TODO: setup parameters from CLI
-//   ILUT( Index p, Real tau ) : p(p), tau(tau) {}
+   bool setup( const Config::ParameterContainer& parameters,
+               const String& prefix = "" ) override;
 
    virtual void update( const Matrix& matrix ) override;
 
    virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
 
 protected:
-   Index p = 8;
+   Index p = 0;
    Real tau = 1e-4;
 
    // The factors L and U are stored separately and the rows of U are reversed.
