@@ -13,7 +13,6 @@
 #include "LinearSolver.h"
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Solvers/IterativeSolver.h>
 
 namespace TNL {
 namespace Solvers {
@@ -21,9 +20,7 @@ namespace Linear {
 
 template< typename Matrix >
 class GMRES
-: public LinearSolver< Matrix >,
-  public IterativeSolver< typename Matrix::RealType,
-                          typename Matrix::IndexType >
+: public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
 public:

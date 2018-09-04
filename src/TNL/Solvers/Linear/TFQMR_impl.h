@@ -27,15 +27,6 @@ String TFQMR< Matrix > :: getType() const
 }
 
 template< typename Matrix >
-bool
-TFQMR< Matrix >::
-setup( const Config::ParameterContainer& parameters,
-       const String& prefix )
-{
-   return IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
-}
-
-template< typename Matrix >
 bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 {
    this->setSize( this->matrix->getRows() );

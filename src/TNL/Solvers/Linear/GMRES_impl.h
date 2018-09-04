@@ -34,7 +34,6 @@ GMRES< Matrix >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
-   //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
    config.addEntry< int >( prefix + "gmres-restarting-min", "Minimal number of iterations after which the GMRES restarts.", 10 );
    config.addEntry< int >( prefix + "gmres-restarting-max", "Maximal number of iterations after which the GMRES restarts.", 10 );
    config.addEntry< int >( prefix + "gmres-restarting-step-min", "Minimal adjusting step for the adaptivity of the GMRES restarting parameter.", 3 );
@@ -47,12 +46,11 @@ GMRES< Matrix >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
    restarting_min = parameters.getParameter< int >( "gmres-restarting-min" );
    this->setRestarting( parameters.getParameter< int >( "gmres-restarting-max" ) );
    restarting_step_min = parameters.getParameter< int >( "gmres-restarting-step-min" );
    restarting_step_max = parameters.getParameter< int >( "gmres-restarting-step-max" );
-   return true;
+   return LinearSolver< Matrix >::setup( parameters, prefix );
 }
 
 template< typename Matrix >

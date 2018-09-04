@@ -32,7 +32,6 @@ BICGStab< Matrix >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
-   //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
    config.addEntry< bool >( prefix + "bicgstab-exact-residue", "Whether the BiCGstab should compute the exact residue in each step (true) or to use a cheap approximation (false).", false );
 }
 
@@ -43,7 +42,7 @@ setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
    exact_residue = parameters.getParameter< bool >( "bicgstab-exact-residue" );
-   return IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
+   return LinearSolver< Matrix >::setup( parameters, prefix );
 }
 
 template< typename Matrix >

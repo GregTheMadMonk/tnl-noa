@@ -31,7 +31,6 @@ SOR< Matrix >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
-   //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "sor-omega", "Relaxation parameter of the SOR method.", 1.0 );
 }
 
@@ -41,13 +40,12 @@ SOR< Matrix >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
    this->setOmega( parameters.getParameter< double >( prefix + "sor-omega" ) );
    if( this->omega <= 0.0 || this->omega > 2.0 )
    {
       std::cerr << "Warning: The SOR method parameter omega is out of interval (0,2). The value is " << this->omega << " the method will not converge." << std::endl;
    }
-   return true;
+   return LinearSolver< Matrix >::setup( parameters, prefix );
 }
 
 template< typename Matrix >

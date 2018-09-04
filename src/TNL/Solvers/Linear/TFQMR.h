@@ -13,7 +13,6 @@
 #include "LinearSolver.h"
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Solvers/IterativeSolver.h>
 
 namespace TNL {
 namespace Solvers {
@@ -21,9 +20,7 @@ namespace Linear {
 
 template< typename Matrix >
 class TFQMR
-: public LinearSolver< Matrix >,
-  public IterativeSolver< typename Matrix::RealType,
-                          typename Matrix::IndexType >
+: public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
 public:
@@ -34,12 +31,6 @@ public:
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
    String getType() const;
-
-   // to avoid ambiguity
-   using Base::configSetup;
-
-   bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" ) override;
 
    bool solve( ConstVectorViewType b, VectorViewType x ) override;
 

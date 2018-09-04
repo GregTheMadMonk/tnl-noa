@@ -10,7 +10,6 @@
 
 #include "LinearSolver.h"
 
-#include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
 
@@ -20,9 +19,7 @@ namespace Linear {
 
 template< typename Matrix >
 class Jacobi
-: public LinearSolver< Matrix >,
-  public IterativeSolver< typename Matrix::RealType,
-                          typename Matrix::IndexType >
+: public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
 public:
@@ -46,13 +43,12 @@ public:
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" ) override
    {
-      IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
       this->setOmega( parameters.getParameter< double >( prefix + "jacobi-omega" ) );
       if( this->omega <= 0.0 || this->omega > 2.0 )
       {
          std::cerr << "Warning: The Jacobi method parameter omega is out of interval (0,2). The value is " << this->omega << " the method will not converge." << std::endl;
       }
-      return true;
+      return LinearSolver< Matrix >::setup( parameters, prefix );
    }
 
    void setOmega( RealType omega )

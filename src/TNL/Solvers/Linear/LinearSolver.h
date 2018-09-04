@@ -14,6 +14,7 @@
 
 #include <memory>  // std::shared_ptr
 
+#include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/Preconditioners/Preconditioner.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/SharedPointer.h>
@@ -24,6 +25,7 @@ namespace Linear {
 
 template< typename Matrix >
 class LinearSolver
+: public IterativeSolver< typename Matrix::RealType, typename Matrix::IndexType >
 {
 public:
    using RealType = typename Matrix::RealType;
@@ -43,7 +45,7 @@ public:
    virtual bool setup( const Config::ParameterContainer& parameters,
                        const String& prefix = "" )
    {
-      return true;
+      return IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
    }
 
    void setMatrix( const MatrixPointer& matrix )

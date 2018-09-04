@@ -19,7 +19,6 @@
 #include "LinearSolver.h"
 
 #include <TNL/Matrices/CSR.h>
-#include <TNL/Solvers/IterativeSolver.h>
 
 
 namespace TNL {
@@ -41,10 +40,7 @@ struct is_csr_matrix< Matrices::CSR< Real, Device, Index > >
 
 template< typename Matrix >
 class UmfpackWrapper
-: public LinearSolver< Matrix >,
-  // just to ensure the same interface as other linear solvers
-  public IterativeSolver< typename Matrix::RealType,
-                          typename Matrix::IndexType >
+: public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
 public:
@@ -53,9 +49,6 @@ public:
    using IndexType = typename Base::IndexType;
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
-
-   // to avoid ambiguity
-   using Base::configSetup;
 
    UmfpackWrapper()
    {
@@ -78,9 +71,7 @@ public:
 
 template<>
 class UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >
-: public LinearSolver< Matrices::CSR< double, Devices::Host, int > >,
-  // just to ensure the same interface as other linear solvers
-  public IterativeSolver< double, int >
+: public LinearSolver< Matrices::CSR< double, Devices::Host, int > >
 {
    using Base = LinearSolver< Matrices::CSR< double, Devices::Host, int > >;
 public:
