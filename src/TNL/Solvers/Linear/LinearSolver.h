@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <type_traits>  // std::add_const
 #include <memory>  // std::shared_ptr
 
 #include <TNL/Solvers/IterativeSolver.h>

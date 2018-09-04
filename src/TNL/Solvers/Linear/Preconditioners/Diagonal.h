@@ -31,9 +31,10 @@ public:
    using IndexType = typename Matrix::IndexType;
    using typename Preconditioner< Matrix >::VectorViewType;
    using typename Preconditioner< Matrix >::ConstVectorViewType;
+   using typename Preconditioner< Matrix >::MatrixPointer;
    using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
 
-   virtual void update( const Matrix& matrix ) override;
+   virtual void update( const MatrixPointer& matrixPointer ) override;
 
    virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
 

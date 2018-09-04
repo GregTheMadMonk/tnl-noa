@@ -36,12 +36,12 @@ setup( const Config::ParameterContainer& parameters,
 template< typename Matrix, typename Real, typename Index >
 void
 ILUT_impl< Matrix, Real, Devices::Host, Index >::
-update( const Matrix& matrix )
+update( const MatrixPointer& matrixPointer )
 {
-   TNL_ASSERT_GT( matrix.getRows(), 0, "empty matrix" );
-   TNL_ASSERT_EQ( matrix.getRows(), matrix.getColumns(), "matrix must be square" );
+   TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
+   TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
 
-   const IndexType N = matrix.getRows();
+   const IndexType N = matrixPointer->getRows();
 
    L.setDimensions( N, N );
    U.setDimensions( N, N );
@@ -57,8 +57,8 @@ update( const Matrix& matrix )
    L_rowLengths.setSize( N );
    U_rowLengths.setSize( N );
    for( IndexType i = 0; i < N; i++ ) {
-      const auto row = matrix.getRow( i );
-      const auto max_length = matrix.getRowLength( i );
+      const auto row = matrixPointer->getRow( i );
+      const auto max_length = matrixPointer->getRowLength( i );
       IndexType L_entries = 0;
       IndexType U_entries = 0;
       for( IndexType j = 0; j < max_length; j++ ) {
@@ -101,8 +101,8 @@ update( const Matrix& matrix )
    // Incomplete LU factorization with threshold
    // (see Saad - Iterative methods for sparse linear systems, section 10.4)
    for( IndexType i = 0; i < N; i++ ) {
-      const auto max_length = matrix.getRowLength( i );
-      const auto A_i = matrix.getRow( i );
+      const auto max_length = matrixPointer->getRowLength( i );
+      const auto A_i = matrixPointer->getRow( i );
 
       RealType A_i_norm = 0.0;
 
@@ -130,7 +130,7 @@ update( const Matrix& matrix )
          if( w_k == 0.0 )
             continue;
 
-         w_k /= matrix.getElementFast( k, k );
+         w_k /= matrixPointer->getElementFast( k, k );
 
          // apply dropping rule to w_k
          if( std::abs( w_k ) < tau_i )

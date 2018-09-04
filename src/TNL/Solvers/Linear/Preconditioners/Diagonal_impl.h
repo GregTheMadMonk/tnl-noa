@@ -52,20 +52,20 @@ __global__ void elementwiseVectorDivisionKernel( const Real* left,
 template< typename Matrix >
 void
 Diagonal< Matrix >::
-update( const Matrix& matrix )
+update( const MatrixPointer& matrixPointer )
 {
 //  std::cout << getType() << "->setMatrix()" << std::endl;
 
-   TNL_ASSERT_GT( matrix.getRows(), 0, "empty matrix" );
-   TNL_ASSERT_EQ( matrix.getRows(), matrix.getColumns(), "matrix must be square" );
+   TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
+   TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
 
-   if( diagonal.getSize() != matrix.getRows() )
-      diagonal.setSize( matrix.getRows() );
+   if( diagonal.getSize() != matrixPointer->getRows() )
+      diagonal.setSize( matrixPointer->getRows() );
 
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
       for( int i = 0; i < diagonal.getSize(); i++ ) {
-         diagonal[ i ] = matrix.getElement( i, i );
+         diagonal[ i ] = matrixPointer->getElement( i, i );
       }
    }
    if( std::is_same< DeviceType, Devices::Cuda >::value )
@@ -78,7 +78,7 @@ update( const Matrix& matrix )
 
       Devices::Cuda::synchronizeDevice();
       matrixDiagonalToVectorKernel<<< cudaBlocks, cudaBlockSize >>>(
-            &matrix.template getData< Devices::Cuda >(),
+            &matrixPointer.template getData< Devices::Cuda >(),
             diagonal.getData(),
             size );
       TNL_CHECK_CUDA_DEVICE;

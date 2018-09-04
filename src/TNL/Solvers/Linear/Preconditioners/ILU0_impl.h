@@ -24,12 +24,12 @@ namespace Preconditioners {
 template< typename Matrix, typename Real, typename Index >
 void
 ILU0_impl< Matrix, Real, Devices::Host, Index >::
-update( const Matrix& matrix )
+update( const MatrixPointer& matrixPointer )
 {
-   TNL_ASSERT_GT( matrix.getRows(), 0, "empty matrix" );
-   TNL_ASSERT_EQ( matrix.getRows(), matrix.getColumns(), "matrix must be square" );
+   TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
+   TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
 
-   const IndexType N = matrix.getRows();
+   const IndexType N = matrixPointer->getRows();
 
    L.setDimensions( N, N );
    U.setDimensions( N, N );
@@ -40,8 +40,8 @@ update( const Matrix& matrix )
    L_rowLengths.setSize( N );
    U_rowLengths.setSize( N );
    for( IndexType i = 0; i < N; i++ ) {
-       const auto row = matrix.getRow( i );
-       const auto max_length = matrix.getRowLength( i );
+       const auto row = matrixPointer->getRow( i );
+       const auto max_length = matrixPointer->getRowLength( i );
        IndexType L_entries = 0;
        IndexType U_entries = 0;
        for( IndexType j = 0; j < max_length; j++ ) {
@@ -63,10 +63,10 @@ update( const Matrix& matrix )
    // The factors L and U are stored separately and the rows of U are reversed.
    for( IndexType i = 0; i < N; i++ ) {
       // copy all non-zero entries from A into L and U
-      const auto max_length = matrix.getRowLength( i );
+      const auto max_length = matrixPointer->getRowLength( i );
       IndexType columns[ max_length ];
       RealType values[ max_length ];
-      matrix.getRowFast( i, columns, values );
+      matrixPointer->getRowFast( i, columns, values );
 
       const auto L_entries = L_rowLengths[ i ];
       const auto U_entries = U_rowLengths[ N - 1 - i ];
@@ -155,7 +155,7 @@ solve( ConstVectorViewType b, VectorViewType x ) const
 template< typename Matrix >
 void
 ILU0_impl< Matrix, double, Devices::Cuda, int >::
-update( const Matrix& matrix )
+update( const MatrixPointer& matrixPointer )
 {
 #ifdef HAVE_CUDA
 #ifdef HAVE_CUSPARSE

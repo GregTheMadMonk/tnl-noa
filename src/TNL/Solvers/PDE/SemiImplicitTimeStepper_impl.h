@@ -177,7 +177,7 @@ solve( const RealType& time,
       if( this->preconditioner )
       {
          this->preconditionerUpdateTimer.start();
-         preconditioner->update( *this->matrix );
+         preconditioner->update( this->matrix );
          this->preconditionerUpdateTimer.stop();
       }
 

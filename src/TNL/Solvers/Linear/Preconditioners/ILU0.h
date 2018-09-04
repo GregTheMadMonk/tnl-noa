@@ -55,8 +55,9 @@ public:
    using IndexType = Index;
    using typename Preconditioner< Matrix >::VectorViewType;
    using typename Preconditioner< Matrix >::ConstVectorViewType;
+   using typename Preconditioner< Matrix >::MatrixPointer;
 
-   virtual void update( const Matrix& matrix ) override;
+   virtual void update( const MatrixPointer& matrixPointer ) override;
 
    virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
 
@@ -75,6 +76,7 @@ public:
    using IndexType = int;
    using typename Preconditioner< Matrix >::VectorViewType;
    using typename Preconditioner< Matrix >::ConstVectorViewType;
+   using typename Preconditioner< Matrix >::MatrixPointer;
 
    ILU0_impl()
    {
@@ -83,7 +85,7 @@ public:
 #endif
    }
 
-   virtual void update( const Matrix& matrix ) override;
+   virtual void update( const MatrixPointer& matrixPointer ) override;
 
    virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
 
@@ -179,8 +181,9 @@ public:
    using IndexType = Index;
    using typename Preconditioner< Matrix >::VectorViewType;
    using typename Preconditioner< Matrix >::ConstVectorViewType;
+   using typename Preconditioner< Matrix >::MatrixPointer;
 
-   virtual void update( const Matrix& matrix ) override
+   virtual void update( const MatrixPointer& matrixPointer ) override
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
    }
