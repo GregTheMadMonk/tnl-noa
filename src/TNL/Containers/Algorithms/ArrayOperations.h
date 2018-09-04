@@ -42,13 +42,6 @@ class ArrayOperations< Devices::Host >
       static Element getMemoryElement( Element* data );
 
       template< typename Element, typename Index >
-      static Element& getArrayElementReference( Element* data, const Index i );
-
-      template< typename Element, typename Index >
-      static const Element& getArrayElementReference( const Element* data, const Index i );
-
-
-      template< typename Element, typename Index >
       static bool setMemory( Element* data,
                              const Element& value,
                              const Index size );
@@ -78,7 +71,6 @@ class ArrayOperations< Devices::Host >
       static bool containsOnlyValue( const Element* data,
                                      const Index size,
                                      const Element& value );
-
 };
 
 template<>
@@ -101,14 +93,6 @@ class ArrayOperations< Devices::Cuda >
       template< typename Element >
       __cuda_callable__
       static Element getMemoryElement( const Element* data );
-
-
-      // TODO: does not make sense for CUDA - remove? <- could make sense with CUDA Unified Memory
-      template< typename Element, typename Index >
-      static Element& getArrayElementReference( Element* data, const Index i );
-
-      template< typename Element, typename Index >
-      static const Element& getArrayElementReference( const Element* data, const Index i );
 
       template< typename Element, typename Index >
       static bool setMemory( Element* data,
@@ -201,12 +185,6 @@ class ArrayOperations< Devices::MIC >
 
       template< typename Element >
       static Element getMemoryElement( const Element* data );
-
-      template< typename Element, typename Index >
-      static Element& getArrayElementReference( Element* data, const Index i );
-
-      template< typename Element, typename Index >
-      static const Element& getArrayElementReference( const Element* data, const Index i );
 
       template< typename Element, typename Index >
       static bool setMemory( Element* data,

@@ -158,8 +158,6 @@ struct ParallelFor< Devices::Cuda >
          dim3 gridSize;
          gridSize.x = TNL::min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( end - start, blockSize.x ) );
 
-         Devices::Cuda::synchronizeDevice();
-
          if( Devices::Cuda::getNumberOfGrids( end - start ) == 1 )
             ParallelForKernel< false ><<< gridSize, blockSize >>>( start, end, f, args... );
          else {
@@ -193,7 +191,7 @@ struct ParallelFor2D< Devices::Cuda >
 
          dim3 blockSize;
          if( sizeX >= sizeY * sizeY ) {
-            blockSize.x = TNL::min( 128, sizeX );
+            blockSize.x = TNL::min( 256, sizeX );
             blockSize.y = 1;
          }
          else if( sizeY >= sizeX * sizeX ) {
@@ -211,8 +209,6 @@ struct ParallelFor2D< Devices::Cuda >
          dim3 gridCount;
          gridCount.x = Devices::Cuda::getNumberOfGrids( sizeX );
          gridCount.y = Devices::Cuda::getNumberOfGrids( sizeY );
-
-//         Devices::Cuda::synchronizeDevice();
 
          if( gridCount.x == 1 && gridCount.y == 1 )
             ParallelFor2DKernel< false, false ><<< gridSize, blockSize >>>
@@ -280,8 +276,6 @@ struct ParallelFor3D< Devices::Cuda >
          gridCount.x = Devices::Cuda::getNumberOfGrids( sizeX );
          gridCount.y = Devices::Cuda::getNumberOfGrids( sizeY );
          gridCount.z = Devices::Cuda::getNumberOfGrids( sizeZ );
-
-//         Devices::Cuda::synchronizeDevice();
 
          if( gridCount.x == 1 && gridCount.y == 1 && gridCount.z == 1 )
             ParallelFor3DKernel< false, false, false ><<< gridSize, blockSize >>>

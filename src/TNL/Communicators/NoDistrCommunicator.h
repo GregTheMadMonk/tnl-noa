@@ -19,7 +19,8 @@
 
 namespace TNL {
 namespace Communicators {
-        
+namespace {
+
 class NoDistrCommunicator
 {
 
@@ -136,7 +137,6 @@ class NoDistrCommunicator
   int NoDistrCommunicator::NullRequest;
   int NoDistrCommunicator::AllGroup;
 
+} // namespace <unnamed>
 } // namespace Communicators
 } // namespace TNL
-
-

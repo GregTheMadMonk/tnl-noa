@@ -36,78 +36,81 @@ processBoundaryEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::getEntityDimension() == 3, "The entity has wrong dimension." );
 
-      auto distributedgrid=gridPointer->getDistributedMesh();
-   if(distributedgrid==nullptr||!distributedgrid->isDistributed())
+   DistributedGridType* distributedGrid = gridPointer->getDistributedMesh();
+   if( distributedGrid == nullptr || !distributedGrid->isDistributed() )
    {
-        GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 1, 1, 1 >(
+      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 1, 1, 1 >(
           gridPointer,
           CoordinatesType( 0, 0, 0 ),
           gridPointer->getDimensions() - CoordinatesType( 1, 1, 1 ),
           userDataPointer,
           0 );
    }
-   else
+   else // distributed
    {
-       const int* neighbors=distributedgrid->getNeighbors(); 
-       if(neighbors[Meshes::DistributedMeshes::West]==-1)
-       {
+      const CoordinatesType begin = distributedGrid->getLowerOverlap();
+      const CoordinatesType end = gridPointer->getDimensions() - distributedGrid->getUpperOverlap() -
+                                  CoordinatesType( 1, 1, 1 );
+      const int* neighbors = distributedGrid->getNeighbors();
+      if( neighbors[ Meshes::DistributedMeshes::West ] == -1 )
+      {
+         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+            gridPointer,
+            begin,
+            CoordinatesType( begin.x(), end.x(), end.y() ),
+            userDataPointer,
+            0 );
+      }
+       
+      if( neighbors[ Meshes::DistributedMeshes::East ] == -1 )
+      {
           GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
             gridPointer,
-            CoordinatesType(0,0,0),
-            CoordinatesType(0,gridPointer->getDimensions().y()-1,gridPointer->getDimensions().z()-1),
+            CoordinatesType( end.x() , begin.y(), begin.z() ),
+            end,
             userDataPointer,
             0 );
        }
        
-       if(neighbors[Meshes::DistributedMeshes::East]==-1)
-       {
-          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+      if( neighbors[ Meshes::DistributedMeshes::North ] == -1 )
+      {
+         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
             gridPointer,
-            CoordinatesType(gridPointer->getDimensions().x()-1,0,0),
-            CoordinatesType(gridPointer->getDimensions().x()-1,gridPointer->getDimensions().y()-1,gridPointer->getDimensions().z()-1),
+            begin,
+            CoordinatesType( end.x(), begin.y(), end.z() ),
+            userDataPointer,
+            0 );
+      }
+       
+      if( neighbors[ Meshes::DistributedMeshes::South ] == -1 )
+      {
+         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+            gridPointer,
+            CoordinatesType( begin.x(), end.y(), begin.z() ),
+            end,
             userDataPointer,
             0 );
        }
        
-       if(neighbors[Meshes::DistributedMeshes::North]==-1)
-       {
-          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+      if( neighbors[ Meshes::DistributedMeshes::Bottom ] == -1 )
+      {
+         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
             gridPointer,
-            CoordinatesType(0,0,0),
-            CoordinatesType(gridPointer->getDimensions().x()-1,0,gridPointer->getDimensions().z()-1),
+            begin,
+            CoordinatesType( end.x(), end.y(), begin.z() ),
             userDataPointer,
             0 );
-       }
-       
-       if(neighbors[Meshes::DistributedMeshes::South]==-1)
-       {
-          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+      }
+      
+      if( neighbors[ Meshes::DistributedMeshes::Top ] == -1 )
+      {
+         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
             gridPointer,
-            CoordinatesType(0,gridPointer->getDimensions().y()-1,0),
-            CoordinatesType(gridPointer->getDimensions().x()-1,gridPointer->getDimensions().y()-1,gridPointer->getDimensions().z()-1),
+            CoordinatesType( begin.x(), begin.y(), end.z() ),
+            end,
             userDataPointer,
             0 );
-       }
-       
-       if(neighbors[Meshes::DistributedMeshes::Bottom]==-1)
-       {
-          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-            gridPointer,
-            CoordinatesType(0,0,0),
-            CoordinatesType(gridPointer->getDimensions().x()-1,gridPointer->getDimensions().y()-1,0),
-            userDataPointer,
-            0 );
-       }
-       
-       if(neighbors[Meshes::DistributedMeshes::Top]==-1)
-       {
-          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-            gridPointer,
-            CoordinatesType(0,0,gridPointer->getDimensions().z()-1),
-            CoordinatesType(gridPointer->getDimensions().x()-1,gridPointer->getDimensions().y()-1,gridPointer->getDimensions().z()-1),
-            userDataPointer,
-            0 );
-       } 
+      } 
    }
 }
 
@@ -127,59 +130,47 @@ processInteriorEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::getEntityDimension() == 3, "The entity has wrong dimension." );
    
-   auto distributedgrid=gridPointer->getDistributedMesh();
-   if(distributedgrid==nullptr||!distributedgrid->isDistributed())
+   DistributedGridType* distributedGrid = gridPointer->getDistributedMesh();
+   if( distributedGrid == nullptr || !distributedGrid->isDistributed() )
    { 
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-      gridPointer,
-      CoordinatesType( 1, 1, 1 ),
-      gridPointer->getDimensions() - CoordinatesType( 2, 2, 2 ),
-      userDataPointer,
-      0 );
+      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+         gridPointer,
+         CoordinatesType( 1, 1, 1 ),
+         gridPointer->getDimensions() - CoordinatesType( 2, 2, 2 ),
+         userDataPointer,
+         0 );
    }
    else
    {
-       const int* neighbors=distributedgrid->getNeighbors(); 
-       CoordinatesType begin( distributedgrid->getOverlap());
-       CoordinatesType end( gridPointer->getDimensions() - distributedgrid->getOverlap()- CoordinatesType(1,1,1) );
-       if(neighbors[Meshes::DistributedMeshes::West]==-1)
-       {
-           begin.x()= 1 ;
-       }
+      const int* neighbors = distributedGrid->getNeighbors(); 
+      CoordinatesType begin( distributedGrid->getLowerOverlap());
+      CoordinatesType end( gridPointer->getDimensions() - distributedGrid->getUpperOverlap()- CoordinatesType(1,1,1) );
+      
+      if( neighbors[ Meshes::DistributedMeshes::West ] == -1 )
+         begin.x() += 1 ;
        
-       if(neighbors[Meshes::DistributedMeshes::East]==-1)
-       {
-           end.x()=gridPointer->getDimensions().x()-2;
-       }
+      if( neighbors[ Meshes::DistributedMeshes::East ] == -1 )
+         end.x() -= 1;
        
-       if(neighbors[Meshes::DistributedMeshes::North]==-1)
-       {
-           begin.y()= 1 ;
-       }
+      if( neighbors[ Meshes::DistributedMeshes::North ] == -1 )
+         begin.y() += 1;
        
-       if(neighbors[Meshes::DistributedMeshes::South]==-1)
-       {
-           end.y()=gridPointer->getDimensions().y()-2;
-       }
+      if( neighbors[ Meshes::DistributedMeshes::South ] == -1 )
+         end.y() -= 1;
        
-       if(neighbors[Meshes::DistributedMeshes::Bottom]==-1)
-       {
-           begin.z()= 1 ;
-       }
+      if( neighbors[ Meshes::DistributedMeshes::Bottom ] == -1 )
+         begin.z() += 1 ;
        
-       if(neighbors[Meshes::DistributedMeshes::Top]==-1)
-       {
-           end.z()=gridPointer->getDimensions().z()-2;
-       }
+      if( neighbors[ Meshes::DistributedMeshes::Top ] == -1 )
+         end.z() -= 1;
 
-       GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-          gridPointer,
-          begin,
-          end,
-          userDataPointer,
-          0);      
+      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+         gridPointer,
+         begin,
+         end,
+         userDataPointer,
+         0);      
    }
-   
 }
 
 template< typename Real,
@@ -198,57 +189,27 @@ processAllEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::getEntityDimension() == 3, "The entity has wrong dimension." );
  
-   auto distributedgrid=gridPointer->getDistributedMesh();
-   if(distributedgrid==nullptr||!distributedgrid->isDistributed())
+   DistributedGridType* distributedGrid=gridPointer->getDistributedMesh();
+   if( distributedGrid == nullptr || !distributedGrid->isDistributed() )
    { 
-    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-       gridPointer,
-       CoordinatesType( 0, 0, 0 ),
-       gridPointer->getDimensions() - CoordinatesType( 1, 1, 1 ),
-       userDataPointer,
-       0 );
+      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+         gridPointer,
+         CoordinatesType( 0, 0, 0 ),
+         gridPointer->getDimensions() - CoordinatesType( 1, 1, 1 ),
+         userDataPointer,
+         0 );
    }
    else
    {
-       CoordinatesType begin( distributedgrid->getOverlap());
-       CoordinatesType end( gridPointer->getDimensions() - distributedgrid->getOverlap()- CoordinatesType(1,1,1) );
-       const int* neighbors=distributedgrid->getNeighbors(); 
-       if(neighbors[Meshes::DistributedMeshes::West]==-1)
-       {
-           begin.x()= 0 ;
-       }
-       
-       if(neighbors[Meshes::DistributedMeshes::East]==-1)
-       {
-           end.x()=gridPointer->getDimensions().x()-1;
-       }
-       
-       if(neighbors[Meshes::DistributedMeshes::North]==-1)
-       {
-           begin.y()= 0 ;
-       }
-       
-       if(neighbors[Meshes::DistributedMeshes::South]==-1)
-       {
-           end.y()=gridPointer->getDimensions().y()-1;
-       }
-    
-       if(neighbors[Meshes::DistributedMeshes::Bottom]==-1)
-       {
-           begin.z()= 0 ;
-       }
-       
-       if(neighbors[Meshes::DistributedMeshes::Top]==-1)
-       {
-           end.z()=gridPointer->getDimensions().z()-1;
-       }
-    
-        GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-           gridPointer,
-           begin,
-           end,
-           userDataPointer,
-           0 ); 
+      CoordinatesType begin( distributedGrid->getLowerOverlap());
+      CoordinatesType end( gridPointer->getDimensions() - distributedGrid->getUpperOverlap()- CoordinatesType(1,1,1) );
+
+      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+         gridPointer,
+         begin,
+         end,
+         userDataPointer,
+         0 ); 
    }
 }
 

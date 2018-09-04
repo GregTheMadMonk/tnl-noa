@@ -88,24 +88,6 @@ getMemoryElement( const Element* data )
 #endif   
 }
 
-template< typename Element, typename Index >
-Element&
-ArrayOperations< Devices::Cuda >::
-getArrayElementReference( Element* data, const Index i )
-{
-   TNL_ASSERT_TRUE( data, "Attempted to access data through a nullptr." );
-   return data[ i ];
-}
-
-template< typename Element, typename Index >
-const
-Element& ArrayOperations< Devices::Cuda >::
-getArrayElementReference( const Element* data, const Index i )
-{
-   TNL_ASSERT_TRUE( data, "Attempted to access data through a nullptr." );
-   return data[ i ];
-}
-
 
 #ifdef HAVE_CUDA
 template< typename Element, typename Index >
@@ -482,54 +464,6 @@ extern template float       ArrayOperations< Devices::Cuda >::getMemoryElement< 
 extern template double      ArrayOperations< Devices::Cuda >::getMemoryElement< double      >( const double* data );
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template long double ArrayOperations< Devices::Cuda >::getMemoryElement< long double >( const long double* data );
-#endif
-
-extern template char&        ArrayOperations< Devices::Cuda >::getArrayElementReference< char,        int >( char* data, const int i );
-extern template int&         ArrayOperations< Devices::Cuda >::getArrayElementReference< int,         int >( int* data, const int i );
-extern template long int&    ArrayOperations< Devices::Cuda >::getArrayElementReference< long int,    int >( long int* data, const int i );
-#ifdef INSTANTIATE_FLOAT
-extern template float&       ArrayOperations< Devices::Cuda >::getArrayElementReference< float,       int >( float* data, const int i );
-#endif
-extern template double&      ArrayOperations< Devices::Cuda >::getArrayElementReference< double,      int >( double* data, const int i );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double& ArrayOperations< Devices::Cuda >::getArrayElementReference< long double, int >( long double* data, const int i );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-extern template char&        ArrayOperations< Devices::Cuda >::getArrayElementReference< char,        long int >( char* data, const long int i );
-extern template int&         ArrayOperations< Devices::Cuda >::getArrayElementReference< int,         long int >( int* data, const long int i );
-extern template long int&    ArrayOperations< Devices::Cuda >::getArrayElementReference< long int,    long int >( long int* data, const long int i );
-#ifdef INSTANTIATE_FLOAT
-extern template float&       ArrayOperations< Devices::Cuda >::getArrayElementReference< float,       long int >( float* data, const long int i );
-#endif
-extern template double&      ArrayOperations< Devices::Cuda >::getArrayElementReference< double,      long int >( double* data, const long int i );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double& ArrayOperations< Devices::Cuda >::getArrayElementReference< long double, long int >( long double* data, const long int i );
-#endif
-#endif
-
-extern template const char&        ArrayOperations< Devices::Cuda >::getArrayElementReference< char,        int >( const char* data, const int i );
-extern template const int&         ArrayOperations< Devices::Cuda >::getArrayElementReference< int,         int >( const int* data, const int i );
-extern template const long int&    ArrayOperations< Devices::Cuda >::getArrayElementReference< long int,    int >( const long int* data, const int i );
-#ifdef INSTANTIATE_FLOAT
-extern template const float&       ArrayOperations< Devices::Cuda >::getArrayElementReference< float,       int >( const float* data, const int i );
-#endif
-extern template const double&      ArrayOperations< Devices::Cuda >::getArrayElementReference< double,      int >( const double* data, const int i );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template const long double& ArrayOperations< Devices::Cuda >::getArrayElementReference< long double, int >( const long double* data, const int i );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-extern template const char&        ArrayOperations< Devices::Cuda >::getArrayElementReference< char,        long int >( const char* data, const long int i );
-extern template const int&         ArrayOperations< Devices::Cuda >::getArrayElementReference< int,         long int >( const int* data, const long int i );
-extern template const long int&    ArrayOperations< Devices::Cuda >::getArrayElementReference< long int,    long int >( const long int* data, const long int i );
-#ifdef INSTANTIATE_FLOAT
-extern template const float&       ArrayOperations< Devices::Cuda >::getArrayElementReference< float,       long int >( const float* data, const long int i );
-#endif
-extern template const double&      ArrayOperations< Devices::Cuda >::getArrayElementReference< double,      long int >( const double* data, const long int i );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template const long double& ArrayOperations< Devices::Cuda >::getArrayElementReference< long double, long int >( const long double* data, const long int i );
-#endif
 #endif
 
 extern template bool ArrayOperations< Devices::Cuda >::copyMemory< char,               char, int >( char* destination, const char* source, const int size );

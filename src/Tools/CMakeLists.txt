@@ -36,10 +36,9 @@ target_link_libraries( tnl-functions-benchmark tnl )
 
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnl-cuda-arch tnl-cuda-arch.cu )
-# TODO: Fix this -- https://cmake.org/pipermail/cmake/2013-September/055755.html
-#   INSTALL( TARGETS tnl-cuda-arch
-#            RUNTIME DESTINATION bin
-#            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+   INSTALL( TARGETS tnl-cuda-arch
+            RUNTIME DESTINATION bin
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 ENDIF()
 
 INSTALL( TARGETS tnl-init
@@ -62,3 +61,4 @@ INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-bindir
                tnl-log-to-html.py
          DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+

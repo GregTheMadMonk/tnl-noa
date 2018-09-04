@@ -16,7 +16,7 @@
 #pragma once
 
 namespace TNL {
-   namespace Matrices {
+namespace Matrices {
 
 /*
  * Auxiliary list implementation
@@ -1444,5 +1444,5 @@ public:
 
 #endif
 
-   } //namespace Matrices
+} // namespace Matrices
 } // namespace TNL

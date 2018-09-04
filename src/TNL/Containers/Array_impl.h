@@ -549,7 +549,7 @@ boundLoad( File& file )
    {
       if( this->getSize() != _size )
       {
-         std::cerr << "Error: The current array size is not zero ( " << this->getSize() << ") and it is different from the size of" << std::endl
+         std::cerr << "Error: The current array size is not zero (" << this->getSize() << ") and it is different from the size of "
                    << "the array being loaded (" << _size << "). This is not possible. Call method reset() before." << std::endl;
          return false;
       }
@@ -560,7 +560,7 @@ boundLoad( File& file )
       if( ! ArrayIO< Element, Device, Index >::load( file, this->data, this->size ) )
       {
          std::cerr << "I was not able to load " << this->getType()
-                    << " with size " << this -> getSize() << std::endl;
+                   << " with size " << this -> getSize() << std::endl;
          return false;
       }
    }

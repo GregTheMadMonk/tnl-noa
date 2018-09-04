@@ -55,18 +55,18 @@ class TestDistributedVectorFieldMPIIO{
         globalGrid->setDimensions(globalProportions);
         globalGrid->setDomain(globalOrigin,globalProportions);
         
-        DistributedGridType distrgrid;
-        distrgrid.template setGlobalGrid<CommunicatorType>( *globalGrid );
+        DistributedGridType distributedGrid;
+        distributedGrid.template setGlobalGrid<CommunicatorType>( *globalGrid );
 
         SharedPointer<MeshType> gridptr;        
-        distrgrid.setupGrid(*gridptr);
+        distributedGrid.setupGrid(*gridptr);
         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
-        distrgrid.setOverlaps( lowerOverlap, upperOverlap );
-        distrgrid.setupGrid(*gridptr);
+        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+        distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
+        distributedGrid.setupGrid(*gridptr);
 
 
-        ///std::cout << distrgrid.printProcessDistr() <<std::endl;
+        ///std::cout << distributedGrid.printProcessDistr() <<std::endl;
 
 		VectorFieldType vectorField;
 
@@ -133,11 +133,11 @@ class TestDistributedVectorFieldMPIIO{
 
         CoordinatesType overlap;
         overlap.setValue(1);
-        DistributedGridType distrgrid;
-        distrgrid.template setGlobalGrid<CommunicatorType>(*globalGrid);
+        DistributedGridType distributedGrid;
+        distributedGrid.template setGlobalGrid<CommunicatorType>(*globalGrid);
         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
-        distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+        distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
 
         String FileName=String("/tmp/test-file.tnl");         
@@ -160,7 +160,7 @@ class TestDistributedVectorFieldMPIIO{
 
         SharedPointer<MeshType> loadGridptr;
         VectorFieldType loadVectorField;
-        distrgrid.setupGrid(*loadGridptr);
+        distributedGrid.setupGrid(*loadGridptr);
         
         DofType loadDof(vctdim*(loadGridptr->template getEntitiesCount< Cell >()));
         loadDof.setValue(0);
@@ -173,7 +173,7 @@ class TestDistributedVectorFieldMPIIO{
 
         SharedPointer<MeshType> evalGridPtr;
         VectorFieldType evalVectorField;
-        distrgrid.setupGrid(*evalGridPtr);
+        distributedGrid.setupGrid(*evalGridPtr);
         
         DofType evalDof(vctdim*(evalGridPtr->template getEntitiesCount< Cell >()));
         evalDof.setValue(-1);

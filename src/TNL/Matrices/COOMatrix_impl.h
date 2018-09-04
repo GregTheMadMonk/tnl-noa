@@ -11,11 +11,11 @@
 #pragma once
 
 #include <TNL/Matrices/COOMatrix.h>
-#include <TNL/Containers/Vectors/Vector.h>
 #include <TNL/Math.h>
+#include <TNL/param-types.h>
 
 namespace TNL {
-   namespace Matrices {
+namespace Matrices {
 
 template< typename Real,
 	  	  typename Device,
@@ -33,7 +33,7 @@ template< typename Real,
 String COOMatrix< Real, Device, Index >::getType()
 {
 	return String("COOMatrix< ") +
-  	 	   String(::getType< Real>()) +
+  	 	   String(TNL::getType< Real>()) +
 		   String(", ") +
 		   Device::getDeviceType() +
 		   String(" >");
@@ -359,7 +359,7 @@ bool COOMatrix< Real, Device, Index >::load(const String& fileName)
 template< typename Real,
 		  typename Device,
 		  typename Index >
-void COOMatrix< Real, Device, Index >::print(ostream& str) const
+void COOMatrix< Real, Device, Index >::print(std::ostream& str) const
 {
 	//zatim jsem to napsal takhle, kdyztak to pozdeji zmenim
 	for(IndexType elementPtr = 0; elementPtr < this->getNumberOfUsedValues(); elementPtr++)
@@ -379,7 +379,5 @@ void COOMatrix< Real, Device, Index >::reset()
 	this->rowIndexes.reset();
 }
 
-   } // namespace Matrices
+} // namespace Matrices
 } // namespace TNL
-
-#endif

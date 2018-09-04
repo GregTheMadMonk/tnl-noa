@@ -17,10 +17,10 @@
 #pragma once
 
 #include <TNL/Matrices/Sparse.h>
-#include <TNL/Containers/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
-   namespace Matrices
+namespace Matrices {
 
 template< typename Device >
 class COOMatrixDeviceDependentCode;
@@ -36,7 +36,7 @@ public:
 	typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
 	typedef COOMatrix< Real, Device, Index > ThisType;
 	typedef COOMatrix< Real, Devices::Host, Index > HostType;
-	typedef COOMatrix< Real, tnlCuda, Index > CudaType;
+	typedef COOMatrix< Real, Devices::Cuda, Index > CudaType;
 
 	COOMatrix();
 
@@ -110,8 +110,8 @@ public:
 
 	bool load(const String& fileName);
 
-	// nejsem si jisty jestli dela to co ma
-	void print(ostream& str) const;
+	// TODO: nejsem si jisty jestli dela to co ma
+	void print(std::ostream& str) const;
 
 	void reset();
 
@@ -129,10 +129,8 @@ private:
 	bool appendMode;
 };
 
-   } //namespace Matrices
+} // namespace Matrices
 } // namespace TNL
 
 
 #include <TNL/Matrices/COOMatrix_impl.h>
-
-#endif

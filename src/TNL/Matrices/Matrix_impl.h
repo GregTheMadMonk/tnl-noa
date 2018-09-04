@@ -99,16 +99,6 @@ getValues()
 template< typename Real,
           typename Device,
           typename Index >
-const Index&
-Matrix< Real, Device, Index >::
-getNumberOfColors() const
-{
-   return this->numberOfColors;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 void Matrix< Real, Device, Index >::reset()
 {
    this->rows = 0;
@@ -143,15 +133,44 @@ bool Matrix< Real, Device, Index >::operator != ( const MatrixT& matrix ) const
 template< typename Real,
           typename Device,
           typename Index >
-void
-Matrix< Real, Device, Index >::
-copyFromHostToCuda( Matrix< Real, Devices::Host, Index >& matrix )
+bool Matrix< Real, Device, Index >::save( File& file ) const
 {
-    this->numberOfColors = matrix.getNumberOfColors();
-    this->columns = matrix.getColumns();
-    this->rows = matrix.getRows();
+   if( ! Object::save( file ) ||
+       ! file.write( &this->rows ) ||
+       ! file.write( &this->columns ) ||
+       ! this->values.save( file ) )
+      return false;
+   return true;
+}
 
-    this->values.setSize( matrix.getValuesSize() );
+template< typename Real,
+          typename Device,
+          typename Index >
+bool Matrix< Real, Device, Index >::load( File& file )
+{
+   if( ! Object::load( file ) ||
+       ! file.read( &this->rows ) ||
+       ! file.read( &this->columns ) ||
+       ! this->values.load( file ) )
+      return false;
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Matrix< Real, Device, Index >::print( std::ostream& str ) const
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+const Index&
+Matrix< Real, Device, Index >::
+getNumberOfColors() const
+{
+   return this->numberOfColors;
 }
 
 template< typename Real,
@@ -191,39 +210,20 @@ computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
     }
 }
 
-
 template< typename Real,
           typename Device,
           typename Index >
-bool Matrix< Real, Device, Index >::save( File& file ) const
+void
+Matrix< Real, Device, Index >::
+copyFromHostToCuda( Matrix< Real, Devices::Host, Index >& matrix )
 {
-   if( ! Object::save( file ) ||
-       ! file.write( &this->rows ) ||
-       ! file.write( &this->columns ) ||
-       ! this->values.save( file ) )
-      return false;
-   return true;
+    this->numberOfColors = matrix.getNumberOfColors();
+    this->columns = matrix.getColumns();
+    this->rows = matrix.getRows();
+
+    this->values.setSize( matrix.getValuesSize() );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-bool Matrix< Real, Device, Index >::load( File& file )
-{
-   if( ! Object::load( file ) ||
-       ! file.read( &this->rows ) ||
-       ! file.read( &this->columns ) ||
-       ! this->values.load( file ) )
-      return false;
-   return true;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Matrix< Real, Device, Index >::print( std::ostream& str ) const
-{
-}
 
 #ifdef HAVE_CUDA
 template< typename Matrix,

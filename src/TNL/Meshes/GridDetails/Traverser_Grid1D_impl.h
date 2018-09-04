@@ -36,8 +36,8 @@ processBoundaryEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimensions." );
    
-   auto distributedgrid=gridPointer->getDistributedMesh();
-   if(distributedgrid==nullptr||!distributedgrid->isDistributed())
+   DistributedGridType* distributedGrid = gridPointer->getDistributedMesh();
+   if( distributedGrid == nullptr || ! distributedGrid->isDistributed() )
    {
         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true >(
            gridPointer,
@@ -45,25 +45,24 @@ processBoundaryEntities( const GridPointer& gridPointer,
            gridPointer->getDimensions() - CoordinatesType( 1 ),
            userDataPointer );
    }
-   else
+   else //Distributed
    {
-       //Distributed
-       const int* neighbors=distributedgrid->getNeighbors(); 
-       if(neighbors[Meshes::DistributedMeshes::Left]==-1)
+       const int* neighbors=distributedGrid->getNeighbors(); 
+       if( neighbors[ Meshes::DistributedMeshes::Left ] == -1 )
        {
           GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
               gridPointer,
-              CoordinatesType( 0 ),
-              CoordinatesType( 0 ),
+              CoordinatesType( 0 ) + distributedGrid->getLowerOverlap(),
+              CoordinatesType( 0 ) + distributedGrid->getLowerOverlap(),
               userDataPointer );
        }
        
-       if(neighbors[Meshes::DistributedMeshes::Right]==-1)
+       if( neighbors[ Meshes::DistributedMeshes::Right ] == -1 )
        {
           GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
               gridPointer,
-              gridPointer->getDimensions() - CoordinatesType( 1 ),
-              gridPointer->getDimensions() - CoordinatesType( 1 ),
+              gridPointer->getDimensions() - CoordinatesType( 1 ) - distributedGrid->getUpperOverlap(),
+              gridPointer->getDimensions() - CoordinatesType( 1 ) - distributedGrid->getUpperOverlap(),
               userDataPointer );
        }
    }
@@ -86,8 +85,8 @@ processInteriorEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimension." );
 
-   auto distributedgrid=gridPointer->getDistributedMesh();
-   if(distributedgrid==nullptr||!distributedgrid->isDistributed())
+   DistributedGridType* distributedGrid = gridPointer->getDistributedMesh();
+   if( distributedGrid == nullptr || !distributedGrid->isDistributed() )
    {
         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
            gridPointer,
@@ -95,22 +94,25 @@ processInteriorEntities( const GridPointer& gridPointer,
            gridPointer->getDimensions() - CoordinatesType( 2 ),
            userDataPointer );   
    }
-   else
+   else //Distributed
    {
-       //Distributed
-       CoordinatesType begin( distributedgrid->getOverlap().x() );
-       CoordinatesType end( gridPointer->getDimensions() - distributedgrid->getOverlap().x()-1 );
-       const int* neighbors=distributedgrid->getNeighbors(); 
-       if(neighbors[Meshes::DistributedMeshes::Left]==-1)
-       {
-           begin=CoordinatesType( 1 );
-       }
+      CoordinatesType begin( distributedGrid->getLowerOverlap() );
+      CoordinatesType end( gridPointer->getDimensions() - distributedGrid->getUpperOverlap() - CoordinatesType( 1 ) );
+      
+      const int* neighbors = distributedGrid->getNeighbors(); 
+      if( neighbors[ Meshes::DistributedMeshes::Left ] == -1 )
+         begin += CoordinatesType( 1 );
        
-       if(neighbors[Meshes::DistributedMeshes::Right]==-1)
-       {
-           end=gridPointer->getDimensions() - CoordinatesType( 2 );
-       }
-       
+      if( neighbors[ Meshes::DistributedMeshes::Right ] == -1 )
+         end -= CoordinatesType( 1 );
+      
+      /*
+         TNL_MPI_PRINT( " lowerOverlap = " << distributedGrid->getLowerOverlap() << 
+               " upperOverlap = " << distributedGrid->getUpperOverlap() <<
+               " gridPointer->getDimensions() = " << gridPointer->getDimensions() <<
+               "begin = " << begin << " end = " << end);
+       */
+
        GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
           gridPointer,
           begin,
@@ -135,11 +137,10 @@ processAllEntities(
    /****
     * All cells
     */
-
    static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimensions." );
    
-   auto distributedgrid=gridPointer->getDistributedMesh();
-   if(distributedgrid==nullptr||!distributedgrid->isDistributed())
+   DistributedGridType* distributedGrid = gridPointer->getDistributedMesh();
+   if( distributedGrid == nullptr || !distributedGrid->isDistributed() )
    {
         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
            gridPointer,
@@ -147,21 +148,10 @@ processAllEntities(
            gridPointer->getDimensions() - CoordinatesType( 1 ),
            userDataPointer );  
    }
-   else
+   else //Distributed
    {
-       //Distributed
-       CoordinatesType begin( distributedgrid->getOverlap().x() );
-       CoordinatesType end( gridPointer->getDimensions() - distributedgrid->getOverlap().x()-1 );
-       const int* neighbors=distributedgrid->getNeighbors(); 
-       if(neighbors[Meshes::DistributedMeshes::Left]==-1)
-       {
-           begin=CoordinatesType( 0 );
-       }
-       
-       if(neighbors[Meshes::DistributedMeshes::Right]==-1)
-       {
-           end=gridPointer->getDimensions() - CoordinatesType( 1 );
-       }
+       CoordinatesType begin( distributedGrid->getLowerOverlap() );
+       CoordinatesType end( gridPointer->getDimensions() - distributedGrid->getUpperOverlap() - 1 );
        
        GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
           gridPointer,

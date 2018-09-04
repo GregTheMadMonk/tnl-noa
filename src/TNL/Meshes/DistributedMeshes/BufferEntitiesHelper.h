@@ -30,7 +30,6 @@ class BufferEntitiesHelper
 
 //======================================== 1D ====================================================
 
-//host
 template < typename MeshFunctionType, typename RealType, typename Device, typename Index >
 class BufferEntitiesHelper<MeshFunctionType,1,RealType,Device,Index>
 {

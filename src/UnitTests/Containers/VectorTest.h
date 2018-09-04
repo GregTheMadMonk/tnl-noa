@@ -15,7 +15,6 @@
 #ifdef HAVE_GTEST
 #include <limits>
 
-#include <TNL/Experimental/Arithmetics/MultiPrecision.h>
 #include <TNL/Experimental/Arithmetics/Quad.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/File.h>
@@ -90,41 +89,41 @@ using VectorTypes = ::testing::Types<
    Vector< int,            Devices::Host, short >,
    Vector< long,           Devices::Host, short >,
    Vector< float,          Devices::Host, short >,
-   //Vector< Quad< float >,  Devices::Host, short>,
    Vector< double,         Devices::Host, short >,
+   //Vector< Quad< float >,  Devices::Host, short >,
    //Vector< Quad< double >, Devices::Host, short >,
    Vector< int,            Devices::Host, int >,
    Vector< long,           Devices::Host, int >,
    Vector< float,          Devices::Host, int >,
-   //Vector< Quad< float >,  Devices::Host, int>,
    Vector< double,         Devices::Host, int >,
-   //Vector< Quad< double >, Devices::Host, int>,
+   //Vector< Quad< float >,  Devices::Host, int >,
+   //Vector< Quad< double >, Devices::Host, int >,
    Vector< int,            Devices::Host, long >,
    Vector< long,           Devices::Host, long >,
    Vector< float,          Devices::Host, long >,
-   //Vector< Quad< float >,  Devices::Host, long>,
    Vector< double,         Devices::Host, long >
-   //Vector< Quad< double >, Devices::Host, long>,
+   //Vector< Quad< float >,  Devices::Host, long >,
+   //Vector< Quad< double >, Devices::Host, long >
 #ifdef HAVE_CUDA
    ,
    Vector< int,            Devices::Cuda, short >,
    Vector< long,           Devices::Cuda, short >,
    Vector< float,          Devices::Cuda, short >,
-   //Vector< Quad< float >,  Devices::Cuda, short>,
    Vector< double,         Devices::Cuda, short >,
-   //Vector< Quad< double >, Devices::Cuda, short>,
+   //Vector< Quad< float >,  Devices::Cuda, short >,
+   //Vector< Quad< double >, Devices::Cuda, short >,
    Vector< int,            Devices::Cuda, int >,
    Vector< long,           Devices::Cuda, int >,
    Vector< float,          Devices::Cuda, int >,
-   //Vector< Quad< float >,  Devices::Cuda, int>,
    Vector< double,         Devices::Cuda, int >,
-   //Vector< Quad< double >, Devices::Cuda, int>,
+   //Vector< Quad< float >,  Devices::Cuda, int >,
+   //Vector< Quad< double >, Devices::Cuda, int >,
    Vector< int,            Devices::Cuda, long >,
    Vector< long,           Devices::Cuda, long >,
    Vector< float,          Devices::Cuda, long >,
-   //Vector< Quad< float >,  Devices::Cuda, long>,
    Vector< double,         Devices::Cuda, long >
-   //Vector< Quad< double >, Devices::Cuda, long>,
+   //Vector< Quad< float >,  Devices::Cuda, long >,
+   //Vector< Quad< double >, Devices::Cuda, long >
 #endif
 #ifdef HAVE_MIC
    ,
