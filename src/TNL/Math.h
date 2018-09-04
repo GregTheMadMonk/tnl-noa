@@ -72,7 +72,12 @@ template< class T >
 __cuda_callable__ inline
 T abs( const T& n )
 {
-#if defined(__MIC__)
+#if defined(__CUDA_ARCH__)
+   if( std::is_integral< T >::value )
+      return ::abs( n );
+   else
+      return ::fabs( n );
+#elif defined(__MIC__)
    if( n < ( T ) 0 )
       return -n;
    return n;

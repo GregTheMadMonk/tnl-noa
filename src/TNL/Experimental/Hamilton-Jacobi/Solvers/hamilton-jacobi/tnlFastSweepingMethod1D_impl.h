@@ -170,7 +170,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
     }
     
     __shared__ volatile Real sArray[ 18 ];
-    sArray[thri] = TypeInfo< Real >::getMaxValue();
+    sArray[thri] = std::numeric_limits<  Real >::max();
     
     //filling sArray edges
     int dimX = mesh.getDimensions().x(); 
@@ -191,7 +191,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         if( dimX > (blIdx+1) * blockDim.x )
             sArray[xkolik] = aux[ blIdx*blockDim.x - 1 + xkolik ];
         else
-            sArray[xkolik] = TypeInfo< Real >::getMaxValue();
+            sArray[xkolik] = std::numeric_limits< Real >::max();
     }
     
     if( thri == 1 )
@@ -199,7 +199,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         if( blIdx != 0 )
             sArray[0] = aux[ blIdx*blockDim.x - 1 ];
         else
-            sArray[0] = TypeInfo< Real >::getMaxValue();
+            sArray[0] = std::numeric_limits< Real >::max();
     }
     
         

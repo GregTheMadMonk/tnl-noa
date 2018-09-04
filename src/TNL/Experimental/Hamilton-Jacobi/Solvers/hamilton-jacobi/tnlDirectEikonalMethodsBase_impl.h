@@ -716,8 +716,8 @@ __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 1, 
 
 
         output[ cind ] =
-               input( cell ) >= 0 ? std::numeric_limits< RealType >::max() :
-                                    - std::numeric_limits< RealType >::max();
+               input( cell ) >= 0 ? std::numeric_limits< Real >::max() :
+                                    - std::numeric_limits< Real >::max();
         interfaceMap[ cind ] = false; 
 
         const Real& h = mesh.getSpaceSteps().x();
@@ -768,8 +768,8 @@ __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, 
 
 
         output[ cind ] =
-               input( cell ) >= 0 ? std::numeric_limits< RealType >::max() :
-                                    - std::numeric_limits< RealType >::max();
+               input( cell ) >= 0 ? std::numeric_limits< Real >::max() :
+                                    - std::numeric_limits< Real >::max();
         interfaceMap[ cind ] = false; 
 
         const Real& hx = mesh.getSpaceSteps().x();
@@ -841,8 +841,8 @@ __global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3
 
 
         output[ cind ] =
-               input( cell ) >= 0 ? std::numeric_limits< RealType >::max() :
-                                    - std::numeric_limits< RealType >::max();
+               input( cell ) >= 0 ? std::numeric_limits< Real >::max() :
+                                    - std::numeric_limits< Real >::max();
         interfaceMap[ cind ] = false; 
         cell.refresh();
 

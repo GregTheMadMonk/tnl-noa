@@ -328,15 +328,15 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         hz = mesh.getSpaceSteps().z();
     }
     __shared__ volatile Real sArray[10][10][10];
-    sArray[thrk][thrj][thri] = TypeInfo< Real >::getMaxValue();
+    sArray[thrk][thrj][thri] = std::numeric_limits< Real >::max();
     if(thri == 0 )
     {
-        sArray[8][thrj+1][thrk+1] = TypeInfo< Real >::getMaxValue();
-        sArray[9][thrj+1][thrk+1] = TypeInfo< Real >::getMaxValue();
-        sArray[thrk+1][thrj+1][8] = TypeInfo< Real >::getMaxValue();
-        sArray[thrk+1][thrj+1][9] = TypeInfo< Real >::getMaxValue();
-        sArray[thrj+1][8][thrk+1] = TypeInfo< Real >::getMaxValue();
-        sArray[thrj+1][9][thrk+1] = TypeInfo< Real >::getMaxValue();
+        sArray[8][thrj+1][thrk+1] = std::numeric_limits< Real >::max();
+        sArray[9][thrj+1][thrk+1] = std::numeric_limits< Real >::max();
+        sArray[thrk+1][thrj+1][8] = std::numeric_limits< Real >::max();
+        sArray[thrk+1][thrj+1][9] = std::numeric_limits< Real >::max();
+        sArray[thrj+1][8][thrk+1] = std::numeric_limits< Real >::max();
+        sArray[thrj+1][9][thrk+1] = std::numeric_limits< Real >::max();
     }
             
     //filling sArray edges
@@ -374,7 +374,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         if( blIdx != 0 && thrj+1 < ykolik && thrk+1 < zkolik )
             sArray[thrk+1][thrj+1][0] = aux[ blIdz*blockDim.z * dimX * dimY + blIdy * blockDim.y*dimX + blIdx*blockDim.x + thrj * dimX -1 + thrk*dimX*dimY ];
         else
-            sArray[thrk+1][thrj+1][0] = TypeInfo< Real >::getMaxValue();
+            sArray[thrk+1][thrj+1][0] = std::numeric_limits< Real >::max();
     }
     
     if( thri == 1 )
@@ -382,14 +382,14 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         if( dimX > (blIdx+1) * blockDim.x && thrj+1 < ykolik && thrk+1 < zkolik )
             sArray[thrk+1][thrj+1][9] = aux[ blIdz*blockDim.z * dimX * dimY + blIdy *blockDim.y*dimX+ blIdx*blockDim.x + blockDim.x + thrj * dimX + thrk*dimX*dimY ];
         else
-            sArray[thrk+1][thrj+1][9] = TypeInfo< Real >::getMaxValue();
+            sArray[thrk+1][thrj+1][9] = std::numeric_limits< Real >::max();
     }
     if( thri == 2 )
     {        
         if( blIdy != 0 && thrj+1 < xkolik && thrk+1 < zkolik )
             sArray[thrk+1][0][thrj+1] = aux[ blIdz*blockDim.z * dimX * dimY + blIdy * blockDim.y*dimX + blIdx*blockDim.x - dimX + thrj + thrk*dimX*dimY ];
         else
-            sArray[thrk+1][0][thrj+1] = TypeInfo< Real >::getMaxValue();
+            sArray[thrk+1][0][thrj+1] = std::numeric_limits< Real >::max();
     }
     
     if( thri == 3 )
@@ -397,14 +397,14 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         if( dimY > (blIdy+1) * blockDim.y && thrj+1 < xkolik && thrk+1 < zkolik )
             sArray[thrk+1][9][thrj+1] = aux[ blIdz*blockDim.z * dimX * dimY + (blIdy+1) * blockDim.y*dimX + blIdx*blockDim.x + thrj + thrk*dimX*dimY ];
         else
-            sArray[thrk+1][9][thrj+1] = TypeInfo< Real >::getMaxValue();
+            sArray[thrk+1][9][thrj+1] = std::numeric_limits< Real >::max();
     }
     if( thri == 4 )
     {        
         if( blIdz != 0 && thrj+1 < ykolik && thrk+1 < xkolik )
             sArray[0][thrj+1][thrk+1] = aux[ blIdz*blockDim.z * dimX * dimY + blIdy * blockDim.y*dimX + blIdx*blockDim.x - dimX * dimY + thrj * dimX + thrk ];
         else
-            sArray[0][thrj+1][thrk+1] = TypeInfo< Real >::getMaxValue();
+            sArray[0][thrj+1][thrk+1] = std::numeric_limits< Real >::max();
     }
     
     if( thri == 5 )
@@ -412,7 +412,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         if( dimZ > (blIdz+1) * blockDim.z && thrj+1 < ykolik && thrk+1 < xkolik )
             sArray[9][thrj+1][thrk+1] = aux[ (blIdz+1)*blockDim.z * dimX * dimY + blIdy * blockDim.y*dimX + blIdx*blockDim.x + thrj * dimX + thrk ];
         else
-            sArray[9][thrj+1][thrk+1] = TypeInfo< Real >::getMaxValue();
+            sArray[9][thrj+1][thrk+1] = std::numeric_limits< Real >::max();
     }
     
     if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() && k < mesh.getDimensions().z() )
