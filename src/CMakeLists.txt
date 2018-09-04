@@ -4,10 +4,10 @@ endif( WITH_PYTHON STREQUAL "yes" )
 
 ADD_SUBDIRECTORY( TNL )
 
-if( WITH_TOOLS STREQUAL "yes" )
+if( ${WITH_TOOLS} )
    ADD_SUBDIRECTORY( Tools )
-endif( WITH_TOOLS STREQUAL "yes" )
+endif()
 
-if( WITH_TESTS STREQUAL "yes" )
+if( ${WITH_TESTS} )
    ADD_SUBDIRECTORY( UnitTests )
-endif( WITH_TESTS STREQUAL "yes" )
+endif()

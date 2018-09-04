@@ -28,6 +28,8 @@ option(WITH_GMP "Build with GMP support" OFF)
 option(WITH_TESTS "Build tests" ON)
 option(WITH_COVERAGE "Enable code coverage reports from unit tests" OFF)
 option(WITH_EXAMPLES "Compile the 'examples' directory" ON)
+option(WITH_TOOLS "Compile the 'src/Tools' directory" ON)
+option(WITH_PYTHON "Compile the Python bindings" ON)
 option(WITH_TEMPLATES_INSTANTIATION "Enable explicit template instantiation" OFF)
 
 # install paths relative to the cmake's prefix
@@ -111,7 +113,6 @@ if( ${CXX_COMPILER_NAME} STREQUAL "mpic++" )
    message( "MPI compiler detected."    )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
    set( CUDA_HOST_COMPILER "mpic++" )
-
 endif()
 
 ####
@@ -148,6 +149,22 @@ if( ${WITH_CUDA} )
                set( CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} )
             endif()
         endif()
+        # An extra CUDA_ARCH_HOST_COMPILER variable for compiling tnl-cuda-arch alone,
+        # because it SHOULD NOT be compiled using mpic++, which would cause weird
+        # RPATH_CHANGE error in cmake.
+        # FIXME: find better solution to switch between MPI-enabled and MPI-disabled binaries in cmake
+        if( NOT $ENV{CUDA_ARCH_HOST_COMPILER} STREQUAL "" )
+           message( "-- Setting CUDA_ARCH_HOST_COMPILER to '$ENV{CUDA_ARCH_HOST_COMPILER}'" )
+           set( CUDA_ARCH_HOST_COMPILER $ENV{CUDA_ARCH_HOST_COMPILER} )
+        else()
+            if( EXISTS "${CUDA_TOOLKIT_ROOT_DIR}/bin/g++" )
+               message( "-- Setting CUDA_ARCH_HOST_COMPILER to '${CUDA_TOOLKIT_ROOT_DIR}/bin/g++'" )
+               set( CUDA_ARCH_HOST_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/g++" )
+            else()
+               message( "-- Setting CUDA_ARCH_HOST_COMPILER to '${CMAKE_CXX_COMPILER}'" )
+               set( CUDA_ARCH_HOST_COMPILER ${CMAKE_CXX_COMPILER} )
+            endif()
+        endif()
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA)
         # disable false compiler warnings
         #   reference for the -Xcudafe flag: http://stackoverflow.com/questions/14831051/how-to-disable-compiler-warnings-with-nvcc/17095910#17095910
@@ -171,7 +188,7 @@ if( ${WITH_CUDA} )
                 set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/src/Tools/tnl-cuda-arch.cu)
                 message( "Compiling tnl-cuda-arch ..." )
                 file( MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
-                execute_process( COMMAND nvcc --compiler-bindir ${CUDA_HOST_COMPILER} --std=c++11 ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
+                execute_process( COMMAND nvcc --compiler-bindir ${CUDA_ARCH_HOST_COMPILER} --std=c++11 ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
                                  RESULT_VARIABLE CUDA_ARCH_RESULT
                                  OUTPUT_VARIABLE CUDA_ARCH_OUTPUT
                                  ERROR_VARIABLE CUDA_ARCH_OUTPUT )
@@ -437,6 +454,8 @@ message( "   WITH_GMP=${WITH_GMP}" )
 message( "   WITH_TESTS=${WITH_TESTS}" )
 message( "   WITH_COVERAGE=${WITH_COVERAGE}" )
 message( "   WITH_EXAMPLES=${WITH_EXAMPLES}" )
+message( "   WITH_TOOLS=${WITH_TOOLS}" )
+message( "   WITH_PYTHON=${WITH_PYTHON}" )
 message( "   WITH_TEMPLATES_INSTANTIATION=${WITH_TEMPLATES_INSTANTIATION}" )
 # Print compiler options
 message( "-- Compiler options:" )

@@ -100,7 +100,7 @@ void
 tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 bindDofs( const DofVectorPointer& dofs )
 {
-   this->u.bind( this->getMesh(), dofs );
+   this->u->bind( this->getMesh(), dofs );
 }
 
 template< typename Mesh,
@@ -114,8 +114,8 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                      DofVectorPointer& dofs )
 {
    String inputFile = parameters.getParameter< String >( "input-file" );
-   this->initialData.setMesh( this->getMesh() );
-   if( !this->initialData.boundLoad( inputFile ) )
+   this->initialData->setMesh( this->getMesh() );
+   if( !this->initialData->boundLoad( inputFile ) )
       return false;
    return true;
 }
