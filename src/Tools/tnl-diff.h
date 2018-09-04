@@ -486,7 +486,7 @@ bool resolveGridRealType( const Containers::List< String >& parsedMeshType,
       return resolveGridIndexType< Dim, double >( parsedMeshType, parameters );
    if( parsedMeshType[ 2 ] == "long double" )
       return resolveGridIndexType< Dim, long double >( parsedMeshType, parameters );
-   
+   return false;
 }
 
 #endif /* TNL_DIFF_H_ */
