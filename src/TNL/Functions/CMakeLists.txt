@@ -1,6 +1,7 @@
 ADD_SUBDIRECTORY( Analytic )
 
-SET( headers Domain.h
+SET( headers BoundaryMeshFunction.h
+             Domain.h
              ExactOperatorFunction.h
              FunctionAdapter.h
              MeshFunction.h

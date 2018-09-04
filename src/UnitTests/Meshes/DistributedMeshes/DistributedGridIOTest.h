@@ -225,18 +225,18 @@ class TestDistributedGridIO
         
         CoordinatesType overlap;
         overlap.setValue(1);
-        DistributedGridType distrgrid;
-        distrgrid.setDomainDecomposition( parameters.getDistr() );
-        distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid );
+        DistributedGridType distributedGrid;
+        distributedGrid.setDomainDecomposition( parameters.getDistr() );
+        distributedGrid.template setGlobalGrid<CommunicatorType>( globalGrid );
         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
-        distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+        distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-        //std::cout << distrgrid.printProcessDistr() <<std::endl;
+        //std::cout << distributedGrid.printProcessDistr() <<std::endl;
 
         SharedPointer<MeshType> gridptr;
         SharedPointer<MeshFunctionType> meshFunctionptr;
-        distrgrid.setupGrid(*gridptr);
+        distributedGrid.setupGrid(*gridptr);
        
         DofType dof(gridptr->template getEntitiesCount< Cell >());
         dof.setValue(0);
@@ -274,7 +274,7 @@ class TestDistributedGridIO
         loadDof.setValue(-1);
         
         File file;
-        file.open( FileName+String("-")+distrgrid.printProcessCoords(), IOMode::read );
+        file.open( FileName+String("-")+distributedGrid.printProcessCoords(), IOMode::read );
         loadMeshFunctionptr->boundLoad(file);
         file.close();
 
@@ -304,12 +304,12 @@ class TestDistributedGridIO
 
         CoordinatesType overlap;
         overlap.setValue(1);
-        DistributedGridType distrgrid;
-        distrgrid.setDomainDecomposition( parameters.getDistr() );
-        distrgrid.template setGlobalGrid<CommunicatorType>( globalGrid );
+        DistributedGridType distributedGrid;
+        distributedGrid.setDomainDecomposition( parameters.getDistr() );
+        distributedGrid.template setGlobalGrid<CommunicatorType>( globalGrid );
         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
-        distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+        distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
         //save files from local mesh        
         PointType localOrigin=parameters.getOrigin(CommunicatorType::GetRank(CommunicatorType::AllGroup));        
@@ -328,7 +328,7 @@ class TestDistributedGridIO
 
         String FileName=String("/tmp/test-file.tnl");
         File file;
-        file.open( FileName+String("-")+distrgrid.printProcessCoords(), IOMode::write );        
+        file.open( FileName+String("-")+distributedGrid.printProcessCoords(), IOMode::write );        
         localMeshFunctionptr->save(file);
         file.close();
 
@@ -337,7 +337,7 @@ class TestDistributedGridIO
         //Crete "distributedgrid driven" grid filed by load
         SharedPointer<MeshType> loadGridptr;
         SharedPointer<MeshFunctionType> loadMeshFunctionptr;
-        distrgrid.setupGrid(*loadGridptr);
+        distributedGrid.setupGrid(*loadGridptr);
         
         DofType loadDof(loadGridptr->template getEntitiesCount< Cell >());
         loadDof.setValue(0);
@@ -351,7 +351,7 @@ class TestDistributedGridIO
         //Crete "distributedgrid driven" grid filed by evaluated linear function
         SharedPointer<MeshType> gridptr;
         SharedPointer<MeshFunctionType> meshFunctionptr;
-        distrgrid.setupGrid(*gridptr);
+        distributedGrid.setupGrid(*gridptr);
         
         DofType dof(gridptr->template getEntitiesCount< Cell >());
         dof.setValue(-1);

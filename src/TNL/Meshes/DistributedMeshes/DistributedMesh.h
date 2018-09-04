@@ -28,6 +28,4 @@ public:
 } // namespace Meshes
 } // namespace TNL
 
-#include <TNL/Meshes/DistributedMeshes/DistributedGrid_1D.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedGrid_2D.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedGrid_3D.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedGrid.h>

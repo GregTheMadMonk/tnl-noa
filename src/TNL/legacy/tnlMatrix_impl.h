@@ -191,19 +191,11 @@ template< typename Real,
           typename Index >
 bool tnlMatrix< Real, Device, Index >::save( File& file ) const
 {
-#ifdef HAVE_NOT_CXX11
-   if( ! tnlObject::save( file ) ||
-       ! file.write< IndexType, Devices::Host, Index >( &this->rows, 1 ) ||
-       ! file.write< IndexType, Devices::Host, Index >( &this->columns, 1 ) ||
-       ! this->values.save( file ) )
-      return false;
-#else   
    if( ! tnlObject::save( file ) ||
        ! file.write( &this->rows ) ||
        ! file.write( &this->columns ) ||
        ! this->values.save( file ) )
       return false;
-#endif      
    return true;
 }
 
@@ -212,19 +204,11 @@ template< typename Real,
           typename Index >
 bool tnlMatrix< Real, Device, Index >::load( File& file )
 {
-#ifdef HAVE_NOT_CXX11
-   if( ! tnlObject::load( file ) ||
-       ! file.read< IndexType, Devices::Host, Index >( &this->rows, 1 ) ||
-       ! file.read< IndexType, Devices::Host, Index >( &this->columns, 1 ) ||
-       ! this->values.load( file ) )
-      return false;
-#else   
    if( ! tnlObject::load( file ) ||
        ! file.read( &this->rows ) ||
        ! file.read( &this->columns ) ||
        ! this->values.load( file ) )
       return false;
-#endif      
    return true;
 }
 

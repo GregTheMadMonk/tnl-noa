@@ -26,7 +26,7 @@ void setDof_3D(DofType &dof, typename DofType::RealType value)
 }
 
 template<typename GridType>
-int getAdd(GridType &grid,bool bottom, bool nord, bool west )
+int getAdd(GridType &grid,bool bottom, bool north, bool west )
 {
     int maxx=grid.getDimensions().x();
     int maxy=grid.getDimensions().y();
@@ -35,7 +35,7 @@ int getAdd(GridType &grid,bool bottom, bool nord, bool west )
     int add=0;
     if(!west)
         add+=maxx-1;
-    if(!nord)
+    if(!north)
         add+=(maxy-1)*maxx;
     if(!bottom)
         add+=(maxz-1)*maxx*maxy;
@@ -44,17 +44,17 @@ int getAdd(GridType &grid,bool bottom, bool nord, bool west )
 }
 
 template<typename DofType,typename GridType>
-void checkConner(GridType &grid, DofType &dof,bool bottom, bool nord, bool west, typename DofType::RealType expectedValue )
+void checkConner(GridType &grid, DofType &dof,bool bottom, bool north, bool west, typename DofType::RealType expectedValue )
 {
-    int i=getAdd(grid,bottom,nord,west);
+    int i=getAdd(grid,bottom,north,west);
     EXPECT_EQ( dof[i], expectedValue) << "Conner test failed";
     
 }
 
 template<typename DofType,typename GridType>
-void checkXDirectionEdge(GridType &grid, DofType &dof, bool bottom, bool nord, typename DofType::RealType expectedValue)
+void checkXDirectionEdge(GridType &grid, DofType &dof, bool bottom, bool north, typename DofType::RealType expectedValue)
 {
-    int add=getAdd(grid,bottom,nord,true);        
+    int add=getAdd(grid,bottom,north,true);        
     for(int i=1;i<grid.getDimensions().x()-1;i++) 
             EXPECT_EQ( dof[i+add], expectedValue) << "X direction Edge test failed " << i;
 }
@@ -69,9 +69,9 @@ void checkYDirectionEdge(GridType &grid, DofType &dof, bool bottom, bool west, t
 }
 
 template<typename DofType,typename GridType>
-void checkZDirectionEdge(GridType &grid, DofType &dof, bool nord, bool west, typename DofType::RealType expectedValue)
+void checkZDirectionEdge(GridType &grid, DofType &dof, bool north, bool west, typename DofType::RealType expectedValue)
 {
-    int add=getAdd(grid,true,nord,west);
+    int add=getAdd(grid,true,north,west);
     for(int i=1;i<grid.getDimensions().z()-1;i++) 
             EXPECT_EQ( dof[grid.getDimensions().y()*grid.getDimensions().x()*i+add], expectedValue) << "Z direction Edge test failed " << i;
 }
@@ -88,9 +88,9 @@ void checkZFace(GridType &grid, DofType &dof, bool bottom, typename DofType::Rea
 }
 
 template<typename DofType,typename GridType>
-void checkYFace(GridType &grid, DofType &dof, bool nord, typename DofType::RealType expectedValue)
+void checkYFace(GridType &grid, DofType &dof, bool north, typename DofType::RealType expectedValue)
 {
-    int add=getAdd(grid,true,nord,true);
+    int add=getAdd(grid,true,north,true);
     for(int i=1;i<grid.getDimensions().z()-1;i++)
         for(int j=1; j<grid.getDimensions().x()-1;j++)
         {
@@ -110,7 +110,7 @@ void checkXFace(GridType &grid, DofType &dof, bool west, typename DofType::RealT
 }
 
 /*
-Expected 27 process
+Expected 27 processes
 */
 template<typename DofType,typename GridType>
 void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType::RealType expectedValue)
@@ -328,263 +328,263 @@ void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType:
 }
 
 template<typename DofType,typename GridType>
-void CheckConnerNode_Overlap(GridType &grid, DofType &dof,bool bottom, bool nord, bool west, typename DofType::RealType expectedValue)
+void CheckConnerNode_Overlap(GridType &grid, DofType &dof,bool bottom, bool north, bool west, typename DofType::RealType expectedValue)
 {
-    checkConner(grid,dof,!bottom, !nord, !west, expectedValue );
-    checkXDirectionEdge(grid,dof,!bottom,!nord,expectedValue);
-    checkYDirectionEdge(grid,dof,!bottom,!west,expectedValue);
-    checkZDirectionEdge(grid,dof,!nord,!west,expectedValue);
-    checkXFace(grid, dof, !west, expectedValue);
-    checkYFace(grid, dof, !nord, expectedValue);
-    checkZFace(grid, dof, !bottom, expectedValue);
+   checkConner(grid,dof,!bottom, !north, !west, expectedValue );
+   checkXDirectionEdge(grid,dof,!bottom,!north,expectedValue);
+   checkYDirectionEdge(grid,dof,!bottom,!west,expectedValue);
+   checkZDirectionEdge(grid,dof,!north,!west,expectedValue);
+   checkXFace(grid, dof, !west, expectedValue);
+   checkYFace(grid, dof, !north, expectedValue);
+   checkZFace(grid, dof, !bottom, expectedValue);
 }
 
 template<typename DofType,typename GridType>
-void CheckXEdgeNode_Overlap(GridType &grid, DofType &dof,bool bottom, bool nord, typename DofType::RealType expectedValue)
+void CheckXEdgeNode_Overlap(GridType &grid, DofType &dof,bool bottom, bool north, typename DofType::RealType expectedValue)
 {
-    checkConner(grid,dof,!bottom, !nord, false, expectedValue );
-    checkConner(grid,dof,!bottom, !nord, true, expectedValue );
-    checkXDirectionEdge(grid,dof,!bottom, !nord,expectedValue);
-    checkYDirectionEdge(grid,dof,!bottom,false,expectedValue);
-    checkYDirectionEdge(grid,dof,!bottom,true,expectedValue);
-    checkZDirectionEdge(grid,dof,!nord,false,expectedValue);
-    checkZDirectionEdge(grid,dof,!nord,true,expectedValue);
-    checkXFace(grid, dof, false, expectedValue);
-    checkXFace(grid, dof, true, expectedValue);
-    checkYFace(grid, dof, !nord, expectedValue);
-    checkZFace(grid, dof, !bottom, expectedValue);
+   checkConner(grid,dof,!bottom, !north, false, expectedValue );
+   checkConner(grid,dof,!bottom, !north, true, expectedValue );
+   checkXDirectionEdge(grid,dof,!bottom, !north,expectedValue);
+   checkYDirectionEdge(grid,dof,!bottom,false,expectedValue);
+   checkYDirectionEdge(grid,dof,!bottom,true,expectedValue);
+   checkZDirectionEdge(grid,dof,!north,false,expectedValue);
+   checkZDirectionEdge(grid,dof,!north,true,expectedValue);
+   checkXFace(grid, dof, false, expectedValue);
+   checkXFace(grid, dof, true, expectedValue);
+   checkYFace(grid, dof, !north, expectedValue);
+   checkZFace(grid, dof, !bottom, expectedValue);
 }
 
 template<typename DofType,typename GridType>
 void CheckYEdgeNode_Overlap(GridType &grid, DofType &dof,bool bottom, bool west, typename DofType::RealType expectedValue)
 {
-        checkConner(grid,dof,!bottom, false, !west, expectedValue );
-        checkConner(grid,dof,!bottom, true, !west, expectedValue );
-        checkXDirectionEdge(grid,dof,!bottom,false,expectedValue);
-        checkXDirectionEdge(grid,dof,!bottom,true,expectedValue);
-        checkYDirectionEdge(grid,dof,!bottom,!west,expectedValue);
-        checkZDirectionEdge(grid,dof,false,!west,expectedValue);
-        checkZDirectionEdge(grid,dof,true,!west,expectedValue);
-        checkXFace(grid, dof, !west, expectedValue);
-        checkYFace(grid, dof, false, expectedValue);
-        checkYFace(grid, dof, true, expectedValue);
-        checkZFace(grid, dof, !bottom, expectedValue);
+   checkConner(grid,dof,!bottom, false, !west, expectedValue );
+   checkConner(grid,dof,!bottom, true, !west, expectedValue );
+   checkXDirectionEdge(grid,dof,!bottom,false,expectedValue);
+   checkXDirectionEdge(grid,dof,!bottom,true,expectedValue);
+   checkYDirectionEdge(grid,dof,!bottom,!west,expectedValue);
+   checkZDirectionEdge(grid,dof,false,!west,expectedValue);
+   checkZDirectionEdge(grid,dof,true,!west,expectedValue);
+   checkXFace(grid, dof, !west, expectedValue);
+   checkYFace(grid, dof, false, expectedValue);
+   checkYFace(grid, dof, true, expectedValue);
+   checkZFace(grid, dof, !bottom, expectedValue);
 }
 
 template<typename DofType,typename GridType>
-void CheckZEdgeNode_Overlap(GridType &grid, DofType &dof,bool nord, bool west, typename DofType::RealType expectedValue)
+void CheckZEdgeNode_Overlap(GridType &grid, DofType &dof,bool north, bool west, typename DofType::RealType expectedValue)
 {
-        checkConner(grid,dof,false, !nord, !west, expectedValue );
-        checkConner(grid,dof,true, !nord, !west, expectedValue );
-        checkXDirectionEdge(grid,dof,false,!nord,expectedValue);
-        checkXDirectionEdge(grid,dof,true,!nord,expectedValue);
-        checkYDirectionEdge(grid,dof,false,!west,expectedValue);
-        checkYDirectionEdge(grid,dof,true,!west,expectedValue);
-        checkZDirectionEdge(grid,dof,!nord,!west,expectedValue);
-        checkXFace(grid, dof, !west, expectedValue);
-        checkYFace(grid, dof, !nord, expectedValue);
-        checkZFace(grid, dof, false, expectedValue);
-        checkZFace(grid, dof, true, expectedValue);
+   checkConner(grid,dof,false, !north, !west, expectedValue );
+   checkConner(grid,dof,true, !north, !west, expectedValue );
+   checkXDirectionEdge(grid,dof,false,!north,expectedValue);
+   checkXDirectionEdge(grid,dof,true,!north,expectedValue);
+   checkYDirectionEdge(grid,dof,false,!west,expectedValue);
+   checkYDirectionEdge(grid,dof,true,!west,expectedValue);
+   checkZDirectionEdge(grid,dof,!north,!west,expectedValue);
+   checkXFace(grid, dof, !west, expectedValue);
+   checkYFace(grid, dof, !north, expectedValue);
+   checkZFace(grid, dof, false, expectedValue);
+   checkZFace(grid, dof, true, expectedValue);
 }
 
 template<typename DofType,typename GridType>
 void CheckXFaceNode_Overlap(GridType &grid, DofType &dof,bool west, typename DofType::RealType expectedValue)
 {
-        checkConner(grid,dof,false, false, !west, expectedValue );
-        checkConner(grid,dof,false, true, !west, expectedValue );
-        checkConner(grid,dof,true, false, !west, expectedValue );
-        checkConner(grid,dof,true, true, !west, expectedValue );
-        checkXDirectionEdge(grid,dof,false,false,expectedValue);
-        checkXDirectionEdge(grid,dof,false,true,expectedValue);
-        checkXDirectionEdge(grid,dof,true,false,expectedValue);
-        checkXDirectionEdge(grid,dof,true,true,expectedValue);
-        checkYDirectionEdge(grid,dof,false,!west,expectedValue);
-        checkYDirectionEdge(grid,dof,true,!west,expectedValue);
-        checkZDirectionEdge(grid,dof,false,!west,expectedValue);
-        checkZDirectionEdge(grid,dof,true,!west,expectedValue);
-        checkXFace(grid, dof, !west, expectedValue);
-        checkYFace(grid, dof, false, expectedValue);
-        checkYFace(grid, dof, true, expectedValue);
-        checkZFace(grid, dof, false, expectedValue);    
-        checkZFace(grid, dof, true, expectedValue);        
+   checkConner(grid,dof,false, false, !west, expectedValue );
+   checkConner(grid,dof,false, true, !west, expectedValue );
+   checkConner(grid,dof,true, false, !west, expectedValue );
+   checkConner(grid,dof,true, true, !west, expectedValue );
+   checkXDirectionEdge(grid,dof,false,false,expectedValue);
+   checkXDirectionEdge(grid,dof,false,true,expectedValue);
+   checkXDirectionEdge(grid,dof,true,false,expectedValue);
+   checkXDirectionEdge(grid,dof,true,true,expectedValue);
+   checkYDirectionEdge(grid,dof,false,!west,expectedValue);
+   checkYDirectionEdge(grid,dof,true,!west,expectedValue);
+   checkZDirectionEdge(grid,dof,false,!west,expectedValue);
+   checkZDirectionEdge(grid,dof,true,!west,expectedValue);
+   checkXFace(grid, dof, !west, expectedValue);
+   checkYFace(grid, dof, false, expectedValue);
+   checkYFace(grid, dof, true, expectedValue);
+   checkZFace(grid, dof, false, expectedValue);    
+   checkZFace(grid, dof, true, expectedValue);        
 }
 
 template<typename DofType,typename GridType>
-void CheckYFaceNode_Overlap(GridType &grid, DofType &dof,bool nord, typename DofType::RealType expectedValue)
+void CheckYFaceNode_Overlap(GridType &grid, DofType &dof,bool north, typename DofType::RealType expectedValue)
 {
-        checkConner(grid,dof, false,!nord, false, expectedValue );
-        checkConner(grid,dof, false,!nord, true, expectedValue );
-        checkConner(grid,dof, true, !nord, false, expectedValue );
-        checkConner(grid,dof, true, !nord, true, expectedValue );
-        checkXDirectionEdge(grid,dof,false,!nord,expectedValue);
-        checkXDirectionEdge(grid,dof,true,!nord,expectedValue);
-        checkYDirectionEdge(grid,dof,false,false,expectedValue);
-        checkYDirectionEdge(grid,dof,false,true,expectedValue);
-        checkYDirectionEdge(grid,dof,true,false,expectedValue);
-        checkYDirectionEdge(grid,dof,true,true,expectedValue);
-        checkZDirectionEdge(grid,dof,!nord,false,expectedValue);
-        checkZDirectionEdge(grid,dof,!nord,true,expectedValue);
-        checkXFace(grid, dof, false, expectedValue);
-        checkXFace(grid, dof, true, expectedValue);
-        checkYFace(grid, dof, !nord, expectedValue);
-        checkZFace(grid, dof, false, expectedValue);
-        checkZFace(grid, dof, true, expectedValue);    
+   checkConner(grid,dof, false,!north, false, expectedValue );
+   checkConner(grid,dof, false,!north, true, expectedValue );
+   checkConner(grid,dof, true, !north, false, expectedValue );
+   checkConner(grid,dof, true, !north, true, expectedValue );
+   checkXDirectionEdge(grid,dof,false,!north,expectedValue);
+   checkXDirectionEdge(grid,dof,true,!north,expectedValue);
+   checkYDirectionEdge(grid,dof,false,false,expectedValue);
+   checkYDirectionEdge(grid,dof,false,true,expectedValue);
+   checkYDirectionEdge(grid,dof,true,false,expectedValue);
+   checkYDirectionEdge(grid,dof,true,true,expectedValue);
+   checkZDirectionEdge(grid,dof,!north,false,expectedValue);
+   checkZDirectionEdge(grid,dof,!north,true,expectedValue);
+   checkXFace(grid, dof, false, expectedValue);
+   checkXFace(grid, dof, true, expectedValue);
+   checkYFace(grid, dof, !north, expectedValue);
+   checkZFace(grid, dof, false, expectedValue);
+   checkZFace(grid, dof, true, expectedValue);    
 }
 
 template<typename DofType,typename GridType>
 void CheckZFaceNode_Overlap(GridType &grid, DofType &dof,bool bottom, typename DofType::RealType expectedValue)
 {
-        checkConner(grid,dof,!bottom, false, false, expectedValue );
-        checkConner(grid,dof,!bottom, false, true, expectedValue );
-        checkConner(grid,dof,!bottom, true, false, expectedValue );
-        checkConner(grid,dof,!bottom, true, true, expectedValue );
-        checkXDirectionEdge(grid,dof,!bottom,false,expectedValue);
-        checkXDirectionEdge(grid,dof,!bottom,true,expectedValue);
-        checkYDirectionEdge(grid,dof,!bottom,false,expectedValue);
-        checkYDirectionEdge(grid,dof,!bottom,true,expectedValue);
-        checkZDirectionEdge(grid,dof,false,false,expectedValue);
-        checkZDirectionEdge(grid,dof,false,true,expectedValue);
-        checkZDirectionEdge(grid,dof,true,false,expectedValue);
-        checkZDirectionEdge(grid,dof,true,true,expectedValue);
-        checkXFace(grid, dof, false, expectedValue);
-        checkXFace(grid, dof, true, expectedValue);
-        checkYFace(grid, dof, false, expectedValue);
-        checkYFace(grid, dof, true, expectedValue);
-        checkZFace(grid, dof, !bottom, expectedValue);    
+   checkConner(grid,dof,!bottom, false, false, expectedValue );
+   checkConner(grid,dof,!bottom, false, true, expectedValue );
+   checkConner(grid,dof,!bottom, true, false, expectedValue );
+   checkConner(grid,dof,!bottom, true, true, expectedValue );
+   checkXDirectionEdge(grid,dof,!bottom,false,expectedValue);
+   checkXDirectionEdge(grid,dof,!bottom,true,expectedValue);
+   checkYDirectionEdge(grid,dof,!bottom,false,expectedValue);
+   checkYDirectionEdge(grid,dof,!bottom,true,expectedValue);
+   checkZDirectionEdge(grid,dof,false,false,expectedValue);
+   checkZDirectionEdge(grid,dof,false,true,expectedValue);
+   checkZDirectionEdge(grid,dof,true,false,expectedValue);
+   checkZDirectionEdge(grid,dof,true,true,expectedValue);
+   checkXFace(grid, dof, false, expectedValue);
+   checkXFace(grid, dof, true, expectedValue);
+   checkYFace(grid, dof, false, expectedValue);
+   checkYFace(grid, dof, true, expectedValue);
+   checkZFace(grid, dof, !bottom, expectedValue);    
 }
 
 template<typename DofType,typename GridType>
 void CheckCentralNode_Overlap(GridType &grid, DofType &dof,typename DofType::RealType expectedValue)
 {
-        checkConner(grid,dof,false, false, false, expectedValue );
-        checkConner(grid,dof,false, false, true, expectedValue );
-        checkConner(grid,dof,false, true, false, expectedValue );
-        checkConner(grid,dof,false, true, true, expectedValue );
-        checkConner(grid,dof,true, false, false, expectedValue );
-        checkConner(grid,dof,true, false, true, expectedValue );
-        checkConner(grid,dof,true, true, false, expectedValue );
-        checkConner(grid,dof,true, true, true, expectedValue );
+   checkConner(grid,dof,false, false, false, expectedValue );
+   checkConner(grid,dof,false, false, true, expectedValue );
+   checkConner(grid,dof,false, true, false, expectedValue );
+   checkConner(grid,dof,false, true, true, expectedValue );
+   checkConner(grid,dof,true, false, false, expectedValue );
+   checkConner(grid,dof,true, false, true, expectedValue );
+   checkConner(grid,dof,true, true, false, expectedValue );
+   checkConner(grid,dof,true, true, true, expectedValue );
 
-        checkXDirectionEdge(grid,dof,false,false,expectedValue);
-        checkXDirectionEdge(grid,dof,false,true,expectedValue);
-        checkXDirectionEdge(grid,dof,true,false,expectedValue);
-        checkXDirectionEdge(grid,dof,true,true,expectedValue);
-        checkYDirectionEdge(grid,dof,false,false,expectedValue);
-        checkYDirectionEdge(grid,dof,false,true,expectedValue);
-        checkYDirectionEdge(grid,dof,true,false,expectedValue);
-        checkYDirectionEdge(grid,dof,true,true,expectedValue);
-        checkZDirectionEdge(grid,dof,false,false,expectedValue);
-        checkZDirectionEdge(grid,dof,false,true,expectedValue);
-        checkZDirectionEdge(grid,dof,true,false,expectedValue);
-        checkZDirectionEdge(grid,dof,true,true,expectedValue);
+   checkXDirectionEdge(grid,dof,false,false,expectedValue);
+   checkXDirectionEdge(grid,dof,false,true,expectedValue);
+   checkXDirectionEdge(grid,dof,true,false,expectedValue);
+   checkXDirectionEdge(grid,dof,true,true,expectedValue);
+   checkYDirectionEdge(grid,dof,false,false,expectedValue);
+   checkYDirectionEdge(grid,dof,false,true,expectedValue);
+   checkYDirectionEdge(grid,dof,true,false,expectedValue);
+   checkYDirectionEdge(grid,dof,true,true,expectedValue);
+   checkZDirectionEdge(grid,dof,false,false,expectedValue);
+   checkZDirectionEdge(grid,dof,false,true,expectedValue);
+   checkZDirectionEdge(grid,dof,true,false,expectedValue);
+   checkZDirectionEdge(grid,dof,true,true,expectedValue);
 
-        checkXFace(grid, dof, false, expectedValue);
-        checkXFace(grid, dof, true, expectedValue);
-        checkYFace(grid, dof, false, expectedValue);
-        checkYFace(grid, dof, true, expectedValue);
-        checkZFace(grid, dof, false, expectedValue);
-        checkZFace(grid, dof, true, expectedValue);    
+   checkXFace(grid, dof, false, expectedValue);
+   checkXFace(grid, dof, true, expectedValue);
+   checkYFace(grid, dof, false, expectedValue);
+   checkYFace(grid, dof, true, expectedValue);
+   checkZFace(grid, dof, false, expectedValue);
+   checkZFace(grid, dof, true, expectedValue);    
 }
 
 /*
-* Expected 27 procs. 
+* Expected 27 processes. 
 */
 template<typename DofType,typename GridType>
 void check_Overlap_3D(int rank, GridType &grid, DofType &dof, typename DofType::RealType expectedValue)
 {
-    if(rank==0)
-        CheckConnerNode_Overlap(grid,dof,true,true,true,expectedValue);
+   if(rank==0)
+       CheckConnerNode_Overlap(grid,dof,true,true,true,expectedValue);
 
-    if(rank==1)
-        CheckXEdgeNode_Overlap(grid,dof,true,true,expectedValue);
+   if(rank==1)
+       CheckXEdgeNode_Overlap(grid,dof,true,true,expectedValue);
 
-    if(rank==2)    
-        CheckConnerNode_Overlap(grid,dof,true,true,false,expectedValue);
-    
-    if(rank==3)
-        CheckYEdgeNode_Overlap(grid,dof,true,true,expectedValue);
+   if(rank==2)    
+       CheckConnerNode_Overlap(grid,dof,true,true,false,expectedValue);
 
-    if(rank==4)
-        CheckZFaceNode_Overlap(grid,dof,true,expectedValue);
-        
-    if(rank==5)
-        CheckYEdgeNode_Overlap(grid,dof,true,false,expectedValue);
-    
-    if(rank==6)
-        CheckConnerNode_Overlap(grid,dof,true,false,true,expectedValue);
+   if(rank==3)
+       CheckYEdgeNode_Overlap(grid,dof,true,true,expectedValue);
 
-    if(rank==7)
-        CheckXEdgeNode_Overlap(grid,dof,true,false,expectedValue);
+   if(rank==4)
+       CheckZFaceNode_Overlap(grid,dof,true,expectedValue);
 
-    if(rank==8)
-        CheckConnerNode_Overlap(grid,dof,true,false,false,expectedValue);
+   if(rank==5)
+       CheckYEdgeNode_Overlap(grid,dof,true,false,expectedValue);
 
-    if(rank==9)
-        CheckZEdgeNode_Overlap(grid,dof,true,true,expectedValue);
+   if(rank==6)
+       CheckConnerNode_Overlap(grid,dof,true,false,true,expectedValue);
 
-    if(rank==10)
-        CheckYFaceNode_Overlap(grid,dof,true,expectedValue);
+   if(rank==7)
+       CheckXEdgeNode_Overlap(grid,dof,true,false,expectedValue);
 
-    if(rank==11)
-        CheckZEdgeNode_Overlap(grid,dof,true,false,expectedValue);
+   if(rank==8)
+       CheckConnerNode_Overlap(grid,dof,true,false,false,expectedValue);
 
-    if(rank==12)
-        CheckXFaceNode_Overlap(grid,dof,true,expectedValue);
+   if(rank==9)
+       CheckZEdgeNode_Overlap(grid,dof,true,true,expectedValue);
 
-    if(rank==13)
-        CheckCentralNode_Overlap(grid,dof,expectedValue);
+   if(rank==10)
+       CheckYFaceNode_Overlap(grid,dof,true,expectedValue);
 
-    if(rank==14)
-        CheckXFaceNode_Overlap(grid,dof,false,expectedValue);
+   if(rank==11)
+       CheckZEdgeNode_Overlap(grid,dof,true,false,expectedValue);
 
-    if(rank==15)
-        CheckZEdgeNode_Overlap(grid,dof,false,true,expectedValue);
+   if(rank==12)
+       CheckXFaceNode_Overlap(grid,dof,true,expectedValue);
 
-    if(rank==16)
-        CheckYFaceNode_Overlap(grid,dof,false,expectedValue);
+   if(rank==13)
+       CheckCentralNode_Overlap(grid,dof,expectedValue);
 
-    if(rank==17)
-        CheckZEdgeNode_Overlap(grid,dof,false,false,expectedValue);
-    
-    if(rank==18)
-        CheckConnerNode_Overlap(grid,dof,false,true,true,expectedValue);
+   if(rank==14)
+       CheckXFaceNode_Overlap(grid,dof,false,expectedValue);
 
-    if(rank==19)
-        CheckXEdgeNode_Overlap(grid,dof,false,true,expectedValue);
+   if(rank==15)
+       CheckZEdgeNode_Overlap(grid,dof,false,true,expectedValue);
 
-    if(rank==20)    
-        CheckConnerNode_Overlap(grid,dof,false,true,false,expectedValue);
-    
-    if(rank==21)
-        CheckYEdgeNode_Overlap(grid,dof,false,true,expectedValue);
+   if(rank==16)
+       CheckYFaceNode_Overlap(grid,dof,false,expectedValue);
 
-    if(rank==22)
-        CheckZFaceNode_Overlap(grid,dof,false,expectedValue);
-        
-    if(rank==23)
-        CheckYEdgeNode_Overlap(grid,dof,false,false,expectedValue);
-    
-    if(rank==24)
-        CheckConnerNode_Overlap(grid,dof,false,false,true,expectedValue);
+   if(rank==17)
+       CheckZEdgeNode_Overlap(grid,dof,false,false,expectedValue);
 
-    if(rank==25)
-        CheckXEdgeNode_Overlap(grid,dof,false,false,expectedValue);
+   if(rank==18)
+       CheckConnerNode_Overlap(grid,dof,false,true,true,expectedValue);
 
-    if(rank==26)
-        CheckConnerNode_Overlap(grid,dof,false,false,false,expectedValue);
+   if(rank==19)
+       CheckXEdgeNode_Overlap(grid,dof,false,true,expectedValue);
+
+   if(rank==20)    
+       CheckConnerNode_Overlap(grid,dof,false,true,false,expectedValue);
+
+   if(rank==21)
+       CheckYEdgeNode_Overlap(grid,dof,false,true,expectedValue);
+
+   if(rank==22)
+       CheckZFaceNode_Overlap(grid,dof,false,expectedValue);
+
+   if(rank==23)
+       CheckYEdgeNode_Overlap(grid,dof,false,false,expectedValue);
+
+   if(rank==24)
+       CheckConnerNode_Overlap(grid,dof,false,false,true,expectedValue);
+
+   if(rank==25)
+       CheckXEdgeNode_Overlap(grid,dof,false,false,expectedValue);
+
+   if(rank==26)
+       CheckConnerNode_Overlap(grid,dof,false,false,false,expectedValue);
 
 }
 
 template<typename DofType,typename GridType>
 void check_Inner_3D(int rank, GridType grid, DofType dof, typename DofType::RealType expectedValue)
 {
-    int maxx=grid.getDimensions().x();
-    int maxy=grid.getDimensions().y();
-    int maxz=grid.getDimensions().z();
-    for(int k=1;k<maxz-1;k++)
-        for(int j=1;j<maxy-1;j++)//prvni a posledni jsou buď hranice, nebo overlap
-            for(int i=1;i<maxx-1;i++) //buď je vlevo hranice, nebo overlap
-                EXPECT_EQ( dof[k*maxx*maxy+j*maxx+i], expectedValue) <<" "<<k <<" "<< j<<" "<<i << " " << maxx << " " << maxy<< " " << maxz;
+   int maxx=grid.getDimensions().x();
+   int maxy=grid.getDimensions().y();
+   int maxz=grid.getDimensions().z();
+   for(int k=1;k<maxz-1;k++)
+      for(int j=1;j<maxy-1;j++)//prvni a posledni jsou buď hranice, nebo overlap
+         for(int i=1;i<maxx-1;i++) //buď je vlevo hranice, nebo overlap
+            EXPECT_EQ( dof[k*maxx*maxy+j*maxx+i], expectedValue) <<" "<<k <<" "<< j<<" "<<i << " " << maxx << " " << maxy<< " " << maxz;
 }
 
 
@@ -605,25 +605,22 @@ class DistributedGirdTest_3D : public ::testing::Test
 {
    protected:
 
-      static DistributedGridType *distrgrid;
-      static DofType *dof;
+      DistributedGridType *distributedGrid;
+      DofType *dof;
 
-      static SharedPointer<GridType> gridptr;
-      static SharedPointer<MeshFunctionType> meshFunctionptr;
+      SharedPointer<GridType> gridptr;
+      SharedPointer<MeshFunctionType> meshFunctionptr;
 
-      static MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > constFunctionEvaluator;
-      static SharedPointer< ConstFunction<double,3>, Host > constFunctionPtr;
+      MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > constFunctionEvaluator;
+      SharedPointer< ConstFunction<double,3>, Host > constFunctionPtr;
 
-      static MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,3> > linearFunctionEvaluator;
-      static SharedPointer< LinearFunction<double,3>, Host > linearFunctionPtr;
+      MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,3> > linearFunctionEvaluator;
+      SharedPointer< LinearFunction<double,3>, Host > linearFunctionPtr;
 
-      static int rank;
-      static int nproc;    
+      int rank;
+      int nproc;    
 
-      // Per-test-case set-up.
-      // Called before the first test in this test case.
-      // Can be omitted if not needed.
-      static void SetUpTestCase()
+      void SetUp()
       {
 
          int size=10;
@@ -645,40 +642,26 @@ class DistributedGirdTest_3D : public ::testing::Test
          globalGrid.setDomain(globalOrigin,globalProportions);
 
          typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-         distrgrid=new DistributedGridType();
-         distrgrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3, 3 ) );
-         distrgrid->template setGlobalGrid<CommunicatorType>( globalGrid );
-         distrgrid->setupGrid(*gridptr);    
-         SubdomainOverlapsGetter< GridType, CommunicatorType >::getOverlaps( distrgrid, lowerOverlap, upperOverlap, 1 );
-         distrgrid->setOverlaps( lowerOverlap, upperOverlap );
+         distributedGrid=new DistributedGridType();
+         distributedGrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3, 3 ) );
+         distributedGrid->template setGlobalGrid<CommunicatorType>( globalGrid );
+         distributedGrid->setupGrid(*gridptr);    
+         SubdomainOverlapsGetter< GridType, CommunicatorType >::getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
+         distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
 
-         distrgrid->setupGrid(*gridptr);
+         distributedGrid->setupGrid(*gridptr);
          dof=new DofType(gridptr->template getEntitiesCount< Cell >());
 
          meshFunctionptr->bind(gridptr,*dof);   
          constFunctionPtr->Number=rank;
       }
 
-      // Per-test-case tear-down.
-      // Called after the last test in this test case.
-      // Can be omitted if not needed.
-      static void TearDownTestCase()
+      void TearDown()
       {
          delete dof;
-         delete distrgrid;
+         delete distributedGrid;
       }
 };
-
-DistributedGridType *DistributedGirdTest_3D::distrgrid=NULL;
-DofType *DistributedGirdTest_3D::dof=NULL;
-SharedPointer<GridType> DistributedGirdTest_3D::gridptr;
-SharedPointer<MeshFunctionType> DistributedGirdTest_3D::meshFunctionptr;
-MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > DistributedGirdTest_3D::constFunctionEvaluator;
-SharedPointer< ConstFunction<double,3>, Host > DistributedGirdTest_3D::constFunctionPtr;
-MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,3> > DistributedGirdTest_3D::linearFunctionEvaluator;
-SharedPointer< LinearFunction<double,3>, Host > DistributedGirdTest_3D::linearFunctionPtr;
-int DistributedGirdTest_3D::rank;
-int DistributedGirdTest_3D::nproc;    
 
 TEST_F(DistributedGirdTest_3D, evaluateAllEntities)
 {

@@ -17,15 +17,16 @@ namespace DistributedMeshes {
 template <typename MeshFunctionType>  
 class DistributedMeshSynchronizer
 {
-    public:
-        typedef typename MeshFunctionType::DistributedMeshType DistributedMeshType;
-        void SetDistributedGrid(DistributedMeshType *distrgrid)
-        {
-            TNL_ASSERT_TRUE(false,"Distribution of this type of mesh is NOT implemented");
-        }; 
+   public:
+   
+      typedef typename MeshFunctionType::DistributedMeshType DistributedMeshType;
+      
+      void setDistributedGrid( DistributedMeshType *distributedGrid )
+      {
+         TNL_ASSERT_TRUE( false, "Distribution of this type of mesh is NOT implemented" );
+      }; 
 
 };
-
 
 } // namespace DistributedMeshes
 } // namespace Meshes

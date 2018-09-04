@@ -46,16 +46,16 @@ TEST(CutDistributedMeshFunction, 2D_Data)
 
    typename DistributedMeshType::CoordinatesType overlap;
    
-   DistributedMeshType distrgrid;
-   distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 3, 4 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
+   DistributedMeshType distributedGrid;
+   distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 3, 4 ) );
+   distributedGrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
-   distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
 
    SharedPointer<MeshType> originalGrid;
-   distrgrid.setupGrid(*originalGrid);
+   distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 
@@ -90,7 +90,7 @@ TEST(CutDistributedMeshFunction, 2D_Data)
                typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
                typename CutMeshType::Cell outEntity(*cutGrid);
                
-                fromEntity.getCoordinates().x()=5-distrgrid.getGlobalBegin().x();
+                fromEntity.getCoordinates().x()=5-distributedGrid.getGlobalBegin().x();
                 fromEntity.getCoordinates().y()=i;
                 outEntity.getCoordinates().x()=i;
 
@@ -126,15 +126,15 @@ TEST(CutDistributedMeshFunction, 3D_1_Data)
    globalOriginalGrid.setDimensions(proportions);
    globalOriginalGrid.setDomain(origin,proportions);
 
-   DistributedMeshType distrgrid;
-   distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2, 2, 3 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
+   DistributedMeshType distributedGrid;
+   distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2, 2, 3 ) );
+   distributedGrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
-   distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
    SharedPointer<MeshType> originalGrid;
-   distrgrid.setupGrid(*originalGrid);
+   distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 
@@ -169,8 +169,8 @@ TEST(CutDistributedMeshFunction, 3D_1_Data)
                typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
                typename CutMeshType::Cell outEntity(*cutGrid);
                
-                fromEntity.getCoordinates().x()=4-distrgrid.getGlobalBegin().x();
-                fromEntity.getCoordinates().y()=3-distrgrid.getGlobalBegin().y();
+                fromEntity.getCoordinates().x()=4-distributedGrid.getGlobalBegin().x();
+                fromEntity.getCoordinates().y()=3-distributedGrid.getGlobalBegin().y();
                 fromEntity.getCoordinates().z()=i;
                 outEntity.getCoordinates().x()=i;
 
@@ -205,15 +205,15 @@ TEST(CutDistributedMeshFunction, 3D_2_Data)
    globalOriginalGrid.setDimensions(proportions);
    globalOriginalGrid.setDomain(origin,proportions);
 
-   DistributedMeshType distrgrid;
-   distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2, 2, 3 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
+   DistributedMeshType distributedGrid;
+   distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2, 2, 3 ) );
+   distributedGrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
-   distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
    SharedPointer<MeshType> originalGrid;
-   distrgrid.setupGrid(*originalGrid);
+   distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 
@@ -251,7 +251,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Data)
                typename CutMeshType::Cell outEntity(*cutGrid);
                
                 fromEntity.getCoordinates().x()=j;
-                fromEntity.getCoordinates().y()=4-distrgrid.getGlobalBegin().y();
+                fromEntity.getCoordinates().y()=4-distributedGrid.getGlobalBegin().y();
                 fromEntity.getCoordinates().z()=i;
 
                 outEntity.getCoordinates().x()=j;
@@ -290,15 +290,15 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
    globalOriginalGrid.setDimensions(proportions);
    globalOriginalGrid.setDomain(origin,proportions);
 
-   DistributedMeshType distrgrid;
-   distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 3, 4 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
+   DistributedMeshType distributedGrid;
+   distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 3, 4 ) );
+   distributedGrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
-   distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
    SharedPointer<MeshType> originalGrid;
-   distrgrid.setupGrid(*originalGrid);
+   distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 
@@ -331,7 +331,7 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
         typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
         typename CutMeshType::Cell outEntity(*cutGrid);
                 
-        fromEntity.getCoordinates().x()=5-distrgrid.getGlobalBegin().x();
+        fromEntity.getCoordinates().x()=5-distributedGrid.getGlobalBegin().x();
         fromEntity.getCoordinates().y()=0;
         outEntity.getCoordinates().x()=0;
         fromEntity.refresh();
@@ -339,7 +339,7 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
 
         EXPECT_EQ(cutMeshFunction.getValue(outEntity), (*linearFunctionPtr)(fromEntity)) << "Error in Left overlap";
 
-        fromEntity.getCoordinates().x()=5-distrgrid.getGlobalBegin().x();
+        fromEntity.getCoordinates().x()=5-distributedGrid.getGlobalBegin().x();
         fromEntity.getCoordinates().y()=(cutDof).getSize()-1;
         outEntity.getCoordinates().x()=(cutDof).getSize()-1;
         fromEntity.refresh();
@@ -373,15 +373,15 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
    globalOriginalGrid.setDimensions(proportions);
    globalOriginalGrid.setDomain(origin,proportions);
 
-   DistributedMeshType distrgrid;
-   distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2,2,3 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>( globalOriginalGrid );
+   DistributedMeshType distributedGrid;
+   distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2,2,3 ) );
+   distributedGrid.template setGlobalGrid<CommunicatorType>( globalOriginalGrid );
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
-   distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
    SharedPointer<MeshType> originalGrid;
-   distrgrid.setupGrid(*originalGrid);
+   distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 
@@ -414,8 +414,8 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
         typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
         typename CutMeshType::Cell outEntity(*cutGrid);
                 
-        fromEntity.getCoordinates().x()=4-distrgrid.getGlobalBegin().x();
-        fromEntity.getCoordinates().z()=4-distrgrid.getGlobalBegin().x();
+        fromEntity.getCoordinates().x()=4-distributedGrid.getGlobalBegin().x();
+        fromEntity.getCoordinates().z()=4-distributedGrid.getGlobalBegin().x();
         fromEntity.getCoordinates().y()=0;
         outEntity.getCoordinates().x()=0;
         fromEntity.refresh();
@@ -423,8 +423,8 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
 
         EXPECT_EQ(cutMeshFunction.getValue(outEntity), (*linearFunctionPtr)(fromEntity)) << "Error in Left overlap";
 
-        fromEntity.getCoordinates().x()=4-distrgrid.getGlobalBegin().x();
-        fromEntity.getCoordinates().z()=4-distrgrid.getGlobalBegin().x();
+        fromEntity.getCoordinates().x()=4-distributedGrid.getGlobalBegin().x();
+        fromEntity.getCoordinates().z()=4-distributedGrid.getGlobalBegin().x();
         fromEntity.getCoordinates().y()=(cutDof).getSize()-1;
         outEntity.getCoordinates().x()=(cutDof).getSize()-1;
         fromEntity.refresh();
@@ -460,15 +460,15 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
 
    typename DistributedMeshType::CoordinatesType overlap;
    overlap.setValue(1);
-   DistributedMeshType distrgrid;
-   distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2,2,3 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
+   DistributedMeshType distributedGrid;
+   distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2,2,3 ) );
+   distributedGrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
-   distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
    SharedPointer<MeshType> originalGrid;
-   distrgrid.setupGrid(*originalGrid);
+   distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 
@@ -501,12 +501,12 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
         typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
         typename CutMeshType::Cell outEntity(*cutGrid);
 
-        for(int i=0;i<distrgrid.getLocalGridSize().x();i++)
-            for(int j=0;j<distrgrid.getLocalGridSize().z();j++)
+        for(int i=0;i<distributedGrid.getLocalGridSize().x();i++)
+            for(int j=0;j<distributedGrid.getLocalGridSize().z();j++)
             {                
                 fromEntity.getCoordinates().x()=i;
                 fromEntity.getCoordinates().z()=j;
-                fromEntity.getCoordinates().y()=4-distrgrid.getGlobalBegin().y();
+                fromEntity.getCoordinates().y()=4-distributedGrid.getGlobalBegin().y();
                 outEntity.getCoordinates().x()=i;
                 outEntity.getCoordinates().y()=j;
                 fromEntity.refresh();
@@ -545,15 +545,15 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
 
    typename DistributedMeshType::CoordinatesType overlap;
    overlap.setValue(1);
-   DistributedMeshType distrgrid;
-   distrgrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2,2,3 ) );
-   distrgrid.template setGlobalGrid<CommunicatorType>( globalOriginalGrid );
+   DistributedMeshType distributedGrid;
+   distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2,2,3 ) );
+   distributedGrid.template setGlobalGrid<CommunicatorType>( globalOriginalGrid );
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distrgrid, lowerOverlap, upperOverlap, 1 );
-   distrgrid.setOverlaps( lowerOverlap, upperOverlap );
+   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
    SharedPointer<MeshType> originalGrid;
-   distrgrid.setupGrid(*originalGrid);
+   distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 

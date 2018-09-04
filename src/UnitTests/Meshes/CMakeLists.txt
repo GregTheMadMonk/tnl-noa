@@ -6,18 +6,19 @@ TARGET_LINK_LIBRARIES( BoundaryTagsTest
                            ${GTEST_BOTH_LIBRARIES}
                            tnl )
 
-if( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( MeshTest MeshTest.cu
-                        OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( MeshTest
-                           ${GTEST_BOTH_LIBRARIES}
-                           tnl )
+# Mesh cannot be compiled by nvcc < 9 due to bugs in the compiler
+if( ${BUILD_CUDA} AND ( ${CUDA_VERSION_MAJOR} GREATER 9 OR ${CUDA_VERSION_MAJOR} EQUAL 9 ) )
+    CUDA_ADD_EXECUTABLE( MeshTest MeshTest.cu
+                         OPTIONS ${CXX_TESTS_FLAGS} )
+    TARGET_LINK_LIBRARIES( MeshTest
+                            ${GTEST_BOTH_LIBRARIES}
+                            tnl )
 
-   CUDA_ADD_EXECUTABLE( MeshOrderingTest MeshOrderingTest.cu
-                        OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( MeshOrderingTest
-                           ${GTEST_BOTH_LIBRARIES}
-                           tnl )
+    CUDA_ADD_EXECUTABLE( MeshOrderingTest MeshOrderingTest.cu
+                         OPTIONS ${CXX_TESTS_FLAGS} )
+    TARGET_LINK_LIBRARIES( MeshOrderingTest
+                            ${GTEST_BOTH_LIBRARIES}
+                            tnl )
 else()
    ADD_EXECUTABLE( MeshTest MeshTest.cpp )
    TARGET_COMPILE_OPTIONS( MeshTest PRIVATE ${CXX_TESTS_FLAGS} )
@@ -58,7 +59,8 @@ ADD_TEST( MeshEntityTest ${EXECUTABLE_OUTPUT_PATH}/MeshEntityTest${CMAKE_EXECUTA
 #   SET( VTK_COMMON_LIBRARIES vtkCommonCore ; vtkIOLegacy )
 #endif( VTK_FOUND )
 
-if( BUILD_CUDA )
+# Mesh cannot be compiled by nvcc < 9 due to bugs in the compiler
+if( ${BUILD_CUDA} AND ( ${CUDA_VERSION_MAJOR} GREATER 9 OR ${CUDA_VERSION_MAJOR} EQUAL 9 ) )
    CUDA_ADD_EXECUTABLE( MeshReaderTest MeshReaderTest.cu
                         OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( MeshReaderTest

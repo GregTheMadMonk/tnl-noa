@@ -49,7 +49,7 @@ class Array : public Object
 
       static String getType();
 
-      String getTypeVirtual() const;
+      virtual String getTypeVirtual() const;
 
       static String getSerializationType();
 

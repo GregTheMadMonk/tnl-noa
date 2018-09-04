@@ -16,7 +16,7 @@
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Real, typename Index >
 class SparseRow
@@ -42,13 +42,13 @@ class SparseRow
       void setElement( const Index& elementIndex,
                        const Index& column,
                        const Real& value );
- 
+
       __cuda_callable__
       const Index& getElementColumn( const Index& elementIndex ) const;
- 
+
       __cuda_callable__
       const Real& getElementValue( const Index& elementIndex ) const;
- 
+
       void print( std::ostream& str ) const;
 
    protected:

@@ -143,9 +143,12 @@ public:
 
 //	void verifyRowLengths( const typename BiEllpack< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths );
 
+   
 	template< typename InVector,
 			  typename OutVector >
-   __cuda_callable__
+#ifdef HAVE_CUDA
+   __device__
+#endif
 	void spmvCuda( const InVector& inVector,
 				   OutVector& outVector,
 				   /*const IndexType warpStart,

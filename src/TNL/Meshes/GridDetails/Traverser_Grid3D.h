@@ -23,9 +23,11 @@ template< typename Real,
 class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 3 >
 {
    public:
-      typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-      typedef SharedPointer< GridType > GridPointer;
-      typedef typename GridType::CoordinatesType CoordinatesType;
+      using GridType = Meshes::Grid< 3, Real, Device, Index >;
+      using GridPointer = SharedPointer< GridType >;
+      using CoordinatesType = typename GridType::CoordinatesType;
+      using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
+      using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
       template< typename UserData,
                 typename EntitiesProcessor >
@@ -50,9 +52,11 @@ template< typename Real,
 class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 2 >
 {
    public:
-      typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-      typedef SharedPointer< GridType > GridPointer;
-      typedef typename GridType::CoordinatesType CoordinatesType;
+      using GridType = Meshes::Grid< 3, Real, Device, Index >;
+      using GridPointer = SharedPointer< GridType >;
+      using CoordinatesType = typename GridType::CoordinatesType;
+      using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
+      using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
       template< typename UserData,
                 typename EntitiesProcessor >
@@ -77,9 +81,11 @@ template< typename Real,
 class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 1 >
 {
    public:
-      typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-      typedef SharedPointer< GridType > GridPointer;
-      typedef typename GridType::CoordinatesType CoordinatesType;
+      using GridType = Meshes::Grid< 3, Real, Device, Index >;
+      using GridPointer = SharedPointer< GridType >;
+      using CoordinatesType = typename GridType::CoordinatesType;
+      using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
+      using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
       template< typename UserData,
                 typename EntitiesProcessor >
@@ -105,9 +111,11 @@ template< typename Real,
 class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 0 >
 {
    public:
-      typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-      typedef SharedPointer< GridType > GridPointer;
-      typedef typename GridType::CoordinatesType CoordinatesType;
+      using GridType = Meshes::Grid< 3, Real, Device, Index >;
+      using GridPointer = SharedPointer< GridType >;
+      using CoordinatesType = typename GridType::CoordinatesType;
+      using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
+      using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
       template< typename UserData,
                 typename EntitiesProcessor >

@@ -39,32 +39,31 @@ set( headers Array.h
              StaticVector2D_impl.h
              StaticVector3D_impl.h  )
 
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Containers )
-set( common_SOURCES
-     ${CURRENT_DIR}/SharedArray_impl.cpp
-     ${CURRENT_DIR}/MultiArray_impl.cpp
-     ${CURRENT_DIR}/Array_impl.cpp
-     ${CURRENT_DIR}/StaticArray_impl.cpp
-     ${CURRENT_DIR}/MultiVector_impl.cpp
-     ${CURRENT_DIR}/SharedVector_impl.cpp
-     ${CURRENT_DIR}/Vector_impl.cpp
-     ${CURRENT_DIR}/StaticVector_impl.cpp
-)
-
-IF( BUILD_CUDA )
-   set( tnl_containers_CUDA__SOURCES
-        ${common_SOURCES}
-        ${CURRENT_DIR}/Array_impl.cu
-        ${CURRENT_DIR}/SharedArray_impl.cu
-        ${CURRENT_DIR}/MultiArray_impl.cu
-        ${CURRENT_DIR}/StaticArray_impl.cu
-        ${CURRENT_DIR}/Vector_impl.cu
-        ${CURRENT_DIR}/StaticVector_impl.cu
-        PARENT_SCOPE )
-ENDIF()
-
-set( tnl_containers_SOURCES
-     ${common_SOURCES}
-     PARENT_SCOPE )
-
 INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Containers )
+
+if( ${WITH_TEMPLATES_INSTANTIATION} )
+   SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Containers )
+   set( common_SOURCES
+        ${CURRENT_DIR}/MultiArray_impl.cpp
+        ${CURRENT_DIR}/Array_impl.cpp
+        ${CURRENT_DIR}/StaticArray_impl.cpp
+        ${CURRENT_DIR}/MultiVector_impl.cpp
+        ${CURRENT_DIR}/Vector_impl.cpp
+        ${CURRENT_DIR}/StaticVector_impl.cpp
+   )
+
+   if( BUILD_CUDA )
+      set( tnl_containers_CUDA__SOURCES
+           ${common_SOURCES}
+           ${CURRENT_DIR}/Array_impl.cu
+           ${CURRENT_DIR}/MultiArray_impl.cu
+           ${CURRENT_DIR}/StaticArray_impl.cu
+           ${CURRENT_DIR}/Vector_impl.cu
+           ${CURRENT_DIR}/StaticVector_impl.cu
+           PARENT_SCOPE )
+   endif()
+
+   set( tnl_containers_SOURCES
+        ${common_SOURCES}
+        PARENT_SCOPE )
+endif()

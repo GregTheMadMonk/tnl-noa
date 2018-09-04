@@ -18,9 +18,11 @@ WITH_MPI="yes"
 WITH_CUDA="yes"
 WITH_CUDA_ARCH="auto"
 WITH_OPENMP="yes"
+WITH_GMP="no"
 WITH_TESTS="yes"
 WITH_COVERAGE="no"
 WITH_EXAMPLES="yes"
+WITH_TOOLS="yes"
 
 WITH_TEMPLATE_INSTANTIATION="no"
 INSTANTIATE_LONG_INT="no"
@@ -50,9 +52,12 @@ do
         --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
         --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;
         --with-openmp=*                  ) WITH_OPENMP="${option#*=}" ;;
+        --with-gmp=*                     ) WITH_GMP="${option#*=}" ;;
         --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
         --with-coverage=*                ) WITH_COVERAGE="${option#*=}" ;;
         --with-examples=*                ) WITH_EXAMPLES="${option#*=}" ;;
+        --with-tools=*                   ) WITH_TOOLS="${option#*=}" ;;
+        --with-python=*                  ) WITH_PYTHON="${option#*=}" ;;
         --with-templates-instantiation=* ) WITH_TEMPLATE_INSTANTIATION="${option#*=}" ;;
         --instantiate-long-int=*         ) INSTANTIATE_LONG_INT="${option#*=}" ;;
         --instantiate-int=*              ) INSTANTIATE_INT="${option#*=}" ;;
@@ -85,9 +90,12 @@ then
     echo "   --with-cuda=yes/no                    Enables CUDA. 'yes' by default (CUDA Toolkit is required)."
     echo "   --with-cuda-arch=all/auto/30/35/...   Chooses CUDA architecture. 'auto' by default."
     echo "   --with-openmp=yes/no                  Enables OpenMP. 'yes' by default."
+    echo "   --with-gmp=yes/no                     Enables the wrapper for GNU Multiple Precision Arithmetic Library. 'no' by default."
     echo "   --with-tests=yes/no                   Enables unit tests. 'yes' by default."
     echo "   --with-coverage=yes/no                Enables code coverage reports for unit tests. 'no' by default (lcov is required)."
     echo "   --with-examples=yes/no                Compile the 'examples' directory. 'yes' by default."
+    echo "   --with-tools=yes/no                   Compile the 'tools' directory. 'yes' by default."
+    echo "   --with-python=yes/no                  Compile with the python bindings. 'yes' by default."
     echo "   --with-templates-instantiation=yes/no Precompiles some TNL templates during the build. 'no' by default."
     echo "   --cmake=CMAKE                         Path to cmake. 'cmake' by default."
     echo "   --verbose                             It enables verbose build."
@@ -129,9 +137,12 @@ ${CMAKE} ${ROOT_DIR} \
          -DWITH_CUDA=${WITH_CUDA} \
          -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH} \
          -DWITH_OPENMP=${WITH_OPENMP} \
+         -DWITH_GMP=${WITH_GMP} \
          -DWITH_TESTS=${WITH_TESTS} \
          -DWITH_COVERAGE=${WITH_COVERAGE} \
          -DWITH_EXAMPLES=${WITH_EXAMPLES} \
+         -DWITH_TOOLS=${WITH_TOOLS} \
+         -DWITH_PYTHON=${WITH_PYTHON} \
          -DDCMTK_DIR=${DCMTK_DIR} \
          -DWITH_TEMPLATE_INSTANTIATION=${WITH_TEMPLATE_INSTANTIATION} \
          -DINSTANTIATE_FLOAT=${INSTANTIATE_FLOAT} \

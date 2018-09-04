@@ -27,25 +27,26 @@ SubdomainOverlapsGetter< Grid< Dimension, Real, Device, Index >, Communicator >:
 getOverlaps( const DistributedMeshType* distributedMesh,
              SubdomainOverlapsType& lower,
              SubdomainOverlapsType& upper,
-             IndexType subdomainOverlapSize )
+             IndexType subdomainOverlapSize,
+             const SubdomainOverlapsType& periodicBoundariesOverlapSize )
 {
    if( ! CommunicatorType::isDistributed() )
       return;
    TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
    
-   CoordinatesType subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
+   const CoordinatesType& subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
    
    for( int i = 0; i < Dimension; i++ )
    {
       if( subdomainCoordinates[ i ] > 0 )
          lower[ i ] = subdomainOverlapSize;
       else
-         lower[ i ] = 0;
+         lower[ i ] = periodicBoundariesOverlapSize[ i ];
       
       if( subdomainCoordinates[ i ] < distributedMesh->getDomainDecomposition()[ i ] - 1 )
          upper[ i ] = subdomainOverlapSize;
       else
-         upper[ i ] = 0;
+         upper[ i ] = periodicBoundariesOverlapSize[ i ];
    }
 }
 

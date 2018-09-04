@@ -22,7 +22,7 @@
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
-   namespace Matrices {
+namespace Matrices {
 
 template< typename Device >
 class AdEllpackDeviceDependentCode;
@@ -239,9 +239,7 @@ protected:
 
 };
 
-   } //namespace Matrices
+} // namespace Matrices
 } // namespace TNL
 
 #include <TNL/Matrices/AdEllpack_impl.h>
-
-
