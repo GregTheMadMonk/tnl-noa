@@ -60,6 +60,8 @@ public:
 
    virtual bool solve( ConstVectorViewType b, VectorViewType x ) = 0;
 
+   virtual ~LinearSolver() {}
+
 protected:
    MatrixPointer matrix = nullptr;
    PreconditionerPointer preconditioner = nullptr;

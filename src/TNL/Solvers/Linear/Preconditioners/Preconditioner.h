@@ -52,6 +52,8 @@ public:
    {
       return String( "Preconditioner" );
    }
+
+   virtual ~Preconditioner() {}
 };
 
 } // namespace Preconditioners
