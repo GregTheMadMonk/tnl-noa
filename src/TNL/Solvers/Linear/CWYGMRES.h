@@ -35,10 +35,6 @@ public:
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   CWYGMRES();
-
-   ~CWYGMRES();
-
    String getType() const;
 
    static void configSetup( Config::ConfigDescription& config,
@@ -107,7 +103,12 @@ protected:
    // host-only storage for Givens rotations and the least squares problem
    HostVector cs, sn, H, s;
 
-   IndexType size, ldSize, restarting_min, restarting_max, restarting_step_min, restarting_step_max;
+   IndexType size = 0;
+   IndexType ldSize = 0;
+   IndexType restarting_min = 10;
+   IndexType restarting_max = 10;
+   IndexType restarting_step_min = 3;
+   IndexType restarting_step_max = 3;
 };
 
 } // namespace Linear

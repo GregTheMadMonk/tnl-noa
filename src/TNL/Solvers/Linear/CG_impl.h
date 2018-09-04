@@ -19,16 +19,6 @@ namespace Solvers {
 namespace Linear {
 
 template< typename Matrix >
-CG< Matrix > :: CG()
-{
-   /****
-    * Clearing the shared pointer means that there is no
-    * preconditioner set.
-    */
-   this->preconditioner.clear();
-}
-
-template< typename Matrix >
 String CG< Matrix > :: getType() const
 {
    return String( "CG< " ) +

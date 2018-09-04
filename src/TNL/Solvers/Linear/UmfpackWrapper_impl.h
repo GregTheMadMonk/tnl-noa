@@ -23,11 +23,6 @@ namespace Solvers {
 namespace Linear {
 
 template<>
-UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >::
-UmfpackWrapper()
-{}
-
-template<>
 bool UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >::
 solve( ConstVectorViewType b, VectorViewType x )
 {
@@ -105,7 +100,7 @@ finished:
     this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
     this->refreshSolverMonitor( true );
     return status == UMFPACK_OK;
-};
+}
 
 } // namespace Linear
 } // namespace Solvers

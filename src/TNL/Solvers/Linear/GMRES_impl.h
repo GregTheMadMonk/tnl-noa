@@ -19,28 +19,6 @@ namespace Solvers {
 namespace Linear {
 
 template< typename Matrix >
-GMRES< Matrix >::
-GMRES()
-: size( 0 ),
-  restarting_min( 10 ),
-  restarting_max( 10 ),
-  restarting_step_min( 3 ),
-  restarting_step_max( 3 )
-{
-   /****
-    * Clearing the shared pointer means that there is no
-    * preconditioner set.
-    */
-   this->preconditioner.clear();
-}
-
-template< typename Matrix >
-GMRES< Matrix >::
-~GMRES()
-{
-}
-
-template< typename Matrix >
 String
 GMRES< Matrix >::
 getType() const

@@ -19,17 +19,6 @@ namespace Solvers {
 namespace Linear {
 
 template< typename Matrix >
-TFQMR< Matrix > :: TFQMR()
-: size( 0 )
-{
-   /****
-    * Clearing the shared pointer means that there is no
-    * preconditioner set.
-    */
-   this->preconditioner.clear();   
-}
-
-template< typename Matrix >
 String TFQMR< Matrix > :: getType() const
 {
    return String( "TFQMR< " ) +

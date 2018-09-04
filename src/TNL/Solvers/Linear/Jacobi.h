@@ -32,8 +32,6 @@ public:
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   Jacobi() : omega(0) {}
-
    String getType() const
    {
       return String( "Jacobi< " ) + this->matrix->getType() + ", " + this->preconditioner->getType() + " >";
@@ -93,7 +91,7 @@ public:
    }
 
 protected:
-   RealType omega;
+   RealType omega = 0.0;
 };
 
 } // namespace Linear

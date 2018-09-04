@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <memory>  // std::shared_ptr
+
 #include <TNL/Solvers/Linear/Preconditioners/Preconditioner.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/SharedPointer.h>
@@ -32,7 +34,7 @@ public:
    using MatrixType = Matrix;
    using MatrixPointer = SharedPointer< typename std::add_const< MatrixType >::type >;
    using PreconditionerType = Preconditioners::Preconditioner< MatrixType >;
-   using PreconditionerPointer = SharedPointer< typename std::add_const< PreconditionerType >::type, DeviceType >;
+   using PreconditionerPointer = std::shared_ptr< typename std::add_const< PreconditionerType >::type >;
 
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" )
@@ -57,8 +59,8 @@ public:
    virtual bool solve( ConstVectorViewType b, VectorViewType x ) = 0;
 
 protected:
-   MatrixPointer matrix;
-   PreconditionerPointer preconditioner;
+   MatrixPointer matrix = nullptr;
+   PreconditionerPointer preconditioner = nullptr;
 };
 
 } // namespace Linear

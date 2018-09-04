@@ -32,8 +32,6 @@ public:
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   SOR();
-
    String getType() const;
 
    static void configSetup( Config::ConfigDescription& config,
@@ -49,7 +47,7 @@ public:
    bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
 protected:
-   RealType omega;
+   RealType omega = 1.0;
 };
 
 } // namespace Linear

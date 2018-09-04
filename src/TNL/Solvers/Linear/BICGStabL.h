@@ -64,8 +64,6 @@ public:
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   BICGStabL();
-
    String getType() const;
 
    static void configSetup( Config::ConfigDescription& config,

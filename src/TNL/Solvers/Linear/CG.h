@@ -33,8 +33,6 @@ public:
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   CG();
-
    String getType() const;
 
    // to avoid ambiguity

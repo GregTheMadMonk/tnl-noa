@@ -33,8 +33,6 @@ public:
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   TFQMR();
-
    String getType() const;
 
    // to avoid ambiguity
@@ -50,7 +48,7 @@ protected:
 
    Containers::Vector< RealType, DeviceType, IndexType > d, r, w, u, v, r_ast, Au, M_tmp;
 
-   IndexType size;
+   IndexType size = 0;
 };
 
 } // namespace Linear

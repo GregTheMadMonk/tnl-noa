@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <memory>  // std::shared_ptr
+
 #include <TNL/Timer.h>
 #include <TNL/Logger.h>
 #include <TNL/SharedPointer.h>
@@ -38,9 +40,9 @@ class SemiImplicitTimeStepper
    typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
 
    using LinearSolverType = Linear::LinearSolver< MatrixType >;
-   using LinearSolverPointer = SharedPointer< LinearSolverType >;
+   using LinearSolverPointer = std::shared_ptr< LinearSolverType >;
    using PreconditionerType = typename LinearSolverType::PreconditionerType;
-   using PreconditionerPointer = typename LinearSolverType::PreconditionerPointer;
+   using PreconditionerPointer = std::shared_ptr< PreconditionerType >;
 
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" );

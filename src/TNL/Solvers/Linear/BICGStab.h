@@ -33,8 +33,6 @@ public:
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   BICGStab();
-
    String getType() const;
 
    static void configSetup( Config::ConfigDescription& config,
@@ -48,7 +46,7 @@ public:
 protected:
    void setSize( IndexType size );
 
-   bool exact_residue;
+   bool exact_residue = false;
 
    Containers::Vector< RealType, DeviceType, IndexType > r, r_ast, p, s, Ap, As, M_tmp;
 };

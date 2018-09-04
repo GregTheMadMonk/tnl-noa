@@ -19,17 +19,6 @@ namespace Solvers {
 namespace Linear {
 
 template< typename Matrix >
-BICGStab< Matrix > :: BICGStab()
-: exact_residue( false )
-{
-   /****
-    * Clearing the shared pointer means that there is no
-    * preconditioner set.
-    */
-   this->preconditioner.clear();   
-}
-
-template< typename Matrix >
 String BICGStab< Matrix > :: getType() const
 {
    return String( "BICGStab< " ) +

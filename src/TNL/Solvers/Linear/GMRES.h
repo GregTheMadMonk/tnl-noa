@@ -33,8 +33,6 @@ public:
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   GMRES();
-
    String getType() const;
 
    static void configSetup( Config::ConfigDescription& config,
@@ -46,8 +44,6 @@ public:
    void setRestarting( IndexType rest );
 
    bool solve( ConstVectorViewType b, VectorViewType x ) override;
-
-   ~GMRES();
 
 protected:
    template< typename VectorT >
@@ -74,7 +70,11 @@ protected:
    Containers::Vector< RealType, DeviceType, IndexType > _r, w, _v, _M_tmp;
    Containers::Vector< RealType, Devices::Host, IndexType > _s, _cs, _sn, _H;
 
-   IndexType size, restarting_min, restarting_max, restarting_step_min, restarting_step_max;
+   IndexType size = 0;
+   IndexType restarting_min = 10;
+   IndexType restarting_max = 10;
+   IndexType restarting_step_min = 3;
+   IndexType restarting_step_max = 3;
 };
 
 } // namespace Linear

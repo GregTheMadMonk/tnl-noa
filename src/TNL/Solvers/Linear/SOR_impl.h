@@ -18,17 +18,6 @@ namespace Solvers {
 namespace Linear {
 
 template< typename Matrix >
-SOR< Matrix > :: SOR()
-: omega( 1.0 )
-{
-   /****
-    * Clearing the shared pointer means that there is no
-    * preconditioner set.
-    */
-   this->preconditioner.clear();   
-}
-
-template< typename Matrix >
 String SOR< Matrix > :: getType() const
 {
    return String( "SOR< " ) +

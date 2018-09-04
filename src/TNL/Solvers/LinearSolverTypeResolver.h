@@ -12,7 +12,8 @@
 
 #pragma once
 
-#include <TNL/SharedPointer.h>
+#include <memory>
+
 #include <TNL/Solvers/Linear/SOR.h>
 #include <TNL/Solvers/Linear/CG.h>
 #include <TNL/Solvers/Linear/BICGStab.h>
@@ -29,28 +30,28 @@ namespace TNL {
 namespace Solvers {
 
 template< typename MatrixType >
-SharedPointer< Linear::LinearSolver< MatrixType > >
+std::shared_ptr< Linear::LinearSolver< MatrixType > >
 getLinearSolver( const Config::ParameterContainer& parameters )
 {
    const String& discreteSolver = parameters.getParameter< String>( "discrete-solver" );
 
    if( discreteSolver == "sor" )
-      return SharedPointer< Linear::SOR< MatrixType > >();
+      return std::make_shared< Linear::SOR< MatrixType > >();
    if( discreteSolver == "cg" )
-      return SharedPointer< Linear::CG< MatrixType > >();
+      return std::make_shared< Linear::CG< MatrixType > >();
    if( discreteSolver == "bicgstab" )
-      return SharedPointer< Linear::BICGStab< MatrixType > >();
+      return std::make_shared< Linear::BICGStab< MatrixType > >();
    if( discreteSolver == "bicgstabl" )
-      return SharedPointer< Linear::BICGStabL< MatrixType > >();
+      return std::make_shared< Linear::BICGStabL< MatrixType > >();
    if( discreteSolver == "gmres" )
-      return SharedPointer< Linear::GMRES< MatrixType > >();
+      return std::make_shared< Linear::GMRES< MatrixType > >();
    if( discreteSolver == "cwygmres" )
-      return SharedPointer< Linear::CWYGMRES< MatrixType > >();
+      return std::make_shared< Linear::CWYGMRES< MatrixType > >();
    if( discreteSolver == "tfqmr" )
-      return SharedPointer< Linear::TFQMR< MatrixType > >();
+      return std::make_shared< Linear::TFQMR< MatrixType > >();
 #ifdef HAVE_UMFPACK
    if( discreteSolver == "umfpack" )
-      return SharedPointer< Linear::UmfpackWrapper< MatrixType > >();
+      return std::make_shared< Linear::UmfpackWrapper< MatrixType > >();
 #endif
 
    std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, bicgstabl, gmres, cwygmres, tfqmr";
@@ -63,7 +64,7 @@ getLinearSolver( const Config::ParameterContainer& parameters )
 }
 
 template< typename MatrixType >
-SharedPointer< Linear::LinearSolver< MatrixType > >
+std::shared_ptr< Linear::Preconditioners::Preconditioner< MatrixType > >
 getPreconditioner( const Config::ParameterContainer& parameters )
 {
    const String& preconditioner = parameters.getParameter< String>( "preconditioner" );
@@ -71,11 +72,11 @@ getPreconditioner( const Config::ParameterContainer& parameters )
    if( preconditioner == "none" )
       return nullptr;
    if( preconditioner == "diagonal" )
-      return SharedPointer< Linear::Preconditioners::Diagonal< MatrixType > >();
+      return std::make_shared< Linear::Preconditioners::Diagonal< MatrixType > >();
    if( preconditioner == "ilu0" )
-      return SharedPointer< Linear::Preconditioners::ILU0< MatrixType > >();
+      return std::make_shared< Linear::Preconditioners::ILU0< MatrixType > >();
    if( preconditioner == "ilut" )
-      return SharedPointer< Linear::Preconditioners::ILUT< MatrixType > >();
+      return std::make_shared< Linear::Preconditioners::ILUT< MatrixType > >();
 
    std::cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal, ilu0, ilut." << std::endl;
    return nullptr;
