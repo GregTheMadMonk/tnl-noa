@@ -12,6 +12,7 @@
 
 #include <TNL/SharedPointer.h>
 #include <TNL/Functions/FunctionAdapter.h>
+#include <TNL/Meshes/Traverser.h>
 
 namespace TNL {
 namespace Solvers {
