@@ -6,6 +6,7 @@ SET( headers IterativeSolver.h
              IterativeSolver_impl.h
              BuildConfigTags.h
              FastBuildConfigTag.h
+             LinearSolverTypeResolver.h
              Solver.h
              Solver_impl.h
              SolverStarter.h
