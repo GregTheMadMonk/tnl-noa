@@ -19,6 +19,7 @@
 #include <TNL/Meshes/Readers/VTKReader.h>
 #include <TNL/Meshes/TypeResolver/GridTypeResolver.h>
 #include <TNL/Meshes/TypeResolver/MeshTypeResolver.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
 
 // TODO: implement this in TNL::String
 inline bool ends_with( const std::string& value, const std::string& ending )
@@ -276,6 +277,17 @@ decomposeMesh( const Config::ParameterContainer& parameters,
    }
    else
       return true;
+}
+
+// convenient overload for non-distributed meshes
+template< typename Mesh >
+bool
+loadMesh( const String& fileName, Mesh& mesh )
+{
+   using Communicator = TNL::Communicators::NoDistrCommunicator;
+   using DistributedMesh = DistributedMeshes::DistributedMesh< Mesh>;
+   DistributedMesh distributedMesh;
+   return loadMesh< Communicator >( fileName, mesh, distributedMesh );
 }
 
 } // namespace Meshes
