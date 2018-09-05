@@ -51,15 +51,15 @@ setMemoryElement( Element* data,
                   const Element& value )
 {
    *data = value;
-};
+}
 
 template< typename Element >
 Element
 ArrayOperations< Devices::Host >::
-getMemoryElement( Element* data )
+getMemoryElement( const Element* data )
 {
    return *data;
-};
+}
 
 template< typename Element, typename Index >
 bool
