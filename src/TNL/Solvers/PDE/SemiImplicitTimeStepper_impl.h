@@ -58,10 +58,10 @@ bool
 SemiImplicitTimeStepper< Problem >::
 init( const MeshPointer& mesh )
 {
-  std::cout << "Setting up the linear system...";
-   if( ! this->problem->setupLinearSystem( this->matrix ) )
+   if( ! this->problem->setupLinearSystem( this->matrix ) ) {
+      std::cerr << "Failed to set up the linear system." << std::endl;
       return false;
-   std::cout << " [ OK ]" << std::endl;
+   }
    if( this->matrix.getData().getRows() == 0 || this->matrix.getData().getColumns() == 0 )
    {
       std::cerr << "The matrix for the semi-implicit time stepping was not set correctly." << std::endl;

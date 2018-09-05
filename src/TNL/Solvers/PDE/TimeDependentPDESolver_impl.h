@@ -97,11 +97,11 @@ setup( const Config::ParameterContainer& parameters,
    /***
     * Set-up the initial condition
     */
-   std::cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! this->problem->setInitialCondition( parameters, this->dofsPointer ) )
+   if( ! this->problem->setInitialCondition( parameters, this->dofsPointer ) ) {
+      std::cerr << "Failed to set up the initial condition." << std::endl;
       return false;
-   std::cout << " [ OK ]" << std::endl;
+   }
 
    /****
     * Initialize the time discretisation
