@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Containers/StaticVector.h>
+
 namespace TNL {
 namespace Meshes { 
 namespace DistributedMeshes {
