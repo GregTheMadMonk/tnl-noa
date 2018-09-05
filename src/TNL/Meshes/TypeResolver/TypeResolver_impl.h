@@ -118,7 +118,7 @@ template< typename CommunicatorType,
 bool
 loadMesh( const String& fileName,
           Mesh< MeshConfig, Device >& mesh,
-          DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > > &distributedMesh )
+          DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > >& distributedMesh )
 {
    if( CommunicatorType::isDistributed() )
    {
@@ -189,9 +189,12 @@ loadMesh( const String& fileName,
    }
 
    Mesh< MeshConfig, Devices::Host > hostMesh;
-   if( ! loadMesh( fileName, hostMesh ) )
+   DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Devices::Host > > hostDistributedMesh;
+   if( ! loadMesh< CommunicatorType >( fileName, hostMesh, hostDistributedMesh ) )
       return false;
    mesh = hostMesh;
+   // TODO
+//   distributedMesh = hostDistributedMesh;
    return true;
 }
 
