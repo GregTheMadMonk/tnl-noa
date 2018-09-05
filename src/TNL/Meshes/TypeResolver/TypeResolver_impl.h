@@ -155,6 +155,25 @@ loadMesh( const String& fileName,
    return true;
 }
 
+template< typename Problem,
+          typename MeshConfig,
+          typename Device >
+bool
+decomposeMesh( const Config::ParameterContainer& parameters,
+               const String& prefix,
+               Mesh< MeshConfig, Device >& mesh,
+               DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > >& distributedMesh,
+               Problem& problem )
+{
+   using CommunicatorType = typename Problem::CommunicatorType;
+   if( CommunicatorType::isDistributed() )
+   {
+       std::cerr << "Distributed Mesh is not supported yet, only Distributed Grid is supported.";
+       return false;
+   }
+   return true;
+}
+
 template< typename CommunicatorType,
           typename MeshConfig >
 bool
@@ -172,24 +191,6 @@ loadMesh( const String& fileName,
    if( ! loadMesh( fileName, hostMesh ) )
       return false;
    mesh = hostMesh;
-   return true;
-}
-
-template< typename CommunicatorType,
-          typename MeshConfig,
-          typename Problem >
-bool
-decomposeMesh( const Config::ParameterContainer& parameters,
-               const String& prefix,
-               Mesh< MeshConfig, Devices::Cuda >& mesh,
-               DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Devices::Cuda > >& distributedMesh,
-               Problem& problem )
-{
-   if( CommunicatorType::isDistributed() )
-   {
-       std::cerr << "Distributed Mesh is not supported yet, only Distributed Grid is supported.";
-       return false;
-   }
    return true;
 }
 
@@ -253,7 +254,7 @@ decomposeMesh( const Config::ParameterContainer& parameters,
    using DistributedGridType = DistributedMeshes::DistributedMesh< GridType >;
    using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
    using CommunicatorType = typename Problem::CommunicatorType;
-   
+
    if( CommunicatorType::isDistributed() )
    {
       SubdomainOverlapsType lower, upper;
@@ -265,7 +266,6 @@ decomposeMesh( const Config::ParameterContainer& parameters,
    else
       return true;
 }
-
 
 } // namespace Meshes
 } // namespace TNL
