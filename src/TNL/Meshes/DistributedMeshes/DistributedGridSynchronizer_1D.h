@@ -161,7 +161,7 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
       
    private:
       template <typename Real_, typename MeshFunctionType >
-      void copyBuffers( MeshFunctionType meshFunction, TNL::Containers::Array<Real_,Device>* buffers, bool toBuffer,
+      void copyBuffers( MeshFunctionType& meshFunction, TNL::Containers::Array<Real_,Device>* buffers, bool toBuffer,
          int left, int right,
          const SubdomainOverlapsType& lowerOverlap,
          const SubdomainOverlapsType& upperOverlap,

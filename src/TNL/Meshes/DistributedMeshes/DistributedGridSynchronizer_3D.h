@@ -196,7 +196,7 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
    private:
       
       template< typename Real_, typename MeshFunctionType >
-      void copyBuffers( MeshFunctionType meshFunction, Containers::Array<Real_, Device, Index>* buffers, bool toBuffer,
+      void copyBuffers( MeshFunctionType& meshFunction, Containers::Array<Real_, Device, Index>* buffers, bool toBuffer,
               int west, int east, int north, int south, int bottom, int top,
               int xcenter, int ycenter, int zcenter,
               const CoordinatesType& lowerOverlap,

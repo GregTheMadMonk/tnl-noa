@@ -34,7 +34,7 @@ template < typename MeshFunctionType, typename RealType, typename Device, typena
 class BufferEntitiesHelper<MeshFunctionType,1,RealType,Device,Index>
 {
     public:
-    static void BufferEntities(MeshFunctionType meshFunction, RealType * buffer, Index beginx, Index sizex, bool tobuffer)
+    static void BufferEntities(MeshFunctionType& meshFunction, RealType * buffer, Index beginx, Index sizex, bool tobuffer)
     {
         auto mesh = meshFunction.getMesh();
         RealType* meshFunctionData = meshFunction.getData().getData();
@@ -58,7 +58,7 @@ template <typename MeshFunctionType, typename RealType, typename Device, typenam
 class BufferEntitiesHelper<MeshFunctionType,2,RealType,Device,Index>
 {
     public:
-    static void BufferEntities(MeshFunctionType meshFunction, RealType * buffer, Index beginx, Index beginy, Index sizex, Index sizey,bool tobuffer)
+    static void BufferEntities(MeshFunctionType& meshFunction, RealType * buffer, Index beginx, Index beginy, Index sizex, Index sizey,bool tobuffer)
     {
         auto mesh=meshFunction.getMesh();
         RealType *meshFunctionData=meshFunction.getData().getData();
@@ -85,7 +85,7 @@ template <typename MeshFunctionType, typename RealType, typename Device, typenam
 class BufferEntitiesHelper<MeshFunctionType,3,RealType,Device,Index>
 {
     public:
-    static void BufferEntities(MeshFunctionType meshFunction, RealType * buffer, Index beginx, Index beginy, Index beginz, Index sizex, Index sizey, Index sizez, bool tobuffer)
+    static void BufferEntities(MeshFunctionType& meshFunction, RealType * buffer, Index beginx, Index beginy, Index beginz, Index sizex, Index sizey, Index sizez, bool tobuffer)
     {
 
         auto mesh=meshFunction.getMesh();
