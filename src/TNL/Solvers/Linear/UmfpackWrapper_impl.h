@@ -22,7 +22,6 @@ namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template<>
 bool UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >::
 solve( ConstVectorViewType b, VectorViewType x )
 {
