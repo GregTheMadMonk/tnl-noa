@@ -70,17 +70,17 @@ class SemiImplicitTimeStepper
 
    protected:
 
+   // raw pointers with setters
    Problem* problem = nullptr;
-
-   MatrixPointer matrix = nullptr;
-
-   DofVectorPointer rightHandSidePointer = nullptr;
-
-   LinearSolverPointer linearSystemSolver = nullptr;
-
-   PreconditionerPointer preconditioner = nullptr;
-
    SolverMonitorType* solverMonitor = nullptr;
+
+   // smart pointers initialized to the default-created objects
+   MatrixPointer matrix;
+   DofVectorPointer rightHandSidePointer;
+
+   // uninitialized smart pointers (they are initialized in the setup method)
+   LinearSolverPointer linearSystemSolver = nullptr;
+   PreconditionerPointer preconditioner = nullptr;
 
    RealType timeStep = 0.0;
 
