@@ -31,6 +31,7 @@ class NoDistrCommunicator
       typedef int CommunicationGroup;
       static Request NullRequest;
       static CommunicationGroup AllGroup;
+      static CommunicationGroup NullGroup;
 
       static void configSetup( Config::ConfigDescription& config, const String& prefix = "" ){};
  
@@ -42,7 +43,9 @@ class NoDistrCommunicator
       
       static void Init(int argc, char **argv, bool redirect=false)
       {
-          NullRequest=-1;
+          NullRequest = -1;
+          AllGroup = 1;
+          NullGroup = 0;
       }
       
       static void setRedirection( bool redirect_ ) {}
@@ -136,6 +139,7 @@ class NoDistrCommunicator
 
   int NoDistrCommunicator::NullRequest;
   int NoDistrCommunicator::AllGroup;
+  int NoDistrCommunicator::NullGroup;
 
 } // namespace <unnamed>
 } // namespace Communicators

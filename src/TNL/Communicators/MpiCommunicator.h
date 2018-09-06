@@ -143,6 +143,7 @@ class MpiCommunicator
          MPI_Init( &argc, &argv );
          NullRequest=MPI_REQUEST_NULL;
          AllGroup=MPI_COMM_WORLD;
+         NullGroup=MPI_COMM_NULL;
          redirect = true;
 
          selectGPU();
@@ -390,15 +391,17 @@ class MpiCommunicator
         }
 #else
         newGroup=oldGroup;
-#endif         
+#endif
       }
 
 #ifdef HAVE_MPI
       static MPI_Request NullRequest;
       static MPI_Comm AllGroup;
+      static MPI_Comm NullGroup;
 #else
       static int NullRequest;
       static int AllGroup;
+      static int NullGroup;
 #endif
     private :
       static std::streambuf *psbuf;
@@ -454,9 +457,11 @@ class MpiCommunicator
 #ifdef HAVE_MPI
 MPI_Request MpiCommunicator::NullRequest;
 MPI_Comm MpiCommunicator::AllGroup;
+MPI_Comm MpiCommunicator::NullGroup;
 #else
 int MpiCommunicator::NullRequest;
 int MpiCommunicator::AllGroup;
+int MpiCommunicator::NullGroup;
 #endif
 std::streambuf *MpiCommunicator::psbuf;
 std::streambuf *MpiCommunicator::backup;
