@@ -12,7 +12,7 @@
 
 #pragma once
 
-#define GRID_TRAVERSER_USE_STREAMS
+//#define GRID_TRAVERSER_USE_STREAMS
 
 #include "GridTraverser.h"
 
