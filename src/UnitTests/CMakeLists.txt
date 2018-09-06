@@ -3,7 +3,6 @@ if( ${WITH_TESTS} )
 ADD_SUBDIRECTORY( Containers )
 ADD_SUBDIRECTORY( Functions )
 ADD_SUBDIRECTORY( Matrices )
-ADD_SUBDIRECTORY( Mpi )
 ADD_SUBDIRECTORY( Meshes )
 
 ADD_EXECUTABLE( UniquePointerTest UniquePointerTest.cpp )
