@@ -53,7 +53,7 @@ __cuda_callable__
 ArrayView< Element, Device, Index >::
 ArrayView( StaticArray< Size, Element_ >& array )
 {
-   this->bind( array );
+   this->bind( array.getData(), Size );
 }
 
 // methods for rebinding (reinitialization)
@@ -77,33 +77,9 @@ template< typename Element,
           typename Device,
           typename Index >
 __cuda_callable__
-void ArrayView< Element, Device, Index >::bind( ArrayView& view )
+void ArrayView< Element, Device, Index >::bind( ArrayView view )
 {
    bind( view.getData(), view.getSize() );
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
-   template< typename Element_ >
-__cuda_callable__
-void
-ArrayView< Element, Device, Index >::
-bind( Array< Element_, Device, Index >& array )
-{
-   bind( array.getData(), array.getSize() );
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
-   template< int Size, typename Element_ >
-__cuda_callable__
-void
-ArrayView< Element, Device, Index >::
-bind( StaticArray< Size, Element_ >& array )
-{
-   bind( array.getData(), Size );
 }
 
 

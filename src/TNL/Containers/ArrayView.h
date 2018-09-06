@@ -67,16 +67,10 @@ public:
    __cuda_callable__
    void bind( Element* data, const Index size );
 
+   // Note that you can also bind directly to Array and other types implicitly
+   // convertible to ArrayView.
    __cuda_callable__
-   void bind( ArrayView& view );
-
-   template< typename Element_ >  // template catches both const and non-const qualified Element
-   __cuda_callable__
-   void bind( Array< Element_, Device, Index >& array );
-
-   template< int Size, typename Element_ >  // template catches both const and non-const qualified Element
-   __cuda_callable__
-   void bind( StaticArray< Size, Element_ >& array );
+   void bind( ArrayView view );
 
 
    // Copy-assignment does deep copy, just like regular array, but the sizes
