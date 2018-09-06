@@ -56,6 +56,28 @@ ArrayView( StaticArray< Size, Element_ >& array )
    this->bind( array.getData(), Size );
 }
 
+template< typename Element,
+          typename Device,
+          typename Index >
+   template< typename Element_ >
+__cuda_callable__
+ArrayView< Element, Device, Index >::
+ArrayView( const Array< Element_, Device, Index >& array )
+{
+   this->bind( array.getData(), array.getSize() );
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
+   template< int Size, typename Element_ >
+__cuda_callable__
+ArrayView< Element, Device, Index >::
+ArrayView( const StaticArray< Size, Element_ >& array )
+{
+   this->bind( array.getData(), Size );
+}
+
 // methods for rebinding (reinitialization)
 template< typename Element,
           typename Device,

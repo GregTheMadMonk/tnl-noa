@@ -137,6 +137,7 @@ TYPED_TEST( ArrayViewTest, constructors )
 {
    using ArrayType = typename TestFixture::ArrayType;
    using ViewType = typename TestFixture::ViewType;
+   using ConstViewType = ArrayView< const typename ArrayType::ElementType, typename ArrayType::DeviceType, typename ArrayType::IndexType >;
 
    ArrayType a( 10 );
    EXPECT_EQ( a.getSize(), 10 );
@@ -154,6 +155,11 @@ TYPED_TEST( ArrayViewTest, constructors )
       EXPECT_EQ( z.getData(), data );
       EXPECT_EQ( z.getSize(), 10 );
    }
+
+   // test initialization by const reference
+   const ArrayType& b = a;
+   ConstViewType b_view( b );
+   ConstViewType const_a_view( a );
 }
 
 TYPED_TEST( ArrayViewTest, bind )

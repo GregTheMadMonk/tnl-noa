@@ -62,6 +62,16 @@ public:
    __cuda_callable__
    ArrayView( StaticArray< Size, Element_ >& array );
 
+   // these constructors will be used only when Element is const-qualified
+   // (const views are initializable by const references)
+   template< typename Element_ >  // template catches both const and non-const qualified Element
+   __cuda_callable__
+   ArrayView( const Array< Element_, Device, Index >& array );
+
+   template< int Size, typename Element_ >  // template catches both const and non-const qualified Element
+   __cuda_callable__
+   ArrayView( const StaticArray< Size, Element_ >& array );
+
 
    // methods for rebinding (reinitialization)
    __cuda_callable__
