@@ -12,22 +12,17 @@
 
 namespace TNL {
 namespace Solvers {
-namespace Linear {   
+namespace Linear {
 
-template< typename Matrix, typename Vector >
 class LinearResidueGetter
 {
-   public:
-
-      typedef Matrix MatrixType;
-      typedef typename MatrixType::RealType RealType;
-      typedef typename MatrixType::DeviceType DeviceType;
-      typedef typename MatrixType::IndexType IndexType;
-
-   static RealType getResidue( const Matrix& matrix,
-                               const Vector& x,
-                               const Vector& b,
-                               RealType bNorm = 0 );
+public:
+   template< typename Matrix, typename Vector1, typename Vector2 >
+   static typename Matrix::RealType
+   getResidue( const Matrix& matrix,
+               const Vector1& x,
+               const Vector2& b,
+               typename Matrix::RealType bNorm = 0 );
 };
 
 } // namespace Linear

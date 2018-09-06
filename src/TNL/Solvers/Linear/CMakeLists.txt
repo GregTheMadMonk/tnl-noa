@@ -13,6 +13,7 @@ SET( headers BICGStab.h
              Jacobi.h
              LinearResidueGetter.h
              LinearResidueGetter_impl.h
+             LinearSolver.h
              SOR.h
              SOR_impl.h
              TFQMR.h

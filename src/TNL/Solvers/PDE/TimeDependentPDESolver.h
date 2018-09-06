@@ -22,10 +22,9 @@
 
 namespace TNL {
 namespace Solvers {
-namespace PDE {   
+namespace PDE {
 
 template< typename Problem,
-          typename DiscreteSolver,
           typename TimeStepper >
 class TimeDependentPDESolver
    : public PDESolver< typename Problem::RealType, 
@@ -94,9 +93,7 @@ class TimeDependentPDESolver
       CommonDataPointer commonDataPointer;
 
       TimeStepper timeStepper;
-      
-      DiscreteSolver discreteSolver;
-      
+
       ProblemType* problem;
 
       RealType initialTime, finalTime, snapshotPeriod, timeStep;

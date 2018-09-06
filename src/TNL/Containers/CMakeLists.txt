@@ -17,8 +17,8 @@ set( headers Array.h
              MultiArray2D_impl.h
              MultiArray3D_impl.h
              MultiArray4D_impl.h
-             SharedArray.h
-             SharedArray_impl.h
+             ArrayView.h
+             ArrayView_impl.h
              StaticArray.h
              StaticArray_impl.h
              StaticArray1D_impl.h
@@ -31,8 +31,8 @@ set( headers Array.h
              MultiVector2D_impl.h
              MultiVector3D_impl.h
              MultiVector4D_impl.h
-             SharedVector.h
-             SharedVector_impl.h
+             VectorView.h
+             VectorView_impl.h
              StaticVector.h
              StaticVector_impl.h
              StaticVector1D_impl.h

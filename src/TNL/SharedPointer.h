@@ -18,6 +18,7 @@
 #include <TNL/SmartPointer.h>
 
 #include <cstring>
+#include <cstddef>  // std::nullptr_t
 
 
 
@@ -75,6 +76,10 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
       typedef SharedPointer< Object, Devices::Host > ThisType;
+
+      SharedPointer( std::nullptr_t )
+      : pd( nullptr )
+      {}
 
       template< typename... Args >
       explicit  SharedPointer( Args... args )
@@ -311,6 +316,11 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       typedef Object ObjectType;
       typedef Devices::Cuda DeviceType;
       typedef SharedPointer< Object, Devices::Cuda > ThisType;
+
+      SharedPointer( std::nullptr_t )
+      : pd( nullptr ),
+        cuda_pointer( nullptr )
+      {}
 
       template< typename... Args >
       explicit  SharedPointer( Args... args )
@@ -650,6 +660,11 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       typedef Object ObjectType;
       typedef Devices::MIC DeviceType;
       typedef SharedPointer< Object, Devices::MIC> ThisType;
+
+      SharedPointer( std::nullptr_t )
+      : pd( nullptr ),
+        mic_pointer( nullptr )
+      {}
 
       template< typename... Args >
       explicit  SharedPointer( Args... args )

@@ -1154,11 +1154,11 @@ void ChunkedEllpack< Real, Device, Index >::getTransposition( const ChunkedEllpa
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-bool ChunkedEllpack< Real, Device, Index >::performSORIteration( const Vector& b,
-                                                                                    const IndexType row,
-                                                                                    Vector& x,
-                                                                                    const RealType& omega ) const
+   template< typename Vector1, typename Vector2 >
+bool ChunkedEllpack< Real, Device, Index >::performSORIteration( const Vector1& b,
+                                                                 const IndexType row,
+                                                                 Vector2& x,
+                                                                 const RealType& omega ) const
 {
    TNL_ASSERT( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row

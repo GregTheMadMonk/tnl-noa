@@ -16,17 +16,20 @@
 
 namespace TNL {
 namespace Solvers {
-namespace Linear {   
+namespace Linear {
 
-template< typename Matrix, typename Vector>
-typename LinearResidueGetter< Matrix, Vector >::RealType
-LinearResidueGetter< Matrix, Vector >::
+template< typename Matrix, typename Vector1, typename Vector2 >
+typename Matrix::RealType
+LinearResidueGetter::
 getResidue( const Matrix& matrix,
-            const Vector& x,
-            const Vector& b,
-            RealType bNorm )
+            const Vector1& x,
+            const Vector2& b,
+            typename Matrix::RealType bNorm )
 {
-   const IndexType size = matrix.getRows();   
+   using RealType = typename Matrix::RealType;
+   using IndexType = typename Matrix::IndexType;
+
+   const IndexType size = matrix.getRows();
    RealType res( 0.0 );
    if( bNorm == 0.0 )
       bNorm = b.lpNorm( 2.0 );

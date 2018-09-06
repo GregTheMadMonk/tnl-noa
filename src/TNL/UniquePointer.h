@@ -17,6 +17,7 @@
 #include <TNL/SmartPointer.h>
 
 #include <cstring>
+#include <cstddef>  // std::nullptr_t
 
 #include "Devices/MIC.h"
 
@@ -36,9 +37,13 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
       typedef UniquePointer< Object, Devices::Host > ThisType;
-         
+
+      UniquePointer( std::nullptr_t )
+      : pointer( nullptr )
+      {}
+
       template< typename... Args >
-      UniquePointer( const Args... args )
+      explicit  UniquePointer( const Args... args )
       {
          this->pointer = new Object( args... );
       }
@@ -126,7 +131,12 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       typedef Object ObjectType;
       typedef Devices::Cuda DeviceType;
       typedef UniquePointer< Object, Devices::Cuda > ThisType;
-         
+
+      UniquePointer( std::nullptr_t )
+      : pd( nullptr ),
+        cuda_pointer( nullptr )
+      {}
+
       template< typename... Args >
       explicit  UniquePointer( const Args... args )
       : pd( nullptr ),
@@ -304,10 +314,15 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
       typedef Devices::MIC DeviceType;
       typedef UniquePointer< Object, Devices::MIC > ThisType;
          
+      UniquePointer( std::nullptr_t )
+      : pd( nullptr ),
+        mic_pointer( nullptr )
+      {}
+
       template< typename... Args >
       explicit  UniquePointer( const Args... args )
       : pd( nullptr ),
-        cuda_pointer( nullptr )
+        mic_pointer( nullptr )
       {
          this->allocate( args... );
       }
@@ -458,7 +473,7 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
       
       PointerData* pd;
 
-      // cuda_pointer can't be part of PointerData structure, since we would be
+      // mic_pointer can't be part of PointerData structure, since we would be
       // unable to dereference this-pd on the device
       Object* mic_pointer;
 };

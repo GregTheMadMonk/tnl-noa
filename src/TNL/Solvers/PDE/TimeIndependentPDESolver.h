@@ -26,11 +26,10 @@
 
 
 namespace TNL {
-namespace Solvers {   
+namespace Solvers {
 namespace PDE {
 
-template< typename Problem,
-          typename DiscreteSolver >
+template< typename Problem >
 class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType,
                                                    typename Problem::IndexType >
 {
@@ -69,12 +68,10 @@ class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType,
    protected:
 
       MeshPointer mesh;
-      
+
       CommonDataPointer commonDataPointer;
 
       DofVectorPointer dofs;
-
-      DiscreteSolver discreteSolver;
 
       ProblemType* problem;
 };

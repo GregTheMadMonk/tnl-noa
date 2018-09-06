@@ -215,22 +215,5 @@ void IterativeSolver< Real, Index> :: refreshSolverMonitor( bool force )
    }
 }
 
-
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
-
-extern template class IterativeSolver< float,  int >;
-extern template class IterativeSolver< double, int >;
-extern template class IterativeSolver< float,  long int >;
-extern template class IterativeSolver< double, long int >;
-
-#ifdef HAVE_CUDA
-extern template class IterativeSolver< float,  int >;
-extern template class IterativeSolver< double, int >;
-extern template class IterativeSolver< float,  long int >;
-extern template class IterativeSolver< double, long int >;
-#endif
-
-#endif
-
 } // namespace Solvers
 } // namespace TNL
