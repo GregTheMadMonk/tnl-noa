@@ -57,7 +57,13 @@ class MpiCommunicator
       inline static MPI_Datatype MPIDataType( const double* ) { return MPI_DOUBLE; };
       inline static MPI_Datatype MPIDataType( const long double* ) { return MPI_LONG_DOUBLE; };
 
-      // TODO: How to deal with bool
+      // TODO: tested with MPI_LOR and MPI_LAND, but there should probably be unit tests for all operations
+      inline static MPI_Datatype MPIDataType( const bool* )
+      {
+         // sizeof(bool) is implementation-defined: https://stackoverflow.com/a/4897859
+         static_assert( sizeof(bool) == 1, "The programmer did not count with systems where sizeof(bool) != 1." );
+         return MPI_CHAR;
+      };
 
       using Request = MPI_Request;
       using CommunicationGroup = MPI_Comm;
