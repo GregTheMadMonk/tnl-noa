@@ -108,13 +108,13 @@ class NoDistrCommunicator
       }
 
       template< typename T >
-      static void Allreduce( T* data,
+      static void Allreduce( const T* data,
                              T* reduced_data,
                              int count,
                              const MPI_Op &op,
                              CommunicationGroup group )
       {
-         memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
+         memcpy( ( void* ) reduced_data, ( const void* ) data, count * sizeof( T ) );
       }
 
       template< typename T >

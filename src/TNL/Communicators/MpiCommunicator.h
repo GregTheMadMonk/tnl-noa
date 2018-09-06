@@ -310,14 +310,14 @@ class MpiCommunicator
         }
 
         template< typename T >
-        static void Allreduce( T* data,
+        static void Allreduce( const T* data,
                                T* reduced_data,
                                int count,
                                const MPI_Op &op,
                                CommunicationGroup group)
         {
 #ifdef HAVE_MPI
-            MPI_Allreduce( (void*) data, (void*) reduced_data,count,MPIDataType(data),op,group);
+            MPI_Allreduce( (const void*) data, (void*) reduced_data,count,MPIDataType(data),op,group);
 #else
             throw Exceptions::MPISupportMissing();
 #endif
