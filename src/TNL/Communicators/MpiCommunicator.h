@@ -22,9 +22,8 @@
     #include <TNL/Devices/Cuda.h>
 
     typedef struct __attribute__((__packed__))  {
-	    char name[MPI_MAX_PROCESSOR_NAME];
+       char name[MPI_MAX_PROCESSOR_NAME];
     } procName;
-
 #endif
 
 #endif
@@ -88,7 +87,7 @@ class MpiCommunicator
          if(IsInitialized())//i.e. - isUsed
          {
             redirect = parameters.getParameter< bool >( "redirect-mpi-output" );
-            setupRedirection();                        
+            setupRedirection();
 #ifdef HAVE_CUDA
    #if defined(MPIX_CUDA_AWARE_SUPPORT) && MPIX_CUDA_AWARE_SUPPORT
             std::cout << "CUDA-aware MPI detected on this system ... " << std::endl;
@@ -100,13 +99,13 @@ class MpiCommunicator
    #endif
 #endif // HAVE_CUDA
             bool gdbDebug = parameters.getParameter< bool >( "mpi-gdb-debug" );
-            int processToAttach = parameters.getParameter< int >( "mpi-process-to-attach" );            
-    
+            int processToAttach = parameters.getParameter< int >( "mpi-process-to-attach" );
+
             if( gdbDebug )
             {
                int rank = GetRank( MPI_COMM_WORLD );
                int pid = getpid();
-                              
+
                volatile int tnlMPIDebugAttached = 0;
                MPI_Send( &pid, 1, MPI_INT, 0, 0, MPI_COMM_WORLD );
                MPI_Barrier( MPI_COMM_WORLD );
@@ -121,8 +120,8 @@ class MpiCommunicator
 
                      if( i == processToAttach || processToAttach == -1 )
                      {
-                        std::cout << "  For MPI process " << i << ": gdb -q -ex \"attach " << recvPid << "\"" 
-                                  << " -ex \"set variable tnlMPIDebugAttached=1\"" 
+                        std::cout << "  For MPI process " << i << ": gdb -q -ex \"attach " << recvPid << "\""
+                                  << " -ex \"set variable tnlMPIDebugAttached=1\""
                                   << " -ex \"finish\"" << std::endl;
                      }
                   }
@@ -169,8 +168,8 @@ class MpiCommunicator
                std::cout<< GetRank(AllGroup) <<": Redirecting std::out to file" <<std::endl;
                String stdoutFile;
                stdoutFile=String( "./stdout-")+convertToString(GetRank(MPI_COMM_WORLD))+String(".txt");
-               filestr.open (stdoutFile.getString()); 
-               psbuf = filestr.rdbuf(); 
+               filestr.open (stdoutFile.getString());
+               psbuf = filestr.rdbuf();
                std::cout.rdbuf(psbuf);
             }
          }
@@ -195,10 +194,10 @@ class MpiCommunicator
       static bool IsInitialized()
       {
 #ifdef HAVE_MPI
-         int inicialized, finalized;
-         MPI_Initialized(&inicialized);
+         int initialized, finalized;
+         MPI_Initialized(&initialized);
          MPI_Finalized(&finalized);
-         return inicialized && !finalized;
+         return initialized && !finalized;
 #else
         return false;
 #endif
@@ -255,7 +254,7 @@ class MpiCommunicator
          static void Barrier(CommunicationGroup comm)
          {
 #ifdef HAVE_MPI
-            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
             MPI_Barrier(comm);
 #else
             throw Exceptions::MPISupportMissing();
@@ -266,7 +265,7 @@ class MpiCommunicator
          static Request ISend( const T *data, int count, int dest, CommunicationGroup group)
          {
 #ifdef HAVE_MPI
-            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
             Request req;
             MPI_Isend((void*) data, count, MPIDataType(data) , dest, 0, group, &req);
             return req;
@@ -279,7 +278,7 @@ class MpiCommunicator
          static Request IRecv( const T *data, int count, int src, CommunicationGroup group)
          {
 #ifdef HAVE_MPI
-            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
             Request req;
             MPI_Irecv((void*) data, count, MPIDataType(data) , src, 0, group, &req);
             return req;
@@ -291,18 +290,18 @@ class MpiCommunicator
          static void WaitAll(Request *reqs, int length)
          {
 #ifdef HAVE_MPI
-            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
             MPI_Waitall(length, reqs, MPI_STATUSES_IGNORE);
 #else
             throw Exceptions::MPISupportMissing();
 #endif
         }
 
-        template< typename T > 
+        template< typename T >
         static void Bcast(  T& data, int count, int root,CommunicationGroup group)
         {
 #ifdef HAVE_MPI
-        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not inicialized");
+        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
         MPI_Bcast((void*) &data, count,  MPIDataType(data), root, group);
 #else
         throw Exceptions::MPISupportMissing();
@@ -338,7 +337,7 @@ class MpiCommunicator
             throw Exceptions::MPISupportMissing();
 #endif
         }
-         
+
          template< typename T >
          static void SendReceive( T* sendData,
                                   int sendCount,
@@ -366,11 +365,11 @@ class MpiCommunicator
                           &status );
 #else
             throw Exceptions::MPISupportMissing();
-#endif            
+#endif
          }
 
 
-      static void writeProlog( Logger& logger ) 
+      static void writeProlog( Logger& logger )
       {
          if( isDistributed() )
          {
