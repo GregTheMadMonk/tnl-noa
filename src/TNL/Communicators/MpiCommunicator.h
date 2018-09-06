@@ -207,6 +207,7 @@ class MpiCommunicator
       {
 #ifdef HAVE_MPI
         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+        TNL_ASSERT_NE(group, NullGroup, "GetRank cannot be called with NullGroup");
         int rank;
         MPI_Comm_rank(group,&rank);
         return rank;
@@ -218,12 +219,13 @@ class MpiCommunicator
       static int GetSize(CommunicationGroup group)
       {
 #ifdef HAVE_MPI
-        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
-        int size;
-        MPI_Comm_size(group,&size);
-        return size;
+         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+         TNL_ASSERT_NE(group, NullGroup, "GetSize cannot be called with NullGroup");
+         int size;
+         MPI_Comm_size(group,&size);
+         return size;
 #else
-        return 1;
+         return 1;
 #endif
       }
 
@@ -251,11 +253,12 @@ class MpiCommunicator
 #endif
         }
 
-         static void Barrier(CommunicationGroup comm)
+         static void Barrier(CommunicationGroup group)
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
-            MPI_Barrier(comm);
+            TNL_ASSERT_NE(group, NullGroup, "Barrier cannot be called with NullGroup");
+            MPI_Barrier(group);
 #else
             throw Exceptions::MPISupportMissing();
 #endif
@@ -266,6 +269,7 @@ class MpiCommunicator
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+            TNL_ASSERT_NE(group, NullGroup, "ISend cannot be called with NullGroup");
             Request req;
             MPI_Isend((void*) data, count, MPIDataType(data) , dest, 0, group, &req);
             return req;
@@ -279,6 +283,7 @@ class MpiCommunicator
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+            TNL_ASSERT_NE(group, NullGroup, "IRecv cannot be called with NullGroup");
             Request req;
             MPI_Irecv((void*) data, count, MPIDataType(data) , src, 0, group, &req);
             return req;
@@ -301,10 +306,11 @@ class MpiCommunicator
         static void Bcast(  T& data, int count, int root,CommunicationGroup group)
         {
 #ifdef HAVE_MPI
-        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
-        MPI_Bcast((void*) &data, count,  MPIDataType(data), root, group);
+           TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+           TNL_ASSERT_NE(group, NullGroup, "BCast cannot be called with NullGroup");
+           MPI_Bcast((void*) &data, count,  MPIDataType(data), root, group);
 #else
-        throw Exceptions::MPISupportMissing();
+           throw Exceptions::MPISupportMissing();
 #endif
         }
 
@@ -316,6 +322,7 @@ class MpiCommunicator
                                CommunicationGroup group)
         {
 #ifdef HAVE_MPI
+            TNL_ASSERT_NE(group, NullGroup, "Allreduce cannot be called with NullGroup");
             MPI_Allreduce( (const void*) data, (void*) reduced_data,count,MPIDataType(data),op,group);
 #else
             throw Exceptions::MPISupportMissing();
@@ -332,6 +339,7 @@ class MpiCommunicator
                     CommunicationGroup group)
          {
 #ifdef HAVE_MPI
+            TNL_ASSERT_NE(group, NullGroup, "Reduce cannot be called with NullGroup");
             MPI_Reduce( (void*) data, (void*) reduced_data,count,MPIDataType(data),op,root,group);
 #else
             throw Exceptions::MPISupportMissing();
@@ -350,6 +358,7 @@ class MpiCommunicator
                                   CommunicationGroup group )
          {
 #ifdef HAVE_MPI
+            TNL_ASSERT_NE(group, NullGroup, "SendReceive cannot be called with NullGroup");
             MPI_Status status;
             MPI_Sendrecv( ( void* ) sendData,
                           sendCount,
