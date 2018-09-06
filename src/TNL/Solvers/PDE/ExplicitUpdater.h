@@ -123,9 +123,9 @@ class ExplicitUpdater
          TNL_ASSERT_GT( uPointer->getData().getSize(), 0, "The first MeshFunction in the parameters was not bound." );
          TNL_ASSERT_GT( fuPointer->getData().getSize(), 0, "The second MeshFunction in the parameters was not bound." );
 
-         TNL_ASSERT_EQ( uPointer->getData().getSize(), mesh.template getEntitiesCount< EntityType >(),
+         TNL_ASSERT_EQ( uPointer->getData().getSize(), meshPointer->template getEntitiesCount< EntityType >(),
                         "The first MeshFunction in the parameters was not bound properly." );
-         TNL_ASSERT_EQ( fuPointer->getData().getSize(), mesh.template getEntitiesCount< EntityType >(),
+         TNL_ASSERT_EQ( fuPointer->getData().getSize(), meshPointer->template getEntitiesCount< EntityType >(),
                         "The second MeshFunction in the parameters was not bound properly." );
             
          TNL_ASSERT_TRUE( this->userData.differentialOperator,
