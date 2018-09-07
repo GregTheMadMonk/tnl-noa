@@ -55,14 +55,14 @@ public:
    using ArrayView< Real, Device, Index >::operator!=;
 
    template< typename Vector >
-   VectorView< Real, Device, Index >& operator-=( const Vector& vector );
+   VectorView& operator-=( const Vector& vector );
 
    template< typename Vector >
-   VectorView< Real, Device, Index >& operator+=( const Vector& vector );
+   VectorView& operator+=( const Vector& vector );
 
-   VectorView< Real, Device, Index >& operator*=( RealType c );
+   VectorView& operator*=( RealType c );
 
-   VectorView< Real, Device, Index >& operator/=( RealType c );
+   VectorView& operator/=( RealType c );
 
    NonConstReal max() const;
 
@@ -102,7 +102,7 @@ public:
    template< typename Vector >
    NonConstReal scalarProduct( const Vector& v );
 
-   //! Computes Y = alpha * X + Y.
+   //! Computes this = thisMultiplicator * this + alpha * x.
    template< typename Vector >
    void addVector( const Vector& x,
                    Real alpha = 1.0,

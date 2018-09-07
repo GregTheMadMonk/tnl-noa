@@ -49,14 +49,14 @@ class Vector
                     const RealType& thisElementMultiplicator );
 
    template< typename VectorT >
-   Vector< Real, Device, Index >& operator -= ( const VectorT& vector );
+   Vector& operator -= ( const VectorT& vector );
 
    template< typename VectorT >
-   Vector< Real, Device, Index >& operator += ( const VectorT& vector );
+   Vector& operator += ( const VectorT& vector );
 
-   Vector< Real, Device, Index >& operator *= ( const RealType& c );
+   Vector& operator *= ( const RealType& c );
 
-   Vector< Real, Device, Index >& operator /= ( const RealType& c );
+   Vector& operator /= ( const RealType& c );
 
    Real max() const;
 
@@ -101,7 +101,6 @@ class Vector
    void addVector( const Vector& v,
                    const Real& multiplicator = 1.0,
                    const Real& thisMultiplicator = 1.0 );
-
 
    //! Computes this = thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
    template< typename Vector >
