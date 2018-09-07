@@ -5,24 +5,37 @@ ADD_SUBDIRECTORY( Functions )
 ADD_SUBDIRECTORY( Matrices )
 ADD_SUBDIRECTORY( Meshes )
 
+ADD_EXECUTABLE( AssertTest AssertTest.cpp )
+TARGET_COMPILE_OPTIONS( AssertTest PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( AssertTest
+                           ${GTEST_BOTH_LIBRARIES}
+                           tnl )
+
+if( BUILD_CUDA )
+   CUDA_ADD_EXECUTABLE( AssertCudaTest AssertCudaTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( AssertCudaTest
+                              ${GTEST_BOTH_LIBRARIES}
+                              tnl )
+endif()
+
 ADD_EXECUTABLE( UniquePointerTest UniquePointerTest.cpp )
 TARGET_COMPILE_OPTIONS( UniquePointerTest PRIVATE ${CXX_TESTS_FLAGS} )
 TARGET_LINK_LIBRARIES( UniquePointerTest
                            ${GTEST_BOTH_LIBRARIES}
                            tnl )
 
-IF( BUILD_CUDA )
+if( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( FileTest FileTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( FileTest
                               ${GTEST_BOTH_LIBRARIES}
                               tnl )
-ELSE(  BUILD_CUDA )               
+else()
    ADD_EXECUTABLE( FileTest FileTest.cpp )
    TARGET_COMPILE_OPTIONS( FileTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( FileTest
                               ${GTEST_BOTH_LIBRARIES}
                               tnl )
-ENDIF( BUILD_CUDA )
+endif()
 
 ADD_EXECUTABLE( StringTest StringTest.cpp )
 TARGET_COMPILE_OPTIONS( StringTest PRIVATE ${CXX_TESTS_FLAGS} )
@@ -42,6 +55,10 @@ TARGET_LINK_LIBRARIES( SaveAndLoadMeshfunctionTest
                            ${GTEST_BOTH_LIBRARIES} 
                            tnl )
 
+ADD_TEST( AssertTest ${EXECUTABLE_OUTPUT_PATH}/AssertTest${CMAKE_EXECUTABLE_SUFFIX} )
+if( BUILD_CUDA )
+   ADD_TEST( AssertCudaTest ${EXECUTABLE_OUTPUT_PATH}/AssertCudaTest${CMAKE_EXECUTABLE_SUFFIX} )
+endif()
 ADD_TEST( FileTest ${EXECUTABLE_OUTPUT_PATH}/FileTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( StringTest ${EXECUTABLE_OUTPUT_PATH}/StringTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( ObjectTest ${EXECUTABLE_OUTPUT_PATH}/ObjectTest${CMAKE_EXECUTABLE_SUFFIX} )
