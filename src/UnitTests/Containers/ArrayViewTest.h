@@ -160,6 +160,9 @@ TYPED_TEST( ArrayViewTest, constructors )
    const ArrayType& b = a;
    ConstViewType b_view( b );
    ConstViewType const_a_view( a );
+
+   // test initialization of cons view by non-const view
+   ConstViewType const_b_view( b_view );
 }
 
 TYPED_TEST( ArrayViewTest, bind )

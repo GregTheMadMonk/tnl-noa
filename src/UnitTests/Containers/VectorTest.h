@@ -740,6 +740,21 @@ TEST( VectorSpecialCasesTest, operationsOnConstView )
    EXPECT_EQ( u_view.scalarProduct( v_view ), 100 );
 }
 
+TEST( VectorSpecialCasesTest, initializationOfVectorViewByArrayView )
+{
+   using ArrayType = Containers::Array< int, Devices::Host >;
+   using VectorViewType = VectorView< const int, Devices::Host >;
+   using ArrayViewType = ArrayView< int, Devices::Host >;
+
+   ArrayType a( 100 );
+   a.setValue( 0 );
+   ArrayViewType a_view( a );
+
+   VectorViewType v_view( a_view );
+   EXPECT_EQ( v_view.getData(), a_view.getData() );
+   EXPECT_EQ( v_view.sum(), 0 );
+}
+
 #endif // HAVE_GTEST
 
 

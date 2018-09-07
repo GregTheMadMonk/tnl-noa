@@ -49,6 +49,12 @@ public:
    __cuda_callable__
    ArrayView( const ArrayView& ) = default;
 
+   // "Templated copy-constructor" accepting any cv-qualification of Element
+   template< typename Element_ >
+   __cuda_callable__
+   ArrayView( ArrayView< Element_, Device, Index >& array )
+   : data(array.getData()), size(array.getSize()) {}
+
    // default move-constructor
    __cuda_callable__
    ArrayView( ArrayView&& ) = default;

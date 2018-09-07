@@ -29,6 +29,7 @@ template< typename Real = double,
 class VectorView
 : public ArrayView< Real, Device, Index >
 {
+   using BaseType = ArrayView< Real, Device, Index >;
    using NonConstReal = typename std::remove_const< Real >::type;
 public:
    using RealType = Real;
@@ -38,7 +39,18 @@ public:
    using CudaType = VectorView< Real, Devices::Cuda, Index >;
 
    // inherit all ArrayView's constructors
+#ifndef __NVCC__
+   using BaseType::ArrayView;
+#else
+   // workaround for a bug in nvcc 8.0 (seems to be fixed in 9.0)
    using ArrayView< Real, Device, Index >::ArrayView;
+#endif
+
+   // initialization by base class is not a copy constructor so it has to be explicit
+   template< typename Element_ >  // template catches both const and non-const qualified Element
+   __cuda_callable__
+   VectorView( const ArrayView< Element_, Device, Index >& view )
+   : BaseType::ArrayView( view ) {}
 
 
    static String getType();
@@ -50,9 +62,6 @@ public:
    void addElement( IndexType i,
                     RealType value,
                     RealType thisElementMultiplicator );
-
-   using ArrayView< Real, Device, Index >::operator==;
-   using ArrayView< Real, Device, Index >::operator!=;
 
    template< typename Vector >
    VectorView& operator-=( const Vector& vector );
