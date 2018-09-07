@@ -8,6 +8,10 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#ifdef NDEBUG
+   #undef NDEBUG
+#endif
+
 #include <TNL/Assert.h>
 
 #ifdef HAVE_GTEST
