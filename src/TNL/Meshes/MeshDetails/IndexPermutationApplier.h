@@ -155,7 +155,7 @@ public:
          entity.setIndex( i );
       };
 
-      DevicePointer< Mesh > meshPointer( mesh );
+      Pointers::DevicePointer< Mesh > meshPointer( mesh );
       ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
                                        kernel1,
                                        &meshPointer.template getData< DeviceType >(),

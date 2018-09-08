@@ -1,5 +1,5 @@
 /***************************************************************************
-                          UniquePointer.h  -  description
+                          CudaStreamPool.h  -  description
                              -------------------
     begin                : Oct 14, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.

@@ -75,7 +75,7 @@ void setCudaTestMatrix( Matrix& matrix,
 #ifdef HAVE_CUDA
     typedef typename Matrix::IndexType IndexType;
     typedef typename Matrix::RealType RealType;
-    DevicePointer< Matrix > kernel_matrix( matrix );
+    Pointers::DevicePointer< Matrix > kernel_matrix( matrix );
     dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
     const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
     const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );

@@ -246,8 +246,8 @@ copySparseMatrix( Matrix1& A, const Matrix2& B )
       typename Matrix1::CompressedRowLengthsVector rowLengths;
       rowLengths.setSize( rows );
 
-      DevicePointer< Matrix1 > Apointer( A );
-      const DevicePointer< const Matrix2 > Bpointer( B );
+      Pointers::DevicePointer< Matrix1 > Apointer( A );
+      const Pointers::DevicePointer< const Matrix2 > Bpointer( B );
 
       // set row lengths
       Devices::Cuda::synchronizeDevice();
