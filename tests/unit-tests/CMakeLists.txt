@@ -14,13 +14,13 @@ ADD_TEST( core/vectors/tnlVectorOperationsTest${mpiExt} ${EXECUTABLE_OUTPUT_PATH
 ADD_TEST( core/vectors/tnlVectorTest${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlVectorTest${mpiExt} )
 ADD_TEST( core/vectors/tnlStaticVectorTest${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlStaticVectorTest${mpiExt} )
 
-ADD_TEST( core/multimaps/tnlEllpackIndexMultimapTest{mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlEllpackIndexMultimapTest${mpiExt} )
+ADD_TEST( core/multimaps/EllpackIndexMultimapTest{mpiExt} ${EXECUTABLE_OUTPUT_PATH}/EllpackIndexMultimapTest${mpiExt} )
 
 ADD_TEST( matrices/tnlDenseTest${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlDenseTest${mpiExt} )
 ADD_TEST( matrices/tnlTridiagonalTest${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlTridiagonalTest${mpiExt} )
 ADD_TEST( matrices/tnlMultidiagonalTest${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMultidiagonalTest${mpiExt} )
-ADD_TEST( matrices/tnlEllpackTest${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlEllpackTest${mpiExt} )
-ADD_TEST( matrices/tnlSlicedEllpackTest${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlSlicedEllpackTest${mpiExt} )
+ADD_TEST( matrices/EllpackTest${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/EllpackTest${mpiExt} )
+ADD_TEST( matrices/SlicedEllpackTest${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/SlicedEllpackTest${mpiExt} )
 ADD_TEST( matrices/tnlChunkedEllpackTest${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlChunkedEllpackTest${mpiExt} )
 ADD_TEST( matrices/tnlCSRTest${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCSRTest${mpiExt} )
 
@@ -63,14 +63,14 @@ if( BUILD_CUDA )
    ADD_TEST( matrices/tnlMultidiagonalTest-cuda${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMultidiagonalTest-cuda${mpiExt} )
    SET_TESTS_PROPERTIES ( matrices/tnlMultidiagonalTest-cuda${mpiExt} PROPERTIES DEPENDS core/cuda/tnlTridiagonalTest-cuda${mpiExt} )         
             
-   ADD_TEST( matrices/tnlEllpackTest-cuda${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlEllpackTest-cuda${mpiExt} )
-   SET_TESTS_PROPERTIES ( matrices/tnlEllpackTest-cuda${mpiExt} PROPERTIES DEPENDS core/cuda/tnlMultidiagonalTest-cuda${mpiExt} )
+   ADD_TEST( matrices/EllpackTest-cuda${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/EllpackTest-cuda${mpiExt} )
+   SET_TESTS_PROPERTIES ( matrices/EllpackTest-cuda${mpiExt} PROPERTIES DEPENDS core/cuda/tnlMultidiagonalTest-cuda${mpiExt} )
    
-   ADD_TEST( matrices/tnlSlicedEllpackTest-cuda${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlSlicedEllpackTest-cuda${mpiExt} )
-   SET_TESTS_PROPERTIES ( matrices/tnlSlicedEllpackTest-cuda${mpiExt} PROPERTIES DEPENDS core/cuda/tnlEllpackTest-cuda${mpiExt} )         
+   ADD_TEST( matrices/SlicedEllpackTest-cuda${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/SlicedEllpackTest-cuda${mpiExt} )
+   SET_TESTS_PROPERTIES ( matrices/SlicedEllpackTest-cuda${mpiExt} PROPERTIES DEPENDS core/cuda/EllpackTest-cuda${mpiExt} )         
    
    ADD_TEST( matrices/tnlChunkedEllpackTest-cuda${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlChunkedEllpackTest-cuda${mpiExt} )
-   SET_TESTS_PROPERTIES ( matrices/tnlChunkedEllpackTest-cuda${mpiExt} PROPERTIES DEPENDS core/cuda/tnlSlicedEllpackTest-cuda${mpiExt} )
+   SET_TESTS_PROPERTIES ( matrices/tnlChunkedEllpackTest-cuda${mpiExt} PROPERTIES DEPENDS core/cuda/SlicedEllpackTest-cuda${mpiExt} )
    
    ADD_TEST( matrices/tnlCSRTest-cuda${mpiExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCSRTest-cuda${mpiExt} )
    SET_TESTS_PROPERTIES ( matrices/tnlCSRTest-cuda${mpiExt} PROPERTIES DEPENDS core/cuda/tnlChunkedEllpackTest-cuda${mpiExt} )                     

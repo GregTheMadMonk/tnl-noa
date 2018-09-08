@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSlicedSlicedEllpack_impl.h  -  description
+                          SlicedSlicedEllpack_impl.h  -  description
                              -------------------
     begin                : Dec 8, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
