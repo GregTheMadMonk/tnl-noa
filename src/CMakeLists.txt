@@ -1,7 +1,3 @@
-if( ${WITH_PYTHON} )
-   ADD_SUBDIRECTORY( Python )
-endif()
-
 ADD_SUBDIRECTORY( TNL )
 
 if( ${WITH_TOOLS} )
@@ -10,4 +6,8 @@ endif()
 
 if( ${WITH_TESTS} )
    ADD_SUBDIRECTORY( UnitTests )
+endif()
+
+if( ${WITH_PYTHON} )
+   ADD_SUBDIRECTORY( Python )
 endif()

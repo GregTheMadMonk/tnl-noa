@@ -97,8 +97,8 @@ if( CXX_COMPILER_NAME MATCHES "icpc" )
 endif()
 
 # force colorized output in continuous integration
-if( DEFINED ENV{CI_JOB_NAME} )
-   message(STATUS "Continuous integration detected -- forcing compilers to produce colorized output.")
+if( DEFINED ENV{CI_JOB_NAME} OR ${CMAKE_GENERATOR} STREQUAL "Ninja" )
+   message(STATUS "Continuous integration or Ninja detected -- forcing compilers to produce colorized output.")
    if( CXX_COMPILER_NAME MATCHES "clang" )
       set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics" )
    else()
@@ -405,15 +405,18 @@ INCLUDE_DIRECTORIES( src )
 INCLUDE_DIRECTORIES( ${PROJECT_BUILD_PATH} )
 LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
-#Pokracujeme dalsimi podadresari
-add_subdirectory( src )
-add_subdirectory( share )
-if( WITH_TESTS STREQUAL "yes" )
-    add_subdirectory( tests )
-endif( WITH_TESTS STREQUAL "yes" )
+# Add all subdirectories
+# Note that it is important to start building examples as soon as possible,
+# because they take the longest time and other stuff can be pipelined before
+# they are finished (at least with Ninja).
 if( WITH_EXAMPLES STREQUAL "yes" )
    add_subdirectory( examples )
 endif( WITH_EXAMPLES STREQUAL "yes" )
+if( WITH_TESTS STREQUAL "yes" )
+    add_subdirectory( tests )
+endif( WITH_TESTS STREQUAL "yes" )
+add_subdirectory( src )
+add_subdirectory( share )
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")
 set(CPACK_PACKAGE_VENDOR "MMG")
