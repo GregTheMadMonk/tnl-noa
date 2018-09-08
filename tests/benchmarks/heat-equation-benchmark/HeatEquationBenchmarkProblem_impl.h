@@ -536,7 +536,6 @@ getExplicitUpdate( const RealType& time,
          cudaThreadSynchronize();         
          TNL_CHECK_CUDA_DEVICE;
       }
-      #endif
       if( this->cudaKernelType == "templated" )
       {
          //if( !this->cudaMesh )
@@ -641,6 +640,7 @@ getExplicitUpdate( const RealType& time,
             
          }
       }      
+      #endif
    }
 }
 
