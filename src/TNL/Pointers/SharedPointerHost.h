@@ -212,6 +212,11 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
          this->free();
       }
 
+      void swap( ThisType& ptr2 )
+      {
+         std::swap( this->pd, ptr2.pd );
+      }
+      
       ~SharedPointer()
       {
          this->free();
