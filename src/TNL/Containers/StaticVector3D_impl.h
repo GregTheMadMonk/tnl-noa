@@ -231,22 +231,5 @@ StaticVector< 3, Real >::lpNorm( const Real& p ) const
                     TNL::pow( TNL::abs( this->data[ 2 ] ), p ), 1.0 / p ); 
 }
 
-
-
-#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
-
-#ifndef HAVE_CUDA
-// TODO: does not work with CUDA
-#ifdef INSTANTIATE_FLOAT
-extern template class StaticVector< 3, float >;
-#endif
-extern template class StaticVector< 3, double >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class StaticVector< 3, long double >;
-#endif
-#endif
-
-#endif
-
 } // namespace Containers
 } // namespace TNL

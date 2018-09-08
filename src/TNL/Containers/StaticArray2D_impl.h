@@ -225,26 +225,5 @@ std::ostream& StaticArray< 2, Value >::write( std::ostream& str, const char* sep
    return str;
 }
 
-#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
-
-// TODO: it does not work with CUDA
-
-#ifndef HAVE_CUDA
-extern template class StaticArray< 2, char >;
-extern template class StaticArray< 2, int >;
-#ifdef INSTANTIATE_LONG_INT
-extern template class StaticArray< 2, long int >;
-#endif
-#ifdef INSTANTIATE_FLOAT
-extern template class StaticArray< 2, float >;
-#endif
-extern template class StaticArray< 2, double >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class StaticArray< 2, long double >;
-#endif
-#endif
-
-#endif
-
 } // namespace Containers
 } // namespace TNL

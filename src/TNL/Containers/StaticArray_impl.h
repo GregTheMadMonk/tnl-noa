@@ -211,26 +211,5 @@ std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Value >&
    return str;
 };
 
-#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
-
-// TODO: it does not work with CUDA
-
-#ifndef HAVE_CUDA
-extern template class StaticArray< 4, char >;
-extern template class StaticArray< 4, int >;
-#ifdef INSTANTIATE_LONG_INT
-extern template class StaticArray< 4, long int >;
-#endif
-#ifdef INSTANTIATE_FLOAT
-extern template class StaticArray< 4, float >;
-#endif
-extern template class StaticArray< 4, double >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class StaticArray< 4, long double >;
-#endif
-#endif
-
-#endif
-
 } // namespace Containers
 } // namespace TNL

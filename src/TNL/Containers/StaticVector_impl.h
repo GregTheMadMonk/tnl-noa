@@ -236,20 +236,5 @@ StaticVector< Size, Real > operator * ( const Scalar& c, const StaticVector< Siz
    return u * c;
 }
 
-#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
-
-#ifndef HAVE_CUDA
-// TODO: does not work with CUDA
-#ifdef INSTANTIATE_FLOAT
-extern template class StaticVector< 4, float >;
-#endif
-extern template class StaticVector< 4, double >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class StaticVector< 4, long double >;
-#endif
-#endif
-
-#endif
-
 } // namespace Containers
 } // namespace TNL

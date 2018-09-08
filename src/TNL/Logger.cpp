@@ -54,30 +54,4 @@ void Logger :: writeCurrentTime( const char* label )
    writeParameter< String >( label, Devices::SystemInfo::getCurrentTime() );
 }
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
-template void Logger::writeParameter< char* >( const String&,
-                                               const String&,
-                                               const Config::ParameterContainer&,
-                                               int );
-template void Logger::writeParameter< double >( const String&,
-                                                const String&,
-                                                const Config::ParameterContainer&,
-                                                int );
-template void Logger::writeParameter< int >( const String&,
-                                             const String&,
-                                             const Config::ParameterContainer&,
-                                             int );
-
-// TODO: fix this
-//template void Logger :: WriteParameter< char* >( const char*,
-//                                                 const char*&,
-//                                                 int );
-template void Logger::writeParameter< double >( const String&,
-                                                const double&,
-                                                int );
-template void Logger::writeParameter< int >( const String&,
-                                             const int&,
-                                             int );
-#endif
-
 } // namespace TNL

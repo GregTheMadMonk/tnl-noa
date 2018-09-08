@@ -324,50 +324,5 @@ computeExclusivePrefixSum( const IndexType begin,
    Algorithms::VectorOperations< Device >::computeExclusivePrefixSum( *this, begin, end );
 }
 
-
-#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
-
-#ifdef INSTANTIATE_FLOAT
-extern template class Vector< float, Devices::Host, int >;
-extern template Vector< float, Devices::Host, int >& Vector< float, Devices::Host, int >:: operator = ( const Vector< double, Devices::Host, int >& vector );
-#endif
-
-extern template class Vector< double, Devices::Host, int >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Vector< long double, Devices::Host, int >;
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-#ifdef INSTANTIATE_FLOAT
-extern template class Vector< float, Devices::Host, long int >;
-#endif
-extern template class Vector< double, Devices::Host, long int >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Vector< long double, Devices::Host, long int >;
-#endif
-#endif
-
-#ifdef HAVE_CUDA
-#ifdef INSTANTIATE_FLOAT
-extern template class Vector< float, Devices::Cuda, int >;
-#endif
-extern template class Vector< double, Devices::Cuda, int >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Vector< long double, Devices::Cuda, int >;
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-#ifdef INSTANTIATE_FLOAT
-extern template class Vector< float, Devices::Cuda, long int >;
-#endif
-extern template class Vector< double, Devices::Cuda, long int >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Vector< long double, Devices::Cuda, long int >;
-#endif
-#endif
-#endif
-
-#endif
-
 } // namespace Containers
 } // namespace TNL

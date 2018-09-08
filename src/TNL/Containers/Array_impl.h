@@ -581,42 +581,5 @@ std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index
    return str;
 }
 
-
-#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
-
-// TODO: this does not work with CUDA 5.5 - fix it later
-
-#ifdef INSTANTIATE_FLOAT
-extern template class Array< float, Devices::Host, int >;
-#endif
-extern template class Array< double, Devices::Host, int >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Array< long double, Devices::Host, int >;
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-#ifdef INSTANTIATE_FLOAT
-extern template class Array< float, Devices::Host, long int >;
-#endif
-extern template class Array< double, Devices::Host, long int >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Array< long double, Devices::Host, long int >;
-#endif
-#endif
-
-#ifdef HAVE_CUDA
-/*
- #ifdef INSTANTIATE_FLOAT
- extern template class Array< float, Devices::Cuda, int >;
- #endif
- extern template class Array< double, Devices::Cuda, int >;
- #ifdef INSTANTIATE_FLOAT
- extern template class Array< float, Devices::Cuda, long int >;
- #endif
- extern template class Array< double, Devices::Cuda, long int >;*/
-#endif
-
-#endif
-
 } // namespace Containers
 } // namespace TNL
