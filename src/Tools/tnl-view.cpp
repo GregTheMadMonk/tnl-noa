@@ -80,17 +80,6 @@ void setupConfig( Config::ConfigDescription& config )
       config.addEntryEnum  < String >             ( "gnuplot" );
       config.addEntryEnum  < String >             ( "vtk" );
    config.addEntry        < int >                 ( "verbose", "Set the verbosity of the program.", 1 );
-
-   config.addDelimiter( "Matrix settings:" );
-   config.addEntry        < String >           ( "matrix-format", "Matrix format to be drawn." );
-      config.addEntryEnum  < String >             ( "csr" );
-      config.addEntryEnum  < String >             ( "ellpack" );
-      config.addEntryEnum  < String >             ( "sliced-ellpack" );
-      config.addEntryEnum  < String >             ( "chunked-ellpack" );
-   config.addEntry        < int >                 ( "matrix-slice-size", "Sets the slice size of the matrix.", 0 );
-   config.addEntry        < int >                 ( "desired-matrix-chunk-size", "Sets desired chunk size for the Chunked Ellpack format.");
-   config.addEntry        < int >                 ( "cuda-block-size", "Sets CUDA block size for the Chunked Ellpack format." );
-   config.addEntry       < bool >                 ( "sort-matrix", "Sort the matrix rows decreasingly by the number of the non-zero elements.", false );
 }
 
 int main( int argc, char* argv[] )

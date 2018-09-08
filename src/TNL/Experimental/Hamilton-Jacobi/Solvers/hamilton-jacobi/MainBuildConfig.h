@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Solvers/BuildConfigTags.h>
+#include <TNL/Meshes/BuildConfigTags.h>
 
 namespace TNL {
 
@@ -22,7 +23,7 @@ namespace Solvers {
 /****
  * Turn off support for float and long double.
  */
-//template<> struct ConfigTagReal< HamiltonJacobiBuildConfig, float > { enum { enabled = false }; };
+template<> struct ConfigTagReal< HamiltonJacobiBuildConfig, float > { enum { enabled = false }; };
 template<> struct ConfigTagReal< HamiltonJacobiBuildConfig, long double > { enum { enabled = false }; };
 
 /****
@@ -54,4 +55,22 @@ template<> struct ConfigTagTimeDiscretisation< HamiltonJacobiBuildConfig, Implic
 //template<> struct ConfigTagExplicitSolver< HamiltonJacobiBuildConfig, ExplicitEulerSolverTag >{ enum { enabled = false }; };
 
 } // namespace Solvers
+
+namespace Meshes {
+namespace BuildConfigTags {
+
+/****
+ * Turn off support for float and long double.
+ */
+template<> struct GridRealTag< HamiltonJacobiBuildConfig, float > { enum { enabled = false }; };
+template<> struct GridRealTag< HamiltonJacobiBuildConfig, long double > { enum { enabled = false }; };
+
+/****
+ * Turn off support for short int and long int indexing.
+ */
+template<> struct GridIndexTag< HamiltonJacobiBuildConfig, short int >{ enum { enabled = false }; };
+template<> struct GridIndexTag< HamiltonJacobiBuildConfig, long int >{ enum { enabled = false }; };
+
+} // namespace BuildConfigTags
+} // namespace Meshes
 } // namespace TNL

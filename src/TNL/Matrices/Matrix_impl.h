@@ -166,6 +166,7 @@ void Matrix< Real, Device, Index >::print( std::ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 const Index&
 Matrix< Real, Device, Index >::
 getNumberOfColors() const

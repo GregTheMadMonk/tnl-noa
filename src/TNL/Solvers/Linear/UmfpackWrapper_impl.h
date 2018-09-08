@@ -16,58 +16,20 @@
 
 #include "UmfpackWrapper.h"
 
+#include <TNL/Solvers/Linear/LinearResidueGetter.h>
+
 namespace TNL {
 namespace Solvers {
-namespace Linear {   
+namespace Linear {
 
-template< typename Preconditioner >
-UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
-UmfpackWrapper()
-{}
-
-template< typename Preconditioner >
-void
-UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
-configSetup( Config::ConfigDescription& config,
-             const String& prefix )
+bool UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >::
+solve( ConstVectorViewType b, VectorViewType x )
 {
-}
+    TNL_ASSERT_EQ( this->matrix->getRows(), this->matrix->getColumns(), "matrix must be square" );
+    TNL_ASSERT_EQ( this->matrix->getColumns(), x.getSize(), "wrong size of the solution vector" );
+    TNL_ASSERT_EQ( this->matrix->getColumns(), b.getSize(), "wrong size of the right hand side" );
 
-template< typename Preconditioner >
-bool
-UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
-setup( const Config::ParameterContainer& parameters,
-       const String& prefix )
-{
-    return true;    
-}
-
-template< typename Preconditioner >
-void UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
-setMatrix( const MatrixPointer& matrix )
-{
-    this -> matrix = matrix;
-}
-
-template< typename Preconditioner >
-void UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
-setPreconditioner( const PreconditionerPointer& preconditioner )
-{
-    this -> preconditioner = preconditioner;
-}
-
-
-template< typename Preconditioner >
-    template< typename Vector, typename ResidueGetter >
-bool UmfpackWrapper< Matrices::CSR< double, Devices::Host, int >, Preconditioner >::
-solve( const Vector& b,
-       Vector& x )
-{
-    TNL_ASSERT_EQ( matrix->getRows(), matrix->getColumns(), "matrix must be square" );
-    TNL_ASSERT_EQ( matrix->getColumns(), x.getSize(), "wrong size of the solution vector" );
-    TNL_ASSERT_EQ( matrix->getColumns(), b.getSize(), "wrong size of the right hand side" );
-
-    const IndexType size = matrix -> getRows();
+    const IndexType size = this->matrix->getRows();
 
     this->resetIterations();
     this->setResidue( this -> getConvergenceResidue() + 1.0 );
@@ -88,9 +50,9 @@ solve( const Vector& b,
 
     // symbolic reordering of the sparse matrix
     status = umfpack_di_symbolic( size, size,
-                                  matrix->getRowPointers().getData(),
-                                  matrix->getColumnIndexes().getData(),
-                                  matrix->getValues().getData(),
+                                  this->matrix->getRowPointers().getData(),
+                                  this->matrix->getColumnIndexes().getData(),
+                                  this->matrix->getValues().getData(),
                                   &Symbolic, Control, Info );
     if( status != UMFPACK_OK ) {
         std::cerr << "error: symbolic reordering failed" << std::endl;
@@ -98,9 +60,9 @@ solve( const Vector& b,
     }
 
     // numeric factorization
-    status = umfpack_di_numeric( matrix->getRowPointers().getData(),
-                                 matrix->getColumnIndexes().getData(),
-                                 matrix->getValues().getData(),
+    status = umfpack_di_numeric( this->matrix->getRowPointers().getData(),
+                                 this->matrix->getColumnIndexes().getData(),
+                                 this->matrix->getValues().getData(),
                                  Symbolic, &Numeric, Control, Info );
     if( status != UMFPACK_OK ) {
         std::cerr << "error: numeric factorization failed" << std::endl;
@@ -109,9 +71,9 @@ solve( const Vector& b,
 
     // solve with specified right-hand-side
     status = umfpack_di_solve( system_type,
-                               matrix->getRowPointers().getData(),
-                               matrix->getColumnIndexes().getData(),
-                               matrix->getValues().getData(),
+                               this->matrix->getRowPointers().getData(),
+                               this->matrix->getColumnIndexes().getData(),
+                               this->matrix->getValues().getData(),
                                x.getData(),
                                b.getData(),
                                Numeric, Control, Info );
@@ -134,10 +96,10 @@ finished:
     if( Numeric )
         umfpack_di_free_numeric( &Numeric );
 
-    this->setResidue( ResidueGetter::getResidue( *matrix, x, b, bNorm ) );
+    this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
     this->refreshSolverMonitor( true );
     return status == UMFPACK_OK;
-};
+}
 
 } // namespace Linear
 } // namespace Solvers

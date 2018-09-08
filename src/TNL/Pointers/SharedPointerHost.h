@@ -41,6 +41,10 @@ class SharedPointer<  Object, Devices::Host > : public SmartPointer
       typedef Devices::Host DeviceType;
       typedef SharedPointer<  Object, Devices::Host > ThisType;
 
+      SharedPointer( std::nullptr_t )
+      : pd( nullptr )
+      {}      
+      
       template< typename... Args >
       explicit  SharedPointer( Args... args )
       : pd( nullptr )

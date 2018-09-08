@@ -39,11 +39,10 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
    public:
       using RealType = Real;
       typedef typename Grid< 1, GridReal, Device, Index >::Cell Cell;
-      typedef typename Functions::MeshFunction< Grid< 1, GridReal, Device, Index >,EntityDimension, RealType> MeshFunctionType;
+      // FIXME: clang does not like this (incomplete type error)
+//      typedef typename Functions::MeshFunction< Grid< 1, GridReal, Device, Index >,EntityDimension, RealType> MeshFunctionType;
       typedef typename Grid< 1, GridReal, Device, Index >::DistributedMeshType DistributedGridType;
       typedef typename DistributedGridType::CoordinatesType CoordinatesType;
-      //template< typename Real_ >
-      //using BufferEntitiesHelperType = BufferEntitiesHelper< MeshFunctionType, 1, Real_, Device >;
       using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
       DistributedMeshSynchronizer()
@@ -76,7 +75,7 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
 
       };
 
-      template<typename CommunicatorType>
+      template<typename CommunicatorType, typename MeshFunctionType>
       void synchronize( MeshFunctionType &meshFunction,
                         bool periodicBoundaries = false )
       {
@@ -161,8 +160,8 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
       }
       
    private:
-      template <typename Real_ >
-      void copyBuffers( MeshFunctionType meshFunction, TNL::Containers::Array<Real_,Device>* buffers, bool toBuffer,
+      template <typename Real_, typename MeshFunctionType >
+      void copyBuffers( MeshFunctionType& meshFunction, TNL::Containers::Array<Real_,Device>* buffers, bool toBuffer,
          int left, int right,
          const SubdomainOverlapsType& lowerOverlap,
          const SubdomainOverlapsType& upperOverlap,

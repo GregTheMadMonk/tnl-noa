@@ -12,7 +12,8 @@
 
 #pragma once
 
-#include <TNL/Object.h>
+#include "Preconditioner.h"
+
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
@@ -20,27 +21,29 @@ namespace Solvers {
 namespace Linear {
 namespace Preconditioners {
 
-template< typename Real, typename Device, typename Index >
+template< typename Matrix >
 class Diagonal
+: public Preconditioner< Matrix >
 {
-   public:
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef Containers::Vector< Real, Device, Index > VectorType;
+public:
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using typename Preconditioner< Matrix >::VectorViewType;
+   using typename Preconditioner< Matrix >::ConstVectorViewType;
+   using typename Preconditioner< Matrix >::MatrixPointer;
+   using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
 
-   template< typename Matrix >
-   void update( const Matrix& matrix );
+   virtual void update( const MatrixPointer& matrixPointer ) override;
 
-   template< typename Vector1, typename Vector2 >
-   bool solve( const Vector1& b, Vector2& x ) const;
+   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
 
    String getType() const
    {
       return String( "Diagonal" );
    }
 
-   protected:
+protected:
    VectorType diagonal;
 };
 

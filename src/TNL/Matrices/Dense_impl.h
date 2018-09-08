@@ -847,11 +847,11 @@ void Dense< Real, Device, Index >::getTransposition( const Matrix& matrix,
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-void Dense< Real, Device, Index >::performSORIteration( const Vector& b,
-                                                                 const IndexType row,
-                                                                 Vector& x,
-                                                                 const RealType& omega ) const
+   template< typename Vector1, typename Vector2 >
+void Dense< Real, Device, Index >::performSORIteration( const Vector1& b,
+                                                        const IndexType row,
+                                                        Vector2& x,
+                                                        const RealType& omega ) const
 {
    RealType sum( 0.0 ), diagonalValue;
    for( IndexType i = 0; i < this->getColumns(); i++ )

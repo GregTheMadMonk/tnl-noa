@@ -10,63 +10,34 @@
 
 #pragma once
 
-#include <math.h>
-#include <TNL/Object.h>
-#include <TNL/Pointers/SharedPointer.h>
+#include "LinearSolver.h"
+
 #include <TNL/Containers/Vector.h>
-#include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
-#include <TNL/Solvers/IterativeSolver.h>
-#include <TNL/Solvers/Linear/LinearResidueGetter.h>
 
 namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Matrix,
-          typename Preconditioner = Preconditioners::Dummy< typename Matrix :: RealType,
-                                                            typename Matrix :: DeviceType,
-                                                            typename Matrix :: IndexType> >
-class CG : public Object,
-           public IterativeSolver< typename Matrix :: RealType,
-                                   typename Matrix :: IndexType >
+template< typename Matrix >
+class CG
+: public LinearSolver< Matrix >
 {
-   public:
+   using Base = LinearSolver< Matrix >;
+public:
+   using RealType = typename Base::RealType;
+   using DeviceType = typename Base::DeviceType;
+   using IndexType = typename Base::IndexType;
+   using VectorViewType = typename Base::VectorViewType;
+   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   typedef typename Matrix::RealType RealType;
-   typedef typename Matrix::IndexType IndexType;
-   typedef typename Matrix::DeviceType DeviceType;
-   typedef Matrix MatrixType;
-   typedef Preconditioner PreconditionerType;
-   typedef Pointers::SharedPointer<  const MatrixType, DeviceType > MatrixPointer;
-   typedef Pointers::SharedPointer<  const PreconditionerType, DeviceType > PreconditionerPointer;
-
-
-   CG();
- 
    String getType() const;
 
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" );
+   bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
-   bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" );
-
-   void setMatrix( const MatrixPointer& matrix );
-
-   void setPreconditioner( const PreconditionerPointer& preconditioner );
-
-   template< typename Vector,
-             typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
-   bool solve( const Vector& b, Vector& x );
-
-   protected:
-
+protected:
    void setSize( IndexType size );
 
    Containers::Vector< RealType, DeviceType, IndexType >  r, new_r, p, Ap;
-
-   MatrixPointer matrix;
-   PreconditionerPointer preconditioner;
 };
 
 } // namespace Linear

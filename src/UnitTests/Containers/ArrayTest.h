@@ -14,6 +14,7 @@
 #include <type_traits>
 
 #include <TNL/Containers/Array.h>
+#include <TNL/Containers/Vector.h>
 
 #include "gtest/gtest.h"
 
@@ -78,11 +79,10 @@ using ArrayTypes = ::testing::Types<
    Array< long,   Devices::Host, long >,
    Array< float,  Devices::Host, long >,
    Array< double, Devices::Host, long >,
-   Array< MyData, Devices::Host, long >
+   Array< MyData, Devices::Host, long >,
    // FIXME: this segfaults in String::~String()
-//   , Array< String, Devices::Host, long >
+//   Array< String, Devices::Host, long >,
 #ifdef HAVE_CUDA
-   ,
    Array< short,  Devices::Cuda, short >,
    Array< int,    Devices::Cuda, short >,
    Array< long,   Devices::Cuda, short >,
@@ -100,10 +100,9 @@ using ArrayTypes = ::testing::Types<
    Array< long,   Devices::Cuda, long >,
    Array< float,  Devices::Cuda, long >,
    Array< double, Devices::Cuda, long >,
-   Array< MyData, Devices::Cuda, long >
+   Array< MyData, Devices::Cuda, long >,
 #endif
 #ifdef HAVE_MIC
-   ,
    Array< short,  Devices::MIC, short >,
    Array< int,    Devices::MIC, short >,
    Array< long,   Devices::MIC, short >,
@@ -122,9 +121,24 @@ using ArrayTypes = ::testing::Types<
    Array< int,    Devices::MIC, long >,
    Array< long,   Devices::MIC, long >,
    Array< float,  Devices::MIC, long >,
-   Array< double, Devices::MIC, long >
+   Array< double, Devices::MIC, long >,
    // TODO: MyData does not work on MIC
-//   Array< MyData, Devices::MIC, long >
+//   Array< MyData, Devices::MIC, long >,
+#endif
+
+   // all array tests should also work with Vector
+   // (but we can't test all types because the argument list would be too long...)
+   Vector< float,  Devices::Host, long >,
+   Vector< double, Devices::Host, long >
+#ifdef HAVE_CUDA
+   ,
+   Vector< float,  Devices::Cuda, long >,
+   Vector< double, Devices::Cuda, long >
+#endif
+#ifdef HAVE_MIC
+   ,
+   Vector< float,  Devices::MIC, long >,
+   Vector< double, Devices::MIC, long >
 #endif
 >;
 

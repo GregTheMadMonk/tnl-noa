@@ -41,40 +41,25 @@
 
 #pragma once
 
-#include <math.h>
-#include <TNL/Object.h>
-#include <TNL/Pointers/SharedPointer.h>
+#include "LinearSolver.h"
+
 #include <TNL/Containers/Vector.h>
-#include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
-#include <TNL/Solvers/IterativeSolver.h>
-#include <TNL/Solvers/Linear/LinearResidueGetter.h>
 
 namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Matrix,
-          typename Preconditioner = Preconditioners::Dummy< typename Matrix :: RealType,
-                                                            typename Matrix :: DeviceType,
-                                                            typename Matrix :: IndexType> >
-
+template< typename Matrix >
 class BICGStabL
-   : public Object,
-     public IterativeSolver< typename Matrix :: RealType,
-                             typename Matrix :: IndexType >
+: public LinearSolver< Matrix >
 {
+   using Base = LinearSolver< Matrix >;
 public:
-   typedef typename Matrix::RealType RealType;
-   typedef typename Matrix::IndexType IndexType;
-   typedef typename Matrix::DeviceType DeviceType;
-   typedef Matrix MatrixType;
-   typedef Preconditioner PreconditionerType;
-   typedef Pointers::SharedPointer<  const MatrixType, DeviceType > MatrixPointer;
-   typedef Pointers::SharedPointer<  const PreconditionerType, DeviceType > PreconditionerPointer;
-   typedef Containers::Vector< RealType, DeviceType, IndexType > DeviceVector;
-   typedef Containers::Vector< RealType, Devices::Host, IndexType > HostVector;
-
-   BICGStabL();
+   using RealType = typename Base::RealType;
+   using DeviceType = typename Base::DeviceType;
+   using IndexType = typename Base::IndexType;
+   using VectorViewType = typename Base::VectorViewType;
+   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
    String getType() const;
 
@@ -82,17 +67,14 @@ public:
                             const String& prefix = "" );
 
    bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" );
+               const String& prefix = "" ) override;
 
-   void setMatrix( const MatrixPointer& matrix );
-
-   void setPreconditioner( const PreconditionerPointer& preconditioner );
-
-   template< typename Vector,
-             typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
-   bool solve( const Vector& b, Vector& x );
+   bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
 protected:
+   using DeviceVector = Containers::Vector< RealType, DeviceType, IndexType >;
+   using HostVector = Containers::Vector< RealType, Devices::Host, IndexType >;
+
    void setSize( IndexType size );
 
    int ell = 1;
@@ -107,9 +89,6 @@ protected:
    HostVector T, sigma, g_0, g_1, g_2;
 
    IndexType size, ldSize;
-
-   MatrixPointer matrix;
-   PreconditionerPointer preconditioner;
 };
 
 } // namespace Linear

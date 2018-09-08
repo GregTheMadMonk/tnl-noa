@@ -535,12 +535,12 @@ void Tridiagonal< Real, Device, Index >::getTransposition( const Tridiagonal< Re
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
+   template< typename Vector1, typename Vector2 >
 __cuda_callable__
-void Tridiagonal< Real, Device, Index >::performSORIteration( const Vector& b,
-                                                                       const IndexType row,
-                                                                       Vector& x,
-                                                                       const RealType& omega ) const
+void Tridiagonal< Real, Device, Index >::performSORIteration( const Vector1& b,
+                                                              const IndexType row,
+                                                              Vector2& x,
+                                                              const RealType& omega ) const
 {
    RealType sum( 0.0 );
    if( row > 0 )

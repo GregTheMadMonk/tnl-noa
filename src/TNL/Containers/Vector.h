@@ -13,12 +13,13 @@
 #include <TNL/Containers/Array.h>
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
 
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
-class Vector : public Containers::Array< Real, Device, Index >
+class Vector
+: public Array< Real, Device, Index >
 {
    public:
 
@@ -28,9 +29,9 @@ class Vector : public Containers::Array< Real, Device, Index >
    typedef Vector< Real, TNL::Devices::Host, Index > HostType;
    typedef Vector< Real, TNL::Devices::Cuda, Index > CudaType;
 
-   Vector();
-
-   Vector( const Index size );
+   // inherit all constructors and assignment operators from Array
+   using Array< Real, Device, Index >::Array;
+   using Array< Real, Device, Index >::operator=;
 
    static String getType();
 
@@ -47,26 +48,15 @@ class Vector : public Containers::Array< Real, Device, Index >
                     const RealType& value,
                     const RealType& thisElementMultiplicator );
 
-   Vector< Real, Device, Index >& operator = ( const Vector< Real, Device, Index >& array );
+   template< typename VectorT >
+   Vector& operator -= ( const VectorT& vector );
 
    template< typename VectorT >
-   Vector< Real, Device, Index >& operator = ( const VectorT& vector );
+   Vector& operator += ( const VectorT& vector );
 
-   template< typename VectorT >
-   bool operator == ( const VectorT& vector ) const;
+   Vector& operator *= ( const RealType& c );
 
-   template< typename VectorT >
-   bool operator != ( const VectorT& vector ) const;
-
-   template< typename VectorT >
-   Vector< Real, Device, Index >& operator -= ( const VectorT& vector );
-
-   template< typename VectorT >
-   Vector< Real, Device, Index >& operator += ( const VectorT& vector );
-
-   Vector< Real, Device, Index >& operator *= ( const RealType& c );
- 
-   Vector< Real, Device, Index >& operator /= ( const RealType& c );
+   Vector& operator /= ( const RealType& c );
 
    Real max() const;
 
@@ -111,7 +101,6 @@ class Vector : public Containers::Array< Real, Device, Index >
    void addVector( const Vector& v,
                    const Real& multiplicator = 1.0,
                    const Real& thisMultiplicator = 1.0 );
-
 
    //! Computes this = thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
    template< typename Vector >

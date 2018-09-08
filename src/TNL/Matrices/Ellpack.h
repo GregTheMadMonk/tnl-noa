@@ -161,10 +161,10 @@ public:
    void getTransposition( const Ellpack< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
-   template< typename Vector >
-   bool performSORIteration( const Vector& b,
+   template< typename Vector1, typename Vector2 >
+   bool performSORIteration( const Vector1& b,
                              const IndexType row,
-                             Vector& x,
+                             Vector2& x,
                              const RealType& omega = 1.0 ) const;
 
    template< typename Vector >

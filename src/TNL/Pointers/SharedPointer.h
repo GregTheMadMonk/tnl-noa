@@ -52,13 +52,13 @@ class SharedPointer
 namespace Assert {
 
 template< typename Object, typename Device >
-struct Formatter< Pointers::SharedPointer<  Object, Device > >
+struct Formatter< Pointers::SharedPointer< Object, Device > >
 {
    static std::string
-   printToString( const Pointers::SharedPointer<  Object, Device >& value )
+   printToString( const Pointers::SharedPointer< Object, Device >& value )
    {
       ::std::stringstream ss;
-      ss << "(Pointers::SharedPointer<  " << Object::getType() << ", " << Device::getDeviceType()
+      ss << "(SharedPointer< " << Object::getType() << ", " << Device::getDeviceType()
          << " > object at " << &value << ")";
       return ss.str();
    }

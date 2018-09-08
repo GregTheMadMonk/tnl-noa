@@ -562,11 +562,11 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-   template< typename Vector >
-bool SlicedEllpack< Real, Device, Index, SliceSize >::performSORIteration( const Vector& b,
-                                                                                    const IndexType row,
-                                                                                    Vector& x,
-                                                                                    const RealType& omega ) const
+   template< typename Vector1, typename Vector2 >
+bool SlicedEllpack< Real, Device, Index, SliceSize >::performSORIteration( const Vector1& b,
+                                                                           const IndexType row,
+                                                                           Vector2& x,
+                                                                           const RealType& omega ) const
 {
    TNL_ASSERT( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row

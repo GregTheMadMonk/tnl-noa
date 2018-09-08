@@ -14,7 +14,32 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/MIC.h>
 #include <TNL/Pointers/SmartPointer.h>
+
+#include <cstring>
+#include <cstddef>  // std::nullptr_t
+
+//#define TNL_DEBUG_SHARED_POINTERS
+
+#ifdef TNL_DEBUG_SHARED_POINTERS
+   #include <typeinfo>
+   #include <cxxabi.h>
+   #include <iostream>
+   #include <string>
+   #include <memory>
+   #include <cstdlib>
+
+   inline
+   std::string demangle(const char* mangled)
+   {
+      int status;
+      std::unique_ptr<char[], void (*)(void*)> result(
+         abi::__cxa_demangle(mangled, 0, 0, &status), std::free);
+      return result.get() ? std::string(result.get()) : "error occurred";
+   }
+#endif
+
 
 namespace TNL {
    namespace Pointers {
@@ -43,6 +68,10 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       typedef Object ObjectType;
       typedef Devices::Cuda DeviceType;
       typedef SharedPointer<  Object, Devices::Cuda > ThisType;
+
+      SharedPointer( std::nullptr_t )
+      : pd( nullptr )
+      {}
 
       template< typename... Args >
       explicit  SharedPointer( Args... args )
@@ -283,6 +312,11 @@ class SharedPointer<  Object, Devices::Cuda > : public SmartPointer
       typedef Object ObjectType;
       typedef Devices::Cuda DeviceType;
       typedef SharedPointer<  Object, Devices::Cuda > ThisType;
+
+      SharedPointer( std::nullptr_t )
+      : pd( nullptr ),
+        cuda_pointer( nullptr )
+      {}
 
       template< typename... Args >
       explicit  SharedPointer( Args... args )
@@ -598,5 +632,5 @@ class SharedPointer<  Object, Devices::Cuda > : public SmartPointer
 };
 #endif // HAVE_CUDA_UNIFIED_MEMORY
 
-} // namespace Pointers
+   } // namespace Pointers
 } // namespace TNL
