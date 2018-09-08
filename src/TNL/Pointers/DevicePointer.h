@@ -753,15 +753,16 @@ class DevicePointer< Object, Devices::MIC > : public SmartPointer
 };
 #endif
 
+} // namespace Pointers
 
 #if (!defined(NDEBUG)) && (!defined(HAVE_MIC))
 namespace Assert {
 
 template< typename Object, typename Device >
-struct Formatter< DevicePointer< Object, Device > >
+struct Formatter< Pointers::DevicePointer< Object, Device > >
 {
    static std::string
-   printToString( const DevicePointer< Object, Device >& value )
+   printToString( const Pointers::DevicePointer< Object, Device >& value )
    {
       ::std::stringstream ss;
       ss << "(DevicePointer< " << Object::getType() << ", " << Device::getDeviceType()
@@ -773,5 +774,4 @@ struct Formatter< DevicePointer< Object, Device > >
 } // namespace Assert
 #endif
 
-} // namespace Pointers
 } // namespace TNL
