@@ -112,7 +112,7 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 
 	if( ! Mesh.load( meshFile ) )
 	{
-		   cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the mesh from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 
@@ -120,7 +120,7 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 	const String& initialCondition = parameters.getParameter <String>("initial-condition");
 	if( ! dofVector.load( initialCondition ) )
 	{
-		   cerr << "I am not able to load the initial condition from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the initial condition from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 
@@ -181,7 +181,7 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 	TNL_CHECK_CUDA_DEVICE;
 
 
-	cout << "Solver initialized." << endl;
+	cout << "Solver initialized." <<std::endl;
 	return true;
 }
 
@@ -206,11 +206,11 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: r
 	double time = 0.0;
 	int reinit = 0;
 
-	cout << "Hi!" << endl;
+	cout << "Hi!" <<std::endl;
 	runCUDA<<<numBlocksFS,threadsPerBlockFS>>>(this->cudaSolver,0,0);
 	cudaDeviceSynchronize();
 	TNL_CHECK_CUDA_DEVICE;
-	cout << "Hi2!" << endl;
+	cout << "Hi2!" <<std::endl;
 	while(time < finalTime)
 	{
 		if(tau+time > finalTime)
@@ -228,7 +228,7 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: r
 		TNL_CHECK_CUDA_DEVICE;
 		if(reinit != 0 /*&& time != finalTime */)
 		{
-			cout << time << endl;
+			cout << time <<std::endl;
 
 			initSetupGridCUDA<<<numBlocksNB,threadsPerBlockNB>>>(this->cudaSolver);
 			cudaDeviceSynchronize();

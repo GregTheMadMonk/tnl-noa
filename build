@@ -18,9 +18,11 @@ WITH_MPI="yes"
 WITH_CUDA="yes"
 WITH_CUDA_ARCH="auto"
 WITH_OPENMP="yes"
+WITH_GMP="no"
 WITH_TESTS="yes"
 WITH_COVERAGE="no"
 WITH_EXAMPLES="yes"
+WITH_PYTHON="yes"
 WITH_TOOLS="yes"
 
 WITH_TEMPLATE_INSTANTIATION="no"
@@ -51,6 +53,7 @@ do
         --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
         --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;
         --with-openmp=*                  ) WITH_OPENMP="${option#*=}" ;;
+        --with-gmp=*                     ) WITH_GMP="${option#*=}" ;;
         --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
         --with-coverage=*                ) WITH_COVERAGE="${option#*=}" ;;
         --with-examples=*                ) WITH_EXAMPLES="${option#*=}" ;;
@@ -89,6 +92,7 @@ then
     echo "   --with-cuda=yes/no                    Enables CUDA. 'yes' by default (CUDA Toolkit is required)."
     echo "   --with-cuda-arch=all/auto/30/35/...   Chooses CUDA architecture. 'auto' by default."
     echo "   --with-openmp=yes/no                  Enables OpenMP. 'yes' by default."
+    echo "   --with-gmp=yes/no                     Enables the wrapper for GNU Multiple Precision Arithmetic Library. 'no' by default."
     echo "   --with-tests=yes/no                   Enables unit tests. 'yes' by default."
     echo "   --with-coverage=yes/no                Enables code coverage reports for unit tests. 'no' by default (lcov is required)."
     echo "   --with-examples=yes/no                Compile the 'examples' directory. 'yes' by default."
@@ -135,6 +139,7 @@ ${CMAKE} ${ROOT_DIR} \
          -DWITH_CUDA=${WITH_CUDA} \
          -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH} \
          -DWITH_OPENMP=${WITH_OPENMP} \
+         -DWITH_GMP=${WITH_GMP} \
          -DWITH_TESTS=${WITH_TESTS} \
          -DWITH_COVERAGE=${WITH_COVERAGE} \
          -DWITH_EXAMPLES=${WITH_EXAMPLES} \

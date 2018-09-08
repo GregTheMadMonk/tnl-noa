@@ -39,7 +39,7 @@ class MultiArray< 1, Element, Device, Index > : public Array< Element, Device, I
 
    static String getType();
 
-   String getTypeVirtual() const;
+   virtual String getTypeVirtual() const;
 
    static String getSerializationType();
 
@@ -118,7 +118,7 @@ class MultiArray< 2, Element, Device, Index > : public Array< Element, Device, I
 
    static String getType();
 
-   String getTypeVirtual() const;
+   virtual String getTypeVirtual() const;
 
    static String getSerializationType();
 
@@ -201,7 +201,7 @@ class MultiArray< 3, Element, Device, Index > : public Array< Element, Device, I
 
    static String getType();
 
-   String getTypeVirtual() const;
+   virtual String getTypeVirtual() const;
 
    static String getSerializationType();
 
@@ -284,7 +284,7 @@ class MultiArray< 4, Element, Device, Index > : public Array< Element, Device, I
 
    static String getType();
 
-   String getTypeVirtual() const;
+   virtual String getTypeVirtual() const;
 
    static String getSerializationType();
 

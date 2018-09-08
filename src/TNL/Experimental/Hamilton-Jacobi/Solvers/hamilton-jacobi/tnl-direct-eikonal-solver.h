@@ -20,14 +20,16 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/Grid.h>
 #include "tnlDirectEikonalProblem.h"
+#include "MainBuildConfig.h"
 
 using namespace TNL;
 
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
-typedef Solvers::FastBuildConfigTag BuildConfig;
+//typedef Solvers::FastBuildConfig BuildConfig;
+typedef HamiltonJacobiBuildConfig BuildConfig;
 
 template< typename MeshConfig >
-class tnlDirectEikonalSolverConfig
+class DirectEikonalSolverConfig
 {
    public:
       static void configSetup( Config::ConfigDescription& config )
@@ -42,8 +44,9 @@ template< typename Real,
           typename Index,
           typename MeshType,
           typename MeshConfig,
-          typename SolverStarter >
-class tnlDirectEikonalSolverSetter
+          typename SolverStarter,
+          typename CommunicatorType >
+class DirectEikonalSolverSetter
 {
    public:
 
@@ -57,7 +60,7 @@ class tnlDirectEikonalSolverSetter
    {
       static const int Dimension = MeshType::getMeshDimension();
       typedef Functions::Analytic::Constant< Dimension, Real > Anisotropy;
-      typedef tnlDirectEikonalProblem< MeshType, Anisotropy > Problem;
+      typedef tnlDirectEikonalProblem< MeshType, CommunicatorType, Anisotropy > Problem;
       SolverStarter solverStarter;
       return solverStarter.template run< Problem >( parameters );
    };
@@ -65,7 +68,7 @@ class tnlDirectEikonalSolverSetter
 
 int main( int argc, char* argv[] )
 {
-   if( ! Solvers::Solver< tnlDirectEikonalSolverSetter, tnlDirectEikonalSolverConfig, BuildConfig >::run( argc, argv ) )
+   if( ! Solvers::Solver< DirectEikonalSolverSetter, DirectEikonalSolverConfig, BuildConfig >::run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

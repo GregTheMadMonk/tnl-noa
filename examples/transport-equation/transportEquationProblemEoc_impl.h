@@ -26,9 +26,10 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename Communicator,
           typename DifferentialOperator >
 String
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 getType()
 {
    return String( "transportEquationProblemEoc< " ) + Mesh :: getType() + " >";
@@ -37,9 +38,10 @@ getType()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename Communicator,
           typename DifferentialOperator >
 String
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 getPrologHeader() const
 {
    return String( "Transport Equation EOC" );
@@ -49,9 +51,10 @@ getPrologHeader() const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename Communicator,
           typename DifferentialOperator >
 bool
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -69,7 +72,7 @@ setup( const Config::ParameterContainer& parameters,
    static const int Dimension = Mesh::getMeshDimension();
    typedef typename MeshPointer::ObjectType MeshType;
    typedef Functions::MeshFunction< MeshType > MeshFunction;
-   SharedPointer< MeshFunction > u( this->getMesh() );
+   Pointers::SharedPointer< MeshFunction > u( this->getMesh() );
    if( initialCondition == "heaviside-vector-norm" )
    {
       typedef Functions::Analytic::VectorNorm< Dimension, RealType > VectorNormType;
@@ -125,9 +128,10 @@ setup( const Config::ParameterContainer& parameters,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename Communicator,
           typename DifferentialOperator >
 bool
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      DofVectorPointer& dofs )
 {

@@ -103,7 +103,7 @@ bool pureCRhsCuda( dim3 cudaGridSize,
    /****
     * Neumann boundary conditions
     */
-   //cout << "Setting boundary conditions ... " << endl;
+   //cout << "Setting boundary conditions ... " <<std::endl;
    boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( cuda_u, cuda_aux, gridXSize, gridYSize );
    if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
    {
@@ -114,7 +114,7 @@ bool pureCRhsCuda( dim3 cudaGridSize,
    /****
     * Laplace operator
     */
-   //cout << "Laplace operator ... " << endl;
+   //cout << "Laplace operator ... " <<std::endl;
    heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
       ( cuda_u, cuda_aux, tau, hx_inv, hy_inv, gridXSize, gridYSize );
    if( cudaGetLastError() != cudaSuccess )

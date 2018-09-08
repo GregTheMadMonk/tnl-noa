@@ -21,7 +21,6 @@ ExplicitSolver()
    stopTime( 0.0 ),
    tau( 0.0 ),
    maxTau( DBL_MAX ),
-   solver_comm( MPI_COMM_WORLD ),
    verbosity( 0 ),
    timer( &defaultTimer ),
    testingMode( false ),
@@ -122,14 +121,6 @@ setStopTime( const RealType& stopTime )
 {
     this->stopTime = stopTime;
 }
-
-template< class Problem >
-void
-ExplicitSolver< Problem >::
-setMPIComm( MPI_Comm comm )
-{
-   this->solver_comm = comm;
-};
 
 template< class Problem >
 void

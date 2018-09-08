@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <TNL/Assert.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Pointers/SmartPointer.h>
 
@@ -204,6 +205,11 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       void clear()
       {
          this->free();
+      }
+      
+      void swap( ThisType& ptr2 )
+      {
+         std::swap( this->pd, ptr2.pd );
       }
 
       ~SharedPointer()
@@ -502,7 +508,13 @@ class SharedPointer<  Object, Devices::Cuda > : public SmartPointer
       void clear()
       {
          this->free();
-      }      
+      }
+      
+      void swap( ThisType& ptr2 )
+      {
+         std::swap( this->pd, ptr2.pd );
+         std::swap( this->cuda_pointer, ptr2.cuda_pointer );
+      }
 
       ~SharedPointer()
       {
@@ -586,5 +598,5 @@ class SharedPointer<  Object, Devices::Cuda > : public SmartPointer
 };
 #endif // HAVE_CUDA_UNIFIED_MEMORY
 
-   } //namespace Pointers
+} // namespace Pointers
 } // namespace TNL

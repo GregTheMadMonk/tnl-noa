@@ -93,6 +93,16 @@ StaticVector< Size, Real >& StaticVector< Size, Real >::operator *= ( const Real
 
 template< int Size, typename Real >
 __cuda_callable__
+StaticVector< Size, Real >& StaticVector< Size, Real >::operator /= ( const Real& c )
+{
+   const RealType d = 1.0 / c;
+   for( int i = 0; i < Size; i++ )
+      this->data[ i ] *= d;
+   return *this;
+}
+
+template< int Size, typename Real >
+__cuda_callable__
 StaticVector< Size, Real > StaticVector< Size, Real >::operator + ( const StaticVector& u ) const
 {
    StaticVector< Size, Real > res;

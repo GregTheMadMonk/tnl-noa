@@ -19,9 +19,10 @@
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 String
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 getType()
 {
    return String( "HeatEquationBenchmarkProblem< " ) + Mesh :: getType() + " >";
@@ -30,8 +31,9 @@ getType()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+          typename DifferentialOperator,
+          typename Communicator >
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 HeatEquationBenchmarkProblem()
 : cudaMesh( 0 ),
   cudaBoundaryConditions( 0 ),
@@ -43,9 +45,10 @@ HeatEquationBenchmarkProblem()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 String
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 getPrologHeader() const
 {
    if( this->cudaKernelType == "pure-c" )
@@ -61,9 +64,10 @@ getPrologHeader() const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 void
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
@@ -75,9 +79,10 @@ writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) cons
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 bool
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -101,9 +106,10 @@ setup( const Config::ParameterContainer& parameters,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
-typename HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+          typename DifferentialOperator,
+          typename Communicator >
+typename HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::IndexType
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 getDofs() const
 {
    /****
@@ -116,9 +122,10 @@ getDofs() const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 void
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 bindDofs( DofVectorPointer& dofsPointer )
 {
    this->u->bind( this->getMesh(), dofsPointer );
@@ -127,9 +134,10 @@ bindDofs( DofVectorPointer& dofsPointer )
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 bool
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      DofVectorPointer& dofsPointer )
 {
@@ -146,10 +154,11 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
    template< typename Matrix >
 bool
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 setupLinearSystem( Matrix& matrix )
 {
    const IndexType dofs = this->getDofs();
@@ -171,9 +180,10 @@ setupLinearSystem( Matrix& matrix )
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 bool
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
               DofVectorPointer& dofsPointer )
@@ -384,9 +394,10 @@ heatEquationTemplatedCompact( const GridType* grid,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 void
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 getExplicitUpdate( const RealType& time,
                    const RealType& tau,
                    DofVectorPointer& uDofs,
@@ -533,7 +544,7 @@ getExplicitUpdate( const RealType& time,
          this->u->bind( mesh, uDofs );
          this->fu->bind( mesh, fuDofs );         
          //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
-         this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, this->u, this->fu );
+         this->explicitUpdater.template update< typename Mesh::Cell, CommunicatorType >( time, tau, mesh, this->u, this->fu );
       }
       if( this->cudaKernelType == "tunning" )
       {
@@ -636,11 +647,12 @@ getExplicitUpdate( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 void 
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 applyBoundaryConditions( const RealType& time,
-                         DofVectorPointer& uDofs )
+                            DofVectorPointer& uDofs )
 {
    const MeshPointer& mesh = this->getMesh();
    if( this->cudaKernelType == "templated" )
@@ -713,14 +725,14 @@ applyBoundaryConditions( const RealType& time,
    }
 }
 
-
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
    template< typename MatrixPointer >
 void
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       DofVectorPointer& _u,
@@ -748,8 +760,9 @@ assemblyLinearSystem( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+          typename DifferentialOperator,
+          typename Communicator >
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 ~HeatEquationBenchmarkProblem()
 {
    if( this->cudaMesh ) Devices::Cuda::freeFromDevice( this->cudaMesh );

@@ -32,7 +32,7 @@ public:
    Matrix();
 
    virtual void setDimensions( const IndexType rows,
-                               const IndexType columns );
+                                 const IndexType columns );
 
    virtual void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths ) = 0;
 
@@ -83,6 +83,10 @@ public:
 
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
+   
+   const ValuesVector& getValues() const;
+   
+   ValuesVector& getValues();
 
    template< typename Matrix >
    bool operator == ( const Matrix& matrix ) const;
@@ -96,9 +100,28 @@ public:
 
    virtual void print( std::ostream& str ) const;
 
-protected:
 
-   IndexType rows, columns;
+   // TODO: method for symmetric matrices, should not be in general Matrix interface
+   __cuda_callable__
+   const IndexType& getNumberOfColors() const;
+
+   // TODO: method for symmetric matrices, should not be in general Matrix interface
+   void computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector);
+
+   // TODO: what is this supposed to do?!?  There are redefinitions only in the
+   // EllpackSymmetricGraph and SlicedEllpackSymmetricGraph classes...
+   bool help( bool verbose = false ) { return true;};
+
+   // TODO: copy should be done in the operator= and it should work the other way too
+   void copyFromHostToCuda( Matrices::Matrix< Real, Devices::Host, Index >& matrix );
+
+   // TODO: missing implementation!
+   __cuda_callable__
+   Index getValuesSize() const;
+
+   protected:
+
+   IndexType rows, columns, numberOfColors;
 
    ValuesVector values;
 };

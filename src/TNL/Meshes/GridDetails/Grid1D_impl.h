@@ -28,7 +28,8 @@ template< typename Real,
           typename Index >
 Grid< 1, Real, Device, Index >::Grid()
 : numberOfCells( 0 ),
-  numberOfVertices( 0 )
+  numberOfVertices( 0 ),
+        distGrid(nullptr)
 {
 }
 
@@ -76,13 +77,39 @@ void Grid< 1, Real, Device, Index >::computeSpaceSteps()
    if( this->getDimensions().x() != 0 )
    {
       this->spaceSteps.x() = this->proportions.x() / ( Real )  this->getDimensions().x();
+      this->computeSpaceStepPowers();
+   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 1, Real, Device, Index > ::computeSpaceStepPowers()
+{
       const RealType& hx = this->spaceSteps.x();
       this->spaceStepsProducts[ 0 ] = 1.0 / ( hx * hx );
       this->spaceStepsProducts[ 1 ] = 1.0 / hx;
       this->spaceStepsProducts[ 2 ] = 1.0;
       this->spaceStepsProducts[ 3 ] = hx;
       this->spaceStepsProducts[ 4 ] = hx * hx;
-   }
+   
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 1, Real, Device, Index > ::computeProportions()
+{
+    this->proportions.x()=this->dimensions.x()*this->spaceSteps.x();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Grid< 1, Real, Device, Index > :: setOrigin( const PointType& origin)
+{
+   this->origin = origin;
 }
 
 template< typename Real,
@@ -225,6 +252,18 @@ getSpaceSteps() const
 template< typename Real,
           typename Device,
           typename Index >
+inline void 
+Grid< 1, Real, Device, Index >::
+setSpaceSteps(const typename Grid< 1, Real, Device, Index >::PointType& steps)
+{
+    this->spaceSteps=steps;
+    computeSpaceStepPowers();
+    computeProportions();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< int xPow >
 __cuda_callable__ inline
 const Real&
@@ -304,6 +343,23 @@ Grid< 1, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
 template< typename Real,
           typename Device,
           typename Index >
+void Grid< 1, Real, Device, Index >:: setDistMesh(DistributedMeshType * distMesh)
+{
+    this->distGrid=distMesh;
+}
+   
+template< typename Real,
+          typename Device,
+          typename Index >
+DistributedMeshes::DistributedMesh <Grid< 1, Real, Device, Index >> * 
+Grid< 1, Real, Device, Index >:: getDistributedMesh(void) const
+{
+    return this->distGrid;
+}
+    
+template< typename Real,
+          typename Device,
+          typename Index >
 bool Grid< 1, Real, Device, Index >::save( File& file ) const
 {
    if( ! Object::save( file ) )
@@ -360,6 +416,8 @@ void
 Grid< 1, Real, Device, Index >::
 writeProlog( Logger& logger ) const
 {
+   if( this->getDistributedMesh() && this->getDistributedMesh()->isDistributed() )
+      return this->getDistributedMesh()->writeProlog( logger );
    logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );

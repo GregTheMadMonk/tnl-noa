@@ -300,6 +300,7 @@ bool computeDifference( const MeshPointer& meshPointer, const String& objectType
    if( objectType == "Containers::Vector" ||
        objectType == "tnlVector" || objectType == "tnlSharedVector" )   // TODO: remove deprecated type name
       return computeDifferenceOfVectors< MeshPointer, Element, Real, Index >( meshPointer, parameters );
+   std::cerr << "Unknown object type " << objectType << "." << std::endl;
    return false;
 }
 
@@ -462,6 +463,31 @@ bool processFiles( const Config::ParameterContainer& parameters )
    }
    setElementType< MeshPointer >( meshPointer, inputFiles[ 0 ], parsedObjectType, parameters );
    return true;
+}
+
+template< int Dim, typename Real >
+bool resolveGridIndexType( const Containers::List< String >& parsedMeshType,
+                           const Config::ParameterContainer& parameters )
+{
+   if( parsedMeshType[ 4 ] == "int" )
+      return processFiles< Meshes::Grid< Dim, Real, Devices::Host, int > >( parameters );
+   if( parsedMeshType[ 4 ] == "long int" )
+      return processFiles< Meshes::Grid< Dim, Real, Devices::Host, long int > >( parameters );
+   std::cerr << "Unknown index type " << parsedMeshType[ 4 ] << "." <<  std::endl;
+   return false;
+}
+
+template< int Dim >
+bool resolveGridRealType( const Containers::List< String >& parsedMeshType,
+                          const Config::ParameterContainer& parameters )
+{
+   if( parsedMeshType[ 2 ] == "float" )
+      return resolveGridIndexType< Dim, float >( parsedMeshType, parameters );
+   if( parsedMeshType[ 2 ] == "double" )
+      return resolveGridIndexType< Dim, double >( parsedMeshType, parameters );
+   if( parsedMeshType[ 2 ] == "long double" )
+      return resolveGridIndexType< Dim, long double >( parsedMeshType, parameters );
+   return false;
 }
 
 #endif /* TNL_DIFF_H_ */

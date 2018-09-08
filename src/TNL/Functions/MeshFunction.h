@@ -8,13 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
+
 #include <TNL/Object.h>
 #include <TNL/Functions/Domain.h>
 #include <TNL/Functions/MeshFunctionGnuplotWriter.h>
 #include <TNL/Functions/MeshFunctionVTKWriter.h>
 #include <TNL/Pointers/SharedPointer.h>
-
-#pragma once
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 namespace TNL {
 namespace Functions {   
@@ -30,13 +32,15 @@ class MeshFunction :
    //               "Both mesh and vector of a mesh function must reside on the same device.");
    public:
       
-      typedef Mesh MeshType;
-      typedef typename MeshType::DeviceType DeviceType;
-      typedef typename MeshType::GlobalIndexType IndexType;
-      typedef Pointers::SharedPointer<  MeshType > MeshPointer;      
-      typedef Real RealType;
-      typedef Containers::Vector< RealType, DeviceType, IndexType > VectorType;
-      typedef Functions::MeshFunction< Mesh, MeshEntityDimension, Real > ThisType;
+      using MeshType = Mesh;
+      using DeviceType = typename MeshType::DeviceType;
+      using IndexType = typename MeshType::GlobalIndexType;
+      using MeshPointer = Pointers::SharedPointer< MeshType >;      
+      using RealType = Real;
+      using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
+      using ThisType = Functions::MeshFunction< MeshType, MeshEntityDimension, RealType >;
+      using DistributedMeshType = Meshes::DistributedMeshes::DistributedMesh<MeshType>;
+      using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer<ThisType>;
  
       static constexpr int getEntitiesDimension() { return MeshEntityDimension; }
       
@@ -159,14 +163,25 @@ class MeshFunction :
       using Object::load;
  
       using Object::boundLoad;
+
+      template< typename CommunicatorType>
+      void synchronize( bool withPeriodicBoundaryConditions = false );
+
  
    protected:
+
+      //DistributedMeshSynchronizerType synchronizer;
+      Meshes::DistributedMeshes::DistributedMeshSynchronizer< Functions::MeshFunction< MeshType, MeshEntityDimension, RealType > > synchronizer;
       
       MeshPointer meshPointer;
       
       VectorType data;
  
       template< typename, typename > friend class MeshFunctionEvaluator;
+
+   private:
+      void setupSynchronizer( DistributedMeshType *distributedMesh );
+   
 };
 
 } // namespace Functions

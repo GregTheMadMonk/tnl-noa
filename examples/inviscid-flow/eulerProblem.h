@@ -22,9 +22,11 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename Communicator,
           typename InviscidOperators >
 class eulerProblem:
    public PDEProblem< Mesh,
+                      Communicator,
                       typename InviscidOperators::RealType,
                       typename Mesh::DeviceType,
                       typename InviscidOperators::IndexType >
@@ -34,7 +36,9 @@ class eulerProblem:
       typedef typename InviscidOperators::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename InviscidOperators::IndexType IndexType;
-      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
+
+      typedef Communicator CommunicatorType;
       
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
@@ -80,6 +84,9 @@ class eulerProblem:
                               const RealType& tau,
                               DofVectorPointer& _u,
                               DofVectorPointer& _fu );
+      
+      void applyBoundaryConditions( const RealType& time,
+                                       DofVectorPointer& dofs );      
 
       template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,

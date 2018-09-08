@@ -17,6 +17,7 @@
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
 #include <TNL/Meshes/GridEntity.h>
 #include <TNL/Meshes/GridEntityConfig.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace TNL {
 namespace Meshes {
@@ -36,6 +37,8 @@ class Grid< 1, Real, Device, Index > : public Object
    typedef Grid< 1, Real, Devices::Host, Index > HostType;
    typedef Grid< 1, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 1, Real, Device, Index > ThisType;
+
+   typedef DistributedMeshes::DistributedMesh <ThisType> DistributedMeshType;
 
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
@@ -66,18 +69,20 @@ class Grid< 1, Real, Device, Index > : public Object
 
    __cuda_callable__
    const CoordinatesType& getDimensions() const;
+ 
+   void setOrigin( const PointType& origin);
 
    void setDomain( const PointType& origin,
                    const PointType& proportions );
+
 
    __cuda_callable__
    inline const PointType& getOrigin() const;
 
    __cuda_callable__
    inline const PointType& getProportions() const;
-
-
-   template< int EntiytDimension >
+ 
+   template< int EntityDimension >
    __cuda_callable__
    IndexType getEntitiesCount() const;
 
@@ -94,7 +99,11 @@ class Grid< 1, Real, Device, Index > : public Object
    inline Index getEntityIndex( const Entity& entity ) const;
 
    __cuda_callable__
+   
+   inline void setSpaceSteps(const PointType& steps);
+
    inline const PointType& getSpaceSteps() const;
+
 
    template< int xPow >
    __cuda_callable__
@@ -115,6 +124,10 @@ class Grid< 1, Real, Device, Index > : public Object
    typename GridFunction::RealType getDifferenceLpNorm( const GridFunction& f1,
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const;
+   
+   void setDistMesh(DistributedMeshType * distMesh);
+   
+   DistributedMeshType * getDistributedMesh() const;
 
    /****
     *  Method for saving the object to a file as a binary data
@@ -134,6 +147,10 @@ class Grid< 1, Real, Device, Index > : public Object
 
    protected:
 
+   void computeProportions();
+       
+   void computeSpaceStepPowers();
+
    void computeSpaceSteps();
 
    CoordinatesType dimensions;
@@ -145,6 +162,8 @@ class Grid< 1, Real, Device, Index > : public Object
    PointType spaceSteps;
 
    RealType spaceStepsProducts[ 5 ];
+   
+   DistributedMeshType *distGrid;
 };
 
 } // namespace Meshes

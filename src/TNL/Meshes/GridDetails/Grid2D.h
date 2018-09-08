@@ -17,6 +17,7 @@
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
 #include <TNL/Meshes/GridEntity.h>
 #include <TNL/Meshes/GridEntityConfig.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace TNL {
 namespace Meshes {
@@ -37,6 +38,8 @@ class Grid< 2, Real, Device, Index > : public Object
    typedef Grid< 2, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 2, Real, Device, Index > ThisType;
 
+   typedef DistributedMeshes::DistributedMesh <ThisType> DistributedMeshType;
+ 
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
 
@@ -69,6 +72,9 @@ class Grid< 2, Real, Device, Index > : public Object
 
    void setDomain( const PointType& origin,
                    const PointType& proportions );
+
+   void setOrigin( const PointType& origin);
+
    __cuda_callable__
    inline const PointType& getOrigin() const;
 
@@ -93,7 +99,10 @@ class Grid< 2, Real, Device, Index > : public Object
    inline Index getEntityIndex( const Entity& entity ) const;
 
    __cuda_callable__
+
    inline const PointType& getSpaceSteps() const;
+
+   inline void setSpaceSteps(const PointType& steps);
 
    template< int xPow, int yPow >
    __cuda_callable__
@@ -121,6 +130,10 @@ class Grid< 2, Real, Device, Index > : public Object
    typename GridFunction::RealType getDifferenceLpNorm( const GridFunction& f1,
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const;
+   
+   void setDistMesh(DistributedMeshType * distGrid);
+   
+   DistributedMeshType * getDistributedMesh() const;
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -135,6 +148,11 @@ class Grid< 2, Real, Device, Index > : public Object
    void writeProlog( Logger& logger ) const;
 
    protected:
+   
+   void computeProportions();
+       
+   __cuda_callable__
+   void computeSpaceStepPowers();
 
    __cuda_callable__
    void computeSpaceSteps();
@@ -148,7 +166,9 @@ class Grid< 2, Real, Device, Index > : public Object
    PointType spaceSteps;
 
    RealType spaceStepsProducts[ 5 ][ 5 ];
-
+   
+   DistributedMeshType *distGrid;
+ 
    template< typename, typename, int >
    friend class GridEntityGetter;
 };

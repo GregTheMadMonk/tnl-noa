@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNL_HEAT_EQUATION_H_
-#define TNL_HEAT_EQUATION_H_
+#pragma once
+
+#define MPIIO
 
 #include <TNL/Solvers/Solver.h>
 #include <TNL/Solvers/FastBuildConfigTag.h>
@@ -48,6 +49,9 @@ class heatEquationConfig
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< double >( "right-hand-side-constant", "This sets a constant value for the right-hand side.", 0.0 );
          config.addEntry< String >( "initial-condition", "File with the initial condition.", "initial.tnl");
+         config.addEntry< String >( "distributed-grid-io-type", "Choose Distributed Grid IO Type", "LocalCopy");
+            config.addEntryEnum< String >( "LocalCopy" );
+            config.addEntryEnum< String >( "MpiIO" );
       };
 };
 
@@ -56,7 +60,8 @@ template< typename Real,
           typename Index,
           typename MeshType,
           typename MeshConfig,
-          typename SolverStarter >
+          typename SolverStarter,
+          typename CommunicatorType >
 class heatEquationSetter
 {
    public:
@@ -78,12 +83,12 @@ class heatEquationSetter
          if( boundaryConditionsType == "dirichlet" )
          {
             typedef Operators::DirichletBoundaryConditions< MeshType, Constant > BoundaryConditions;
-            typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+            typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide,CommunicatorType, ApproximateOperator > Problem;
             SolverStarter solverStarter;
             return solverStarter.template run< Problem >( parameters );
          }
          typedef Operators::NeumannBoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
-         typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+         typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, CommunicatorType, ApproximateOperator > Problem;
          SolverStarter solverStarter;
          return solverStarter.template run< Problem >( parameters );
       }
@@ -91,12 +96,12 @@ class heatEquationSetter
       if( boundaryConditionsType == "dirichlet" )
       {
          typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction > BoundaryConditions;
-         typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+         typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide,CommunicatorType, ApproximateOperator > Problem;
          SolverStarter solverStarter;
          return solverStarter.template run< Problem >( parameters );
       }
       typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
-      typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+      typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide,CommunicatorType, ApproximateOperator > Problem;
       SolverStarter solverStarter;
       return solverStarter.template run< Problem >( parameters );
    };
@@ -108,5 +113,3 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }
-
-#endif /* TNL_HEAT_EQUATION_H_ */

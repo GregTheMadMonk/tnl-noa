@@ -64,8 +64,6 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
    void setMaxTau( const RealType& maxTau );
 
    const RealType& getMaxTau() const;
-
-   void setMPIComm( MPI_Comm comm );
  
    void setVerbose( IndexType v );
 
@@ -97,8 +95,6 @@ protected:
    RealType tau;
 
    RealType maxTau;
-
-   MPI_Comm solver_comm;
 
    IndexType verbosity;
 

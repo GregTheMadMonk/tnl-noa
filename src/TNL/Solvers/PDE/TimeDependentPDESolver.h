@@ -17,6 +17,9 @@
 #include <TNL/Solvers/PDE/PDESolver.h>
 #include <TNL/Solvers/PDE/MeshDependentTimeSteps.h>
 
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+
+
 namespace TNL {
 namespace Solvers {
 namespace PDE {   
@@ -83,6 +86,8 @@ class TimeDependentPDESolver
    protected:
 
       MeshPointer meshPointer;
+
+      Meshes::DistributedMeshes::DistributedMesh<MeshType> distrMesh;
 
       DofVectorPointer dofsPointer;
 

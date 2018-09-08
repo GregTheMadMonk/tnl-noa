@@ -35,6 +35,8 @@ public:
    void setResidue( const RealType& residue );
 
    void setVerbose( const Index& verbose );
+
+   void setNodesPerIteration( const IndexType& nodes );
  
    virtual void refresh();
 
@@ -45,11 +47,14 @@ protected:
 
    std::atomic_bool saved;
 
-   RealType time, saved_time, timeStep, saved_timeStep, residue, saved_residue;
+   RealType time, saved_time, timeStep, saved_timeStep, residue, saved_residue, elapsed_time_before_refresh, last_mlups;
+   //TODO: Move MLUPS to LBM solver only i.e create solver monitor for LBM
 
-   IndexType iterations, saved_iterations;
+   IndexType iterations, saved_iterations, iterations_before_refresh;
 
    IndexType verbose;
+
+   IndexType nodesPerIteration;
 };
 
 } // namespace Solvers

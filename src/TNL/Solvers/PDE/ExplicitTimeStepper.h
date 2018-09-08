@@ -27,69 +27,71 @@ class ExplicitTimeStepper
 {
    public:
 
-   typedef Problem ProblemType;
-   typedef OdeSolver< ExplicitTimeStepper< Problem, OdeSolver > > OdeSolverType;
-   typedef typename Problem::RealType RealType;
-   typedef typename Problem::DeviceType DeviceType;
-   typedef typename Problem::IndexType IndexType;
-   typedef typename Problem::MeshType MeshType;
-   typedef Pointers::SharedPointer<  MeshType > MeshPointer;
-   typedef typename ProblemType::DofVectorType DofVectorType;
-   typedef Pointers::SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-   typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
-   
-   static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
+      typedef Problem ProblemType;
+      typedef OdeSolver< ExplicitTimeStepper< Problem, OdeSolver > > OdeSolverType;
+      typedef typename Problem::RealType RealType;
+      typedef typename Problem::DeviceType DeviceType;
+      typedef typename Problem::IndexType IndexType;
+      typedef typename Problem::MeshType MeshType;
+      typedef Pointers::SharedPointer< MeshType > MeshPointer;
+      typedef typename ProblemType::DofVectorType DofVectorType;
+      typedef Pointers::SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+      typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
+      using CommunicatorType = typename Problem::CommunicatorType;
 
-   ExplicitTimeStepper();
+      static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
 
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" );
+      ExplicitTimeStepper();
 
-   bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" );
 
-   bool init( const MeshPointer& meshPointer );
+      bool setup( const Config::ParameterContainer& parameters,
+                 const String& prefix = "" );
 
-   void setSolver( OdeSolverType& odeSolver );
+      bool init( const MeshPointer& meshPointer );
 
-   void setSolverMonitor( SolverMonitorType& solverMonitor );
+      void setSolver( OdeSolverType& odeSolver );
 
-   void setProblem( ProblemType& problem );
+      void setSolverMonitor( SolverMonitorType& solverMonitor );
 
-   ProblemType* getProblem() const;
+      void setProblem( ProblemType& problem );
 
-   bool setTimeStep( const RealType& tau );
+      ProblemType* getProblem() const;
 
-   const RealType& getTimeStep() const;
+      bool setTimeStep( const RealType& tau );
 
-   bool solve( const RealType& time,
-               const RealType& stopTime,
-               DofVectorPointer& dofVector );
+      bool solve( const RealType& time,
+                   const RealType& stopTime,
+                   DofVectorPointer& dofVector );
 
-   void getExplicitUpdate( const RealType& time,
-                             const RealType& tau,
-                             DofVectorPointer& _u,
-                             DofVectorPointer& _fu );
-   
-   void applyBoundaryConditions( const RealType& time,
+      const RealType& getTimeStep() const;
+
+      void getExplicitUpdate( const RealType& time,
+                           const RealType& tau,
+                           DofVectorPointer& _u,
+                           DofVectorPointer& _fu );
+
+      void applyBoundaryConditions( const RealType& time,
                                  DofVectorPointer& _u );
-   
-   bool writeEpilog( Logger& logger ) const;
+
+      bool writeEpilog( Logger& logger ) const;
 
    protected:
 
-   OdeSolverType* odeSolver;
+      OdeSolverType* odeSolver;
 
-   SolverMonitorType* solverMonitor;
+      SolverMonitorType* solverMonitor;
 
-   Problem* problem;
+      Problem* problem;
 
+      RealType timeStep;
 
-   RealType timeStep;
+      const MeshPointer* mesh;
 
-   Timer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
- 
-   long long int allIterations;
+      Timer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
+
+      long long int allIterations;
 };
 
 } // namespace PDE

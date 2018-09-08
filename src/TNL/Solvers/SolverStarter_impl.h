@@ -14,6 +14,9 @@
 #include <TNL/Logger.h>
 #include <TNL/String.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/ODE/Merson.h>
@@ -87,7 +90,10 @@ bool SolverStarter< ConfigTag > :: run( const Config::ParameterContainer& parame
     * Create and set-up the problem
     */
    if( ! Devices::Host::setup( parameters ) ||
-       ! Devices::Cuda::setup( parameters ) )
+       ! Devices::Cuda::setup( parameters ) ||
+       ! Communicators::NoDistrCommunicator::setup( parameters ) ||
+       ! Communicators::MpiCommunicator::setup( parameters ) 
+    )
       return false;
    Problem problem;
    //return UserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
@@ -135,7 +141,8 @@ class UserDefinedTimeDiscretisationSetter
             return false;
          }
          SolverStarter< ConfigTag > solverStarter;
-         return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters, timeStepper );
+         // TODO: Solve the set-up of the DiscreteSOlver type in some better way
+         return solverStarter.template runPDESolver< Problem, TimeStepper, typename Problem::DiscreteSolver >( problem, parameters );
       }
 };
 
@@ -154,9 +161,23 @@ class UserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
          if( timeDiscretisation == "explicit" )
             return SolverStarterTimeDiscretisationSetter< Problem, ExplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
          if( timeDiscretisation == "semi-implicit" )
+         {
+            if( Problem::CommunicatorType::isDistributed() )
+            {
+               std::cerr << "TNL currently does not support semi-implicit solvers with MPI." << std::endl;
+               return false;
+            }
             return SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
+         }
          if( timeDiscretisation == "implicit" )
+         {
+            if( Problem::CommunicatorType::isDistributed() )
+            {
+               std::cerr << "TNL currently does not support implicit solvers with MPI." << std::endl;
+               return false;
+            }            
             return SolverStarterTimeDiscretisationSetter< Problem, ImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
+         }
          std::cerr << "Uknown time discretisation: " << timeDiscretisation << "." << std::endl;
          return false;
       }

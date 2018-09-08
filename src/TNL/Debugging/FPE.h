@@ -41,6 +41,7 @@ printStackBacktraceAndAbort( int sig = 0 )
    else
       fprintf( stderr, "Aborting due to signal %d...\n", sig );
    printStackBacktrace();
+   // TODO: maybe use MPI_Abort(MPI_COMM_WORLD, 1); if we can detect we run under MPI
    abort();
 }
 

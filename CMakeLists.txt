@@ -24,9 +24,12 @@ option(WITH_MIC "Build with MIC support" OFF)
 option(WITH_CUDA "Build with CUDA support" ON)
 set(WITH_CUDA_ARCH "auto" CACHE STRING "Build for these CUDA architectures")
 option(WITH_OPENMP "Build with OpenMP support" ON)
+option(WITH_GMP "Build with GMP support" OFF)
 option(WITH_TESTS "Build tests" ON)
 option(WITH_COVERAGE "Enable code coverage reports from unit tests" OFF)
 option(WITH_EXAMPLES "Compile the 'examples' directory" ON)
+option(WITH_TOOLS "Compile the 'src/Tools' directory" ON)
+option(WITH_PYTHON "Compile the Python bindings" ON)
 option(WITH_TEMPLATES_INSTANTIATION "Enable explicit template instantiation" OFF)
 
 # install paths relative to the cmake's prefix
@@ -68,13 +71,19 @@ set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG" )
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "" )
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG "-rdynamic" )
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE "" )
+set( CMAKE_EXE_LINKER_FLAGS "" )
+set( CMAKE_EXE_LINKER_FLAGS_DEBUG "-rdynamic" )
+set( CMAKE_EXE_LINKER_FLAGS_RELEASE "" )
+set( CMAKE_SHARED_LINKER_FLAGS "" )
+set( CMAKE_SHARED_LINKER_FLAGS_DEBUG "-rdynamic" )
+set( CMAKE_SHARED_LINKER_FLAGS_RELEASE "" )
 
 get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
 if( CXX_COMPILER_NAME MATCHES "icpc" )
    message( "Intel compiler detected..."    )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_ICPC -wd2568 -wd2571 -wd2570")
    #####
-   #  Ckeck for MIC 
+   #  Check for MIC
    #
    if( ${WITH_MIC} )
       message( "Enabled MIC support." )
@@ -98,6 +107,26 @@ if( DEFINED ENV{CI_JOB_NAME} )
 endif()
 
 #####
+# Check for MPI -- poznej podle vraperu compileru -- da se testovat preklad bez MPI
+#
+if( ${CXX_COMPILER_NAME} STREQUAL "mpic++" )
+   message( "MPI compiler detected."    )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
+   set( CUDA_HOST_COMPILER "mpic++" )
+endif()
+
+####
+# Check for MPI -- not working
+#
+#find_package( MPI )
+#if( MPI_CXX_FOUND )
+   # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
+   # message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
+   # message( "MPI link flags  -- ${MPI_CXX_LINK_FLAGS}")
+   # message( "MPI libraries-- ${MPI_CXX_LIBRARIES}")
+#endif()
+
+#####
 # Check for CUDA
 #
 if( ${WITH_CUDA} )
@@ -118,6 +147,22 @@ if( ${WITH_CUDA} )
             else()
                message( "-- Setting CUDA_HOST_COMPILER to '${CMAKE_CXX_COMPILER}'" )
                set( CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} )
+            endif()
+        endif()
+        # An extra CUDA_ARCH_HOST_COMPILER variable for compiling tnl-cuda-arch alone,
+        # because it SHOULD NOT be compiled using mpic++, which would cause weird
+        # RPATH_CHANGE error in cmake.
+        # FIXME: find better solution to switch between MPI-enabled and MPI-disabled binaries in cmake
+        if( NOT $ENV{CUDA_ARCH_HOST_COMPILER} STREQUAL "" )
+           message( "-- Setting CUDA_ARCH_HOST_COMPILER to '$ENV{CUDA_ARCH_HOST_COMPILER}'" )
+           set( CUDA_ARCH_HOST_COMPILER $ENV{CUDA_ARCH_HOST_COMPILER} )
+        else()
+            if( EXISTS "${CUDA_TOOLKIT_ROOT_DIR}/bin/g++" )
+               message( "-- Setting CUDA_ARCH_HOST_COMPILER to '${CUDA_TOOLKIT_ROOT_DIR}/bin/g++'" )
+               set( CUDA_ARCH_HOST_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/g++" )
+            else()
+               message( "-- Setting CUDA_ARCH_HOST_COMPILER to '${CMAKE_CXX_COMPILER}'" )
+               set( CUDA_ARCH_HOST_COMPILER ${CMAKE_CXX_COMPILER} )
             endif()
         endif()
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA)
@@ -143,7 +188,7 @@ if( ${WITH_CUDA} )
                 set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/src/Tools/tnl-cuda-arch.cu)
                 message( "Compiling tnl-cuda-arch ..." )
                 file( MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
-                execute_process( COMMAND nvcc --compiler-bindir ${CUDA_HOST_COMPILER} ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
+                execute_process( COMMAND nvcc --compiler-bindir ${CUDA_ARCH_HOST_COMPILER} --std=c++11 ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
                                  RESULT_VARIABLE CUDA_ARCH_RESULT
                                  OUTPUT_VARIABLE CUDA_ARCH_OUTPUT
                                  ERROR_VARIABLE CUDA_ARCH_OUTPUT )
@@ -183,15 +228,6 @@ if( OPENMP_FOUND AND ${WITH_OPENMP} )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP ${OpenMP_CXX_FLAGS}" )
 endif()
 
-####
-# Check for MPI
-#
-#find_package( MPI )
-#if( MPI_CXX_FOUND )
-#    set( BUILD_MPI TRUE )
-#    message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
-#endif()
-
 find_package( DCMTK )
 if( DCMTK_FOUND )
    set( HAVE_DCMTK_H "#define HAVE_DCMTK_H 1" )
@@ -223,6 +259,36 @@ else()
    set( JPEG_LIBRARIES "" )
 endif()
 
+####
+# Test for GMP 
+#
+if( ${WITH_GMP} )
+   if (GMP_INCLUDES AND GMP_LIBRARIES)
+      set(GMP_FIND_QUIETLY TRUE)
+   endif (GMP_INCLUDES AND GMP_LIBRARIES)
+
+   find_path(GMP_INCLUDES
+      NAMES
+      gmp.h
+      PATHS
+      $ENV{GMPDIR}
+      ${INCLUDE_INSTALL_DIR}
+   )
+
+   find_library(GMP_LIBRARIES gmp PATHS $ENV{GMPDIR} ${LIB_INSTALL_DIR})
+
+   include(FindPackageHandleStandardArgs)
+   find_package_handle_standard_args(GMP DEFAULT_MSG
+                                      GMP_INCLUDES GMP_LIBRARIES)
+   if( ${GMP_INCLUDES} STREQUAL "GMP_INCLUDES-NOTFOUND" OR ${GMP_LIBRARIES} STREQUAL "GMP_LIBRARIES-NOTFOUND" )
+      message( "GMP was not found. Some tests for higher precision arithmetics will not be passed." )
+   else()
+      set( HAVE_GMP )
+      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GMP_INCLUDES} -DHAVE_GMP" )
+      set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${GMP_LIBRARIES}" )
+      mark_as_advanced(GMP_INCLUDES GMP_LIBRARIES)
+   endif()
+endif()
 
 ####
 # Check for some system header
@@ -342,11 +408,12 @@ LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 #Pokracujeme dalsimi podadresari
 add_subdirectory( src )
 add_subdirectory( share )
-add_subdirectory( tests )
-
-if( ${WITH_EXAMPLES} )
+if( WITH_TESTS STREQUAL "yes" )
+    add_subdirectory( tests )
+endif( WITH_TESTS STREQUAL "yes" )
+if( WITH_EXAMPLES STREQUAL "yes" )
    add_subdirectory( examples )
-endif()
+endif( WITH_EXAMPLES STREQUAL "yes" )
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")
 set(CPACK_PACKAGE_VENDOR "MMG")
@@ -383,9 +450,12 @@ message( "   WITH_MIC=${WITH_MIC}" )
 message( "   WITH_CUDA=${WITH_CUDA}" )
 message( "   WITH_CUDA_ARCH=${WITH_CUDA_ARCH}" )
 message( "   WITH_OPENMP=${WITH_OPENMP}" )
+message( "   WITH_GMP=${WITH_GMP}" )
 message( "   WITH_TESTS=${WITH_TESTS}" )
 message( "   WITH_COVERAGE=${WITH_COVERAGE}" )
 message( "   WITH_EXAMPLES=${WITH_EXAMPLES}" )
+message( "   WITH_TOOLS=${WITH_TOOLS}" )
+message( "   WITH_PYTHON=${WITH_PYTHON}" )
 message( "   WITH_TEMPLATES_INSTANTIATION=${WITH_TEMPLATES_INSTANTIATION}" )
 # Print compiler options
 message( "-- Compiler options:" )
@@ -395,4 +465,11 @@ message( "   CMAKE_CXX_FLAGS_RELEASE = ${CMAKE_CXX_FLAGS_RELEASE}" )
 message( "   CMAKE_SHARED_LIBRARY_LINK_C_FLAGS = ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS}" )
 message( "   CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG = ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG}" )
 message( "   CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE = ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE}" )
+message( "   CMAKE_EXE_LINKER_FLAGS = ${CMAKE_EXE_LINKER_FLAGS}" )
+message( "   CMAKE_EXE_LINKER_FLAGS_DEBUG = ${CMAKE_EXE_LINKER_FLAGS_DEBUG}" )
+message( "   CMAKE_EXE_LINKER_FLAGS_RELEASE = ${CMAKE_EXE_LINKER_FLAGS_RELEASE}" )
+message( "   CMAKE_SHARED_LINKER_FLAGS = ${CMAKE_SHARED_LINKER_FLAGS}" )
+message( "   CMAKE_SHARED_LINKER_FLAGS_DEBUG = ${CMAKE_SHARED_LINKER_FLAGS_DEBUG}" )
+message( "   CMAKE_SHARED_LINKER_FLAGS_RELEASE = ${CMAKE_SHARED_LINKER_FLAGS_RELEASE}" )
 message( "   CUDA_NVCC_FLAGS = ${CUDA_NVCC_FLAGS}" )
+message( "   GMP_LIBRARIES = ${GMP_LIBRARIES}" )

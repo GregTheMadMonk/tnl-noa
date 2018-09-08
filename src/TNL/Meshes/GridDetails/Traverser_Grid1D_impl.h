@@ -11,6 +11,8 @@
 #pragma once
 
 #include <TNL/Meshes/GridDetails/GridTraverser.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+
 
 namespace TNL {
 namespace Meshes {
@@ -32,13 +34,39 @@ processBoundaryEntities( const GridPointer& gridPointer,
    /****
     * Boundary cells
     */
-   static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimension." );
-
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true >(
-      gridPointer,
-      CoordinatesType( 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 1 ),
-      userData );
+   static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimensions." );
+   
+   DistributedGridType* distributedGrid = gridPointer->getDistributedMesh();
+   if( distributedGrid == nullptr || ! distributedGrid->isDistributed() )
+   {
+        GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true >(
+           gridPointer,
+           CoordinatesType( 0 ),
+           gridPointer->getDimensions() - CoordinatesType( 1 ),
+           userData );
+   }
+   else //Distributed
+   {
+       const int* neighbors=distributedGrid->getNeighbors(); 
+       if( neighbors[ Meshes::DistributedMeshes::Left ] == -1 )
+       {
+          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+              gridPointer,
+              CoordinatesType( 0 ) + distributedGrid->getLowerOverlap(),
+              CoordinatesType( 0 ) + distributedGrid->getLowerOverlap(),
+              userData );
+       }
+       
+       if( neighbors[ Meshes::DistributedMeshes::Right ] == -1 )
+       {
+          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+              gridPointer,
+              gridPointer->getDimensions() - CoordinatesType( 1 ) - distributedGrid->getUpperOverlap(),
+              gridPointer->getDimensions() - CoordinatesType( 1 ) - distributedGrid->getUpperOverlap(),
+              userData );
+       }
+   }
+   
 }
 
 template< typename Real,
@@ -57,11 +85,41 @@ processInteriorEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimension." );
 
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-      gridPointer,
-      CoordinatesType( 1 ),
-      gridPointer->getDimensions() - CoordinatesType( 2 ),
-      userData );
+   DistributedGridType* distributedGrid = gridPointer->getDistributedMesh();
+   if( distributedGrid == nullptr || !distributedGrid->isDistributed() )
+   {
+        GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+           gridPointer,
+           CoordinatesType( 1 ),
+           gridPointer->getDimensions() - CoordinatesType( 2 ),
+           userData );   
+   }
+   else //Distributed
+   {
+      CoordinatesType begin( distributedGrid->getLowerOverlap() );
+      CoordinatesType end( gridPointer->getDimensions() - distributedGrid->getUpperOverlap() - CoordinatesType( 1 ) );
+      
+      const int* neighbors = distributedGrid->getNeighbors(); 
+      if( neighbors[ Meshes::DistributedMeshes::Left ] == -1 )
+         begin += CoordinatesType( 1 );
+       
+      if( neighbors[ Meshes::DistributedMeshes::Right ] == -1 )
+         end -= CoordinatesType( 1 );
+      
+      /*
+         TNL_MPI_PRINT( " lowerOverlap = " << distributedGrid->getLowerOverlap() << 
+               " upperOverlap = " << distributedGrid->getUpperOverlap() <<
+               " gridPointer->getDimensions() = " << gridPointer->getDimensions() <<
+               "begin = " << begin << " end = " << end);
+       */
+
+       GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+          gridPointer,
+          begin,
+          end,
+          userData );
+   }
+   
 }
 
 template< typename Real,
@@ -79,13 +137,29 @@ processAllEntities(
    /****
     * All cells
     */
-   static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimension." );
+   static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimensions." );
+   
+   DistributedGridType* distributedGrid = gridPointer->getDistributedMesh();
+   if( distributedGrid == nullptr || !distributedGrid->isDistributed() )
+   {
+        GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+           gridPointer,
+           CoordinatesType( 0 ),
+           gridPointer->getDimensions() - CoordinatesType( 1 ),
+           userData );  
+   }
+   else //Distributed
+   {
+       CoordinatesType begin( distributedGrid->getLowerOverlap() );
+       CoordinatesType end( gridPointer->getDimensions() - distributedGrid->getUpperOverlap() - 1 );
+       
+       GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+          gridPointer,
+          begin,
+          end,
+          userData );
+   }
 
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-      gridPointer,
-      CoordinatesType( 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 1 ),
-      userData );
 }
 
 /****

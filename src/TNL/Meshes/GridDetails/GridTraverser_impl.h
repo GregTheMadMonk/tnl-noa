@@ -266,7 +266,7 @@ processEntities(
    if( stream == 0 )
    {
       cudaStreamSynchronize( s );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
    }
 */
 }
@@ -1380,7 +1380,7 @@ processEntities(
    if( stream == 0 )
    {
       cudaStreamSynchronize( s );
-      checkCudaDevice;
+      TNL_CHECK_CUDA_DEVICE;
    }
  */
 }

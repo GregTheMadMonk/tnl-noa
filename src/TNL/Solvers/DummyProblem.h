@@ -14,6 +14,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Problems/CommonData.h>
 
 namespace TNL {
@@ -33,6 +34,7 @@ class DummyProblem
       typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
       using CommonDataType = Problems::CommonData;
       using CommonDataPointer = Pointers::SharedPointer< CommonDataType, Device >;
+      using CommunicatorType = Communicators::NoDistrCommunicator;
       
       static constexpr bool isTimeDependent(){ return true; };      
 };

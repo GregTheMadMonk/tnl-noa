@@ -21,6 +21,9 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Functions/VectorField.h>
 
+#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Meshes/TypeResolver/TypeResolver.h>
+
 using namespace TNL;
 
 bool getOutputFileName( const String& inputFileName,
@@ -424,8 +427,11 @@ struct FilesProcessor
       MeshPointer meshPointer;
       
       if( meshFile != "" )
-         if( ! loadMesh( meshFile, *meshPointer ) )
+      {
+         Meshes::DistributedMeshes::DistributedMesh<Mesh> distributedMesh;
+         if( ! Meshes::loadMesh<Communicators::NoDistrCommunicator>( meshFile, *meshPointer, distributedMesh ) )
             return false;
+      }
 
       bool checkOutputFile = parameters. getParameter< bool >( "check-output-file" );
       Containers::List< String > inputFiles = parameters. getParameter< Containers::List< String > >( "input-files" );

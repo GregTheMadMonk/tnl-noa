@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNL_INIT_H_
-#define TNL_INIT_H_
+#pragma once 
 
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Containers/Vector.h>
@@ -19,20 +18,52 @@
 #include <TNL/FileName.h>
 #include <TNL/Functions/MeshFunction.h>
 
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
+
+#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Communicators/MpiCommunicator.h>
+
 using namespace TNL;
 
 template< typename MeshType,
           typename RealType,
+          typename CommunicatorType,
           int xDiff,
           int yDiff,
           int zDiff >
 bool renderFunction( const Config::ParameterContainer& parameters )
 {
-   Pointers::SharedPointer<  MeshType > meshPointer;
-   String meshFile = parameters.getParameter< String >( "mesh" );
-   std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
-   if( ! meshPointer->load( meshFile ) )
-      return false;
+
+   using namespace  Meshes::DistributedMeshes;
+   using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh<MeshType>;
+   DistributedGridType distributedMesh;
+   Pointers::SharedPointer< MeshType > meshPointer;
+   MeshType globalMesh;
+
+   if(CommunicatorType::isDistributed())
+   {
+       //suppose global mesh loaded from single file
+       String meshFile = parameters.getParameter< String >( "mesh" );
+       std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
+       if( ! globalMesh.load( meshFile ) )
+          return false;
+   
+       // TODO: This should work with no overlaps
+       distributedMesh.template setGlobalGrid<CommunicatorType>(globalMesh);
+       typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+       SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedMesh, lowerOverlap, upperOverlap, 1 );
+       distributedMesh.setOverlaps( lowerOverlap, upperOverlap );
+       distributedMesh.setupGrid(*meshPointer);
+    }
+    else
+    {
+       String meshFile = parameters.getParameter< String >( "mesh" );
+       std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
+       if( ! meshPointer->load( meshFile ) )
+            return false;
+    }
 
    typedef Functions::TestFunction< MeshType::getMeshDimension(), RealType > FunctionType;
    typedef Pointers::SharedPointer<  FunctionType, typename MeshType::DeviceType > FunctionPointer;
@@ -87,12 +118,44 @@ bool renderFunction( const Config::ParameterContainer& parameters )
       }
       else
         std::cout << "+ -> Writing the function to " << outputFile << " ... " << std::endl;
-      if( ! meshFunction->save( outputFile) )
+
+      if(CommunicatorType::isDistributed())
+      {
+         if( ! Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(outputFile, *meshFunction ) )
+            return false;
+      }
+      else
+      {
+        if( ! meshFunction->save( outputFile) )
          return false;
+      }
+
       time += tau;
       step ++;
    }
    return true;
+}
+
+template< typename MeshType,
+          typename RealType,
+          int xDiff,
+          int yDiff,
+          int zDiff >
+bool resolvCommunicator( const Config::ParameterContainer& parameters )
+{   
+#ifdef HAVE_MPI
+    if(Communicators::MpiCommunicator::isDistributed())
+    {
+        Communicators::NoDistrCommunicator::Finalize();
+        bool ret=renderFunction<MeshType,RealType, Communicators::MpiCommunicator,xDiff,yDiff,zDiff>(parameters);
+        return ret;
+    }
+#endif
+    
+    bool ret=renderFunction<MeshType,RealType, Communicators::NoDistrCommunicator,xDiff,yDiff,zDiff>(parameters);
+    Communicators::NoDistrCommunicator::Finalize();
+    return ret;
+
 }
 
 template< typename MeshType,
@@ -112,75 +175,75 @@ bool resolveDerivatives( const Config::ParameterContainer& parameters )
       return false;
    }
    if( xDiff == 0 && yDiff == 0 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 0, 0, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 0, 0 >( parameters );
    if( xDiff == 0 && yDiff == 0 && zDiff == 1 )
-      return renderFunction< MeshType, RealType, 0, 0, 1 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 0, 1 >( parameters );
    if( xDiff == 0 && yDiff == 0 && zDiff == 2 )
-      return renderFunction< MeshType, RealType, 0, 0, 2 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 0, 2 >( parameters );
    if( xDiff == 0 && yDiff == 0 && zDiff == 3 )
-      return renderFunction< MeshType, RealType, 0, 0, 3 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 0, 3 >( parameters );
    if( xDiff == 0 && yDiff == 0 && zDiff == 4 )
-      return renderFunction< MeshType, RealType, 0, 0, 4 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 0, 4 >( parameters );
    if( xDiff == 0 && yDiff == 1 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 0, 1, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 1, 0 >( parameters );
    if( xDiff == 0 && yDiff == 1 && zDiff == 1 )
-      return renderFunction< MeshType, RealType, 0, 1, 1 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 1, 1 >( parameters );
    if( xDiff == 0 && yDiff == 1 && zDiff == 2 )
-      return renderFunction< MeshType, RealType, 0, 1, 2 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 1, 2 >( parameters );
    if( xDiff == 0 && yDiff == 1 && zDiff == 3 )
-      return renderFunction< MeshType, RealType, 0, 1, 3 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 1, 3 >( parameters );
    if( xDiff == 0 && yDiff == 2 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 0, 2, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 2, 0 >( parameters );
    if( xDiff == 0 && yDiff == 2 && zDiff == 1 )
-      return renderFunction< MeshType, RealType, 0, 2, 1 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 2, 1 >( parameters );
    if( xDiff == 0 && yDiff == 2 && zDiff == 2 )
-      return renderFunction< MeshType, RealType, 0, 2, 2 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 2, 2 >( parameters );
    if( xDiff == 0 && yDiff == 3 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 0, 3, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 3, 0 >( parameters );
    if( xDiff == 0 && yDiff == 3 && zDiff == 1 )
-      return renderFunction< MeshType, RealType, 0, 3, 1 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 3, 1 >( parameters );
    if( xDiff == 0 && yDiff == 4 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 0, 4, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 0, 4, 0 >( parameters );
    if( xDiff == 1 && yDiff == 0 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 1, 0, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 1, 0, 0 >( parameters );
    if( xDiff == 1 && yDiff == 0 && zDiff == 1 )
-      return renderFunction< MeshType, RealType, 1, 0, 1 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 1, 0, 1 >( parameters );
    if( xDiff == 1 && yDiff == 0 && zDiff == 2 )
-      return renderFunction< MeshType, RealType, 1, 0, 2 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 1, 0, 2 >( parameters );
    if( xDiff == 1 && yDiff == 0 && zDiff == 3 )
-      return renderFunction< MeshType, RealType, 1, 0, 3 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 1, 0, 3 >( parameters );
    if( xDiff == 1 && yDiff == 1 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 1, 1, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 1, 1, 0 >( parameters );
    if( xDiff == 1 && yDiff == 1 && zDiff == 1 )
-      return renderFunction< MeshType, RealType, 1, 1, 1 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 1, 1, 1 >( parameters );
    if( xDiff == 1 && yDiff == 1 && zDiff == 2 )
-      return renderFunction< MeshType, RealType, 1, 1, 2 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 1, 1, 2 >( parameters );
    if( xDiff == 1 && yDiff == 2 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 1, 2, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 1, 2, 0 >( parameters );
    if( xDiff == 1 && yDiff == 2 && zDiff == 1 )
-      return renderFunction< MeshType, RealType, 1, 2, 1 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 1, 2, 1 >( parameters );
    if( xDiff == 1 && yDiff == 3 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 1, 3, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 1, 3, 0 >( parameters );
    if( xDiff == 2 && yDiff == 0 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 2, 0, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 2, 0, 0 >( parameters );
    if( xDiff == 2 && yDiff == 0 && zDiff == 1 )
-      return renderFunction< MeshType, RealType, 2, 0, 1 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 2, 0, 1 >( parameters );
    if( xDiff == 2 && yDiff == 0 && zDiff == 2 )
-      return renderFunction< MeshType, RealType, 2, 0, 2 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 2, 0, 2 >( parameters );
    if( xDiff == 2 && yDiff == 1 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 2, 1, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 2, 1, 0 >( parameters );
    if( xDiff == 2 && yDiff == 1 && zDiff == 1 )
-      return renderFunction< MeshType, RealType, 2, 1, 1 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 2, 1, 1 >( parameters );
    if( xDiff == 2 && yDiff == 2 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 2, 2, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 2, 2, 0 >( parameters );
    if( xDiff == 3 && yDiff == 0 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 3, 0, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 3, 0, 0 >( parameters );
    if( xDiff == 3 && yDiff == 0 && zDiff == 1 )
-      return renderFunction< MeshType, RealType, 3, 0, 1 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 3, 0, 1 >( parameters );
    if( xDiff == 3 && yDiff == 1 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 3, 1, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 3, 1, 0 >( parameters );
    if( xDiff == 4 && yDiff == 0 && zDiff == 0 )
-      return renderFunction< MeshType, RealType, 4, 0, 0 >( parameters );
+      return resolvCommunicator< MeshType, RealType, 4, 0, 0 >( parameters );
    return false;
 }
 
@@ -264,4 +327,3 @@ bool resolveMeshType( const Containers::List< String >& parsedMeshType,
 
    return false;
 }
-#endif /* TNL_INIT_H_ */

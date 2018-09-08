@@ -2,6 +2,7 @@
 #include <TNL/Meshes/DefaultConfig.h>
 #include <TNL/Meshes/BuildConfigTags.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
 
 #ifdef HAVE_VTK
 #include <TNL/Meshes/Readers/VTKReader_libvtk.h>
@@ -138,7 +139,8 @@ public:
       timer.start();
 
       MeshType mesh;
-      if( ! loadMesh( fileName, mesh ) )
+      Meshes::DistributedMeshes::DistributedMesh<MeshType> distributedMesh;
+      if( ! loadMesh<Communicators::NoDistrCommunicator>( fileName, mesh, distributedMesh ) )
          return false;
 
       timer.stop();

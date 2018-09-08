@@ -12,12 +12,14 @@ using namespace TNL::Problems;
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 class HeatEquationBenchmarkProblem:
    public PDEProblem< Mesh,
-                         typename DifferentialOperator::RealType,
-                         typename Mesh::DeviceType,
-                         typename DifferentialOperator::IndexType >
+                      Communicator,
+                      typename DifferentialOperator::RealType,
+                      typename Mesh::DeviceType,
+                      typename DifferentialOperator::IndexType >
 {
    public:
 
@@ -25,12 +27,13 @@ class HeatEquationBenchmarkProblem:
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef Pointers::SharedPointer<  MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
-      typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;
-      typedef Pointers::SharedPointer<  BoundaryCondition > BoundaryConditionPointer;
-      typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
+      typedef Pointers::SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
+      typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
+      typedef Pointers::SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
+      typedef Pointers::SharedPointer< BoundaryCondition > BoundaryConditionPointer;
+      typedef Pointers::SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       
+      typedef Communicator CommunicatorType;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
@@ -68,7 +71,7 @@ class HeatEquationBenchmarkProblem:
                               DofVectorPointer& _fuPointer );
       
       void applyBoundaryConditions( const RealType& time,
-                                    DofVectorPointer& dofs );        
+                                       DofVectorPointer& dofs );        
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,

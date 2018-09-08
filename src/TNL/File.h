@@ -34,7 +34,7 @@ enum class IOMode
  * http://wiki.accelereyes.com/wiki/index.php/GPU_Memory_Transfer
  * Similar constant is defined in tnlLonegVectorCUDA
  */
-const size_t tnlFileGPUvsCPUTransferBufferSize = 5 * 2<<20;
+const size_t FileGPUvsCPUTransferBufferSize = 5 * 2<<20;
 
 /*
  * This file is aimed mainly for the binary data. It supports transparent compression.

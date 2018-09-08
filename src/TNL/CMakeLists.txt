@@ -1,5 +1,6 @@
 ADD_SUBDIRECTORY( Config )
 ADD_SUBDIRECTORY( Containers )
+ADD_SUBDIRECTORY( Communicators )
 ADD_SUBDIRECTORY( Debugging )
 ADD_SUBDIRECTORY( Devices )
 ADD_SUBDIRECTORY( Exceptions )
@@ -29,12 +30,12 @@ set( headers
      Logger.h
      Logger_impl.h
      Math.h
-     mpi-supp.h
      ParallelFor.h
      param-types.h
      StaticFor.h
      String.h
-     Timer.h )
+     Timer.h
+     StaticVectorFor.h )
 
 set( common_SOURCES
      File.cpp

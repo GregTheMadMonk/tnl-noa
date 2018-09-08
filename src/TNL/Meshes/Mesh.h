@@ -26,6 +26,8 @@
 #include <TNL/Meshes/MeshDetails/MeshLayers/StorageLayer.h>
 #include <TNL/Meshes/MeshDetails/MeshLayers/BoundaryTags/LayerFamily.h>
 
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+
 namespace TNL {
 namespace Meshes {
 
@@ -169,6 +171,11 @@ class Mesh
       bool operator!=( const Mesh& mesh ) const;
 
       void writeProlog( Logger& logger ) const;
+
+      DistributedMeshes::DistributedMesh< Mesh<MeshConfig,Device> >* getDistributedMesh(void) const
+      {
+            return NULL;
+      };
 
    protected:
       // Methods for the mesh initializer

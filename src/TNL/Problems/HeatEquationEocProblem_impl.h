@@ -25,9 +25,10 @@ namespace Problems {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename Communicator,
           typename DifferentialOperator >
 String
-HeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 getType()
 {
    return String( "heatEquationEocSolver< " ) + Mesh :: getType() + " >";
@@ -36,9 +37,10 @@ getType()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename Communicator,
           typename DifferentialOperator >
 bool
-HeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator  >::
+HeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator  >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {

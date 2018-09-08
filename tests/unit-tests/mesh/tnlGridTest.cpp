@@ -12,14 +12,11 @@
 #include <TNL/Devices/Host.h>
 #include <cstdlib>
 
-#ifndef HAVE_NOT_CXX11
 #include "tnlGridTester.h"
-#endif
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
-#ifndef HAVE_NOT_CXX11
 #ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter :: run< GridTester< 1, double, Devices::Host, int > >() ||
        ! tnlUnitTestStarter :: run< GridTester< 2, double, Devices::Host, int > >() ||
@@ -30,9 +27,4 @@ int main( int argc, char* argv[] )
 #else
    return EXIT_FAILURE;
 #endif
-#endif
 }
-
-
-
-

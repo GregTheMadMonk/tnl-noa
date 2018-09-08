@@ -41,7 +41,7 @@ stages:
                 -DWITH_COVERAGE=${WITH_COVERAGE}
                 -DWITH_EXAMPLES=${WITH_EXAMPLES}
         - make
-        - make test
+        - make test CTEST_OUTPUT_ON_FAILURE=1
         - make install
         - popd
     variables:

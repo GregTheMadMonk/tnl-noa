@@ -91,7 +91,7 @@ bool benchmarkSolver( const Config::ParameterContainer& parameters,
    solver.setMatrix( matrix );
    solver.setConvergenceResidue( 1.0e-6 );
    solver.template solve< VectorType, Solvers::Linear::LinearResidueGetter< MatrixType, VectorType > >( *b, *y );
-   cout << endl;
+  std::cout <<std::endl;
    return true;
 }
 

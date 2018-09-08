@@ -21,9 +21,11 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
+          typename Communicator,
           typename DifferentialOperator >
 class transportEquationProblem:
 public PDEProblem< Mesh,
+                   Communicator,
                    typename DifferentialOperator::RealType,
                    typename Mesh::DeviceType,
                    typename DifferentialOperator::IndexType >
@@ -34,13 +36,15 @@ public PDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
       typedef Pointers::SharedPointer<  MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;
       typedef Pointers::SharedPointer<  BoundaryCondition > BoundaryConditionPointer;
       typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
       typedef typename DifferentialOperator::VelocityFieldType VelocityFieldType;
       typedef Pointers::SharedPointer<  VelocityFieldType, DeviceType > VelocityFieldPointer;
+
+      typedef Communicator CommunicatorType;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
@@ -75,6 +79,9 @@ public PDEProblem< Mesh,
                               const RealType& tau,
                               DofVectorPointer& _u,
                               DofVectorPointer& _fu );
+      
+      void applyBoundaryConditions( const RealType& time,
+                                       DofVectorPointer& dofs );      
 
       template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,

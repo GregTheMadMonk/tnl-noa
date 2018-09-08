@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Matrices/Multidiagonal.h>
 
 namespace TNL {
 namespace Matrices {   

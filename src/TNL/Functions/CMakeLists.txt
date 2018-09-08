@@ -1,6 +1,7 @@
 ADD_SUBDIRECTORY( Analytic )
 
-SET( headers Domain.h
+SET( headers BoundaryMeshFunction.h
+             Domain.h
              ExactOperatorFunction.h
              FunctionAdapter.h
              MeshFunction.h
@@ -14,8 +15,13 @@ SET( headers Domain.h
              TestFunction.h             
              TestFunction_impl.h
              VectorField.h
+             VectorFieldEvaluator.h
+             VectorFieldEvaluator_impl.h
              VectorFieldGnuplotWriter.h
              VectorFieldGnuplotWriter_impl.h
+             VectorFieldVTKWriter.h
+             VectorFieldVTKWriter_impl.h
+             CutMeshFunction.h
  )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Functions )

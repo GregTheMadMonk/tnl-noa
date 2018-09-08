@@ -93,15 +93,3 @@ then
     echo "export PATH"
     echo "export LD_LIBRARY_PATH"
 fi
-
-if test ${BUILD_RELEASE} = "yes";
-then
-    BUILD_PREFIX="Release"
-fi
-if test ${BUILD_DEBUG} = "yes";
-then
-    BUILD_PREFIX="Debug"
-fi
-
-exit 0
-

@@ -95,17 +95,17 @@ openForRead( const String& fileName )
 }
 
 template< typename Index >
-   template< typename Real,
+   template< typename MeshReal,
              typename Device,
-             typename Vector >
+             typename Real >
 bool
 JPEGImage< Index >::
 read( const RegionOfInterest< Index > roi,
-      const Meshes::Grid< 2, Real, Device, Index >& grid,
-      Vector& vector )
+      Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function )
 {
 #ifdef HAVE_JPEG_H
    typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+   const GridType& grid = function.getMesh();
    typename GridType::Cell cell( grid );
  
    /***
@@ -150,7 +150,7 @@ read( const RegionOfInterest< Index > roi,
             case 1:
                char_color[ 0 ] = row[ 0 ][ j ];
                value = char_color[ 0 ] / ( Real ) 255.0;
-               vector.setElement( cell.getIndex(), value );
+               function.getData().setElement( cell.getIndex(), value );
                break;
             case 3:
                char_color[ 0 ] = row[ 0 ][ 3 * j ];
@@ -160,7 +160,7 @@ read( const RegionOfInterest< Index > roi,
                g = char_color[ 1 ] / ( Real ) 255.0;
                b = char_color[ 2 ] / ( Real ) 255.0;
                value = 0.2989 * r + 0.5870 * g + 0.1140 * b;
-               vector.setElement( cell.getIndex(), value );
+               function.getData().setElement( cell.getIndex(), value );
                break;
             default:
                std::cerr << "Unknown JPEG color type." << std::endl;
@@ -261,6 +261,48 @@ write( const Meshes::Grid< 2, Real, Device, Index >& grid,
    return false;
 #endif
 }
+
+template< typename Index >
+   template< typename MeshReal,
+             typename Device,
+             typename Real >
+bool
+JPEGImage< Index >::
+write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function )
+{
+   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+   const GridType& grid = function.getMesh();
+   typename GridType::Cell cell( grid );
+
+#ifdef HAVE_JPEG_H
+   Index i( 0 ), j;
+   JSAMPROW row[1];
+   row[ 0 ] = new JSAMPLE[ grid.getDimensions().x() ];
+   // JSAMPLE is unsigned char
+   while( this->cinfo.next_scanline < this->cinfo.image_height )
+   {
+      for( j = 0; j < grid.getDimensions().x(); j ++ )
+      {
+         cell.getCoordinates().x() = j;
+         cell.getCoordinates().y() = grid.getDimensions().y() - 1 - i;
+
+         //Index cellIndex = grid.getCellIndex( CoordinatesType( j,
+         //                                     grid.getDimensions().y() - 1 - i ) );
+
+         row[ 0 ][ j ] = 255 * function.getData().getElement( cell.getIndex() );
+      }
+      jpeg_write_scanlines( &this->cinfo, row, 1 );
+      i++;
+   }
+   jpeg_finish_compress( &this->cinfo );
+   jpeg_destroy_compress( &this->cinfo );
+   delete[] row[ 0 ];
+   return true;
+#else
+   return false;
+#endif   
+}
+
 
 
 template< typename Index >
