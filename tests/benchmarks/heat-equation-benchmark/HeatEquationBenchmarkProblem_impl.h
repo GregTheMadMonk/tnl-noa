@@ -666,8 +666,10 @@ applyBoundaryConditions( const RealType& time,
       return;
       this->bindDofs( uDofs );
       this->explicitUpdater.template applyBoundaryConditions< typename Mesh::Cell >( this->getMesh(), time, this->u );
-      return;
+      return;*/
       
+#ifdef HAVE_CUDA
+/*
 #ifdef WITH_TNL
       using ExplicitUpdaterType = TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
       using Cell = typename MeshType::Cell;
@@ -721,7 +723,7 @@ applyBoundaryConditions( const RealType& time,
          std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
          return;
       }
-      
+#endif
    }
 }
 
