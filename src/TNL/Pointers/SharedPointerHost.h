@@ -12,15 +12,19 @@
 
 #pragma once
 
+#include "SharedPointer.h"
+
 #include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/CudaCallable.h>
 #include <TNL/Pointers/SmartPointer.h>
 
+#include <cstddef>  // std::nullptr_t
+
 namespace TNL {
-   namespace Pointers {
+namespace Pointers {
 
 template< typename Object >
-class SharedPointer<  Object, Devices::Host > : public SmartPointer
+class SharedPointer< Object, Devices::Host > : public SmartPointer
 {
    private:
       // Convenient template alias for controlling the selection of copy- and
@@ -43,8 +47,8 @@ class SharedPointer<  Object, Devices::Host > : public SmartPointer
 
       SharedPointer( std::nullptr_t )
       : pd( nullptr )
-      {}      
-      
+      {}
+
       template< typename... Args >
       explicit  SharedPointer( Args... args )
       : pd( nullptr )
@@ -149,8 +153,8 @@ class SharedPointer<  Object, Devices::Host > : public SmartPointer
       const Object& getData() const
       {
          return this->pd->data;
-      }      
-      
+      }
+
       template< typename Device = Devices::Host >
       __cuda_callable__
       Object& modifyData()
@@ -202,7 +206,7 @@ class SharedPointer<  Object, Devices::Host > : public SmartPointer
       {
          return true;
       }
-      
+
       void clear()
       {
          this->free();
@@ -251,5 +255,5 @@ class SharedPointer<  Object, Devices::Host > : public SmartPointer
       PointerData* pd;
 };
 
-   } //namespace Pointers
+} // namespace Pointers
 } // namespace TNL

@@ -12,12 +12,12 @@
 
 #pragma once
 
-#include <TNL/Assert.h>
+#include "SharedPointer.h"
+
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Devices/MIC.h>
 #include <TNL/Pointers/SmartPointer.h>
 
-#include <cstring>
+#include <cstring>  // std::memcpy, std::memcmp
 #include <cstddef>  // std::nullptr_t
 
 //#define TNL_DEBUG_SHARED_POINTERS
@@ -42,10 +42,10 @@
 
 
 namespace TNL {
-   namespace Pointers {
+namespace Pointers {
 
 //#define HAVE_CUDA_UNIFIED_MEMORY
-      
+
 #ifdef HAVE_CUDA_UNIFIED_MEMORY
 template< typename Object >
 class SharedPointer< Object, Devices::Cuda > : public SmartPointer
@@ -177,8 +177,8 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       const Object& getData() const
       {
          return this->pd->data;
-      }      
-      
+      }
+
       template< typename Device = Devices::Host >
       __cuda_callable__
       Object& modifyData()
@@ -230,12 +230,12 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       {
          return true;
       }
-      
+
       void clear()
       {
          this->free();
       }
-      
+
       void swap( ThisType& ptr2 )
       {
          std::swap( this->pd, ptr2.pd );
@@ -264,7 +264,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       template< typename... Args >
       bool allocate( Args... args )
       {
-#ifdef HAVE_CUDA         
+#ifdef HAVE_CUDA
          if( cudaMallocManaged( ( void** ) &this->pd, sizeof( PointerData ) != cudaSuccess ) )
             return false;
          new ( this->pd ) PointerData( args... );
@@ -280,19 +280,21 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
          {
             if( ! --this->pd->counter )
             {
-#ifdef HAVE_CUDA               
+#ifdef HAVE_CUDA
                cudaFree( this->pd );
-#endif               
+#endif
                this->pd = nullptr;
             }
          }
       }
 
       PointerData* pd;
-}; 
+};
+
 #else // HAVE_CUDA_UNIFIED_MEMORY
+
 template< typename Object >
-class SharedPointer<  Object, Devices::Cuda > : public SmartPointer
+class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 {
    private:
       // Convenient template alias for controlling the selection of copy- and
@@ -538,12 +540,12 @@ class SharedPointer<  Object, Devices::Cuda > : public SmartPointer
          return false;
 #endif
       }
-      
+
       void clear()
       {
          this->free();
       }
-      
+
       void swap( ThisType& ptr2 )
       {
          std::swap( this->pd, ptr2.pd );
@@ -632,5 +634,5 @@ class SharedPointer<  Object, Devices::Cuda > : public SmartPointer
 };
 #endif // HAVE_CUDA_UNIFIED_MEMORY
 
-   } // namespace Pointers
+} // namespace Pointers
 } // namespace TNL

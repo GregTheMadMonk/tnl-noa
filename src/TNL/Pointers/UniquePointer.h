@@ -14,26 +14,25 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/MIC.h>
 #include <TNL/Pointers/SmartPointer.h>
 
-#include <cstring>
+#include <cstring>  // std::memcpy, std::memcmp
 #include <cstddef>  // std::nullptr_t
 
-#include <TNL/Devices/MIC.h>
-
-
-namespace TNL { 
+namespace TNL {
+namespace Pointers {
 
 template< typename Object, typename Device = typename Object::DeviceType >
 class UniquePointer
-{  
+{
 };
 
 template< typename Object >
 class UniquePointer< Object, Devices::Host > : public SmartPointer
 {
    public:
-      
+
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
       typedef UniquePointer< Object, Devices::Host > ThisType;
@@ -47,27 +46,27 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
       {
          this->pointer = new Object( args... );
       }
-      
+
       const Object* operator->() const
       {
          return this->pointer;
       }
-      
+
       Object* operator->()
       {
          return this->pointer;
       }
-      
+
       const Object& operator *() const
       {
          return *( this->pointer );
       }
-      
+
       Object& operator *()
       {
          return *( this->pointer );
       }
-      
+
       __cuda_callable__
       operator bool() const
       {
@@ -91,7 +90,7 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
       {
          return *( this->pointer );
       }
-      
+
       const ThisType& operator=( ThisType& ptr )
       {
          if( this->pointer )
@@ -100,26 +99,26 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
          ptr.pointer = nullptr;
          return *this;
       }
-      
+
       const ThisType& operator=( ThisType&& ptr )
       {
-         return this->operator=( ptr );         
-      }      
-      
+         return this->operator=( ptr );
+      }
+
       bool synchronize()
       {
          return true;
       }
-      
+
       ~UniquePointer()
       {
          if( this->pointer )
             delete this->pointer;
       }
 
-      
+
    protected:
-      
+
       Object* pointer;
 };
 
@@ -127,7 +126,7 @@ template< typename Object >
 class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 {
    public:
-      
+
       typedef Object ObjectType;
       typedef Devices::Cuda DeviceType;
       typedef UniquePointer< Object, Devices::Cuda > ThisType;
@@ -144,29 +143,29 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       {
          this->allocate( args... );
       }
-      
+
       const Object* operator->() const
       {
          return &this->pd->data;
       }
-      
+
       Object* operator->()
       {
          this->pd->maybe_modified = true;
          return &this->pd->data;
       }
-      
+
       const Object& operator *() const
       {
          return this->pd->data;
       }
-      
+
       Object& operator *()
       {
          this->pd->maybe_modified = true;
          return this->pd->data;
       }
-      
+
       __cuda_callable__
       operator bool() const
       {
@@ -179,7 +178,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          return ! this->pd;
       }
 
-      template< typename Device = Devices::Host >      
+      template< typename Device = Devices::Host >
       const Object& getData() const
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
@@ -188,7 +187,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          if( std::is_same< Device, Devices::Host >::value )
             return this->pd->data;
          if( std::is_same< Device, Devices::Cuda >::value )
-            return *( this->cuda_pointer );            
+            return *( this->cuda_pointer );
       }
 
       template< typename Device = Devices::Host >
@@ -205,7 +204,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          if( std::is_same< Device, Devices::Cuda >::value )
             return *( this->cuda_pointer );
       }
-      
+
       const ThisType& operator=( ThisType& ptr )
       {
          this->free();
@@ -215,12 +214,12 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          ptr.cuda_pointer = nullptr;
          return *this;
       }
-      
+
       const ThisType& operator=( ThisType&& ptr )
       {
          return this->operator=( ptr );
-      }      
-      
+      }
+
       bool synchronize()
       {
          if( ! this->pd )
@@ -235,17 +234,17 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
             return true;
          }
          return true;
-#else         
+#else
          return false;
-#endif         
+#endif
       }
-            
+
       ~UniquePointer()
       {
          this->free();
          Devices::Cuda::removeSmartPointer( this );
       }
-      
+
    protected:
 
       struct PointerData
@@ -296,7 +295,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          if( this->cuda_pointer )
             Devices::Cuda::freeFromDevice( this->cuda_pointer );
       }
-      
+
       PointerData* pd;
 
       // cuda_pointer can't be part of PointerData structure, since we would be
@@ -309,11 +308,11 @@ template< typename Object >
 class UniquePointer< Object, Devices::MIC > : public SmartPointer
 {
    public:
-      
+
       typedef Object ObjectType;
       typedef Devices::MIC DeviceType;
       typedef UniquePointer< Object, Devices::MIC > ThisType;
-         
+
       UniquePointer( std::nullptr_t )
       : pd( nullptr ),
         mic_pointer( nullptr )
@@ -326,35 +325,35 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
       {
          this->allocate( args... );
       }
-      
+
       const Object* operator->() const
       {
          return &this->pd->data;
       }
-      
+
       Object* operator->()
       {
          this->pd->maybe_modified = true;
          return &this->pd->data;
       }
-      
+
       const Object& operator *() const
       {
          return this->pd->data;
       }
-      
+
       Object& operator *()
       {
          this->pd->maybe_modified = true;
          return this->pd->data;
       }
-      
+
       operator bool()
       {
          return this->pd;
       }
 
-      template< typename Device = Devices::Host >      
+      template< typename Device = Devices::Host >
       const Object& getData() const
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::MIC >::value, "Only Devices::Host or Devices::MIC devices are accepted here." );
@@ -363,7 +362,7 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
          if( std::is_same< Device, Devices::Host >::value )
             return this->pd->data;
          if( std::is_same< Device, Devices::MIC >::value )
-            return *( this->mic_pointer );            
+            return *( this->mic_pointer );
       }
 
       template< typename Device = Devices::Host >
@@ -380,7 +379,7 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
          if( std::is_same< Device, Devices::MIC >::value )
             return *( this->mic_pointer );
       }
-      
+
       const ThisType& operator=( ThisType& ptr )
       {
          this->free();
@@ -390,31 +389,31 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
          ptr.mic_pointer = nullptr;
          return *this;
       }
-      
+
       const ThisType& operator=( ThisType&& ptr )
       {
          return this->operator=( ptr );
-      }      
-      
+      }
+
       bool synchronize()
       {
          if( ! this->pd )
             return true;
          if( this->modified() )
-         { 
-            Devices::MIC::CopyToMIC(this->mic_pointer,(void*) &this->pd->data,sizeof(Object));  
+         {
+            Devices::MIC::CopyToMIC(this->mic_pointer,(void*) &this->pd->data,sizeof(Object));
             this->set_last_sync_state();
             return true;
          }
          return true;//??
       }
-            
+
       ~UniquePointer()
       {
          this->free();
          Devices::MIC::removeSmartPointer( this );
       }
-      
+
    protected:
 
       struct PointerData
@@ -470,7 +469,7 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
          if( this->mic_pointer )
              Devices::MIC::FreeMIC(mic_pointer);
       }
-      
+
       PointerData* pd;
 
       // mic_pointer can't be part of PointerData structure, since we would be
@@ -479,7 +478,7 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
 };
 #endif
 
-#if  (!defined(NDEBUG)) && (!defined(HAVE_MIC)) 
+#if (!defined(NDEBUG)) && (!defined(HAVE_MIC))
 namespace Assert {
 
 template< typename Object, typename Device >
@@ -498,5 +497,5 @@ struct Formatter< UniquePointer< Object, Device > >
 } // namespace Assert
 #endif
 
+} // namespace Pointers
 } // namespace TNL
-
