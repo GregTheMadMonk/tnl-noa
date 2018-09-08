@@ -718,7 +718,7 @@ applyBoundaryConditions( const RealType& time,
           //&userDataPtr.template modifyData< Devices::Cuda >() );
       // */ 
       int cudaErr;
-      if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
+      if( ( cudaErr = ::cudaGetLastError() ) != cudaSuccess )
       {
          std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
          return;
