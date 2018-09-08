@@ -79,6 +79,26 @@ Index Matrix< Real, Device, Index >::getColumns() const
 template< typename Real,
           typename Device,
           typename Index >
+const typename Matrix< Real, Device, Index >::ValuesVector&
+Matrix< Real, Device, Index >::
+getValues() const
+{
+   return this->values;
+}
+   
+template< typename Real,
+          typename Device,
+          typename Index >
+typename Matrix< Real, Device, Index >::ValuesVector& 
+Matrix< Real, Device, Index >::
+getValues()
+{
+   return this->values;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void Matrix< Real, Device, Index >::reset()
 {
    this->rows = 0;
@@ -142,6 +162,69 @@ template< typename Real,
 void Matrix< Real, Device, Index >::print( std::ostream& str ) const
 {
 }
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+const Index&
+Matrix< Real, Device, Index >::
+getNumberOfColors() const
+{
+   return this->numberOfColors;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void 
+Matrix< Real, Device, Index >::
+computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
+{
+    for( IndexType i = this->getRows() - 1; i >= 0; i-- )
+    {
+        // init color array
+        Containers::Vector< Index, Device, Index > usedColors;
+        usedColors.setSize( this->numberOfColors );
+        for( IndexType j = 0; j < this->numberOfColors; j++ )
+            usedColors.setElement( j, 0 );
+
+        // find all colors used in given row
+        for( IndexType j = i + 1; j < this->getColumns(); j++ )
+             if( this->getElement( i, j ) != 0.0 )
+                 usedColors.setElement( colorsVector.getElement( j ), 1 );
+
+        // find unused color
+        bool found = false;
+        for( IndexType j = 0; j < this->numberOfColors; j++ )
+            if( usedColors.getElement( j ) == 0 )
+            {
+                colorsVector.setElement( i, j );
+                found = true;
+                break;
+            }
+        if( !found )
+        {
+            colorsVector.setElement( i, this->numberOfColors );
+            this->numberOfColors++;
+        }
+    }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void
+Matrix< Real, Device, Index >::
+copyFromHostToCuda( Matrix< Real, Devices::Host, Index >& matrix )
+{
+    this->numberOfColors = matrix.getNumberOfColors();
+    this->columns = matrix.getColumns();
+    this->rows = matrix.getRows();
+
+    this->values.setSize( matrix.getValuesSize() );
+}
+
 
 #ifdef HAVE_CUDA
 template< typename Matrix,

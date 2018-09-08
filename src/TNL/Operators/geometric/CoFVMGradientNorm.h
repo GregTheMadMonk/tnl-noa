@@ -50,7 +50,7 @@ class CoFVMGradientNorm< Meshes::Grid< MeshDimension, MeshReal, Device, MeshInde
       typedef MeshEntitiesInterpolants< MeshType, MeshDimension - 1, MeshDimension > OuterOperator;
       typedef OperatorComposition< OuterOperator, InnerOperator > BaseType;
       typedef ExactGradientNorm< MeshDimension, RealType > ExactOperatorType;
-      typedef SharedPointer< MeshType > MeshPointer;
+      typedef Pointers::SharedPointer<  MeshType > MeshPointer;
          
       CoFVMGradientNorm( const OuterOperator& outerOperator,
                             InnerOperator& innerOperator,

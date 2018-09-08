@@ -22,7 +22,7 @@ namespace Matrices {
 #endif
 
 template< typename Real >
-class tnlCusparseCSR;
+class CusparseCSR;
 
 template< typename Device >
 class CSRDeviceDependentCode;
@@ -164,10 +164,10 @@ public:
    void getTransposition( const CSR< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
-   template< typename Vector >
-   bool performSORIteration( const Vector& b,
+   template< typename Vector1, typename Vector2 >
+   bool performSORIteration( const Vector1& b,
                              const IndexType row,
-                             Vector& x,
+                             Vector2& x,
                              const RealType& omega = 1.0 ) const;
 
    // copy assignment
@@ -249,18 +249,6 @@ public:
       return this->columnIndexes;
    }
 
-   const Containers::Vector< Real, Device, Index >&
-   getValues() const
-   {
-      return this->values;
-   }
-
-   Containers::Vector< Real, Device, Index >&
-   getValues()
-   {
-      return this->values;
-   }
-
 protected:
 
    Containers::Vector< Index, Device, Index > rowPointers;
@@ -270,8 +258,9 @@ protected:
    int cudaWarpSize, hybridModeSplit;
 
    typedef CSRDeviceDependentCode< DeviceType > DeviceDependentCode;
+   
    friend class CSRDeviceDependentCode< DeviceType >;
-   friend class tnlCusparseCSR< RealType >;
+   friend class CusparseCSR< RealType >;
 };
 
 } // namespace Matrices

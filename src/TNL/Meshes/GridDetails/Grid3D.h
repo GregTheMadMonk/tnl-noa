@@ -10,11 +10,13 @@
 
 #pragma once
 
+#include <TNL/Logger.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/GridEntity.h>
 #include <TNL/Meshes/GridDetails/GridEntityTopology.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter.h>
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
+#include <TNL/Meshes/GridEntity.h>
+#include <TNL/Meshes/GridEntityConfig.h>
 
 namespace TNL {
 namespace Meshes {
@@ -39,7 +41,7 @@ class Grid< 3, Real, Device, Index > : public Object
  
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
- 
+
    static constexpr int getMeshDimension() { return 3; };
 
    template< int EntityDimension,
@@ -91,11 +93,11 @@ class Grid< 3, Real, Device, Index > : public Object
    template< typename Entity >
    __cuda_callable__
    inline Entity getEntity( const IndexType& entityIndex ) const;
- 
+
    template< typename Entity >
    __cuda_callable__
    inline Index getEntityIndex( const Entity& entity ) const;
- 
+
    __cuda_callable__
    inline const PointType& getSpaceSteps() const;
 
@@ -112,10 +114,10 @@ class Grid< 3, Real, Device, Index > : public Object
    __cuda_callable__
    inline const RealType& getCellMeasure() const;
 
- 
+
    __cuda_callable__
    RealType getSmallestSpaceStep() const;
-      
+
    template< typename GridFunction >
    typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;
 
@@ -153,7 +155,7 @@ class Grid< 3, Real, Device, Index > : public Object
    void computeSpaceSteps();
 
    CoordinatesType dimensions;
- 
+
    IndexType numberOfCells,
           numberOfNxFaces, numberOfNyFaces, numberOfNzFaces, numberOfNxAndNyFaces, numberOfFaces,
           numberOfDxEdges, numberOfDyEdges, numberOfDzEdges, numberOfDxAndDyEdges, numberOfEdges,
@@ -162,16 +164,16 @@ class Grid< 3, Real, Device, Index > : public Object
    PointType origin, proportions;
 
    IndexType cellZNeighborsStep;
- 
+
    PointType spaceSteps;
- 
+
    RealType spaceStepsProducts[ 5 ][ 5 ][ 5 ];
    
    DistributedMeshType *distGrid;
 
    template< typename, typename, int >
    friend class GridEntityGetter;
- 
+
    template< typename, int, typename >
    friend class NeighborGridEntityGetter;
 };

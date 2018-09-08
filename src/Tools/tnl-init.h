@@ -39,7 +39,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
    using namespace  Meshes::DistributedMeshes;
    using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh<MeshType>;
    DistributedGridType distributedMesh;
-   SharedPointer< MeshType > meshPointer;
+   Pointers::SharedPointer< MeshType > meshPointer;
    MeshType globalMesh;
 
    if(CommunicatorType::isDistributed())
@@ -66,14 +66,14 @@ bool renderFunction( const Config::ParameterContainer& parameters )
     }
 
    typedef Functions::TestFunction< MeshType::getMeshDimension(), RealType > FunctionType;
-   typedef SharedPointer< FunctionType, typename MeshType::DeviceType > FunctionPointer;
+   typedef Pointers::SharedPointer<  FunctionType, typename MeshType::DeviceType > FunctionPointer;
    FunctionPointer function;
    std::cout << "Setting up the function ... " << std::endl;
    if( ! function->setup( parameters, "" ) )
       return false;
    std::cout << "done." << std::endl;
    typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimension() > MeshFunctionType;
-   typedef SharedPointer< MeshFunctionType, typename MeshType::DeviceType > MeshFunctionPointer;
+   typedef Pointers::SharedPointer<  MeshFunctionType, typename MeshType::DeviceType > MeshFunctionPointer;
    MeshFunctionPointer meshFunction( meshPointer );
    //if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
    //   return false;

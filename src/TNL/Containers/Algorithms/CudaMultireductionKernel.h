@@ -242,7 +242,7 @@ CudaMultireductionKernelLauncher( Operation& operation,
             ? 2 * blockSize.x * blockSize.y * sizeof( ResultType )
             : blockSize.x * blockSize.y * sizeof( ResultType );
 
-   //cout << "Multireduction of " << n << " datasets, block size (" << blockSize.x << "," << blockSize.y << "), grid size (" << gridSize.x << "," << gridSize.y << "), shmem " << shmem << endl;
+   //cout << "Multireduction of " << n << " datasets, block size (" << blockSize.x << "," << blockSize.y << "), grid size (" << gridSize.x << "," << gridSize.y << "), shmem " << shmem <<std::endl;
 
    /***
     * Depending on the blockSize we generate appropriate template instance.

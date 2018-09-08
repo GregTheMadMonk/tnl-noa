@@ -494,10 +494,10 @@ void CSR< Real, Device, Index >::getTransposition( const CSR< Real2, Device, Ind
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-bool CSR< Real, Device, Index >::performSORIteration( const Vector& b,
+   template< typename Vector1, typename Vector2 >
+bool CSR< Real, Device, Index >::performSORIteration( const Vector1& b,
                                                       const IndexType row,
-                                                      Vector& x,
+                                                      Vector2& x,
                                                       const RealType& omega ) const
 {
    TNL_ASSERT( row >=0 && row < this->getRows(),
@@ -797,7 +797,7 @@ class CSRDeviceDependentCode< Devices::MIC >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
-          cout <<"Not Implemented YET tnlCSRMatrixDeviceDependentCode for MIC" <<endl;
+         std::cout <<"Not Implemented YET tnlCSRMatrixDeviceDependentCode for MIC" <<endl;
       };
   /*       const Index rows = matrix.getRows();
          const tnlCSRMatrix< Real, Device, Index >* matrixPtr = &matrix;

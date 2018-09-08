@@ -19,7 +19,8 @@
 
 namespace TNL {
 namespace Communicators {
-        
+namespace {
+
 class NoDistrCommunicator
 {
 
@@ -30,6 +31,7 @@ class NoDistrCommunicator
       typedef int CommunicationGroup;
       static Request NullRequest;
       static CommunicationGroup AllGroup;
+      static CommunicationGroup NullGroup;
 
       static void configSetup( Config::ConfigDescription& config, const String& prefix = "" ){};
  
@@ -41,7 +43,9 @@ class NoDistrCommunicator
       
       static void Init(int argc, char **argv, bool redirect=false)
       {
-          NullRequest=-1;
+          NullRequest = -1;
+          AllGroup = 1;
+          NullGroup = 0;
       }
       
       static void setRedirection( bool redirect_ ) {}
@@ -104,13 +108,13 @@ class NoDistrCommunicator
       }
 
       template< typename T >
-      static void Allreduce( T* data,
+      static void Allreduce( const T* data,
                              T* reduced_data,
                              int count,
                              const MPI_Op &op,
                              CommunicationGroup group )
       {
-         memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
+         memcpy( ( void* ) reduced_data, ( const void* ) data, count * sizeof( T ) );
       }
 
       template< typename T >
@@ -135,8 +139,8 @@ class NoDistrCommunicator
 
   int NoDistrCommunicator::NullRequest;
   int NoDistrCommunicator::AllGroup;
+  int NoDistrCommunicator::NullGroup;
 
+} // namespace <unnamed>
 } // namespace Communicators
 } // namespace TNL
-
-

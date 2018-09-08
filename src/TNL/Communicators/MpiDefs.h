@@ -11,5 +11,18 @@
 #pragma once
 
 #ifndef HAVE_MPI
-enum MPI_Op { MPI_SUM, MPI_MAX };
+enum MPI_Op {
+   MPI_MAX,
+   MPI_MIN,
+   MPI_SUM,
+   MPI_PROD,
+   MPI_LAND,
+   MPI_BAND,
+   MPI_LOR,
+   MPI_BOR,
+   MPI_LXOR,
+   MPI_BXOR,
+   MPI_MINLOC,
+   MPI_MAXLOC,
+};
 #endif

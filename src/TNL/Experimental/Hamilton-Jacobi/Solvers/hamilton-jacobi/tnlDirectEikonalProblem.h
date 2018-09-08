@@ -15,7 +15,7 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Functions/MeshFunction.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include "tnlFastSweepingMethod.h"
 
 template< typename Mesh,
@@ -38,13 +38,13 @@ class tnlDirectEikonalProblem
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef Problems::PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
       using AnisotropyType = Anisotropy;
+      using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
+      using MeshFunctionPointer = Pointers::SharedPointer< MeshFunctionType >;
 
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
-      using typename BaseType::MeshDependentDataType;
-      using MeshPointer = SharedPointer< MeshType >;
-      using DofVectorPointer = SharedPointer< DofVectorType >;
-      using MeshDependentDataPointer = SharedPointer< MeshDependentDataType >;
+      using MeshPointer = Pointers::SharedPointer< MeshType >;
+      using DofVectorPointer = Pointers::SharedPointer< DofVectorType >;
       
       static constexpr bool isTimeDependent() { return false; };
 
@@ -58,31 +58,26 @@ class tnlDirectEikonalProblem
       bool writeEpilog( Logger& logger );
 
 
-      bool setup( const MeshPointer& mesh,
-                  const Config::ParameterContainer& parameters,
+      bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );
 
-      IndexType getDofs( const MeshPointer& mesh ) const;
+      IndexType getDofs() const;
 
-      void bindDofs( const MeshPointer& mesh,
-                     const DofVectorPointer& dofs );
+      void bindDofs( const DofVectorPointer& dofs );
       
       bool setInitialCondition( const Config::ParameterContainer& parameters,
-                                const MeshPointer& mesh,
-                                DofVectorPointer& dofs,
-                                MeshDependentDataPointer& meshdependentData );
+                                DofVectorPointer& dofs );
 
-      bool solve( const MeshPointer& mesh,
-                  DofVectorPointer& dosf );
+      bool solve( DofVectorPointer& dosf );
 
 
       protected:
          
-         MeshFunctionType u;
+         MeshFunctionPointer u;
          
-         MeshFunctionType initialData;
+         MeshFunctionPointer initialData;
          
-         AnisotropyType anisotropy;
+         AnisotropyPointer anisotropy;
 
 };
 

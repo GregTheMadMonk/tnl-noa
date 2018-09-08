@@ -81,7 +81,7 @@ bool godunovScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, Funct
 	   const String& meshFile = parameters.getParameter< String >( "mesh" );
 	   if( ! this->originalMesh.load( meshFile ) )
 	   {
-		   cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the mesh from the file " << meshFile << "." <<std::endl;
 		   return false;
 	   }
 

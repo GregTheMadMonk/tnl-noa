@@ -13,6 +13,7 @@
 #pragma once
 
 #include <type_traits>
+#include <cmath>
 
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/Multireduction.h>
@@ -24,35 +25,9 @@ namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Matrix,
-          typename Preconditioner >
-CWYGMRES< Matrix, Preconditioner >::
-CWYGMRES()
-: size( 0 ),
-  ldSize( 0 ),
-  restarting_min( 10 ),
-  restarting_max( 10 ),
-  restarting_step_min( 3 ),
-  restarting_step_max( 3 )
-{
-   /****
-    * Clearing the shared pointer means that there is no
-    * preconditioner set.
-    */
-   this->preconditioner.clear();   
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-CWYGMRES< Matrix, Preconditioner >::
-~CWYGMRES()
-{
-}
-
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 String
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 getType() const
 {
    return String( "CWYGMRES< " ) +
@@ -60,39 +35,34 @@ getType() const
           this->preconditioner -> getType() + " >";
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
-   //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
    config.addEntry< int >( prefix + "gmres-restarting-min", "Minimal number of iterations after which the GMRES restarts.", 10 );
    config.addEntry< int >( prefix + "gmres-restarting-max", "Maximal number of iterations after which the GMRES restarts.", 10 );
    config.addEntry< int >( prefix + "gmres-restarting-step-min", "Minimal adjusting step for the adaptivity of the GMRES restarting parameter.", 3 );
    config.addEntry< int >( prefix + "gmres-restarting-step-max", "Maximal adjusting step for the adaptivity of the GMRES restarting parameter.", 3 );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 bool
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
    restarting_min = parameters.getParameter< int >( "gmres-restarting-min" );
    this->setRestarting( parameters.getParameter< int >( "gmres-restarting-max" ) );
    restarting_step_min = parameters.getParameter< int >( "gmres-restarting-step-min" );
    restarting_step_max = parameters.getParameter< int >( "gmres-restarting-step-max" );
-   return true;
+   return LinearSolver< Matrix >::setup( parameters, prefix );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 setRestarting( IndexType rest )
 {
    if( size != 0 )
@@ -100,32 +70,12 @@ setRestarting( IndexType rest )
    restarting_max = rest;
 }
 
-template< typename Matrix,
-          typename Preconditioner >
-void
-CWYGMRES< Matrix, Preconditioner >::
-setMatrix( const MatrixPointer& matrix )
-{
-   this->matrix = matrix;
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-void
-CWYGMRES< Matrix, Preconditioner >::
-setPreconditioner( const PreconditionerPointer& preconditioner )
-{
-   this->preconditioner = preconditioner;
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-   template< typename Vector, typename ResidueGetter >
+template< typename Matrix >
 bool
-CWYGMRES< Matrix, Preconditioner >::
-solve( const Vector& b, Vector& x )
+CWYGMRES< Matrix >::
+solve( ConstVectorViewType b, VectorViewType x )
 {
-   TNL_ASSERT_TRUE( matrix, "No matrix was set in CWYGMRES. Call setMatrix() before solve()." );
+   TNL_ASSERT_TRUE( this->matrix, "No matrix was set in CWYGMRES. Call setMatrix() before solve()." );
    if( restarting_min <= 0 || restarting_max <= 0 || restarting_min > restarting_max )
    {
       std::cerr << "Wrong value for the GMRES restarting parameters: r_min = " << restarting_min
@@ -138,32 +88,32 @@ solve( const Vector& b, Vector& x )
                 << ", d_max = " << restarting_step_max << std::endl;
       return false;
    }
-   setSize( matrix -> getRows(), restarting_max );
+   setSize( this->matrix->getRows(), restarting_max );
 
    RealType normb( 0.0 ), beta( 0.0 );
    /****
     * 1. Solve r from M r = b - A x_0
     */
-   if( preconditioner )
+   if( this->preconditioner )
    {
       this->preconditioner->solve( b, _M_tmp );
       normb = _M_tmp.lpNorm( ( RealType ) 2.0 );
 
-      matrix->vectorProduct( x, _M_tmp );
+      this->matrix->vectorProduct( x, _M_tmp );
       _M_tmp.addVector( b, ( RealType ) 1.0, -1.0 );
 
       this->preconditioner->solve( _M_tmp, r );
    }
    else
    {
-      matrix->vectorProduct( x, r );
+      this->matrix->vectorProduct( x, r );
       normb = b.lpNorm( ( RealType ) 2.0 );
       r.addVector( b, ( RealType ) 1.0, -1.0 );
    }
    beta = r.lpNorm( ( RealType ) 2.0 );
 
-   //cout << "norm b = " << normb << endl;
-   //cout << " beta = " << beta << endl;
+   //cout << "norm b = " << normb <<std::endl;
+   //cout << " beta = " << beta <<std::endl;
 
 
    if( normb == 0.0 )
@@ -222,7 +172,7 @@ solve( const Vector& b, Vector& x )
        */
       for( IndexType i = 0; i <= m && this->nextIteration(); i++ )
       {
-//         cout << "==== i = " << i << " ====" << endl;
+//        std::cout << "==== i = " << i << " ====" <<std::endl;
 
          /****
           * Generate new Hauseholder transformation from vector z.
@@ -255,13 +205,13 @@ solve( const Vector& b, Vector& x )
             /****
              * Solve w from M w = A v_i
              */
-            if( preconditioner )
+            if( this->preconditioner )
             {
-               matrix->vectorProduct( vi, _M_tmp );
+               this->matrix->vectorProduct( vi, _M_tmp );
                this->preconditioner->solve( _M_tmp, w );
             }
             else
-                matrix -> vectorProduct( vi, w );
+                this->matrix->vectorProduct( vi, w );
 
             /****
              * Apply all previous Hauseholder transformations, using the compact WY representation:
@@ -270,14 +220,14 @@ solve( const Vector& b, Vector& x )
             hauseholder_cwy_transposed( z, Y, T, i, w );
          }
 
-//         cout << "vi.norm = " << vi.lpNorm( 2.0 ) << endl;
-//         cout << "H (before rotations) = " << endl;
+//        std::cout << "vi.norm = " << vi.lpNorm( 2.0 ) <<std::endl;
+//        std::cout << "H (before rotations) = " <<std::endl;
 //         for( int i = 0; i <= m; i++ ) {
 //             for( int j = 0; j < m; j++ )
-//                 cout << H[ i + j * (m+1) ] << "\t";
-//             cout << endl;
+//                std::cout << H[ i + j * (m+1) ] << "\t";
+//            std::cout <<std::endl;
 //         }
-//         cout << "s = " << s << endl;
+//        std::cout << "s = " << s <<std::endl;
 
          /****
           * Applying the Givens rotations
@@ -305,18 +255,18 @@ solve( const Vector& b, Vector& x )
             }
          }
 
-//         cout << "H (after rotations) = " << endl;
+//        std::cout << "H (after rotations) = " <<std::endl;
 //         for( int i = 0; i <= m; i++ ) {
 //             for( int j = 0; j < m; j++ )
-//                 cout << H[ i + j * (m+1) ] << "\t";
-//             cout << endl;
+//                std::cout << H[ i + j * (m+1) ] << "\t";
+//            std::cout <<std::endl;
 //         }
-//         cout << "s (after rotations) = " << s << endl;
-//         cout << "residue / normb = " << std::fabs( s[ i ] ) / normb << endl;
+//        std::cout << "s (after rotations) = " << s <<std::endl;
+//        std::cout << "residue / normb = " << std::fabs( s[ i ] ) / normb <<std::endl;
 
 //         for( int k = 0; k <= i; k++ ) {
 //            vk.bind( &V.getData()[ k * ldSize ], size );
-//            cout << "(v" << k << ",v" << i << ") = " << vk.scalarProduct( vi ) << endl;
+//           std::cout << "(v" << k << ",v" << i << ") = " << vk.scalarProduct( vi ) <<std::endl;
 //         }
 
          this->setResidue( std::fabs( s[ i ] ) / normb );
@@ -335,23 +285,23 @@ solve( const Vector& b, Vector& x )
        * r = M.solve(b - A * x);
        */
       const RealType beta_old = beta;
-      if( preconditioner )
+      if( this->preconditioner )
       {
-         matrix->vectorProduct( x, _M_tmp );
+         this->matrix->vectorProduct( x, _M_tmp );
          _M_tmp.addVector( b, ( RealType ) 1.0, -1.0 );
-         preconditioner->solve( _M_tmp, r );
+         this->preconditioner->solve( _M_tmp, r );
       }
       else
       {
-         matrix->vectorProduct( x, r );
+         this->matrix->vectorProduct( x, r );
          r.addVector( b, ( RealType ) 1.0, -1.0 );
       }
       beta = r.lpNorm( ( RealType ) 2.0 );
       this->setResidue( beta / normb );
 
-//      cout << " x = " << x << endl;
-//      cout << " beta = " << beta << endl;
-//      cout << "residue = " << beta / normb << endl;
+//     std::cout << " x = " << x <<std::endl;
+//     std::cout << " beta = " << beta <<std::endl;
+//     std::cout << "residue = " << beta / normb <<std::endl;
 
       // update parameters for the adaptivity of the restarting parameter
       ++restart_cycles;
@@ -387,10 +337,9 @@ copyTruncatedVectorKernel( DestinationElement* destination,
 }
 #endif
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 hauseholder_generate( DeviceVector& Y,
                       HostVector& T,
                       const int& i,
@@ -471,10 +420,9 @@ hauseholder_generate( DeviceVector& Y,
    }
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 hauseholder_apply_trunc( HostVector& out,
                          DeviceVector& Y,
                          HostVector& T,
@@ -505,10 +453,9 @@ hauseholder_apply_trunc( HostVector& out,
    }
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 hauseholder_cwy( DeviceVector& v,
                  DeviceVector& Y,
                  HostVector& T,
@@ -542,10 +489,9 @@ hauseholder_cwy( DeviceVector& v,
    v.setElement( i, 1.0 + v.getElement( i ) );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 hauseholder_cwy_transposed( DeviceVector& z,
                             DeviceVector& Y,
                             HostVector& T,
@@ -584,11 +530,10 @@ hauseholder_cwy_transposed( DeviceVector& z,
                                          1.0, z.getData() );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
    template< typename Vector >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 update( IndexType k,
         IndexType m,
         const HostVector& H,
@@ -609,8 +554,8 @@ update( IndexType k,
       if( H[ i + i * ( m + 1 ) ] == 0 ) {
 //         for( int _i = 0; _i <= i; _i++ ) {
 //             for( int _j = 0; _j < i; _j++ )
-//                 cout << H[ _i + _j * (m+1) ] << "  ";
-//             cout << endl;
+//                std::cout << H[ _i + _j * (m+1) ] << "  ";
+//            std::cout <<std::endl;
 //         }
          std::cerr << "H.norm = " << H.lpNorm( 2.0 ) << std::endl;
          std::cerr << "s = " << s << std::endl;
@@ -628,10 +573,9 @@ update( IndexType k,
                                          1.0, x.getData() );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-CWYGMRES< Matrix, Preconditioner >::
+CWYGMRES< Matrix >::
 generatePlaneRotation( RealType& dx,
                        RealType& dy,
                        RealType& cs,
@@ -657,9 +601,8 @@ generatePlaneRotation( RealType& dx,
       }
 }
 
-template< typename Matrix,
-          typename Preconditioner >
-void CWYGMRES< Matrix, Preconditioner > ::
+template< typename Matrix >
+void CWYGMRES< Matrix > ::
 applyPlaneRotation( RealType& dx,
                     RealType& dy,
                     RealType& cs,
@@ -670,9 +613,8 @@ applyPlaneRotation( RealType& dx,
    dx = temp;
 }
 
-template< typename Matrix,
-          typename Preconditioner >
-void CWYGMRES< Matrix, Preconditioner > :: setSize( IndexType _size, IndexType m )
+template< typename Matrix >
+void CWYGMRES< Matrix > :: setSize( IndexType _size, IndexType m )
 {
    if( size == _size && restarting_max == m )
       return;

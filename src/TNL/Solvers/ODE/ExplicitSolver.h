@@ -18,7 +18,7 @@
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
@@ -36,7 +36,7 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
    typedef typename Problem :: RealType RealType;
    typedef typename Problem :: DeviceType DeviceType;
    typedef typename Problem :: IndexType IndexType;
-   typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+   typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
    typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
 
    ExplicitSolver();

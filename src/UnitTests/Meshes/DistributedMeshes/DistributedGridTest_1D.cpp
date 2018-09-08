@@ -102,14 +102,14 @@ class DistributedGridTest_1D : public ::testing::Test
       DistributedMesh< GridType > *distributedGrid;
       DofType dof;
 
-      SharedPointer< GridType > gridptr;
-      SharedPointer< MeshFunctionType > meshFunctionPtr;
+      Pointers::SharedPointer< GridType > gridptr;
+      Pointers::SharedPointer< MeshFunctionType > meshFunctionPtr;
 
       MeshFunctionEvaluator< MeshFunctionType, ConstFunction< double, 1 > > constFunctionEvaluator;
-      SharedPointer< ConstFunction< double, 1 >, Host > constFunctionPtr;
+      Pointers::SharedPointer< ConstFunction< double, 1 >, Host > constFunctionPtr;
 
       MeshFunctionEvaluator< MeshFunctionType, LinearFunction< double, 1 > > linearFunctionEvaluator;
-      SharedPointer< LinearFunction< double, 1 >, Host > linearFunctionPtr;
+      Pointers::SharedPointer< LinearFunction< double, 1 >, Host > linearFunctionPtr;
 
       int rank;
       int nproc;

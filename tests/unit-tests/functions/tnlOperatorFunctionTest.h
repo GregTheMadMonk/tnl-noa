@@ -43,7 +43,7 @@ class OperatorFunctionTest
    typedef typename MeshType::PointType PointType;
    typedef Functions::Analytic::ExpBump< MeshType::getMeshDimension(), RealType > TestFunctionType;
    typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimension() > MeshFunctionType;
-   typedef SharedPointer< MeshType > MeshPointer;
+   typedef Pointers::SharedPointer<  MeshType > MeshPointer;
 
    OperatorFunctionTest(){};
 
@@ -74,7 +74,7 @@ class OperatorFunctionTest
       OperatorType operator_;
       OperatorFunctionType operatorFunction( operator_, f1 );
       operatorFunction.refresh();
-      //cerr << f1.getData() << endl;
+      //cerr << f1.getData() <<std::endl;
       for( IndexType i = 0; i < meshPointer->template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
          auto entity = meshPointer->template getEntity< typename MeshType::Cell >( i );
@@ -90,7 +90,7 @@ class OperatorFunctionTest
  
    void testWithBoundaryConditions()
    {
-      SharedPointer< MeshType > mesh;
+      Pointers::SharedPointer<  MeshType > mesh;
       typedef Operators::DirichletBoundaryConditions< MeshType > BoundaryConditionsType;
       typedef Functions::OperatorFunction< Operator, MeshFunctionType, BoundaryConditionsType, EvaluateOnFly > OperatorFunctionType;
       mesh->setDimensions( CoordinatesType( 25 ) );
@@ -104,7 +104,7 @@ class OperatorFunctionTest
       BoundaryConditionsType boundaryConditions;
       OperatorFunctionType operatorFunction( operator_, boundaryConditions, f1 );
       operatorFunction.refresh();
-      //cerr << f1.getData() << endl;
+      //cerr << f1.getData() <<std::endl;
       for( IndexType i = 0; i < mesh->template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
          auto entity = mesh->template getEntity< typename MeshType::Cell >( i );

@@ -10,35 +10,23 @@
 
 #pragma once
 
-#include <TNL/Object.h>
-#include <TNL/SharedPointer.h>
-#include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
-#include <TNL/Solvers/IterativeSolver.h>
-#include <TNL/Solvers/Linear/LinearResidueGetter.h>
+#include "LinearSolver.h"
 
 namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Matrix,
-          typename Preconditioner = Preconditioners::Dummy< typename Matrix :: RealType,
-                                                            typename Matrix :: DeviceType,
-                                                            typename Matrix :: IndexType> >
-class SOR : public Object,
-            public IterativeSolver< typename Matrix :: RealType,
-                                    typename Matrix :: IndexType >
+template< typename Matrix >
+class SOR
+: public LinearSolver< Matrix >
 {
-   public:
-
-   typedef typename Matrix :: RealType RealType;
-   typedef typename Matrix :: IndexType IndexType;
-   typedef typename Matrix :: DeviceType DeviceType;
-   typedef Matrix MatrixType;
-   typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
-
-   SOR();
+   using Base = LinearSolver< Matrix >;
+public:
+   using RealType = typename Base::RealType;
+   using DeviceType = typename Base::DeviceType;
+   using IndexType = typename Base::IndexType;
+   using VectorViewType = typename Base::VectorViewType;
+   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
    String getType() const;
 
@@ -46,26 +34,16 @@ class SOR : public Object,
                             const String& prefix = "" );
 
    bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" );
+               const String& prefix = "" ) override;
 
    void setOmega( const RealType& omega );
 
    const RealType& getOmega() const;
 
-   void setMatrix( const MatrixPointer& matrix );
+   bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
-   void setPreconditioner( const PreconditionerPointer& preconditioner );
-
-   template< typename Vector,
-             typename ResidueGetter = LinearResidueGetter< Matrix, Vector >  >
-   bool solve( const Vector& b, Vector& x );
-
-   protected:
-
-   RealType omega;
-
-   MatrixPointer matrix;
-   PreconditionerPointer preconditioner;
+protected:
+   RealType omega = 1.0;
 };
 
 } // namespace Linear

@@ -10,7 +10,8 @@
 
 #pragma once
 
-#include <TNL/Constants.h>
+#include <limits>  // std::numeric_limits
+
 #include <TNL/Math.h>
 #include <TNL/Devices/CudaCallable.h>
 
@@ -31,7 +32,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   __cuda_callable__ Result initialValue() { return 0; };
+   static constexpr Result initialValue() { return 0; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -67,7 +68,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMin< Result >;
 
-   __cuda_callable__ Result initialValue() { return MaxValue< Result >(); };
+   static constexpr Result initialValue() { return std::numeric_limits< Result >::max(); };
 
    template< typename Index >
    __cuda_callable__ void
@@ -103,7 +104,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMax< Result >;
 
-   __cuda_callable__ Result initialValue() { return MinValue< Result>(); };
+   static constexpr Result initialValue() { return std::numeric_limits< Result >::lowest(); };
 
    template< typename Index >
    __cuda_callable__ void
@@ -139,7 +140,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionLogicalAnd< Result >;
 
-   __cuda_callable__ Result initialValue() { return ( Result ) true; };
+   static constexpr Result initialValue() { return true; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -176,7 +177,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionLogicalOr< Result >;
 
-   __cuda_callable__ Result initialValue() { return ( Result ) false; };
+   static constexpr Result initialValue() { return false; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -212,7 +213,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   __cuda_callable__ Result initialValue() { return ( Result ) 0; };
+   static constexpr Result initialValue() { return 0; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -234,7 +235,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMin< Result >;
 
-   __cuda_callable__ Result initialValue() { return MaxValue< Result>(); };
+   static constexpr Result initialValue() { return std::numeric_limits< Result >::max(); };
 
    template< typename Index >
    __cuda_callable__ void
@@ -256,7 +257,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMax< Result >;
 
-   __cuda_callable__ Result initialValue() { return ( Result ) 0; };
+   static constexpr Result initialValue() { return 0; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -278,7 +279,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   __cuda_callable__ Result initialValue() { return ( Result ) 0; };
+   static constexpr Result initialValue() { return 0; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -307,7 +308,7 @@ public:
       this->p = p;
    }
 
-   __cuda_callable__ Result initialValue() { return ( Result ) 0; };
+   static constexpr Result initialValue() { return 0; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -337,7 +338,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionLogicalAnd< Result >;
 
-   __cuda_callable__ Result initialValue() { return ( Result ) true; };
+   static constexpr Result initialValue() { return true; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -359,7 +360,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionLogicalAnd< Result >;
 
-   __cuda_callable__ Result initialValue() { return ( Result ) false; };
+   static constexpr Result initialValue() { return false; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -381,7 +382,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   __cuda_callable__ Result initialValue() { return ( Result ) 0; };
+   static constexpr Result initialValue() { return 0; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -403,7 +404,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   __cuda_callable__ Result initialValue() { return ( Result ) 0; };
+   static constexpr Result initialValue() { return 0; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -425,7 +426,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMin< Result >;
 
-   __cuda_callable__ Result initialValue() { return MaxValue< Result>(); };
+   static constexpr Result initialValue() { return std::numeric_limits< Result >::max(); };
 
    template< typename Index >
    __cuda_callable__ void
@@ -447,7 +448,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMax< Result >;
 
-   __cuda_callable__ Result initialValue() { return ( Result ) 0; };
+   static constexpr Result initialValue() { return std::numeric_limits< Result >::lowest(); };
 
    template< typename Index >
    __cuda_callable__ void
@@ -469,7 +470,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   __cuda_callable__ Result initialValue() { return ( Result ) 0; };
+   static constexpr Result initialValue() { return 0; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -491,7 +492,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMin< Result >;
 
-   __cuda_callable__ Result initialValue() { return MaxValue< Result>(); };
+   static constexpr Result initialValue() { return std::numeric_limits< Result >::max(); };
 
    template< typename Index >
    __cuda_callable__ void
@@ -513,7 +514,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionMax< Result >;
 
-   __cuda_callable__ Result initialValue() { return ( Result ) 0; };
+   static constexpr Result initialValue() { return 0; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -535,7 +536,7 @@ public:
    using ResultType = Result;
    using LaterReductionOperation = ParallelReductionSum< Result >;
 
-   __cuda_callable__ Result initialValue() { return ( Result ) 0; };
+   static constexpr Result initialValue() { return 0; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -563,7 +564,7 @@ public:
       this->p = p;
    }
 
-   __cuda_callable__ Result initialValue() { return ( Result ) 0; };
+   static constexpr Result initialValue() { return 0; };
 
    template< typename Index >
    __cuda_callable__ void
@@ -582,61 +583,58 @@ protected:
 template< typename Data, typename Result = bool >
 class ParallelReductionContainsValue : public ParallelReductionLogicalOr< Result >
 {
-   public:
-      using DataType1 = Data;
-      using DataType2 = Data;
-      using ResultType = Result;
-      using LaterReductionOperation = ParallelReductionLogicalOr< Result >;
+public:
+   using DataType1 = Data;
+   using DataType2 = Data;
+   using ResultType = Result;
+   using LaterReductionOperation = ParallelReductionLogicalOr< Result >;
 
-      template< typename Index >
-      __cuda_callable__ void
-      firstReduction( ResultType& result,
-                      const Index& index,
-                      const DataType1* data1,
-                      const DataType2* data2 )
-      {
-         result = result || ( data1[ index ] == value );
-      }
-      
-      void setValue( const Data& v )
-      {
-         this->value = v;
-      }
-      
-   protected:
-      Data value;
+   template< typename Index >
+   __cuda_callable__ void
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
+   {
+      result = result || ( data1[ index ] == value );
+   }
+
+   void setValue( const Data& v )
+   {
+      this->value = v;
+   }
+
+protected:
+   Data value;
 };
 
 template< typename Data, typename Result = bool >
 class ParallelReductionContainsOnlyValue : public ParallelReductionLogicalAnd< Result >
 {
-   public:
-      using DataType1 = Data;
-      using DataType2 = Data;
-      using ResultType = Result;
-      using LaterReductionOperation = ParallelReductionLogicalAnd< Result >;
+public:
+   using DataType1 = Data;
+   using DataType2 = Data;
+   using ResultType = Result;
+   using LaterReductionOperation = ParallelReductionLogicalAnd< Result >;
 
-      template< typename Index >
-      __cuda_callable__ void
-      firstReduction( ResultType& result,
-                      const Index& index,
-                      const DataType1* data1,
-                      const DataType2* data2 )
-      {
-         result = result && ( data1[ index ] == value );
-      }
-      
-      void setValue( const Data& v )
-      {
-         this->value = v;
-      }
-      
-   protected:
-      Data value;
+   template< typename Index >
+   __cuda_callable__ void
+   firstReduction( ResultType& result,
+                   const Index& index,
+                   const DataType1* data1,
+                   const DataType2* data2 )
+   {
+      result = result && ( data1[ index ] == value );
+   }
+
+   void setValue( const Data& v )
+   {
+      this->value = v;
+   }
+
+protected:
+   Data value;
 };
-
-
-
 
 } // namespace Algorithms
 } // namespace Containers

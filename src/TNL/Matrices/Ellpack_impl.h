@@ -540,11 +540,11 @@ void Ellpack< Real, Device, Index >::getTransposition( const Ellpack< Real2, Dev
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-bool Ellpack< Real, Device, Index > :: performSORIteration( const Vector& b,
-                                                                           const IndexType row,
-                                                                           Vector& x,
-                                                                           const RealType& omega ) const
+   template< typename Vector1, typename Vector2 >
+bool Ellpack< Real, Device, Index > :: performSORIteration( const Vector1& b,
+                                                            const IndexType row,
+                                                            Vector2& x,
+                                                            const RealType& omega ) const
 {
    TNL_ASSERT( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row
@@ -572,6 +572,46 @@ bool Ellpack< Real, Device, Index > :: performSORIteration( const Vector& b,
       return false;
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
+   return true;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vector >
+bool
+Ellpack< Real, Device, Index >::
+performJacobiIteration( const Vector& b,
+                        const IndexType row,
+                        const Vector& old_x,
+                        Vector& x,
+                        const RealType& omega ) const
+{
+   TNL_ASSERT( row >=0 && row < this->getRows(),
+               std::cerr << "row = " << row << " this->getRows() = " << this->getRows() << std::endl );
+
+   RealType diagonalValue( 0.0 );
+   RealType sum( 0.0 );
+
+   IndexType i = DeviceDependentCode::getRowBegin( *this, row );
+   const IndexType rowEnd = DeviceDependentCode::getRowEnd( *this, row );
+   const IndexType step = DeviceDependentCode::getElementStep( *this );
+
+   IndexType column;
+   while( i < rowEnd && ( column = this->columnIndexes[ i ] ) < this->columns )
+   {
+	  if( column == row )
+		 diagonalValue = this->values[ i ];
+	  else
+		 sum += this->values[ i ] * old_x[ column ];
+	  i++;
+   }
+   if( diagonalValue == ( Real ) 0.0 )
+   {
+	  std::cerr << "There is zero on the diagonal in " << row << "-th row of the matrix. I cannot perform the Jacobi iteration." << std::endl;
+	  return false;
+   }
+   x[ row ] = ( 1.0 - omega ) * old_x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
    return true;
 }
 

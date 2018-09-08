@@ -1,6 +1,6 @@
-if( WITH_TOOLS STREQUAL "yes" )
+if( WITH_PYTHON STREQUAL "yes" )
    ADD_SUBDIRECTORY( Python )
-endif( WITH_TOOLS STREQUAL "yes" )
+endif( WITH_PYTHON STREQUAL "yes" )
 
 ADD_SUBDIRECTORY( TNL )
 

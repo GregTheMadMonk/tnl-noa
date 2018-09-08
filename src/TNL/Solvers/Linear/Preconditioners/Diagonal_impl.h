@@ -17,7 +17,7 @@
 namespace TNL {
 namespace Solvers {
 namespace Linear {
-namespace Preconditioners {   
+namespace Preconditioners {
 
 #ifdef HAVE_CUDA
 template< typename Real, typename Index, typename Matrix >
@@ -49,37 +49,36 @@ __global__ void elementwiseVectorDivisionKernel( const Real* left,
 }
 #endif
 
-template< typename Real, typename Device, typename Index >
-   template< typename MatrixPointer >
+template< typename Matrix >
 void
-Diagonal< Real, Device, Index >::
-update( const MatrixPointer& matrix )
+Diagonal< Matrix >::
+update( const MatrixPointer& matrixPointer )
 {
 //  std::cout << getType() << "->setMatrix()" << std::endl;
 
-   TNL_ASSERT_GT( matrix->getRows(), 0, "empty matrix" );
-   TNL_ASSERT_EQ( matrix->getRows(), matrix->getColumns(), "matrix must be square" );
+   TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
+   TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
 
-   if( diagonal.getSize() != matrix->getRows() )
-      diagonal.setSize( matrix->getRows() );
+   if( diagonal.getSize() != matrixPointer->getRows() )
+      diagonal.setSize( matrixPointer->getRows() );
 
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
       for( int i = 0; i < diagonal.getSize(); i++ ) {
-         diagonal[ i ] = matrix->getElement( i, i );
+         diagonal[ i ] = matrixPointer->getElement( i, i );
       }
    }
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      const Index& size = diagonal.getSize();
+      const IndexType& size = diagonal.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
-      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
+      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
       Devices::Cuda::synchronizeDevice();
       matrixDiagonalToVectorKernel<<< cudaBlocks, cudaBlockSize >>>(
-            &matrix.template getData< Devices::Cuda >(),
+            &matrixPointer.template getData< Devices::Cuda >(),
             diagonal.getData(),
             size );
       TNL_CHECK_CUDA_DEVICE;
@@ -87,11 +86,10 @@ update( const MatrixPointer& matrix )
    }
 }
 
-template< typename Real, typename Device, typename Index >
-   template< typename Vector1, typename Vector2 >
+template< typename Matrix >
 bool
-Diagonal< Real, Device, Index >::
-solve( const Vector1& b, Vector2& x ) const
+Diagonal< Matrix >::
+solve( ConstVectorViewType b, VectorViewType x ) const
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
@@ -102,10 +100,10 @@ solve( const Vector1& b, Vector2& x ) const
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      const Index& size = diagonal.getSize();
+      const IndexType& size = diagonal.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
-      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
+      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
       elementwiseVectorDivisionKernel<<< cudaBlocks, cudaBlockSize >>>(
             b.getData(),

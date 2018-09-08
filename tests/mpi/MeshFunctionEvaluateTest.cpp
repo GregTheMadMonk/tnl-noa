@@ -21,7 +21,7 @@ using namespace std;
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 #include <TNL/Timer.h>
-#include  <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 
 //#define DIMENSION 3
 //#define OUTPUT 
@@ -111,8 +111,8 @@ int main ( int argc, char *argv[])
    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-   SharedPointer<MeshType> gridptr;
-   SharedPointer<MeshFunctionType> meshFunctionptr;
+   Pointers::SharedPointer<MeshType> gridptr;
+   Pointers::SharedPointer<MeshFunctionType> meshFunctionptr;
    MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
    MeshFunctionEvaluator< MeshFunctionType, ConstFunctionType > constFunctionEvaluator;
  
@@ -124,8 +124,8 @@ int main ( int argc, char *argv[])
   
    meshFunctionptr->bind(gridptr,dof);  
   
-   SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
-   SharedPointer< ConstFunctionType, Host > constFunctionPtr; 
+   Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+   Pointers::SharedPointer< ConstFunctionType, Host > constFunctionPtr; 
    
   
   

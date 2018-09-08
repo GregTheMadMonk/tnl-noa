@@ -13,7 +13,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Logger.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Solvers/PDE/PDESolver.h>
 #include <TNL/Solvers/PDE/MeshDependentTimeSteps.h>
 
@@ -22,10 +22,9 @@
 
 namespace TNL {
 namespace Solvers {
-namespace PDE {   
+namespace PDE {
 
 template< typename Problem,
-          typename DiscreteSolver,
           typename TimeStepper >
 class TimeDependentPDESolver
    : public PDESolver< typename Problem::RealType, 
@@ -42,10 +41,10 @@ class TimeDependentPDESolver
       using ProblemType = Problem;
       typedef typename ProblemType::MeshType MeshType;
       typedef typename ProblemType::DofVectorType DofVectorType;
-      typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
-      typedef SharedPointer< MeshType, DeviceType > MeshPointer;
-      typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-      typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
+      typedef typename ProblemType::CommonDataType CommonDataType;
+      typedef typename ProblemType::CommonDataPointer CommonDataPointer;
+      typedef Pointers::SharedPointer< MeshType, DeviceType > MeshPointer;
+      typedef Pointers::SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
       typedef IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > SolverMonitorType;
       
       static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
@@ -91,12 +90,10 @@ class TimeDependentPDESolver
 
       DofVectorPointer dofsPointer;
 
-      MeshDependentDataPointer meshDependentDataPointer;
+      CommonDataPointer commonDataPointer;
 
       TimeStepper timeStepper;
-      
-      DiscreteSolver discreteSolver;
-      
+
       ProblemType* problem;
 
       RealType initialTime, finalTime, snapshotPeriod, timeStep;

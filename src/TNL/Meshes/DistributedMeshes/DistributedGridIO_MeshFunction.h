@@ -50,7 +50,7 @@ class DistributedGridIO<Functions::MeshFunction<MeshType>,LocalCopy,Device>
         CoordinatesType localSize=distrGrid->getLocalSize();
         CoordinatesType localBegin=distrGrid->getLocalBegin();
  
-        SharedPointer<MeshType> newMesh;
+        Pointers::SharedPointer<MeshType> newMesh;
         newMesh->setDimensions(localSize);
         newMesh->setSpaceSteps(spaceSteps);
         CoordinatesType newOrigin;
@@ -96,7 +96,7 @@ class DistributedGridIO<Functions::MeshFunction<MeshType>,LocalCopy,Device>
         CoordinatesType localSize=distrGrid->getLocalSize();
         CoordinatesType localBegin=distrGrid->getLocalBegin();
 
-        SharedPointer<MeshType> newMesh;
+        Pointers::SharedPointer<MeshType> newMesh;
         newMesh->setDimensions(localSize);
         newMesh->setSpaceSteps(spaceSteps);
         CoordinatesType newOrigin;

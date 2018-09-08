@@ -18,7 +18,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Matrices/Dense.h>
 #include <TNL/Matrices/Tridiagonal.h>
 #include <TNL/Matrices/Multidiagonal.h>
@@ -31,10 +31,8 @@
 #include <TNL/Solvers/Linear/CG.h>
 #include <TNL/Solvers/Linear/BICGStab.h>
 #include <TNL/Solvers/Linear/TFQMR.h>
-#include <TNL/Solvers/Linear/LinearResidueGetter.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 
-using namespace std;
 using namespace TNL;
 using namespace TNL::Matrices;
 
@@ -67,22 +65,21 @@ void configSetup( Config::ConfigDescription& config )
 
 template< typename Solver >
 bool benchmarkSolver( const Config::ParameterContainer& parameters,
-                      SharedPointer< typename Solver::MatrixType >& matrix)
+                      Pointers::SharedPointer<  typename Solver::MatrixType >& matrix)
 {
    typedef typename Solver::MatrixType MatrixType;
    typedef typename MatrixType::RealType RealType;
    typedef typename MatrixType::DeviceType DeviceType;
    typedef typename MatrixType::IndexType IndexType;
    typedef Containers::Vector< RealType, DeviceType, IndexType > VectorType;
-   typedef SharedPointer< VectorType > VectorPointer;
-   typedef SharedPointer< MatrixType > MatrixPointer;
+   typedef Pointers::SharedPointer<  MatrixType > MatrixPointer;
 
-   VectorPointer x, y, b;
-   x->setSize( matrix->getColumns() );
-   x->setValue( 1.0 / ( RealType ) matrix->getColumns() );
-   y->setSize( matrix->getColumns() );
-   b->setSize( matrix->getRows() );
-   matrix->vectorProduct( *x, *b );
+   VectorType x, y, b;
+   x.setSize( matrix->getColumns() );
+   x.setValue( 1.0 / ( RealType ) matrix->getColumns() );
+   y.setSize( matrix->getColumns() );
+   b.setSize( matrix->getRows() );
+   matrix->vectorProduct( x, b );
 
    Solver solver;
    Solvers::IterativeSolverMonitor< RealType, IndexType > monitor;
@@ -90,8 +87,8 @@ bool benchmarkSolver( const Config::ParameterContainer& parameters,
    solver.setSolverMonitor( monitor );
    solver.setMatrix( matrix );
    solver.setConvergenceResidue( 1.0e-6 );
-   solver.template solve< VectorType, Solvers::Linear::LinearResidueGetter< MatrixType, VectorType > >( *b, *y );
-   cout << endl;
+   solver.solve( b, y );
+   std::cout << std::endl;
    return true;
 }
 
@@ -136,7 +133,7 @@ template< typename Matrix >
 bool resolveLinearSolver( const Config::ParameterContainer& parameters )
 {
    const String& solver = parameters.getParameter< String >( "solver" );
-   typedef SharedPointer< Matrix > MatrixPointer;
+   typedef Pointers::SharedPointer<  Matrix > MatrixPointer;
 
    MatrixPointer matrix;
    if( ! readMatrix( parameters, *matrix ) )

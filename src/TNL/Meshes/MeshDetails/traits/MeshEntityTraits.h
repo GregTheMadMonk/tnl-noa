@@ -31,28 +31,6 @@ template< typename MeshConfig, typename Device, typename EntityTopology > class 
 template< typename MeshConfig, typename EntityTopology > class MeshEntityReferenceOrientation;
 
 template< typename MeshConfig,
-          typename EntityDimensionTag,
-          typename SuperDimensionTag = DimensionTag< MeshConfig::meshDimension > >
-class MeshEntityOrientationNeeded
-{
-   using SuperentityTopology = typename MeshTraits< MeshConfig >::template EntityTraits< SuperDimensionTag::value >::EntityTopology;
-
-   static constexpr bool previousSuperDimensionValue = MeshEntityOrientationNeeded< MeshConfig, EntityDimensionTag, typename SuperDimensionTag::Decrement >::value;
-   static constexpr bool thisSuperDimensionValue = MeshTraits< MeshConfig >::template SubentityTraits< SuperentityTopology, EntityDimensionTag::value >::orientationEnabled;
-
-public:
-   static constexpr bool value = ( previousSuperDimensionValue || thisSuperDimensionValue );
-};
-
-template< typename MeshConfig, typename DimensionTag >
-class MeshEntityOrientationNeeded< MeshConfig, DimensionTag, DimensionTag >
-{
-public:
-   static constexpr bool value = false;
-};
-
-
-template< typename MeshConfig,
           typename DimensionTag >
 struct EntityTopologyGetter
 {
@@ -88,7 +66,7 @@ public:
    using ReferenceOrientationArrayType = Containers::Array< ReferenceOrientationType, Device, GlobalIndexType >;
 
    static constexpr bool storageEnabled = MeshConfig::entityStorage( Dimension );
-   static constexpr bool orientationNeeded = MeshEntityOrientationNeeded< MeshConfig, DimensionTag< Dimension > >::value;
+   static constexpr bool orientationNeeded = 0 < Dimension && Dimension < MeshConfig::meshDimension;
 };
 
 } // namespace Meshes

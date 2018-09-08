@@ -54,24 +54,24 @@ TEST(CutDistributedMeshFunction, 2D_Data)
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
 
-   SharedPointer<MeshType> originalGrid;
+   Pointers::SharedPointer<MeshType> originalGrid;
    distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 
 
-   SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
    MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
-   SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+   Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
    meshFunctionptr->template synchronize<CommunicatorType>();
  
    //Prepare Mesh Function parts for Cut 
    CutDistributedMeshType cutDistributedGrid;
-   SharedPointer<CutMeshType> cutGrid;
+   Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
    bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
@@ -133,24 +133,24 @@ TEST(CutDistributedMeshFunction, 3D_1_Data)
    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-   SharedPointer<MeshType> originalGrid;
+   Pointers::SharedPointer<MeshType> originalGrid;
    distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 
 
-   SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
    MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
-   SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+   Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
    meshFunctionptr->template synchronize<CommunicatorType>();
 
    //Prepare Mesh Function parts for Cut 
    CutDistributedMeshType cutDistributedGrid;
-   SharedPointer<CutMeshType> cutGrid;
+   Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
    bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
@@ -212,24 +212,24 @@ TEST(CutDistributedMeshFunction, 3D_2_Data)
    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-   SharedPointer<MeshType> originalGrid;
+   Pointers::SharedPointer<MeshType> originalGrid;
    distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 
 
-   SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
    MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
-   SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+   Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
    meshFunctionptr->template synchronize<CommunicatorType>();
 
    //Prepare Mesh Function parts for Cut 
    CutDistributedMeshType cutDistributedGrid;
-   SharedPointer<CutMeshType> cutGrid;
+   Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
    bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
@@ -297,22 +297,22 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-   SharedPointer<MeshType> originalGrid;
+   Pointers::SharedPointer<MeshType> originalGrid;
    distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 
 
-   SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
    MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
-   SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+   Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
    //Prepare Mesh Function parts for Cut 
    CutDistributedMeshType cutDistributedGrid;
-   SharedPointer<CutMeshType> cutGrid;
+   Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
    bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
@@ -380,22 +380,22 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-   SharedPointer<MeshType> originalGrid;
+   Pointers::SharedPointer<MeshType> originalGrid;
    distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 
 
-   SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
    MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
-   SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+   Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
    //Prepare Mesh Function parts for Cut 
    CutDistributedMeshType cutDistributedGrid;
-   SharedPointer<CutMeshType> cutGrid;
+   Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
    bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
@@ -467,22 +467,22 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-   SharedPointer<MeshType> originalGrid;
+   Pointers::SharedPointer<MeshType> originalGrid;
    distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 
 
-   SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
    MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
-   SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+   Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
    //Prepare Mesh Function parts for Cut 
    CutDistributedMeshType cutDistributedGrid;
-   SharedPointer<CutMeshType> cutGrid;
+   Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
    bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
@@ -552,22 +552,22 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-   SharedPointer<MeshType> originalGrid;
+   Pointers::SharedPointer<MeshType> originalGrid;
    distributedGrid.setupGrid(*originalGrid);
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0); 
 
-   SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
    MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
-   SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+   Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
    //Prepare Mesh Function parts for Cut 
    CutDistributedMeshType cutDistributedGrid;
-   SharedPointer<CutMeshType> cutGrid;
+   Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
    bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
@@ -600,7 +600,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
 
    if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
    {
-       SharedPointer<CutMeshType> globalCutGrid;
+       Pointers::SharedPointer<CutMeshType> globalCutGrid;
        MeshFunction<CutMeshType> loadMeshFunctionptr;
 
        globalCutGrid->setDimensions(typename CutMeshType::CoordinatesType(10));

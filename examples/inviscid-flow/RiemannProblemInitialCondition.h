@@ -30,7 +30,7 @@ class RiemannProblemInitialCondition
       static const int Dimensions = MeshType::getMeshDimension();
       typedef Containers::StaticVector< Dimensions, RealType > PointType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
-      typedef SharedPointer< MeshFunctionType > MeshFunctionPointer;
+      typedef Pointers::SharedPointer<  MeshFunctionType > MeshFunctionPointer;
       typedef Functions::VectorField< Dimensions, MeshType > VectorFieldType;
       
       RiemannProblemInitialCondition()
@@ -149,7 +149,7 @@ class RiemannProblemInitialCondition
          typedef Functions::Analytic::VectorNorm< Dimensions, RealType > VectorNormType;
          typedef Operators::Analytic::Sign< Dimensions, RealType > SignType;
          typedef Functions::OperatorFunction< SignType, VectorNormType > InitialConditionType;
-         typedef SharedPointer< InitialConditionType, DeviceType > InitialConditionPointer;
+         typedef Pointers::SharedPointer<  InitialConditionType, DeviceType > InitialConditionPointer;
          
          InitialConditionPointer initialCondition;
          initialCondition->getFunction().setCenter( center );

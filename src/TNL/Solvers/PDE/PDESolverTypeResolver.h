@@ -15,38 +15,33 @@
 
 namespace TNL {
 namespace Solvers {
-namespace PDE { 
-   
+namespace PDE {
+
 template< typename Problem,
-          typename DiscreteSolver,
           typename TimeStepper,
           bool TimeDependent = Problem::isTimeDependent() >
 class PDESolverTypeResolver
 {
 };
-  
+
 template< typename Problem,
-          typename DiscreteSolver,
           typename TimeStepper >
-class PDESolverTypeResolver< Problem, DiscreteSolver, TimeStepper, true >
+class PDESolverTypeResolver< Problem, TimeStepper, true >
 {
    public:
-      
-      using SolverType = TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >;
+
+      using SolverType = TimeDependentPDESolver< Problem, TimeStepper >;
 };
 
 template< typename Problem,
-          typename DiscreteSolver,
           typename TimeStepper >
-class PDESolverTypeResolver< Problem, DiscreteSolver, TimeStepper, false >
+class PDESolverTypeResolver< Problem, TimeStepper, false >
 {
    public:
-      
-      using SolverType = TimeIndependentPDESolver< Problem, DiscreteSolver >;
+
+      using SolverType = TimeIndependentPDESolver< Problem >;
 };
-   
- 
+
 } // namespace PDE
 } // namespace Solvers
 } // namespace TNL
-

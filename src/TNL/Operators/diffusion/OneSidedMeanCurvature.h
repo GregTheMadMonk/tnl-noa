@@ -38,7 +38,7 @@ class OneSidedMeanCurvature
    public:
  
       typedef Mesh MeshType;
-      typedef SharedPointer< MeshType > MeshPointer;
+      typedef Pointers::SharedPointer<  MeshType > MeshPointer;
       typedef Real RealType;
       typedef Index IndexType;
       typedef FDMGradientNorm< MeshType, ForwardFiniteDifference, RealType, IndexType > GradientNorm;

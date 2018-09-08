@@ -48,7 +48,7 @@ class TestDistributedGridMPIIO{
 
     static void TestSave()
     {
-        SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
+        Pointers::SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
         MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
         
         //save distributed meshfunction into file
@@ -58,7 +58,7 @@ class TestDistributedGridMPIIO{
         PointType globalProportions;
         globalProportions.setValue(50);
 
-        SharedPointer<MeshType> globalGrid;
+        Pointers::SharedPointer<MeshType> globalGrid;
         globalGrid->setDimensions(globalProportions);
         globalGrid->setDomain(globalOrigin,globalProportions);
         
@@ -70,8 +70,8 @@ class TestDistributedGridMPIIO{
 
         ///std::cout << distributedGrid.printProcessDistr() <<std::endl;
 
-        SharedPointer<MeshType> gridptr;
-        SharedPointer<MeshFunctionType> meshFunctionptr;
+        Pointers::SharedPointer<MeshType> gridptr;
+        Pointers::SharedPointer<MeshFunctionType> meshFunctionptr;
         distributedGrid.setupGrid(*gridptr);
        
         DofType dof(gridptr->template getEntitiesCount< Cell >());
@@ -88,13 +88,13 @@ class TestDistributedGridMPIIO{
        {
             DofType globalEvaluatedDof(globalGrid->template getEntitiesCount< Cell >());
 
-            SharedPointer<MeshFunctionType> globalEvaluatedMeshFunctionptr;
+            Pointers::SharedPointer<MeshFunctionType> globalEvaluatedMeshFunctionptr;
             globalEvaluatedMeshFunctionptr->bind(globalGrid,globalEvaluatedDof);
             linearFunctionEvaluator.evaluateAllEntities(globalEvaluatedMeshFunctionptr , linearFunctionPtr);
 
 
             DofType loadDof(globalGrid->template getEntitiesCount< Cell >());
-            SharedPointer<MeshFunctionType> loadMeshFunctionptr;
+            Pointers::SharedPointer<MeshFunctionType> loadMeshFunctionptr;
             loadMeshFunctionptr->bind(globalGrid,loadDof);
 
             loadDof.setValue(-1);
@@ -113,7 +113,7 @@ class TestDistributedGridMPIIO{
     
     static void TestLoad()
     {
-        SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
+        Pointers::SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
         MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
 
         //Crete distributed grid            
@@ -123,7 +123,7 @@ class TestDistributedGridMPIIO{
         PointType globalProportions;
         globalProportions.setValue(50);
 
-        SharedPointer<MeshType> globalGrid;
+        Pointers::SharedPointer<MeshType> globalGrid;
         globalGrid->setDimensions(globalProportions);
         globalGrid->setDomain(globalOrigin,globalProportions);
 
@@ -142,7 +142,7 @@ class TestDistributedGridMPIIO{
         {   
             DofType saveDof(globalGrid->template getEntitiesCount< Cell >());
 
-            SharedPointer<MeshFunctionType> saveMeshFunctionptr;
+            Pointers::SharedPointer<MeshFunctionType> saveMeshFunctionptr;
             saveMeshFunctionptr->bind(globalGrid,saveDof);
             linearFunctionEvaluator.evaluateAllEntities(saveMeshFunctionptr , linearFunctionPtr);
       
@@ -152,8 +152,8 @@ class TestDistributedGridMPIIO{
             file.close();
         }
 
-        SharedPointer<MeshType> loadGridptr;
-        SharedPointer<MeshFunctionType> loadMeshFunctionptr;
+        Pointers::SharedPointer<MeshType> loadGridptr;
+        Pointers::SharedPointer<MeshFunctionType> loadMeshFunctionptr;
         distributedGrid.setupGrid(*loadGridptr);
         
         DofType loadDof(loadGridptr->template getEntitiesCount< Cell >());
@@ -163,8 +163,8 @@ class TestDistributedGridMPIIO{
         DistributedGridIO<MeshFunctionType,MpiIO> ::load(FileName, *loadMeshFunctionptr );
         loadMeshFunctionptr->template synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
 
-        SharedPointer<MeshType> evalGridPtr;
-        SharedPointer<MeshFunctionType> evalMeshFunctionptr;
+        Pointers::SharedPointer<MeshType> evalGridPtr;
+        Pointers::SharedPointer<MeshFunctionType> evalMeshFunctionptr;
         distributedGrid.setupGrid(*evalGridPtr);
         
         DofType evalDof(evalGridPtr->template getEntitiesCount< Cell >());

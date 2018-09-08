@@ -1,11 +1,11 @@
 #!/bin/bash
 
 device="cuda"
-dofSize=128
+dofSize=256
 dimension=2;
 proportions=2
-finalTime=1.0e-1
-timeStep=1.0e-5
+finalTime=1.0e-4
+timeStep=1.0e-8
 
 analyticFunction="exp-bump"
 sigma=0.25
@@ -23,14 +23,73 @@ tnl-grid-setup --dimensions ${dimension} \
                
 tnl-init --mesh mesh.tnl \
          --test-function ${analyticFunction} \
-         --output-file init.tnl \
+         --output-file initial.tnl \
          --sigma ${sigma}
 
 #valgrind --tool=memcheck \
+#echo "==================================================================="
+#echo "================ Heat equation solver ============================="
+#echo "==================================================================="
+#tnl-heat-equation --device ${device} \
+#                 --time-discretisation explicit \
+#                  --boundary-conditions-type dirichlet \
+#                  --boundary-conditions-constant 0 \
+#                  --discrete-solver euler \
+#                  --snapshot-period ${finalTime} \
+#                  --final-time ${finalTime} \
+#                  --time-step ${timeStep} \
+#                  --max-iterations 100000000 \
+#                  --refresh-rate 1000 \
+#                  --openmp-enabled false \
+#                  --verbose 0
+#
+#cat log.txt                  
+
+#echo "==================================================================="
+#echo "=================== Pure-C benchcmark ============================="
+#echo "==================================================================="
+#
+#tnl-benchmark-heat-equation --device ${device} \
+#                 --time-discretisation explicit \
+#                  --boundary-conditions-type dirichlet \
+#                  --boundary-conditions-constant 0 \
+#                  --discrete-solver euler \
+#                  --snapshot-period ${finalTime} \
+#                  --final-time ${finalTime} \
+#                  --time-step ${timeStep} \
+#                  --max-iterations 100000000 \
+#                  --refresh-rate 1000 \
+#                  --openmp-enabled false \
+#                  --verbose 0 \
+#                  --cuda-kernel-type pure-c
+#
+#cat log.txt                  
+
+#echo "==================================================================="
+#echo "=============== Templated compact benchmark ======================="
+#echo "==================================================================="
+#
+#tnl-benchmark-heat-equation --device ${device} \
+#                 --time-discretisation explicit \
+#                  --boundary-conditions-type dirichlet \
+#                  --boundary-conditions-constant 0 \
+#                  --discrete-solver euler \
+#                  --snapshot-period ${finalTime} \
+#                  --final-time ${finalTime} \
+#                  --time-step ${timeStep} \
+#                  --max-iterations 100000000 \
+#                  --refresh-rate 1000 \
+#                  --openmp-enabled false \
+#                  --verbose 0 \
+#                  --cuda-kernel-type templated-compact
+#
+#cat log.txt                  
+
 echo "==================================================================="
-echo "================ Heat equation solver ============================="
+echo "=================== Templated benchmark ==========================="
 echo "==================================================================="
-tnl-heat-equation --device ${device} \
+
+tnl-benchmark-heat-equation --device ${device} \
                  --time-discretisation explicit \
                   --boundary-conditions-type dirichlet \
                   --boundary-conditions-constant 0 \
@@ -40,24 +99,12 @@ tnl-heat-equation --device ${device} \
                   --time-step ${timeStep} \
                   --max-iterations 100000000 \
                   --refresh-rate 1000 \
-                  --openmp-enabled false
+                  --openmp-enabled false \
+                  --verbose 0 \
+                  --cuda-kernel-type templated
 
-echo "==================================================================="
-echo "================ Heat equation benchmark =========================="
-echo "==================================================================="
-tnl-benchmark-heat-equation --device ${device} \
-                  --cuda-kernel-type templated-compact \
-                  --time-discretisation explicit \
-                  --boundary-conditions-type dirichlet \
-                  --boundary-conditions-constant 0 \
-                  --discrete-solver euler \
-                  --snapshot-period ${finalTime} \
-                  --final-time ${finalTime} \
-                  --time-step ${timeStep} \
-                  --max-iterations 100000000 \
-                  --refresh-rate 1000 \
-                  --openmp-enabled false
-             
+cat log.txt                  
+
 echo "==================================================================="
 echo "=============== Heat equation pure C benchmark ===================="
 echo "==================================================================="
@@ -70,15 +117,6 @@ tnl-benchmark-simple-heat-equation --device ${device} \
                                    --time-step ${timeStep} \
                                    --final-time ${finalTime}       
 
-#tnl-benchmark-simple-heat-equation-bug --device ${device} \
-#                                   --domain-x-size 2 \
-#                                   --domain-y-size 2 \
-#                                   --grid-x-size ${dofSize} \
-#                                   --grid-y-size ${dofSize} \
-#                                   --sigma ${sigma} \
-#                                   --time-step ${timeStep} \
-#                                   --final-time ${finalTime}       
-                                   
 tnl-diff --input-files simple-heat-equation-result.tnl u-00001.tnl
 
 cat tnl-diff.log                                         

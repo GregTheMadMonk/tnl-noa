@@ -12,7 +12,7 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Functions/MeshFunction.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include "transportEquationProblem.h"
 
 using namespace TNL::Problems;
@@ -22,10 +22,10 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
+          typename Communicator,
           typename DifferentialOperator >
 class transportEquationProblemEoc:
-public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >
+public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >
 {
    public:
 
@@ -33,22 +33,20 @@ public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommTyp
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator > BaseType;
-      typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
-      typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
-      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator > BaseType;
+      typedef Pointers::SharedPointer<  MeshFunctionType, DeviceType > MeshFunctionPointer;
+      typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;
+      typedef Pointers::SharedPointer<  BoundaryCondition > BoundaryConditionPointer;
+      typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
       typedef typename DifferentialOperator::VelocityFieldType VelocityFieldType;
-      typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
+      typedef Pointers::SharedPointer<  VelocityFieldType, DeviceType > VelocityFieldPointer;
       
       
-      typedef CommType CommunicatorType;
+      typedef Communicator CommunicatorType;
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
-      using typename BaseType::MeshDependentDataType;
-      using typename BaseType::MeshDependentDataPointer; 
       
       //using BaseType::getExplicitUpdate;
       
@@ -56,36 +54,27 @@ public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, CommTyp
 
       String getPrologHeader() const;
 
-      bool setup( const MeshPointer& meshPointer,
-                  const Config::ParameterContainer& parameters,
+      bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" );
 
       bool setInitialCondition( const Config::ParameterContainer& parameters,
-                                const MeshPointer& mesh,
-                                DofVectorPointer& dofs,
-                                MeshDependentDataPointer& meshDependentData );
+                                DofVectorPointer& dofs );
 
       /*template< typename Matrix >
-      bool setupLinearSystem( const MeshPointer& mesh,
-                              Matrix& matrix );
+      bool setupLinearSystem( Matrix& matrix );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
-                         const MeshPointer& mesh,
-                         DofVectorPointer& dofs,
-                         MeshDependentDataPointer& meshDependentData );
+                         DofVectorPointer& dofs );
 
-      IndexType getDofs( const MeshPointer& mesh ) const;
+      IndexType getDofs() const;
 
-      void bindDofs( const MeshPointer& mesh,
-                     DofVectorPointer& dofs );
+      void bindDofs( DofVectorPointer& dofs );
 
       void getExplicitUpdate( const RealType& time,
-                           const RealType& tau,
-                           const MeshPointer& mesh,
-                           DofVectorPointer& _u,
-                           DofVectorPointer& _fu,
-                           MeshDependentDataPointer& meshDependentData );*/
+                              const RealType& tau,
+                              DofVectorPointer& _u,
+                              DofVectorPointer& _fu );*/
 
 
    protected:

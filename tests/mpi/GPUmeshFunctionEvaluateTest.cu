@@ -4,7 +4,7 @@
 #if defined(HAVE_MPI) && defined(HAVE_CUDA)
 
 #include <TNL/Timer.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Communicators/MpiCommunicator.h>
@@ -105,8 +105,8 @@ int main ( int argc, char *argv[])
    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
    
-   SharedPointer<MeshType> gridptr;
-   SharedPointer<MeshFunctionType> meshFunctionptr;
+   Pointers::SharedPointer<MeshType> gridptr;
+   Pointers::SharedPointer<MeshFunctionType> meshFunctionptr;
    MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
    MeshFunctionEvaluator< MeshFunctionType, ConstFunctionType > constFunctionEvaluator;
  
@@ -118,8 +118,8 @@ int main ( int argc, char *argv[])
   
   meshFunctionptr->bind(gridptr,dof);  
   
-  SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
-  SharedPointer< ConstFunctionType, Device > constFunctionPtr; 
+  Pointers::SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
+  Pointers::SharedPointer< ConstFunctionType, Device > constFunctionPtr; 
    
   setup.stop();
   

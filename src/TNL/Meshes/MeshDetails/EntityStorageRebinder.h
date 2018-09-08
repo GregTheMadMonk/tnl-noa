@@ -27,7 +27,7 @@
 
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/Mesh.h>
-#include <TNL/DevicePointer.h>
+#include <TNL/Pointers/DevicePointer.h>
 #include <TNL/ParallelFor.h>
 #include <TNL/StaticFor.h>
 

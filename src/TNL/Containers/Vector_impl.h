@@ -14,25 +14,7 @@
 #include <TNL/Containers/Algorithms/VectorOperations.h>
 
 namespace TNL {
-namespace Containers {   
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Vector< Real, Device, Index >::
-Vector()
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Vector< Real, Device, Index >::
-Vector( const Index size )
-{
-   this->setSize( size );
-}
-
+namespace Containers {
 
 template< typename Real,
           typename Device,
@@ -98,51 +80,6 @@ addElement( const IndexType i,
             const RealType& thisElementMultiplicator )
 {
    Algorithms::VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::
-operator = ( const Vector< Real, Device, Index >& vector )
-{
-   Containers::Array< Real, Device, Index >::operator = ( vector );
-   return ( *this );
-};
-
-template< typename Real,
-           typename Device,
-           typename Index >
-   template< typename VectorT >
-Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::
-operator = ( const VectorT& vector )
-{
-   Containers::Array< Real, Device, Index >::operator = ( vector );
-   return ( *this );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename VectorT >
-bool
-Vector< Real, Device, Index >::
-operator == ( const VectorT& vector ) const
-{
-   return Containers::Array< Real, Device, Index >::operator == ( vector );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename VectorT >
-bool
-Vector< Real, Device, Index >::
-operator != ( const VectorT& vector ) const
-{
-   return Containers::Array< Real, Device, Index >::operator != ( vector );
 }
 
 template< typename Real,

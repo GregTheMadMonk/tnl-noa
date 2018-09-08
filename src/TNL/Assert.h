@@ -90,7 +90,7 @@ printDiagnosticsHost( const char* assertion,
        << "Line: " << line << "\n"
        << "Diagnostics:\n" << diagnostics << std::endl;
 
-	PrintStackBacktrace;
+   PrintStackBacktrace;
 
    throw AssertionError( str.str() );
 }
@@ -113,7 +113,7 @@ printDiagnosticsHost( const char* assertion,
              << "Line: " << line << "\n"
              << "Diagnostics:\n" << diagnostics << std::endl;
 
-	PrintStackBacktrace;
+   PrintStackBacktrace;
 }
 #endif // TNL_THROW_ASSERTION_ERROR
 

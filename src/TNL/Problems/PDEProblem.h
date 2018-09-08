@@ -11,7 +11,8 @@
 #pragma once
 
 #include <TNL/Problems/Problem.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Problems/CommonData.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Matrices/SlicedEllpack.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 
@@ -33,16 +34,15 @@ class PDEProblem : public Problem< Real, Device, Index >
       using typename BaseType::IndexType;
 
       using MeshType = Mesh;
-      using MeshPointer = SharedPointer< MeshType, DeviceType >;
+      using MeshPointer = Pointers::SharedPointer< MeshType, DeviceType >;
       using DistributedMeshType = Meshes::DistributedMeshes::DistributedMesh< MeshType >;
       using SubdomainOverlapsType = typename DistributedMeshType::SubdomainOverlapsType;
       using DofVectorType = Containers::Vector< RealType, DeviceType, IndexType>;
-      using DofVectorPointer = SharedPointer< DofVectorType, DeviceType >;
+      using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
       using MatrixType = Matrices::SlicedEllpack< RealType, DeviceType, IndexType >;
       using CommunicatorType = Communicator;
-      
-      using MeshDependentDataType = Containers::Vector< RealType, DeviceType, IndexType >;
-      using MeshDependentDataPointer = SharedPointer< MeshDependentDataType, DeviceType >;
+      using CommonDataType = CommonData;
+      using CommonDataPointer = Pointers::SharedPointer< CommonDataType, DeviceType >;
 
       static constexpr bool isTimeDependent() { return true; };
       
@@ -60,6 +60,18 @@ class PDEProblem : public Problem< Real, Device, Index >
  
       bool writeEpilog( Logger& logger ) const;
       
+      void setMesh( MeshPointer& meshPointer);
+      
+      const MeshPointer& getMesh() const;
+      
+      MeshPointer& getMesh();
+
+      void setCommonData( CommonDataPointer& commonData );
+      
+      const CommonDataPointer& getCommonData() const;
+      
+      CommonDataPointer& getCommonData();
+
       // Width of the subdomain overlaps in case when all of them are the same
       virtual IndexType subdomainOverlapSize();
       
@@ -71,22 +83,12 @@ class PDEProblem : public Problem< Real, Device, Index >
                                  SubdomainOverlapsType& lower,
                                  SubdomainOverlapsType& upper );
 
-      bool setMeshDependentData( const MeshPointer& mesh,
-                                 MeshDependentDataPointer& meshDependentData );
-
-      void bindMeshDependentData( const MeshPointer& mesh,
-                                  MeshDependentDataPointer& meshDependentData );
-
       bool preIterate( const RealType& time,
                        const RealType& tau,
-                       const MeshPointer& meshPointer,
-                       DofVectorPointer& dofs,
-                       MeshDependentDataPointer& meshDependentData );
+                       DofVectorPointer& dofs );
  
-      void setExplicitBoundaryConditions( const RealType& time,
-                                          const MeshPointer& meshPointer,
-                                          DofVectorPointer& dofs,
-                                          MeshDependentDataPointer& meshDependentData );
+      void applyBoundaryConditions( const RealType& time,
+                                       DofVectorPointer& dofs );
 
       template< typename Matrix >
       void saveFailedLinearSystem( const Matrix& matrix,
@@ -95,11 +97,13 @@ class PDEProblem : public Problem< Real, Device, Index >
 
       bool postIterate( const RealType& time,
                         const RealType& tau,
-                        const MeshPointer& meshPointer,
-                        DofVectorPointer& dofs,
-                        MeshDependentDataPointer& meshDependentData );
+                        DofVectorPointer& dofs );
 
       Solvers::SolverMonitor* getSolverMonitor();
+      
+      MeshPointer meshPointer;
+      
+      CommonDataPointer commonDataPointer;
 };
 
 } // namespace Problems

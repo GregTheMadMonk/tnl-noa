@@ -11,7 +11,7 @@
 #pragma once
 
 #include "Sparse.h"
-#include <TNL/DevicePointer.h>
+#include <TNL/Pointers/DevicePointer.h>
 
 namespace TNL {
 namespace Matrices {

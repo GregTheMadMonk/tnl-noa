@@ -10,37 +10,25 @@
 
 #pragma once
 
-#include <math.h>
-#include <TNL/Object.h>
-#include <TNL/SharedPointer.h>
+#include "LinearSolver.h"
+
 #include <TNL/Containers/Vector.h>
-#include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
-#include <TNL/Solvers/IterativeSolver.h>
-#include <TNL/Solvers/Linear/LinearResidueGetter.h>
 
 namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Matrix,
-          typename Preconditioner = Preconditioners::Dummy< typename Matrix :: RealType,
-                                                            typename Matrix :: DeviceType,
-                                                            typename Matrix :: IndexType> >
+template< typename Matrix >
 class GMRES
-: public Object,
-  public IterativeSolver< typename Matrix :: RealType,
-                          typename Matrix :: IndexType >
+: public LinearSolver< Matrix >
 {
+   using Base = LinearSolver< Matrix >;
 public:
-   typedef typename Matrix::RealType RealType;
-   typedef typename Matrix::IndexType IndexType;
-   typedef typename Matrix::DeviceType DeviceType;
-   typedef Matrix MatrixType;
-   typedef Preconditioner PreconditionerType;
-   typedef SharedPointer< const MatrixType, DeviceType > MatrixPointer;
-   typedef SharedPointer< const PreconditionerType, DeviceType > PreconditionerPointer;
-
-   GMRES();
+   using RealType = typename Base::RealType;
+   using DeviceType = typename Base::DeviceType;
+   using IndexType = typename Base::IndexType;
+   using VectorViewType = typename Base::VectorViewType;
+   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
    String getType() const;
 
@@ -48,19 +36,11 @@ public:
                             const String& prefix = "" );
 
    bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" );
+               const String& prefix = "" ) override;
 
    void setRestarting( IndexType rest );
 
-   void setMatrix( const MatrixPointer& matrix );
-
-   void setPreconditioner( const PreconditionerPointer& preconditioner );
-
-   template< typename Vector,
-             typename ResidueGetter = LinearResidueGetter< Matrix, Vector > >
-   bool solve( const Vector& b, Vector& x );
-
-   ~GMRES();
+   bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
 protected:
    template< typename VectorT >
@@ -87,11 +67,11 @@ protected:
    Containers::Vector< RealType, DeviceType, IndexType > _r, w, _v, _M_tmp;
    Containers::Vector< RealType, Devices::Host, IndexType > _s, _cs, _sn, _H;
 
-   IndexType size, restarting_min, restarting_max, restarting_step_min, restarting_step_max;
-
-   MatrixPointer matrix;
-   
-   PreconditionerPointer preconditioner;
+   IndexType size = 0;
+   IndexType restarting_min = 10;
+   IndexType restarting_max = 10;
+   IndexType restarting_step_min = 3;
+   IndexType restarting_step_max = 3;
 };
 
 } // namespace Linear
@@ -99,49 +79,3 @@ protected:
 } // namespace TNL
 
 #include <TNL/Solvers/Linear/GMRES_impl.h>
-
-#include <TNL/Matrices/CSR.h>
-#include <TNL/Matrices/Ellpack.h>
-#include <TNL/Matrices/Multidiagonal.h>
-
-namespace TNL {
-namespace Solvers {
-namespace Linear {
-   
-/*extern template class GMRES< Matrices::CSR< float,  Devices::Host, int > >;
-extern template class GMRES< Matrices::CSR< double, Devices::Host, int > >;
-extern template class GMRES< Matrices::CSR< float,  Devices::Host, long int > >;
-extern template class GMRES< Matrices::CSR< double, Devices::Host, long int > >;*/
-
-/*extern template class GMRES< Ellpack< float,  Devices::Host, int > >;
-extern template class GMRES< Ellpack< double, Devices::Host, int > >;
-extern template class GMRES< Ellpack< float,  Devices::Host, long int > >;
-extern template class GMRES< Ellpack< double, Devices::Host, long int > >;
-
-extern template class GMRES< Multidiagonal< float,  Devices::Host, int > >;
-extern template class GMRES< Multidiagonal< double, Devices::Host, int > >;
-extern template class GMRES< Multidiagonal< float,  Devices::Host, long int > >;
-extern template class GMRES< Multidiagonal< double, Devices::Host, long int > >;*/
-
-
-#ifdef HAVE_CUDA
-// TODO: fix this - does not work with CUDA 5.5
-/*extern template class GMRES< CSR< float,  Devices::Cuda, int > >;
-extern template class GMRES< CSR< double, Devices::Cuda, int > >;
-extern template class GMRES< CSR< float,  Devices::Cuda, long int > >;
-extern template class GMRES< CSR< double, Devices::Cuda, long int > >;*/
-
-/*extern template class GMRES< Ellpack< float,  Devices::Cuda, int > >;
-extern template class GMRES< Ellpack< double, Devices::Cuda, int > >;
-extern template class GMRES< Ellpack< float,  Devices::Cuda, long int > >;
-extern template class GMRES< Ellpack< double, Devices::Cuda, long int > >;
-
-extern template class GMRES< tnlMutliDiagonalMatrix< float,  Devices::Cuda, int > >;
-extern template class GMRES< tnlMutliDiagonalMatrix< double, Devices::Cuda, int > >;
-extern template class GMRES< tnlMutliDiagonalMatrix< float,  Devices::Cuda, long int > >;
-extern template class GMRES< tnlMutliDiagonalMatrix< double, Devices::Cuda, long int > >;*/
-#endif
-
-} // namespace Linear
-} // namespace Solvers
-} // namespace TNL

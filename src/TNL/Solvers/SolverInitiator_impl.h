@@ -73,8 +73,6 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool SolverInitiator< ProblemSetter, ConfigTag > :: run( const Config::ParameterContainer& parameters )
 {
    const String& realType = parameters. getParameter< String >( "real-type" );
-   if( parameters. getParameter< int >( "verbose" ) )
-     std::cout << "Setting RealType to   ... " << realType << std::endl;
    if( realType == "float" )
       return SolverInitiatorRealResolver< ProblemSetter, float, ConfigTag >::run( parameters );
    if( realType == "double" )
@@ -94,9 +92,6 @@ class SolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
       static bool run( const Config::ParameterContainer& parameters )
       {
          const String& device = parameters. getParameter< String >( "device" );
-         if( parameters. getParameter< int >( "verbose" ) )
-           std::cout << "Setting DeviceType to ... " << device << std::endl;
-
          if( device == "host" )
             return SolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Host, ConfigTag >::run( parameters );
          if( device == "cuda" )
@@ -131,8 +126,6 @@ class SolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, tru
       static bool run( const Config::ParameterContainer& parameters )
       {
          const String& indexType = parameters. getParameter< String >( "index-type" );
-         if( parameters. getParameter< int >( "verbose" ) )
-           std::cout << "Setting IndexType to  ... " << indexType << std::endl;
          if( indexType == "short-int" )
             return SolverInitiatorIndexResolver< ProblemSetter, Real, Device, short int, ConfigTag >::run( parameters );
          if( indexType == "int" )

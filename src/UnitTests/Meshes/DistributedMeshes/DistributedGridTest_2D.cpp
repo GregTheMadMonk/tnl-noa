@@ -329,14 +329,14 @@ class DistributedGirdTest_2D : public ::testing::Test
       DistributedGridType *distributedGrid;
       DofType *dof;
 
-      SharedPointer<GridType> gridPtr;
-      SharedPointer<MeshFunctionType> meshFunctionPtr;
+      Pointers::SharedPointer<GridType> gridPtr;
+      Pointers::SharedPointer<MeshFunctionType> meshFunctionPtr;
 
       MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,2> > constFunctionEvaluator;
-      SharedPointer< ConstFunction<double,2>, Host > constFunctionPtr;
+      Pointers::SharedPointer< ConstFunction<double,2>, Host > constFunctionPtr;
 
       MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,2> > linearFunctionEvaluator;
-      SharedPointer< LinearFunction<double,2>, Host > linearFunctionPtr;
+      Pointers::SharedPointer< LinearFunction<double,2>, Host > linearFunctionPtr;
 
       int rank;
       int nproc;    

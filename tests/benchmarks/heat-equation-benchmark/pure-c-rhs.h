@@ -82,6 +82,7 @@ __global__ void heatEquationKernel( const Real* u,
       const Index c = j * gridXSize + i;
       aux[ c ] = ( ( u[ c - 1 ]         - 2.0 * u[ c ] + u[ c + 1 ]         ) * hx_inv +
                    ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
+      //aux[ c ] += 0.1;
       //aux[ c ] = ( ( __ldg( &u[ c - 1 ] ) - 2.0 * __ldg( &u[ c ] ) + __ldg( &u[ c + 1 ] ) ) * hx_inv +
       //                   ( __ldg( &u[ c - gridXSize ] ) - 2.0 * __ldg( &u[ c ] ) + __ldg( &u[ c + gridXSize ] ) ) * hy_inv );
    }  
@@ -102,7 +103,7 @@ bool pureCRhsCuda( dim3 cudaGridSize,
    /****
     * Neumann boundary conditions
     */
-   //cout << "Setting boundary conditions ... " << endl;
+   //cout << "Setting boundary conditions ... " <<std::endl;
    boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( cuda_u, cuda_aux, gridXSize, gridYSize );
    if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
    {
@@ -113,7 +114,7 @@ bool pureCRhsCuda( dim3 cudaGridSize,
    /****
     * Laplace operator
     */
-   //cout << "Laplace operator ... " << endl;
+   //cout << "Laplace operator ... " <<std::endl;
    heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
       ( cuda_u, cuda_aux, tau, hx_inv, hy_inv, gridXSize, gridYSize );
    if( cudaGetLastError() != cudaSuccess )

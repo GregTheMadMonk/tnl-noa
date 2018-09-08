@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 
         CommunicatorType::Init(argc, argv);
 
-        SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
+        Pointers::SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
         MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
                 
         //save distributed meshfunction into files
@@ -66,8 +66,8 @@ int main(int argc, char **argv)
         SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
         distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-        SharedPointer<MeshType> gridptr;
-        SharedPointer<MeshFunctionType> meshFunctionptr;
+        Pointers::SharedPointer<MeshType> gridptr;
+        Pointers::SharedPointer<MeshFunctionType> meshFunctionptr;
         distributedGrid.setupGrid(*gridptr);
        
         DofType dofsave(gridptr->template getEntitiesCount< Cell >());
@@ -99,6 +99,6 @@ int main(int argc, char **argv)
 
 #else
 
-main(){}
-#endif
+int main(){}
 
+#endif

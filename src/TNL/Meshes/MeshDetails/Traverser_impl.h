@@ -25,7 +25,7 @@ template< typename Mesh,
 void
 Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processBoundaryEntities( const MeshPointer& meshPointer,
-                         SharedPointer< UserData, DeviceType >& userDataPointer ) const
+                         UserData& userData ) const
 {
    auto entitiesCount = meshPointer->template getBoundaryEntitiesCount< EntitiesDimension >();
 #ifdef HAVE_OPENMP
@@ -35,7 +35,7 @@ processBoundaryEntities( const MeshPointer& meshPointer,
       const auto entityIndex = meshPointer->template getBoundaryEntityIndex< EntitiesDimension >( i );
       auto& entity = meshPointer->template getEntity< EntitiesDimension >( entityIndex );
       // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
-      EntitiesProcessor::processEntity( *meshPointer, *userDataPointer, entity );
+      EntitiesProcessor::processEntity( *meshPointer, userData, entity );
    }
 }
 
@@ -47,7 +47,7 @@ template< typename Mesh,
 void
 Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processInteriorEntities( const MeshPointer& meshPointer,
-                         SharedPointer< UserData, DeviceType >& userDataPointer ) const
+                            UserData& userData ) const
 {
    auto entitiesCount = meshPointer->template getInteriorEntitiesCount< EntitiesDimension >();
 #ifdef HAVE_OPENMP
@@ -57,7 +57,7 @@ processInteriorEntities( const MeshPointer& meshPointer,
       const auto entityIndex = meshPointer->template getInteriorEntityIndex< EntitiesDimension >( i );
       auto& entity = meshPointer->template getEntity< EntitiesDimension >( entityIndex );
       // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
-      EntitiesProcessor::processEntity( *meshPointer, *userDataPointer, entity );
+      EntitiesProcessor::processEntity( *meshPointer, userData, entity );
    }
 }
 
@@ -69,7 +69,7 @@ template< typename Mesh,
 void
 Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processAllEntities( const MeshPointer& meshPointer,
-                    SharedPointer< UserData, DeviceType >& userDataPointer ) const
+                      UserData& userData ) const
 {
    auto entitiesCount = meshPointer->template getEntitiesCount< EntitiesDimension >();
 #ifdef HAVE_OPENMP
@@ -78,7 +78,7 @@ processAllEntities( const MeshPointer& meshPointer,
    for( decltype(entitiesCount) entityIndex = 0; entityIndex < entitiesCount; entityIndex++ ) {
       auto& entity = meshPointer->template getEntity< EntitiesDimension >( entityIndex );
       // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
-      EntitiesProcessor::processEntity( *meshPointer, *userDataPointer, entity );
+      EntitiesProcessor::processEntity( *meshPointer, userData, entity );
    }
 }
 
@@ -90,7 +90,7 @@ template< int EntitiesDimension,
           typename UserData >
 __global__ void
 MeshTraverserBoundaryEntitiesKernel( const Mesh* mesh,
-                                     UserData* userData,
+                                     UserData userData,
                                      typename Mesh::GlobalIndexType entitiesCount )
 {
    for( typename Mesh::GlobalIndexType i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -100,7 +100,7 @@ MeshTraverserBoundaryEntitiesKernel( const Mesh* mesh,
       const auto entityIndex = mesh->template getBoundaryEntityIndex< EntitiesDimension >( i );
       auto& entity = mesh->template getEntity< EntitiesDimension >( entityIndex );
       // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
-      EntitiesProcessor::processEntity( *mesh, *userData, entity );
+      EntitiesProcessor::processEntity( *mesh, userData, entity );
    }
 }
 
@@ -110,7 +110,7 @@ template< int EntitiesDimension,
           typename UserData >
 __global__ void
 MeshTraverserInteriorEntitiesKernel( const Mesh* mesh,
-                                     UserData* userData,
+                                     UserData userData,
                                      typename Mesh::GlobalIndexType entitiesCount )
 {
    for( typename Mesh::GlobalIndexType i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -120,7 +120,7 @@ MeshTraverserInteriorEntitiesKernel( const Mesh* mesh,
       const auto entityIndex = mesh->template getInteriorEntityIndex< EntitiesDimension >( i );
       auto& entity = mesh->template getEntity< EntitiesDimension >( entityIndex );
       // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
-      EntitiesProcessor::processEntity( *mesh, *userData, entity );
+      EntitiesProcessor::processEntity( *mesh, userData, entity );
    }
 }
 
@@ -130,7 +130,7 @@ template< int EntitiesDimension,
           typename UserData >
 __global__ void
 MeshTraverserAllEntitiesKernel( const Mesh* mesh,
-                                UserData* userData,
+                                UserData userData,
                                 typename Mesh::GlobalIndexType entitiesCount )
 {
    for( typename Mesh::GlobalIndexType entityIndex = blockIdx.x * blockDim.x + threadIdx.x;
@@ -139,7 +139,7 @@ MeshTraverserAllEntitiesKernel( const Mesh* mesh,
    {
       auto& entity = mesh->template getEntity< EntitiesDimension >( entityIndex );
       // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
-      EntitiesProcessor::processEntity( *mesh, *userData, entity );
+      EntitiesProcessor::processEntity( *mesh, userData, entity );
    }
 }
 #endif
@@ -152,7 +152,7 @@ template< typename MeshConfig,
 void
 Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimension >::
 processBoundaryEntities( const MeshPointer& meshPointer,
-                         SharedPointer< UserData, DeviceType >& userDataPointer ) const
+                            UserData& userData ) const
 {
 #ifdef HAVE_CUDA
    auto entitiesCount = meshPointer->template getBoundaryEntitiesCount< EntitiesDimension >();
@@ -166,7 +166,7 @@ processBoundaryEntities( const MeshPointer& meshPointer,
    MeshTraverserBoundaryEntitiesKernel< EntitiesDimension, EntitiesProcessor >
       <<< gridSize, blockSize >>>
       ( &meshPointer.template getData< Devices::Cuda >(),
-        &userDataPointer.template modifyData< Devices::Cuda >(),
+        userData,
         entitiesCount );
    cudaDeviceSynchronize();
    TNL_CHECK_CUDA_DEVICE;
@@ -183,7 +183,7 @@ template< typename MeshConfig,
 void
 Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimension >::
 processInteriorEntities( const MeshPointer& meshPointer,
-                         SharedPointer< UserData, DeviceType >& userDataPointer ) const
+                            UserData& userData ) const
 {
 #ifdef HAVE_CUDA
    auto entitiesCount = meshPointer->template getInteriorEntitiesCount< EntitiesDimension >();
@@ -197,7 +197,7 @@ processInteriorEntities( const MeshPointer& meshPointer,
    MeshTraverserInteriorEntitiesKernel< EntitiesDimension, EntitiesProcessor >
       <<< gridSize, blockSize >>>
       ( &meshPointer.template getData< Devices::Cuda >(),
-        &userDataPointer.template modifyData< Devices::Cuda >(),
+        userData,
         entitiesCount );
    cudaDeviceSynchronize();
    TNL_CHECK_CUDA_DEVICE;
@@ -214,7 +214,7 @@ template< typename MeshConfig,
 void
 Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimension >::
 processAllEntities( const MeshPointer& meshPointer,
-                    SharedPointer< UserData, DeviceType >& userDataPointer ) const
+                      UserData& userData ) const
 {
 #ifdef HAVE_CUDA
    auto entitiesCount = meshPointer->template getEntitiesCount< EntitiesDimension >();
@@ -228,7 +228,7 @@ processAllEntities( const MeshPointer& meshPointer,
    MeshTraverserAllEntitiesKernel< EntitiesDimension, EntitiesProcessor >
       <<< gridSize, blockSize >>>
       ( &meshPointer.template getData< Devices::Cuda >(),
-        &userDataPointer.template modifyData< Devices::Cuda >(),
+        userData,
         entitiesCount );
    cudaDeviceSynchronize();
    TNL_CHECK_CUDA_DEVICE;

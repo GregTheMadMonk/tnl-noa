@@ -48,18 +48,18 @@ int main(int argc, char ** argv)
   PointType origin(-0.5);
   PointType proportions(size);
  
-  SharedPointer<MeshType> gridPtr;
+  Pointers::SharedPointer<MeshType> gridPtr;
   gridPtr->setDimensions(proportions);
   gridPtr->setDomain(origin,proportions);
 
-  SharedPointer<MeshFunctionType> meshFunctionptr;
+  Pointers::SharedPointer<MeshFunctionType> meshFunctionptr;
   MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
 
   DofType dof(gridPtr->template getEntitiesCount< Cell >());
   dof.setValue(0);  
   meshFunctionptr->bind(gridPtr,dof);  
   
-  SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
+  Pointers::SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
 
   for(int i=0;i<cycles;i++)
   {

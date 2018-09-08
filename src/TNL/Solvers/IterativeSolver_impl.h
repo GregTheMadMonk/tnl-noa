@@ -107,12 +107,7 @@ bool IterativeSolver< Real, Index> :: checkNextIteration()
 {
    this->refreshSolverMonitor();
 
-   if(
-#ifndef HAVE_CUDA      
-      std::isnan( this->getResidue() ) ||
-      // TODO: Fix this !!!!
-      // this does not work (at least) with nvcc 8.0 and g++ 5.4
-#endif      
+   if( std::isnan( this->getResidue() ) ||
        this->getIterations() > this->getMaxIterations()  ||
        ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() >= this->getMinIterations() ) ||
        ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() >= this->getMinIterations() ) )
@@ -219,23 +214,6 @@ void IterativeSolver< Real, Index> :: refreshSolverMonitor( bool force )
       this->solverMonitor->setRefreshRate( this-> refreshRate );
    }
 }
-
-
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
-
-extern template class IterativeSolver< float,  int >;
-extern template class IterativeSolver< double, int >;
-extern template class IterativeSolver< float,  long int >;
-extern template class IterativeSolver< double, long int >;
-
-#ifdef HAVE_CUDA
-extern template class IterativeSolver< float,  int >;
-extern template class IterativeSolver< double, int >;
-extern template class IterativeSolver< float,  long int >;
-extern template class IterativeSolver< double, long int >;
-#endif
-
-#endif
 
 } // namespace Solvers
 } // namespace TNL

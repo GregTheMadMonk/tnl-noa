@@ -168,6 +168,68 @@ template< typename MeshReal,
           typename Index >
 template< typename MeshEntity >
 __cuda_callable__
+Real
+BenchmarkLaplace< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+operator()( const RealType* u,
+            const MeshEntity& entity,
+            const Real& time ) const
+{
+   /****
+    * Implement your explicit form of the differential operator here.
+    * The following example is the Laplace operator approximated 
+    * by the Finite difference method.
+    */
+   /*static_assert( MeshEntity::getEntityDimension() == 2, "Wrong mesh entity dimension." ); 
+   static_assert( MeshFunction::getEntitiesDimension() == 2, "Wrong preimage function" ); 
+   const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities(); 
+
+   const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >(); 
+   const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >(); 
+   const IndexType& center = entity.getIndex(); 
+   const IndexType& east  = neighborEntities.template getEntityIndex<  1,  0 >(); 
+   const IndexType& west  = neighborEntities.template getEntityIndex< -1,  0 >(); 
+   const IndexType& north = neighborEntities.template getEntityIndex<  0,  1 >(); 
+   const IndexType& south = neighborEntities.template getEntityIndex<  0, -1 >(); */
+
+   const IndexType& xSize = entity.getMesh().getDimensions().x();
+   const IndexType& c = entity.getIndex();
+   const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >(); 
+   const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >(); 
+   return ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ]  ) * hxSquareInverse +
+          ( u[ c - xSize ] - 2.0 * u[ c ] + u[ c + xSize ] ) * hySquareInverse;
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+   //template< typename MeshFunction > //, typename MeshEntity >
+__cuda_callable__
+Real
+BenchmarkLaplace< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+operator()( const MeshType& mesh,
+            const Real* u,
+            const IndexType& entityIndex,
+            const typename MeshType::CoordinatesType coordinates,
+            const RealType& time ) const
+{
+   //const MeshType& mesh = u.template getMesh< Device >();
+   const IndexType& xSize = mesh.getDimensions().x();
+   const IndexType& c = entityIndex;
+   const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< -2, 0 >(); 
+   const RealType& hySquareInverse = mesh.template getSpaceStepsProducts< 0, -2 >(); 
+   return ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ]  ) * hxSquareInverse +
+          ( u[ c - xSize ] - 2.0 * u[ c ] + u[ c + xSize ] ) * hySquareInverse;
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+template< typename MeshEntity >
+__cuda_callable__
 Index
 BenchmarkLaplace< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,

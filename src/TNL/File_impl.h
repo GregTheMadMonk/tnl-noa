@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFile_impl.h  -  description
+                          File_impl.h  -  description
                              -------------------
     begin                : Mar 5, Oct 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -87,7 +87,7 @@ bool File::read_impl( Type* buffer,
 {
 #ifdef HAVE_CUDA
    this->readElements = 0;
-   const std::size_t host_buffer_size = std::min( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ), elements );
+   const std::size_t host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / sizeof( Type ), elements );
    using BaseType = typename std::remove_cv< Type >::type;
    BaseType* host_buffer = new BaseType[ host_buffer_size ];
 
@@ -133,7 +133,7 @@ bool File::read_impl( Type* buffer,
 {
 #ifdef HAVE_MIC
    this->readElements = 0;
-   const std::size_t host_buffer_size = std::min( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ), elements );
+   const std::size_t host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / sizeof( Type ), elements );
    Type * host_buffer = (Type *)malloc( sizeof( Type ) * host_buffer_size );
    readElements = 0;
    if( ! host_buffer )
@@ -230,7 +230,7 @@ bool File::write_impl( const Type* buffer,
 {
 #ifdef HAVE_CUDA
    this->writtenElements = 0;
-   const std::size_t host_buffer_size = std::min( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ),
+   const std::size_t host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / sizeof( Type ),
                                              elements );
    using BaseType = typename std::remove_cv< Type >::type;
    BaseType* host_buffer = new BaseType[ host_buffer_size ];
@@ -277,7 +277,7 @@ bool File::write_impl( const Type* buffer,
 {
 #ifdef HAVE_MIC
    this->writtenElements = 0;
-   const std::size_t host_buffer_size = std::min( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ),
+   const std::size_t host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / sizeof( Type ),
                                                   elements );
    Type * host_buffer = (Type *)malloc( sizeof( Type ) * host_buffer_size );
    if( ! host_buffer )

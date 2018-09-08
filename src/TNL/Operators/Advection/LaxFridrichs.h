@@ -4,7 +4,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/VectorField.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 
 namespace TNL {
    namespace Operators {
@@ -30,7 +30,7 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
    public:
       
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
-      typedef SharedPointer< MeshType > MeshPointer;
+      typedef Pointers::SharedPointer<  MeshType > MeshPointer;
       static const int Dimension = MeshType::getMeshDimension();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
@@ -39,7 +39,7 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef VelocityFunction VelocityFunctionType;
       typedef Functions::VectorField< Dimension, VelocityFunctionType > VelocityFieldType;
-      typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
+      typedef Pointers::SharedPointer<  VelocityFieldType, DeviceType > VelocityFieldPointer;
       
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
@@ -122,7 +122,7 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
    public:
       
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
-      typedef SharedPointer< MeshType > MeshPointer;
+      typedef Pointers::SharedPointer<  MeshType > MeshPointer;
       static const int Dimension = MeshType::getMeshDimension();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
@@ -131,7 +131,7 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef VelocityFunction VelocityFunctionType;
       typedef Functions::VectorField< Dimension, VelocityFunctionType > VelocityFieldType;
-      typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
+      typedef Pointers::SharedPointer<  VelocityFieldType, DeviceType > VelocityFieldPointer;
       
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
@@ -220,7 +220,7 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
    public:
       
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
-      typedef SharedPointer< MeshType > MeshPointer;
+      typedef Pointers::SharedPointer<  MeshType > MeshPointer;
       static const int Dimension = MeshType::getMeshDimension();
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
@@ -229,7 +229,7 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef VelocityFunction VelocityFunctionType;
       typedef Functions::VectorField< Dimension, VelocityFunctionType > VelocityFieldType;
-      typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
+      typedef Pointers::SharedPointer<  VelocityFieldType, DeviceType > VelocityFieldPointer;
       
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )

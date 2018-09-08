@@ -55,7 +55,7 @@ bool tnlNarrowBand< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: i
 
 	if( ! Mesh.load( meshFile ) )
 	{
-		   cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the mesh from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 
@@ -63,7 +63,7 @@ bool tnlNarrowBand< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: i
 	const String& initialCondition = parameters.getParameter <String>("initial-condition");
 	if( ! dofVector.load( initialCondition ) )
 	{
-		   cerr << "I am not able to load the initial condition from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the initial condition from the file " << meshFile << "." <<std::endl;
 		   return false;
 	}
 	dofVector2.load(initialCondition);

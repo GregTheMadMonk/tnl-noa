@@ -300,6 +300,7 @@ bool computeDifference( const MeshPointer& meshPointer, const String& objectType
    if( objectType == "Containers::Vector" ||
        objectType == "tnlVector" || objectType == "tnlSharedVector" )   // TODO: remove deprecated type name
       return computeDifferenceOfVectors< MeshPointer, Element, Real, Index >( meshPointer, parameters );
+   std::cerr << "Unknown object type " << objectType << "." << std::endl;
    return false;
 }
 
@@ -435,7 +436,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
     */
    String meshFile = parameters. getParameter< String >( "mesh" );
    
-   typedef SharedPointer< Mesh > MeshPointer;
+   typedef Pointers::SharedPointer<  Mesh > MeshPointer;
 
    MeshPointer meshPointer;
    if( meshFile != "" )
@@ -486,7 +487,7 @@ bool resolveGridRealType( const Containers::List< String >& parsedMeshType,
       return resolveGridIndexType< Dim, double >( parsedMeshType, parameters );
    if( parsedMeshType[ 2 ] == "long double" )
       return resolveGridIndexType< Dim, long double >( parsedMeshType, parameters );
-   
+   return false;
 }
 
 #endif /* TNL_DIFF_H_ */

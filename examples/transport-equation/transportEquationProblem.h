@@ -12,7 +12,7 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Functions/MeshFunction.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 
 using namespace TNL::Problems;
 
@@ -37,12 +37,12 @@ public PDEProblem< Mesh,
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
-      typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
-      typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
-      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef Pointers::SharedPointer<  MeshFunctionType, DeviceType > MeshFunctionPointer;
+      typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;
+      typedef Pointers::SharedPointer<  BoundaryCondition > BoundaryConditionPointer;
+      typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
       typedef typename DifferentialOperator::VelocityFieldType VelocityFieldType;
-      typedef SharedPointer< VelocityFieldType, DeviceType > VelocityFieldPointer;
+      typedef Pointers::SharedPointer<  VelocityFieldType, DeviceType > VelocityFieldPointer;
 
       typedef Communicator CommunicatorType;
 
@@ -50,8 +50,6 @@ public PDEProblem< Mesh,
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
-      using typename BaseType::MeshDependentDataType;
-      using typename BaseType::MeshDependentDataPointer; 
       
       static String getType();
 
@@ -60,45 +58,37 @@ public PDEProblem< Mesh,
       void writeProlog( Logger& logger,
                         const Config::ParameterContainer& parameters ) const;
 
-      bool setup( const MeshPointer& meshPointer,
-                  const Config::ParameterContainer& parameters,
+      bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" );
 
       bool setInitialCondition( const Config::ParameterContainer& parameters,
-                                const MeshPointer& mesh,
-                                DofVectorPointer& dofs,
-                                MeshDependentDataPointer& meshDependentData );
+                                DofVectorPointer& dofs );
 
       template< typename Matrix >
-      bool setupLinearSystem( const MeshPointer& mesh,
-                              Matrix& matrix );
+      bool setupLinearSystem( Matrix& matrix );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
-                         const MeshPointer& mesh,
-                         DofVectorPointer& dofs,
-                         MeshDependentDataPointer& meshDependentData );
+                         DofVectorPointer& dofs );
 
-      IndexType getDofs( const MeshPointer& mesh ) const;
+      IndexType getDofs() const;
 
-      void bindDofs( const MeshPointer& mesh,
-                     DofVectorPointer& dofs );
+      void bindDofs( DofVectorPointer& dofs );
 
       void getExplicitUpdate( const RealType& time,
-                           const RealType& tau,
-                           const MeshPointer& mesh,
-                           DofVectorPointer& _u,
-                           DofVectorPointer& _fu,
-                           MeshDependentDataPointer& meshDependentData );
+                              const RealType& tau,
+                              DofVectorPointer& _u,
+                              DofVectorPointer& _fu );
+      
+      void applyBoundaryConditions( const RealType& time,
+                                       DofVectorPointer& dofs );      
 
       template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
-                                 const MeshPointer& mesh,
                                  DofVectorPointer& dofs,
                                  Matrix& matrix,
-                                 DofVectorPointer& rightHandSide,
-                                 MeshDependentDataPointer& meshDependentData );
+                                 DofVectorPointer& rightHandSide );
 
    protected:
 

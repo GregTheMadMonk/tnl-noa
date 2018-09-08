@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/Traverser.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 
 namespace TNL {
 namespace Meshes {
@@ -24,7 +24,7 @@ class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 3 >
 {
    public:
       using GridType = Meshes::Grid< 3, Real, Device, Index >;
-      using GridPointer = SharedPointer< GridType >;
+      using GridPointer = Pointers::SharedPointer< GridType >;
       using CoordinatesType = typename GridType::CoordinatesType;
       using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
       using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
@@ -32,16 +32,16 @@ class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 3 >
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const GridPointer& gridPointer,
-                                    SharedPointer< UserData, Device >& userDataPointer ) const;
+                                       UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridPointer& gridPointer,
-                                    SharedPointer< UserData, Device >& userDataPointer ) const;
+                                       UserData& userData ) const;
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const GridPointer& gridPointer,
-                               SharedPointer< UserData, Device >& userDataPointer ) const;
+                                 UserData& userData ) const;
  
 };
 
@@ -53,7 +53,7 @@ class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 2 >
 {
    public:
       using GridType = Meshes::Grid< 3, Real, Device, Index >;
-      using GridPointer = SharedPointer< GridType >;
+      using GridPointer = Pointers::SharedPointer< GridType >;
       using CoordinatesType = typename GridType::CoordinatesType;
       using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
       using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
@@ -61,16 +61,16 @@ class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 2 >
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const GridPointer& gridPointer,
-                                    SharedPointer< UserData, Device >& userDataPointer ) const;
+                                       UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridPointer& gridPointer,
-                                    SharedPointer< UserData, Device >& userDataPointer ) const;
+                                       UserData& userData ) const;
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const GridPointer& gridPointer,
-                               SharedPointer< UserData, Device >& userDataPointer ) const;
+                                 UserData& userData ) const;
  
 };
 
@@ -82,7 +82,7 @@ class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 1 >
 {
    public:
       using GridType = Meshes::Grid< 3, Real, Device, Index >;
-      using GridPointer = SharedPointer< GridType >;
+      using GridPointer = Pointers::SharedPointer< GridType >;
       using CoordinatesType = typename GridType::CoordinatesType;
       using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
       using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
@@ -90,17 +90,17 @@ class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 1 >
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const GridPointer& gridPointer,
-                                    SharedPointer< UserData, Device >& userDataPointer ) const;
+                                       UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridPointer& gridPointer,
-                                    SharedPointer< UserData, Device >& userDataPointer ) const;
+                                       UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const GridPointer& gridPointer,
-                               SharedPointer< UserData, Device >& userDataPointer ) const;
+                                 UserData& userData ) const;
  
 };
 
@@ -112,7 +112,7 @@ class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 0 >
 {
    public:
       using GridType = Meshes::Grid< 3, Real, Device, Index >;
-      using GridPointer = SharedPointer< GridType >;
+      using GridPointer = Pointers::SharedPointer< GridType >;
       using CoordinatesType = typename GridType::CoordinatesType;
       using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
       using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
@@ -120,17 +120,17 @@ class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 0 >
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const GridPointer& gridPointer,
-                                    SharedPointer< UserData, Device >& userDataPointer ) const;
+                                       UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridPointer& gridPointer,
-                                    SharedPointer< UserData, Device >& userDataPointer ) const;
+                                       UserData& userData ) const;
  
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const GridPointer& gridPointer,
-                               SharedPointer< UserData, Device >& userDataPointer ) const;
+                                 UserData& userData ) const;
 };
 
 } // namespace Meshes

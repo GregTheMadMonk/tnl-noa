@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/Assert.h>
-#include <TNL/DevicePointer.h>
+#include <TNL/Pointers/DevicePointer.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Functions/MeshFunctionEvaluator.h>
 #include <TNL/Functions/MeshFunctionNormGetter.h>
@@ -83,7 +83,7 @@ template< typename Mesh,
    template< typename Vector >
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const MeshPointer& meshPointer,
-              SharedPointer< Vector >& data,
+              Pointers::SharedPointer<  Vector >& data,
               const IndexType& offset )
 //: meshPointer( meshPointer )
 {
@@ -200,6 +200,21 @@ template< typename Mesh,
    template< typename Vector >
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
+bind( const Vector& data,
+      const IndexType& offset )
+{
+   this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
+   TNL_ASSERT( this->data.getSize() == this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 
+               std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
+                         << "this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() = " << this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >() );   
+}
+
+template< typename Mesh,
+          int MeshEntityDimension,
+          typename Real >
+   template< typename Vector >
+void
+MeshFunction< Mesh, MeshEntityDimension, Real >::
 bind( const MeshPointer& meshPointer,
       const Vector& data,
       const IndexType& offset )
@@ -219,7 +234,7 @@ template< typename Mesh,
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 bind( const MeshPointer& meshPointer,
-      const SharedPointer< Vector >& data,
+      const Pointers::SharedPointer<  Vector >& data,
       const IndexType& offset )
 {
    TNL_ASSERT_GE( data->getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(), 

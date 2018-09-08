@@ -5,15 +5,24 @@
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include "TestGridEntity.h"
+#include "Tuning/tunning.h"
+#include "Tuning/SimpleCell.h"
+#include "Tuning/GridTraverser.h"
+
+//#define WITH_TNL  // In the 'tunning' part, this serves for comparison of performance 
+                  // when using common TNL structures compared to the benchmark ones
+
+
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 String
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 getType()
 {
    return String( "HeatEquationBenchmarkProblem< " ) + Mesh :: getType() + " >";
@@ -22,9 +31,9 @@ getType()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
-          typename DifferentialOperator >
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+          typename DifferentialOperator,
+          typename Communicator >
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 HeatEquationBenchmarkProblem()
 : cudaMesh( 0 ),
   cudaBoundaryConditions( 0 ),
@@ -36,22 +45,29 @@ HeatEquationBenchmarkProblem()
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 String
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 getPrologHeader() const
 {
-   return String( "Heat Equation Benchmark" );
+   if( this->cudaKernelType == "pure-c" )
+      return String( "Heat Equation Benchmark PURE-C test" );
+   if( this->cudaKernelType == "templated" )
+      return String( "Heat Equation Benchmark TEMPLATED test" );
+   if( this->cudaKernelType == "templated-compact" )
+      return String( "Heat Equation Benchmark TEMPLATED COMPACT test" );
+   if( this->cudaKernelType == "tunning" )
+      return String( "Heat Equation Benchmark TUNNIG test" );            
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 void
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
@@ -63,15 +79,14 @@ writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) cons
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 bool
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
-setup( const MeshPointer& meshPointer,
-       const Config::ParameterContainer& parameters,
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
+setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( meshPointer, parameters, "boundary-conditions-" ) ||
+   if( ! this->boundaryConditionPointer->setup( this->getMesh(), parameters, "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
       return false;
    this->cudaKernelType = parameters.getParameter< String >( "cuda-kernel-type" );
@@ -82,52 +97,52 @@ setup( const MeshPointer& meshPointer,
       this->cudaRightHandSide = Devices::Cuda::passToDevice( *this->rightHandSidePointer );
       this->cudaDifferentialOperator = Devices::Cuda::passToDevice( *this->differentialOperatorPointer );
    }
-   
+   this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
+   this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
+   this->explicitUpdater.setRightHandSide( this->rightHandSidePointer );   
    return true;
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
-          typename DifferentialOperator >
-typename HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::IndexType
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
-getDofs( const MeshPointer& meshPointer ) const
+          typename DifferentialOperator,
+          typename Communicator >
+typename HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::IndexType
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
+getDofs() const
 {
    /****
     * Return number of  DOFs (degrees of freedom) i.e. number
     * of unknowns to be resolved by the main solver.
     */
-   return meshPointer->template getEntitiesCount< typename MeshType::Cell >();
+   return this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 void
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
-bindDofs( const MeshPointer& meshPointer,
-          DofVectorPointer& dofsPointer )
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
+bindDofs( DofVectorPointer& dofsPointer )
 {
+   this->u->bind( this->getMesh(), dofsPointer );
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 bool
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
-                     const MeshPointer& meshPointer,
-                     DofVectorPointer& dofsPointer,
-                     MeshDependentDataPointer& meshDependentData )
+                     DofVectorPointer& dofsPointer )
 {
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-   Functions::MeshFunction< Mesh > u( meshPointer, dofsPointer );
+   Functions::MeshFunction< Mesh > u( this->getMesh(), dofsPointer );
    if( ! u.boundLoad( initialConditionFile ) )
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
@@ -139,21 +154,20 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
    template< typename Matrix >
 bool
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
-setupLinearSystem( const MeshType& mesh,
-                   Matrix& matrix )
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
+setupLinearSystem( Matrix& matrix )
 {
-   const IndexType dofs = this->getDofs( mesh );
+   const IndexType dofs = this->getDofs();
    typedef typename Matrix::CompressedRowLengthsVector CompressedRowLengthsVectorType;
    CompressedRowLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
    Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( mesh,
+   matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( this->getMesh(),
                                                                           differentialOperatorPointer,
                                                                           boundaryConditionPointer,
                                                                           rowLengths );
@@ -166,20 +180,18 @@ setupLinearSystem( const MeshType& mesh,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 bool
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
-              const MeshPointer& meshPointer,
-              DofVectorPointer& dofsPointer,
-              MeshDependentDataPointer& meshDependentData )
+              DofVectorPointer& dofsPointer )
 {
    std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
-   this->bindDofs( meshPointer, dofsPointer );
+   this->bindDofs( dofsPointer );
    MeshFunctionType u;
-   u.bind( meshPointer, *dofsPointer );
+   u.bind( this->getMesh(), *dofsPointer );
    
    FileName fileName;
    fileName.setFileNameBase( "u-" );
@@ -334,7 +346,6 @@ template< typename GridType,
           typename GridEntity,
           typename DifferentialOperator,
           typename RightHandSide,
-          typename CommType,
           typename MeshFunction >
 __global__ void 
 heatEquationTemplatedCompact( const GridType* grid,
@@ -383,16 +394,14 @@ heatEquationTemplatedCompact( const GridType* grid,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
 void
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 getExplicitUpdate( const RealType& time,
-                const RealType& tau,
-                const MeshPointer& mesh,
-                DofVectorPointer& uDofs,
-                DofVectorPointer& fuDofs,
-                MeshDependentDataPointer& meshDependentData )
+                   const RealType& tau,
+                   DofVectorPointer& uDofs,
+                   DofVectorPointer& fuDofs )
 {
    /****
     * If you use an explicit solver like Euler or Merson, you
@@ -402,6 +411,7 @@ getExplicitUpdate( const RealType& time,
     *
     * You may use supporting mesh dependent data if you need.
     */
+   const MeshPointer& mesh = this->getMesh();
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
       const IndexType gridXSize = mesh->getDimensions().x();
@@ -450,17 +460,7 @@ getExplicitUpdate( const RealType& time,
                             gridYSize / 16 + ( gridYSize % 16 != 0 ) );
 
          int cudaErr;
-         boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( uDofs->getData(), fuDofs->getData(), gridXSize, gridYSize );
-         if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
-         {
-            std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
-            return;
-         }
 
-         /****
-          * Laplace operator
-          */
-         //cout << "Laplace operator ... " << endl;
          heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
             ( uDofs->getData(), fuDofs->getData(), tau, hx_inv, hy_inv, gridXSize, gridYSize );
          if( cudaGetLastError() != cudaSuccess )
@@ -468,6 +468,14 @@ getExplicitUpdate( const RealType& time,
             std::cerr << "Laplace operator failed." << std::endl;
             return;
          }
+         
+         boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( uDofs->getData(), fuDofs->getData(), gridXSize, gridYSize );
+         if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
+         {
+            std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
+            return;
+         }
+         
       }
       if( this->cudaKernelType == "templated-compact" )
       {
@@ -536,30 +544,200 @@ getExplicitUpdate( const RealType& time,
          this->u->bind( mesh, uDofs );
          this->fu->bind( mesh, fuDofs );         
          //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
-         explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
-         explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
-         explicitUpdater.setRightHandSide( this->rightHandSidePointer );
-         
          this->explicitUpdater.template update< typename Mesh::Cell, CommunicatorType >( time, tau, mesh, this->u, this->fu );
       }
+      if( this->cudaKernelType == "tunning" )
+      {
+         if( std::is_same< DeviceType, Devices::Cuda >::value )
+         {   
+            this->u->bind( mesh, uDofs );
+            this->fu->bind( mesh, fuDofs );                     
+            
+            
+            /*this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, this->u, this->fu );
+            return;*/
+            
+#ifdef WITH_TNL
+            using ExplicitUpdaterType = TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
+            using Cell = typename MeshType::Cell;
+            using MeshTraverserType = Meshes::Traverser< MeshType, Cell >;
+            using UserData = TNL::Solvers::PDE::ExplicitUpdaterTraverserUserData< RealType,
+               MeshFunctionType,
+               DifferentialOperator,
+               BoundaryCondition,
+               RightHandSide >;
+            
+#else
+            //using CellConfig = Meshes::GridEntityNoStencilStorage;
+            using CellConfig = Meshes::GridEntityCrossStencilStorage< 1 >;
+            using ExplicitUpdaterType = ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
+            using Cell = typename MeshType::Cell; 
+            //using Cell = SimpleCell< Mesh, CellConfig >;
+            using MeshTraverserType = Traverser< MeshType, Cell >;
+            using UserData = ExplicitUpdaterTraverserUserData< RealType,
+               MeshFunctionType,
+               DifferentialOperator,
+               BoundaryCondition,
+               RightHandSide >;
+#endif            
+
+            using InteriorEntitiesProcessor = typename ExplicitUpdaterType::TraverserInteriorEntitiesProcessor;
+            using BoundaryEntitiesProcessor = typename ExplicitUpdaterType::TraverserBoundaryEntitiesProcessor;
+            
+            UserData userData;
+            userData.time = time;
+            userData.differentialOperator = &this->differentialOperatorPointer.template getData< Devices::Cuda >();
+            userData.boundaryConditions = &this->boundaryConditionPointer.template getData< Devices::Cuda >();
+            userData.rightHandSide = &this->rightHandSidePointer.template getData< Devices::Cuda >();
+            userData.u = &this->u.template modifyData< Devices::Cuda >(); //uDofs->getData();
+            userData.fu = &this->fu.template modifyData< Devices::Cuda >(); //fuDofs->getData();
+#ifndef WITH_TNL
+            userData.real_u = uDofs->getData();
+            userData.real_fu = fuDofs->getData();
+#endif                        
+            const IndexType gridXSize = mesh->getDimensions().x();
+            const IndexType gridYSize = mesh->getDimensions().y();
+            dim3 cudaBlockSize( 16, 16 );
+            dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
+                               gridYSize / 16 + ( gridYSize % 16 != 0 ) );
+            
+            TNL::Devices::Cuda::synchronizeDevice();
+            int cudaErr;
+            Meshes::Traverser< MeshType, Cell > meshTraverser;
+            meshTraverser.template processInteriorEntities< UserData,
+                                                      InteriorEntitiesProcessor >
+                                                          ( mesh,
+                                                            userData );
+             // */
+            /*_heatEquationKernel< InteriorEntitiesProcessor, UserData, MeshType, RealType, IndexType >
+            <<< cudaGridSize, cudaBlockSize >>>
+               ( &mesh.template getData< Devices::Cuda >(),
+                userData );
+                //&userDataPtr.template modifyData< Devices::Cuda >() );*/
+            if( cudaGetLastError() != cudaSuccess )
+            {
+               std::cerr << "Laplace operator failed." << std::endl;
+               return;
+            }
+            
+            meshTraverser.template processBoundaryEntities< UserData,
+                                                      BoundaryEntitiesProcessor >
+                                                          ( mesh,
+                                                            userData );
+            // */
+           /*_boundaryConditionsKernel< BoundaryEntitiesProcessor, UserData, MeshType, RealType, IndexType >
+            <<< cudaGridSize, cudaBlockSize >>>
+               ( &mesh.template getData< Devices::Cuda >(),
+                userData );
+                //&userDataPtr.template modifyData< Devices::Cuda >() );
+            // */ 
+            if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
+            {
+               std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
+               return;
+            }
+
+            
+            
+         }
+      }      
    }
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
-          typename DifferentialOperator >
+          typename DifferentialOperator,
+          typename Communicator >
+void 
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
+applyBoundaryConditions( const RealType& time,
+                            DofVectorPointer& uDofs )
+{
+   const MeshPointer& mesh = this->getMesh();
+   if( this->cudaKernelType == "templated" )
+   {
+      this->bindDofs( uDofs );
+      this->explicitUpdater.template applyBoundaryConditions< typename Mesh::Cell >( this->getMesh(), time, this->u );
+   }
+   if( this->cudaKernelType == "tunning" )
+   {
+      /*
+      return;
+      this->bindDofs( uDofs );
+      this->explicitUpdater.template applyBoundaryConditions< typename Mesh::Cell >( this->getMesh(), time, this->u );
+      return;
+      
+#ifdef WITH_TNL
+      using ExplicitUpdaterType = TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
+      using Cell = typename MeshType::Cell;
+      using MeshTraverserType = Meshes::Traverser< MeshType, Cell >;
+      using UserData = TNL::Solvers::PDE::ExplicitUpdaterTraverserUserData< RealType,
+         MeshFunctionType,
+         DifferentialOperator,
+         BoundaryCondition,
+         RightHandSide >;
+            
+#else
+      //using CellConfig = Meshes::GridEntityNoStencilStorage;
+      using CellConfig = Meshes::GridEntityCrossStencilStorage< 1 >;
+      using ExplicitUpdaterType = ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
+      //using Cell = typename MeshType::Cell; 
+      using Cell = SimpleCell< Mesh, CellConfig >;
+      using MeshTraverserType = Traverser< MeshType, Cell >;
+      using UserData = ExplicitUpdaterTraverserUserData< RealType,
+         MeshFunctionType,
+         DifferentialOperator,
+         BoundaryCondition,
+         RightHandSide >;
+#endif            
+         using InteriorEntitiesProcessor = typename ExplicitUpdaterType::TraverserInteriorEntitiesProcessor;
+         using BoundaryEntitiesProcessor = typename ExplicitUpdaterType::TraverserBoundaryEntitiesProcessor;
+
+         UserData userData;
+         userData.time = time;
+         userData.differentialOperator = &this->differentialOperatorPointer.template getData< Devices::Cuda >();
+         userData.rightHandSide = &this->rightHandSidePointer.template getData< Devices::Cuda >();
+         userData.u = &this->u.template modifyData< Devices::Cuda >(); //uDofs->getData();
+#ifndef WITH_TNL
+         userData.real_u = uDofs->getData();
+#endif
+      userData.boundaryConditions = &this->boundaryConditionPointer.template getData< Devices::Cuda >();
+      Meshes::Traverser< MeshType, Cell > meshTraverser;
+      /*meshTraverser.template processBoundaryEntities< UserData,
+                                                BoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );*/
+      // */
+      /*_boundaryConditionsKernel< BoundaryEntitiesProcessor, UserData, MeshType, RealType, IndexType >
+      <<< cudaGridSize, cudaBlockSize >>>
+         ( &mesh.template getData< Devices::Cuda >(),
+          userData );
+          //&userDataPtr.template modifyData< Devices::Cuda >() );
+      // */ 
+      int cudaErr;
+      if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
+      {
+         std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
+         return;
+      }
+      
+   }
+}
+
+template< typename Mesh,
+          typename BoundaryCondition,
+          typename RightHandSide,
+          typename DifferentialOperator,
+          typename Communicator >
    template< typename MatrixPointer >
 void
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const MeshPointer& mesh,
                       DofVectorPointer& _u,
                       MatrixPointer& matrix,
-                      DofVectorPointer& b,
-                      MeshDependentDataPointer& meshDependentData )
+                      DofVectorPointer& b )
 {
    // TODO: the instance should be "cached" like this->explicitUpdater, but there is a problem with MatrixPointer
    Solvers::PDE::LinearSystemAssembler< Mesh,
@@ -571,20 +749,20 @@ assemblyLinearSystem( const RealType& time,
                              typename DofVectorPointer::ObjectType > systemAssembler;
 
    typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-   typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-   MeshFunctionPointer u( mesh, *_u );
+   typedef Pointers::SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
+   MeshFunctionPointer u( this->getMesh(), *_u );
    systemAssembler.setDifferentialOperator( this->differentialOperator );
    systemAssembler.setBoundaryConditions( this->boundaryCondition );
    systemAssembler.setRightHandSide( this->rightHandSide );
-   systemAssembler.template assembly< typename Mesh::Cell >( time, tau, mesh, u, matrix, b );
+   systemAssembler.template assembly< typename Mesh::Cell >( time, tau, this->getMesh(), u, matrix, b );
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename CommType,
-          typename DifferentialOperator >
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, CommType, DifferentialOperator >::
+          typename DifferentialOperator,
+          typename Communicator >
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 ~HeatEquationBenchmarkProblem()
 {
    if( this->cudaMesh ) Devices::Cuda::freeFromDevice( this->cudaMesh );

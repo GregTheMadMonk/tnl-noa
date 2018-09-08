@@ -16,6 +16,18 @@
 #include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
+#include <TNL/Solvers/Linear/SOR.h>
+#include <TNL/Solvers/Linear/CG.h>
+#include <TNL/Solvers/Linear/BICGStab.h>
+#include <TNL/Solvers/Linear/BICGStabL.h>
+#include <TNL/Solvers/Linear/GMRES.h>
+#include <TNL/Solvers/Linear/CWYGMRES.h>
+#include <TNL/Solvers/Linear/TFQMR.h>
+#include <TNL/Solvers/Linear/UmfpackWrapper.h>
+#include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
+#include <TNL/Solvers/Linear/Preconditioners/ILU0.h>
+#include <TNL/Solvers/Linear/Preconditioners/ILUT.h>
+#include <TNL/Matrices/CSR.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGrid.h>
 
 namespace TNL {
@@ -96,7 +108,7 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    config.addDelimiter( " === Time discretisation parameters ==== " );
    typedef PDE::ExplicitTimeStepper< DummyProblemType, ODE::Euler > ExplicitTimeStepper;
    typedef Solvers::DummySolver DiscreteSolver;
-   PDE::TimeDependentPDESolver< DummyProblemType, DiscreteSolver, ExplicitTimeStepper >::configSetup( config );
+   PDE::TimeDependentPDESolver< DummyProblemType, ExplicitTimeStepper >::configSetup( config );
    ExplicitTimeStepper::configSetup( config );
    if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled ||
        ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled ||
@@ -120,32 +132,25 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    }
    if( ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
    {
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitCGSolverTag >::enabled )
-         config.addEntryEnum( "cg" );
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitBICGStabSolverTag >::enabled )
-         config.addEntryEnum( "bicgstab" );
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitBICGStabLSolverTag >::enabled )
-         config.addEntryEnum( "bicgstabl" );
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitCWYGMRESSolverTag >::enabled )
-         config.addEntryEnum( "cwygmres" );
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitGMRESSolverTag >::enabled )
-         config.addEntryEnum( "gmres" );
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitTFQMRSolverTag >::enabled )
-         config.addEntryEnum( "tfqmr" );
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitSORSolverTag >::enabled )
-         config.addEntryEnum( "sor" );
+      config.addEntryEnum( "cg" );
+      config.addEntryEnum( "bicgstab" );
+      config.addEntryEnum( "bicgstabl" );
+      config.addEntryEnum( "cwygmres" );
+      config.addEntryEnum( "gmres" );
+      config.addEntryEnum( "tfqmr" );
+      config.addEntryEnum( "sor" );
 #ifdef HAVE_UMFPACK
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitUmfpackSolverTag >::enabled )
-         config.addEntryEnum( "umfpack" );
+      config.addEntryEnum( "umfpack" );
+#endif
+      config.addEntry< String >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
+      config.addEntryEnum( "none" );
+      config.addEntryEnum( "diagonal" );
+   // TODO: implement parallel ILU or device-dependent build config tags for preconditioners
+#ifndef HAVE_CUDA
+      config.addEntryEnum( "ilu0" );
+      config.addEntryEnum( "ilut" );
 #endif
    }
-   config.addEntry< String >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
-   config.addEntryEnum( "none" );
-   config.addEntryEnum( "diagonal" );
-// TODO: implement parallel ILU or device-dependent build config tags for preconditioners
-#ifndef HAVE_CUDA
-   config.addEntryEnum( "ilu0" );
-#endif
    if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled ||
        ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
    {
@@ -166,23 +171,19 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    {
       config.addDelimiter( " === Semi-implicit solvers parameters === " );
       typedef Matrices::CSR< double, Devices::Host, int > MatrixType;
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitCGSolverTag >::enabled )
-         Linear::CG< MatrixType >::configSetup( config );
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitBICGStabSolverTag >::enabled )
-         Linear::BICGStab< MatrixType >::configSetup( config );
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitBICGStabLSolverTag >::enabled )
-         Linear::BICGStabL< MatrixType >::configSetup( config );
+      Linear::CG< MatrixType >::configSetup( config );
+      Linear::BICGStab< MatrixType >::configSetup( config );
+      Linear::BICGStabL< MatrixType >::configSetup( config );
 
       // GMRES and CWYGMRES have the same options
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitCWYGMRESSolverTag >::enabled )
-         Linear::CWYGMRES< MatrixType >::configSetup( config );
-      else if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitGMRESSolverTag >::enabled )
-         Linear::GMRES< MatrixType >::configSetup( config );
+      Linear::GMRES< MatrixType >::configSetup( config );
 
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitTFQMRSolverTag >::enabled )
-         Linear::TFQMR< MatrixType >::configSetup( config );
-      if( ConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitSORSolverTag >::enabled )
-         Linear::SOR< MatrixType >::configSetup( config );
+      Linear::TFQMR< MatrixType >::configSetup( config );
+      Linear::SOR< MatrixType >::configSetup( config );
+
+      Linear::Preconditioners::Diagonal< MatrixType >::configSetup( config );
+      Linear::Preconditioners::ILU0< MatrixType >::configSetup( config );
+      Linear::Preconditioners::ILUT< MatrixType >::configSetup( config );
    }
 
    config.addDelimiter( " === Logs and messages ===" );

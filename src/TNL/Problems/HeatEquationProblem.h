@@ -48,19 +48,17 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
+      typedef Pointers::SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
       typedef Matrices::SlicedEllpack< RealType, DeviceType, IndexType > MatrixType;
-      typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
-      typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
-      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;
+      typedef Pointers::SharedPointer<  BoundaryCondition > BoundaryConditionPointer;
+      typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
-      using typename BaseType::MeshDependentDataType;
-      using typename BaseType::MeshDependentDataPointer;
 
       typedef Communicator CommunicatorType;
 
@@ -74,45 +72,37 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       bool writeEpilog( Logger& logger );
 
 
-      bool setup( const MeshPointer& meshPointer,
-                  const Config::ParameterContainer& parameters,
+      bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix );
 
       bool setInitialCondition( const Config::ParameterContainer& parameters,
-                                const MeshPointer& mesh,
-                                DofVectorPointer& dofs,
-                                MeshDependentDataPointer& meshDependentData );
+                                DofVectorPointer& dofs );
 
       template< typename MatrixPointer >
-      bool setupLinearSystem( const MeshPointer& meshPointer,
-                              MatrixPointer& matrixPointer );
+      bool setupLinearSystem( MatrixPointer& matrixPointer );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
-                         const MeshPointer& meshPointer,
-                         DofVectorPointer& dofs,
-                         MeshDependentDataPointer& meshDependentData );
+                         DofVectorPointer& dofs );
 
-      IndexType getDofs( const MeshPointer& meshPointer ) const;
+      IndexType getDofs() const;
 
-      void bindDofs( const MeshPointer& meshPointer,
-                     const DofVectorPointer& dofs );
+      void bindDofs( const DofVectorPointer& dofs );
 
       void getExplicitUpdate( const RealType& time,
                               const RealType& tau,
-                              const MeshPointer& meshPointer,
                               DofVectorPointer& _u,
-                              DofVectorPointer& _fu,
-                              MeshDependentDataPointer& meshDependentData );
+                              DofVectorPointer& _fu );
+      
+      void applyBoundaryConditions( const RealType& time,
+                                    DofVectorPointer& dofs );      
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
-                                 const MeshPointer& meshPointer,
                                  const DofVectorPointer& dofsPointer,
                                  MatrixPointer& matrixPointer,
-                                 DofVectorPointer& rightHandSidePointer,
-                                 MeshDependentDataPointer& meshDependentData );
+                                 DofVectorPointer& rightHandSidePointer );
 
       protected:
          

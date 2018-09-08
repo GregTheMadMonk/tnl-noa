@@ -51,33 +51,15 @@ setMemoryElement( Element* data,
                   const Element& value )
 {
    *data = value;
-};
+}
 
 template< typename Element >
 Element
 ArrayOperations< Devices::Host >::
-getMemoryElement( Element* data )
+getMemoryElement( const Element* data )
 {
    return *data;
-};
-
-template< typename Element, typename Index >
-Element&
-ArrayOperations< Devices::Host >::
-getArrayElementReference( Element* data,
-                          const Index i )
-{
-   return data[ i ];
-};
-
-template< typename Element, typename Index >
-const Element&
-ArrayOperations< Devices::Host >::
-getArrayElementReference( const Element* data,
-                          const Index i )
-{
-   return data[ i ];
-};
+}
 
 template< typename Element, typename Index >
 bool
@@ -106,7 +88,7 @@ copyMemory( DestinationElement* destination,
    {
       // GCC 8.1 complains that we bypass a non-trivial copy-constructor
       // (in C++17 we could use constexpr if to avoid compiling this branch in that case)
-      #if defined(__GNUC__) && !defined(__clang__) && !defined(__NVCC__)
+      #if defined(__GNUC__) && ( __GNUC__ > 8 || ( __GNUC__ == 8 && __GNUC_MINOR__ > 0 ) ) && !defined(__clang__) && !defined(__NVCC__)
          #pragma GCC diagnostic push
          #pragma GCC diagnostic ignored "-Wclass-memaccess"
       #endif
@@ -156,7 +138,7 @@ containsValue( const Element* data,
 {
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
-   
+
    for( Index i = 0; i < size; i ++ )
       if( data[ i ] == value )
          return true;
@@ -173,15 +155,14 @@ containsOnlyValue( const Element* data,
 {
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
-   
+
    if( size == 0 ) return false;
-   
+
    for( Index i = 0; i < size; i ++ )
       if( ! ( data[ i ] == value ) )
          return false;
    return true;
 }
-
 
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
@@ -241,54 +222,6 @@ extern template float       ArrayOperations< Devices::Host >::getMemoryElement< 
 extern template double      ArrayOperations< Devices::Host >::getMemoryElement< double      >( double* data );
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template long double ArrayOperations< Devices::Host >::getMemoryElement< long double >( long double* data );
-#endif
-
-extern template char&        ArrayOperations< Devices::Host >::getArrayElementReference< char,        int >( char* data, const int i );
-extern template int&         ArrayOperations< Devices::Host >::getArrayElementReference< int,         int >( int* data, const int i );
-extern template long int&    ArrayOperations< Devices::Host >::getArrayElementReference< long int,    int >( long int* data, const int i );
-#ifdef INSTANTIATE_FLOAT
-extern template float&       ArrayOperations< Devices::Host >::getArrayElementReference< float,       int >( float* data, const int i );
-#endif
-extern template double&      ArrayOperations< Devices::Host >::getArrayElementReference< double,      int >( double* data, const int i );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double& ArrayOperations< Devices::Host >::getArrayElementReference< long double, int >( long double* data, const int i );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-extern template char&        ArrayOperations< Devices::Host >::getArrayElementReference< char,        long int >( char* data, const long int i );
-extern template int&         ArrayOperations< Devices::Host >::getArrayElementReference< int,         long int >( int* data, const long int i );
-extern template long int&    ArrayOperations< Devices::Host >::getArrayElementReference< long int,    long int >( long int* data, const long int i );
-#ifdef INSTANTIATE_FLOAT
-extern template float&       ArrayOperations< Devices::Host >::getArrayElementReference< float,       long int >( float* data, const long int i );
-#endif
-extern template double&      ArrayOperations< Devices::Host >::getArrayElementReference< double,      long int >( double* data, const long int i );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double& ArrayOperations< Devices::Host >::getArrayElementReference< long double, long int >( long double* data, const long int i );
-#endif
-#endif
-
-extern template const char&        ArrayOperations< Devices::Host >::getArrayElementReference< char,        int >( const char* data, const int i );
-extern template const int&         ArrayOperations< Devices::Host >::getArrayElementReference< int,         int >( const int* data, const int i );
-extern template const long int&    ArrayOperations< Devices::Host >::getArrayElementReference< long int,    int >( const long int* data, const int i );
-#ifdef INSTANTIATE_FLOAT
-extern template const float&       ArrayOperations< Devices::Host >::getArrayElementReference< float,       int >( const float* data, const int i );
-#endif
-extern template const double&      ArrayOperations< Devices::Host >::getArrayElementReference< double,      int >( const double* data, const int i );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template const long double& ArrayOperations< Devices::Host >::getArrayElementReference< long double, int >( const long double* data, const int i );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-extern template const char&        ArrayOperations< Devices::Host >::getArrayElementReference< char,        long int >( const char* data, const long int i );
-extern template const int&         ArrayOperations< Devices::Host >::getArrayElementReference< int,         long int >( const int* data, const long int i );
-extern template const long int&    ArrayOperations< Devices::Host >::getArrayElementReference< long int,    long int >( const long int* data, const long int i );
-#ifdef INSTANTIATE_FLOAT
-extern template const float&       ArrayOperations< Devices::Host >::getArrayElementReference< float,       long int >( const float* data, const long int i );
-#endif
-extern template const double&      ArrayOperations< Devices::Host >::getArrayElementReference< double,      long int >( const double* data, const long int i );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template const long double& ArrayOperations< Devices::Host >::getArrayElementReference< long double, long int >( const long double* data, const long int i );
-#endif
 #endif
 
 extern template bool ArrayOperations< Devices::Host >::copyMemory< char,                char, int >( char* destination, const char* source, const int size );

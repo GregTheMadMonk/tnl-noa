@@ -75,7 +75,7 @@ bool parallelGodunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Rea
 	   const String& meshFile = parameters.getParameter< String >( "mesh" );
 	   if( ! this->originalMesh.load( meshFile ) )
 	   {
-		   cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+		  std::cerr << "I am not able to load the mesh from the file " << meshFile << "." <<std::endl;
 		   return false;
 	   }
 

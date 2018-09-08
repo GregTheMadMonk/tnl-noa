@@ -28,7 +28,7 @@ class Merson : public ExplicitSolver< Problem >
    typedef typename Problem :: RealType RealType;
    typedef typename Problem :: DeviceType DeviceType;
    typedef typename Problem :: IndexType IndexType;
-   typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+   typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
 
    Merson();
 
@@ -58,8 +58,9 @@ class Merson : public ExplicitSolver< Problem >
 
    RealType computeError( const RealType tau );
 
-   void computeNewTimeLevel( DofVectorPointer& u,
-                             RealType tau,
+   void computeNewTimeLevel( const RealType time,
+                             const RealType tau,
+                             DofVectorPointer& u,
                              RealType& currentResidue );
 
    void writeGrids( const DofVectorPointer& u );

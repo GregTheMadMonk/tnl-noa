@@ -73,8 +73,7 @@ template< typename Mesh,
           typename Index >
 bool
 tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
-setup( const MeshPointer& mesh,
-       const Config::ParameterContainer& parameters,
+setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
    return true;
@@ -87,9 +86,9 @@ template< typename Mesh,
           typename Index >
 Index
 tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
-getDofs( const MeshPointer& mesh ) const
+getDofs() const
 {
-   return mesh->template getEntitiesCount< typename MeshType::Cell >();
+   return this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
@@ -99,10 +98,9 @@ template< typename Mesh,
           typename Index >
 void
 tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
-bindDofs( const MeshPointer& mesh,
-          const DofVectorPointer& dofs )
+bindDofs( const DofVectorPointer& dofs )
 {
-   this->u.bind( mesh, dofs );
+   this->u->bind( this->getMesh(), dofs );
 }
 
 template< typename Mesh,
@@ -113,13 +111,11 @@ template< typename Mesh,
 bool
 tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 setInitialCondition( const Config::ParameterContainer& parameters,
-                     const MeshPointer& mesh,
-                     DofVectorPointer& dofs,
-                     MeshDependentDataPointer& meshdependentData )
+                     DofVectorPointer& dofs )
 {
    String inputFile = parameters.getParameter< String >( "input-file" );
-   this->initialData.setMesh( mesh );
-   if( !this->initialData.boundLoad( inputFile ) )
+   this->initialData->setMesh( this->getMesh() );
+   if( !this->initialData->boundLoad( inputFile ) )
       return false;
    return true;
 }
@@ -132,10 +128,9 @@ template< typename Mesh,
           typename Index >
 bool
 tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
-solve( const MeshPointer& mesh,
-       DofVectorPointer& dofs )
+solve( DofVectorPointer& dofs )
 {
    FastSweepingMethod< MeshType, AnisotropyType > fsm;
-   fsm.solve( mesh, anisotropy, initialData );
+   fsm.solve( this->getMesh(), anisotropy, initialData );
    return true;
 }

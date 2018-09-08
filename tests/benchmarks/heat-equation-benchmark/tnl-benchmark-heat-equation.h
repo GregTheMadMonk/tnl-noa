@@ -6,6 +6,7 @@
 #include <TNL/Functions/Analytic/Constant.h>
 #include "HeatEquationBenchmarkProblem.h"
 #include "BenchmarkLaplace.h"
+#include "DirichletBoundaryConditions.h"
 #include "HeatEquationBenchmarkRhs.h"
 #include "HeatEquationBenchmarkBuildConfigTag.h"
 
@@ -35,6 +36,7 @@ template< typename ConfigTag >class HeatEquationBenchmarkConfig
             config.addEntryEnum< String >( "pure-c" );
             config.addEntryEnum< String >( "templated" );
             config.addEntryEnum< String >( "templated-compact" );
+            config.addEntryEnum< String >( "tunning" );
 
          /****
           * Add definition of your solver command line arguments.
@@ -77,27 +79,27 @@ class HeatEquationBenchmarkSetter
              if( boundaryConditionsType == "dirichlet" )
              {
                 typedef Operators::DirichletBoundaryConditions< MeshType, Constant, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-                typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, CommunicatorType, ApproximateOperator > Problem;
+                typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator, CommunicatorType > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
              }
-             typedef Operators::NeumannBoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
-             typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, CommunicatorType, ApproximateOperator > Problem;
+             /*typedef Operators::NeumannBoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
+             typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator, CommunicatorType > Problem;
              SolverStarter solverStarter;
-             return solverStarter.template run< Problem >( parameters );
+             return solverStarter.template run< Problem >( parameters );*/
           }
-          typedef Functions::MeshFunction< MeshType > MeshFunction;
+          /*typedef Functions::MeshFunction< MeshType > MeshFunction;
           if( boundaryConditionsType == "dirichlet" )
           {
              typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-             typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, CommunicatorType, ApproximateOperator > Problem;
+             typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator, CommunicatorType > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
           typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
-          typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, CommunicatorType, ApproximateOperator > Problem;
+          typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator, CommunicatorType > Problem;
           SolverStarter solverStarter;
-          return solverStarter.template run< Problem >( parameters );
+          return solverStarter.template run< Problem >( parameters );*/
       }
 
 };

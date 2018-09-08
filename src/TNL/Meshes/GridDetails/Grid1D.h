@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
 #include <TNL/Logger.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/GridDetails/GridEntityTopology.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter.h>
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
@@ -42,13 +42,13 @@ class Grid< 1, Real, Device, Index > : public Object
 
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
- 
+
    static constexpr int getMeshDimension() { return 1; };
- 
+
    template< int EntityDimension,
              typename Config = GridEntityCrossStencilStorage< 1 > >
    using EntityType = GridEntity< ThisType, EntityDimension, Config >;
- 
+
    typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
    typedef EntityType< 0 > Face;
    typedef EntityType< 0 > Vertex;
@@ -89,29 +89,27 @@ class Grid< 1, Real, Device, Index > : public Object
    template< typename Entity >
    __cuda_callable__
    IndexType getEntitiesCount() const;
-   
+
    template< typename Entity >
    __cuda_callable__
    inline Entity getEntity( const IndexType& entityIndex ) const;
- 
+
    template< typename Entity >
    __cuda_callable__
    inline Index getEntityIndex( const Entity& entity ) const;
- 
-   __cuda_callable__
-   
-   inline void setSpaceSteps(const PointType& steps);
 
+   __cuda_callable__
    inline const PointType& getSpaceSteps() const;
 
+   inline void setSpaceSteps(const PointType& steps);
 
    template< int xPow >
    __cuda_callable__
    const RealType& getSpaceStepsProducts() const;
-   
+
    __cuda_callable__
    inline const RealType& getCellMeasure() const;
- 
+
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
 
@@ -154,13 +152,13 @@ class Grid< 1, Real, Device, Index > : public Object
    void computeSpaceSteps();
 
    CoordinatesType dimensions;
- 
+
    IndexType numberOfCells, numberOfVertices;
 
    PointType origin, proportions;
- 
+
    PointType spaceSteps;
- 
+
    RealType spaceStepsProducts[ 5 ];
    
    DistributedMeshType *distGrid;

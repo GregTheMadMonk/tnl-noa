@@ -42,7 +42,7 @@ class TestSaveAndLoadMeshfunction
             typedef typename MeshType::CoordinatesType CoordinatesType;
             typedef LinearFunction<double,dim> LinearFunctionType;
 
-            SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+            Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
             MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
 
 
@@ -51,13 +51,13 @@ class TestSaveAndLoadMeshfunction
             PointType localProportions;
             localProportions.setValue(10);
             
-            SharedPointer<MeshType>  localGridptr;
+            Pointers::SharedPointer<MeshType>  localGridptr;
             localGridptr->setDimensions(localProportions);
             localGridptr->setDomain(localOrigin,localProportions);
 
             DofType localDof(localGridptr->template getEntitiesCount< Cell >());
 
-            SharedPointer<MeshFunctionType> localMeshFunctionptr;
+            Pointers::SharedPointer<MeshFunctionType> localMeshFunctionptr;
             localMeshFunctionptr->bind(localGridptr,localDof);
             linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
 
@@ -67,12 +67,12 @@ class TestSaveAndLoadMeshfunction
             ASSERT_TRUE( file.close() );
 
             //load other meshfunction on same localgrid from created file
-            SharedPointer<MeshType>  loadGridptr;
+            Pointers::SharedPointer<MeshType>  loadGridptr;
             loadGridptr->setDimensions(localProportions);
             loadGridptr->setDomain(localOrigin,localProportions);
 
             DofType loadDof(loadGridptr->template getEntitiesCount< Cell >());
-            SharedPointer<MeshFunctionType> loadMeshFunctionptr;
+            Pointers::SharedPointer<MeshFunctionType> loadMeshFunctionptr;
             loadMeshFunctionptr->bind(loadGridptr,loadDof);
 
             for(int i=0;i<loadDof.getSize();i++)
