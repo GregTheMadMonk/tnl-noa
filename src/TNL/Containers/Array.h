@@ -118,14 +118,6 @@ class Array : public Object
        */
       operator bool() const;
 
-      //! This method measures data transfers done by this vector.
-      /*!
-       * Every time one touches this grid touches * size * sizeof( Real ) bytes are added
-       * to transfered bytes in tnlStatistics.
-       */
-      template< typename IndexType2 = Index >
-      void touch( IndexType2 touches = 1 ) const;
-
       //! Method for saving the object to a file as a binary data.
       bool save( File& file ) const;
 

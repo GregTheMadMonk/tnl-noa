@@ -257,16 +257,6 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
    RealType* _kAux = kAux->getData();
    RealType* _u = u->getData();
 
-   /****
-    * Compute data transfers statistics
-    */
-   k1->touch( 4 );
-   k2->touch( 1 );
-   k3->touch( 2 );
-   k4->touch( 1 );
-   kAux->touch( 4 );
-   u->touch( 4 );
-
    RealType tau_3 = tau / 3.0;
 
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -374,14 +364,6 @@ typename Problem :: RealType Merson< Problem > :: computeError( const RealType t
    const RealType* _k5 = k5->getData();
    RealType* _kAux = kAux->getData();
 
-   /****
-    * Compute data transfers statistics
-    */
-   k1->touch();
-   k3->touch();
-   k4->touch();
-   k5->touch();
-
    RealType eps( 0.0 ), maxEps( 0.0 );
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
@@ -448,14 +430,6 @@ void Merson< Problem >::computeNewTimeLevel( const RealType time,
    RealType* _k1 = k1->getData();
    RealType* _k4 = k4->getData();
    RealType* _k5 = k5->getData();
-
-   /****
-    * Compute data transfers statistics
-    */
-   u->touch();
-   k1->touch();
-   k4->touch();
-   k5->touch();
 
    if( std::is_same< DeviceType, Devices::Host >::value )
    {

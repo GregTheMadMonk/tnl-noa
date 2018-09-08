@@ -471,15 +471,6 @@ Array< Element, Device, Index >::operator bool() const
 template< typename Element,
           typename Device,
           typename Index >
-   template< typename IndexType2 >
-void Array< Element, Device, Index >::touch( IndexType2 touches ) const
-{
-   //TODO: implement
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
 bool Array< Element, Device, Index >::save( File& file ) const
 {
    if( ! Object::save( file ) )
