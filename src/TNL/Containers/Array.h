@@ -82,15 +82,13 @@ class Array : public Object
 
       void reset();
 
+      __cuda_callable__ const Value* getData() const;
+
+      __cuda_callable__ Value* getData();
+
       void setElement( const Index& i, const Value& x );
 
       Value getElement( const Index& i ) const;
-
-      // Checks if there is an element with value v in this array
-      bool containsValue( const Value& v ) const;
-
-      // Checks if all elements in this array have the same value v
-      bool containsOnlyValue( const Value& v ) const;
 
       __cuda_callable__ inline Value& operator[] ( const Index& i );
 
@@ -109,9 +107,11 @@ class Array : public Object
 
       void setValue( const Value& v );
 
-      __cuda_callable__ const Value* getData() const;
+      // Checks if there is an element with value v in this array
+      bool containsValue( const Value& v ) const;
 
-      __cuda_callable__ Value* getData();
+      // Checks if all elements in this array have the same value v
+      bool containsOnlyValue( const Value& v ) const;
 
       /*!
        * Returns true if non-zero size is set.

@@ -300,6 +300,24 @@ reset()
 template< typename Value,
           typename Device,
           typename Index >
+__cuda_callable__
+const Value* Array< Value, Device, Index >::getData() const
+{
+   return this->data;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Value* Array< Value, Device, Index >::getData()
+{
+   return this->data;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
 void
 Array< Value, Device, Index >::
 setElement( const Index& i, const Value& x )
@@ -319,26 +337,6 @@ getElement( const Index& i ) const
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return Algorithms::ArrayOperations< Device >::getMemoryElement( & ( this->data[ i ] ) );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-bool
-Array< Value, Device, Index >::
-containsValue( const Value& v ) const
-{
-   return Algorithms::ArrayOperations< Device >::containsValue( this->data, this->size, v );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-bool
-Array< Value, Device, Index >::
-containsOnlyValue( const Value& v ) const
-{
-   return Algorithms::ArrayOperations< Device >::containsOnlyValue( this->data, this->size, v );
 }
 
 template< typename Value,
@@ -431,7 +429,6 @@ bool Array< Value, Device, Index >::operator != ( const ArrayT& array ) const
    return ! ( ( *this ) == array );
 }
 
-
 template< typename Value,
           typename Device,
           typename Index >
@@ -444,19 +441,21 @@ void Array< Value, Device, Index >::setValue( const Value& e )
 template< typename Value,
           typename Device,
           typename Index >
-__cuda_callable__
-const Value* Array< Value, Device, Index >::getData() const
+bool
+Array< Value, Device, Index >::
+containsValue( const Value& v ) const
 {
-   return this -> data;
+   return Algorithms::ArrayOperations< Device >::containsValue( this->data, this->size, v );
 }
 
 template< typename Value,
           typename Device,
           typename Index >
-__cuda_callable__
-Value* Array< Value, Device, Index >::getData()
+bool
+Array< Value, Device, Index >::
+containsOnlyValue( const Value& v ) const
 {
-   return this -> data;
+   return Algorithms::ArrayOperations< Device >::containsOnlyValue( this->data, this->size, v );
 }
 
 template< typename Value,
