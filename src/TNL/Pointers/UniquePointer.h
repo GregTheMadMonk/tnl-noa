@@ -478,14 +478,16 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
 };
 #endif
 
+} // namespace Pointers
+
 #if (!defined(NDEBUG)) && (!defined(HAVE_MIC))
 namespace Assert {
 
 template< typename Object, typename Device >
-struct Formatter< UniquePointer< Object, Device > >
+struct Formatter< Pointers::UniquePointer< Object, Device > >
 {
    static std::string
-   printToString( const UniquePointer< Object, Device >& value )
+   printToString( const Pointers::UniquePointer< Object, Device >& value )
    {
       ::std::stringstream ss;
       ss << "(UniquePointer< " << Object::getType() << ", " << Device::getDeviceType()
@@ -497,5 +499,4 @@ struct Formatter< UniquePointer< Object, Device > >
 } // namespace Assert
 #endif
 
-} // namespace Pointers
 } // namespace TNL
